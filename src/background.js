@@ -1,15 +1,20 @@
 'use strict'
+import settings from 'electron-settings'
+import { app, BrowserWindow, ipcMain, protocol } from 'electron'
+import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
-import { app, protocol, BrowserWindow } from 'electron'
-import {
-  createProtocol
-  /* installVueDevtools */
-} from 'vue-cli-plugin-electron-builder/lib'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
+
+ipcMain.on('reload', () => {
+  console.log('get reload')
+  app.relaunch()
+  app.quit()
+})
+
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true } }])
@@ -17,24 +22,32 @@ protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: tru
 function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1920,
+    height: 1080,
+    show: false,
     webPreferences: {
-    // Use pluginOptions.nodeIntegration, leave this alone
-    // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+      // Use pluginOptions.nodeIntegration, leave this alone
+      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
     }
   })
-
+  const Debug = settings.get('config.Debug')
+  console.log('Debug', Debug)
+  win.setFullScreen(!Debug)
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    if (!process.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
     // Load the index.html when not in development
     win.loadURL('app://./index.html')
   }
+  win.once('ready-to-show', () => {
+    win.show()
+    if (Debug) {
+      win.webContents.openDevTools()
+    }
+  })
 
   win.on('closed', () => {
     win = null
@@ -74,11 +87,13 @@ app.on('ready', async () => {
     // } catch (e) {
     //   console.error('Vue Devtools failed to install:', e.toString())
     // }
-
   }
+  if (!settings.has('config')) {
+    settings.set('config', require('@/assets/AadenConfig.json'))
+  }
+  console.log(settings.get('config'), 'Setting')
   createWindow()
 })
-
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
   if (process.platform === 'win32') {
