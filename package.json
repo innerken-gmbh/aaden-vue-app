@@ -86,6 +86,8 @@
   "homepage": "http://aaden.online",
   "release-it": {
     "git": {
+      "commit": false,
+      "push": false,
       "commitMessage": "update: release v${version}",
       "requireCleanWorkingDir": false
     }
