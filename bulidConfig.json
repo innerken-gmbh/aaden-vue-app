@@ -1,0 +1,13 @@
+{
+  "appId": "com.aaden.app.vue",
+  "snap": {
+    "autoStart": true,
+    "grade": "devel",
+    "publish": [
+      {
+        "provider": "snapStore",
+        "channels": "beta"
+      }
+    ]
+  }
+}

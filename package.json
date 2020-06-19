@@ -2,15 +2,24 @@
   "name": "aaden-vue-app",
   "version": "0.1.0",
   "private": true,
+  "description": "全新构建的Aaden Vue版本，重新启航，更加牢靠！",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "electron:build": "vue-cli-service electron:build",
+    "electron:build": "vue-cli-service electron:build --linux snap --publish always",
     "electron:serve": "vue-cli-service electron:serve",
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/innerken-gmbh/aaden-vue-app.git"
+  },
+  "author": "juhaodong@gmail.com",
+  "bugs": {
+    "url": "https://github.com/innerken-gmbh/aaden-vue-app/issues"
   },
   "main": "background.js",
   "dependencies": {
@@ -72,31 +81,6 @@
     "last 2 versions",
     "not dead"
   ],
-  "build": {
-    "appId": "com.aaden.app.vue",
-    "mac": {
-      "target": [
-        "dmg",
-        "zip"
-      ]
-    },
-    "win": {
-      "target": [
-        "nsis",
-        "zip"
-      ]
-    },
-    "snap": {
-      "autoStart": true,
-      "grade": "devel",
-      "publish": [
-        {
-          "provider": "snapStore",
-          "channels": "beta"
-        }
-      ]
-    }
-  },
   "homepage": "http://aaden.online",
   "release-it": {
     "git": {
