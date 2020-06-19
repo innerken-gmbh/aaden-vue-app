@@ -6,12 +6,24 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
+    <!--Import materialize.css-->
+    <link rel="stylesheet" href="resource/custom.css">
+    <link rel="stylesheet" href="resource/pages/index.css">
+    <style>
+      @import url('node_modules/material-design-icons-iconfont/dist/material-design-icons.css');
+    </style>
   </head>
   <body>
     <noscript>
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
+    <script>
+      window.electron=require('electron')
+    </script>
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
+
 </html>

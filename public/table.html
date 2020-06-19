@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title class="S_tablePageTitle">桌子</title>
+    <link href="../node_modules/material-design-icons/iconfont/material-icons.css" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link href="dependency/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@5.x/css/materialdesignicons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+    <link href="resource/custom.css" rel="stylesheet">
+    <link href="resource/pages/table.css" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+    <v-app class="transparent">
+        <nav class="noShadow">
+            <div class="white elevation-3 avesNav">
+                <div class="left flex-Container">
+                    <div class="languageSwitch">
+                        <div onclick="changeLanguage('ZH')" class="active S_langZH">中</div>
+                        <div onclick="changeLanguage('EN')" class="S_langEN">英</div>
+                        <div onclick="changeLanguage('DE')" class="S_langDE">德</div>
+                    </div>
+                    <div class="splitter"></div>
+                    <div class="timeDisplay">
+                        <div class="timeFont">
+                            <span id="time" v-cloak>{{time}}</span>
+                        </div>
+                    </div>
+                    <div class="splitter"></div>
+                    <div class="appName S_appName">
+                        Aaden Kasse
+                    </div>
+
+                </div>
+                <div v-cloak id='address' class="right  valign-wrapper">
+                    <div class="indexTabs flex-Container">
+                        <a @click="takeawayInfoShow=!takeawayInfoShow" class="indexTab S_takeawayAddress">外卖地址</a>
+                    </div>
+                    <div v-show="takeawayInfoShow" class=" takeawayFloat surface">
+                        {{ rawAddressInfo.firstName }} {{ rawAddressInfo.lastName }}
+                        <div> {{ rawAddressInfo.addressLine1 }}</div>
+                        <div> {{ rawAddressInfo.addressline2 }}</div>
+                        <div> {{ rawAddressInfo.city }} {{ rawAddressInfo.plz }}</div>
+                        <div><span class="font-weight-bold">Email: </span>{{ rawAddressInfo.email }}</div>
+                        <div><span class="font-weight-bold">Phone: </span>{{ rawAddressInfo.tel }}</div>
+                        <span class="font-weight-bold">Lieferzeit: </span>
+                        {{ rawAddressInfo.date }}
+                        {{ rawAddressInfo.time }}
+                        {{ rawAddressInfo.note }}
+                        <div class="chip" v-show="rawAddressInfo.reason">
+                            {{ rawAddressInfo.deliveryMethod }}
+                        </div>
+                        <div class="chip" v-show="rawAddressInfo.reason">
+                            {{ rawAddressInfo.reason }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <main style="margin-top:48px ">
+            <div class="center-panel" id="mainTableContainer" v-cloak>
+                <transition name="fade">
+                    <div class="panel" v-show="orders.length>0">
+                        <div class="d-flex justify-space-between dishListTitle">
+                            <div class="S_haveOrderedDish"> 已点菜品</div>
+                            <div class="d-flex">
+                                <v-icon>mdi-cash-usd</v-icon>
+                                <span class="ml-1">{{calculateOrderTableTotal()}}</span>
+                                <v-icon class="ml-2">mdi-food</v-icon>
+                                <span class="ml-1">{{orders.length}}</span>
+                            </div>
+                        </div>
+                        <div class="orderDishList">
+                            <template v-for="(order,index) in orders">
+                                <div v-bind:key="index" v-on:click="addToSplit(index)"
+                                     class="dishCard d-flex container--fluid justify-space-between">
+                                    <div class="dishInfo">
+                                        <div class="basicInfo d-flex">
+                                            <div class="d-flex">
+                                                <div class='codeRow'>
+                                                    {{order.code}}
+                                                </div>
+                                                <div class='dishName'>
+                                                    {{order.name}}
+                                                </div>
+                                            </div>
+                                            <div class='priceRow'>
+                                                {{(hideFreeDish&&parseInt(order.categoryTypeId)===11)?"Free":
+                                                order.price}}
+                                            </div>
+                                        </div>
+                                        <div v-if="order.note" class="note">
+                                            <div class="d-flex">
+                                                <v-icon>edit</v-icon>
+                                                <div>{{order.note}}</div>
+                                            </div>
+                                        </div>
+                                        <div v-if="order.hasMod>0" class="dishMod">
+                                            <div v-for="(ag,i) in order.agNameArr">
+                                                {{ag}}:{{order.aNameArr[i]}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="dishCount">{{order.sumCount}}</div>
+                                </div>
+                            </template>
+
+                        </div>
+                    </div>
+                </transition>
+            </div>
+            <div v-cloak class="dishListContainer" id="dishListContainer">
+                <div class="tableTitle S_tableDishListTitle">
+                </div>
+                <div style="padding: 8px">
+                    <div class="ikTitle"><span class="S_classification">分类</span><span
+                            class="strong S_information">信息</span>
+                    </div>
+                    <div class="dragscroll">
+                        <div class="categoryList">
+                            <template v-for="category of categories">
+                                <div class="categoryBlock" @click="setActiveCategories(category)"
+                                     v-bind:class="{'active  z-depth-2':category.isActive}">
+                                    <div class="name">{{category.name}}</div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="ikTitle"><span class="S_isShowing">正在显示</span> <span
+                            class="strong S_allDish">{{activeCategory?activeCategory.name:"所有菜品"}}</span>
+                    </div>
+                    <div class="dragscroll dishCardListContainer">
+                        <div class="dishCardList">
+                            <template v-for="dish of filteredDish">
+                                <div class="dishBlock" @click="orderOneDish(dish.code)">
+                                    <div class="spaceBetween" style="align-items: center">
+                                        <div class="code">{{dish.code}}<span class="red--text"
+                                                                             v-if="dish.haveMod>0">*</span>
+                                        </div>
+                                        <div class="price">{{dish.price}}</div>
+                                    </div>
+                                    <div class="name">{{dish.dishName}}</div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="newDishContainerTP">
+                <transition name="fade" appear>
+                    <div v-if="cartOrder.length>0" class="white bottomCart surface" id="newDishContainer">
+                        <template v-if="expand">
+                            <div class="spaceBetween">
+                                <div class="tableTitle S_tableNewDishTitle">
+                                    {{newDish}}
+                                </div>
+                                <div style="display: flex">
+                                    <div class="cartTotal">
+                                        <span class="label S_tableDishListTHPrice">{{tableDishListTHPrice}}:</span><span
+                                            class="S_cartTotal totalRed">{{cartTotal}}</span>
+                                    </div>
+                                    <div @click="expand=false" style="margin-top: 4px" class="iconButton">
+                                        <i class="material-icons">expand_more</i>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="smallTableContainer">
+                                <table class="highlight smallTable">
+                                    <thead>
+                                    <tr>
+                                        <th class="S_tableNewDishTHCode">{{tableNewDishTHCode}}</th>
+                                        <th class="S_tableNewDishTHName">{{tableNewDishTHName}}</th>
+                                        <th class="S_tableNewDishTHPrice">{{tableDishListTHPrice}}</th>
+                                        <th class="S_tableNewDishTHAmount">{{tableNewDishTHAmount}}</th>
+                                        <th class="S_tableNewDishTHDelete">{{tableNewDishTHDelete}}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <template v-for="(item,index) in cartOrder">
+                                        <tr v-bind:key="index">
+                                            <td class='codeRow'>{{item.code}}</td>
+                                            <td class='nameRow'>{{item.name}}|<i @click="addNote(item)"
+                                                                                 style="font-size: 12px"
+                                                                                 class=" material-icons">edit</i></td>
+                                            <td class='priceRow'>{{item.price}}</td>
+                                            <td class='countRow'>x {{item.count}}</td>
+                                            <td class='deleteRow'><i class="material-icons red--text pointer pt14"
+                                                                     @click='removeDish(item.code)'>close</i></td>
+                                        </tr>
+                                        <tr v-bind:key="index+'note'" v-if="item.note">
+                                            <td class="codeRow" colspan="5">
+                                                note: {{item.note}}
+                                            </td>
+                                        </tr>
+                                        <tr v-bind:key="index+'mod'" v-if="item.apply">
+                                            <td class="codeRow" colspan="5">
+                                                <div v-for="(mod) in item.apply">
+                                                    {{renderAppliedInfo(mod.groupId,item.modInfo,mod.selectId)}}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </template>
+                        <template v-else>
+                            <div class="spaceBetween">
+                                <div style="display: flex">
+                                    <div class="tableTitle S_tableNewDishTitle">
+                                        {{tableDishListTHPrice}}
+                                    </div>
+                                    <div class="lastDish">
+                                  <span class="lastDishName"
+                                  >{{lastDish.name}}</span>
+                                        &times;
+                                        {{lastCount}}
+                                    </div>
+
+                                </div>
+                                <div style="display: flex">
+                                    <div class="cartTotal">
+                                        <span class="label S_tableDishListTHPrice">{{tableDishListTHPrice}}:</span><span
+                                            class="S_cartTotal totalRed">{{cartTotal}}</span>
+                                    </div>
+                                    <div @click="expand=true" style="margin-top: 4px" class="iconButton">
+                                        <i class="material-icons">expand_less</i>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </template>
+                    </div>
+                </transition>
+            </div>
+            <div class="panelF">
+                <div class="infoPanel surface shadowForInsPanel">
+                    <div class="spaceBetween">
+                        <div style="padding-top: 8px;">
+                            <div class="spaceBetween">
+                                <div>
+                                    <div class="verticalInfoRow">
+                                        <div class="verticalInfoRowLabel S_orderNumberLabel">订单号</div>
+                                        <div class="verticalInfoRowText S_orderNumber"></div>
+                                    </div>
+                                    <div class="verticalInfoRow" style="margin-top: 8px">
+                                        <div class="verticalInfoRowLabel S_tableInfoLabelPerson"></div>
+                                        <div class="verticalInfoRowText S_personCount"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="verticalInfoRow">
+                                        <div class="verticalInfoRowLabel S_tableInfoLabelTime"></div>
+                                        <div class="verticalInfoRowText S_startTime"></div>
+                                    </div>
+                                    <div class="verticalInfoRow" style="margin-top: 8px">
+                                        <div class="verticalInfoRowLabel S_tableInfoLabelSeat"></div>
+                                        <div class="verticalInfoRowText S_seatTimes"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="bigTableNumberContainer z-depth-2 S_tableNumber">0</div>
+                    </div>
+                    <div class="rightAlign typeLabel">
+                        <span class="S_type"> </span>/<span class="S_servantName"> </span>
+                    </div>
+
+                    <div class="verticalInfoRow">
+                        <div class="verticalInfoRowLabel S_infoLabelTotal"></div>
+                        <div v-cloak class="verticalInfoRowBigText totalRed">
+                            {{calculateOrderTableTotal()}}
+                        </div>
+                    </div>
+
+                </div>
+                <div v-cloak class="collapse areaC dragscroll" id="areaC">
+                    <div v-cloak v-for="area in areas" class="area">
+                        <div class="areaTitle">{{area.areaName}}</div>
+                        <div class="areaTableContainer">
+                            <template v-for="table in area.tables">
+                                <div v-if="table.usageStatus==='1'" class="tableCard"
+                                     v-bind:class="{onCall:parseInt(table.callService)===1}"
+                                     v-on:click='jumpToTable(table.tableId,table.tableName)'>
+                                    <div class="tableCardName tableBold">{{table.tableName}}</div>
+                                </div>
+                                <div v-else @click="openTable(table.tableName)" class="tableCard notUsed">
+                                    <div class="tableCardName">
+                                        {{table.tableName}}
+                                    </div>
+                                </div>
+                            </template>
+
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="insPanel surface">
+                    <div class="hintPanel">
+                        <div class="left-panel">
+                            <div class="floatMenuPanel" id="listOfFunction">
+                                <div class="floatMenuPanelItem valign-wrapper" onclick="insDecodeButtonList(0);">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">arrow_back</i></div>
+                                        <div class="text S_backToHome"></div>
+                                    </div>
+
+                                </div>
+                                <div class="floatMenuPanelItem valign-wrapper" onclick="insDecodeButtonList(1);">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">restaurant</i></div>
+                                        <div class="text S_dishOrder"></div>
+                                    </div>
+
+                                </div>
+                                <div class="floatMenuPanelItem valign-wrapper" onclick="insDecodeButtonList(2)">
+                                    <div class="innerItem" style="">
+                                        <div class="icon"><i class="material-icons">local_offer</i></div>
+                                        <div class="text S_discount"></div>
+                                    </div>
+                                </div>
+
+                                <div class="floatMenuPanelItem valign-wrapper" onclick="insDecodeButtonList(3)">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">swap_horiz</i></div>
+                                        <div class="text S_tableChange"></div>
+                                    </div>
+
+
+                                </div>
+                                <div class="floatMenuPanelItem valign-wrapper" onclick="insDecodeButtonList(4)">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">merge_type</i></div>
+                                        <div class="text S_tableMerge"></div>
+                                    </div>
+
+
+                                </div>
+                                <div class="floatMenuPanelItem valign-wrapper" onclick="insDecodeButtonList(5)">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">account_balance_wallet</i></div>
+                                        <div class="text S_payBill"></div>
+                                    </div>
+
+
+                                </div>
+                                <div class="floatMenuPanelItem valign-wrapper" onclick="insDecodeButtonList(6)">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">assignment_turned_in</i></div>
+                                        <div class="text S_QuickBill"></div>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="inputArea">
+                        <div class="input-field ">
+                            <v-text-field v-model="buffer" placeholder="instruction.." id="instruction"
+                                          autofocus=autofocus></v-text-field>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <transition appear name="fade">
+            <div v-show="items.length>0" class="bottomCart surface" v-cloak id="splitOrderContainer">
+                <div class="tableTitle blue lighten-3 S_operation">
+                    操作
+                </div>
+                <div class="smallTableContainer">
+                    <table class="highlight smallTable">
+                        <thead>
+                        <tr class="noBorder">
+                            <th class="S_tableNewDishTHCode">菜号</th>
+                            <th class="S_tableNewDishTHName">菜名</th>
+                            <th class="S_tableNewDishTHPrice">价格</th>
+                            <th class="S_tableNewDishTHAmount">数量</th>
+                            <th class="S_tableNewDishTHDelete">删除</th>
+                        </tr>
+                        </thead>
+                        <tbody class="smallTableBody">
+                        <tr v-for="(item,index) in items">
+                            <td class='codeRow'>{{item.code}}</td>
+                            <td class='name2Row'>{{item.name}}</td>
+                            <td class='price2Row'>{{item.price}}</td>
+                            <td class='count2Row'>x {{item.sumCount}}</td>
+                            <td class='deleteRow'><i class="material-icons red--text pointer pt14"
+                                                     v-on:click="removeFromSplitOrder(index)">close</i>
+                            </td>
+                        </tr>
+                        </tbody>
+
+
+                    </table>
+                </div>
+                <div class="spaceBetween" style="padding: 8px">
+                    <div class="cartTotal">
+                        <span class="label S_tableDishListTHPrice">总价:</span><span
+                            class="S_splitOrderTotal">{{splitOrderTotal}}</span>
+                    </div>
+                    <div style="display: flex;">
+                        <div class="button">
+                            <a class="ikButton red white--text waves-effect waves-light S_cancel"
+                               v-on:click="removeAllFromSplitOrder()">取消</a>
+                        </div>
+                        <div class="button">
+                            <a class="ikButton waves-effect waves-light S_billSplit" v-on:click="splitOrder()">分单</a>
+                        </div>
+                        <div class="button">
+                            <a class="ikButton waves-effect waves-light S_dishCancel" v-on:click="deleteDishes()">退菜</a>
+                        </div>
+                        <div class="button">
+                            <a class="ikButton waves-effect waves-light S_tableChange"
+                               v-on:click="dishesChangeTable()">换桌</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </transition>
+        <transition appear name="fade">
+            <div v-show="modificationShow" v-cloak class="bottomCart surface" id="dishModification">
+                <div>
+                    <div class="popTitle">
+                        {{dishName}}
+                    </div>
+                    <div class="modification">
+                        <form @submit.prevent="submit">
+                            <template v-for="item in computedOption">
+                                <v-select
+                                        v-model="mod['mod'+item.id]"
+                                        :multiple="item.multiSelect==='1'"
+                                        :label="`${item.name}
+                                       ${item.required==='1'?`:${item.select[0].text}`:``}`"
+                                        v-bind:id="'mod'+item.id" :items="item.select">
+                                </v-select>
+
+                            </template>
+
+                            <div class="spaceBetween">
+                                <div>
+                                    <button class="confirmContainer waves-light waves-effect red white--text S_cancel"
+                                            @click="cancel"
+                                            type="button">
+                                        取消
+                                    </button>
+                                </div>
+                                <div>
+                                    <button class="confirmContainer  waves-light waves-effect S_tableCheckOutConfirm"
+                                            name="confirm"
+                                            type="submit">
+                                        确认
+                                    </button>
+                                </div>
+                            </div>
+
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </transition>
+    </v-app>
+</div>
+
+
+</body>
+<!-- Insert this line above script imports  -->
+<script>
+    if (typeof module === 'object') {
+        window.module = module
+        module = undefined
+    }
+</script>
+
+<script src="dependency/js/common/jquery.js"></script>
+<!-- Insert this line after script imports -->
+<script src="dependency/js/common/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+<script src="dependency/js/common/materialize.min.js" type="text/javascript"></script>
+
+<script src="dependency/js/common/sweetAlert.js"></script>
+<script src="resource/js/dragScroll.js"></script>
+<script src="js/common/Strings.js"></script>
+<script src="js/common/tpl.js"></script>
+
+<script src="dependency/js/common/IKJSCOMMONLIB.js"></script>
+<script src="js/common/common.js"></script>
+<script src="js/pages/Table/table.js"></script>
+<script src="js/pages/Table/TableVue.js"></script>
+<script>if (window.module) module = window.module</script>
+
+</html>
