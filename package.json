@@ -73,7 +73,7 @@
     "not dead"
   ],
   "build": {
-    "appId": "com.aaden.app",
+    "appId": "com.aaden.app.vue",
     "mac": {
       "target": [
         "dmg",
