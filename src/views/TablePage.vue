@@ -48,7 +48,7 @@
                     <div class="ikTitle"><span class="S_classification">分类</span><span
                             class="strong S_information">信息</span>
                     </div>
-                    <div class="dragscroll">
+                    <div v-dragscroll class="dragscroll">
                         <div class="categoryList">
                             <template v-for="category of categories">
                                 <div v-bind:key="category.name+'categorys'" class="categoryBlock"
@@ -62,7 +62,7 @@
                     <div class="ikTitle"><span class="S_isShowing">正在显示</span> <span
                             class="strong S_allDish">{{activeCategory?activeCategory.name:'所有菜品'}}</span>
                     </div>
-                    <div class="dragscroll dishCardListContainer">
+                    <div v-dragscroll class="dragscroll dishCardListContainer">
                         <div class="dishCardList">
                             <template v-for="dish of filteredDish">
                                 <div :key="'dish'+dish.code" class="dishBlock" @click="orderOneDish(dish.code)">
@@ -166,7 +166,7 @@
                             </div>
 
                         </div>
-                        <div class="bigTableNumberContainer z-depth-2 S_tableNumber">0</div>
+                        <div class="bigTableNumberContainer z-depth-2">{{tableName}}</div>
                     </div>
                     <div class="rightAlign typeLabel">
                         <span class="S_type"> </span>/<span class="S_servantName"> </span>
@@ -180,7 +180,7 @@
                     </div>
 
                 </div>
-                <div v-cloak class="collapse areaC dragscroll" id="areaC">
+                <div v-cloak class="collapse areaC dragscroll" v-dragscroll id="areaC">
                     <div v-cloak v-bind:key="'area'+area.areaName" v-for="area in areas" class="area">
                         <div class="areaTitle">{{area.areaName}}</div>
                         <div class="areaTableContainer">
@@ -201,7 +201,6 @@
 
                         </div>
                     </div>
-
                 </div>
                 <div class="insPanel surface">
                     <div class="hintPanel">
@@ -271,7 +270,8 @@
             </div>
         </main>
         <transition appear name="fade">
-            <div v-show="items.length>0" class="bottomCart surface" style="background: #f5f6fa;" v-cloak id="splitOrderContainer">
+            <div v-show="items.length>0" class="bottomCart surface" style="background: #f5f6fa;" v-cloak
+                 id="splitOrderContainer">
                 <dish-card-list :orders="items"
                                 :click-callback="removeFromSplitOrder"
                                 :title="findInString('operation')"/>
@@ -282,7 +282,8 @@
                            v-on:click="removeAllFromSplitOrder()">取消</a>
                         <a class="ikButton ml-1 waves-effect waves-light S_billSplit"
                            v-on:click="needSplitOrder()">分单</a>
-                        <a class="ikButton ml-1 waves-effect waves-light S_dishCancel" v-on:click="deleteDishes()">退菜</a>
+                        <a class="ikButton ml-1 waves-effect waves-light S_dishCancel"
+                           v-on:click="deleteDishes()">退菜</a>
                         <a class="ikButton ml-1 waves-effect waves-light S_tableChange"
                            v-on:click="dishesChangeTable()">换桌</a>
                     </div>
@@ -290,7 +291,46 @@
                 </div>
             </div>
         </transition>
+        <v-navigation-drawer width="30%" fixed temporary v-model="modificationShow">
+            <div style="margin-top: 64px">
+                <v-container>
+                    <v-row>
+                        <v-col cols="12" class="elevation-3">
+                            <div class="popTitle">
+                                {{dishName}}
+                            </div>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="12">
+                            <template v-for="item in computedOption">
+                                <div class="elevation-2 pa-2 my-2" style="width: 100%" :key="'mod2'+item.id">
+                                    <span class="subtitle-2">{{`${item.name}${item.required==='1'?`:${item.select[0].text}`:``}`}}</span>
+                                    <v-chip-group
+                                            v-model="mod['mod'+item.id]"
+                                            :mandatory="item.required==='1'" column
+                                            :multiple="item.multiSelect==='1'" active-class="primary--text">
+                                        <v-chip :key="'mod111'+index" v-for="(s,index) in item.select">
+                                            {{s.text}}
+                                        </v-chip>
+                                    </v-chip-group>
+                                </div>
+
+                                <!--                                                                <v-select v-bind:key="'mod2'+item.id"-->
+                                <!--                                                                          v-model="mod['mod'+item.id]"-->
+                                <!--                                                                          :multiple="item.multiSelect==='1'"-->
+                                <!--                                                                          :label="`${item.name}-->
+                                <!--                                                                       ${item.required==='1'?`:${item.select[0].text}`:``}`"-->
+                                <!--                                                                          v-bind:id="'mod'+item.id" :items="item.select">-->
+                                <!--                                                                </v-select>-->
+                            </template>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </div>
+        </v-navigation-drawer>
         <transition appear name="fade">
+
             <div v-show="modificationShow" v-cloak class="bottomCart surface" id="dishModification">
                 <div>
                     <div class="popTitle">
@@ -311,15 +351,13 @@
                                 <div>
                                     <button class="confirmContainer waves-light waves-effect red white--text S_cancel"
                                             @click="cancel"
-                                            type="button">
-                                        取消
+                                            type="button">取消
                                     </button>
                                 </div>
                                 <div>
                                     <button class="confirmContainer  waves-light waves-effect S_tableCheckOutConfirm"
                                             name="confirm"
-                                            type="submit">
-                                        确认
+                                            type="submit">确认
                                     </button>
                                 </div>
                             </div>
@@ -382,6 +420,7 @@ import {
 } from '../oldjs/api'
 import Navgation from '../components/Navgation'
 import DishCard from '../components/DishCard'
+import { dragscroll } from 'vue-dragscroll'
 import DishCardList from '../components/DishCardList'
 
 const UIState = {
@@ -444,6 +483,9 @@ async function checkOutPrompt () {
 // endregion
 export default {
   name: 'TablePage',
+  directives: {
+    dragscroll
+  },
   components: { DishCardList, DishCard, Navgation },
   props: {
     id: {
@@ -844,7 +886,10 @@ export default {
     checkOut (print = 1, payMethod = 1, tipIncome = 0) {
       checkOut(this.id, this.cartOrder, print = 1, payMethod = 1, tipIncome = 0)
     },
-    jumpToTable: jumpToTable,
+    jumpToTable: function (tableId, tableName) {
+      jumpToTable(tableId, tableName)
+      this.initialUI()
+    },
     findConsumeType: (id) => findConsumeTypeById(id),
     openTable: (name) => createOrEnterTable(name),
     autoGetFocus () {
@@ -1041,6 +1086,7 @@ export default {
       }
       return l
     },
+    createTable: createOrEnterTable,
     resetList () {
       for (const l of this.getButtonList()) {
         l.classList.remove('focus')
@@ -1065,6 +1111,7 @@ export default {
         })
         realModInfo.push(item)
       })
+      console.log(realModInfo)
       return realModInfo
     },
     splitOrderTotal: function () {

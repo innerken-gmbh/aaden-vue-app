@@ -139,14 +139,14 @@ export function findConsumeTypeById (id) {
 }
 
 export function jumpToTable (tableId, tableName) {
+  console.log(tableId, tableName)
   getData(Config.PHPROOT + 'Complex.php', {
     op: 'resetTableCallStatus',
     tableId: tableId,
     chaos: timeStampNow()
   })
   const params = Object.assign({ id: tableId, tableId, tableName })
-
-  jumpTo('table.html', params)
+  jumpTo('table', params)
 }
 
 export function blockReady () {
