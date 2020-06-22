@@ -1,26 +1,8 @@
 <template>
     <v-app class="transparent">
-        <nav class="noShadow">
-            <div class="white elevation-3 avesNav">
-                <div class="left flex-Container">
-                    <div class="languageSwitch">
-                        <div onclick="changeLanguage('ZH')" class="active S_langZH">中</div>
-                        <div onclick="changeLanguage('EN')" class="S_langEN">英</div>
-                        <div onclick="changeLanguage('DE')" class="S_langDE">德</div>
-                    </div>
-                    <div class="splitter"></div>
-                    <div class="timeDisplay">
-                        <div class="timeFont">
-                            <span id="time" v-cloak>{{time}}</span>
-                        </div>
-                    </div>
-                    <div class="splitter"></div>
-                    <div class="appName S_appName">
-                        Aaden Kasse
-                    </div>
-
-                </div>
-                <div v-cloak id='address' class="right  valign-wrapper">
+        <Navgation>
+            <template v-slot:right-slot>
+                <div v-cloak>
                     <div class="indexTabs flex-Container">
                         <a @click="takeawayInfoShow=!takeawayInfoShow" class="indexTab S_takeawayAddress">外卖地址</a>
                     </div>
@@ -43,58 +25,20 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </nav>
+            </template>
+        </Navgation>
         <main class="main" style="margin-top:48px ">
             <div class="center-panel" id="mainTableContainer" v-cloak>
                 <transition name="fade">
-                    <div class="panel" v-show="orders.length>0">
-                        <div class="d-flex justify-space-between dishListTitle">
-                            <div class="S_haveOrderedDish"> 已点菜品</div>
-                            <div class="d-flex">
-                                <v-icon>mdi-cash-usd</v-icon>
-                                <span class="ml-1">{{calculateOrderTableTotal()}}</span>
-                                <v-icon class="ml-2">mdi-food</v-icon>
-                                <span class="ml-1">{{orders.length}}</span>
-                            </div>
-                        </div>
-                        <div class="orderDishList">
-                            <template v-for="(order,index) in orders">
-                                <div v-bind:key="'order'+index" v-on:click="addToSplit(index)"
-                                     class="dishCard d-flex container--fluid justify-space-between">
-                                    <div class="dishInfo">
-                                        <div class="basicInfo d-flex">
-                                            <div class="d-flex">
-                                                <div class='codeRow'>
-                                                    {{order.code}}
-                                                </div>
-                                                <div class='dishName'>
-                                                    {{order.name}}
-                                                </div>
-                                            </div>
-                                            <div class='priceRow'>
-                                                {{(hideFreeDish&&parseInt(order.categoryTypeId)===11)?'Free':
-                                                order.price}}
-                                            </div>
-                                        </div>
-                                        <div v-if="order.note" class="note">
-                                            <div class="d-flex">
-                                                <v-icon>edit</v-icon>
-                                                <div>{{order.note}}</div>
-                                            </div>
-                                        </div>
-                                        <div v-if="order.hasMod>0" class="dishMod">
-                                            <div v-bind:key="'mod_order'+i" v-for="(ag,i) in order.agNameArr">
-                                                {{ag}}:{{order.aNameArr[i]}}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="dishCount">{{order.sumCount}}</div>
-                                </div>
-                            </template>
-
-                        </div>
+                    <div class="panel">
+                        <dish-card-list
+                                :orders="orders"
+                                :click-callback="addToSplit"
+                                :title="findInString('haveOrderedDish')"
+                                :hide-free-dish="hideFreeDish"
+                        />
                     </div>
+
                 </transition>
             </div>
             <div v-cloak class="dishListContainer" id="dishListContainer">
@@ -145,54 +89,24 @@
                                 </div>
                                 <div style="display: flex">
                                     <div class="cartTotal">
-                                        <span class="label S_tableDishListTHPrice">{{tableDishListTHPrice}}:</span><span
+                                        <span class="label S_tableDishListTHPrice">
+                                            {{tableDishListTHPrice}}:</span><span
                                             class="S_cartTotal totalRed">{{cartTotal}}</span>
                                     </div>
                                     <div @click="expand=false" style="margin-top: 4px" class="iconButton">
                                         <i class="material-icons">expand_more</i>
                                     </div>
                                 </div>
-
                             </div>
-                            <div class="smallTableContainer">
-                                <table class="highlight smallTable">
-                                    <thead>
-                                    <tr>
-                                        <th class="S_tableNewDishTHCode">{{tableNewDishTHCode}}</th>
-                                        <th class="S_tableNewDishTHName">{{tableNewDishTHName}}</th>
-                                        <th class="S_tableNewDishTHPrice">{{tableDishListTHPrice}}</th>
-                                        <th class="S_tableNewDishTHAmount">{{tableNewDishTHAmount}}</th>
-                                        <th class="S_tableNewDishTHDelete">{{tableNewDishTHDelete}}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <template v-for="(item,index) in cartOrder">
-                                        <tr v-bind:key="'cart'+index">
-                                            <td class='codeRow'>{{item.code}}</td>
-                                            <td class='nameRow'>{{item.name}}|<i @click="addNote(item)"
-                                                                                 style="font-size: 12px"
-                                                                                 class=" material-icons">edit</i></td>
-                                            <td class='priceRow'>{{item.price}}</td>
-                                            <td class='countRow'>x {{item.count}}</td>
-                                            <td class='deleteRow'><i class="material-icons red--text pointer pt14"
-                                                                     @click='removeDish(item.code)'>close</i></td>
-                                        </tr>
-                                        <tr v-bind:key="index+'note'" v-if="item.note">
-                                            <td class="codeRow" colspan="5">
-                                                note: {{item.note}}
-                                            </td>
-                                        </tr>
-                                        <tr v-bind:key="index+'mod'" v-if="item.apply">
-                                            <td class="codeRow" colspan="5">
-                                                <div :key="'mod'+t" v-for="(mod,t) in item.apply">
-                                                    {{renderAppliedInfo(mod.groupId,item.modInfo,mod.selectId)}}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </template>
-                                    </tbody>
-
-                                </table>
+                            <div class="orderDishList">
+                                <template v-for="(order,index) in cartOrder">
+                                    <div :key="'newCart'+index" @click="removeDish(index)">
+                                        <dish-card
+                                                :dish="order"
+                                                :hide-free-dish="hideFreeDish"
+                                        />
+                                    </div>
+                                </template>
                             </div>
                         </template>
                         <template v-else>
@@ -357,55 +271,35 @@
             </div>
         </main>
         <transition appear name="fade">
-            <div v-show="items.length>0" class="bottomCart surface" v-cloak id="splitOrderContainer">
-                <div class="tableTitle blue lighten-3 S_operation">
-                    操作
-                </div>
-                <div class="smallTableContainer">
-                    <table class="highlight smallTable">
-                        <thead>
-                        <tr class="noBorder">
-                            <th class="S_tableNewDishTHCode">菜号</th>
-                            <th class="S_tableNewDishTHName">菜名</th>
-                            <th class="S_tableNewDishTHPrice">价格</th>
-                            <th class="S_tableNewDishTHAmount">数量</th>
-                            <th class="S_tableNewDishTHDelete">删除</th>
-                        </tr>
-                        </thead>
-                        <tbody class="smallTableBody">
-                        <tr v-bind:key="index" v-for="(item,index) in items">
-                            <td class='codeRow'>{{item.code}}</td>
-                            <td class='name2Row'>{{item.name}}</td>
-                            <td class='price2Row'>{{item.price}}</td>
-                            <td class='count2Row'>x {{item.sumCount}}</td>
-                            <td class='deleteRow'><i class="material-icons red--text pointer pt14"
-                                                     v-on:click="removeFromSplitOrder(index)">close</i>
-                            </td>
-                        </tr>
-                        </tbody>
-
-                    </table>
-                </div>
-                <div class="spaceBetween" style="padding: 8px">
-                    <div class="cartTotal">
-                        <span class="label S_tableDishListTHPrice">总价:</span><span
-                            class="S_splitOrderTotal">{{splitOrderTotal}}</span>
+            <div v-show="items.length>0" class="bottomCart surface" style="background: #f5f6fa;" v-cloak id="splitOrderContainer">
+                <div class="spaceBetween">
+                    <div class="tableTitle">
+                        <span class="S_operation">操作</span>
                     </div>
-                    <div style="display: flex;">
-                        <div class="button">
-                            <a class="ikButton red white--text waves-effect waves-light S_cancel"
-                               v-on:click="removeAllFromSplitOrder()">取消</a>
+                    <div class="cartTotal">
+                        <span class="label S_tableDishListTHPrice">总价:</span>
+                        <span class="S_splitOrderTotal">{{splitOrderTotal}}</span>
+                    </div>
+                </div>
+                <div class="pa-2">
+                    <template v-for="(order,index) in items">
+                        <div :key="'newCart'+index" @click="removeFromSplitOrder(index)">
+                            <dish-card
+                                    :dish="order"
+                                    :hide-free-dish="hideFreeDish"/>
                         </div>
-                        <div class="button">
-                            <a class="ikButton waves-effect waves-light S_billSplit" v-on:click="splitOrder()">分单</a>
-                        </div>
-                        <div class="button">
-                            <a class="ikButton waves-effect waves-light S_dishCancel" v-on:click="deleteDishes()">退菜</a>
-                        </div>
-                        <div class="button">
-                            <a class="ikButton waves-effect waves-light S_tableChange"
-                               v-on:click="dishesChangeTable()">换桌</a>
-                        </div>
+                    </template>
+                </div>
+                <div class="spaceBetween pa-2">
+                    <div></div>
+                    <div style="display: flex;align-items: center">
+                        <a class="ikButton ml-1 red white--text waves-effect waves-light S_cancel"
+                           v-on:click="removeAllFromSplitOrder()">取消</a>
+                        <a class="ikButton ml-1 waves-effect waves-light S_billSplit"
+                           v-on:click="needSplitOrder()">分单</a>
+                        <a class="ikButton ml-1 waves-effect waves-light S_dishCancel" v-on:click="deleteDishes()">退菜</a>
+                        <a class="ikButton ml-1 waves-effect waves-light S_tableChange"
+                           v-on:click="dishesChangeTable()">换桌</a>
                     </div>
 
                 </div>
@@ -418,7 +312,7 @@
                         {{dishName}}
                     </div>
                     <div class="modification">
-                        <form @submit.prevent="submit">
+                        <form @submit.prevent="submitModification">
                             <template v-for="item in computedOption">
                                 <v-select v-bind:key="'mod2'+item.id"
                                           v-model="mod['mod'+item.id]"
@@ -457,7 +351,6 @@
 <script>
 
 import {
-  _Config,
   AssginToStringClass,
   blocking,
   blockReady,
@@ -468,34 +361,44 @@ import {
   findElement,
   findInString,
   getActiveTables,
-  getAllDishes, getConfig,
+  getAllDishes,
+  getConfig,
   getConsumeTypeList,
-  getData, getGlobalTableId,
+  getData,
   goodRequest,
   isBlocking,
   jumpTo,
   jumpToTable,
-  loadingComplete,
   logError,
   logErrorAndPop,
   popAuthorize,
   postData,
   remove,
-  requestApi,
-  RequestMethod,
-  resolveBestIP, setGlobalTableId,
+  resolveBestIP,
+  setGlobalTableId,
   showConfirm,
   showLoading,
-  showTime,
   showTimedAlert,
   Strings,
-  toast,
-  version
+  toast
 } from '../oldjs/common'
+import { version } from './../../package.json'
+
 import Swal from 'sweetalert2'
 import hillo from 'innerken-utils/Utlis/request'
+import {
+  checkOut,
+  deleteDishes,
+  dishesChangeTable,
+  popChangeTablePanel,
+  popDiscountPanel,
+  popMergeTablePanel,
+  splitOrder
+} from '../oldjs/api'
+import Navgation from '../components/Navgation'
+import DishCard from '../components/DishCard'
+import DishCardList from '../components/DishCardList'
 
-let Config = getConfig()
 const UIState = {
   Init: 0,
   commandShow: 5,
@@ -506,18 +409,57 @@ let UIStatus = UIState.Init
 const DefaultAddressInfo = {
   reason: ''
 }
-
 let listIndex = -1
 let CurrentConsumeType = 0
 let OrderId = -1
 
 function goHome () {
-  jumpTo('index.html')
+  jumpTo('index')
+}
+
+async function checkOutPrompt () {
+  const res = await Swal.mixin({
+    input: 'text',
+    confirmButtonText: findInString('nextStep') + ' &rarr;',
+    showCancelButton: true,
+    progressSteps: ['1', '2', '3']
+  }).queue([
+    {
+      title: findInString('tableCheckOutBillTypeLabel'),
+      input: 'select',
+      inputOptions: {
+        1: findInString('tableCheckOutBillTypeOptionNormal'),
+        2: findInString('tableCheckOutBillTypeOptionCompany'),
+        3: findInString('tableCheckOutBillTypeOption3')
+      }
+    },
+    {
+      title: findInString('tableCheckOutPaymentLabel'),
+      input: 'select',
+      inputOptions: {
+        1: findInString('tableCheckOutPaymentOptionBar'),
+        2: findInString('tableCheckOutPaymentOptionCard'),
+        3: findInString('tableCheckOutPaymentOptionCredit')
+      }
+    },
+    {
+      title: findInString('tableCheckOutTipLabel'),
+      input: 'number',
+      inputAttributes: {
+        min: 0,
+        step: 0.1
+      }
+    }
+  ])
+  if (res.value !== undefined) {
+    return res.value
+  }
 }
 
 // endregion
-const Page = {
+export default {
   name: 'TablePage',
+  components: { DishCardList, DishCard, Navgation },
   props: {
     id: {
       type: String,
@@ -530,7 +472,7 @@ const Page = {
   },
   data: function () {
     return {
-      time: '',
+      version: version,
       /**/
       items: [],
       discountStr: null,
@@ -538,7 +480,7 @@ const Page = {
       orders: [],
       /**/
       cartOrder: [],
-      expand: _Config.defaultExpand,
+      expand: getConfig().defaultExpand,
       lastDish: { name: '' },
       lastCount: 0,
       focusTimer: null,
@@ -568,11 +510,12 @@ const Page = {
     }
   },
   methods: {
+    findInString,
     getOrderedDish () {
-      getData(Config.PHPROOT + 'Complex.php', {
+      getData(this.Config.PHPROOT + 'Complex.php', {
         op: 'dishesInTable',
         tableId: this.id,
-        lang: Config.lang
+        lang: this.Config.lang
       }).then(res => {
         if (res.status === 'good') {
           this.orders = res.content
@@ -582,10 +525,10 @@ const Page = {
       })
     },
     dishQuery (code, count = 1) {
-      getData(Config.PHPROOT + 'Dishes.php?op=simpleInfo', {
+      getData(this.Config.PHPROOT + 'Dishes.php?op=simpleInfo', {
         op: 'simpleInfo',
         code: code,
-        lang: Config.lang
+        lang: this.Config.lang
       }).then(res => {
         if (goodRequest(res)) {
           if (res.content.length > 0) {
@@ -599,10 +542,10 @@ const Page = {
             }
             this.addDish(dishInfo, parseInt(count))
           } else {
-            logError(Strings[Config.lang].JSTableCodeNotFound)
+            logError(findInString('JSTableCodeNotFound'))
           }
         } else {
-          logError(Strings[Config.lang].JSTableGetDishFailed + res.info)
+          logError(findInString('JSTableGetDishFailed') + res.info)
         }
       })
     },
@@ -628,7 +571,7 @@ const Page = {
       this.dishes = await getAllDishes()
     },
     getTableCurrentStatus () {
-      getData(Config.PHPROOT + 'Tables.php', {
+      getData(this.Config.PHPROOT + 'Tables.php', {
         name: this.tableName
       }).then(res => {
         if (goodRequest(res)) {
@@ -714,14 +657,22 @@ const Page = {
         this.removeFromSplitOrder(0)
       }
     },
-    splitOrder: function () {
-      splitOrder()
+    needSplitOrder: async function () {
+      if (this.Config.checkOutUsePassword) {
+        popAuthorize('', async () => {
+          const arr = await checkOutPrompt()
+          splitOrder(this.discountStr, this.id, this.items, this.initialUI, ...arr)
+        }, true)
+      } else {
+        const arr = await checkOutPrompt()
+        splitOrder(this.discountStr, this.id, this.items, this.initialUI, ...arr)
+      }
     },
     deleteDishes: function () {
-      deleteDishes()
+      deleteDishes(this.id, this.items, this.initialUI)
     },
     dishesChangeTable: function () {
-      dishesChangeTable()
+      dishesChangeTable(this.tableName, this.items, this.initialUI)
     },
     calculateOrderTableTotal: function () {
       let totalPrice = 0
@@ -763,23 +714,6 @@ const Page = {
         }
       })
     },
-    renderAppliedInfo: function (groupId, modInfos, selectId) {
-      const modInfo = this.findModInfoUseGroupId(groupId, modInfos)
-      let modStr = ''
-      for (const i of selectId) {
-        const index = modInfo.selectValue.indexOf(i)
-        modStr += `${modInfo.selectName[index]}(€${modInfo.priceInfo[index]})`
-      }
-      return selectId ? `${modInfo.name}:${modStr}` : ''
-    },
-    findModInfoUseGroupId: function (groupId, modInfos) {
-      for (const i of modInfos) {
-        if (parseInt(i.id) === parseInt(groupId)) {
-          return i
-        }
-      }
-      return null
-    },
     calculateTotal: function () {
       let totalPrice = 0
       for (const item of this.cartOrder) {
@@ -812,6 +746,7 @@ const Page = {
         dish.total = dish.count * dish.price
         this.cartOrder.push(dish)
       }
+      this.cartOrder.reverse()
       this.lastDish = dish
       this.lastCount = count
     },
@@ -826,13 +761,10 @@ const Page = {
       }
       return -1
     },
-    removeDish: function (code) {
-      const index = this.findDishByCode(code)
-      if (index !== -1) {
-        remove(this.cartOrder, index)
-      }
+    removeDish: function (index) {
+      remove(this.cartOrder, index)
     },
-    submit: function () {
+    submitModification: function () {
       const apply = []
       for (const i of this.dish.modInfo) {
         const item = {}
@@ -856,7 +788,7 @@ const Page = {
       blockReady()
     },
     initialUI () {
-      resetList()
+      this.resetList()
       UIStatus = UIState.Init
       listIndex = -1
       this.cartOrder = []
@@ -867,16 +799,18 @@ const Page = {
     },
     back () {
       if (listIndex > -1) {
-        resetList()
+        this.resetList()
         listIndex = -1
         UIStatus = UIState.Init
         this.$refs.ins.focus()
+      } else if (this.modificationShow) {
+        this.cancel()
       } else if (this.items.length > 0) {
         this.removeAllFromSplitOrder()
       } else if (this.cartOrder.length > 0) {
         this.cartOrder = []
       } else if (UIStatus === UIState.Init) {
-        jumpTo('index.html', Config)
+        goHome()
       }
       blockReady()
     },
@@ -898,27 +832,32 @@ const Page = {
           }
           break
         case 2:
-          popAuthorize('', popDiscountPanel)
+          popAuthorize('', () => popDiscountPanel(this.id, this.initialUI))
           break
         case 3:
-          popAuthorize('', popChangeTablePanel)
+          popAuthorize('', () => popChangeTablePanel(this.tableName, this.initialUI))
           break
         case 4:
           // 转台
-          popAuthorize('', popMergeTablePanel)
+          popAuthorize('', () => popMergeTablePanel(this.tableName, this.initialUI))
           break
         case 5:
-          jumpToPayment()
+          this.jumpToPayment()
           break
         case 6:
-          if (Config.checkOutUsePassword) {
-            popAuthorize('', checkOut, true)
+          if (this.Config.checkOutUsePassword) {
+            popAuthorize('', () => {
+              this.checkOut()
+            }, true)
           } else {
-            checkOut()
+            this.checkOut()
           }
           break
         default:
       }
+    },
+    checkOut (print = 1, payMethod = 1, tipIncome = 0) {
+      checkOut(this.id, this.cartOrder, print = 1, payMethod = 1, tipIncome = 0)
     },
     jumpToTable: jumpToTable,
     findConsumeType: (id) => findConsumeTypeById(id),
@@ -936,7 +875,7 @@ const Page = {
       this.areas = await getActiveTables()
     },
     getTableDetail () {
-      getData(Config.PHPROOT + 'Tables.php', {
+      getData(this.Config.PHPROOT + 'Tables.php', {
         op: 'currentInfo',
         id: this.id
       }).then(res => {
@@ -946,7 +885,7 @@ const Page = {
           AssginToStringClass('servantName', infos.order.counsumeTypeStatusName)
           CurrentConsumeType = parseInt(infos.consumeTypeId)
           OrderId = infos.order.id
-          AssginToStringClass('orderNumber', OrderId)
+          AssginToStringClass('orderNumber', infos.order.id)
           AssginToStringClass('type', findConsumeTypeById(infos.consumeTypeId).name)
           AssginToStringClass('startTime', infos.createTimestamp)
           AssginToStringClass('personCount', infos.personCount)
@@ -977,7 +916,7 @@ const Page = {
           }
           this.getOrderedDish()
         } else {
-          showTimedAlert('info', Strings[Config.lang].JSTableGetTableDetailFailed + res.info, 1000, goHome)
+          showTimedAlert('info', findInString('JSTableGetTableDetailFailed') + res.info, 1000, goHome)
         }
       })
     },
@@ -1016,10 +955,10 @@ const Page = {
     },
     moveIndex (i) {
       if (listIndex === 0 && i === -1) {
-        this.highLight(getButtonList().length - 1)
+        this.highLight(this.getButtonList().length - 1)
         return
       }
-      if ((listIndex === getButtonList().length - 1) && i === 1) {
+      if ((listIndex === this.getButtonList().length - 1) && i === 1) {
         this.highLight(0)
         return
       }
@@ -1030,11 +969,11 @@ const Page = {
     highLight (index) {
       UIStatus = UIState.OnList
       listIndex = index
-      resetList()
+      this.resetList()
       this.$refs.ins.blur()
-      getButtonList()[index].classList.add('focus')
-      getButtonList()[index].classList.remove('normal')
-      getButtonList()[index].focus()
+      this.getButtonList()[index].classList.add('focus')
+      this.getButtonList()[index].classList.remove('normal')
+      this.getButtonList()[index].focus()
     },
     insDecode (t) {
       if (isBlocking()) {
@@ -1050,6 +989,9 @@ const Page = {
         } else if (t === 'rp') {
           hillo.post('Printer.php?op=questReprintOrder', {
             orderId: OrderId
+          }).then(res => {
+            toast()
+            blockReady()
           })
         } else {
           this.dishQuery(t)
@@ -1074,23 +1016,51 @@ const Page = {
     },
     orderDish () {
       showLoading()
-      postData(Config.PHPROOT + 'Complex.php?op=addDishesToTable', {
+      postData(this.Config.PHPROOT + 'Complex.php?op=addDishesToTable', {
         params: JSON.stringify(this.cartOrder),
         tableId: this.id
       }).then(res => {
         if (goodRequest(res)) {
           this.cartOrder = []
           this.initialUI()
-          toast(findInString('orderSuccess'), function () {
-            if (Config.jumpToHomeWhenOrder) {
-              jumpTo('index.html')
+          toast(findInString('orderSuccess'), () => {
+            if (this.Config.jumpToHomeWhenOrder) {
+              goHome()
             }
           })
         } else {
-          logError(Strings[Config.lang].JSTableOrderFailed + res.info)
+          logError(findInString('JSTableOrderFailed') + res.info)
         }
         blockReady()
       })
+    },
+    jumpToPayment () {
+      setTimeout(async () => {
+        if (this.Config.checkOutUsePassword) {
+          popAuthorize('', async () => {
+            const res = await checkOutPrompt()
+            this.checkOut(...res)
+          }, true)
+        } else {
+          const res = await checkOutPrompt()
+          this.checkOut(...res)
+        }
+      }, 20)
+    },
+    getButtonList () {
+      const l = []
+      for (const a of findElement('listOfFunction').childNodes) {
+        if (a.tagName === 'DIV' && !a.className.includes('spl') && !a.className.includes('disabled')) {
+          l.push(a)
+        }
+      }
+      return l
+    },
+    resetList () {
+      for (const l of this.getButtonList()) {
+        l.classList.remove('focus')
+        l.classList.add('normal')
+      }
     }
   },
   computed: {
@@ -1172,13 +1142,10 @@ const Page = {
     }
   },
   created: function () {
-    setInterval(() => {
-      this.time = showTime()
-    }, 1000)
+    this.version = version
     AssginToStringClass('version', version)
     resolveBestIP(() => {
       this.Config = getConfig()
-      Config = getConfig()
       for (const i in this.Strings[this.Config.lang]) {
         AssginToStringClass(i, this.Strings[this.Config.lang][i])
       }
@@ -1200,234 +1167,6 @@ const Page = {
     })
   }
 }
-
-// region UI
-
-function getButtonList () {
-  const l = []
-  for (const a of findElement('listOfFunction').childNodes) {
-    if (a.tagName === 'DIV' && !a.className.includes('spl') && !a.className.includes('disabled')) {
-      l.push(a)
-    }
-  }
-  return l
-}
-
-function resetList () {
-  for (const l of getButtonList()) {
-    l.classList.remove('focus')
-    l.classList.add('normal')
-  }
-}
-
-function jumpToPayment () {
-  setTimeout(() => {
-    if (Config.checkOutUsePassword) {
-      popAuthorize('', () => {
-        checkOutPrompt((...arr) => checkOut(...arr))
-      }, true)
-    } else {
-      checkOutPrompt((...arr) => checkOut(...arr))
-    }
-  }
-  , 20)
-}
-
-// endregion
-// region ajax
-
-function checkOut (print = 1, payMethod = 1, tipIncome = 0) {
-  let withTitle = 0
-  let printCount = 1
-  if (parseInt(print) === 2) {
-    withTitle = 1
-  }
-  if (parseInt(print) === 3) {
-    withTitle = 1
-    printCount = 2
-  }
-  requestApi(
-    'Complex.php?op=checkOut',
-    {
-      withTitle: withTitle,
-      printCount: printCount,
-      payMethod: payMethod,
-      tableId: getGlobalTableId(),
-      tipIncome: tipIncome || 0
-    },
-    RequestMethod.POST,
-    (res) => {
-      Page.cartOrder = []
-      toast(Strings[Config.lang].JSTableCheckOutSuccess, function () {
-        jumpTo('index.html', Config)
-      })
-      blockReady()
-    },
-    false, false
-  )
-}
-
-function deleteDishes () {
-  popAuthorize('boss', () => {
-    fastSweetAlertRequest(findInString('JSTableAdditionPopReturnDishInfo'),
-      'text',
-      'Complex.php?op=deleteDishes', 'reason', {
-        tableId: Page.id,
-        dishes: JSON.stringify(Page.items)
-      }, 'POST', () => {
-        loadingComplete()
-        Page.initialUI()
-      },
-      true
-    )
-  })
-}
-
-function dishesChangeTable () {
-  popAuthorize('boss', () => {
-    fastSweetAlertRequest(findInString('JSTableAdditionPopChangeTableInfo'),
-      'text',
-      'Complex.php?op=dishesChangeTable', 'newTableName', {
-        oldTableName: Page.tableName,
-        dishes: JSON.stringify(Page.items)
-      }, 'POST', () => {
-        loadingComplete()
-        Page.initialUI()
-      })
-  })
-}
-
-function checkOutPrompt (callback) {
-  Swal.mixin({
-    input: 'text',
-    confirmButtonText: findInString('nextStep') + ' &rarr;',
-    showCancelButton: true,
-    progressSteps: ['1', '2', '3']
-  }).queue([
-    {
-      title: findInString('tableCheckOutBillTypeLabel'),
-      input: 'select',
-      inputOptions: {
-        1: findInString('tableCheckOutBillTypeOptionNormal'),
-        2: findInString('tableCheckOutBillTypeOptionCompany'),
-        3: findInString('tableCheckOutBillTypeOption3')
-      }
-    },
-    {
-      title: findInString('tableCheckOutPaymentLabel'),
-      input: 'select',
-      inputOptions: {
-        1: findInString('tableCheckOutPaymentOptionBar'),
-        2: findInString('tableCheckOutPaymentOptionCard'),
-        3: findInString('tableCheckOutPaymentOptionCredit')
-      }
-    },
-    {
-      title: findInString('tableCheckOutTipLabel'),
-      input: 'number',
-      inputAttributes: {
-        min: 0,
-        step: 0.1
-      }
-    }
-  ]).then(res => {
-    if (res.value !== undefined) {
-      if (callback) {
-        // eslint-disable-next-line standard/no-callback-literal
-        callback(...res.value)
-      }
-    }
-  })
-}
-
-function splitOrder () {
-  if (Config.checkOutUsePassword) {
-    popAuthorize('', () => {
-      checkOutPrompt((...arr) => {
-        let discountStr = ''
-        if (Page.discountStr) {
-          if (Page.discountStr.indexOf('p') !== -1) {
-            discountStr = Page.discountStr
-          }
-        }
-        const [print, payMethod, tipIncome] = arr
-        let withTitle = 0
-        let printCount = 1
-        if (print === 2) {
-          withTitle = 1
-        }
-        if (print === 3) {
-          withTitle = 1
-          printCount = 2
-        }
-        requestApi('Complex.php?op=splitOrder', {
-          payMethod,
-          tipIncome: tipIncome || 0,
-          tableId: Page.id,
-          discountStr: discountStr,
-          dishes: JSON.stringify(Page.items),
-          withTitle,
-          printCount
-        }, RequestMethod.POST, () => {
-          Page.initialUI()
-        })
-      })
-    }, true)
-  } else {
-    checkOutPrompt((...arr) => {
-      let discountStr = ''
-      if (Page.discountStr) {
-        if (Page.discountStr.indexOf('p') !== -1) {
-          discountStr = Page.discountStr
-        }
-      }
-      const [print, payMethod, tipIncome] = arr
-      let withTitle = 0
-      let printCount = 1
-      if (print === 2) {
-        withTitle = 1
-      }
-      if (print === 3) {
-        withTitle = 1
-        printCount = 2
-      }
-      requestApi('Complex.php?op=splitOrder', {
-        payMethod,
-        tipIncome: tipIncome || 0,
-        tableId: Page.id,
-        discountStr: discountStr,
-        dishes: JSON.stringify(Page.items),
-        withTitle,
-        printCount
-      }, RequestMethod.POST, () => {
-        Page.initialUI()
-      })
-    })
-  }
-}
-
-function popDiscountPanel () {
-  fastSweetAlertRequest(findInString('JSTableAdditionPopDiscountInfo'), 'text',
-    'Complex.php?op=setDiscount', 'discountStr', {
-      tableId: Page.id
-    }, 'POST', Page.initialUI)
-}
-
-function popChangeTablePanel () {
-  fastSweetAlertRequest(findInString('JSTableAdditionPopChangeTableInfo'), 'text',
-    'Tables.php?op=change', 'newTableName', {
-      oldTableName: Page.tableName
-    }, 'POST', Page.initialUI)
-}
-
-function popMergeTablePanel () {
-  fastSweetAlertRequest(findInString('JSTableAdditionPopMergeTableInfo'), 'text',
-    'Tables.php?op=mergeTables', 'newTableName', {
-      oldTableName: Page.tableName
-    }, 'POST', Page.initialUI)
-}
-
-export default { ...Page }
 </script>
 
 <style scoped>
@@ -1867,6 +1606,7 @@ export default { ...Page }
 
     #newDishContainer {
         max-height: calc(100vh - 60px);
+        overflow-x: hidden;
         overflow-y: scroll;
         bottom: 0;
         left: 12px;
@@ -1885,6 +1625,7 @@ export default { ...Page }
     }
 
     .panel {
+        width: 100%;
         box-shadow: 0 3px 6px rgba(0, 25, 244, 0.1);
         border-radius: 5px;
         background: #f2f4f7;

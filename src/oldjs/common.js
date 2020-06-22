@@ -17,9 +17,11 @@ Config = Object.assign(Config, StaticConfig)
 Config.PHPROOT = `${Config.REALROOT}/PHP/`
 window.Config = Config
 export const _Config = Config
+
 export function getConfig () {
   return Config
 }
+
 export const RequestMethod = {
   GET: 'GET',
   POST: 'POST'
@@ -153,7 +155,7 @@ export function blockReady () {
 }
 
 export function blocking () {
-  console.info('blocked!')
+  // console.info('blocked!')
   blocked = true
 }
 
@@ -165,11 +167,7 @@ export function setGlobalTableId (id) {
   TableId = id
 }
 
-export function getGlobalTableId () {
-  return TableId
-}
-
-export function popAuthorize (type, successCallback, force = false, failedCallback) {
+export async function popAuthorize (type, successCallback, force = false, failedCallback) {
   if (!force) {
     if (!Config.UsePassword && type !== 'boss') {
       successCallback()
@@ -180,14 +178,21 @@ export function popAuthorize (type, successCallback, force = false, failedCallba
       return
     }
   }
-  fastSweetAlertRequest(findInString('popAuthTitle'), 'password',
+  const res = await fastSweetAlertRequest(findInString('popAuthTitle'), 'password',
     'Servant.php'
     , 'pw', {
       op: type === 'boss' ? 'checkBoss' : 'checkServant',
       tableId: TableId
-    }, 'GET', () => {
+    }, 'GET', false)
+  if (res) {
+    if (successCallback) {
       successCallback()
-    })
+    }
+  } else {
+    if (failedCallback) {
+      failedCallback()
+    }
+  }
 } // Request element password,authorized
 
 /** should provide a model list */
@@ -478,7 +483,7 @@ export function toast (str, callback, type) {
       }
     }
   })
-  Toast.fire(str, type)
+  Toast.fire({ title: str, icon: type })
 }
 
 export function loadingComplete () {
@@ -505,7 +510,9 @@ export function getData (url, data) {
   url.search = url.search + '&' + new URLSearchParams(data).toString()
   return fetch(url).then(res => {
     blockReady()
-    return res.json()
+    return res.json().catch(err => {
+      console.log(err, res, url)
+    })
   })
 }
 
@@ -519,11 +526,10 @@ export function getData (url, data) {
  * @param {(function(...[*]=))|initialUI} callback
  * @param {boolean} allowEmpty
  */
-export function fastSweetAlertRequest (title, input, url, dataName, dataObj, method = 'POST',
-  callback = false, allowEmpty = false) {
+export async function fastSweetAlertRequest (title, input, url, dataName, dataObj, method = 'POST', allowEmpty = false) {
   url = `${Config.PHPROOT + url}`
   dataObj[dataName] = ''
-  Swal.fire({
+  const result = await Swal.fire({
     title: title,
     input: input,
     inputAttributes: {
@@ -568,13 +574,12 @@ export function fastSweetAlertRequest (title, input, url, dataName, dataObj, met
       }
     },
     allowOutsideClick: () => !Swal.isLoading()
-  }).then(result => {
-    if (result.value || allowEmpty) {
-      if (callback) {
-        callback()
-      }
-    }
   })
+  if (result.value || allowEmpty) {
+    return result.value
+  } else {
+    return false
+  }
 }
 
 export function toastMore (str, content) {
@@ -631,19 +636,6 @@ export function jumpTo (url, params) {
   url = url.split('.')[0]
   console.log('jumping to ' + url, params)
   router.push({ name: url, params })
-  // let nUrl = url
-  // console.log(params)
-  // if (params) {
-  //   nUrl += '?'
-  //   const paramArray = []
-  //   for (const i of Object.keys(params)) {
-  //     const param = i + '=' + params[i]
-  //     paramArray.push(param)
-  //   }
-  //   nUrl += paramArray.join('&')
-  // }
-
-  // window.location.href = nUrl
 }
 
 export function oldJumpTo (url, params) {

@@ -1,40 +1,15 @@
 <template>
     <div>
-        <nav class="noShadow">
-            <div class="nav-wrapper white  avesNav">
-                <div class="left flex-Container">
-                    <div class="languageSwitch">
-                        <div @click="changeLanguage('ZH')" class="active S_langZH">中</div>
-                        <div @click="changeLanguage('EN')" class="S_langEN">英</div>
-                        <div @click="changeLanguage('DE')" class="S_langDE">德</div>
-                    </div>
-                    <div class="splitter"></div>
-                    <div class="timeDisplay">
-                        <div class="timeFont">
-                    <span v-cloak id="time">
-                        {{time}}
-                    </span>
-                        </div>
-                    </div>
-                    <div class="splitter"></div>
-                    <div class="appName ">
-                        <span class="S_appName">Aaden Kasse</span>-V<span class="S_version"></span>
-                    </div>
-                    <div class="splitter"></div>
-                    <div @click="toggleDebug()" class="adbIcon">
-                        <i class="material-icons littleIcon">adb</i>
-                    </div>
-                </div>
+        <Navgation>
+            <template slot="right-slot">
                 <div class="right  valign-wrapper">
                     <div class="indexTabs flex-Container">
                         <a @click="popAuthorize('boss',toManage)" class="indexTab S_indexTabBoss"></a>
-                        <a href="index.html" class="indexTab active S_indexTabDineIn"></a>
-                        <!--                <a class="indexTab S_indexTabTakeaway">外卖</a>-->
+                        <a class="indexTab active S_indexTabDineIn"></a>
                     </div>
                 </div>
-            </div>
-        </nav>
-
+            </template>
+        </Navgation>
         <main>
             <div class="center-panel" id="centerPanel">
                 <div class="tableDisplay  dragscroll  ">
@@ -132,7 +107,6 @@ import {
   _Config,
   AssginToStringClass,
   blockReady,
-  changeLanguage,
   createOrEnterTable,
   findInString,
   getActiveTables,
@@ -143,21 +117,19 @@ import {
   popAuthorize,
   requestOutTable,
   resolveBestIP,
-  showTime,
-  Strings,
-  toggleDebug,
-  version
+  Strings
 } from '../oldjs/common'
 import Swal from 'sweetalert2'
+import Navgation from '../components/Navgation'
 
 export default {
   name: 'IndexPage',
+  components: { Navgation },
   data: function () {
     return {
       reservations: [],
       areas: [],
       seen: true,
-      time: '',
       buffer: '',
       ins: {},
       dishes: [],
@@ -171,8 +143,6 @@ export default {
     findInString,
     createTable: createOrEnterTable,
     jumpToTable,
-    changeLanguage,
-    toggleDebug,
     requestOutTable,
     initialUI () {
       this.$refs.ins.focus()
@@ -228,10 +198,6 @@ export default {
     }
   },
   mounted: function () {
-    setInterval(() => {
-      this.time = showTime()
-    }, 1000)
-    AssginToStringClass('version', version)
     resolveBestIP(() => {
       for (const i in this.Strings[this.Config.lang]) {
         AssginToStringClass(i, this.Strings[this.Config.lang][i])
@@ -441,71 +407,9 @@ export default {
         width: 100vw;
     }
 
-    .newInput {
-        border-bottom: 1px dashed #367aeb !important;
-        box-shadow: none !important;
-
-    }
-
-    .inputContainer2 {
-        margin-top: 12px;
-        width: 170px;
-    }
-
-    .select-wrapper .caret {
-        height: 39px;
-        width: 28px;
-        z-index: 4;
-        background: #367aeb;
-        border-radius: 0 5px 5px 0;
-        fill: white;
-        box-shadow: 0 10px 10px #367aeb;
-    }
-
-    .select-wrapper input.select-dropdown {
-        border: none;
-        background: #f5f6fa;
-        width: 170px;
-        height: 39px;
-        padding-left: 14px;
-        box-shadow: 0 10px 10px #f5f6fa;
-        color: rgba(29, 29, 29, 1);
-        font-weight: 100;
-        line-height: 20px;
-        font-size: 14px;
-
-    }
-
-    .select-wrapper input.select-dropdown:focus {
-        border: none;
-    }
-
-    .select-wrapper + label {
-        top: -57px;
-        font-size: 14px;
-        color: #4b4b4b;
-    }
-
-    .totalLabel {
-        margin-top: 15px;
-    }
-
-    .rightLittlePopContainer {
-        top: 584px;
-    }
-
     /*input:focus{*/
     /*    background: red;*/
     /*    color: red !important;*/
     /*}*/
-    .adbIcon {
-        display: flex;
-        align-items: center;
-    }
-
-    .adbIcon .material-icons {
-        height: auto;
-        line-height: unset;
-    }
 
 </style>

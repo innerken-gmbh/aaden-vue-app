@@ -7,7 +7,11 @@ import vuetify from './plugins/vuetify'
 import 'material-design-icons/iconfont/material-icons.css'
 
 Vue.config.productionTip = false
-
+Vue.filter('priceDisplay',
+  function (price) {
+    return parseFloat(price).toFixed(2).replace('.', ',')
+  }
+)
 new Vue({
   router,
   store,

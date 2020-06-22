@@ -19,7 +19,7 @@ export default {
 
 <style>
     .theme--light.v-application {
-        background: transparent !important;
+        background: transparent;
         color: rgba(0,0,0,.87);
     }
 
@@ -328,7 +328,6 @@ export default {
         padding-bottom: 18px;
     }
     .hintPanel{
-        margin-top: 24px;
         padding-bottom: 24px;
     }
     .infoContainer {
