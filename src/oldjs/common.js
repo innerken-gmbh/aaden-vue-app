@@ -506,7 +506,6 @@ export function getData (url, data) {
     chaos: timeStampNow()
   }
   data = Object.assign(defaultData, data)
-
   url.search = url.search + '&' + new URLSearchParams(data).toString()
   return fetch(url).then(res => {
     blockReady()
@@ -634,7 +633,6 @@ export function remove (arr, index) {
 
 export function jumpTo (url, params) {
   url = url.split('.')[0]
-  console.log('jumping to ' + url, params)
   router.push({ name: url, params })
 }
 

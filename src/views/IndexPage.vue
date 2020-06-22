@@ -12,7 +12,7 @@
         </Navgation>
         <main>
             <div class="center-panel" id="centerPanel">
-                <div class="tableDisplay  dragscroll  ">
+                <div v-dragscroll class="tableDisplay">
                     <div v-cloak class="areaC" id="areaC">
                         <div :key="area.name" v-cloak v-for="area in areas" class="area">
                             <div class="areaTitle">{{area.areaName}}</div>
@@ -121,9 +121,13 @@ import {
 } from '../oldjs/common'
 import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
+import { dragscroll } from 'vue-dragscroll'
 
 export default {
   name: 'IndexPage',
+  directives: {
+    dragscroll
+  },
   components: { Navgation },
   data: function () {
     return {

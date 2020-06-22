@@ -272,24 +272,9 @@
         </main>
         <transition appear name="fade">
             <div v-show="items.length>0" class="bottomCart surface" style="background: #f5f6fa;" v-cloak id="splitOrderContainer">
-                <div class="spaceBetween">
-                    <div class="tableTitle">
-                        <span class="S_operation">操作</span>
-                    </div>
-                    <div class="cartTotal">
-                        <span class="label S_tableDishListTHPrice">总价:</span>
-                        <span class="S_splitOrderTotal">{{splitOrderTotal}}</span>
-                    </div>
-                </div>
-                <div class="pa-2">
-                    <template v-for="(order,index) in items">
-                        <div :key="'newCart'+index" @click="removeFromSplitOrder(index)">
-                            <dish-card
-                                    :dish="order"
-                                    :hide-free-dish="hideFreeDish"/>
-                        </div>
-                    </template>
-                </div>
+                <dish-card-list :orders="items"
+                                :click-callback="removeFromSplitOrder"
+                                :title="findInString('operation')"/>
                 <div class="spaceBetween pa-2">
                     <div></div>
                     <div style="display: flex;align-items: center">

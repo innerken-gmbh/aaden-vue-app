@@ -55,8 +55,7 @@ export default {
         if (this.hideFreeDish && parseInt(a.categoryTypeId) === 11) {
           continue
         }
-        a.totalPrice = parseFloat(a.totalPrice).toFixed(2)
-        totalPrice += parseFloat(a.totalPrice)
+        totalPrice += parseFloat(parseInt(a.sumCount ?? a.count) * parseFloat(a.price))
       }
       return totalPrice
     }
