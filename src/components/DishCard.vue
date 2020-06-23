@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div v-if="wellFormattedApplyInfo.length>0" class="dishMod">
-                <div v-bind:key="'mod_order'+i" v-for="(ap,i) in wellFormattedApplyInfo">
+                <div v-bind:key="'mod_order-i'+i+'value'+ap.value" v-for="(ap,i) in wellFormattedApplyInfo">
                     {{ap.groupName}}:{{ap.value}}<span v-if="ap.priceInfo">(<price-text :price="ap.priceInfo" />)</span>
                 </div>
             </div>
@@ -73,6 +73,9 @@ export default {
     },
     wellFormattedApplyInfo: function () {
       let apply = []
+      if (!(this.dish.apply || this.dish.agNameArr)) {
+        return apply
+      }
       if (this.dish?.apply?.length > 0) {
         this.dish.apply.forEach(mod => {
           const modInfo = this.dish.modInfo.find(i => i.id === mod.groupId)
@@ -107,11 +110,11 @@ export default {
         margin-top: 8px;
         background: white;
         border-radius: 5px;
-        box-shadow: 0px 3px 4px 0 rgba(220, 224, 239, 0.59);
+        box-shadow: 0 3px 4px 0 rgba(220, 224, 239, 0.59);
     }
 
     .dishInfo {
-        width: 100%;
+        max-width: calc(100% - 45px);
         font-size: 18px;
     }
 

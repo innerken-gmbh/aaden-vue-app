@@ -32,6 +32,7 @@
                 <transition name="fade">
                     <div class="panel">
                         <dish-card-list
+                                :default-expand="true"
                                 :orders="orders"
                                 :click-callback="addToSplit"
                                 :title="findInString('haveOrderedDish')"
@@ -82,59 +83,17 @@
             <div id="newDishContainerTP">
                 <transition name="fade" appear>
                     <div v-if="cartOrder.length>0" class="white bottomCart surface" id="newDishContainer">
-                        <template v-if="expand">
-                            <div class="spaceBetween">
-                                <div class="tableTitle S_tableNewDishTitle">
-                                    {{newDish}}
-                                </div>
-                                <div style="display: flex">
-                                    <div class="cartTotal">
-                                        <span class="label S_tableDishListTHPrice">
-                                            {{tableDishListTHPrice}}:</span><span
-                                            class="S_cartTotal totalRed">{{cartTotal}}</span>
-                                    </div>
-                                    <div @click="expand=false" style="margin-top: 4px" class="iconButton">
-                                        <i class="material-icons">expand_more</i>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="orderDishList">
-                                <template v-for="(order,index) in cartOrder">
-                                    <div :key="'newCart'+index" @click="removeDish(index)">
-                                        <dish-card
-                                                :dish="order"
-                                                :hide-free-dish="hideFreeDish"
-                                        />
-                                    </div>
-                                </template>
-                            </div>
-                        </template>
-                        <template v-else>
-                            <div class="spaceBetween">
-                                <div style="display: flex">
-                                    <div class="tableTitle S_tableNewDishTitle">
-                                        {{tableDishListTHPrice}}
-                                    </div>
-                                    <div class="lastDish">
+                        <dish-card-list :orders="cartOrder" :default-expand="Config.defaultExpand"
+                                        :title="$t('tableNewDishTitle')">
+                            <template v-slot:after-title="af">
+                                <div v-if="af" class="lastDish">
                                   <span class="lastDishName"
                                   >{{lastDish.name}}</span>
-                                        &times;
-                                        {{lastCount}}
-                                    </div>
-
+                                    &times;
+                                    {{lastCount}}
                                 </div>
-                                <div style="display: flex">
-                                    <div class="cartTotal">
-                                        <span class="label S_tableDishListTHPrice">{{tableDishListTHPrice}}:</span><span
-                                            class="S_cartTotal totalRed">{{cartTotal}}</span>
-                                    </div>
-                                    <div @click="expand=true" style="margin-top: 4px" class="iconButton">
-                                        <i class="material-icons">expand_less</i>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </template>
+                            </template>
+                        </dish-card-list>
                     </div>
                 </transition>
             </div>
@@ -272,7 +231,7 @@
         <transition appear name="fade">
             <div v-show="items.length>0" class="bottomCart surface" style="background: #f5f6fa;" v-cloak
                  id="splitOrderContainer">
-                <dish-card-list :orders="items"
+                <dish-card-list :default-expand="true" :orders="items"
                                 :click-callback="removeFromSplitOrder"
                                 :title="findInString('operation')"/>
                 <div class="spaceBetween pa-2">
@@ -291,83 +250,47 @@
                 </div>
             </div>
         </transition>
-        <v-navigation-drawer width="30%" fixed temporary v-model="modificationShow">
+        <v-navigation-drawer color="#f5f6fa" width="480px" right fixed temporary v-model="modificationShow">
             <div style="margin-top: 64px">
                 <v-container>
                     <v-row>
-                        <v-col cols="12" class="elevation-3">
-                            <div class="popTitle">
+                        <v-col cols="12">
+                            <h2>
                                 {{dishName}}
-                            </div>
+                            </h2>
                         </v-col>
                     </v-row>
                     <v-row>
                         <v-col cols="12">
                             <template v-for="item in computedOption">
-                                <div class="elevation-2 pa-2 my-2" style="width: 100%" :key="'mod2'+item.id">
-                                    <span class="subtitle-2">{{`${item.name}${item.required==='1'?`:${item.select[0].text}`:``}`}}</span>
+                                <v-sheet elevation="1" class="pa-2 my-2" :key="'mod2'+item.id">
+                                    <h4>{{`${item.name}${item.required==='1'?`:${item.select[0].text}`:``}`}}</h4>
                                     <v-chip-group
                                             v-model="mod['mod'+item.id]"
                                             :mandatory="item.required==='1'" column
-                                            :multiple="item.multiSelect==='1'" active-class="primary--text">
-                                        <v-chip :key="'mod111'+index" v-for="(s,index) in item.select">
+                                            :multiple="item.multiSelect==='1'"
+                                            active-class="primary--text">
+                                        <v-chip label x-large filter :key="'mod111'+index"
+                                                v-for="(s,index) in item.select">
                                             {{s.text}}
                                         </v-chip>
                                     </v-chip-group>
-                                </div>
-
-                                <!--                                                                <v-select v-bind:key="'mod2'+item.id"-->
-                                <!--                                                                          v-model="mod['mod'+item.id]"-->
-                                <!--                                                                          :multiple="item.multiSelect==='1'"-->
-                                <!--                                                                          :label="`${item.name}-->
-                                <!--                                                                       ${item.required==='1'?`:${item.select[0].text}`:``}`"-->
-                                <!--                                                                          v-bind:id="'mod'+item.id" :items="item.select">-->
-                                <!--                                                                </v-select>-->
+                                </v-sheet>
                             </template>
+                        </v-col>
+                    </v-row>
+                    <v-spacer class="mx-4"/>
+                    <v-row>
+                        <v-col cols="6">
+                            <v-btn outlined block @click="cancel" color="error" text>取消</v-btn>
+                        </v-col>
+                        <v-col cols="6">
+                            <v-btn block @click="submitModification" color="primary">确认</v-btn>
                         </v-col>
                     </v-row>
                 </v-container>
             </div>
         </v-navigation-drawer>
-        <transition appear name="fade">
-
-            <div v-show="modificationShow" v-cloak class="bottomCart surface" id="dishModification">
-                <div>
-                    <div class="popTitle">
-                        {{dishName}}
-                    </div>
-                    <div class="modification">
-                        <form @submit.prevent="submitModification">
-                            <template v-for="item in computedOption">
-                                <v-select v-bind:key="'mod2'+item.id"
-                                          v-model="mod['mod'+item.id]"
-                                          :multiple="item.multiSelect==='1'"
-                                          :label="`${item.name}
-                                       ${item.required==='1'?`:${item.select[0].text}`:``}`"
-                                          v-bind:id="'mod'+item.id" :items="item.select">
-                                </v-select>
-                            </template>
-                            <div class="spaceBetween">
-                                <div>
-                                    <button class="confirmContainer waves-light waves-effect red white--text S_cancel"
-                                            @click="cancel"
-                                            type="button">取消
-                                    </button>
-                                </div>
-                                <div>
-                                    <button class="confirmContainer  waves-light waves-effect S_tableCheckOutConfirm"
-                                            name="confirm"
-                                            type="submit">确认
-                                    </button>
-                                </div>
-                            </div>
-
-                        </form>
-
-                    </div>
-                </div>
-            </div>
-        </transition>
     </v-app>
 </template>
 
@@ -419,7 +342,6 @@ import {
   splitOrder
 } from '../oldjs/api'
 import Navgation from '../components/Navgation'
-import DishCard from '../components/DishCard'
 import { dragscroll } from 'vue-dragscroll'
 import DishCardList from '../components/DishCardList'
 
@@ -486,7 +408,7 @@ export default {
   directives: {
     dragscroll
   },
-  components: { DishCardList, DishCard, Navgation },
+  components: { DishCardList, Navgation },
   props: {
     id: {
       type: String,
@@ -619,7 +541,9 @@ export default {
     addToSplitOrder: function (item) {
       const raw = copyObject(item)
       raw.sumCount = 1
-      const realItem = this.findByCodeInSplitOrder(raw.code)
+      const realItem = this.items.find(i => {
+        return item.code === i.code && i.aId === item.aId && item.agId === i.agId
+      })
       if (realItem == null) {
         this.items.push(raw)
       } else {
@@ -796,7 +720,11 @@ export default {
       for (const i of this.dish.modInfo) {
         const item = {}
         item.groupId = i.id
-        item.selectId = this.mod['mod' + i.id] ? this.mod['mod' + i.id] : ''
+        item.selectId = i.selectValue.filter((s, index) => {
+          return [(this.mod['mod' + i.id] ?? [])].flat().includes(index)
+        })
+        console.log(item.selectId)
+        // item.selectId = this.mod['mod' + i.id] ? this.mod['mod' + i.id] : ''
         if (i.required === '1' && item.selectId === '') {
           item.selectId = i.selectValue[0]
         }
@@ -1111,7 +1039,7 @@ export default {
         })
         realModInfo.push(item)
       })
-      console.log(realModInfo)
+      // console.log(realModInfo)
       return realModInfo
     },
     splitOrderTotal: function () {
