@@ -107,3 +107,7 @@ if (isDevelopment) {
     })
   }
 }
+
+const set = settings.get('config')
+
+export const globalSetting = set
