@@ -8,6 +8,9 @@ module.exports = {
         linux: {
           target: 'snap'
         },
+        win: {
+          target: 'nsis'
+        },
         publish: 'always',
         snap: {
           autoStart: true,
