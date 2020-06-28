@@ -1,13 +1,13 @@
 {
   "name": "aaden-vue-app",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "description": "全新构建的Aaden Vue版本，重新启航，更加牢靠！",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "update": "dotenv release-it --ci",
+    "update": "dotenv -- release-it --ci --no-npm-publish",
     "release": "sudo snap install snapcraft --classic && snapcraft login --with log && vue-cli-service electron:build --linux snap --publish always",
     "electron:build": "vue-cli-service electron:build --linux snap --publish always",
     "electron:serve": "vue-cli-service electron:serve",
