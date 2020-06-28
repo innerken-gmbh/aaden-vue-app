@@ -11,11 +11,11 @@ module.exports = {
         publish: 'always',
         snap: {
           autoStart: true,
-          grade: 'devel',
+          grade: 'stable',
           publish: [
             {
               provider: 'snapStore',
-              channels: 'beta'
+              channels: 'stable'
             }
           ]
         }
