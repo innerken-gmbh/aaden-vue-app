@@ -2,22 +2,21 @@ import Swal from 'sweetalert2'
 import router from '../router'
 import { ego, hillo } from 'innerken-utils'
 import i18n from '../i18n'
-import { globalSetting } from '../background'
 
-const ipcRenderer = window.electron.ipcRenderer
-
+const { ipcRenderer, remote } = require('electron')
+const settings = remote.require('electron-settings')
+const StaticConfig = settings.get('config')
 export const version = '1.1.0'
 
 let Config = {}
 Config.IP = 'localhost'
 Config.Dir = ''
 Config.REALROOT = `http://${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
-Config = Object.assign(Config, globalSetting)
+Config = Object.assign(Config, StaticConfig)
 Config.PHPROOT = `${Config.REALROOT}/PHP/`
 window.Config = Config
 console.log('Config', Config)
 export const _Config = Config
-const settings = {}
 
 export function getConfig () {
   return Config
@@ -554,7 +553,7 @@ export async function fastSweetAlertRequest (title, input, url, dataName, dataOb
           })
           .catch(error => {
             Swal.showValidationMessage(
-                            `Request failed: ${error}`
+              `Request failed: ${error}`
             )
           })
       } else {
@@ -568,7 +567,7 @@ export async function fastSweetAlertRequest (title, input, url, dataName, dataOb
           })
           .catch(error => {
             Swal.showValidationMessage(
-                            `Request failed: ${error}`
+              `Request failed: ${error}`
             )
           })
       }
@@ -758,7 +757,7 @@ export function showTimedAlert (type, title, time = 1000, callback = null) {
     }
   }).then((result) => {
     if (
-    /* Read more about handling dismissals below */
+      /* Read more about handling dismissals below */
       result.dismiss === Swal.DismissReason.timer
     ) {
       if (callback) {
@@ -1138,11 +1137,11 @@ export const Strings = {
         Dabei achten wir stets auf die Planung der eigenen Karriere und Entwicklung der Mitarbeiter, damit Unternehmen und Mitarbeiter zusammenwachsen. Wir investieren auch immer 70% unseres Jahresgewinns in die Entwicklung des Unternehmens und verfügen immer über ein Team von Top-Talentierten in allen Branchen.`,
     aboutUsWhereTitle: 'Woher wir kommen?',
     aboutUsWhereContent: 'Die Konzeption des Aaden-Systems basiert auf den Meinungen vieler Mitarbeiter mit langjähriger Erfahrung in der Gastronomie.\n' +
-            '                            Wir haben ein tiefes Verständnis für die tatsächlichen Bedürfnisse der Gastronomiefachleute - vom Chef bis zu jedem Mitarbeiter.\n' +
-            '                            Dies führte zur Einführung der integrierten Lösung für digitales Catering in der Aaden Smart Cloud. Bestellung von Scannern, Mitnehmen, Buchung von Webseiten und Verwaltung von Tischen vor Ort. \n' +
-            '                            Flexibler Einsatz und effizientes Design verändern das Managementmodell der Gastronomie von oben nach unten.\n' +
-            '                            Das Aaden-System ist auch das letzte System, das Sie benötigen, da die flexible Bereitstellungsoption [1] die Möglichkeit der Softwareentwicklung bietet.\n' +
-            '                            Von einem kleinen Café bis zu einem riesigen Buffetrestaurant mit Tausenden von Sitzplätzen ist das Aaden-System immer an Ihrer Seite wie ein Kamin.',
+      '                            Wir haben ein tiefes Verständnis für die tatsächlichen Bedürfnisse der Gastronomiefachleute - vom Chef bis zu jedem Mitarbeiter.\n' +
+      '                            Dies führte zur Einführung der integrierten Lösung für digitales Catering in der Aaden Smart Cloud. Bestellung von Scannern, Mitnehmen, Buchung von Webseiten und Verwaltung von Tischen vor Ort. \n' +
+      '                            Flexibler Einsatz und effizientes Design verändern das Managementmodell der Gastronomie von oben nach unten.\n' +
+      '                            Das Aaden-System ist auch das letzte System, das Sie benötigen, da die flexible Bereitstellungsoption [1] die Möglichkeit der Softwareentwicklung bietet.\n' +
+      '                            Von einem kleinen Café bis zu einem riesigen Buffetrestaurant mit Tausenden von Sitzplätzen ist das Aaden-System immer an Ihrer Seite wie ein Kamin.',
 
     aboutUsBusinessTitle: 'Unser Geschäftsfeld',
     aboutUsBusinessContent: `Die Konzeption des Aaden-Systems basiert auf den Meinungen vieler Mitarbeiter mit langjähriger Erfahrung in der Gastronomie.
@@ -1523,11 +1522,11 @@ export const Strings = {
         我们永远注重对于人本身职业和生涯发展的规划，让公司和员工共同成长。我们也始终将每年盈利的百分之七十投入到公司的发展，并始终保持团队中有各个领域最好的人才。`,
     aboutUsWhereTitle: '我们从哪来',
     aboutUsWhereContent: 'Aaden系统的设计参考了众多具有多年餐饮业从业经验的实际场内工作人员的意见。\n' +
-            '                            我们认真的了解了餐饮业从业人员——从老板到每一个员工的真正需求，\n' +
-            '                            从而推出Aaden智能云数字餐饮一体化解决方案。扫码点餐，外卖，网页预定，\n' +
-            '                            场内桌子管理，灵活的部署和高效的设计，从上而下变革餐饮业的管理模式。\n' +
-            '                            Aaden系统也是您需要的最后一个系统，因为灵活部署选项[1]提供了软件“生长”的可能，\n' +
-            '                            从一个小小的咖啡馆到有几千个座位的巨型自助餐厅，Aaden系统都如同壁炉般永远陪在您的身边。',
+      '                            我们认真的了解了餐饮业从业人员——从老板到每一个员工的真正需求，\n' +
+      '                            从而推出Aaden智能云数字餐饮一体化解决方案。扫码点餐，外卖，网页预定，\n' +
+      '                            场内桌子管理，灵活的部署和高效的设计，从上而下变革餐饮业的管理模式。\n' +
+      '                            Aaden系统也是您需要的最后一个系统，因为灵活部署选项[1]提供了软件“生长”的可能，\n' +
+      '                            从一个小小的咖啡馆到有几千个座位的巨型自助餐厅，Aaden系统都如同壁炉般永远陪在您的身边。',
 
     aboutUsBusinessTitle: '我们的业务范围',
     aboutUsBusinessContent: `Aaden系统的设计参考了众多具有多年餐饮业从业经验的实际场内工作人员的意见。
@@ -1919,11 +1918,11 @@ export const Strings = {
         我们永远注重对于人本身职业和生涯发展的规划，让公司和员工共同成长。我们也始终将每年盈利的百分之七十投入到公司的发展，并始终保持团队中有各个领域最好的人才。`,
     aboutUsWhereTitle: '我们从哪来',
     aboutUsWhereContent: 'Aaden系统的设计参考了众多具有多年餐饮业从业经验的实际场内工作人员的意见。\n' +
-            '                            我们认真的了解了餐饮业从业人员——从老板到每一个员工的真正需求，\n' +
-            '                            从而推出Aaden智能云数字餐饮一体化解决方案。扫码点餐，外卖，网页预定，\n' +
-            '                            场内桌子管理，灵活的部署和高效的设计，从上而下变革餐饮业的管理模式。\n' +
-            '                            Aaden系统也是您需要的最后一个系统，因为灵活部署选项[1]提供了软件“生长”的可能，\n' +
-            '                            从一个小小的咖啡馆到有几千个座位的巨型自助餐厅，Aaden系统都如同壁炉般永远陪在您的身边。',
+      '                            我们认真的了解了餐饮业从业人员——从老板到每一个员工的真正需求，\n' +
+      '                            从而推出Aaden智能云数字餐饮一体化解决方案。扫码点餐，外卖，网页预定，\n' +
+      '                            场内桌子管理，灵活的部署和高效的设计，从上而下变革餐饮业的管理模式。\n' +
+      '                            Aaden系统也是您需要的最后一个系统，因为灵活部署选项[1]提供了软件“生长”的可能，\n' +
+      '                            从一个小小的咖啡馆到有几千个座位的巨型自助餐厅，Aaden系统都如同壁炉般永远陪在您的身边。',
 
     aboutUsBusinessTitle: '我们的业务范围',
     aboutUsBusinessContent: `Aaden系统的设计参考了众多具有多年餐饮业从业经验的实际场内工作人员的意见。

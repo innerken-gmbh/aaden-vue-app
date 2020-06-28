@@ -19,7 +19,8 @@ module.exports = {
             }
           ]
         }
-      }
+      },
+      nodeIntegration: true
     },
     i18n: {
       locale: 'zh',

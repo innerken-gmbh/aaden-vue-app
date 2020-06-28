@@ -74,6 +74,8 @@ export function dishesChangeTable (tableName, items, initialUI) {
 }
 
 export function splitOrder (discountStr = '', id, items, initialUI, print, payMethod, tipIncome) {
+  console.log(arguments)
+  print = parseInt(print)
   let withTitle = 0
   let printCount = 1
   if (print === 2) {
@@ -96,6 +98,7 @@ export function splitOrder (discountStr = '', id, items, initialUI, print, payMe
     initialUI()
   })
 }
+
 export async function popDiscountPanel (id, initialUI) {
   const res = await fastSweetAlertRequest(findInString('JSTableAdditionPopDiscountInfo'), 'text',
     'Complex.php?op=setDiscount', 'discountStr', {
