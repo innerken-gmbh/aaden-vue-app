@@ -10,7 +10,7 @@ import {
   toast
 } from './common'
 
-export function checkOut (tableId, cartOrder, print = 1, payMethod = 1, tipIncome = 0) {
+export function checkOut (tableId, cartOrder, print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
   let withTitle = 0
   let printCount = 1
   if (parseInt(print) === 2) {
@@ -27,7 +27,8 @@ export function checkOut (tableId, cartOrder, print = 1, payMethod = 1, tipIncom
       printCount: printCount,
       payMethod: payMethod,
       tableId: tableId,
-      tipIncome: tipIncome || 0
+      tipIncome: tipIncome || 0,
+      memberCardId: memberCardId
     },
     RequestMethod.POST,
     (res) => {
@@ -73,7 +74,7 @@ export function dishesChangeTable (tableName, items, initialUI) {
   })
 }
 
-export function splitOrder (discountStr = '', id, items, initialUI, print, payMethod, tipIncome) {
+export function splitOrder (discountStr = '', id, items, initialUI, print, payMethod, tipIncome, memberCardId) {
   console.log(arguments)
   print = parseInt(print)
   let withTitle = 0
@@ -93,7 +94,8 @@ export function splitOrder (discountStr = '', id, items, initialUI, print, payMe
     discountStr: discountStr,
     dishes: JSON.stringify(items),
     withTitle,
-    printCount
+    printCount,
+    memberCardId: memberCardId
   }, RequestMethod.POST, () => {
     initialUI()
   })

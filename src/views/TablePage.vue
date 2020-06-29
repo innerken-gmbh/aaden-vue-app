@@ -362,46 +362,6 @@ let OrderId = -1
 function goHome () {
   jumpTo('index')
 }
-
-async function checkOutPrompt () {
-  const res = await Swal.mixin({
-    input: 'text',
-    confirmButtonText: findInString('nextStep') + ' &rarr;',
-    showCancelButton: true,
-    progressSteps: ['1', '2', '3']
-  }).queue([
-    {
-      title: findInString('tableCheckOutBillTypeLabel'),
-      input: 'select',
-      inputOptions: {
-        1: findInString('tableCheckOutBillTypeOptionNormal'),
-        2: findInString('tableCheckOutBillTypeOptionCompany'),
-        3: findInString('tableCheckOutBillTypeOption3')
-      }
-    },
-    {
-      title: findInString('tableCheckOutPaymentLabel'),
-      input: 'select',
-      inputOptions: {
-        1: findInString('tableCheckOutPaymentOptionBar'),
-        2: findInString('tableCheckOutPaymentOptionCard'),
-        3: findInString('tableCheckOutPaymentOptionCredit')
-      }
-    },
-    {
-      title: findInString('tableCheckOutTipLabel'),
-      input: 'number',
-      inputAttributes: {
-        min: 0,
-        step: 0.1
-      }
-    }
-  ])
-  if (res.value !== undefined) {
-    return res.value
-  }
-}
-
 // endregion
 export default {
   name: 'TablePage',
@@ -450,7 +410,9 @@ export default {
       Strings: Strings,
       Config: getConfig(),
       buffer: '',
-      mod: {}
+      mod: {},
+      payment: [],
+      memberCardVerify: false
     }
   },
   beforeDestroy () {
@@ -470,6 +432,84 @@ export default {
           this.orders = res.content
         } else {
           showTimedAlert('warning', findInString('JSTableGetOrderedDishFailed') + res.info, 1000, goHome)
+        }
+      })
+    },
+    async checkOutPrompt () {
+      const res = await Swal.mixin({
+        input: 'text',
+        confirmButtonText: findInString('nextStep') + ' &rarr;',
+        showCancelButton: true,
+        progressSteps: ['1', '2', '3']
+      }).queue([
+        {
+          title: findInString('tableCheckOutBillTypeLabel'),
+          input: 'select',
+          inputOptions: {
+            1: findInString('tableCheckOutBillTypeOptionNormal'),
+            2: findInString('tableCheckOutBillTypeOptionCompany'),
+            3: findInString('tableCheckOutBillTypeOption3')
+          }
+        },
+        {
+          title: findInString('tableCheckOutPaymentLabel'),
+          input: 'select',
+          inputOptions: {
+            ...this.payment.reduce((cry, i) => {
+              cry[i.id] = i.name
+              return cry
+            }, {})
+          }
+        },
+        {
+          title: findInString('tableCheckOutTipLabel'),
+          input: 'number',
+          inputAttributes: {
+            min: 0,
+            step: 0.1
+          }
+        }
+      ])
+      if (res.value) {
+        if (res.value[1] === '4') {
+          const memberCardId = await Swal.fire({
+            title: '请输入会员卡号',
+            input: 'text'
+          })
+          await this.verifyMemberCard(memberCardId.value)
+          if (this.memberCardVerify === true) {
+            res.value.push(memberCardId.value)
+          } else {
+            return
+          }
+        } else {
+          res.value.push(null)
+        }
+        return res.value
+      }
+    },
+    getPayment () {
+      getData(this.Config.PHPROOT + 'PayMethod.php', {
+        op: 'byLang',
+        lang: this.Config.lang
+      }).then(res => {
+        if (res.status === 'good') {
+          this.payment = res.content
+        } else {
+          showTimedAlert('warning', findInString('JSTableGetOrderedDishFailed') + res.info, 1000, goHome)
+        }
+      })
+    },
+    async verifyMemberCard (cardId) {
+      await getData(this.Config.PHPROOT + 'MemberCard.php', {
+        op: 'getOne',
+        id: cardId
+      }).then(res => {
+        if (res.status === 'good') {
+          this.memberCardVerify = true
+        } else {
+          this.memberCardVerify = false
+          showTimedAlert('warning', findInString('This card is not exist') + res.info, 1000, goHome)
         }
       })
     },
@@ -611,12 +651,18 @@ export default {
     needSplitOrder: async function () {
       if (this.Config.checkOutUsePassword) {
         popAuthorize('', async () => {
-          const arr = await checkOutPrompt()
+          const arr = await this.checkOutPrompt()
           console.log(arr)
+          if (arr[1] !== '4') {
+            arr[3] = null
+          }
           splitOrder(this.discountStr, this.id, this.items, this.initialUI, ...arr)
         }, true)
       } else {
-        const arr = await checkOutPrompt()
+        const arr = await this.checkOutPrompt()
+        if (arr[1] !== '4') {
+          arr[3] = null
+        }
         splitOrder(this.discountStr, this.id, this.items, this.initialUI, ...arr)
       }
     },
@@ -812,8 +858,11 @@ export default {
         default:
       }
     },
-    checkOut (print = 1, payMethod = 1, tipIncome = 0) {
-      checkOut(this.id, this.cartOrder, print = 1, payMethod = 1, tipIncome = 0)
+    checkOut (print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
+      if (!memberCardId) {
+        memberCardId = null
+      }
+      checkOut(this.id, this.cartOrder, print, payMethod, tipIncome, memberCardId)
     },
     jumpToTable: function (tableId, tableName) {
       jumpToTable(tableId, tableName)
@@ -997,11 +1046,12 @@ export default {
       setTimeout(async () => {
         if (this.Config.checkOutUsePassword) {
           popAuthorize('', async () => {
-            const res = await checkOutPrompt()
+            const res = await this.checkOutPrompt()
+            console.log(res)
             this.checkOut(...res)
           }, true)
         } else {
-          const res = await checkOutPrompt()
+          const res = await this.checkOutPrompt()
           this.checkOut(...res)
         }
       }, 20)
@@ -1118,6 +1168,7 @@ export default {
         UIStatus = UIState.Init
         document.getElementById('instruction').focus()
         this.getCategory()
+        this.getPayment()
         setGlobalTableId(this.id)
         AssginToStringClass('tableNumber', this.tableName)
         blockReady()

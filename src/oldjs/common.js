@@ -941,6 +941,7 @@ export const Strings = {
     tableCheckOutPaymentOptionBar: 'Bargeld',
     tableCheckOutPaymentOptionCard: 'Bankkarte',
     tableCheckOutPaymentOptionCredit: 'Kreditkarte',
+    tableCheckOutPaymentOptionMemberCard: 'Mitgliedskarte',
     tableCheckOutPaymentLabel: 'Bitte wählen Sie eine Zahlungsart',
 
     tableCheckOutGuestCountLabel: 'Count',
@@ -1328,6 +1329,7 @@ export const Strings = {
     tableCheckOutPaymentOptionBar: '现金',
     tableCheckOutPaymentOptionCard: '刷卡',
     tableCheckOutPaymentOptionCredit: '信用卡',
+    tableCheckOutPaymentOptionMemberCard: '会员卡',
     tableCheckOutPaymentLabel: '请选择支付方式',
 
     tableCheckOutGuestCountLabel: '结账人数',
@@ -1724,6 +1726,7 @@ export const Strings = {
     tableCheckOutPaymentOptionBar: '现金',
     tableCheckOutPaymentOptionCard: '刷卡',
     tableCheckOutPaymentOptionCredit: '信用卡',
+    tableCheckOutPaymentOptionMemberCard: '会员卡',
     tableCheckOutPaymentLabel: '请选择支付方式',
 
     tableCheckOutGuestCountLabel: '结账人数',
