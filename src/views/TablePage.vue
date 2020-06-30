@@ -83,7 +83,7 @@
       <div id="newDishContainerTP">
         <transition name="fade" appear>
           <div v-if="cartOrder.length>0" class="white bottomCart surface" id="newDishContainer">
-            <dish-card-list :orders="cartOrder" :default-expand="Config.defaultExpand"
+            <dish-card-list :click-callback="removeDish" :orders="cartOrder" :default-expand="Config.defaultExpand"
                             :title="$t('tableNewDishTitle')">
               <template v-slot:after-title="af">
                 <div v-if="af" class="lastDish">
@@ -716,6 +716,9 @@ export default {
     removeDish: function (index) {
       remove(this.cartOrder, index)
     },
+    removeDishWithCode: function (code) {
+      remove(this.cartOrder, this.findDishByCode(code))
+    },
     submitModification: function () {
       const apply = []
       for (const i of this.dish.modInfo) {
@@ -940,7 +943,7 @@ export default {
       }
       if (t !== '') {
         if (t.startsWith('-') && t.length >= 2) {
-          this.removeDish(t.substring(1))
+          this.removeDishWithCode(t.substring(1))
           blockReady()
           return
         } else if (t.indexOf('*') !== -1) {
