@@ -144,8 +144,8 @@
                     <div v-cloak v-bind:key="'area'+area.areaName" v-for="area in areas" class="area">
                         <div class="areaTitle">{{area.areaName}}</div>
                         <div class="areaTableContainer">
-                            <template v-for="table in area.tables">
-                                <div :key="'table'+table.tableName">
+                            <template v-for="(table,index) in area.tables">
+                                <div :key="'table'+table.tableName+'i'+index">
                                     <div v-if="table.usageStatus==='1'" class="tableCard"
                                          v-bind:class="{onCall:parseInt(table.callService)===1}"
                                          v-on:click='jumpToTable(table.tableId,table.tableName)'>
@@ -251,47 +251,11 @@
                 </div>
             </div>
         </transition>
-        <v-navigation-drawer color="#f5f6fa" width="480px" right fixed temporary v-model="modificationShow">
-            <div style="margin-top: 64px">
-                <v-container>
-                    <v-row>
-                        <v-col cols="12">
-                            <h2>
-                                {{dishName}}
-                            </h2>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="12">
-                            <template v-for="item in computedOption">
-                                <v-sheet elevation="1" class="pa-2 my-2" :key="'mod2'+item.id">
-                                    <h4>{{`${item.name}${item.required==='1'?`:${item.select[0].text}`:``}`}}</h4>
-                                    <v-chip-group
-                                            v-model="mod['mod'+item.id]"
-                                            :mandatory="item.required==='1'" column
-                                            :multiple="item.multiSelect==='1'"
-                                            active-class="primary--text">
-                                        <v-chip label x-large filter :key="'mod111'+index"
-                                                v-for="(s,index) in item.select">
-                                            {{s.text}}
-                                        </v-chip>
-                                    </v-chip-group>
-                                </v-sheet>
-                            </template>
-                        </v-col>
-                    </v-row>
-                    <v-spacer class="mx-4"/>
-                    <v-row>
-                        <v-col cols="6">
-                            <v-btn outlined block @click="cancel" color="error" text>取消</v-btn>
-                        </v-col>
-                        <v-col cols="6">
-                            <v-btn block @click="submitModification" color="primary">确认</v-btn>
-                        </v-col>
-                    </v-row>
-                </v-container>
-            </div>
-        </v-navigation-drawer>
+        <ModificationDrawer
+                :modification-show.sync="modificationShow"
+                :dish="dish"
+                :mod="submitModification"
+        />
     </v-app>
 </template>
 
@@ -345,6 +309,7 @@ import {
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
 import DishCardList from '../components/DishCardList'
+import ModificationDrawer from '../components/ModificationDrawer'
 
 const UIState = {
   Init: 0,
@@ -370,7 +335,7 @@ export default {
   directives: {
     dragscroll
   },
-  components: { DishCardList, Navgation },
+  components: { ModificationDrawer, DishCardList, Navgation },
   props: {
     id: {
       type: String,
@@ -473,7 +438,6 @@ export default {
         }
       ])
       if (res.value) {
-        console.log(res.value)
         if (res.value[1] === '4') {
           const cardId = await Swal.fire({
             title: '请输入会员卡号',
@@ -483,20 +447,27 @@ export default {
             cancelButtonText: 'Stornieren',
             confirmButtonText: 'Bestätigen',
             preConfirm: (cardId) => {
-              return hillo.get('MemberCard.php', {
+              return hillo.silentGet('MemberCard.php', {
                 op: 'getOne',
                 id: cardId
-              }).then(res => {
-                console.log(res, 'res')
-              }).catch(error => {
-                console.log(error, 'error')
-                Swal.showValidationMessage(
-                  `Request failed: ${error}`
-                )
-              })
+              }, { silent: true })
+                .then(res => {
+                  const totalPrice = this.calculateOrderTableTotal()
+                  if (parseFloat(totalPrice) > parseFloat(res.content.leftAmount)) {
+                    throw new Error('您的余额为' + res.content.leftAmount + '，不够支付' + totalPrice + '。请更换支付方式。')
+                  }
+                }).catch(error => {
+                  console.log(error)
+                  Swal.showValidationMessage(
+                    `Request failed: ${error?.data?.info ?? error}`
+                  )
+                })
             }
           })
           console.log(cardId)
+          if (cardId.value) {
+            res.value.push(cardId.value)
+          }
         }
         return res.value
       }
@@ -512,9 +483,6 @@ export default {
           showTimedAlert('warning', findInString('JSTableGetOrderedDishFailed') + res.info, 1000, goHome)
         }
       })
-    },
-    async verifyMemberCard (cardId) {
-
     },
     dishQuery (code, count = 1) {
       getData(this.Config.PHPROOT + 'Dishes.php?op=simpleInfo', {
@@ -622,14 +590,6 @@ export default {
       }
       return null
     },
-    findByCodeInSplitOrder: function (code) {
-      for (const i of this.items) {
-        if (i.code === code) {
-          return i
-        }
-      }
-      return null
-    },
     removeFromSplitOrder: function (index) {
       const realItem = this.items[index]
       const orderItem = this.findByCodeInOrder(realItem.code)
@@ -652,21 +612,18 @@ export default {
       }
     },
     needSplitOrder: async function () {
+      const realEnd = async () => {
+        const arr = await this.checkOutPrompt()
+        if (arr) {
+          splitOrder(this.discountStr, this.id, this.items, this.initialUI, ...arr)
+        }
+      }
       if (this.Config.checkOutUsePassword) {
         popAuthorize('', async () => {
-          const arr = await this.checkOutPrompt()
-          console.log(arr)
-          if (arr[1] !== '4') {
-            arr[3] = null
-          }
-          splitOrder(this.discountStr, this.id, this.items, this.initialUI, ...arr)
+          await realEnd()
         }, true)
       } else {
-        const arr = await this.checkOutPrompt()
-        if (arr[1] !== '4') {
-          arr[3] = null
-        }
-        splitOrder(this.discountStr, this.id, this.items, this.initialUI, ...arr)
+        await realEnd()
       }
     },
     deleteDishes: function () {
@@ -704,29 +661,6 @@ export default {
       }
       this.addToSplitOrder(item)
     },
-    addNote: function (item) {
-      Swal.fire({
-        title: 'Add Note',
-        input: 'text',
-        showCancelButton: true,
-        preConfirm: (note) => {
-          this.$set(item, 'note', note)
-          item.note = note
-        }
-      })
-    },
-    calculateTotal: function () {
-      let totalPrice = 0
-      for (const item of this.cartOrder) {
-        if (this.hideFreeDish && parseInt(item.categoryTypeId) === 11) {
-          continue
-        }
-        item.totalPrice = parseFloat(item.price) * item.count
-        totalPrice += parseFloat(item.totalPrice)
-      }
-      return totalPrice.toFixed(2)
-    },
-
     addDish: function (dish, count = 1) {
       dish.count = count
       dish.price = parseFloat(dish.price)
@@ -768,7 +702,7 @@ export default {
     removeDishWithCode: function (code) {
       remove(this.cartOrder, this.findDishByCode(code))
     },
-    submitModification: function () {
+    submitModification: function (mod) {
       const apply = []
       for (const i of this.dish.modInfo) {
         const item = {}
@@ -875,7 +809,6 @@ export default {
       this.initialUI()
     },
     findConsumeType: (id) => findConsumeTypeById(id),
-    openTable: (name) => createOrEnterTable(name),
     autoGetFocus () {
       if (UIStatus !== UIState.Init) {
         return
@@ -942,28 +875,23 @@ export default {
         case 'Escape':
           this.back()
           break
-        case 'Enter': {
-          const instruction = this.readBuffer()
+        case 'Enter':
           if (listIndex > -1) {
             this.insDecodeButtonList(listIndex)
             break
           }
-          this.insDecode(instruction)
-        }
+          this.insDecode(this.readBuffer())
           break
-        // eslint-disable-next-line no-lone-blocks
-        case 'ArrowUp': {
+        case 'ArrowUp':
           if (UIStatus === UIState.OnList) {
             this.moveIndex(-1)
           }
-        }
           break
         // eslint-disable-next-line no-lone-blocks
-        case 'ArrowDown': {
+        case 'ArrowDown':
           if (UIStatus === UIState.OnList) {
             this.moveIndex(1)
           }
-        }
           break
       }
     },
@@ -1049,16 +977,20 @@ export default {
       })
     },
     jumpToPayment () {
+      const realCheckOut = async () => {
+        const res = await this.checkOutPrompt()
+        if (res) {
+          console.log(res)
+          this.checkOut(...res)
+        }
+      }
       setTimeout(async () => {
         if (this.Config.checkOutUsePassword) {
           popAuthorize('', async () => {
-            const res = await this.checkOutPrompt()
-            console.log(res)
-            this.checkOut(...res)
+            await realCheckOut()
           }, true)
         } else {
-          const res = await this.checkOutPrompt()
-          this.checkOut(...res)
+          await realCheckOut()
         }
       }, 20)
     },
@@ -1080,42 +1012,6 @@ export default {
     }
   },
   computed: {
-    computedOption: function () {
-      const realModInfo = []
-      this.options.forEach(item => {
-        item.select = []
-        item.selectName = item.selectName.split(',')
-        item.selectValue = item.selectValue.split(',')
-        item.priceInfo = item.priceInfo.split(',')
-        item.selectName.forEach((name, index) => {
-          item.select.push({
-            text: `${name}${parseFloat(item.priceInfo[index]) === 0 ? ''
-              : `(€${parseFloat(item.priceInfo[index]).toFixed(2)})`}`,
-            value: item.selectValue[index]
-          })
-        })
-        realModInfo.push(item)
-      })
-      // console.log(realModInfo)
-      return realModInfo
-    },
-    splitOrderTotal: function () {
-      let cartTotalAmount = 0
-      for (const a of this.items) {
-        cartTotalAmount += parseFloat(a.price) * parseFloat(a.sumCount)
-      }
-      return cartTotalAmount.toFixed(2)
-    },
-    cartTotal: function () {
-      let cartTotalAmount = 0
-      for (const a of this.cartOrder) {
-        cartTotalAmount += parseFloat(a.price) * parseFloat(a.count)
-      }
-      return cartTotalAmount.toFixed(2)
-    },
-    newDish: function () {
-      return findInString('tableNewDishTitle')
-    },
     tableDishListTHPrice: function () {
       return findInString('tableDishListTHPrice')
     },
@@ -1144,15 +1040,6 @@ export default {
     }
   },
   beforeUpdate: function () {
-    for (const arrElement of this.orders) {
-      if (arrElement.hasMod > 0) {
-        arrElement.agNameArr = arrElement.agName.split(',')
-        arrElement.aNameArr = arrElement.aName.split(',')
-      } else {
-        arrElement.agNameArr = []
-        arrElement.aNameArr = []
-      }
-    }
     if (this.cartOrder.length === 0) {
       this.lastDish = { name: '' }
       this.lastCount = 0

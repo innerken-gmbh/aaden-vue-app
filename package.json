@@ -1,6 +1,6 @@
 {
   "name": "aaden-vue-app",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "private": true,
   "description": "全新构建的Aaden Vue版本，重新启航，更加牢靠！",
   "scripts": {
@@ -29,7 +29,7 @@
     "core-js": "^3.6.5",
     "electron-settings": "^3.2.0",
     "electron-updater": "^4.3.1",
-    "innerken-utils": "^1.7.5",
+    "innerken-utils": "^1.7.13",
     "material-design-icons": "^3.0.1",
     "sweetalert2": "^9.15.1",
     "vue": "^2.6.11",

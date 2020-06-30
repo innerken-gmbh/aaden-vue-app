@@ -10,6 +10,14 @@ import {
   toast
 } from './common'
 
+/**
+ * @param {string} tableId
+ * @param {[]} cartOrder
+ * @param {number|string} print
+ * @param {number} payMethod
+ * @param {number} tipIncome
+ * @param {null} memberCardId
+ */
 export function checkOut (tableId, cartOrder, print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
   let withTitle = 0
   let printCount = 1
@@ -28,7 +36,7 @@ export function checkOut (tableId, cartOrder, print = 1, payMethod = 1, tipIncom
       payMethod: payMethod,
       tableId: tableId,
       tipIncome: tipIncome || 0,
-      memberCardId: memberCardId
+      memberCardId: memberCardId ?? null
     },
     RequestMethod.POST,
     (res) => {
@@ -95,7 +103,7 @@ export function splitOrder (discountStr = '', id, items, initialUI, print, payMe
     dishes: JSON.stringify(items),
     withTitle,
     printCount,
-    memberCardId: memberCardId
+    memberCardId: memberCardId ?? null
   }, RequestMethod.POST, () => {
     initialUI()
   })

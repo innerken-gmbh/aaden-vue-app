@@ -2,9 +2,8 @@ import Swal from 'sweetalert2'
 import router from '../router'
 import { ego, hillo } from 'innerken-utils'
 import i18n from '../i18n'
-
-const { ipcRenderer, remote } = require('electron')
-const settings = remote.require('electron-settings')
+import settings from 'electron-settings'
+const { ipcRenderer } = require('electron')
 const StaticConfig = settings.get('config')
 export const version = '1.1.0'
 
