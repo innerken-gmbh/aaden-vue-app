@@ -1,297 +1,298 @@
 <template>
-  <v-app class="transparent">
-    <Navgation>
-      <template v-slot:right-slot>
-        <div v-cloak>
-          <div class="indexTabs flex-Container">
-            <a @click="takeawayInfoShow=!takeawayInfoShow" class="indexTab S_takeawayAddress">外卖地址</a>
-          </div>
-          <div v-show="takeawayInfoShow" class=" takeawayFloat surface">
-            {{ rawAddressInfo.firstName }} {{ rawAddressInfo.lastName }}
-            <div> {{ rawAddressInfo.addressLine1 }}</div>
-            <div> {{ rawAddressInfo.addressline2 }}</div>
-            <div> {{ rawAddressInfo.city }} {{ rawAddressInfo.plz }}</div>
-            <div><span class="font-weight-bold">Email: </span>{{ rawAddressInfo.email }}</div>
-            <div><span class="font-weight-bold">Phone: </span>{{ rawAddressInfo.tel }}</div>
-            <span class="font-weight-bold">Lieferzeit: </span>
-            {{ rawAddressInfo.date }}
-            {{ rawAddressInfo.time }}
-            {{ rawAddressInfo.note }}
-            <div class="chip" v-show="rawAddressInfo.reason">
-              {{ rawAddressInfo.deliveryMethod }}
-            </div>
-            <div class="chip" v-show="rawAddressInfo.reason">
-              {{ rawAddressInfo.reason }}
-            </div>
-          </div>
-        </div>
-      </template>
-    </Navgation>
-    <main class="main" style="margin-top:48px ">
-      <div class="center-panel" id="mainTableContainer" v-cloak>
-        <transition name="fade">
-          <div class="panel">
-            <dish-card-list
-              :default-expand="true"
-              :orders="orders"
-              :click-callback="addToSplit"
-              :title="findInString('haveOrderedDish')"
-              :hide-free-dish="hideFreeDish"
-            />
-          </div>
-
-        </transition>
-      </div>
-      <div v-cloak class="dishListContainer" id="dishListContainer">
-        <div class="tableTitle S_tableDishListTitle">
-        </div>
-        <div style="padding: 8px">
-          <div class="ikTitle"><span class="S_classification">分类</span><span
-            class="strong S_information">信息</span>
-          </div>
-          <div v-dragscroll class="dragscroll">
-            <div class="categoryList">
-              <template v-for="category of categories">
-                <div v-bind:key="category.name+'categorys'" class="categoryBlock"
-                     @click="setActiveCategories(category)"
-                     v-bind:class="{'active  z-depth-2':category.isActive}">
-                  <div class="name">{{category.name}}</div>
-                </div>
-              </template>
-            </div>
-          </div>
-          <div class="ikTitle"><span class="S_isShowing">正在显示</span> <span
-            class="strong S_allDish">{{activeCategory?activeCategory.name:'所有菜品'}}</span>
-          </div>
-          <div v-dragscroll class="dragscroll dishCardListContainer">
-            <div class="dishCardList">
-              <template v-for="dish of filteredDish">
-                <div :key="'dish'+dish.code" class="dishBlock" @click="orderOneDish(dish.code)">
-                  <div class="spaceBetween" style="align-items: center">
-                    <div class="code">{{dish.code}}<span class="red--text"
-                                                         v-if="dish.haveMod>0">*</span>
+    <v-app class="transparent">
+        <Navgation>
+            <template v-slot:right-slot>
+                <div v-cloak>
+                    <div class="indexTabs flex-Container">
+                        <a @click="takeawayInfoShow=!takeawayInfoShow" class="indexTab S_takeawayAddress">外卖地址</a>
                     </div>
-                    <div class="price">{{dish.price}}</div>
-                  </div>
-                  <div class="name">{{dish.dishName}}</div>
+                    <div v-show="takeawayInfoShow" class=" takeawayFloat surface">
+                        {{ rawAddressInfo.firstName }} {{ rawAddressInfo.lastName }}
+                        <div> {{ rawAddressInfo.addressLine1 }}</div>
+                        <div> {{ rawAddressInfo.addressline2 }}</div>
+                        <div> {{ rawAddressInfo.city }} {{ rawAddressInfo.plz }}</div>
+                        <div><span class="font-weight-bold">Email: </span>{{ rawAddressInfo.email }}</div>
+                        <div><span class="font-weight-bold">Phone: </span>{{ rawAddressInfo.tel }}</div>
+                        <span class="font-weight-bold">Lieferzeit: </span>
+                        {{ rawAddressInfo.date }}
+                        {{ rawAddressInfo.time }}
+                        {{ rawAddressInfo.note }}
+                        <div class="chip" v-show="rawAddressInfo.reason">
+                            {{ rawAddressInfo.deliveryMethod }}
+                        </div>
+                        <div class="chip" v-show="rawAddressInfo.reason">
+                            {{ rawAddressInfo.reason }}
+                        </div>
+                    </div>
                 </div>
-              </template>
+            </template>
+        </Navgation>
+        <main class="main" style="margin-top:48px ">
+            <div class="center-panel" id="mainTableContainer" v-cloak>
+                <transition name="fade">
+                    <div class="panel">
+                        <dish-card-list
+                                :default-expand="true"
+                                :orders="orders"
+                                :click-callback="addToSplit"
+                                :title="findInString('haveOrderedDish')"
+                                :hide-free-dish="hideFreeDish"
+                        />
+                    </div>
+
+                </transition>
             </div>
-          </div>
-        </div>
-      </div>
-      <div id="newDishContainerTP">
-        <transition name="fade" appear>
-          <div v-if="cartOrder.length>0" class="white bottomCart surface" id="newDishContainer">
-            <dish-card-list :click-callback="removeDish" :orders="cartOrder" :default-expand="Config.defaultExpand"
-                            :title="$t('tableNewDishTitle')">
-              <template v-slot:after-title="af">
-                <div v-if="af" class="lastDish">
+            <div v-cloak class="dishListContainer" id="dishListContainer">
+                <div class="tableTitle S_tableDishListTitle">
+                </div>
+                <div style="padding: 8px">
+                    <div class="ikTitle"><span class="S_classification">分类</span><span
+                            class="strong S_information">信息</span>
+                    </div>
+                    <div v-dragscroll class="dragscroll">
+                        <div class="categoryList">
+                            <template v-for="category of categories">
+                                <div v-bind:key="category.name+'categorys'" class="categoryBlock"
+                                     @click="setActiveCategories(category)"
+                                     v-bind:class="{'active  z-depth-2':category.isActive}">
+                                    <div class="name">{{category.name}}</div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="ikTitle"><span class="S_isShowing">正在显示</span> <span
+                            class="strong S_allDish">{{activeCategory?activeCategory.name:'所有菜品'}}</span>
+                    </div>
+                    <div v-dragscroll class="dragscroll dishCardListContainer">
+                        <div class="dishCardList">
+                            <template v-for="dish of filteredDish">
+                                <div :key="'dish'+dish.code" class="dishBlock" @click="orderOneDish(dish.code)">
+                                    <div class="spaceBetween" style="align-items: center">
+                                        <div class="code">{{dish.code}}<span class="red--text"
+                                                                             v-if="dish.haveMod>0">*</span>
+                                        </div>
+                                        <div class="price">{{dish.price}}</div>
+                                    </div>
+                                    <div class="name">{{dish.dishName}}</div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="newDishContainerTP">
+                <transition name="fade" appear>
+                    <div v-if="cartOrder.length>0" class="white bottomCart surface" id="newDishContainer">
+                        <dish-card-list :click-callback="removeDish" :orders="cartOrder"
+                                        :default-expand="Config.defaultExpand"
+                                        :title="$t('tableNewDishTitle')">
+                            <template v-slot:after-title="af">
+                                <div v-if="af" class="lastDish">
                                   <span class="lastDishName"
                                   >{{lastDish.name}}</span>
-                  &times;
-                  {{lastCount}}
-                </div>
-              </template>
-            </dish-card-list>
-          </div>
-        </transition>
-      </div>
-      <div class="panelF">
-        <div class="infoPanel surface shadowForInsPanel">
-          <div class="spaceBetween">
-            <div style="padding-top: 8px;">
-              <div class="spaceBetween">
-                <div>
-                  <div class="verticalInfoRow">
-                    <div class="verticalInfoRowLabel S_orderNumberLabel">订单号</div>
-                    <div class="verticalInfoRowText S_orderNumber"></div>
-                  </div>
-                  <div class="verticalInfoRow" style="margin-top: 8px">
-                    <div class="verticalInfoRowLabel S_tableInfoLabelPerson"></div>
-                    <div class="verticalInfoRowText S_personCount"></div>
-                  </div>
-                </div>
-                <div>
-                  <div class="verticalInfoRow">
-                    <div class="verticalInfoRowLabel S_tableInfoLabelTime"></div>
-                    <div class="verticalInfoRowText S_startTime"></div>
-                  </div>
-                  <div class="verticalInfoRow" style="margin-top: 8px">
-                    <div class="verticalInfoRowLabel S_tableInfoLabelSeat"></div>
-                    <div class="verticalInfoRowText S_seatTimes"></div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-            <div class="bigTableNumberContainer z-depth-2">{{tableName}}</div>
-          </div>
-          <div class="rightAlign typeLabel">
-            <span class="S_type"> </span>/<span class="S_servantName"> </span>
-          </div>
-
-          <div class="verticalInfoRow">
-            <div class="verticalInfoRowLabel S_infoLabelTotal"></div>
-            <div v-cloak class="verticalInfoRowBigText totalRed">
-              {{calculateOrderTableTotal()}}
-            </div>
-          </div>
-
-        </div>
-        <div v-cloak class="collapse areaC dragscroll" v-dragscroll id="areaC">
-          <div v-cloak v-bind:key="'area'+area.areaName" v-for="area in areas" class="area">
-            <div class="areaTitle">{{area.areaName}}</div>
-            <div class="areaTableContainer">
-              <template v-for="table in area.tables">
-                <div :key="'table'+table.tableName">
-                  <div v-if="table.usageStatus==='1'" class="tableCard"
-                       v-bind:class="{onCall:parseInt(table.callService)===1}"
-                       v-on:click='jumpToTable(table.tableId,table.tableName)'>
-                    <div class="tableCardName tableBold">{{table.tableName}}</div>
-                  </div>
-                  <div v-else @click="createTable(table.tableName)" class="tableCard notUsed">
-                    <div class="tableCardName">
-                      {{table.tableName}}
+                                    &times;
+                                    {{lastCount}}
+                                </div>
+                            </template>
+                        </dish-card-list>
                     </div>
-                  </div>
-                </div>
-              </template>
-
+                </transition>
             </div>
-          </div>
-        </div>
-        <div class="insPanel surface">
-          <div class="hintPanel">
-            <div class="left-panel">
-              <div class="floatMenuPanel" id="listOfFunction">
-                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(0)">
-                  <div class="innerItem">
-                    <div class="icon"><i class="material-icons">arrow_back</i></div>
-                    <div class="text S_backToHome"></div>
-                  </div>
+            <div class="panelF">
+                <div class="infoPanel surface shadowForInsPanel">
+                    <div class="spaceBetween">
+                        <div style="padding-top: 8px;">
+                            <div class="spaceBetween">
+                                <div>
+                                    <div class="verticalInfoRow">
+                                        <div class="verticalInfoRowLabel S_orderNumberLabel">订单号</div>
+                                        <div class="verticalInfoRowText S_orderNumber"></div>
+                                    </div>
+                                    <div class="verticalInfoRow" style="margin-top: 8px">
+                                        <div class="verticalInfoRowLabel S_tableInfoLabelPerson"></div>
+                                        <div class="verticalInfoRowText S_personCount"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="verticalInfoRow">
+                                        <div class="verticalInfoRowLabel S_tableInfoLabelTime"></div>
+                                        <div class="verticalInfoRowText S_startTime"></div>
+                                    </div>
+                                    <div class="verticalInfoRow" style="margin-top: 8px">
+                                        <div class="verticalInfoRowLabel S_tableInfoLabelSeat"></div>
+                                        <div class="verticalInfoRowText S_seatTimes"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="bigTableNumberContainer z-depth-2">{{tableName}}</div>
+                    </div>
+                    <div class="rightAlign typeLabel">
+                        <span class="S_type"> </span>/<span class="S_servantName"> </span>
+                    </div>
+
+                    <div class="verticalInfoRow">
+                        <div class="verticalInfoRowLabel S_infoLabelTotal"></div>
+                        <div v-cloak class="verticalInfoRowBigText totalRed">
+                            {{calculateOrderTableTotal()}}
+                        </div>
+                    </div>
 
                 </div>
-                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(1)">
-                  <div class="innerItem">
-                    <div class="icon"><i class="material-icons">restaurant</i></div>
-                    <div class="text S_dishOrder"></div>
-                  </div>
+                <div v-cloak class="collapse areaC dragscroll" v-dragscroll id="areaC">
+                    <div v-cloak v-bind:key="'area'+area.areaName" v-for="area in areas" class="area">
+                        <div class="areaTitle">{{area.areaName}}</div>
+                        <div class="areaTableContainer">
+                            <template v-for="table in area.tables">
+                                <div :key="'table'+table.tableName">
+                                    <div v-if="table.usageStatus==='1'" class="tableCard"
+                                         v-bind:class="{onCall:parseInt(table.callService)===1}"
+                                         v-on:click='jumpToTable(table.tableId,table.tableName)'>
+                                        <div class="tableCardName tableBold">{{table.tableName}}</div>
+                                    </div>
+                                    <div v-else @click="createTable(table.tableName)" class="tableCard notUsed">
+                                        <div class="tableCardName">
+                                            {{table.tableName}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
 
+                        </div>
+                    </div>
                 </div>
-                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(2)">
-                  <div class="innerItem" style="">
-                    <div class="icon"><i class="material-icons">local_offer</i></div>
-                    <div class="text S_discount"></div>
-                  </div>
-                </div>
-                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(3)">
-                  <div class="innerItem">
-                    <div class="icon"><i class="material-icons">swap_horiz</i></div>
-                    <div class="text S_tableChange"></div>
-                  </div>
+                <div class="insPanel surface">
+                    <div class="hintPanel">
+                        <div class="left-panel">
+                            <div class="floatMenuPanel" id="listOfFunction">
+                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(0)">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">arrow_back</i></div>
+                                        <div class="text S_backToHome"></div>
+                                    </div>
 
-                </div>
-                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(4)">
-                  <div class="innerItem">
-                    <div class="icon"><i class="material-icons">merge_type</i></div>
-                    <div class="text S_tableMerge"></div>
-                  </div>
+                                </div>
+                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(1)">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">restaurant</i></div>
+                                        <div class="text S_dishOrder"></div>
+                                    </div>
 
-                </div>
-                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(5)">
-                  <div class="innerItem">
-                    <div class="icon"><i class="material-icons">account_balance_wallet</i></div>
-                    <div class="text S_payBill"></div>
-                  </div>
+                                </div>
+                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(2)">
+                                    <div class="innerItem" style="">
+                                        <div class="icon"><i class="material-icons">local_offer</i></div>
+                                        <div class="text S_discount"></div>
+                                    </div>
+                                </div>
+                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(3)">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">swap_horiz</i></div>
+                                        <div class="text S_tableChange"></div>
+                                    </div>
 
-                </div>
-                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(6)">
-                  <div class="innerItem">
-                    <div class="icon"><i class="material-icons">assignment_turned_in</i></div>
-                    <div class="text S_QuickBill"></div>
-                  </div>
+                                </div>
+                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(4)">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">merge_type</i></div>
+                                        <div class="text S_tableMerge"></div>
+                                    </div>
 
-                </div>
+                                </div>
+                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(5)">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">account_balance_wallet</i></div>
+                                        <div class="text S_payBill"></div>
+                                    </div>
 
-              </div>
+                                </div>
+                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(6)">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">assignment_turned_in</i></div>
+                                        <div class="text S_QuickBill"></div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="inputArea">
+                        <div class="input-field ">
+                            <v-text-field ref="ins" v-model="buffer"
+                                          placeholder="instruction.." id="instruction"
+                                          autofocus=autofocus></v-text-field>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </main>
+        <transition appear name="fade">
+            <div v-show="items.length>0" class="bottomCart surface" style="background: #f5f6fa;" v-cloak
+                 id="splitOrderContainer">
+                <dish-card-list :default-expand="true" :orders="items"
+                                :click-callback="removeFromSplitOrder"
+                                :title="findInString('operation')"/>
+                <div class="spaceBetween pa-2">
+                    <div></div>
+                    <div style="display: flex;align-items: center">
+                        <a class="ikButton ml-1 red white--text waves-effect waves-light S_cancel"
+                           v-on:click="removeAllFromSplitOrder()">取消</a>
+                        <a class="ikButton ml-1 waves-effect waves-light S_billSplit"
+                           v-on:click="needSplitOrder()">分单</a>
+                        <a class="ikButton ml-1 waves-effect waves-light S_dishCancel"
+                           v-on:click="deleteDishes()">退菜</a>
+                        <a class="ikButton ml-1 waves-effect waves-light S_tableChange"
+                           v-on:click="dishesChangeTable()">换桌</a>
+                    </div>
 
-          </div>
-          <div class="inputArea">
-            <div class="input-field ">
-              <v-text-field ref="ins" v-model="buffer"
-                            placeholder="instruction.." id="instruction"
-                            autofocus=autofocus></v-text-field>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </main>
-    <transition appear name="fade">
-      <div v-show="items.length>0" class="bottomCart surface" style="background: #f5f6fa;" v-cloak
-           id="splitOrderContainer">
-        <dish-card-list :default-expand="true" :orders="items"
-                        :click-callback="removeFromSplitOrder"
-                        :title="findInString('operation')"/>
-        <div class="spaceBetween pa-2">
-          <div></div>
-          <div style="display: flex;align-items: center">
-            <a class="ikButton ml-1 red white--text waves-effect waves-light S_cancel"
-               v-on:click="removeAllFromSplitOrder()">取消</a>
-            <a class="ikButton ml-1 waves-effect waves-light S_billSplit"
-               v-on:click="needSplitOrder()">分单</a>
-            <a class="ikButton ml-1 waves-effect waves-light S_dishCancel"
-               v-on:click="deleteDishes()">退菜</a>
-            <a class="ikButton ml-1 waves-effect waves-light S_tableChange"
-               v-on:click="dishesChangeTable()">换桌</a>
-          </div>
-
-        </div>
-      </div>
-    </transition>
-    <v-navigation-drawer color="#f5f6fa" width="480px" right fixed temporary v-model="modificationShow">
-      <div style="margin-top: 64px">
-        <v-container>
-          <v-row>
-            <v-col cols="12">
-              <h2>
-                {{dishName}}
-              </h2>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <template v-for="item in computedOption">
-                <v-sheet elevation="1" class="pa-2 my-2" :key="'mod2'+item.id">
-                  <h4>{{`${item.name}${item.required==='1'?`:${item.select[0].text}`:``}`}}</h4>
-                  <v-chip-group
-                    v-model="mod['mod'+item.id]"
-                    :mandatory="item.required==='1'" column
-                    :multiple="item.multiSelect==='1'"
-                    active-class="primary--text">
-                    <v-chip label x-large filter :key="'mod111'+index"
-                            v-for="(s,index) in item.select">
-                      {{s.text}}
-                    </v-chip>
-                  </v-chip-group>
-                </v-sheet>
-              </template>
-            </v-col>
-          </v-row>
-          <v-spacer class="mx-4"/>
-          <v-row>
-            <v-col cols="6">
-              <v-btn outlined block @click="cancel" color="error" text>取消</v-btn>
-            </v-col>
-            <v-col cols="6">
-              <v-btn block @click="submitModification" color="primary">确认</v-btn>
-            </v-col>
-          </v-row>
-        </v-container>
-      </div>
-    </v-navigation-drawer>
-  </v-app>
+        </transition>
+        <v-navigation-drawer color="#f5f6fa" width="480px" right fixed temporary v-model="modificationShow">
+            <div style="margin-top: 64px">
+                <v-container>
+                    <v-row>
+                        <v-col cols="12">
+                            <h2>
+                                {{dishName}}
+                            </h2>
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col cols="12">
+                            <template v-for="item in computedOption">
+                                <v-sheet elevation="1" class="pa-2 my-2" :key="'mod2'+item.id">
+                                    <h4>{{`${item.name}${item.required==='1'?`:${item.select[0].text}`:``}`}}</h4>
+                                    <v-chip-group
+                                            v-model="mod['mod'+item.id]"
+                                            :mandatory="item.required==='1'" column
+                                            :multiple="item.multiSelect==='1'"
+                                            active-class="primary--text">
+                                        <v-chip label x-large filter :key="'mod111'+index"
+                                                v-for="(s,index) in item.select">
+                                            {{s.text}}
+                                        </v-chip>
+                                    </v-chip-group>
+                                </v-sheet>
+                            </template>
+                        </v-col>
+                    </v-row>
+                    <v-spacer class="mx-4"/>
+                    <v-row>
+                        <v-col cols="6">
+                            <v-btn outlined block @click="cancel" color="error" text>取消</v-btn>
+                        </v-col>
+                        <v-col cols="6">
+                            <v-btn block @click="submitModification" color="primary">确认</v-btn>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </div>
+        </v-navigation-drawer>
+    </v-app>
 </template>
 
 <script>
@@ -362,6 +363,7 @@ let OrderId = -1
 function goHome () {
   jumpTo('index')
 }
+
 // endregion
 export default {
   name: 'TablePage',
@@ -439,8 +441,7 @@ export default {
       const res = await Swal.mixin({
         input: 'text',
         confirmButtonText: findInString('nextStep') + ' &rarr;',
-        showCancelButton: true,
-        progressSteps: ['1', '2', '3']
+        showCancelButton: true
       }).queue([
         {
           title: findInString('tableCheckOutBillTypeLabel'),
@@ -455,10 +456,11 @@ export default {
           title: findInString('tableCheckOutPaymentLabel'),
           input: 'select',
           inputOptions: {
-            ...this.payment.reduce((cry, i) => {
-              cry[i.id] = i.name
-              return cry
-            }, {})
+            ...this.payment.filter(i => i.id !== '0')
+              .reduce((cry, i) => {
+                cry[i.id] = i.name
+                return cry
+              }, {})
           }
         },
         {
@@ -471,19 +473,30 @@ export default {
         }
       ])
       if (res.value) {
+        console.log(res.value)
         if (res.value[1] === '4') {
-          const memberCardId = await Swal.fire({
+          const cardId = await Swal.fire({
             title: '请输入会员卡号',
-            input: 'text'
+            input: 'text',
+            showCancelButton: false,
+            showLoaderOnConfirm: true,
+            cancelButtonText: 'Stornieren',
+            confirmButtonText: 'Bestätigen',
+            preConfirm: (cardId) => {
+              return hillo.get('MemberCard.php', {
+                op: 'getOne',
+                id: cardId
+              }).then(res => {
+                console.log(res, 'res')
+              }).catch(error => {
+                console.log(error, 'error')
+                Swal.showValidationMessage(
+                  `Request failed: ${error}`
+                )
+              })
+            }
           })
-          await this.verifyMemberCard(memberCardId.value)
-          if (this.memberCardVerify === true) {
-            res.value.push(memberCardId.value)
-          } else {
-            return
-          }
-        } else {
-          res.value.push(null)
+          console.log(cardId)
         }
         return res.value
       }
@@ -501,17 +514,7 @@ export default {
       })
     },
     async verifyMemberCard (cardId) {
-      await getData(this.Config.PHPROOT + 'MemberCard.php', {
-        op: 'getOne',
-        id: cardId
-      }).then(res => {
-        if (res.status === 'good') {
-          this.memberCardVerify = true
-        } else {
-          this.memberCardVerify = false
-          showTimedAlert('warning', findInString('This card is not exist') + res.info, 1000, goHome)
-        }
-      })
+
     },
     dishQuery (code, count = 1) {
       getData(this.Config.PHPROOT + 'Dishes.php?op=simpleInfo', {
@@ -1185,609 +1188,609 @@ export default {
 </script>
 
 <style scoped>
-  .center-panel {
-    margin-left: 12px;
-    margin-top: 12px;
-    height: 100%;
-    max-height: calc(100vh - 60px);
-    border-radius: 5px;
-    width: 100%;
-    max-width: 400px;
-    overflow-y: scroll;
-    box-shadow: 4px 10px 20px 0 rgba(220, 224, 239, 0.59);
-  }
-
-  .spaceBetween {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .tableContainer {
-    overflow-x: hidden;
-    max-height: calc(100vh - 200px);
-    padding: 4px 8px;
-    overflow-y: scroll;
-  }
-
-  th {
-    font-weight: 600;
-    font-size: 16px;
-  }
-
-  td {
-    color: #4b4b4b;
-    font-size: 18px;
-  }
-
-  td, th {
-    padding: 8px 4px;
-  }
-
-  .nameRow {
-    font-weight: 600;
-    max-width: 144px;
-  }
-
-  .priceRow {
-    font-weight: lighter;
-  }
-
-  .countRow {
-    font-weight: bold;
-  }
-
-  .sumRow {
-    opacity: 1;
-    color: #367aeb;
-    font-size: 16px;
-    font-weight: lighter;
-  }
-
-  .infoContainer {
-    padding: 5.5px 0;
-  }
-
-  .infoRow {
-    padding: 5.5px 12px;
-    margin: 0;
-  }
-
-  .focus .innerItem {
-    color: white;
-  }
-
-  ::-webkit-scrollbar {
-    height: 80%;
-    margin-top: 20%;
-    width: 6px;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: url("/Resources/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
-    width: 6px;
-    cursor: pointer;
-    height: 56px;
-
-  }
-
-  ::-webkit-scrollbar-track {
-    width: 10px;
-
-  }
-
-  .totalDisplayBlock {
-    padding-top: 8px;
-    display: flex;
-    font-size: 20px;
-    font-weight: bold;
-    justify-content: flex-end;
-
-  }
-
-  .totalDisplayInnerBlock > .S_totalPrice {
-    margin-top: -6px;
-    margin-left: 12px;
-  }
-
-  .totalDisplayInnerBlock {
-    padding: 0 5px;
-    height: 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #367aeb;
-    border-bottom: 1px solid #367aeb;
-
-  }
-
-  .dot {
-    background: #367aeb;
-    width: 10px;
-    height: 10px;
-    border-radius: 5px;
-  }
-
-  .pop2Container {
-    z-index: 1500;
-    left: 123px;
-    width: 700px;
-    height: 802px;
-    padding: 57px 53px;
-    position: fixed;
-    top: 107px;
-    border-radius: 14px;
-    -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
-    box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
-  }
-
-  .tableTitle {
-    width: fit-content;
-    background: #367aeb;
-    color: white;
-    border-radius: 5px;
-    font-size: 18px;
-    font-weight: bold;
-    padding: 8px;
-    -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.24);
-    box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.24);
-  }
-
-  tr:hover {
-    background: #f8f8f8;
-  }
-
-  .smallTableBody > tr {
-    border-bottom-width: 0.2px;
-  }
-
-  .smallTableBody > tr > td {
-    padding: 0 6px;
-  }
-
-  .smallTableContainer {
-    padding: 8px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-  }
-
-  .pointer {
-    cursor: pointer;
-  }
-
-  .dishListContainer {
-    margin-top: 12px;
-    width: 100%;
-  }
-
-  .dishList {
-    width: 331px;
-  }
-
-  .code3Row {
-    font-weight: bolder;
-    text-align: center;
-  }
-
-  .name3Row {
-    text-align: center;
-    cursor: pointer;
-  }
-
-  .sizeOfDisCount {
-    width: 625px;
-    height: 285px;
-
-    padding: 0;
-  }
-
-  .inputWithDesc {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .discountContent {
-    margin-top: 28px;
-    width: 206px;
-  }
-
-  .midLine {
-    width: 1px;
-    height: 216px;
-    border: 1px solid rgba(54, 122, 235, 1);
-    opacity: 0.46;
-
-    position: absolute;
-    top: 53px;
-    left: 313px;
-
-  }
-
-  .leftHalf {
-    margin-top: 64px;
-    margin-left: 60px;
-  }
-
-  .discountInput {
-    width: 188px !important;
-  }
-
-  .hints {
-    width: 206px;
-    height: 101px;
-    border: 1px solid rgba(54, 122, 235, 1);
-    border-radius: 5px;
-    padding: 10px;
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 16px;
-    color: rgba(54, 122, 235, 0.36);
-    margin-top: 131px;
-    margin-right: 61px;
-  }
-
-  .modification {
-    margin-top: 12px;
-  }
-
-  .popRow {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .input-field > label {
-    font-size: 14px;
-  }
-
-  .rightLittlePopContainer.sizeOfCheckOut {
-    width: 625px;
-    height: 351px;
-    padding-right: 91px;
-    padding-left: 91px;
-  }
-
-  .popRow.sec {
-    margin-top: 24px;
-  }
-
-  .popRow > .confirmContainer {
-    margin-top: 0;
-  }
-
-  .cartTotal {
-    padding: 8px;
-    font-size: 18px;
-    font-weight: bold;
-  }
-
-  .botLine {
-    padding-right: 60px;
-  }
-
-  .categoryBlock {
-    margin-top: 5px;
-    width: max-content;
-    cursor: pointer;
-    background: white;
-    padding: 8px 12px;
-    font-size: 16px;
-    border-radius: 5px;
-    font-weight: 600;
-    margin-right: 7px;
-    -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.12);
-    box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.12);
-  }
-
-  .categoryBlock.active {
-    background: #367aeb;
-    color: white;
-
-  }
-
-  .categoryBlock:hover {
-    background: #357aeb;
-    color: white;
-    -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
-    box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
-
-  }
-
-  .dishBlock {
-    height: 120px;
-    width: calc(16.6% - 12px);
-    margin-top: 12px;
-    cursor: pointer;
-    padding: 5px 12px;
-    background: white;
-    -webkit-box-shadow: 0 3px 3px rgba(0, 86, 255, 0.13);
-    box-shadow: 0 3px 3px rgba(0, 86, 255, 0.13);
-    border-radius: 5px;
-    margin-right: 12px;
-  }
-
-  @media screen and (max-width: 1600px ) {
-    .dishBlock {
-
-      width: calc(25% - 12px);
-      margin-top: 12px;
-      margin-right: 12px;
+    .center-panel {
+        margin-left: 12px;
+        margin-top: 12px;
+        height: 100%;
+        max-height: calc(100vh - 60px);
+        border-radius: 5px;
+        width: 100%;
+        max-width: 400px;
+        overflow-y: scroll;
+        box-shadow: 4px 10px 20px 0 rgba(220, 224, 239, 0.59);
     }
-  }
 
-  @media screen and (max-width: 1200px ) {
-    .dishBlock {
-
-      width: calc(33% - 12px);
-      margin-top: 12px;
-      margin-right: 12px;
+    .spaceBetween {
+        display: flex;
+        justify-content: space-between;
     }
-  }
 
-  .dishBlock .code {
-    font-size: 18px;
-    font-weight: bold;
-  }
+    .tableContainer {
+        overflow-x: hidden;
+        max-height: calc(100vh - 200px);
+        padding: 4px 8px;
+        overflow-y: scroll;
+    }
 
-  .dishBlock .price {
-    font-size: 18px;
-  }
+    th {
+        font-weight: 600;
+        font-size: 16px;
+    }
 
-  .dishBlock .name {
-    font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-    height: 70px;
-    display: flex;
-    width: 100%;
-    font-size: 18px;
-    font-weight: 600;
-    word-break: break-all;
-    justify-content: center;
-    align-items: center;
-  }
+    td {
+        color: #4b4b4b;
+        font-size: 18px;
+    }
 
-  .dishBlock.active {
-    background: #367aeb;
-    color: white;
+    td, th {
+        padding: 8px 4px;
+    }
 
-  }
+    .nameRow {
+        font-weight: 600;
+        max-width: 144px;
+    }
 
-  .dishBlock:hover {
-    background: #357aeb;
-    color: white;
-    -webkit-box-shadow: 0 3px 10px 0 rgba(0, 86, 255, 0.54);
-    box-shadow: 0 3px 10px 0 rgba(0, 86, 255, 0.54);
+    .priceRow {
+        font-weight: lighter;
+    }
 
-  }
+    .countRow {
+        font-weight: bold;
+    }
 
-  .dragscroll {
-    overflow-x: hidden;
-  }
+    .sumRow {
+        opacity: 1;
+        color: #367aeb;
+        font-size: 16px;
+        font-weight: lighter;
+    }
 
-  .categoryList {
-    padding: 12px 0;
-    width: fit-content;
-    flex-wrap: wrap;
-    display: flex;
-  }
+    .infoContainer {
+        padding: 5.5px 0;
+    }
 
-  .dishCardList {
-    margin-bottom: 60px;
-    width: 100%;
-    flex-wrap: wrap;
-    display: flex;
-  }
+    .infoRow {
+        padding: 5.5px 12px;
+        margin: 0;
+    }
 
-  .popMenu {
-    background: white;
-    -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
-    box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
-    border-radius: 5px;
-    margin-left: 12px;
-    height: 100%;
-    width: 100%;
-  }
+    .focus .innerItem {
+        color: white;
+    }
 
-  .dishCardListContainer {
-    height: 800px;
-  }
+    ::-webkit-scrollbar {
+        height: 80%;
+        margin-top: 20%;
+        width: 6px;
+    }
 
-  .ikTitle {
-    color: #367aeb;
-    font-size: 18px;
-    font-weight: lighter;
-    padding: 7px 4px;
-    width: fit-content;
-  }
+    ::-webkit-scrollbar-thumb {
+        background: url("/Resources/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
+        width: 6px;
+        cursor: pointer;
+        height: 56px;
 
-  .ikTitle .strong {
-    font-weight: bold;
-  }
+    }
 
-  .bottomCart {
-    z-index: 1002;
-    position: fixed;
-    width: 100%;
-    max-width: 400px;
-  }
+    ::-webkit-scrollbar-track {
+        width: 10px;
 
-  .normalPos {
-    right: 352px;
-    bottom: 116px;
-    padding: 12px;
-  }
+    }
 
-  #checkOutPopContainer {
+    .totalDisplayBlock {
+        padding-top: 8px;
+        display: flex;
+        font-size: 20px;
+        font-weight: bold;
+        justify-content: flex-end;
 
-  }
+    }
 
-  #newDishContainer {
-    max-height: calc(100vh - 60px);
-    overflow-x: hidden;
-    overflow-y: scroll;
-    bottom: 0;
-    left: 12px;
-  }
+    .totalDisplayInnerBlock > .S_totalPrice {
+        margin-top: -6px;
+        margin-left: 12px;
+    }
 
-  #splitOrderContainer {
-    max-width: 700px;
-    top: 60px;
-    right: 352px;
-  }
+    .totalDisplayInnerBlock {
+        padding: 0 5px;
+        height: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #367aeb;
+        border-bottom: 1px solid #367aeb;
 
-  #dishModification {
-    padding: 12px;
-    right: 352px;
-    top: 60px;
-  }
+    }
 
-  .panel {
-    width: 100%;
-    box-shadow: 0 3px 6px rgba(0, 25, 244, 0.1);
-    border-radius: 5px;
-    background: #f2f4f7;
-  }
+    .dot {
+        background: #367aeb;
+        width: 10px;
+        height: 10px;
+        border-radius: 5px;
+    }
 
-  .generalPanel {
-    padding: 12px;
-  }
+    .pop2Container {
+        z-index: 1500;
+        left: 123px;
+        width: 700px;
+        height: 802px;
+        padding: 57px 53px;
+        position: fixed;
+        top: 107px;
+        border-radius: 14px;
+        -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
+        box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
+    }
 
-  .takeawayFloat {
-    position: fixed;
-    right: 0;
-    top: 48px;
-    background: white;
-    width: 300px;
-    padding: 12px;
-  }
+    .tableTitle {
+        width: fit-content;
+        background: #367aeb;
+        color: white;
+        border-radius: 5px;
+        font-size: 18px;
+        font-weight: bold;
+        padding: 8px;
+        -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.24);
+        box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.24);
+    }
 
-  .panelF {
-    height: calc(100vh - 48px);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 340px;
-    padding-left: 10px;
-  }
+    tr:hover {
+        background: #f8f8f8;
+    }
 
-  .verticalInfoRow {
-    padding: 0 8px;
-  }
+    .smallTableBody > tr {
+        border-bottom-width: 0.2px;
+    }
 
-  .verticalInfoRowLabel {
-    font-size: 14px;
-  }
+    .smallTableBody > tr > td {
+        padding: 0 6px;
+    }
 
-  .verticalInfoRowText {
-    font-size: 16px;
-    font-weight: 600;
-  }
+    .smallTableContainer {
+        padding: 8px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
 
-  .bigTableNumberContainer {
-    background: #367aeb;
-    color: white;
-    padding: 4px 28px;
-    font-size: 64px;
-    min-width: 144px;
-    text-align: center;
-    border-radius: 5px;
-  }
+    .pointer {
+        cursor: pointer;
+    }
 
-  .verticalSpaceBetween {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: column;
-    justify-content: space-between
-  }
+    .dishListContainer {
+        margin-top: 12px;
+        width: 100%;
+    }
 
-  .rightAlign {
-    width: 100%;
-    text-align: right;
-  }
+    .dishList {
+        width: 331px;
+    }
 
-  .typeLabel {
-    padding: 8px 12px;
-    font-size: 18px;
+    .code3Row {
+        font-weight: bolder;
+        text-align: center;
+    }
 
-    font-weight: 900;
-  }
+    .name3Row {
+        text-align: center;
+        cursor: pointer;
+    }
 
-  .verticalInfoRowBigText {
-    font-weight: 900;
-    font-size: 56px;
-    text-align: right;
-    width: 100%;
-    padding-right: 4px;
-    color: black;
-  }
+    .sizeOfDisCount {
+        width: 625px;
+        height: 285px;
 
-  .iconButton {
-    width: 36px;
-    height: 36px;
-    background: #58be8b;
-    color: white;
-    cursor: pointer;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 3px 6px rgba(0, 25, 244, 0.1);
-  }
+        padding: 0;
+    }
 
-  .lastDishName {
-    display: inline-block;
-    overflow: hidden;
-    max-width: 110px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+    .inputWithDesc {
+        display: flex;
+        justify-content: space-between;
+    }
 
-  .lastDish {
-    font-size: 18px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-  }
+    .discountContent {
+        margin-top: 28px;
+        width: 206px;
+    }
 
-  .totalRed {
-    color: #fd7f41;
-  }
+    .midLine {
+        width: 1px;
+        height: 216px;
+        border: 1px solid rgba(54, 122, 235, 1);
+        opacity: 0.46;
 
-  .ikButton {
-    background: white;
-    padding: 8px 24px;
-    cursor: pointer;
-    box-shadow: 0 3px 6px rgba(0, 25, 244, 0.1);
-    color: black;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 5px;
-  }
+        position: absolute;
+        top: 53px;
+        left: 313px;
 
-  .ikButton:hover {
-    background: #367aeb;
-    color: white;
-  }
+    }
 
-  .ikButton:focus {
-    background: #367aeb;
-    color: white;
-  }
+    .leftHalf {
+        margin-top: 64px;
+        margin-left: 60px;
+    }
 
-  .ikButton:active {
-    background: #367aeb;
-    color: white;
-  }
+    .discountInput {
+        width: 188px !important;
+    }
 
-  .button {
-    margin-left: 12px;
-  }
+    .hints {
+        width: 206px;
+        height: 101px;
+        border: 1px solid rgba(54, 122, 235, 1);
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 16px;
+        color: rgba(54, 122, 235, 0.36);
+        margin-top: 131px;
+        margin-right: 61px;
+    }
 
-  .inputAreaCheckOut {
-    width: 100%;
-    margin-top: 12px;
-  }
+    .modification {
+        margin-top: 12px;
+    }
 
-  .swal2-input[type=number] {
-    max-width: unset !important;
-  }
+    .popRow {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .input-field > label {
+        font-size: 14px;
+    }
+
+    .rightLittlePopContainer.sizeOfCheckOut {
+        width: 625px;
+        height: 351px;
+        padding-right: 91px;
+        padding-left: 91px;
+    }
+
+    .popRow.sec {
+        margin-top: 24px;
+    }
+
+    .popRow > .confirmContainer {
+        margin-top: 0;
+    }
+
+    .cartTotal {
+        padding: 8px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .botLine {
+        padding-right: 60px;
+    }
+
+    .categoryBlock {
+        margin-top: 5px;
+        width: max-content;
+        cursor: pointer;
+        background: white;
+        padding: 8px 12px;
+        font-size: 16px;
+        border-radius: 5px;
+        font-weight: 600;
+        margin-right: 7px;
+        -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.12);
+        box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.12);
+    }
+
+    .categoryBlock.active {
+        background: #367aeb;
+        color: white;
+
+    }
+
+    .categoryBlock:hover {
+        background: #357aeb;
+        color: white;
+        -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
+        box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
+
+    }
+
+    .dishBlock {
+        height: 120px;
+        width: calc(16.6% - 12px);
+        margin-top: 12px;
+        cursor: pointer;
+        padding: 5px 12px;
+        background: white;
+        -webkit-box-shadow: 0 3px 3px rgba(0, 86, 255, 0.13);
+        box-shadow: 0 3px 3px rgba(0, 86, 255, 0.13);
+        border-radius: 5px;
+        margin-right: 12px;
+    }
+
+    @media screen and (max-width: 1600px ) {
+        .dishBlock {
+
+            width: calc(25% - 12px);
+            margin-top: 12px;
+            margin-right: 12px;
+        }
+    }
+
+    @media screen and (max-width: 1200px ) {
+        .dishBlock {
+
+            width: calc(33% - 12px);
+            margin-top: 12px;
+            margin-right: 12px;
+        }
+    }
+
+    .dishBlock .code {
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .dishBlock .price {
+        font-size: 18px;
+    }
+
+    .dishBlock .name {
+        font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+        height: 70px;
+        display: flex;
+        width: 100%;
+        font-size: 18px;
+        font-weight: 600;
+        word-break: break-all;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .dishBlock.active {
+        background: #367aeb;
+        color: white;
+
+    }
+
+    .dishBlock:hover {
+        background: #357aeb;
+        color: white;
+        -webkit-box-shadow: 0 3px 10px 0 rgba(0, 86, 255, 0.54);
+        box-shadow: 0 3px 10px 0 rgba(0, 86, 255, 0.54);
+
+    }
+
+    .dragscroll {
+        overflow-x: hidden;
+    }
+
+    .categoryList {
+        padding: 12px 0;
+        width: fit-content;
+        flex-wrap: wrap;
+        display: flex;
+    }
+
+    .dishCardList {
+        margin-bottom: 60px;
+        width: 100%;
+        flex-wrap: wrap;
+        display: flex;
+    }
+
+    .popMenu {
+        background: white;
+        -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
+        box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
+        border-radius: 5px;
+        margin-left: 12px;
+        height: 100%;
+        width: 100%;
+    }
+
+    .dishCardListContainer {
+        height: 800px;
+    }
+
+    .ikTitle {
+        color: #367aeb;
+        font-size: 18px;
+        font-weight: lighter;
+        padding: 7px 4px;
+        width: fit-content;
+    }
+
+    .ikTitle .strong {
+        font-weight: bold;
+    }
+
+    .bottomCart {
+        z-index: 1002;
+        position: fixed;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .normalPos {
+        right: 352px;
+        bottom: 116px;
+        padding: 12px;
+    }
+
+    #checkOutPopContainer {
+
+    }
+
+    #newDishContainer {
+        max-height: calc(100vh - 60px);
+        overflow-x: hidden;
+        overflow-y: scroll;
+        bottom: 0;
+        left: 12px;
+    }
+
+    #splitOrderContainer {
+        max-width: 700px;
+        top: 60px;
+        right: 352px;
+    }
+
+    #dishModification {
+        padding: 12px;
+        right: 352px;
+        top: 60px;
+    }
+
+    .panel {
+        width: 100%;
+        box-shadow: 0 3px 6px rgba(0, 25, 244, 0.1);
+        border-radius: 5px;
+        background: #f2f4f7;
+    }
+
+    .generalPanel {
+        padding: 12px;
+    }
+
+    .takeawayFloat {
+        position: fixed;
+        right: 0;
+        top: 48px;
+        background: white;
+        width: 300px;
+        padding: 12px;
+    }
+
+    .panelF {
+        height: calc(100vh - 48px);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 340px;
+        padding-left: 10px;
+    }
+
+    .verticalInfoRow {
+        padding: 0 8px;
+    }
+
+    .verticalInfoRowLabel {
+        font-size: 14px;
+    }
+
+    .verticalInfoRowText {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .bigTableNumberContainer {
+        background: #367aeb;
+        color: white;
+        padding: 4px 28px;
+        font-size: 64px;
+        min-width: 144px;
+        text-align: center;
+        border-radius: 5px;
+    }
+
+    .verticalSpaceBetween {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        justify-content: space-between
+    }
+
+    .rightAlign {
+        width: 100%;
+        text-align: right;
+    }
+
+    .typeLabel {
+        padding: 8px 12px;
+        font-size: 18px;
+
+        font-weight: 900;
+    }
+
+    .verticalInfoRowBigText {
+        font-weight: 900;
+        font-size: 56px;
+        text-align: right;
+        width: 100%;
+        padding-right: 4px;
+        color: black;
+    }
+
+    .iconButton {
+        width: 36px;
+        height: 36px;
+        background: #58be8b;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 3px 6px rgba(0, 25, 244, 0.1);
+    }
+
+    .lastDishName {
+        display: inline-block;
+        overflow: hidden;
+        max-width: 110px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .lastDish {
+        font-size: 18px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+    }
+
+    .totalRed {
+        color: #fd7f41;
+    }
+
+    .ikButton {
+        background: white;
+        padding: 8px 24px;
+        cursor: pointer;
+        box-shadow: 0 3px 6px rgba(0, 25, 244, 0.1);
+        color: black;
+        font-size: 18px;
+        font-weight: bold;
+        border-radius: 5px;
+    }
+
+    .ikButton:hover {
+        background: #367aeb;
+        color: white;
+    }
+
+    .ikButton:focus {
+        background: #367aeb;
+        color: white;
+    }
+
+    .ikButton:active {
+        background: #367aeb;
+        color: white;
+    }
+
+    .button {
+        margin-left: 12px;
+    }
+
+    .inputAreaCheckOut {
+        width: 100%;
+        margin-top: 12px;
+    }
+
+    .swal2-input[type=number] {
+        max-width: unset !important;
+    }
 </style>
