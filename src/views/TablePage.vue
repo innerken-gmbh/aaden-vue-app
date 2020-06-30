@@ -33,13 +33,12 @@
                     <div class="panel">
                         <dish-card-list
                                 :default-expand="true"
-                                :orders="orders"
+                                :orders="OrderListModel.list"
                                 :click-callback="addToSplit"
                                 :title="findInString('haveOrderedDish')"
                                 :hide-free-dish="hideFreeDish"
                         />
                     </div>
-
                 </transition>
             </div>
             <div v-cloak class="dishListContainer" id="dishListContainer">
@@ -230,9 +229,9 @@
             </div>
         </main>
         <transition appear name="fade">
-            <div v-show="items.length>0" class="bottomCart surface" style="background: #f5f6fa;" v-cloak
+            <div v-show="SplitOrderListModel.list.length>0" class="bottomCart surface" style="background: #f5f6fa;" v-cloak
                  id="splitOrderContainer">
-                <dish-card-list :default-expand="true" :orders="items"
+                <dish-card-list :default-expand="true" :orders="SplitOrderListModel.list"
                                 :click-callback="removeFromSplitOrder"
                                 :title="findInString('operation')"/>
                 <div class="spaceBetween pa-2">
@@ -310,6 +309,8 @@ import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
 import DishCardList from '../components/DishCardList'
 import ModificationDrawer from '../components/ModificationDrawer'
+import { getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
+import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 
 const UIState = {
   Init: 0,
@@ -352,9 +353,7 @@ export default {
       /**/
       items: [],
       discountStr: null,
-      /**/
-      orders: [],
-      /**/
+
       cartOrder: [],
       expand: getConfig().defaultExpand,
       lastDish: { name: '' },
@@ -377,9 +376,10 @@ export default {
       Strings: Strings,
       Config: getConfig(),
       buffer: '',
-      mod: {},
       payment: [],
-      memberCardVerify: false
+      //* */
+      SplitOrderListModel: StandardDishesListFactory(),
+      OrderListModel: StandardDishesListFactory()
     }
   },
   beforeDestroy () {
@@ -389,18 +389,8 @@ export default {
   },
   methods: {
     findInString,
-    getOrderedDish () {
-      getData(this.Config.PHPROOT + 'Complex.php', {
-        op: 'dishesInTable',
-        tableId: this.id,
-        lang: this.Config.lang
-      }).then(res => {
-        if (res.status === 'good') {
-          this.orders = res.content
-        } else {
-          showTimedAlert('warning', findInString('JSTableGetOrderedDishFailed') + res.info, 1000, goHome)
-        }
-      })
+    async getOrderedDish () {
+      this.OrderListModel.loadTTDishList(await getOrderInfo(this.id))
     },
     async checkOutPrompt () {
       const res = await Swal.mixin({
@@ -535,7 +525,7 @@ export default {
         name: this.tableName
       }).then(res => {
         if (goodRequest(res)) {
-          if (this.items.length === 0) {
+          if (this.SplitOrderListModel.list.length === 0) {
             this.getOrderedDish()
           }
           if (res.content[0].usageStatus === '0') {
@@ -548,18 +538,6 @@ export default {
     },
     orderOneDish: function (code) {
       this.dishQuery(code)
-    },
-    addToSplitOrder: function (item) {
-      const raw = copyObject(item)
-      raw.sumCount = 1
-      const realItem = this.items.find(i => {
-        return item.code === i.code && i.aId === item.aId && item.agId === i.agId
-      })
-      if (realItem == null) {
-        this.items.push(raw)
-      } else {
-        realItem.sumCount += 1
-      }
     },
     readBuffer: function (clear = true) {
       const ins = this.buffer
@@ -582,32 +560,13 @@ export default {
         this.activeCategory = null
       }
     },
-    findByCodeInOrder: function (code) {
-      for (const i of this.orders) {
-        if (i.code === code) {
-          return i
-        }
-      }
-      return null
-    },
     removeFromSplitOrder: function (index) {
-      const realItem = this.items[index]
-      const orderItem = this.findByCodeInOrder(realItem.code)
-      if (orderItem == null) {
-        const item = copyObject(realItem)
-        item.sumCount = 1
-        this.orders.push(item)
-      } else {
-        orderItem.sumCount = parseInt(orderItem.sumCount) + 1
-      }
-      if (realItem.sumCount > 1) {
-        realItem.sumCount--
-      } else {
-        remove(this.items, index)
-      }
+      const realItem = this.SplitOrderListModel.list[index]
+      this.SplitOrderListModel.add(realItem, -1)
+      this.OrderListModel.add(realItem, 1)
     },
     removeAllFromSplitOrder: function () {
-      while (this.items.length > 0) {
+      while (this.SplitOrderListModel.list.length > 0) {
         this.removeFromSplitOrder(0)
       }
     },
@@ -615,7 +574,7 @@ export default {
       const realEnd = async () => {
         const arr = await this.checkOutPrompt()
         if (arr) {
-          splitOrder(this.discountStr, this.id, this.items, this.initialUI, ...arr)
+          splitOrder(this.discountStr, this.id, this.SplitOrderListModel.list, this.initialUI, ...arr)
         }
       }
       if (this.Config.checkOutUsePassword) {
@@ -627,14 +586,14 @@ export default {
       }
     },
     deleteDishes: function () {
-      deleteDishes(this.id, this.items, this.initialUI)
+      deleteDishes(this.id, this.SplitOrderListModel.list, this.initialUI)
     },
     dishesChangeTable: function () {
-      dishesChangeTable(this.tableName, this.items, this.initialUI)
+      dishesChangeTable(this.tableName, this.SplitOrderListModel.list, this.initialUI)
     },
     calculateOrderTableTotal: function () {
       let totalPrice = 0
-      for (const a of this.orders) {
+      for (const a of this.OrderListModel.list) {
         if (this.hideFreeDish && parseInt(a.categoryTypeId) === 11) {
           continue
         }
@@ -644,22 +603,15 @@ export default {
       return totalPrice.toFixed(2)
     },
     addToSplit: function (index) {
-      const item = this.orders[index]
-      // if (item.hasMod) {
-      //     logErrorAndPop('高级菜品暂不支持分单')
-      //     return
-      // }
+      const item = this.OrderListModel.list[index]
       if (item.code === '-1') {
         logErrorAndPop('折扣菜品不能被加入到分单里')
         return
       }
-      item.sumCount = parseInt(item.sumCount)
-      if (item.sumCount > 1) {
-        item.sumCount--
-      } else {
-        remove(this.orders, index)
-      }
-      this.addToSplitOrder(item)
+      console.log(this.OrderListModel.list)
+      this.OrderListModel.add(item, -1)
+      console.log(this.OrderListModel.list)
+      this.SplitOrderListModel.add(item, 1)
     },
     addDish: function (dish, count = 1) {
       dish.count = count
@@ -702,13 +654,14 @@ export default {
     removeDishWithCode: function (code) {
       remove(this.cartOrder, this.findDishByCode(code))
     },
-    submitModification: function (mod) {
+    submitModification: function (mod, dish) {
       const apply = []
-      for (const i of this.dish.modInfo) {
+      for (const i of dish.modInfo) {
+        console.log(mod)
         const item = {}
         item.groupId = i.id
         item.selectId = i.selectValue.filter((s, index) => {
-          return [(this.mod['mod' + i.id] ?? [])].flat().includes(index)
+          return [(mod[i.id] ?? [])].flat().includes(index)
         })
         console.log(item.selectId)
         // item.selectId = this.mod['mod' + i.id] ? this.mod['mod' + i.id] : ''
@@ -717,9 +670,8 @@ export default {
         }
         apply.push(item)
       }
-      this.dish.apply = apply
-      this.addDish(this.dish, parseInt(this.count))
-      this.mod = []
+      dish.apply = apply
+      this.addDish(dish, parseInt(this.count))
       UIStatus = UIState.Init
       blockReady()
       this.modificationShow = false
@@ -747,7 +699,7 @@ export default {
         this.$refs.ins.focus()
       } else if (this.modificationShow) {
         this.cancel()
-      } else if (this.items.length > 0) {
+      } else if (this.SplitOrderListModel.list.length > 0) {
         this.removeAllFromSplitOrder()
       } else if (this.cartOrder.length > 0) {
         this.cartOrder = []

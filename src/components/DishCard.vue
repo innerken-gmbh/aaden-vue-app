@@ -28,13 +28,13 @@
                     <div>{{dish.note}}</div>
                 </div>
             </div>
-            <div v-if="wellFormattedApplyInfo.length>0" class="dishMod">
-                <div v-bind:key="'mod_order-i'+i+'value'+ap.value" v-for="(ap,i) in wellFormattedApplyInfo">
+            <div v-if="dish.displayApply.length>0" class="dishMod">
+                <div v-bind:key="'mod_order-i'+i+'value'+ap.value" v-for="(ap,i) in dish.displayApply">
                     {{ap.groupName}}:{{ap.value}}<span v-if="ap.priceInfo">(<price-text :price="ap.priceInfo" />)</span>
                 </div>
             </div>
         </div>
-        <div class="dishCount">&times;{{realCount}}</div>
+        <div class="dishCount">&times;{{dish.count}}</div>
     </div>
 </template>
 
@@ -56,49 +56,6 @@ export default {
   },
   data: function () {
     return Object.assign({ modInfos: {}, hasMod: 0, apply: [], note: '', sumCount: null, count: null }, { ...this.dish })
-  },
-  computed: {
-    realCount: function () {
-      return this.dish.sumCount || this.dish.count
-    },
-    addPrice: function () {
-      let price = 0
-      this.wellFormattedApplyInfo.forEach(ap => {
-        price += parseFloat(ap?.priceInfo ?? 0)
-      })
-      return price
-    },
-    realPrice: function () {
-      return this.dish.price + this.addPrice
-    },
-    wellFormattedApplyInfo: function () {
-      let apply = []
-      if (!(this.dish.apply || this.dish.agNameArr)) {
-        return apply
-      }
-      if (this.dish?.apply?.length > 0) {
-        this.dish.apply.forEach(mod => {
-          const modInfo = this.dish.modInfo.find(i => i.id === mod.groupId)
-          const groupName = modInfo.name
-          const item = [mod.selectId].flat().reduce((arr, id) => {
-            if (!id) {
-              return arr
-            }
-            const index = modInfo.selectValue.indexOf(id)
-            const value = `${modInfo.selectName[index]}`
-            const priceInfo = modInfo.priceInfo[index]
-            arr.push({ groupName, value, priceInfo })
-            return arr
-          }, [])
-          apply = apply.concat(item)
-        })
-      } else if (this.dish?.agNameArr?.length > 0) {
-        this.dish.agNameArr.forEach((ag, i) => {
-          apply.push({ groupName: ag, value: this.aNameArr[i] })
-        })
-      }
-      return apply
-    }
   },
   methods: {
   }
