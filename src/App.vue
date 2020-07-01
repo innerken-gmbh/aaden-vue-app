@@ -680,15 +680,6 @@ export default {
         font-weight: 900;
         width: 48px;
     }
-    .dishCount{
-        padding: 8px 0;
-        width: 45px;
-        display: flex;
-        background: #f2f2f2;
-        font-size: 18px;
-        font-weight: bold;
-        justify-content: center;
-    }
     .dishMod{
         margin-left: 48px;
         padding: 8px 30px;

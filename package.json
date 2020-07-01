@@ -1,6 +1,6 @@
 {
   "name": "aaden-vue-app",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "private": true,
   "description": "全新构建的Aaden Vue版本，重新启航，更加牢靠！",
   "scripts": {
@@ -25,7 +25,7 @@
   },
   "main": "background.js",
   "dependencies": {
-    "aaden-base-model": "^0.1.6",
+    "aaden-base-model": "^0.1.9",
     "core-js": "^3.6.5",
     "electron-settings": "^3.2.0",
     "electron-updater": "^4.3.1",

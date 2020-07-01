@@ -18,9 +18,15 @@
                     Aaden Kasse
                 </div>
                 <div class="splitter"></div>
-                <div class="appName">
-                    {{version}}
-                </div>
+                <v-tooltip bottom absolute>
+                    <template v-slot:activator="{on,attrs}">
+                        <div  v-bind="attrs"
+                              v-on="on" class="appName">
+                            {{version}}
+                        </div>
+                    </template>
+                    <span>Tooltip</span>
+                </v-tooltip>
                 <div class="splitter"></div>
                 <div @click="toggleDebug()" class="adbIcon">
                     <i class="material-icons littleIcon">adb</i>

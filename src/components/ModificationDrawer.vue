@@ -1,10 +1,10 @@
 <template>
     <v-navigation-drawer color="#f5f6fa" width="480px" right fixed
-                         temporary v-model="modificationShow">
+                         temporary v-model="realShow">
         <div style="margin-top: 64px">
                 <DishModification
                         @modification-submit="submit($event,dish)"
-                        @modification-cancel="dish.modShow=false"
+                        @modification-cancel="realShow=false"
                         :options="dish.modInfo">
                     <template v-slot:before>
                         <v-row>
@@ -44,10 +44,20 @@ export default {
       default: false
     }
   },
+  computed: {
+    realShow: {
+      get: function () {
+        return this.modificationShow
+      },
+      set: function (val) {
+        this.$emit('should-change-modification-show', val)
+      }
+    }
+  },
   methods: {
     submit: function (mod, dish) {
       this.mod(mod, dish)
-      this.modificationShow = false
+      this.realShow = false
     }
   }
 }

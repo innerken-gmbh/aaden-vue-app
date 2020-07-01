@@ -33,7 +33,7 @@
                     <div class="panel">
                         <dish-card-list
                                 :default-expand="true"
-                                :orders="OrderListModel.list"
+                                :orders="orderListModel.list"
                                 :click-callback="addToSplit"
                                 :title="findInString('haveOrderedDish')"
                                 :hide-free-dish="hideFreeDish"
@@ -81,8 +81,8 @@
             </div>
             <div id="newDishContainerTP">
                 <transition name="fade" appear>
-                    <div v-if="cartOrder.length>0" class="white bottomCart surface" id="newDishContainer">
-                        <dish-card-list :click-callback="removeDish" :orders="cartOrder"
+                    <div v-if="cartListModel.list.length>0" class="white bottomCart surface" id="newDishContainer">
+                        <dish-card-list :click-callback="removeDish" :orders="cartListModel.list"
                                         :default-expand="Config.defaultExpand"
                                         :title="$t('tableNewDishTitle')">
                             <template v-slot:after-title="af">
@@ -229,9 +229,10 @@
             </div>
         </main>
         <transition appear name="fade">
-            <div v-show="SplitOrderListModel.list.length>0" class="bottomCart surface" style="background: #f5f6fa;" v-cloak
+            <div v-show="splitOrderListModel.list.length>0" class="bottomCart surface" style="background: #f5f6fa;"
+                 v-cloak
                  id="splitOrderContainer">
-                <dish-card-list :default-expand="true" :orders="SplitOrderListModel.list"
+                <dish-card-list :default-expand="true" :orders="splitOrderListModel.list"
                                 :click-callback="removeFromSplitOrder"
                                 :title="findInString('operation')"/>
                 <div class="spaceBetween pa-2">
@@ -251,7 +252,8 @@
             </div>
         </transition>
         <ModificationDrawer
-                :modification-show.sync="modificationShow"
+                @should-change-modification-show="changeModification"
+                :modification-show="modificationShow"
                 :dish="dish"
                 :mod="submitModification"
         />
@@ -264,7 +266,6 @@ import {
   AssginToStringClass,
   blocking,
   blockReady,
-  copyObject,
   createOrEnterTable,
   fastSweetAlertRequest,
   findConsumeTypeById,
@@ -351,10 +352,7 @@ export default {
     return {
       version: version,
       /**/
-      items: [],
       discountStr: null,
-
-      cartOrder: [],
       expand: getConfig().defaultExpand,
       lastDish: { name: '' },
       lastCount: 0,
@@ -378,8 +376,10 @@ export default {
       buffer: '',
       payment: [],
       //* */
-      SplitOrderListModel: StandardDishesListFactory(),
-      OrderListModel: StandardDishesListFactory()
+      splitOrderListModel: StandardDishesListFactory(),
+      orderListModel: StandardDishesListFactory(),
+      cartListModel: StandardDishesListFactory(),
+      cartOrder: []
     }
   },
   beforeDestroy () {
@@ -388,9 +388,12 @@ export default {
     }
   },
   methods: {
+    changeModification: function (val) {
+      this.modificationShow = val
+    },
     findInString,
     async getOrderedDish () {
-      this.OrderListModel.loadTTDishList(await getOrderInfo(this.id))
+      this.orderListModel.loadTTDishList(await getOrderInfo(this.id))
     },
     async checkOutPrompt () {
       const res = await Swal.mixin({
@@ -525,7 +528,7 @@ export default {
         name: this.tableName
       }).then(res => {
         if (goodRequest(res)) {
-          if (this.SplitOrderListModel.list.length === 0) {
+          if (this.splitOrderListModel.list.length === 0) {
             this.getOrderedDish()
           }
           if (res.content[0].usageStatus === '0') {
@@ -561,12 +564,12 @@ export default {
       }
     },
     removeFromSplitOrder: function (index) {
-      const realItem = this.SplitOrderListModel.list[index]
-      this.SplitOrderListModel.add(realItem, -1)
-      this.OrderListModel.add(realItem, 1)
+      const realItem = this.splitOrderListModel.list[index]
+      this.splitOrderListModel.add(realItem, -1)
+      this.orderListModel.add(realItem, 1)
     },
     removeAllFromSplitOrder: function () {
-      while (this.SplitOrderListModel.list.length > 0) {
+      while (this.splitOrderListModel.list.length > 0) {
         this.removeFromSplitOrder(0)
       }
     },
@@ -574,7 +577,7 @@ export default {
       const realEnd = async () => {
         const arr = await this.checkOutPrompt()
         if (arr) {
-          splitOrder(this.discountStr, this.id, this.SplitOrderListModel.list, this.initialUI, ...arr)
+          splitOrder(this.discountStr, this.id, this.splitOrderListModel.list, this.initialUI, ...arr)
         }
       }
       if (this.Config.checkOutUsePassword) {
@@ -586,14 +589,14 @@ export default {
       }
     },
     deleteDishes: function () {
-      deleteDishes(this.id, this.SplitOrderListModel.list, this.initialUI)
+      deleteDishes(this.id, this.splitOrderListModel.list, this.initialUI)
     },
     dishesChangeTable: function () {
-      dishesChangeTable(this.tableName, this.SplitOrderListModel.list, this.initialUI)
+      dishesChangeTable(this.tableName, this.splitOrderListModel.list, this.initialUI)
     },
     calculateOrderTableTotal: function () {
       let totalPrice = 0
-      for (const a of this.OrderListModel.list) {
+      for (const a of this.orderListModel.list) {
         if (this.hideFreeDish && parseInt(a.categoryTypeId) === 11) {
           continue
         }
@@ -603,67 +606,48 @@ export default {
       return totalPrice.toFixed(2)
     },
     addToSplit: function (index) {
-      const item = this.OrderListModel.list[index]
+      const item = this.orderListModel.list[index]
       if (item.code === '-1') {
         logErrorAndPop('折扣菜品不能被加入到分单里')
         return
       }
-      console.log(this.OrderListModel.list)
-      this.OrderListModel.add(item, -1)
-      console.log(this.OrderListModel.list)
-      this.SplitOrderListModel.add(item, 1)
+      console.log(this.orderListModel.list)
+      this.orderListModel.add(item, -1)
+      console.log(this.orderListModel.list)
+      this.splitOrderListModel.add(item, 1)
     },
     addDish: function (dish, count = 1) {
+      console.log(dish, count)
       dish.count = count
-      dish.price = parseFloat(dish.price)
-      const dishIndex = this.findDishByCode(dish.code)
-      if (dishIndex !== -1) {
-        const dishItem = this.cartOrder[dishIndex]
-        if (dishItem.haveMod > 0) {
-          dish.total = dish.count * dish.price
-          this.cartOrder.push(dish)
-        } else {
-          dishItem.count += count
-          dishItem.total = dishItem.count * dish.price
-          const newDish = copyObject(dishItem)
-          remove(this.cartOrder, dishIndex)
-          this.cartOrder.push(newDish)
-        }
-      } else {
-        dish.total = dish.count * dish.price
-        this.cartOrder.push(dish)
-      }
-      this.cartOrder.reverse()
+      this.cartListModel.add(dish, count)
       this.lastDish = dish
       this.lastCount = count
     },
     clear: function () {
-      this.cartOrder = []
+      this.cartListModel.clear()
     },
     findDishByCode: function (code) {
-      for (const d of this.cartOrder) {
+      for (const d of this.cartListModel.list) {
         if (d.code === code) {
-          return this.cartOrder.indexOf(d)
+          return this.cartListModel.list.indexOf(d)
         }
       }
       return -1
     },
     removeDish: function (index) {
-      remove(this.cartOrder, index)
+      remove(this.cartListModel.list, index)
     },
     removeDishWithCode: function (code) {
-      remove(this.cartOrder, this.findDishByCode(code))
+      remove(this.cartListModel.list, this.findDishByCode(code))
     },
     submitModification: function (mod, dish) {
       const apply = []
       for (const i of dish.modInfo) {
-        console.log(mod)
         const item = {}
         item.groupId = i.id
         item.selectId = i.selectValue.filter((s, index) => {
           return [(mod[i.id] ?? [])].flat().includes(index)
         })
-        console.log(item.selectId)
         // item.selectId = this.mod['mod' + i.id] ? this.mod['mod' + i.id] : ''
         if (i.required === '1' && item.selectId === '') {
           item.selectId = i.selectValue[0]
@@ -674,7 +658,6 @@ export default {
       this.addDish(dish, parseInt(this.count))
       UIStatus = UIState.Init
       blockReady()
-      this.modificationShow = false
     },
     cancel: function () {
       this.modificationShow = false
@@ -685,7 +668,7 @@ export default {
       this.resetList()
       UIStatus = UIState.Init
       listIndex = -1
-      this.cartOrder = []
+      this.cartListModel.clear()
       this.removeAllFromSplitOrder()
       this.getTableDetail()
       // getOrderedDish();
@@ -699,10 +682,10 @@ export default {
         this.$refs.ins.focus()
       } else if (this.modificationShow) {
         this.cancel()
-      } else if (this.SplitOrderListModel.list.length > 0) {
+      } else if (this.splitOrderListModel.list.length > 0) {
         this.removeAllFromSplitOrder()
-      } else if (this.cartOrder.length > 0) {
-        this.cartOrder = []
+      } else if (this.cartListModel.list.length > 0) {
+        this.cartListModel.clear()
       } else if (UIStatus === UIState.Init) {
         goHome()
       }
@@ -718,7 +701,7 @@ export default {
           blockReady()
           break
         case 1: // 打单
-          if (this.cartOrder.length > 0) {
+          if (this.cartListModel.list.length > 0) {
             this.orderDish()
             blocking()
           } else {
@@ -754,7 +737,7 @@ export default {
       if (!memberCardId) {
         memberCardId = null
       }
-      checkOut(this.id, this.cartOrder, print, payMethod, tipIncome, memberCardId)
+      checkOut(this.id, this.cartListModel.list, print, payMethod, tipIncome, memberCardId)
     },
     jumpToTable: function (tableId, tableName) {
       jumpToTable(tableId, tableName)
@@ -892,7 +875,7 @@ export default {
         }
       } else {
         if (UIStatus === UIState.Init) {
-          if (this.cartOrder.length > 0) {
+          if (this.cartListModel.list.length > 0) {
             UIStatus = UIState.OnList
             this.highLight(1)
             blockReady()
@@ -911,11 +894,11 @@ export default {
     orderDish () {
       showLoading()
       postData(this.Config.PHPROOT + 'Complex.php?op=addDishesToTable', {
-        params: JSON.stringify(this.cartOrder),
+        params: JSON.stringify(this.cartListModel.list),
         tableId: this.id
       }).then(res => {
         if (goodRequest(res)) {
-          this.cartOrder = []
+          this.cartListModel.clear()
           this.initialUI()
           toast(findInString('orderSuccess'), () => {
             if (this.Config.jumpToHomeWhenOrder) {
@@ -992,7 +975,7 @@ export default {
     }
   },
   beforeUpdate: function () {
-    if (this.cartOrder.length === 0) {
+    if (this.cartListModel.list.length === 0) {
       this.lastDish = { name: '' }
       this.lastCount = 0
     }
