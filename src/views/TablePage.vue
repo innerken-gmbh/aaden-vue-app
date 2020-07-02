@@ -51,7 +51,7 @@
                     <div v-dragscroll class="dragscroll">
                         <div class="categoryList">
                             <template v-for="category of categories">
-                                <div v-bind:key="category.name+'categorys'" class="categoryBlock"
+                                <div v-bind:key="category.id+'categorys'" class="categoryBlock"
                                      @click="setActiveCategories(category)"
                                      v-bind:class="{'active  z-depth-2':category.isActive}">
                                     <div class="name">{{category.name}}</div>
@@ -611,9 +611,7 @@ export default {
         logErrorAndPop('折扣菜品不能被加入到分单里')
         return
       }
-      console.log(this.orderListModel.list)
       this.orderListModel.add(item, -1)
-      console.log(this.orderListModel.list)
       this.splitOrderListModel.add(item, 1)
     },
     addDish: function (dish, count = 1) {
