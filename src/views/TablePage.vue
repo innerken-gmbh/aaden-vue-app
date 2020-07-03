@@ -43,27 +43,27 @@
             </div>
             <div v-cloak class="dishListContainer" id="dishListContainer">
                 <div style="padding: 8px">
-                    <div class="ikTitle"><span class="S_classification">分类</span><span
+                    <v-card class="ikTitle"><span class="S_classification">分类</span><span
                             class="strong S_information">信息</span>
-                    </div>
+                    </v-card>
                     <div v-dragscroll>
                         <div class="categoryList">
                             <template v-for="category of categories">
-                                <div v-bind:key="category.id+'categorys'" class="categoryBlock"
+                                <v-sheet large  v-bind:key="category.id+'categorys'" class="categoryBlock "
                                      @click="setActiveCategories(category)"
-                                     v-bind:class="{'active  z-depth-2':category.isActive}">
+                                     v-bind:class="{'active  elevation-5':category.isActive}">
                                     <div class="name">{{category.name}}</div>
-                                </div>
+                                </v-sheet>
                             </template>
                         </div>
                     </div>
-                    <div class="ikTitle"><span
+                    <v-card class="ikTitle"><span
                             class="strong S_allDish">{{activeCategory?activeCategory.name:'所有菜品'}}</span>
-                    </div>
+                    </v-card>
                     <div v-dragscroll class="dragscroll dishCardListContainer">
                         <div class="dishCardList">
                             <template v-for="dish of filteredDish">
-                                <div :key="'dish'+dish.code" class="dishBlock" @click="orderOneDish(dish.code)">
+                                <v-sheet :key="'dish'+dish.code" class="dishBlock" @click="orderOneDish(dish.code)">
                                     <div class="spaceBetween" style="align-items: center">
                                         <div class="code">{{dish.code}}<span class="red--text"
                                                                              v-if="dish.haveMod>0">*</span>
@@ -71,7 +71,7 @@
                                         <div class="price">{{dish.price}}</div>
                                     </div>
                                     <div class="name">{{dish.dishName}}</div>
-                                </div>
+                                </v-sheet>
                             </template>
                         </div>
                     </div>
@@ -97,43 +97,42 @@
             </div>
             <div class="panelF">
                 <div class="infoPanel surface shadowForInsPanel">
-                    <div class="spaceBetween">
-                        <div style="padding-top: 8px;">
-                            <div class="spaceBetween">
-                                <div>
-                                    <div class="verticalInfoRow">
-                                        <div class="verticalInfoRowLabel S_orderNumberLabel">订单号</div>
-                                        <div class="verticalInfoRowText S_orderNumber"></div>
-                                    </div>
-                                    <div class="verticalInfoRow" style="margin-top: 8px">
-                                        <div class="verticalInfoRowLabel S_tableInfoLabelPerson"></div>
-                                        <div class="verticalInfoRowText S_personCount"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="verticalInfoRow">
-                                        <div class="verticalInfoRowLabel S_tableInfoLabelTime"></div>
-                                        <div class="verticalInfoRowText S_startTime"></div>
-                                    </div>
-                                    <div class="verticalInfoRow" style="margin-top: 8px">
-                                        <div class="verticalInfoRowLabel S_tableInfoLabelSeat"></div>
-                                        <div class="verticalInfoRowText S_seatTimes"></div>
-                                    </div>
+                    <v-card class="topRow">
+                        <div class="bigTableName z-depth-2">{{tableName}}</div>
+                        <div class="d-flex">
+                            <span class="icon-line">
+                                <v-icon color="white">mdi-account-outline</v-icon>
+                                <span class="ml-1 S_personCount"></span>
+                            </span>
+                            <span class="icon-line ml-4">
+                                <v-icon color="white">mdi-calendar-text</v-icon>
+                                <span class="ml-1 S_orderNumber"></span>
+                            </span>
+                        </div>
+                    </v-card>
+                    <div class="py-4 px-9">
+                        <div class="spaceBetween">
+                            <div class="verticalInfoRowLabel S_tableInfoLabelTime"></div>
+                            <div class="verticalInfoRowText S_startTime"></div>
+                        </div>
+                        <div class="mt-1 spaceBetween">
+                            <div class="verticalInfoRowLabel S_tableInfoLabelSeat"></div>
+                            <div class="verticalInfoRowText S_seatTimes"></div>
+                        </div>
+                        <div class="mt-1 typeLabel">
+                            <span class="S_type"> </span>/<span class="S_servantName"> </span>
+                        </div>
+                        <div class="d-flex justify-space-between align-center mt-4">
+                            <div>
+                                <v-icon color="black" x-large>mdi-currency-usd</v-icon>
+                            </div>
+                            <div class="verticalInfoRow">
+                                <div v-cloak class="verticalInfoRowBigText">
+                                    {{calculateOrderTableTotal()}}
                                 </div>
                             </div>
-
                         </div>
-                        <div class="bigTableNumberContainer z-depth-2">{{tableName}}</div>
-                    </div>
-                    <div class=" typeLabel">
-                        <span class="S_type"> </span>/<span class="S_servantName"> </span>
-                    </div>
 
-                    <div class="verticalInfoRow">
-                        <div class="verticalInfoRowLabel S_infoLabelTotal"></div>
-                        <div v-cloak class="verticalInfoRowBigText">
-                            {{calculateOrderTableTotal()}}
-                        </div>
                     </div>
 
                 </div>
@@ -1291,9 +1290,9 @@ export default {
         font-size: 16px;
         border-radius: 5px;
         font-weight: 600;
-        margin-right: 7px;
         -webkit-box-shadow: 0 3px 8px 0 #d0d2d9;
-        box-shadow: 0 3px 8px 0 #d0d2d9;
+        box-shadow: 0 3px 3px 0 #d0d2d9;
+        margin-right: 7px;
     }
 
     .categoryBlock.active {
@@ -1408,10 +1407,12 @@ export default {
     }
 
     .ikTitle {
-        color: #367aeb;
+        color: white;
+        background: #367aeb;
         font-size: 18px;
         font-weight: bold;
-        padding: 7px 4px;
+        border-radius: 5px;
+        padding: 6px 12px;
         width: fit-content;
     }
 
@@ -1499,16 +1500,6 @@ export default {
         font-weight: 600;
     }
 
-    .bigTableNumberContainer {
-
-        color: #367aeb;
-        padding: 4px 28px;
-        font-weight: 900;
-        font-size: 88px;
-        text-align: right;
-        border-radius: 5px;
-    }
-
     .verticalSpaceBetween {
         display: flex;
         flex-wrap: wrap;
@@ -1522,18 +1513,17 @@ export default {
     }
 
     .typeLabel {
-        padding: 8px 12px;
         font-size: 18px;
-        font-weight: 900;
+        font-weight: 600;
     }
 
     .verticalInfoRowBigText {
         font-weight: 900;
-        font-size: 56px;
+        font-size: 48px;
         text-align: right;
         width: 100%;
         padding-right: 4px;
-        color: black;
+        color: #367aeb;
     }
 
     .iconButton {
@@ -1606,4 +1596,25 @@ export default {
     .swal2-input[type=number] {
         max-width: unset !important;
     }
+
+    .topRow {
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #367aeb;
+        color: white;
+    }
+
+    .bigTableName {
+        font-size: 36px;
+        font-weight: bold;
+    }
+
+    .icon-line {
+        display: flex;
+        align-items: center;
+        font-size: 18px;
+    }
+
 </style>

@@ -297,7 +297,7 @@ export default {
 
     .tableCard.onCall {
         color: white !important;
-        background-image: url("/Resources/第一页/红色背景板@2x.png");
+       background: #F34141;
     }
 
     .onCall > .tableTimeLabel {

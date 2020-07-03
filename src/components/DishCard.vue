@@ -112,10 +112,4 @@ export default {
         padding: 8px 30px;
     }
 
-    .dishListTitle {
-        background: #e3e6ea;
-        font-weight: bold;
-        padding: 12px 30px;
-    }
-
 </style>

@@ -685,10 +685,5 @@ export default {
         margin-left: 48px;
         padding: 8px 30px;
     }
-    .dishListTitle{
-
-        font-weight: bold;
-        padding: 12px 12px;
-    }
 
 </style>

@@ -1,6 +1,6 @@
 <template>
     <div v-if="count>0">
-        <div class="d-flex py-2 justify-space-between" style="color:white;background: #367aeb;">
+        <v-card class="d-flex py-2 justify-space-between" style="color:white;background: #367aeb;">
             <div class="d-flex flex-grow-1 justify-space-between dishListTitle">
                 <div class="d-flex">
                     <slot name="after-title" :expand="expand"><span class="mr-1">{{title}}</span></slot>
@@ -20,7 +20,7 @@
                     <v-icon v-else>mdi-unfold-less-horizontal</v-icon>
                 </v-btn>
             </div>
-        </div>
+        </v-card>
         <transition name="fade">
             <div v-dragscroll v-if="expand" class="orderDishList"
                  style="max-height: calc(100vh - 200px);overflow: hidden">
@@ -104,5 +104,8 @@ export default {
 </script>
 
 <style scoped>
-
+    .dishListTitle {
+        font-weight: bold;
+        padding: 12px 12px;
+    }
 </style>
