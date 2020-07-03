@@ -290,7 +290,7 @@ export default {
 
     .tableCard.notUsed {
         background: transparent;
-        color: #4b4b4b;
+        color: #6b6b6b;
         border: 0.4px solid #d0d2d9;
         box-shadow: none;
     }

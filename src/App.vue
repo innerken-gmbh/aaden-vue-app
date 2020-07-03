@@ -100,14 +100,6 @@ export default {
 
     }
 
-    .avesNav {
-        width: 100%;
-        -webkit-box-shadow: 0 10px 10px 0 rgba(138, 181, 253, 0.08);
-
-        box-shadow: 0 10px 10px 0 rgba(138, 181, 253, 0.08);
-
-    }
-
     .right-panel {
         z-index: 1000;
         right: 0;

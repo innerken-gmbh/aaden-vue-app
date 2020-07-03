@@ -79,7 +79,7 @@
             </div>
             <div id="newDishContainerTP">
                 <transition name="fade" appear>
-                    <div v-if="cartListModel.list.length>0" class="white bottomCart surface" id="newDishContainer">
+                    <div v-dragscroll v-if="cartListModel.list.length>0" class="white bottomCart surface" id="newDishContainer">
                         <dish-card-list :click-callback="removeDish" :orders="cartListModel.list"
                                         :default-expand="Config.defaultExpand"
                                         :title="$t('tableNewDishTitle')">
@@ -390,7 +390,11 @@ export default {
     },
     findInString,
     async getOrderedDish () {
-      this.orderListModel.loadTTDishList(await getOrderInfo(this.id))
+      try {
+        this.orderListModel.loadTTDishList(await getOrderInfo(this.id))
+      } catch (e) {
+
+      }
     },
     async checkOutPrompt () {
       const res = await Swal.mixin({
@@ -1291,7 +1295,7 @@ export default {
         border-radius: 5px;
         font-weight: 600;
         -webkit-box-shadow: 0 3px 8px 0 #d0d2d9;
-        box-shadow: 0 3px 3px 0 #d0d2d9;
+        box-shadow: 0 3px 8px 0 #d0d2d9;
         margin-right: 7px;
     }
 
@@ -1421,26 +1425,18 @@ export default {
     }
 
     .bottomCart {
-        z-index: 1002;
         position: fixed;
         width: 100%;
         max-width: 400px;
     }
-
     .normalPos {
         right: 352px;
         bottom: 116px;
         padding: 12px;
     }
-
-    #checkOutPopContainer {
-
-    }
-
     #newDishContainer {
         max-height: calc(100vh - 60px);
-        overflow-x: hidden;
-        overflow-y: scroll;
+        overflow: hidden;
         bottom: 0;
         left: 12px;
     }
