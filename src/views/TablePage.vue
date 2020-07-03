@@ -42,13 +42,11 @@
                 </transition>
             </div>
             <div v-cloak class="dishListContainer" id="dishListContainer">
-                <div class="tableTitle S_tableDishListTitle">
-                </div>
                 <div style="padding: 8px">
                     <div class="ikTitle"><span class="S_classification">分类</span><span
                             class="strong S_information">信息</span>
                     </div>
-                    <div v-dragscroll class="dragscroll">
+                    <div v-dragscroll>
                         <div class="categoryList">
                             <template v-for="category of categories">
                                 <div v-bind:key="category.id+'categorys'" class="categoryBlock"
@@ -59,7 +57,7 @@
                             </template>
                         </div>
                     </div>
-                    <div class="ikTitle"><span class="S_isShowing">正在显示</span> <span
+                    <div class="ikTitle"><span
                             class="strong S_allDish">{{activeCategory?activeCategory.name:'所有菜品'}}</span>
                     </div>
                     <div v-dragscroll class="dragscroll dishCardListContainer">
@@ -127,13 +125,13 @@
                         </div>
                         <div class="bigTableNumberContainer z-depth-2">{{tableName}}</div>
                     </div>
-                    <div class="rightAlign typeLabel">
+                    <div class=" typeLabel">
                         <span class="S_type"> </span>/<span class="S_servantName"> </span>
                     </div>
 
                     <div class="verticalInfoRow">
                         <div class="verticalInfoRowLabel S_infoLabelTotal"></div>
-                        <div v-cloak class="verticalInfoRowBigText totalRed">
+                        <div v-cloak class="verticalInfoRowBigText">
                             {{calculateOrderTableTotal()}}
                         </div>
                     </div>
@@ -220,7 +218,7 @@
                     </div>
                     <div class="inputArea">
                         <div class="input-field ">
-                            <v-text-field ref="ins" v-model="buffer"
+                            <v-text-field ref="ins" color="black" v-model="buffer"
                                           placeholder="instruction.." id="instruction"
                                           autofocus=autofocus></v-text-field>
                         </div>
@@ -1145,14 +1143,11 @@ export default {
 
     .tableTitle {
         width: fit-content;
-        background: #367aeb;
-        color: white;
+        color: #367aeb;
         border-radius: 5px;
         font-size: 18px;
-        font-weight: bold;
+        font-weight: 900;
         padding: 8px;
-        -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.24);
-        box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.24);
     }
 
     tr:hover {
@@ -1297,8 +1292,8 @@ export default {
         border-radius: 5px;
         font-weight: 600;
         margin-right: 7px;
-        -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.12);
-        box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.12);
+        -webkit-box-shadow: 0 3px 8px 0 #d0d2d9;
+        box-shadow: 0 3px 8px 0 #d0d2d9;
     }
 
     .categoryBlock.active {
@@ -1310,8 +1305,8 @@ export default {
     .categoryBlock:hover {
         background: #357aeb;
         color: white;
-        -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
-        box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
+        -webkit-box-shadow: 0 3px 8px 0 #d0d2d9;
+        box-shadow: 0 3px 8px 0 #d0d2d9;
 
     }
 
@@ -1322,15 +1317,14 @@ export default {
         cursor: pointer;
         padding: 5px 12px;
         background: white;
-        -webkit-box-shadow: 0 3px 3px rgba(0, 86, 255, 0.13);
-        box-shadow: 0 3px 3px rgba(0, 86, 255, 0.13);
+        -webkit-box-shadow: 0 3px 3px #d0d2d9;
+        box-shadow: 0 3px 3px #d0d2d9;
         border-radius: 5px;
         margin-right: 12px;
     }
 
     @media screen and (max-width: 1600px ) {
         .dishBlock {
-
             width: calc(25% - 12px);
             margin-top: 12px;
             margin-right: 12px;
@@ -1356,14 +1350,14 @@ export default {
     }
 
     .dishBlock .name {
+        margin-top: 12px;
         font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-        height: 70px;
         display: flex;
         width: 100%;
         font-size: 18px;
         font-weight: 600;
         word-break: break-all;
-        justify-content: center;
+        justify-content: left;
         align-items: center;
     }
 
@@ -1416,7 +1410,7 @@ export default {
     .ikTitle {
         color: #367aeb;
         font-size: 18px;
-        font-weight: lighter;
+        font-weight: bold;
         padding: 7px 4px;
         width: fit-content;
     }
@@ -1506,12 +1500,12 @@ export default {
     }
 
     .bigTableNumberContainer {
-        background: #367aeb;
-        color: white;
+
+        color: #367aeb;
         padding: 4px 28px;
-        font-size: 64px;
-        min-width: 144px;
-        text-align: center;
+        font-weight: 900;
+        font-size: 88px;
+        text-align: right;
         border-radius: 5px;
     }
 
@@ -1530,7 +1524,6 @@ export default {
     .typeLabel {
         padding: 8px 12px;
         font-size: 18px;
-
         font-weight: 900;
     }
 

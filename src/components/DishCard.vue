@@ -94,7 +94,7 @@ export default {
     }
 
     .dishCount {
-        color: #0D47A1;
+        color: #367aeb;
         padding: 8px 0;
         width: 45px;
         display: flex;

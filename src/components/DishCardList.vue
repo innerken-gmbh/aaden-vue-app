@@ -1,33 +1,39 @@
 <template>
-    <div v-if="orders.length>0">
-        <div class="d-flex justify-space-between" style="   background: #e3e6ea;">
+    <div v-if="count>0">
+        <div class="d-flex py-2 justify-space-between" style="color:white;background: #367aeb;">
             <div class="d-flex flex-grow-1 justify-space-between dishListTitle">
-                <div class="d-flex"><span class="mr-1">{{title}}</span><slot name="after-title" :expand="expand"></slot></div>
+                <div class="d-flex">
+                    <slot name="after-title" :expand="expand"><span class="mr-1">{{title}}</span></slot>
+                </div>
                 <div class="d-flex">
                     <div class="d-flex align-center">
-                        <v-icon>mdi-cash-usd</v-icon>
+                        <v-icon color="white">mdi-cash-usd</v-icon>
                         <span class="ml-1">{{total | priceDisplay}}</span>
-                        <v-icon class="ml-2">mdi-food</v-icon>
-                        <span class="ml-1">{{orders.length}}</span>
+                        <v-icon color="white" class="ml-6">mdi-food</v-icon>
+                        <span class="ml-1">{{count}}</span>
                     </div>
                 </div>
             </div>
             <div class="pr-1 d-flex align-center">
-                <v-btn @click="expand=!expand" fab x-small dark>
+                <v-btn color="white" @click="expand=!expand" text x-small>
                     <v-icon v-if="!expand">mdi-unfold-more-horizontal</v-icon>
                     <v-icon v-else>mdi-unfold-less-horizontal</v-icon>
                 </v-btn>
             </div>
         </div>
         <transition name="fade">
-            <div v-if="expand" class="orderDishList" style="max-height: calc(100vh - 200px);overflow-y: scroll">
-                <template v-for="(order,index) in orders">
-                    <div :key="'order'+title+order.tid+'code'+index" @click="clickCallback(index)">
-                        <dish-card
-                                :dish="order"
-                                :hide-free-dish="hideFreeDish"/>
-                    </div>
-                </template>
+            <div v-dragscroll v-if="expand" class="orderDishList"
+                 style="max-height: calc(100vh - 200px);overflow: hidden">
+                <div>
+                    <template v-for="(order,index) in orders">
+                        <div :key="'order'+title+order.tid+'code'+index+'hash'+order.hash"
+                             @click="clickCallback(index)">
+                            <dish-card
+                                    :dish="order"
+                                    :hide-free-dish="hideFreeDish"/>
+                        </div>
+                    </template>
+                </div>
             </div>
         </transition>
     </div>
@@ -36,10 +42,14 @@
 
 <script>
 import DishCard from './DishCard'
+import { dragscroll } from 'vue-dragscroll'
 
 export default {
   name: 'DishCardList',
   components: { DishCard },
+  directives: {
+    dragscroll
+  },
   props: {
     title: {
       type: String,
@@ -75,9 +85,19 @@ export default {
         if (this.hideFreeDish && parseInt(a.categoryTypeId) === 11) {
           continue
         }
-        totalPrice += parseFloat(parseInt(a.sumCount ?? a.count) * parseFloat(a.price))
+        totalPrice += parseFloat(parseInt(a.count) * parseFloat(a.price))
       }
       return totalPrice
+    },
+    count: function () {
+      let count = 0
+      for (const a of this.orders) {
+        if (this.hideFreeDish && parseInt(a.categoryTypeId) === 11) {
+          continue
+        }
+        count += parseInt(a.count)
+      }
+      return count
     }
   }
 }

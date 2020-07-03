@@ -240,8 +240,6 @@ export default {
         margin-right: 6px;
         margin-top: 6px;
 
-        -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
-        box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
     }
     .floatMenuPanelItem.focus{
         border-radius: 12px;
@@ -255,7 +253,7 @@ export default {
         color: white;
         box-shadow: 0 3px 4px 0 rgba(0, 86, 255, 0.15);
     }
-    .innerItem:hover{
+    .floatMenuPanelItem:hover .innerItem{
         color: white;
     }
     .innerItem {
@@ -267,11 +265,14 @@ export default {
     }
 
     .innerItem .material-icons {
-        font-size: 32px;
+        font-size: 28px;
     }
 
     .innerItem .icon {
-        height: 32px;
+        height: 28px;
+    }
+    .innerItem .text {
+        margin-top: 4px;
     }
 
     .splitter {
@@ -507,7 +508,7 @@ export default {
     }
 
     .surface {
-        box-shadow: 0px 4px 10px 0 rgba(138, 181, 253, 0.4);
+        box-shadow: 0px 4px 10px 0 #d0d2d9;
         background-color: #ffffff;
         border-radius: 5px;
     }
@@ -627,7 +628,7 @@ export default {
         margin-right: 4px;
         margin-top: 4px;
         width: 48px;
-        box-shadow: 0 3px 6px rgba(0, 25, 244, 0.1);
+        box-shadow: 0 3px 6px #d0d2d9;
         height: 48px;
         display: flex;
         justify-items: center;

@@ -213,23 +213,6 @@ function reloadTables (arrOfT) {
     const area = {}
     area.areaName = k
     area.tables = arrOfT[k]
-    if (area.tables.length > 6 && area.tables.length <= 12) {
-      area.width = '470px'
-      area.maxHeight = '900px'
-      area.flexDirection = 'column'
-    } else if (area.tables.length > 12 && area.tables.length <= 18) {
-      area.width = '708px'
-      area.maxHeight = '900px'
-      area.flexDirection = 'column'
-    } else if (area.tables.length > 18) {
-      area.width = '708px'
-      area.maxHeight = 'auto'
-      area.flexDirection = 'row'
-    } else {
-      area.width = 'fit-content'
-      area.maxHeight = '900px'
-      area.flexDirection = 'column'
-    }
     for (const i of area.tables) {
       if (i.consumeType) {
         i.consumeTypeName = findConsumeTypeById(i.consumeType).name
