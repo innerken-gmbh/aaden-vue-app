@@ -6,6 +6,7 @@ import i18n from './i18n'
 import vuetify from './plugins/vuetify'
 import 'material-design-icons/iconfont/material-icons.css'
 import { initialAadenBase } from 'aaden-base-model/lib/Models/GlobalSettings'
+
 import settings from 'electron-settings'
 
 const StaticSetting = settings.get('config')

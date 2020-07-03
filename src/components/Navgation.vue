@@ -1,7 +1,7 @@
 <template>
     <nav class="noShadow">
-        <div class="white elevation-3 avesNav">
-            <div class="left flex-Container">
+        <div class="white elevation-3 avesNav d-flex justify-space-between">
+            <div class=" flex-Container">
                 <div class="languageSwitch">
                     <div @click="changeLanguage('ZH')" class="S_langZH">中</div>
                     <div @click="changeLanguage('EN')" class="S_langEN">英</div>
@@ -20,19 +20,19 @@
                 <div class="splitter"></div>
                 <v-tooltip bottom absolute>
                     <template v-slot:activator="{on,attrs}">
-                        <div  v-bind="attrs"
-                              v-on="on" class="appName">
+                        <v-sheet v-bind="attrs"
+                                 v-on="on" class="appName">
                             {{version}}
-                        </div>
+                        </v-sheet>
                     </template>
-                    <span>Tooltip</span>
+                    <span>{{info.version}}</span>
                 </v-tooltip>
                 <div class="splitter"></div>
                 <div @click="toggleDebug()" class="adbIcon">
                     <i class="material-icons littleIcon">adb</i>
                 </div>
             </div>
-            <div class="right">
+            <div class="">
                 <slot name="right-slot">
                 </slot>
             </div>
@@ -49,12 +49,17 @@ export default {
   data: function () {
     return {
       time: '',
-      version: version
+      version: version,
+      info: {}
     }
   },
   methods: {
     changeLanguage: function (l) {
       changeLanguage(l)
+    },
+    loadBackGroundVersion: async function () {
+      this.info = Object.assign({ version: '-1' }, await fetch('/package.json'))
+      console.log(this.info)
     },
     toggleDebug
   },
@@ -62,6 +67,7 @@ export default {
     setInterval(() => {
       this.time = showTime()
     }, 1000)
+    this.loadBackGroundVersion()
   }
 }
 </script>
