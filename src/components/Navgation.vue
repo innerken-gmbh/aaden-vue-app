@@ -18,15 +18,11 @@
                     Aaden Kasse
                 </div>
                 <div class="splitter"></div>
-                <v-tooltip bottom absolute>
-                    <template v-slot:activator="{on,attrs}">
-                        <v-sheet v-bind="attrs"
-                                 v-on="on" class="appName">
-                            {{version}}
-                        </v-sheet>
-                    </template>
-                    <span>{{info.version}}</span>
-                </v-tooltip>
+
+                <v-sheet class="appName">
+                    {{version}}
+                </v-sheet>
+
                 <div class="splitter"></div>
                 <div @click="toggleDebug()" class="adbIcon">
                     <i class="material-icons littleIcon">adb</i>
@@ -58,10 +54,6 @@ export default {
     changeLanguage: function (l) {
       changeLanguage(l)
     },
-    loadBackGroundVersion: async function () {
-      this.info = Object.assign({ version: '-1' }, await fetch('/package.json'))
-      console.log(this.info)
-    },
     toggleDebug
 
   },
@@ -69,7 +61,6 @@ export default {
     setInterval(() => {
       this.time = showTime()
     }, 1000)
-    this.loadBackGroundVersion()
   }
 }
 </script>

@@ -131,6 +131,7 @@ import {
 import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
+import StaticSetting from '../oldjs/LocalGlobalSettings'
 
 export default {
   name: 'IndexPage',
@@ -200,7 +201,8 @@ export default {
       }
     },
     toManage () {
-      oldJumpTo('admin/index.html', this.Config)
+      oldJumpTo('admin/index.html', StaticSetting)
+
       // jumpTo('manage.html',Config);
     },
     autoGetFocus () {
