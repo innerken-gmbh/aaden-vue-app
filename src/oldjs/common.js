@@ -2,20 +2,11 @@ import Swal from 'sweetalert2'
 import router from '../router'
 import { ego, hillo } from 'innerken-utils'
 import i18n from '../i18n'
-import settings from 'electron-settings'
-const { ipcRenderer } = require('electron')
-const StaticConfig = settings.get('config')
-export const version = '1.1.0'
+import { _Config } from './LocalGlobalSettings'
 
-let Config = {}
-Config.IP = 'localhost'
-Config.Dir = ''
-Config.REALROOT = `http://${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
-Config = Object.assign(Config, StaticConfig)
-Config.PHPROOT = `${Config.REALROOT}/PHP/`
-window.Config = Config
-console.log('Config', Config)
-export const _Config = Config
+const { ipcRenderer } = require('electron')
+
+const Config = _Config
 
 export function getConfig () {
   return Config
@@ -32,32 +23,9 @@ const TOASTTIME = 700
 let consumeTypeList = []
 let Dishes = []
 
-function useCurrentConfig () {
-  settings.set('config', Config)
-  reload()
-}
-
-function hardReload () {
-  settings.deleteAll()
-}
-
-function setDeviceId (id) {
-  settings.set('config.DeviceId', id)
-  reload()
-}
-
-export function changeLanguage (l) {
-  settings.set('config.lang', l)
-  reload()
-}
-
 export function reload () {
   ipcRenderer.send('reload')
 }
-
-window.useCurrentConfig = useCurrentConfig
-window.hardReload = hardReload
-window.setDeviceId = setDeviceId
 
 export function postData (url, data) {
   // Default options are marked with *
@@ -88,17 +56,6 @@ export async function getAllDishes () {
 }
 
 // const ipcRenderer = require('electron').ipcRenderer
-
-let debugCounter = 0
-
-export function toggleDebug () {
-  debugCounter++
-  if (debugCounter > 10) {
-    settings.set('config.Debug', !settings.get('config.Debug'))
-    reload()
-    debugCounter = 0
-  }
-}
 
 export function tryToReport () {
   getData('http://' + Config.IP + '/PHP/AccessLog.php?op=reportStatus')

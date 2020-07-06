@@ -393,7 +393,8 @@ export default {
       try {
         this.orderListModel.loadTTDishList(await getOrderInfo(this.id))
       } catch (e) {
-
+        showTimedAlert(e)
+        goHome()
       }
     },
     async checkOutPrompt () {
@@ -514,7 +515,7 @@ export default {
     },
     async getCategory () {
       const res = await hillo.get('Category.php?op=withTableType', {
-        tableId: this.id, lang: this.$i18n.locale.toUpperCase()
+        tableId: this.id, lang: this.Config.lang
       })
       for (const i of res.content) {
         if (!i.isActive) {

@@ -1,6 +1,6 @@
 {
   "name": "aaden-vue-app",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "private": true,
   "description": "全新构建的Aaden Vue版本，重新启航，更加牢靠！",
   "scripts": {

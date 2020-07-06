@@ -30,18 +30,21 @@
                                                 </div>
                                                 <div class="d-flex justify-space-between">
                                                     <div class="">
-                                                        <template v-if="table.consumeType!=='4'&&table.consumeType!=='6'">
+                                                        <template
+                                                                v-if="table.consumeType!=='4'&&table.consumeType!=='6'">
                                                             <div v-if="table.consumeType!=='2'" class="tableIconRow">
                                                                 <i class="icon material-icons">person_outline</i>
                                                                 <div class="text">{{table.seatCount}}</div>
                                                             </div>
                                                             <div class="tableIconRow">
                                                                 <i class="icon material-icons">notifications_none</i>
-                                                                <div class="text">{{table.dishCount===null?0:table.dishCount}}
+                                                                <div class="text">
+                                                                    {{table.dishCount===null?0:table.dishCount}}
                                                                 </div>
                                                             </div>
                                                         </template>
-                                                        <template v-if="table.consumeType==='4'||table.consumeType==='6'">
+                                                        <template
+                                                                v-if="table.consumeType==='4'||table.consumeType==='6'">
                                                             <div class="tableIconRow">
                                                                 <i class="icon material-icons">person_outline</i>
                                                                 <div class="text">{{table.seatCount}}</div>
@@ -74,7 +77,7 @@
 
                                 </div>
                             </div>
-                            </div>
+                        </div>
 
                     </div>
                 </div>
@@ -111,13 +114,12 @@
 
 <script>
 import {
-  _Config,
   AssginToStringClass,
   blockReady,
   createOrEnterTable,
   findInString,
   getActiveTables,
-  getAllDishes,
+  getAllDishes, getConfig,
   getConsumeTypeList,
   jumpToTable,
   oldJumpTo,
@@ -144,7 +146,7 @@ export default {
       buffer: '',
       ins: {},
       dishes: [],
-      Config: _Config,
+      Config: getConfig(),
       Strings,
       focusTimer: null
     }
@@ -285,7 +287,7 @@ export default {
         cursor: pointer;
         border-radius: 8px;
         -webkit-box-shadow: 3px 3px 8px 0 rgba(75, 75, 75, 0.08);
-        box-shadow: 0 6px 8px  #d0d2d9;
+        box-shadow: 0 6px 8px #d0d2d9;
     }
 
     .tableCard.notUsed {
@@ -297,7 +299,7 @@ export default {
 
     .tableCard.onCall {
         color: white !important;
-       background: #F34141;
+        background: #F34141;
     }
 
     .onCall > .tableTimeLabel {

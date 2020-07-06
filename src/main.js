@@ -5,25 +5,30 @@ import store from './store'
 import i18n from './i18n'
 import vuetify from './plugins/vuetify'
 import 'material-design-icons/iconfont/material-icons.css'
-import { initialAadenBase } from 'aaden-base-model/lib/Models/GlobalSettings'
+import Settings, { initialAadenBase } from 'aaden-base-model/lib/Models/GlobalSettings'
 
-import settings from 'electron-settings'
+import StaticSetting from './oldjs/LocalGlobalSettings'
 
-const StaticSetting = settings.get('config')
 Vue.config.productionTip = false
 Vue.filter('priceDisplay',
   function (price) {
     return parseFloat(price).toFixed(2).replace('.', ',')
   }
 )
-StaticSetting.lang = function () {
-  return i18n.locale
+
+async function initial () {
+  await initialAadenBase(StaticSetting)
+  console.log(Settings, 'Main')
+  Settings.lang = function () {
+    return i18n.locale.toUpperCase()
+  }
+  new Vue({
+    router,
+    store,
+    i18n,
+    vuetify,
+    render: h => h(App)
+  }).$mount('#app')
 }
-initialAadenBase(StaticSetting)
-new Vue({
-  router,
-  store,
-  i18n,
-  vuetify,
-  render: h => h(App)
-}).$mount('#app')
+
+initial()
