@@ -202,8 +202,6 @@ export default {
     },
     toManage () {
       oldJumpTo('admin/index.html', StaticSetting)
-
-      // jumpTo('manage.html',Config);
     },
     autoGetFocus () {
       if (Swal.isVisible()) {
