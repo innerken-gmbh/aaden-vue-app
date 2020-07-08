@@ -4,7 +4,10 @@
             <v-row>
                 <v-col cols="12">
                     <template v-for="item in computedOption">
-                        <h4 :key="'mod2head'+item.id">{{`${item.name}${item.required==='1'?`:${item.select[0].text}`:``}`}}</h4>
+                        <h4 :key="'mod2head'+item.id">
+                            {{`${item.name}${item.required==='1'?
+                            `:${item.select[0].text}`:``}`}}
+                        </h4>
                         <v-sheet class="my-2" style="background: transparent" :key="'mod2'+item.id" >
                             <v-chip-group
                                     v-model="mod[item.id]"
@@ -23,10 +26,16 @@
             <v-spacer class="mx-4"/>
             <v-row>
                 <v-col cols="6">
-                    <v-btn outlined block @click="cancel" color="error" text>取消</v-btn>
+                    <v-btn outlined x-large block
+                           @click="cancel" color="error"
+                           >{{$t('cancel')}}</v-btn>
                 </v-col>
                 <v-col cols="6">
-                    <v-btn block @click="submitModification" color="primary">确认</v-btn>
+                    <v-btn block x-large
+                           @click="submitModification"
+                           color="primary">
+                        {{$t('tableCheckOutConfirm')}}
+                    </v-btn>
                 </v-col>
             </v-row>
         </v-container>

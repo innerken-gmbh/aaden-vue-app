@@ -346,16 +346,6 @@ export default {
         font-weight: 600;
     }
 
-    .totalLabel {
-        border-radius: 5px;
-        padding: 9.5px 10px;
-        width: fit-content;
-        background: #367aeb;
-        font-size: 16px;
-        color: white;
-        font-weight: 900;
-    }
-
     .important {
         font-weight: 600;
     }

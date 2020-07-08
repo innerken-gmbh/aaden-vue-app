@@ -1907,3 +1907,4 @@ export const Strings = {
     operation: '操作'
   }
 }
+window.Strings = Strings

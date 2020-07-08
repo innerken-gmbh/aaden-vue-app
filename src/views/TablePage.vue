@@ -49,9 +49,9 @@
                     <div v-dragscroll>
                         <div class="categoryList">
                             <template v-for="category of categories">
-                                <v-sheet large  v-bind:key="category.id+'categorys'" class="categoryBlock "
-                                     @click="setActiveCategories(category)"
-                                     v-bind:class="{'active  elevation-5':category.isActive}">
+                                <v-sheet large v-bind:key="category.id+'categorys'" class="categoryBlock "
+                                         @click="setActiveCategories(category)"
+                                         v-bind:class="{'active  elevation-5':category.isActive}">
                                     <div class="name">{{category.name}}</div>
                                 </v-sheet>
                             </template>
@@ -79,7 +79,8 @@
             </div>
             <div id="newDishContainerTP">
                 <transition name="fade" appear>
-                    <div v-dragscroll v-if="cartListModel.list.length>0" class="white bottomCart surface" id="newDishContainer">
+                    <div v-dragscroll v-if="cartListModel.list.length>0" class="white bottomCart surface"
+                         id="newDishContainer">
                         <dish-card-list :click-callback="removeDish" :orders="cartListModel.list"
                                         :default-expand="Config.defaultExpand"
                                         :title="$t('tableNewDishTitle')">
@@ -249,11 +250,16 @@
             </div>
         </transition>
         <ModificationDrawer
-                @should-change-modification-show="changeModification"
+                @visibility-changed="changeModification"
                 :modification-show="modificationShow"
                 :dish="dish"
                 :mod="submitModification"
         />
+        <check-out-drawer
+                @visibility-changed="changeCheckOut"
+                :order="orderListModel"
+                :total-price="calculateOrderTableTotal()"
+                :visible="checkoutShow"/>
     </v-app>
 </template>
 
@@ -309,6 +315,7 @@ import DishCardList from '../components/DishCardList'
 import ModificationDrawer from '../components/ModificationDrawer'
 import { getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
+import CheckOutDrawer from '../components/CheckOutDrawer'
 
 const UIState = {
   Init: 0,
@@ -334,7 +341,7 @@ export default {
   directives: {
     dragscroll
   },
-  components: { ModificationDrawer, DishCardList, Navgation },
+  components: { CheckOutDrawer, ModificationDrawer, DishCardList, Navgation },
   props: {
     id: {
       type: String,
@@ -349,6 +356,7 @@ export default {
     return {
       version: version,
       /**/
+      checkoutShow: true,
       discountStr: null,
       expand: getConfig().defaultExpand,
       lastDish: { name: '' },
@@ -387,6 +395,10 @@ export default {
   methods: {
     changeModification: function (val) {
       this.modificationShow = val
+    },
+    changeCheckOut: function (val) {
+      console.log(val)
+      this.checkoutShow = val
     },
     findInString,
     async getOrderedDish () {
@@ -467,18 +479,7 @@ export default {
         return res.value
       }
     },
-    getPayment () {
-      getData(this.Config.PHPROOT + 'PayMethod.php', {
-        op: 'byLang',
-        lang: this.Config.lang
-      }).then(res => {
-        if (res.status === 'good') {
-          this.payment = res.content
-        } else {
-          showTimedAlert('warning', findInString('JSTableGetOrderedDishFailed') + res.info, 1000, goHome)
-        }
-      })
-    },
+
     dishQuery (code, count = 1) {
       getData(this.Config.PHPROOT + 'Dishes.php?op=simpleInfo', {
         op: 'simpleInfo',
@@ -748,6 +749,9 @@ export default {
       if (UIStatus !== UIState.Init) {
         return
       }
+      if (this.modificationShow || this.checkoutShow) {
+        return
+      }
       if (Swal.isVisible()) {
         return
       }
@@ -996,7 +1000,6 @@ export default {
         UIStatus = UIState.Init
         document.getElementById('instruction').focus()
         this.getCategory()
-        this.getPayment()
         setGlobalTableId(this.id)
         AssginToStringClass('tableNumber', this.tableName)
         blockReady()
@@ -1430,11 +1433,13 @@ export default {
         width: 100%;
         max-width: 400px;
     }
+
     .normalPos {
         right: 352px;
         bottom: 116px;
         padding: 12px;
     }
+
     #newDishContainer {
         max-height: calc(100vh - 60px);
         overflow: hidden;

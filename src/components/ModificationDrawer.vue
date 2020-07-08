@@ -50,7 +50,7 @@ export default {
         return this.modificationShow
       },
       set: function (val) {
-        this.$emit('should-change-modification-show', val)
+        this.$emit('visibility-changed', val)
       }
     }
   },
