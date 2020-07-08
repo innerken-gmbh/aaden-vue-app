@@ -286,14 +286,13 @@ export default {
         justify-content: space-between;
         cursor: pointer;
         border-radius: 8px;
-        -webkit-box-shadow: 3px 3px 8px 0 rgba(75, 75, 75, 0.08);
         box-shadow: 0 6px 8px #d0d2d9;
     }
 
     .tableCard.notUsed {
         background: transparent;
         color: #6b6b6b;
-        border: 0.4px solid #d0d2d9;
+        border: 3px dotted #e2e3e5;
         box-shadow: none;
     }
 
@@ -322,6 +321,9 @@ export default {
         font-weight: 600;
     }
 
+    .tableCard.notUsed .tableCardName{
+        font-weight: 400;
+    }
     .tableTimeLabel {
         color: #367aeb;
         font-size: 18px;
