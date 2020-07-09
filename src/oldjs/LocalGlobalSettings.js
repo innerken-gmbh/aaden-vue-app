@@ -46,4 +46,5 @@ export function toggleDebug () {
   }
 }
 
+StaticSetting.fetch = false
 export default StaticSetting
