@@ -1,7 +1,7 @@
 <template>
     <v-sheet rounded :elevation="2" class="fill-height pa-2">
         <div class="rootContainer fill-height">
-            <div class="calculator pa-2 d-flex flex-column fill-height">
+            <div style="width: 550px" class="calculator pa-2 d-flex flex-column fill-height">
                 <v-sheet :elevation="2" class="display pa-4 d-flex
                  justify-space-between align-end">
                     <div>
@@ -48,70 +48,83 @@
                     </v-btn>
                 </v-sheet>
             </div>
-            <div class="paymentLog pa-2">
-                <div class="my-3">
-                    <h3>结账记录</h3>
-                </div>
-                <div class="my-3" style="height: 400px;overflow-y: scroll">
-                    <template v-for="(paymentInfo,index) in paymentLog">
-                        <v-sheet :key="'price'+paymentInfo.hash" :elevation="2"
-                                 class="d-flex justify-space-between pa-2 my-1">
-                            <h2 class="font-weight-bold"
-                                style="font-size: 24px">
-                                {{ paymentInfo.price|priceDisplay }}
-                            </h2>
-                            <div>
-                                <v-btn text color="success">
-                                    <v-icon large>{{paymentInfo.icon}}</v-icon>
-                                </v-btn>
-                                <v-btn @click="withdrawPayment(index)" icon color="error">
-                                    <v-icon>mdi-close</v-icon>
-                                </v-btn>
-                            </div>
-                        </v-sheet>
-                    </template>
-                </div>
-                <div style="height: 300px">
-                    <template v-if="remainTotal===0">
-                        <v-divider class="my-3"></v-divider>
-                        <v-sheet>
-                            <h4>
-                                {{$t('tableCheckOutBillTypeLabel')}}
-                            </h4>
-                            <v-sheet class="my-2" style="background: transparent">
-                                <v-chip-group
-                                        v-model="billType"
-                                        mandatory column
-                                        active-class="primary--text">
-                                    <v-chip x-large label>
-                                        {{$t('tableCheckOutBillTypeOptionNormal')}}
-                                    </v-chip>
-                                    <v-chip x-large label>
-                                        {{$t('tableCheckOutBillTypeOptionCompany')}}
-                                    </v-chip>
-                                    <v-chip x-large label>
-                                        {{$t('tableCheckOutBillTypeOption3')}}
-                                    </v-chip>
-                                </v-chip-group>
+            <v-fade-transition>
+                <div v-if="paymentLog.length>0" class="paymentLog pa-2">
+                    <div class="my-3">
+                        <h3>结账记录</h3>
+                    </div>
+                    <div class="my-3" v-dragscroll style="max-height: 460px;overflow:hidden">
+                        <template v-for="(paymentInfo,index) in paymentLog">
+                            <v-sheet :key="'price'+paymentInfo.hash" :elevation="0"
+                                     class="d-flex justify-space-between pa-2 my-1">
+                                <h2 class="font-weight-bold"
+                                    style="font-size: 24px">
+                                    {{ paymentInfo.price|priceDisplay }}
+                                </h2>
+                                <div>
+                                    <v-btn text color="success">
+                                        <v-icon large>{{paymentInfo.icon}}</v-icon>
+                                    </v-btn>
+                                    <v-btn @click="withdrawPayment(index)" icon color="error">
+                                        <v-icon>mdi-close</v-icon>
+                                    </v-btn>
+                                </div>
                             </v-sheet>
-                        </v-sheet>
-                        <v-divider class="my-3"></v-divider>
-                        <div style="height: 120px;display: grid;grid-template-columns: 1fr 1fr">
-                            <div class="pa-2">
-                                <v-btn tile fab outlined color="error" block x-large>{{$t('cancel')}}</v-btn>
+                            <v-divider :key="'d'+paymentInfo.hash"></v-divider>
+                        </template>
+                    </div>
+                    <div style="height: 300px">
+                        <template v-if="remainTotal===0">
+
+                            <v-sheet class="my-6">
+                                <h4>
+                                    {{$t('tableCheckOutBillTypeLabel')}}
+                                </h4>
+                                <v-sheet class="my-2" style="background: transparent">
+                                    <v-chip-group
+                                            v-model="billType"
+                                            mandatory column
+                                            active-class="primary--text">
+                                        <v-chip x-large label>
+                                            {{$t('tableCheckOutBillTypeOptionNormal')}}
+                                        </v-chip>
+                                        <v-chip x-large label>
+                                            {{$t('tableCheckOutBillTypeOptionCompany')}}
+                                        </v-chip>
+                                        <v-chip x-large label>
+                                            {{$t('tableCheckOutBillTypeOption3')}}
+                                        </v-chip>
+                                    </v-chip-group>
+                                </v-sheet>
+                            </v-sheet>
+                            <v-divider class="my-3"></v-divider>
+                            <div style="height: 120px;display: grid;grid-template-columns: 1fr 1fr">
+                                <div class="pa-2">
+                                    <v-btn tile fab
+                                           outlined
+                                           @click="cancel"
+                                           color="error" block x-large>
+                                        {{$t('cancel')}}
+                                    </v-btn>
+                                </div>
+                                <div class="pa-2">
+                                    <v-btn color="success"
+                                           @click="checkOut"
+                                           tile fab block x-large> {{$t('tableCheckOutConfirm')}}
+                                    </v-btn>
+                                </div>
                             </div>
-                            <div class="pa-2">
-                                <v-btn color="success" tile fab block x-large> {{$t('tableCheckOutConfirm')}}</v-btn>
-                            </div>
-                        </div>
-                    </template>
+                        </template>
+                    </div>
                 </div>
-            </div>
+            </v-fade-transition>
         </div>
     </v-sheet>
 </template>
 
 <script>
+
+import { dragscroll } from 'vue-dragscroll'
 
 export default {
   name: 'CheckOutCalculator',
@@ -121,33 +134,57 @@ export default {
       default: 0
     }
   },
+  directives: {
+    dragscroll
+  },
   data: function () {
     return {
-      remainTotal: 931,
-      keyArr: [
-        [1, 2, 3, 'mdi-backspace'],
-        [4, 5, 6, 'mdi-restart'],
-        [7, 8, 9, 'mdi-credit-card-outline'],
-        ['mdi-dots-horizontal', 0, 'mdi-circle-small', 'mdi-cash-usd']],
+      billType: 0,
       realName: {
         'mdi-backspace': 'back',
         'mdi-restart': 'clear',
         'mdi-circle-small': '.',
-        'mdi-cash-usd': 'bar',
-        'mdi-credit-card-outline': 'ec',
+        'mdi-cash-usd': '1',
+        'mdi-bell': '9',
+        'mdi-credit-card-outline': '2',
         'mdi-dots-horizontal': 'more'
       },
       inputBuffer: '',
       paymentLog: []
     }
   },
-  methods: {
-    parseInput (input) {
-      if (!isNaN(parseInt(input))) {
-        return input
+  computed: {
+    keyArr: function () {
+      if (this.remainTotal >= 0) {
+        return [
+          [1, 2, 3, 'mdi-backspace'],
+          [4, 5, 6, 'mdi-restart'],
+          [7, 8, 9, 'mdi-credit-card-outline'],
+          ['mdi-dots-horizontal', 0, 'mdi-circle-small', 'mdi-cash-usd']]
       } else {
-        return this.realName[input]
+        return [
+          [1, 2, 3, 'mdi-backspace'],
+          [4, 5, 6, 'mdi-restart'],
+          [7, 8, 9, 'mdi-bell'],
+          ['mdi-dots-horizontal', 0, 'mdi-circle-small', 'mdi-cash-usd']]
       }
+    },
+    remainTotal: function () {
+      const logTotal = this.paymentLog.reduce((cry, i) => {
+        cry += parseFloat(i.price)
+        return cry
+      }, 0)
+      return this.total - logTotal
+    }
+  },
+  methods: {
+    checkOut () {
+      this.$emit('payment-submit', this.paymentLog, this.billType)
+    },
+    cancel () {
+      this.clearBuffer()
+      this.paymentLog = []
+      this.$emit('payment-cancel')
     },
     clearBuffer () {
       this.inputBuffer = ''
@@ -165,27 +202,25 @@ export default {
     },
     logPayment (type) {
       const price = this.readBuffer()
+      console.log(type)
       const icon = Object.entries(this.realName).find(([k, v]) => v === type)[0]
-      console.log(icon)
-      this.remainTotal -= price
       const hash = this.paymentLog.length + 'p' + price + 'icon' + icon
       this.paymentLog.push({
+        id: type,
         price,
         icon,
         hash
       })
     },
     withdrawPayment (index) {
-      const paymentLog = this.paymentLog[index]
       this.paymentLog.splice(index, 1)
-      this.remainTotal += parseFloat(paymentLog.price)
     },
     input (input) {
-      input = this.parseInput(input)
       if (!isNaN(parseInt(input))) {
         this.inputBuffer += input
       } else {
-        switch (input) {
+        const c = this.realName[input]
+        switch (c) {
           case '.':
             this.inputBuffer += input
             break
@@ -198,24 +233,22 @@ export default {
           case 'more':
             break
           default:
-            this.logPayment(input)
+            this.logPayment(c)
         }
       }
     }
   },
-  mounted () {
-    this.remainTotal = this.total
+  async mounted () {
+    // this.paymentMethods = (await Payment.getList())
   }
 }
 </script>
 
 <style scoped>
-    .display {
-    }
 
     .rootContainer {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
+        height: calc(100vh - 200px);
+        display: flex;
     }
 
     .totalNumber {

@@ -1,15 +1,18 @@
 <template>
-    <v-navigation-drawer color="#f5f6fa" width="100%" right fixed hide-overlay
+    <v-navigation-drawer color="#f5f6fa" width="fit-content" left fixed
                          temporary v-model="realShow">
         <div style="margin-top: 64px">
-            <div class="d-flex justify-space-between px-2" style="">
-                <div style="width: 400px">
+            <div class="d-flex justify-space-between px-2 fill-height" style="">
+                <div v-if="order.count()>0" style="width: 400px">
                     <dish-card-list
                             :title="'结账菜品'"
                             :default-expand="true" :orders="order.list"/>
                 </div>
                 <div class="flex-grow-1 px-2">
-                    <check-out-calculator :total="order.total()"/>
+                    <check-out-calculator
+                            @payment-cancel="realShow=false"
+                            @payment-submit="checkOut"
+                            :total="order.total()"/>
                 </div>
             </div>
         </div>
@@ -17,34 +20,37 @@
 </template>
 
 <script>
-import Payment from 'aaden-base-model/lib/Models/Payment'
-import { hillo } from 'innerken-utils'
 import DishCardList from './DishCardList'
 import CheckOutCalculator from './CheckOutCalculator'
+import { hillo } from 'innerken-utils'
+import { findInString, jumpTo, toast } from '../oldjs/common'
 
 export default {
   name: 'CheckOutDrawer',
   components: { CheckOutCalculator, DishCardList },
   props: {
     order: {
-      type: Object
+      type: Object,
+      default: () => ({ total: () => 0, count: () => 0 })
     },
     visible: {
       type: Boolean,
       default: true
+    },
+    checkOutType: {
+      type: String,
+      default: 'checkOut'
+    },
+    tableId: {
+      type: String
+    },
+    discountStr: {
+      type: String,
+      default: ''
     }
   },
   data: function () {
-    return {
-      error: false,
-      errorMessage: '',
-      billType: 0,
-      paymentId: 0,
-      payment: [],
-      tip: '',
-      cardId: '',
-      loadingMemberCard: false
-    }
+    return {}
   },
   computed: {
     realShow: {
@@ -52,46 +58,42 @@ export default {
         return this.visible
       },
       set: function (val) {
-        console.log(val)
         this.$emit('visibility-changed', val)
       }
-    },
-    disableButton: function () {
-      return this.paymentId === 3 && (this.error || this.cardId === '')
-    }
-  },
-  watch: {
-    cardId: async function (val) {
-      this.loadingMemberCard = true
-      try {
-        const res = (await hillo.silentGet('MemberCard.php', {
-          op: 'getOne',
-          id: val
-        })).content
-        if (parseFloat(this.order.total()) > parseFloat(res.leftAmount)) {
-          throw new Error('您的余额为' + res.leftAmount + '，不够支付' + this.order.total() + '。请更换支付方式。')
-        }
-        this.error = false
-        this.errorMessage = ''
-      } catch (error) {
-        console.log(error)
-        this.error = true
-        this.errorMessage = `ERROR: ${error?.data?.info ?? error}`
-      }
-      this.loadingMemberCard = false
     }
   },
   methods: {
     cancel () {
       this.realShow = false
     },
-    checkoutParams () {
-      this.$emit('checkout')
+    async checkOut (paymentLog, billType) {
+      console.log(paymentLog, billType)
+      const print = parseInt(billType)
+      let withTitle = 0
+      let printCount = 1
+      if (print > 0) {
+        withTitle = 1
+      }
+      if (print > 1) {
+        printCount = 2
+      }
+      const discountStr = (this.discountStr ?? '')
+        .indexOf('p') !== -1 ? this.discountStr : ''
+      const checkOutData = {
+        tableId: this.tableId,
+        withTitle,
+        printCount,
+        paymentLog: JSON.stringify(paymentLog),
+        discountStr
+      }
+
+      const res = await hillo.post('Complex.php?op=' + this.checkOutType, checkOutData)
+      console.log(res)
+      if (res) {
+        toast(findInString('JSTableCheckOutSuccess'))
+        jumpTo('index.html')
+      }
     }
-  },
-  async mounted () {
-    console.log(this.order)
-    this.payment = (await Payment.getList()).filter(i => i.id !== 0 && i.isOnline === 0)
   }
 }
 </script>

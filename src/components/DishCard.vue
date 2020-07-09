@@ -11,10 +11,11 @@
                     </div>
                 </div>
                 <div class='priceRow'>
-                    <span v-if="hideFreeDish&&parseInt(dish.categoryTypeId)===11">
+                    <span v-if="dish.isFree==='1'">
                         {{$t('Free')}}
                     </span>
                     <span v-else>
+                        {{dish.isFree}}
                         {{realPrice | priceDisplay}}
                         <span v-if="addPrice!==0">
                                (<price-text :price="addPrice"></price-text>)
@@ -29,8 +30,13 @@
                 </div>
             </div>
             <div v-if="dish.displayApply.length>0" class="dishMod">
-                <div class="d-flex subtitle-2 justify-space-between grey--text text--darken-2" v-bind:key="'mod_order-i'+i+'value'+ap.value" v-for="(ap,i) in dish.displayApply">
-                    <div>{{ap.groupName}}:{{ap.value}}</div><div><template v-if="ap.priceInfo&&ap.priceInfo>0">(<price-text :price="ap.priceInfo" />)</template></div>
+                <div class="d-flex subtitle-2 justify-space-between grey--text text--darken-2"
+                     v-bind:key="'mod_order-i'+i+'value'+ap.value" v-for="(ap,i) in dish.displayApply">
+                    <div>{{ap.groupName}}:{{ap.value}}</div>
+                    <div>
+                        <template v-if="ap.priceInfo&&ap.priceInfo>0">(<price-text :price="ap.priceInfo"/>)
+                        </template>
+                    </div>
                 </div>
             </div>
         </div>
@@ -40,6 +46,7 @@
 
 <script>
 import PriceText from './PriceText'
+
 export default {
   name: 'DishCard',
   components: { PriceText },
@@ -48,17 +55,19 @@ export default {
       type: Object,
       default: () => {
       }
-    },
-    hideFreeDish: {
-      type: Boolean,
-      default: false
     }
   },
   data: function () {
-    return Object.assign({ modInfos: {}, hasMod: 0, apply: [], note: '', sumCount: null, count: null }, { ...this.dish })
+    return Object.assign({
+      modInfos: {},
+      hasMod: 0,
+      apply: [],
+      note: '',
+      sumCount: null,
+      count: null
+    }, { ...this.dish })
   },
-  methods: {
-  }
+  methods: {}
 }
 </script>
 

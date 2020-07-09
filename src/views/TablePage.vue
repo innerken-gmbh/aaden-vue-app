@@ -36,7 +36,6 @@
                                 :orders="orderListModel.list"
                                 :click-callback="addToSplit"
                                 :title="findInString('haveOrderedDish')"
-                                :hide-free-dish="hideFreeDish"
                         />
                     </div>
                 </transition>
@@ -68,7 +67,7 @@
                                         <div class="code">{{dish.code}}<span class="red--text"
                                                                              v-if="dish.haveMod>0">*</span>
                                         </div>
-                                        <div class="price">{{dish.price}}</div>
+                                        <div class="price">{{dish.isFree==='1'?'Frei':dish.price}}</div>
                                     </div>
                                     <div class="name">{{dish.dishName}}</div>
                                 </v-sheet>
@@ -257,8 +256,10 @@
         />
         <check-out-drawer
                 @visibility-changed="changeCheckOut"
-                :order="orderListModel"
-                :total-price="calculateOrderTableTotal()"
+                :order="checkOutModel"
+                :check-out-type="checkOutType"
+                :table-id="id"
+                :discount-str="discountStr"
                 :visible="checkoutShow"/>
     </v-app>
 </template>
@@ -275,7 +276,6 @@ import {
   findElement,
   findInString,
   getActiveTables,
-  getAllDishes,
   getConfig,
   getConsumeTypeList,
   getData,
@@ -306,8 +306,7 @@ import {
   dishesChangeTable,
   popChangeTablePanel,
   popDiscountPanel,
-  popMergeTablePanel,
-  splitOrder
+  popMergeTablePanel
 } from '../oldjs/api'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
@@ -328,7 +327,6 @@ const DefaultAddressInfo = {
   reason: ''
 }
 let listIndex = -1
-let CurrentConsumeType = 0
 let OrderId = -1
 
 function goHome () {
@@ -354,9 +352,12 @@ export default {
   },
   data: function () {
     return {
+      breakCount: 0,
+      checkOutType: 'checkOut',
+      checkOutModel: { total: () => 0, count: () => 0 },
       version: version,
       /**/
-      checkoutShow: true,
+      checkoutShow: false,
       discountStr: null,
       expand: getConfig().defaultExpand,
       lastDish: { name: '' },
@@ -399,87 +400,20 @@ export default {
     changeCheckOut: function (val) {
       console.log(val)
       this.checkoutShow = val
+      this.initialUI()
     },
     findInString,
     async getOrderedDish () {
       try {
         this.orderListModel.loadTTDishList(await getOrderInfo(this.id))
       } catch (e) {
-        showTimedAlert(e)
-        goHome()
+        this.breakCount++
+        if (this.breakCount > 2) {
+          showTimedAlert(e)
+          goHome()
+        }
       }
     },
-    async checkOutPrompt () {
-      const res = await Swal.mixin({
-        input: 'text',
-        confirmButtonText: findInString('nextStep') + ' &rarr;',
-        showCancelButton: true
-      }).queue([
-        {
-          title: findInString('tableCheckOutBillTypeLabel'),
-          input: 'select',
-          inputOptions: {
-            1: findInString('tableCheckOutBillTypeOptionNormal'),
-            2: findInString('tableCheckOutBillTypeOptionCompany'),
-            3: findInString('tableCheckOutBillTypeOption3')
-          }
-        },
-        {
-          title: findInString('tableCheckOutPaymentLabel'),
-          input: 'select',
-          inputOptions: {
-            ...this.payment.filter(i => i.id !== '0')
-              .reduce((cry, i) => {
-                cry[i.id] = i.name
-                return cry
-              }, {})
-          }
-        },
-        {
-          title: findInString('tableCheckOutTipLabel'),
-          input: 'number',
-          inputAttributes: {
-            min: 0,
-            step: 0.1
-          }
-        }
-      ])
-      if (res.value) {
-        if (res.value[1] === '4') {
-          const cardId = await Swal.fire({
-            title: '请输入会员卡号',
-            input: 'text',
-            showCancelButton: false,
-            showLoaderOnConfirm: true,
-            cancelButtonText: 'Stornieren',
-            confirmButtonText: 'Bestätigen',
-            preConfirm: (cardId) => {
-              return hillo.silentGet('MemberCard.php', {
-                op: 'getOne',
-                id: cardId
-              }, { silent: true })
-                .then(res => {
-                  const totalPrice = this.calculateOrderTableTotal()
-                  if (parseFloat(totalPrice) > parseFloat(res.content.leftAmount)) {
-                    throw new Error('您的余额为' + res.content.leftAmount + '，不够支付' + totalPrice + '。请更换支付方式。')
-                  }
-                }).catch(error => {
-                  console.log(error)
-                  Swal.showValidationMessage(
-                    `Request failed: ${error?.data?.info ?? error}`
-                  )
-                })
-            }
-          })
-          console.log(cardId)
-          if (cardId.value) {
-            res.value.push(cardId.value)
-          }
-        }
-        return res.value
-      }
-    },
-
     dishQuery (code, count = 1) {
       getData(this.Config.PHPROOT + 'Dishes.php?op=simpleInfo', {
         op: 'simpleInfo',
@@ -524,23 +458,18 @@ export default {
         }
       }
       this.categories = res.content
-      this.dishes = await getAllDishes()
-    },
-    getTableCurrentStatus () {
-      getData(this.Config.PHPROOT + 'Tables.php', {
-        name: this.tableName
-      }).then(res => {
-        if (goodRequest(res)) {
-          if (this.splitOrderListModel.list.length === 0) {
-            this.getOrderedDish()
-          }
-          if (res.content[0].usageStatus === '0') {
-            showTimedAlert('warning', findInString('alreadyOrdered'), 2000, goHome)
-          }
-        } else {
-          showTimedAlert('warning', findInString('alreadyOrdered'), 2000, goHome)
+      this.dishes = this.categories.reduce((cry, i) => {
+        if (i.dishes) {
+          const tmp = i.dishes.map(d => {
+            if (d.isFree === '1') {
+              d.price = 0
+            }
+            return d
+          })
+          return cry.concat(tmp)
         }
-      })
+        return cry
+      }, [])
     },
     orderOneDish: function (code) {
       this.dishQuery(code)
@@ -576,21 +505,7 @@ export default {
         this.removeFromSplitOrder(0)
       }
     },
-    needSplitOrder: async function () {
-      const realEnd = async () => {
-        const arr = await this.checkOutPrompt()
-        if (arr) {
-          splitOrder(this.discountStr, this.id, this.splitOrderListModel.list, this.initialUI, ...arr)
-        }
-      }
-      if (this.Config.checkOutUsePassword) {
-        popAuthorize('', async () => {
-          await realEnd()
-        }, true)
-      } else {
-        await realEnd()
-      }
-    },
+
     deleteDishes: function () {
       deleteDishes(this.id, this.splitOrderListModel.list, this.initialUI)
     },
@@ -600,9 +515,6 @@ export default {
     calculateOrderTableTotal: function () {
       let totalPrice = 0
       for (const a of this.orderListModel.list) {
-        if (this.hideFreeDish && parseInt(a.categoryTypeId) === 11) {
-          continue
-        }
         a.totalPrice = parseFloat(a.totalPrice).toFixed(2)
         totalPrice += parseFloat(a.totalPrice)
       }
@@ -618,7 +530,6 @@ export default {
       this.splitOrderListModel.add(item, 1)
     },
     addDish: function (dish, count = 1) {
-      console.log(dish, count)
       dish.count = count
       this.cartListModel.add(dish, count)
       this.lastDish = dish
@@ -649,7 +560,6 @@ export default {
         item.selectId = i.selectValue.filter((s, index) => {
           return [(mod[i.id] ?? [])].flat().includes(index)
         })
-        // item.selectId = this.mod['mod' + i.id] ? this.mod['mod' + i.id] : ''
         if (i.required === '1' && item.selectId === '') {
           item.selectId = i.selectValue[0]
         }
@@ -738,13 +648,26 @@ export default {
       if (!memberCardId) {
         memberCardId = null
       }
-      checkOut(this.id, this.cartListModel.list, print, payMethod, tipIncome, memberCardId)
+      checkOut(this.id, print, payMethod, tipIncome, memberCardId)
     },
     jumpToTable: function (tableId, tableName) {
       jumpToTable(tableId, tableName)
       this.initialUI()
     },
-    findConsumeType: (id) => findConsumeTypeById(id),
+    needSplitOrder: async function () {
+      const realEnd = async () => {
+        this.checkoutShow = true
+        this.checkOutModel = this.splitOrderListModel
+        this.checkOutType = 'splitOrder'
+      }
+      if (this.Config.checkOutUsePassword) {
+        popAuthorize('', async () => {
+          await realEnd()
+        }, true)
+      } else {
+        await realEnd()
+      }
+    },
     autoGetFocus () {
       if (UIStatus !== UIState.Init) {
         return
@@ -769,7 +692,6 @@ export default {
           const infos = res.content
           AssginToStringClass('seatTimes', infos.satCount)
           AssginToStringClass('servantName', infos.order.counsumeTypeStatusName)
-          CurrentConsumeType = parseInt(infos.consumeTypeId)
           OrderId = infos.order.id
           AssginToStringClass('orderNumber', infos.order.id)
           AssginToStringClass('type', findConsumeTypeById(infos.consumeTypeId).name)
@@ -802,7 +724,12 @@ export default {
           }
           this.getOrderedDish()
         } else {
-          showTimedAlert('info', findInString('JSTableGetTableDetailFailed') + res.info, 1000, goHome)
+          this.breakCount++
+          if (this.breakCount > 2) {
+            showTimedAlert('info',
+              findInString('JSTableGetTableDetailFailed') + res.info,
+              1000, goHome)
+          }
         }
       })
     },
@@ -867,7 +794,7 @@ export default {
           return
         } else if (t.indexOf('*') !== -1) {
           this.dishQuery(t.split('*')[1], t.split('*')[0])
-        } else if (t === 'rp') {
+        } else if (t === '/rp') {
           hillo.post('Printer.php?op=questReprintOrder', {
             orderId: OrderId
           }).then(res => {
@@ -917,11 +844,10 @@ export default {
     },
     jumpToPayment () {
       const realCheckOut = async () => {
-        const res = await this.checkOutPrompt()
-        if (res) {
-          console.log(res)
-          this.checkOut(...res)
-        }
+        this.checkoutShow = true
+        this.checkOutModel = this.orderListModel
+        this.checkOutType = 'checkOut'
+        this.discountStr = ''
       }
       setTimeout(async () => {
         if (this.Config.checkOutUsePassword) {
@@ -966,13 +892,15 @@ export default {
     tableNewDishTHDelete: function () {
       return findInString('tableNewDishTHDelete')
     },
-    hideFreeDish: function () {
-      return [4, 6].includes(CurrentConsumeType)
-    },
     filteredDish: function () {
       if (this.activeCategory) {
         return this.dishes.filter((item) => {
           return item.categoryId === this.activeCategory.id
+        })
+      }
+      if (this.buffer !== '') {
+        return this.dishes.filter((item) => {
+          return item.dishName.includes(this.buffer) || item.code.includes(this.buffer)
         })
       }
       return this.dishes
@@ -984,8 +912,9 @@ export default {
       this.lastCount = 0
     }
   },
-  created: function () {
+  mounted: function () {
     this.version = version
+    this.breakCount = 0
     AssginToStringClass('version', version)
     resolveBestIP(() => {
       this.Config = getConfig()
@@ -994,7 +923,6 @@ export default {
       }
       getConsumeTypeList(() => {
         this.focusTimer = [setInterval(this.autoGetFocus, 1000),
-          setInterval(this.getTableCurrentStatus, 5000),
           setInterval(this.refreshTables, 5000)]
         window.onkeydown = this.listenKeyDown
         UIStatus = UIState.Init

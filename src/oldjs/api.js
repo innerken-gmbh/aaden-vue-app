@@ -10,15 +10,45 @@ import {
   toast
 } from './common'
 
+export function splitOrder (discountStr = '', id, items,
+  initialUI, print,
+  payMethod, tipIncome, memberCardId) {
+  console.log(arguments)
+  print = parseInt(print)
+  let withTitle = 0
+  let printCount = 1
+  if (print === 2) {
+    withTitle = 1
+  }
+  if (print === 3) {
+    withTitle = 1
+    printCount = 2
+  }
+  discountStr = (discountStr ?? '').indexOf('p') !== -1 ? discountStr : ''
+  requestApi('Complex.php?op=splitOrder', {
+    payMethod,
+    tipIncome: tipIncome || 0,
+    tableId: id,
+    discountStr: discountStr,
+    dishes: JSON.stringify(items),
+    withTitle,
+    printCount,
+    memberCardId: memberCardId ?? null
+  }, RequestMethod.POST, () => {
+    initialUI()
+  })
+}
+
 /**
  * @param {string} tableId
- * @param {[]} cartOrder
  * @param {number|string} print
  * @param {number} payMethod
  * @param {number} tipIncome
  * @param {null} memberCardId
  */
-export function checkOut (tableId, cartOrder, print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
+export function checkOut (tableId, print = 1,
+  payMethod = 1, tipIncome = 0,
+  memberCardId) {
   let withTitle = 0
   let printCount = 1
   if (parseInt(print) === 2) {
@@ -33,18 +63,16 @@ export function checkOut (tableId, cartOrder, print = 1, payMethod = 1, tipIncom
     {
       withTitle: withTitle,
       printCount: printCount,
-      payMethod: payMethod,
       tableId: tableId,
+      payMethod: payMethod,
       tipIncome: tipIncome || 0,
       memberCardId: memberCardId ?? null
     },
     RequestMethod.POST,
     (res) => {
-      cartOrder = []
-      toast(findInString('JSTableCheckOutSuccess'), function () {
-        jumpTo('index.html')
-      })
+      toast(findInString('JSTableCheckOutSuccess'))
       blockReady()
+      jumpTo('index.html')
     },
     false, false
   )
@@ -79,33 +107,6 @@ export function dishesChangeTable (tableName, items, initialUI) {
       loadingComplete()
       initialUI()
     }
-  })
-}
-
-export function splitOrder (discountStr = '', id, items, initialUI, print, payMethod, tipIncome, memberCardId) {
-  console.log(arguments)
-  print = parseInt(print)
-  let withTitle = 0
-  let printCount = 1
-  if (print === 2) {
-    withTitle = 1
-  }
-  if (print === 3) {
-    withTitle = 1
-    printCount = 2
-  }
-  discountStr = (discountStr ?? '').indexOf('p') !== -1 ? discountStr : ''
-  requestApi('Complex.php?op=splitOrder', {
-    payMethod,
-    tipIncome: tipIncome || 0,
-    tableId: id,
-    discountStr: discountStr,
-    dishes: JSON.stringify(items),
-    withTitle,
-    printCount,
-    memberCardId: memberCardId ?? null
-  }, RequestMethod.POST, () => {
-    initialUI()
   })
 }
 

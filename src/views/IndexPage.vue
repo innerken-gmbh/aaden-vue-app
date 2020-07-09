@@ -57,7 +57,7 @@
                                                     </div>
                                                     <div class="text-right">
                                                         <div class="tableStatusContainer tableBold">
-                                                            <span style="border-bottom: 0.2px solid black;">
+                                                            <span style="border-bottom: 0.2px solid white;">
                                                                       {{ table.consumeTypeName}}
                                                             </span>
                                                         </div>
@@ -280,7 +280,8 @@ export default {
         padding: 16px;
         width: 100%;
         height: 100%;
-        background: white;
+        background: #367aeb;
+        color: white;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -325,7 +326,7 @@ export default {
         font-weight: 400;
     }
     .tableTimeLabel {
-        color: #367aeb;
+        color: white;
         font-size: 18px;
         height: 25px;
         font-weight: 900;

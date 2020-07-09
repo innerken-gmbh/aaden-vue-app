@@ -29,8 +29,7 @@
                         <div :key="'order'+title+order.tid+'code'+index+'hash'+order.hash"
                              @click="clickCallback(index)">
                             <dish-card
-                                    :dish="order"
-                                    :hide-free-dish="hideFreeDish"/>
+                                    :dish="order"/>
                         </div>
                     </template>
                 </div>
@@ -59,10 +58,6 @@ export default {
       type: Array,
       default: () => []
     },
-    hideFreeDish: {
-      type: Boolean,
-      default: false
-    },
     clickCallback: {
       type: Function,
       default: () => {
@@ -82,9 +77,6 @@ export default {
     total: function () {
       let totalPrice = 0
       for (const a of this.orders) {
-        if (this.hideFreeDish && parseInt(a.categoryTypeId) === 11) {
-          continue
-        }
         totalPrice += parseFloat(parseInt(a.count) * parseFloat(a.price))
       }
       return totalPrice
@@ -92,9 +84,6 @@ export default {
     count: function () {
       let count = 0
       for (const a of this.orders) {
-        if (this.hideFreeDish && parseInt(a.categoryTypeId) === 11) {
-          continue
-        }
         count += parseInt(a.count)
       }
       return count
