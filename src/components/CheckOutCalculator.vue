@@ -49,7 +49,7 @@
                 </v-sheet>
             </div>
             <v-fade-transition>
-                <div v-if="paymentLog.length>0" class="paymentLog pa-2">
+                <div v-if="paymentLog.length>0" style="width: 550px" class="paymentLog pa-2">
                     <div class="my-3">
                         <h3>结账记录</h3>
                     </div>

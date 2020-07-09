@@ -354,7 +354,7 @@ export default {
     return {
       breakCount: 0,
       checkOutType: 'checkOut',
-      checkOutModel: { total: () => 0, count: () => 0 },
+      checkOutModel: StandardDishesListFactory(),
       version: version,
       /**/
       checkoutShow: false,
@@ -657,7 +657,8 @@ export default {
     needSplitOrder: async function () {
       const realEnd = async () => {
         this.checkoutShow = true
-        this.checkOutModel = this.splitOrderListModel
+        this.checkOutModel.clear()
+        this.checkOutModel.loadTTDishList(this.splitOrderListModel.list)
         this.checkOutType = 'splitOrder'
       }
       if (this.Config.checkOutUsePassword) {
@@ -845,7 +846,7 @@ export default {
     jumpToPayment () {
       const realCheckOut = async () => {
         this.checkoutShow = true
-        this.checkOutModel = this.orderListModel
+        this.checkOutModel.loadTTDishList(this.orderListModel.list)
         this.checkOutType = 'checkOut'
         this.discountStr = ''
       }
