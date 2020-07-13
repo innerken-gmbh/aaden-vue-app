@@ -180,6 +180,8 @@ export default {
   methods: {
     checkOut () {
       this.$emit('payment-submit', this.paymentLog, this.billType)
+      this.clearBuffer()
+      this.paymentLog = []
     },
     cancel () {
       this.clearBuffer()

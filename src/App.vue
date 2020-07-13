@@ -266,6 +266,11 @@ export default {
     .innerItem .text {
         margin-top: 4px;
     }
+    .splitter-no-margin {
+        width: 1px;
+        height: 14px;
+        border: 1px solid cadetblue;
+    }
 
     .splitter {
         margin-left: 8px;

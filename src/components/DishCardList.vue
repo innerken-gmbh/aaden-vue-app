@@ -26,9 +26,11 @@
                  style="max-height: calc(100vh - 200px);overflow: hidden">
                 <div>
                     <template v-for="(order,index) in orders">
-                        <div :key="'order'+title+order.tid+'code'+index+'hash'+order.hash"
-                             @click="clickCallback(index)">
+                        <div :key="'order'+title+order.tid+
+                        'code'+index+'hash'+order.hash">
                             <dish-card
+                                    :click-callback="()=>clickCallback(index)"
+                                    :show-edit="showEdit"
                                     :dish="order"/>
                         </div>
                     </template>
@@ -40,8 +42,8 @@
 </template>
 
 <script>
-import DishCard from './DishCard'
 import { dragscroll } from 'vue-dragscroll'
+import DishCard from './DishCard'
 
 export default {
   name: 'DishCardList',
@@ -66,6 +68,10 @@ export default {
     defaultExpand: {
       type: Boolean,
       default: false
+    },
+    showEdit: {
+      type: Boolean,
+      default: false
     }
   },
   data: function () {
@@ -77,7 +83,7 @@ export default {
     total: function () {
       let totalPrice = 0
       for (const a of this.orders) {
-        totalPrice += parseFloat(parseInt(a.count) * parseFloat(a.price))
+        totalPrice += parseFloat(parseInt(a.count) * parseFloat(a.realPrice))
       }
       return totalPrice
     },

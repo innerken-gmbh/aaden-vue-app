@@ -80,7 +80,7 @@
                 <transition name="fade" appear>
                     <div v-dragscroll v-if="cartListModel.list.length>0" class="white bottomCart surface"
                          id="newDishContainer">
-                        <dish-card-list :click-callback="removeDish" :orders="cartListModel.list"
+                        <dish-card-list :show-edit="true" :click-callback="removeDish" :orders="cartListModel.list"
                                         :default-expand="Config.defaultExpand"
                                         :title="$t('tableNewDishTitle')">
                             <template v-slot:after-title="af">
@@ -405,7 +405,9 @@ export default {
     findInString,
     async getOrderedDish () {
       try {
-        this.orderListModel.loadTTDishList(await getOrderInfo(this.id))
+        if (this.splitOrderListModel.count() === 0) {
+          this.orderListModel.loadTTDishList(await getOrderInfo(this.id))
+        }
       } catch (e) {
         this.breakCount++
         if (this.breakCount > 2) {
@@ -794,10 +796,19 @@ export default {
           blockReady()
           return
         } else if (t.indexOf('*') !== -1) {
-          this.dishQuery(t.split('*')[1], t.split('*')[0])
+          this.dishQuery(t.split('*')[0], t.split('*')[1])
         } else if (t === '/rp') {
           hillo.post('Printer.php?op=questReprintOrder', {
             orderId: OrderId
+          }).then(res => {
+            toast()
+            blockReady()
+          })
+        } else if (t === '/ps') {
+          hillo.post('BackendData.php?op=reprintOrder', {
+            id: OrderId,
+            withTitle: 0,
+            printCount: 1
           }).then(res => {
             toast()
             blockReady()
@@ -899,9 +910,10 @@ export default {
           return item.categoryId === this.activeCategory.id
         })
       }
-      if (this.buffer !== '') {
+      if (this.buffer !== '' && !this.buffer.includes('/')) {
+        const [buffer] = this.buffer.split('*')
         return this.dishes.filter((item) => {
-          return item.dishName.includes(this.buffer) || item.code.includes(this.buffer)
+          return item.dishName.includes(buffer) || item.code.includes(buffer)
         })
       }
       return this.dishes
@@ -978,26 +990,6 @@ export default {
 
     td, th {
         padding: 8px 4px;
-    }
-
-    .nameRow {
-        font-weight: 600;
-        max-width: 144px;
-    }
-
-    .priceRow {
-        font-weight: lighter;
-    }
-
-    .countRow {
-        font-weight: bold;
-    }
-
-    .sumRow {
-        opacity: 1;
-        color: #367aeb;
-        font-size: 16px;
-        font-weight: lighter;
     }
 
     .infoContainer {

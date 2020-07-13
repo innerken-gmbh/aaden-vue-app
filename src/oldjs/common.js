@@ -179,7 +179,6 @@ function reloadTables (arrOfT) {
     }
     areaData.push(area)
   }
-  // console.log(areaData)
   return areaData
 }
 

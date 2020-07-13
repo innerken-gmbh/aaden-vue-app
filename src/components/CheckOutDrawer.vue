@@ -81,6 +81,7 @@ export default {
         .indexOf('p') !== -1 ? this.discountStr : ''
       const checkOutData = {
         tableId: this.tableId,
+        dishes: JSON.stringify(this.order.list),
         withTitle,
         printCount,
         paymentLog: JSON.stringify(paymentLog),
@@ -91,7 +92,10 @@ export default {
       console.log(res)
       if (res) {
         toast(findInString('JSTableCheckOutSuccess'))
-        jumpTo('index.html')
+        this.cancel()
+        if (this.checkOutType === 'checkOut') {
+          jumpTo('index.html')
+        }
       }
     }
   }

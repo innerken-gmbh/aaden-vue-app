@@ -2,10 +2,16 @@
     <v-app>
         <Navgation>
             <template slot="right-slot">
-                <div class="right  valign-wrapper">
-                    <div class="indexTabs flex-Container">
-                        <div @click="popAuthorize('boss',toManage)" class="indexTab S_indexTabBoss"></div>
-                        <div class="indexTab active S_indexTabDineIn"></div>
+                <div class="">
+                    <div style="height: 48px" class="d-flex justify-center align-center fill-height">
+
+                        <v-switch v-model="onlyActive" color="red"></v-switch>
+
+                        <div class="splitter-no-margin mx-1"></div>
+                        <v-btn outlined
+                               color="#367aeb" @click="popAuthorize('boss',toManage)">
+                            {{$t('indexTabBoss')}}
+                        </v-btn>
                     </div>
                 </div>
             </template>
@@ -14,7 +20,7 @@
             <div class="center-panel" id="centerPanel">
                 <div v-dragscroll class="tableDisplay">
                     <div v-cloak class="areaC" id="areaC">
-                        <div :key="area.name" v-cloak v-for="area in areas" class="area">
+                        <div :key="area.name" v-cloak v-for="area in realArea" class="area">
                             <div>
                                 <div class="areaTitle">{{area.areaName}}</div>
                                 <div class="areaTableContainer">
@@ -67,7 +73,8 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div v-else @click="createTable(table.tableName)" class="tableCard notUsed">
+                                            <div v-else @click="createTable(table.tableName)"
+                                                 class="tableCard notUsed">
                                                 <div class="tableCardName">
                                                     {{table.tableName}}
                                                 </div>
@@ -94,7 +101,6 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                     <div class="inputArea">
                         <div class="insInput ">
@@ -119,7 +125,8 @@ import {
   createOrEnterTable,
   findInString,
   getActiveTables,
-  getAllDishes, getConfig,
+  getAllDishes,
+  getConfig,
   getConsumeTypeList,
   jumpToTable,
   oldJumpTo,
@@ -141,6 +148,7 @@ export default {
   components: { Navgation },
   data: function () {
     return {
+      onlyActive: false,
       reservations: [],
       areas: [],
       seen: true,
@@ -150,6 +158,20 @@ export default {
       Config: getConfig(),
       Strings,
       focusTimer: null
+    }
+  },
+  watch: {
+    onlyActive: function () {
+      this.refreshTables()
+    }
+  },
+  computed: {
+    realArea: function () {
+      const only = this.onlyActive
+      return this.areas.map(a => {
+        a.tables = a.tables.filter(t => !only || t.usageStatus === '1')
+        return a
+      }).filter(a => a.tables.length > 0)
     }
   },
   methods: {
@@ -164,6 +186,7 @@ export default {
     },
     async refreshTables () {
       this.areas = await getActiveTables()
+      console.log(this.areas)
     },
     listenKeyDown (e) {
       if (Swal.isVisible()) {
@@ -259,7 +282,7 @@ export default {
         max-height: 900px;
         margin-top: 36px;
         display: grid;
-        grid-template-columns: repeat(3, 124px);
+        grid-template-columns: repeat(1, 124px);
         grid-template-rows: repeat(6, 124px);
         grid-auto-columns: 124px;
         grid-auto-rows: 124px;
@@ -322,9 +345,10 @@ export default {
         font-weight: 600;
     }
 
-    .tableCard.notUsed .tableCardName{
+    .tableCard.notUsed .tableCardName {
         font-weight: 400;
     }
+
     .tableTimeLabel {
         color: white;
         font-size: 18px;
