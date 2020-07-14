@@ -1,6 +1,7 @@
 <template>
     <div v-if="count>0">
-        <v-card class="d-flex py-2 justify-space-between" style="color:white;background: #367aeb;">
+        <v-card class="d-flex py-2 justify-space-between"
+                :color="color" style="color: white">
             <div class="d-flex flex-grow-1 justify-space-between dishListTitle">
                 <div class="d-flex">
                     <slot name="after-title" :expand="expand"><span class="mr-1">{{title}}</span></slot>
@@ -23,12 +24,13 @@
         </v-card>
         <transition name="fade">
             <div v-dragscroll v-if="expand" class="orderDishList"
-                 style="max-height: calc(100vh - 200px);overflow: hidden">
+                 style="max-height: calc(100vh - 88px);overflow: hidden">
                 <div>
                     <template v-for="(order,index) in orders">
                         <div :key="'order'+title+order.tid+
                         'code'+index+'hash'+order.hash">
                             <dish-card
+                                    :color="color"
                                     :click-callback="()=>clickCallback(index)"
                                     :show-edit="showEdit"
                                     :dish="order"/>
@@ -72,6 +74,10 @@ export default {
     showEdit: {
       type: Boolean,
       default: false
+    },
+    color: {
+      type: String,
+      default: '#367aeb'
     }
   },
   data: function () {

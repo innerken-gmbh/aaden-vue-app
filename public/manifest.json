@@ -1,11 +1,11 @@
 {
-  "name": "Aaden-QROrder",
-  "short_name": "Aaden-QR",
-  "start_url": "./menu?TableName=1",
+  "name": "Aaden PWA App",
+  "short_name": "Aaden",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#367aeb",
-  "description": "Aaden-QROrder",
+  "description": "Aaden PWA APP",
   "related_applications": [{
     "platform": "web"
   }]

@@ -1,7 +1,7 @@
 <template>
     <v-sheet rounded :elevation="2" class="fill-height pa-2">
-        <div class="rootContainer fill-height">
-            <div style="width: 550px" class="calculator pa-2 d-flex flex-column fill-height">
+        <div class="d-flex fill-height">
+            <div style="width: 480px" class="calculator pa-2 d-flex flex-column fill-height">
                 <v-sheet :elevation="2" class="display pa-4 d-flex
                  justify-space-between align-end">
                     <div>
@@ -41,83 +41,85 @@
                     </div>
                 </v-sheet>
                 <v-sheet :elevation="2" class="keyboard flex-grow-1 pa-4">
-                    <v-btn @click="input(i)" fab block x-large class="key" :elevation="2" v-for="i in keyArr.flat()"
+                    <v-btn @click="input(i)" :ripple="false" fab block x-large class="key" :elevation="2" v-for="i in keyArr.flat()"
                            :key="'key'+i">
                         <v-icon v-if="!isNaN(i)" x-large>mdi-numeric-{{i}}</v-icon>
                         <v-icon x-large v-else>{{i}}</v-icon>
                     </v-btn>
                 </v-sheet>
             </div>
-            <v-fade-transition>
-                <div v-if="paymentLog.length>0" style="width: 550px" class="paymentLog pa-2">
-                    <div class="my-3">
-                        <h3>结账记录</h3>
-                    </div>
-                    <div class="my-3" v-dragscroll style="max-height: 460px;overflow:hidden">
-                        <template v-for="(paymentInfo,index) in paymentLog">
-                            <v-sheet :key="'price'+paymentInfo.hash" :elevation="0"
-                                     class="d-flex justify-space-between pa-2 my-1">
-                                <h2 class="font-weight-bold"
-                                    style="font-size: 24px">
-                                    {{ paymentInfo.price|priceDisplay }}
-                                </h2>
-                                <div>
-                                    <v-btn text color="success">
-                                        <v-icon large>{{paymentInfo.icon}}</v-icon>
-                                    </v-btn>
-                                    <v-btn @click="withdrawPayment(index)" icon color="error">
-                                        <v-icon>mdi-close</v-icon>
-                                    </v-btn>
-                                </div>
-                            </v-sheet>
-                            <v-divider :key="'d'+paymentInfo.hash"></v-divider>
-                        </template>
-                    </div>
-                    <div style="height: 300px">
-                        <template v-if="remainTotal===0">
 
-                            <v-sheet class="my-6">
-                                <h4>
-                                    {{$t('tableCheckOutBillTypeLabel')}}
-                                </h4>
-                                <v-sheet class="my-2" style="background: transparent">
-                                    <v-chip-group
-                                            v-model="billType"
-                                            mandatory column
-                                            active-class="primary--text">
-                                        <v-chip x-large label>
-                                            {{$t('tableCheckOutBillTypeOptionNormal')}}
-                                        </v-chip>
-                                        <v-chip x-large label>
-                                            {{$t('tableCheckOutBillTypeOptionCompany')}}
-                                        </v-chip>
-                                        <v-chip x-large label>
-                                            {{$t('tableCheckOutBillTypeOption3')}}
-                                        </v-chip>
-                                    </v-chip-group>
-                                </v-sheet>
-                            </v-sheet>
-                            <v-divider class="my-3"></v-divider>
-                            <div style="height: 120px;display: grid;grid-template-columns: 1fr 1fr">
-                                <div class="pa-2">
-                                    <v-btn tile fab
-                                           outlined
-                                           @click="cancel"
-                                           color="error" block x-large>
-                                        {{$t('cancel')}}
-                                    </v-btn>
-                                </div>
-                                <div class="pa-2">
-                                    <v-btn color="success"
-                                           @click="checkOut"
-                                           tile fab block x-large> {{$t('tableCheckOutConfirm')}}
-                                    </v-btn>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
+            <div v-if="paymentLog.length>0"
+                 style="width: calc(100vw - 340px - 24px - 480px)"
+                 class="paymentLog pa-2">
+                <div class="my-3">
+                    <h3>结账记录</h3>
                 </div>
-            </v-fade-transition>
+                <div class="my-3" v-dragscroll style="max-height: 460px;overflow:hidden">
+                    <template v-for="(paymentInfo,index) in paymentLog">
+                        <v-sheet :key="'price'+paymentInfo.hash" :elevation="0"
+                                 class="d-flex justify-space-between pa-2 my-1">
+                            <h2 class="font-weight-bold"
+                                style="font-size: 24px">
+                                {{ paymentInfo.price|priceDisplay }}
+                            </h2>
+                            <div>
+                                <v-btn text color="success">
+                                    <v-icon large>{{paymentInfo.icon}}</v-icon>
+                                </v-btn>
+                                <v-btn @click="withdrawPayment(index)" icon color="error">
+                                    <v-icon>mdi-close</v-icon>
+                                </v-btn>
+                            </div>
+                        </v-sheet>
+                        <v-divider :key="'d'+paymentInfo.hash"></v-divider>
+                    </template>
+                </div>
+                <div style="height: 300px">
+                    <template v-if="remainTotal===0">
+
+                        <v-sheet class="my-6">
+                            <h4>
+                                {{$t('tableCheckOutBillTypeLabel')}}
+                            </h4>
+                            <v-sheet class="my-2" style="background: transparent">
+                                <v-chip-group
+                                        v-model="billType"
+                                        mandatory column
+                                        active-class="primary--text">
+                                    <v-chip x-large label>
+                                        {{$t('tableCheckOutBillTypeOptionNormal')}}
+                                    </v-chip>
+                                    <v-chip x-large label>
+                                        {{$t('tableCheckOutBillTypeOptionCompany')}}
+                                    </v-chip>
+                                    <v-chip x-large label>
+                                        {{$t('tableCheckOutBillTypeOption3')}}
+                                    </v-chip>
+                                </v-chip-group>
+                            </v-sheet>
+                        </v-sheet>
+                        <v-divider class="my-3"></v-divider>
+                        <div style="height: 120px;display: grid;grid-template-columns: 1fr 1fr">
+                            <div class="pa-2">
+                                <v-btn tile fab
+                                       outlined
+                                       @click="cancel"
+                                       color="error" block x-large>
+                                    {{$t('cancel')}}
+                                </v-btn>
+                            </div>
+                            <div class="pa-2">
+                                <v-btn color="success"
+                                       @click="checkOut"
+                                       tile fab block x-large> {{$t('tableCheckOutConfirm')}}
+                                </v-btn>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
         </div>
     </v-sheet>
 </template>
@@ -247,11 +249,6 @@ export default {
 </script>
 
 <style scoped>
-
-    .rootContainer {
-        height: calc(100vh - 200px);
-        display: flex;
-    }
 
     .totalNumber {
         width: fit-content;

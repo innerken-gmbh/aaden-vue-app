@@ -52,7 +52,7 @@ export async function getAllDishes () {
 // const ipcRenderer = require('electron').ipcRenderer
 
 export function tryToReport () {
-  getData('http://' + Config.IP + '/PHP/AccessLog.php?op=reportStatus')
+  getData('https://' + Config.IP + '/PHP/AccessLog.php?op=reportStatus')
     .then(res => {
       if (res.status === 'good') {
         // console.info('reportGood', res)
@@ -355,10 +355,10 @@ export function resolveBestIP (callback) {
   }).then(res => {
     if (goodRequest(res)) {
       Config.IP = res.content
-      Config.REALROOT = `http://${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
+      Config.REALROOT = `${Config.Protocol}${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
       initialConfig()
     } else {
-      Config.REALROOT = `http://${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
+      Config.REALROOT = `${Config.Protocol}${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
       initialConfig()
     }
     if (callback) {

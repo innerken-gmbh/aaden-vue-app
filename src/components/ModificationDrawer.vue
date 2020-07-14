@@ -1,8 +1,8 @@
 <template>
-    <v-navigation-drawer color="#f5f6fa" width="480px" right fixed
+    <v-navigation-drawer color="#f5f6fa" width="fit-content" right fixed
                          temporary v-model="realShow">
-        <div style="margin-top: 64px">
-                <DishModification
+        <div>
+                <dish-modification
                         @modification-submit="submit($event,dish)"
                         @modification-cancel="realShow=false"
                         :options="dish.modInfo">
@@ -15,7 +15,7 @@
                             </v-col>
                         </v-row>
                     </template>
-                </DishModification>
+                </dish-modification>
         </div>
     </v-navigation-drawer>
 </template>

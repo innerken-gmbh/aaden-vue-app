@@ -2,11 +2,12 @@
   "DeviceId": 1,
   "Debug": true,
   "usePassword": false,
-  "UseBossPassword": true,
+  "UseBossPassword": false,
   "resolveIP": true,
   "defaultPassword": "111",
   "lang": "ZH",
   "defaultExpand": true,
   "useOpenTablePrompt": false,
-  "checkOutUsePassword": true
+  "checkOutUsePassword": false,
+  "Protocol": "https://"
 }

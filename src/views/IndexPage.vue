@@ -148,7 +148,7 @@ export default {
   components: { Navgation },
   data: function () {
     return {
-      onlyActive: false,
+      onlyActive: true,
       reservations: [],
       areas: [],
       seen: true,
@@ -283,7 +283,7 @@ export default {
         margin-top: 36px;
         display: grid;
         grid-template-columns: repeat(1, 124px);
-        grid-template-rows: repeat(6, 124px);
+        grid-template-rows: repeat(4, 124px);
         grid-auto-columns: 124px;
         grid-auto-rows: 124px;
         grid-auto-flow: column;
