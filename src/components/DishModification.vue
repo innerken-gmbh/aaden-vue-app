@@ -2,13 +2,13 @@
     <div class="pa-2">
         <slot name="before"></slot>
         <div style="display: grid;max-height: calc(100vh - 150px);
-    grid-template-rows: auto auto auto;
-    grid-template-columns: calc(33vw - 12px);
+    grid-template-rows: auto auto;
+    grid-template-columns: calc(40vw - 12px);
     grid-auto-columns:  calc(33vw - 12px);
     grid-gap: 4px;
     grid-auto-flow: column;
   min-width: 300px;
-
+  overflow: scroll;
 ">
             <template v-for="item in computedOption">
                 <v-sheet style="background: transparent"
