@@ -4,8 +4,6 @@ import { ego, hillo } from 'innerken-utils'
 import i18n from '../i18n'
 import { _Config } from './LocalGlobalSettings'
 
-const { ipcRenderer } = require('electron')
-
 const Config = _Config
 
 export function getConfig () {
@@ -22,10 +20,6 @@ const TOASTTIME = 700
 
 let consumeTypeList = []
 let Dishes = []
-
-export function reload () {
-  ipcRenderer.send('reload')
-}
 
 export function postData (url, data) {
   // Default options are marked with *

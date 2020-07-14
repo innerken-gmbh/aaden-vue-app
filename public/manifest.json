@@ -1,0 +1,12 @@
+{
+  "name": "Aaden-QROrder",
+  "short_name": "Aaden-QR",
+  "start_url": "./menu?TableName=1",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#367aeb",
+  "description": "Aaden-QROrder",
+  "related_applications": [{
+    "platform": "web"
+  }]
+}
