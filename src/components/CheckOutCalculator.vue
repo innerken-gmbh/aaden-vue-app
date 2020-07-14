@@ -36,7 +36,7 @@
                             <v-text-field height="64px" reverse solo
                                           class="payingNumber py-1 text-right"
                                           v-model="inputBuffer"
-                                          :placeholder="''+remainTotal"/>
+                                          :placeholder="''+remainTotal.toFixed(2)"/>
                         </div>
                     </div>
                 </v-sheet>

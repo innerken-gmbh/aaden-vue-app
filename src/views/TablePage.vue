@@ -509,6 +509,7 @@ export default {
         apply.push(item)
       }
       dish.apply = apply
+      mod = {}
       this.addDish(dish, parseInt(this.count))
       UIStatus = UIState.Init
       blockReady()
@@ -1311,6 +1312,7 @@ export default {
         max-width: 512px;
         top: 0;
         right: 352px;
+        z-index: 5;
     }
 
     #dishModification {

@@ -2,20 +2,21 @@
     <v-navigation-drawer color="#f5f6fa" width="fit-content" right fixed
                          temporary v-model="realShow">
         <div>
-                <dish-modification
-                        @modification-submit="submit($event,dish)"
-                        @modification-cancel="realShow=false"
-                        :options="dish.modInfo">
-                    <template v-slot:before>
-                        <v-row>
-                            <v-col cols="12">
-                                <h2>
-                                    {{dish.name}}
-                                </h2>
-                            </v-col>
-                        </v-row>
-                    </template>
-                </dish-modification>
+            <dish-modification
+                    ref="modification"
+                    @modification-submit="submit($event,dish)"
+                    @modification-cancel="realShow=false"
+                    :options="dish.modInfo">
+                <template v-slot:before>
+                    <v-row>
+                        <v-col cols="12">
+                            <h2>
+                                {{dish.name}}
+                            </h2>
+                        </v-col>
+                    </v-row>
+                </template>
+            </dish-modification>
         </div>
     </v-navigation-drawer>
 </template>
@@ -50,6 +51,7 @@ export default {
         return this.modificationShow
       },
       set: function (val) {
+        this.$refs.modification.mod = {}
         this.$emit('visibility-changed', val)
       }
     }
