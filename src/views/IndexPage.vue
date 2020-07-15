@@ -4,9 +4,7 @@
             <template slot="right-slot">
                 <div class="">
                     <div style="height: 48px" class="d-flex justify-center align-center fill-height">
-
                         <v-switch v-model="onlyActive" color="red"></v-switch>
-
                         <div class="splitter-no-margin mx-1"></div>
                         <v-btn outlined
                                color="#367aeb" @click="popAuthorize('boss',toManage)">
