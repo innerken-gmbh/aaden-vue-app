@@ -27,7 +27,6 @@
 <script>
 import { version } from '../../package.json'
 import { showTime } from '../oldjs/common'
-import { changeLanguage, toggleDebug } from '../oldjs/LocalGlobalSettings'
 
 export default {
   name: 'Navgation',
@@ -39,11 +38,6 @@ export default {
     }
   },
   methods: {
-    changeLanguage: function (l) {
-      changeLanguage(l)
-    },
-    toggleDebug
-
   },
   created () {
     setInterval(() => {

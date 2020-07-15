@@ -1,9 +1,9 @@
 <template>
     <v-app class="transparent">
         <main class="main" style="margin-top: 0">
-            <div class="center-panel" id="mainTableContainer" v-cloak>
+            <div class="center-panel" id="mainTableContainer"  v-cloak>
                 <transition name="fade">
-                    <div class="panel">
+                    <div class="panel" v-if="!loading">
                         <dish-card-list
                                 :default-expand="true"
                                 :orders="orderListModel.list"
@@ -14,12 +14,13 @@
                 </transition>
             </div>
             <div v-cloak class="dishListContainer" id="dishListContainer">
-                <div  class="d-flex flex-wrap pa-2">
-                    <div  v-dragscroll   style="z-index: 4">
+                <div class="d-flex flex-wrap pa-2">
+                    <div v-dragscroll style="z-index: 4">
                         <v-card class="ikTitle"><span class="S_classification">分类</span><span
                                 class="strong S_information">信息</span>
                         </v-card>
-                        <v-sheet rounded style="background: transparent" class="d-flex flex-wrap pt-1 pb-2 px-1 mr-2 mt-1">
+                        <v-sheet rounded style="background: transparent"
+                                 class="d-flex flex-wrap pt-1 pb-2 px-1 mr-2 mt-1">
                             <template v-for="category of categories">
                                 <v-sheet large v-bind:key="category.id+'categorys'" class="categoryBlock mt-1"
                                          @click="setActiveCategories(category)"
@@ -48,14 +49,15 @@
             </div>
             <div id="newDishContainerTP">
                 <transition name="fade" appear>
-                    <v-sheet  style="box-shadow: -5px 0px 8px #bfbfbf" v-dragscroll v-if="cartListModel.list.length>0" class="white bottomCart surface"
-                         id="newDishContainer">
+                    <v-sheet style="box-shadow: -5px 0px 8px #bfbfbf" v-dragscroll v-if="cartListModel.list.length>0"
+                             class="white bottomCart surface"
+                             id="newDishContainer">
                         <dish-card-list
                                 :color="'#707070'"
                                 :show-edit="true" :click-callback="removeDish"
                                 :orders="cartListModel.list"
-                                        :default-expand="Config.defaultExpand"
-                                        :title="$t('tableNewDishTitle')">
+                                :default-expand="Config.defaultExpand"
+                                :title="$t('tableNewDishTitle')">
                             <template v-slot:after-title="af">
                                 <div v-if="af" class="lastDish">
                                   <span class="lastDishName"
@@ -98,7 +100,7 @@
                     </div>
 
                 </div>
-                <div v-cloak class="collapse areaC dragscroll" v-dragscroll id="areaC">
+                <div v-cloak class="collapse areaC dragscroll flex-grow-1" v-dragscroll id="areaC">
                     <div v-cloak v-bind:key="'area'+area.areaName" v-for="area in areas" class="area">
                         <div class="areaTitle">{{area.areaName}}</div>
                         <div class="areaTableContainer">
@@ -291,10 +293,6 @@ const DefaultAddressInfo = {
 let listIndex = -1
 let OrderId = -1
 
-function goHome () {
-  jumpTo('index')
-}
-
 // endregion
 export default {
   name: 'TablePage',
@@ -312,6 +310,7 @@ export default {
   },
   data: function () {
     return {
+      loading: true,
       breakCount: 0,
       checkOutType: 'checkOut',
       checkOutModel: StandardDishesListFactory(),
@@ -349,11 +348,21 @@ export default {
     }
   },
   beforeDestroy () {
-    if (this.focusTimer != null) {
-      this.focusTimer.map(clearInterval)
-    }
+    this.goHomeCallBack()
   },
   methods: {
+    goHome () {
+      this.goHomeCallBack()
+      jumpTo('index')
+    },
+    goHomeCallBack () {
+      this.loading = true
+      if (this.focusTimer != null) {
+        console.log(this.focusTimer)
+        this.focusTimer.map(clearInterval)
+        this.focusTimer = null
+      }
+    },
     changeModification: function (val) {
       this.modificationShow = val
     },
@@ -368,11 +377,12 @@ export default {
         if (this.splitOrderListModel.count() === 0) {
           this.orderListModel.loadTTDishList(await getOrderInfo(this.id))
         }
+        this.loading = false
       } catch (e) {
         this.breakCount++
         if (this.breakCount > 2) {
           showTimedAlert(e)
-          goHome()
+          this.goHome()
         }
       }
     },
@@ -542,7 +552,7 @@ export default {
       } else if (this.cartListModel.list.length > 0) {
         this.cartListModel.clear()
       } else if (UIStatus === UIState.Init) {
-        goHome()
+        this.goHome()
       }
       blockReady()
     },
@@ -595,6 +605,7 @@ export default {
       checkOut(this.id, print, payMethod, tipIncome, memberCardId)
     },
     jumpToTable: function (tableId, tableName) {
+      this.goHomeCallBack()
       jumpToTable(tableId, tableName)
       this.initialUI()
     },
@@ -672,10 +683,13 @@ export default {
           this.getOrderedDish()
         } else {
           this.breakCount++
+          console.log(this.breakCount)
           if (this.breakCount > 2) {
-            showTimedAlert('info',
-              findInString('JSTableGetTableDetailFailed') + res.info,
-              1000, goHome)
+            if (!Swal.isVisible()) {
+              showTimedAlert('info',
+                findInString('JSTableGetTableDetailFailed') + res.info,
+                1000, this.goHome)
+            }
           }
         }
       })
@@ -789,7 +803,7 @@ export default {
           this.initialUI()
           toast(findInString('orderSuccess'), () => {
             if (this.Config.jumpToHomeWhenOrder) {
-              goHome()
+              this.goHome()
             }
           })
         } else {
@@ -842,7 +856,8 @@ export default {
         }
         getConsumeTypeList(() => {
           this.focusTimer = [setInterval(this.autoGetFocus, 1000),
-            setInterval(this.refreshTables, 5000)]
+            setInterval(this.refreshTables, 5000), setInterval(this.getTableDetail, 3000)]
+          console.log(this.focusTimer)
           window.onkeydown = this.listenKeyDown
           UIStatus = UIState.Init
           document.getElementById('instruction').focus()
@@ -852,7 +867,7 @@ export default {
           blockReady()
           this.initialUI()
           this.refreshTables()
-          setTimeout(this.getTableDetail, 1000)
+          this.getTableDetail()
         })
       })
     }
