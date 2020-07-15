@@ -145,6 +145,7 @@ export default {
     return {
       billType: 0,
       realName: {
+        'mdi-minus': 'reverse',
         'mdi-backspace': 'back',
         'mdi-restart': 'clear',
         'mdi-circle-small': '.',
@@ -161,13 +162,13 @@ export default {
     keyArr: function () {
       if (this.remainTotal >= 0) {
         return [
-          [1, 2, 3, 'mdi-backspace'],
+          [1, 2, 3, 'mdi-minus'],
           [4, 5, 6, 'mdi-restart'],
           [7, 8, 9, 'mdi-credit-card-outline'],
           ['mdi-dots-horizontal', 0, 'mdi-circle-small', 'mdi-cash-usd']]
       } else {
         return [
-          [1, 2, 3, 'mdi-backspace'],
+          [1, 2, 3, 'mdi-minus'],
           [4, 5, 6, 'mdi-restart'],
           [7, 8, 9, 'mdi-bell'],
           ['mdi-dots-horizontal', 0, 'mdi-circle-small', 'mdi-cash-usd']]
@@ -235,6 +236,9 @@ export default {
             break
           case 'clear':
             this.clearBuffer()
+            break
+          case 'reverse':
+            this.inputBuffer = '-' + this.inputBuffer
             break
           case 'more':
             break
