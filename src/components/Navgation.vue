@@ -13,7 +13,7 @@
                 </div>
                 <div class="splitter"></div>
                 <v-sheet class="appName">
-                    {{version}}
+                    OV-{{version}}
                 </v-sheet>
             </div>
             <div class="">
