@@ -42,7 +42,7 @@ export default {
       default: 'checkOut'
     },
     tableId: {
-      type: String
+      type: [String, Number]
     },
     discountStr: {
       type: String,

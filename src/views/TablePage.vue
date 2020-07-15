@@ -1,7 +1,7 @@
 <template>
     <v-app class="transparent">
         <main class="main" style="margin-top: 0">
-            <div class="center-panel" id="mainTableContainer"  v-cloak>
+            <div class="center-panel" id="mainTableContainer" v-cloak>
                 <transition name="fade">
                     <div class="panel" v-if="!loading">
                         <dish-card-list
@@ -279,6 +279,7 @@ import { getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import CheckOutDrawer from '../components/CheckOutDrawer'
 import { getAllDishesWithCache } from '../oldjs/StaticModel'
+import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 
 const UIState = {
   Init: 0,
@@ -306,6 +307,9 @@ export default {
     },
     tableName: {
       type: String
+    },
+    refresh: {
+      type: Number
     }
   },
   data: function () {
@@ -356,12 +360,8 @@ export default {
       jumpTo('index')
     },
     goHomeCallBack () {
+      clearAllTimer()
       this.loading = true
-      if (this.focusTimer != null) {
-        console.log(this.focusTimer)
-        this.focusTimer.map(clearInterval)
-        this.focusTimer = null
-      }
     },
     changeModification: function (val) {
       this.modificationShow = val
@@ -380,7 +380,7 @@ export default {
         this.loading = false
       } catch (e) {
         this.breakCount++
-        if (this.breakCount > 2) {
+        if (this.breakCount > 1) {
           showTimedAlert(e)
           this.goHome()
         }
@@ -855,9 +855,9 @@ export default {
           AssginToStringClass(i, this.Strings[this.Config.lang][i])
         }
         getConsumeTypeList(() => {
-          this.focusTimer = [setInterval(this.autoGetFocus, 1000),
-            setInterval(this.refreshTables, 5000), setInterval(this.getTableDetail, 3000)]
-          console.log(this.focusTimer)
+          [setInterval(this.autoGetFocus, 1000),
+            setInterval(this.refreshTables, 5000),
+            setInterval(this.getTableDetail, 3000)].map(addToTimerList)
           window.onkeydown = this.listenKeyDown
           UIStatus = UIState.Init
           document.getElementById('instruction').focus()
@@ -904,7 +904,7 @@ export default {
     }
   },
   watch: {
-    id: function (val) {
+    refresh: function (val) {
       this.realInitial()
     }
   },

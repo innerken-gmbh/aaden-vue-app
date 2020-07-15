@@ -565,7 +565,7 @@ export function remove (arr, index) {
 
 export function jumpTo (url, params) {
   url = url.split('.')[0]
-  router.push({ name: url, params })
+  router.replace({ name: url, params })
 }
 
 export function oldJumpTo (url, params) {

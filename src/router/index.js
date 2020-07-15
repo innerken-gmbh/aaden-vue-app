@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import IndexPage from '../views/IndexPage'
 import TablePage from '../views/TablePage'
+import { clearAllTimer } from '../oldjs/Timer'
 
 Vue.use(VueRouter)
 
@@ -9,6 +10,7 @@ const routes = [
   {
     path: '/',
     name: 'index',
+    props: true,
     component: IndexPage
   },
   {
@@ -25,5 +27,15 @@ const routes = [
 const router = new VueRouter({
   routes
 })
+let count = 0
+count++
 
+router.beforeEach((to, from, next) => {
+  count += 1
+  clearAllTimer()
+  if (!to.params.refresh) {
+    Object.assign(to.params, { refresh: count })
+  }
+  next()
+})
 export default router

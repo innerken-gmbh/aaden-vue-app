@@ -139,6 +139,7 @@ import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
 import StaticSetting from '../oldjs/LocalGlobalSettings'
+import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 
 export default {
   name: 'IndexPage',
@@ -146,6 +147,11 @@ export default {
     dragscroll
   },
   components: { Navgation },
+  props: {
+    refresh: {
+      type: Number
+    }
+  },
   data: function () {
     return {
       onlyActive: true,
@@ -162,6 +168,9 @@ export default {
   },
   watch: {
     onlyActive: function () {
+      this.refreshTables()
+    },
+    refresh: function () {
       this.refreshTables()
     }
   },
@@ -186,7 +195,7 @@ export default {
     },
     async refreshTables () {
       this.areas = await getActiveTables()
-      console.log(this.areas)
+      // console.log(this.areas)
     },
     listenKeyDown (e) {
       if (Swal.isVisible()) {
@@ -241,19 +250,18 @@ export default {
       getConsumeTypeList(() => {
         window.onkeydown = this.listenKeyDown
         this.refreshTables()
-        this.focusTimer =
-          [setInterval(this.autoGetFocus, 1000),
-            setInterval(this.refreshTables, 5000)]
+
         getAllDishes().then(res => {
           this.dishes = res
         })
+        setInterval(this.refreshTables, 5000)
+        const list = [setInterval(this.autoGetFocus, 1000)]
+        list.map(addToTimerList)
       })
     })
   },
   beforeDestroy () {
-    if (this.focusTimer != null) {
-      this.focusTimer.map(clearInterval)
-    }
+    clearAllTimer()
   }
 }
 </script>

@@ -2,9 +2,9 @@ import { IKUtils } from 'innerken-utils'
 
 const StaticSetting = require('@/assets/AadenConfig.json')
 const urlLang = IKUtils.getQueryString('lang')
-console.log(StaticSetting.lang)
+// console.log(StaticSetting.lang)
 StaticSetting.lang = urlLang || 'ZH'
-console.log(StaticSetting.lang)
+// console.log(StaticSetting.lang)
 let Config = {}
 Config.IP = 'localhost'
 Config.Dir = ''

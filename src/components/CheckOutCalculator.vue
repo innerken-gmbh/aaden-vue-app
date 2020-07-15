@@ -41,7 +41,9 @@
                     </div>
                 </v-sheet>
                 <v-sheet :elevation="2" class="keyboard flex-grow-1 pa-4">
-                    <v-btn @click="input(i)" :ripple="false" fab block x-large class="key" :elevation="2" v-for="i in keyArr.flat()"
+                    <v-btn @click="input(i)" block x-large class="key"
+                           style="height: 100%"
+                           :elevation="2" v-for="i in keyArr.flat()"
                            :key="'key'+i">
                         <v-icon v-if="!isNaN(i)" x-large>mdi-numeric-{{i}}</v-icon>
                         <v-icon x-large v-else>{{i}}</v-icon>
