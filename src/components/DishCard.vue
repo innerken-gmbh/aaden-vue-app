@@ -22,7 +22,7 @@
                     </span>
                         <span v-else>
                         {{dish.isFree}}
-                        {{realPrice | priceDisplay}}
+                        {{dish.realPrice | priceDisplay}}
                     </span>
                     </div>
 
