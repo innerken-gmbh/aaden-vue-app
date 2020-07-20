@@ -1,7 +1,7 @@
 <template>
-    <transition name="fade">
+    <keep-alive>
         <router-view/>
-    </transition>
+    </keep-alive>
 </template>
 
 <script>
@@ -10,8 +10,7 @@ import { tryToReport } from './oldjs/common'
 export default {
   name: 'App',
   props: {},
-  data: () => ({
-  }),
+  data: () => ({}),
   mounted () {
     tryToReport()
   }
@@ -22,7 +21,7 @@ export default {
 
     .theme--light.v-application {
         background: transparent;
-        color: rgba(0,0,0,.87);
+        color: rgba(0, 0, 0, .87);
     }
 
     table {
@@ -68,20 +67,24 @@ export default {
         vertical-align: middle;
         border-radius: 2px;
     }
-    nav{
+
+    nav {
         position: fixed;
         width: 100%;
         height: 48px;
         background: white;
     }
-    .left{
+
+    .left {
         float: left;
     }
-    .right{
+
+    .right {
         float: right;
     }
+
     body {
-        font-family: Arial, Lantinghei SC,sans-serif, serif;
+        font-family: Arial, Lantinghei SC, sans-serif, serif;
         user-select: none;
     }
 
@@ -128,7 +131,8 @@ export default {
         color: #357aeb;
         width: 100%;
     }
-    .inputArea{
+
+    .inputArea {
         width: 100%;
         padding-right: 36px;
     }
@@ -233,21 +237,25 @@ export default {
         margin-top: 6px;
 
     }
-    .floatMenuPanelItem.focus{
+
+    .floatMenuPanelItem.focus {
         border-radius: 12px;
         background: #367aeb;
         color: white;
         box-shadow: 0 3px 4px 0 rgba(0, 86, 255, 0.15);
     }
-    .floatMenuPanelItem:hover{
+
+    .floatMenuPanelItem:hover {
         border-radius: 12px;
         background: #367aeb;
         color: white;
         box-shadow: 0 3px 4px 0 rgba(0, 86, 255, 0.15);
     }
-    .floatMenuPanelItem:hover .innerItem{
+
+    .floatMenuPanelItem:hover .innerItem {
         color: white;
     }
+
     .innerItem {
         background: center / contain no-repeat;
         width: 100px;
@@ -263,9 +271,11 @@ export default {
     .innerItem .icon {
         height: 28px;
     }
+
     .innerItem .text {
         margin-top: 4px;
     }
+
     .splitter-no-margin {
         width: 1px;
         height: 14px;
@@ -327,9 +337,11 @@ export default {
         padding: 12px;
         padding-bottom: 18px;
     }
-    .hintPanel{
+
+    .hintPanel {
         padding-bottom: 24px;
     }
+
     .infoContainer {
         margin: 12px;
         border-radius: 5px;
@@ -581,11 +593,14 @@ export default {
         display: inline-block;
         margin-right: 10px;
     }
+
     .list-complete-enter, .list-complete-leave-to
-        /* .list-complete-leave-active for below version 2.1.8 */ {
+        /* .list-complete-leave-active for below version 2.1.8 */
+    {
         opacity: 0;
         transform: translateY(30px);
     }
+
     .list-complete-leave-active {
         position: absolute;
     }
@@ -593,10 +608,13 @@ export default {
     .fade-enter-active, .fade-leave-active {
         transition: opacity .3s;
     }
-    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+
+    .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */
+    {
         opacity: 0;
     }
-    .littleIcon{
+
+    .littleIcon {
         font-size: 18px !important;
     }
 
@@ -609,19 +627,21 @@ export default {
         margin-right: 4px;
         margin-top: 4px;
         width: 48px;
-        box-shadow: 0 3px 6px #d0d2d9;
+    font-weight: bold;
         height: 48px;
         display: flex;
         justify-items: center;
         align-items: center;
-        background: #367aeb;
-        color: white;
+        background: transparent;
+        color: #367aeb;
         border-radius: 5px;
         cursor: pointer;
     }
 
     .collapse .tableCard.notUsed {
         background: white;
+        font-weight: 400;
+        box-shadow: 0 3px 6px #d0d2d9;
         color: black;
     }
 
@@ -637,32 +657,30 @@ export default {
         font-weight: 600;
     }
 
-    .dishCard{
+    .dishCard {
         margin-top: 8px;
         background: white;
         border-radius: 5px;
         box-shadow: 0px 3px 4px 0 rgba(220, 224, 239, 0.59);
     }
-    .dishInfo{
+
+    .dishInfo {
         width: 100%;
         font-size: 18px;
     }
-    .basicInfo{
+
+    .basicInfo {
         padding: 8px 30px;
         width: 100%;
         justify-content: space-between;
     }
-    .dishName{
-        max-width: 180px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space:nowrap;
-    }
-    .codeRow{
+
+    .codeRow {
         font-weight: 900;
         width: 48px;
     }
-    .dishMod{
+
+    .dishMod {
         margin-left: 48px;
         padding: 8px 30px;
     }

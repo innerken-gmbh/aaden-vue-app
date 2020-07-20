@@ -4,8 +4,6 @@ import { ego, hillo } from 'innerken-utils'
 import i18n from '../i18n'
 import { _Config } from './LocalGlobalSettings'
 
-const { ipcRenderer } = require('electron')
-
 const Config = _Config
 
 export function getConfig () {
@@ -22,10 +20,6 @@ const TOASTTIME = 700
 
 let consumeTypeList = []
 let Dishes = []
-
-export function reload () {
-  ipcRenderer.send('reload')
-}
 
 export function postData (url, data) {
   // Default options are marked with *
@@ -58,7 +52,7 @@ export async function getAllDishes () {
 // const ipcRenderer = require('electron').ipcRenderer
 
 export function tryToReport () {
-  getData('http://' + Config.IP + '/PHP/AccessLog.php?op=reportStatus')
+  getData('https://' + Config.IP + '/PHP/AccessLog.php?op=reportStatus')
     .then(res => {
       if (res.status === 'good') {
         // console.info('reportGood', res)
@@ -361,10 +355,10 @@ export function resolveBestIP (callback) {
   }).then(res => {
     if (goodRequest(res)) {
       Config.IP = res.content
-      Config.REALROOT = `http://${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
+      Config.REALROOT = `${Config.Protocol}${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
       initialConfig()
     } else {
-      Config.REALROOT = `http://${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
+      Config.REALROOT = `${Config.Protocol}${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
       initialConfig()
     }
     if (callback) {
@@ -571,7 +565,7 @@ export function remove (arr, index) {
 
 export function jumpTo (url, params) {
   url = url.split('.')[0]
-  router.push({ name: url, params })
+  router.replace({ name: url, params })
 }
 
 export function oldJumpTo (url, params) {

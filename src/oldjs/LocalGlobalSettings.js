@@ -1,50 +1,20 @@
-import settings from 'electron-settings'
-import { reload } from './common'
+import { IKUtils } from 'innerken-utils'
 
-const StaticSetting = settings.get('config')
+const StaticSetting = require('@/assets/AadenConfig.json')
+const urlLang = IKUtils.getQueryString('lang')
+// console.log(StaticSetting.lang)
+StaticSetting.lang = urlLang || 'ZH'
+// console.log(StaticSetting.lang)
 let Config = {}
 Config.IP = 'localhost'
 Config.Dir = ''
-Config.REALROOT = `http://${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
+Config.REALROOT = `https://${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
 Config = Object.assign(Config, StaticSetting)
 Config.PHPROOT = `${Config.REALROOT}/PHP/`
 Config.lang = StaticSetting.lang
 window.Config = Config
-window.useCurrentConfig = useCurrentConfig
-window.hardReload = hardReload
-window.setDeviceId = setDeviceId
 
 export const _Config = Config
-
-function useCurrentConfig () {
-  settings.set('config', Config)
-  reload()
-}
-
-function hardReload () {
-  settings.deleteAll()
-}
-
-function setDeviceId (id) {
-  settings.set('config.DeviceId', id)
-  reload()
-}
-
-export function changeLanguage (l) {
-  settings.set('config.lang', l)
-  reload()
-}
-
-let debugCounter = 0
-
-export function toggleDebug () {
-  debugCounter++
-  if (debugCounter > 10) {
-    settings.set('config.Debug', !settings.get('config.Debug'))
-    reload()
-    debugCounter = 0
-  }
-}
 
 StaticSetting.fetch = false
 export default StaticSetting

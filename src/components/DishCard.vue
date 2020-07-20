@@ -22,28 +22,28 @@
                     </span>
                         <span v-else>
                         {{dish.isFree}}
-                        {{realPrice | priceDisplay}}
+                        {{dish.realPrice | priceDisplay}}
                     </span>
                     </div>
 
                 </div>
                 <div v-if="dish.note" class="dishNote">
-                    <v-icon small class="mr-2">mdi-pencil</v-icon>{{dish.note}}
+                    <v-icon color="primary" small class="mr-2">mdi-pencil</v-icon>
+                    {{dish.note}}
                 </div>
                 <div v-if="dish.displayApply.length>0" class="dishMod">
                     <div class="d-flex subtitle-2 justify-space-between grey--text text--darken-2"
                          v-bind:key="'mod_order-i'+i+'value'+ap.value" v-for="(ap,i) in dish.displayApply">
                         <div>{{ap.groupName}}:{{ap.value}}</div>
                         <div>
-                            <template v-if="ap.priceInfo&&ap.priceInfo>0">(
-                                <price-text :price="ap.priceInfo"/>
-                                )
+                            <template v-if="ap.priceInfo&&ap.priceInfo>0">
+                                (<price-text :price="ap.priceInfo"/>)
                             </template>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="dishCount">&times;{{dish.count}}
+            <div :style="{color }" class="dishCount">&times;{{dish.count}}
             </div>
         </div>
         <div class="editRow">
@@ -73,6 +73,10 @@ export default {
     showEdit: {
       type: Boolean,
       default: false
+    },
+    color: {
+      type: String,
+      default: '#367aeb'
     }
   },
   data: function () {
@@ -133,7 +137,7 @@ export default {
     }
 
     .dishName {
-        max-width: 180px;
+        max-width: 150px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

@@ -1,21 +1,21 @@
 <template>
     <v-navigation-drawer color="#f5f6fa" width="fit-content" left fixed
                          temporary v-model="realShow">
-        <div style="margin-top: 64px">
-            <div class="d-flex justify-space-between px-2 fill-height" style="">
-                <div v-if="order.count()>0" style="width: 400px">
-                    <dish-card-list
-                            :title="'结账菜品'"
-                            :default-expand="true" :orders="order.list"/>
-                </div>
-                <div class="flex-grow-1 px-2">
-                    <check-out-calculator
-                            @payment-cancel="realShow=false"
-                            @payment-submit="checkOut"
-                            :total="order.total()"/>
-                </div>
+
+        <div class="d-flex justify-space-between pa-2 fill-height" style="">
+            <div v-if="order.count()>0" style="width: 340px">
+                <dish-card-list
+                        :title="'结账菜品'"
+                        :default-expand="true" :orders="order.list"/>
+            </div>
+            <div class="flex-grow-1 px-2">
+                <check-out-calculator
+                        @payment-cancel="realShow=false"
+                        @payment-submit="checkOut"
+                        :total="order.total()"/>
             </div>
         </div>
+
     </v-navigation-drawer>
 </template>
 
@@ -42,7 +42,7 @@ export default {
       default: 'checkOut'
     },
     tableId: {
-      type: String
+      type: [String, Number]
     },
     discountStr: {
       type: String,

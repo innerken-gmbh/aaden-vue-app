@@ -1,36 +1,9 @@
 <template>
     <v-app class="transparent">
-        <Navgation>
-            <template v-slot:right-slot>
-                <div v-cloak>
-                    <div class="indexTabs flex-Container">
-                        <a @click="takeawayInfoShow=!takeawayInfoShow" class="indexTab S_takeawayAddress">外卖地址</a>
-                    </div>
-                    <div v-show="takeawayInfoShow" class=" takeawayFloat surface">
-                        {{ rawAddressInfo.firstName }} {{ rawAddressInfo.lastName }}
-                        <div> {{ rawAddressInfo.addressLine1 }}</div>
-                        <div> {{ rawAddressInfo.addressline2 }}</div>
-                        <div> {{ rawAddressInfo.city }} {{ rawAddressInfo.plz }}</div>
-                        <div><span class="font-weight-bold">Email: </span>{{ rawAddressInfo.email }}</div>
-                        <div><span class="font-weight-bold">Phone: </span>{{ rawAddressInfo.tel }}</div>
-                        <span class="font-weight-bold">Lieferzeit: </span>
-                        {{ rawAddressInfo.date }}
-                        {{ rawAddressInfo.time }}
-                        {{ rawAddressInfo.note }}
-                        <div class="chip" v-show="rawAddressInfo.reason">
-                            {{ rawAddressInfo.deliveryMethod }}
-                        </div>
-                        <div class="chip" v-show="rawAddressInfo.reason">
-                            {{ rawAddressInfo.reason }}
-                        </div>
-                    </div>
-                </div>
-            </template>
-        </Navgation>
-        <main class="main" style="margin-top:48px ">
+        <main class="main" style="margin-top: 0">
             <div class="center-panel" id="mainTableContainer" v-cloak>
                 <transition name="fade">
-                    <div class="panel">
+                    <div class="panel" v-if="!loading">
                         <dish-card-list
                                 :default-expand="true"
                                 :orders="orderListModel.list"
@@ -41,24 +14,22 @@
                 </transition>
             </div>
             <div v-cloak class="dishListContainer" id="dishListContainer">
-                <div style="padding: 8px">
-                    <v-card class="ikTitle"><span class="S_classification">分类</span><span
-                            class="strong S_information">信息</span>
-                    </v-card>
-                    <div v-dragscroll>
-                        <div class="categoryList">
+                <div class="d-flex flex-wrap pa-2">
+                    <div v-dragscroll style="z-index: 4">
+                        <v-card class="ikTitle"><span class="S_classification">分类</span><span
+                                class="strong S_information">信息</span>
+                        </v-card>
+                        <v-sheet rounded style="background: transparent"
+                                 class="d-flex flex-wrap pt-1 pb-2 px-1 mr-2 mt-1">
                             <template v-for="category of categories">
-                                <v-sheet large v-bind:key="category.id+'categorys'" class="categoryBlock "
+                                <v-sheet large v-bind:key="category.id+'categorys'" class="categoryBlock mt-1"
                                          @click="setActiveCategories(category)"
                                          v-bind:class="{'active  elevation-5':category.isActive}">
                                     <div class="name">{{category.name}}</div>
                                 </v-sheet>
                             </template>
-                        </div>
+                        </v-sheet>
                     </div>
-                    <v-card class="ikTitle"><span
-                            class="strong S_allDish">{{activeCategory?activeCategory.name:'所有菜品'}}</span>
-                    </v-card>
                     <div v-dragscroll class="dragscroll dishCardListContainer">
                         <div class="dishCardList">
                             <template v-for="dish of filteredDish">
@@ -78,11 +49,15 @@
             </div>
             <div id="newDishContainerTP">
                 <transition name="fade" appear>
-                    <div v-dragscroll v-if="cartListModel.list.length>0" class="white bottomCart surface"
-                         id="newDishContainer">
-                        <dish-card-list :show-edit="true" :click-callback="removeDish" :orders="cartListModel.list"
-                                        :default-expand="Config.defaultExpand"
-                                        :title="$t('tableNewDishTitle')">
+                    <v-sheet style="box-shadow: -5px 0px 8px #bfbfbf" v-dragscroll v-if="cartListModel.list.length>0"
+                             class="white bottomCart surface"
+                             id="newDishContainer">
+                        <dish-card-list
+                                :color="'#707070'"
+                                :show-edit="true" :click-callback="removeDish"
+                                :orders="cartListModel.list"
+                                :default-expand="Config.defaultExpand"
+                                :title="$t('tableNewDishTitle')">
                             <template v-slot:after-title="af">
                                 <div v-if="af" class="lastDish">
                                   <span class="lastDishName"
@@ -92,11 +67,11 @@
                                 </div>
                             </template>
                         </dish-card-list>
-                    </div>
+                    </v-sheet>
                 </transition>
             </div>
             <div class="panelF">
-                <div class="infoPanel surface shadowForInsPanel">
+                <div style="z-index: 1" class="infoPanel surface shadowForInsPanel">
                     <v-card class="topRow">
                         <div class="bigTableName z-depth-2">{{tableName}}</div>
                         <div class="d-flex">
@@ -111,18 +86,7 @@
                         </div>
                     </v-card>
                     <div class="py-4 px-9">
-                        <div class="spaceBetween">
-                            <div class="verticalInfoRowLabel S_tableInfoLabelTime"></div>
-                            <div class="verticalInfoRowText S_startTime"></div>
-                        </div>
-                        <div class="mt-1 spaceBetween">
-                            <div class="verticalInfoRowLabel S_tableInfoLabelSeat"></div>
-                            <div class="verticalInfoRowText S_seatTimes"></div>
-                        </div>
-                        <div class="mt-1 typeLabel">
-                            <span class="S_type"> </span>/<span class="S_servantName"> </span>
-                        </div>
-                        <div class="d-flex justify-space-between align-center mt-4">
+                        <div class="d-flex justify-space-between align-center">
                             <div>
                                 <v-icon color="black" x-large>mdi-currency-usd</v-icon>
                             </div>
@@ -136,7 +100,7 @@
                     </div>
 
                 </div>
-                <div v-cloak class="collapse areaC dragscroll" v-dragscroll id="areaC">
+                <div v-cloak class="collapse areaC dragscroll flex-grow-1" v-dragscroll id="areaC">
                     <div v-cloak v-bind:key="'area'+area.areaName" v-for="area in areas" class="area">
                         <div class="areaTitle">{{area.areaName}}</div>
                         <div class="areaTableContainer">
@@ -158,7 +122,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="insPanel surface">
+                <div style="z-index: 1;" class="insPanel surface">
                     <div class="hintPanel">
                         <div class="left-panel">
                             <div class="floatMenuPanel" id="listOfFunction">
@@ -182,20 +146,20 @@
                                         <div class="text S_discount"></div>
                                     </div>
                                 </div>
-                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(3)">
-                                    <div class="innerItem">
-                                        <div class="icon"><i class="material-icons">swap_horiz</i></div>
-                                        <div class="text S_tableChange"></div>
-                                    </div>
+                                <!--                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(3)">-->
+                                <!--                                    <div class="innerItem">-->
+                                <!--                                        <div class="icon"><i class="material-icons">swap_horiz</i></div>-->
+                                <!--                                        <div class="text S_tableChange"></div>-->
+                                <!--                                    </div>-->
 
-                                </div>
-                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(4)">
-                                    <div class="innerItem">
-                                        <div class="icon"><i class="material-icons">merge_type</i></div>
-                                        <div class="text S_tableMerge"></div>
-                                    </div>
+                                <!--                                </div>-->
+                                <!--                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(4)">-->
+                                <!--                                    <div class="innerItem">-->
+                                <!--                                        <div class="icon"><i class="material-icons">merge_type</i></div>-->
+                                <!--                                        <div class="text S_tableMerge"></div>-->
+                                <!--                                    </div>-->
 
-                                </div>
+                                <!--                                </div>-->
                                 <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(5)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">account_balance_wallet</i></div>
@@ -308,13 +272,14 @@ import {
   popDiscountPanel,
   popMergeTablePanel
 } from '../oldjs/api'
-import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
 import DishCardList from '../components/DishCardList'
 import ModificationDrawer from '../components/ModificationDrawer'
 import { getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import CheckOutDrawer from '../components/CheckOutDrawer'
+import { getAllDishesWithCache } from '../oldjs/StaticModel'
+import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 
 const UIState = {
   Init: 0,
@@ -329,29 +294,27 @@ const DefaultAddressInfo = {
 let listIndex = -1
 let OrderId = -1
 
-function goHome () {
-  jumpTo('index')
-}
-
 // endregion
 export default {
   name: 'TablePage',
   directives: {
     dragscroll
   },
-  components: { CheckOutDrawer, ModificationDrawer, DishCardList, Navgation },
+  components: { CheckOutDrawer, ModificationDrawer, DishCardList },
   props: {
     id: {
-      type: String,
-      default: '7'
+      type: String
     },
     tableName: {
-      type: String,
-      default: '1'
+      type: String
+    },
+    refresh: {
+      type: Number
     }
   },
   data: function () {
     return {
+      loading: true,
       breakCount: 0,
       checkOutType: 'checkOut',
       checkOutModel: StandardDishesListFactory(),
@@ -389,11 +352,17 @@ export default {
     }
   },
   beforeDestroy () {
-    if (this.focusTimer != null) {
-      this.focusTimer.map(clearInterval)
-    }
+    this.goHomeCallBack()
   },
   methods: {
+    goHome () {
+      this.goHomeCallBack()
+      jumpTo('index')
+    },
+    goHomeCallBack () {
+      clearAllTimer()
+      this.loading = true
+    },
     changeModification: function (val) {
       this.modificationShow = val
     },
@@ -408,38 +377,29 @@ export default {
         if (this.splitOrderListModel.count() === 0) {
           this.orderListModel.loadTTDishList(await getOrderInfo(this.id))
         }
+        this.loading = false
       } catch (e) {
         this.breakCount++
-        if (this.breakCount > 2) {
+        if (this.breakCount > 1) {
           showTimedAlert(e)
-          goHome()
+          this.goHome()
         }
       }
     },
     dishQuery (code, count = 1) {
-      getData(this.Config.PHPROOT + 'Dishes.php?op=simpleInfo', {
-        op: 'simpleInfo',
-        code: code,
-        lang: this.Config.lang
-      }).then(res => {
-        if (goodRequest(res)) {
-          if (res.content.length > 0) {
-            // todo: add modification
-            const dishInfo = res.content[0]
-            dishInfo.name = dishInfo.name.length > 28
-              ? dishInfo.name.substr(0, 28) + '...' : dishInfo.name
-            if (dishInfo.haveMod > 0) {
-              this.showModification(dishInfo, count)
-              return
-            }
-            this.addDish(dishInfo, parseInt(count))
-          } else {
-            logError(findInString('JSTableCodeNotFound'))
-          }
-        } else {
-          logError(findInString('JSTableGetDishFailed') + res.info)
+      const dish = this.dishes.find(d => d.code === code)
+      if (dish) {
+        dish.name = dish.dishName
+        dish.name = dish.name.length > 28
+          ? dish.name.substr(0, 28) + '...' : dish.name
+        if (dish.haveMod > 0) {
+          this.showModification(dish, count)
+          return
         }
-      })
+        this.addDish(dish, parseInt(count))
+      } else {
+        logError(findInString('JSTableCodeNotFound'))
+      }
     },
     showModification (dish, count) {
       this.options = dish.modInfo
@@ -451,27 +411,18 @@ export default {
       this.modificationShow = true
     },
     async getCategory () {
-      const res = await hillo.get('Category.php?op=withTableType', {
-        tableId: this.id, lang: this.Config.lang
-      })
-      for (const i of res.content) {
-        if (!i.isActive) {
-          i.isActive = false
+      if (this.categories.length === 0) {
+        const res = await hillo.get('Category.php?op=withTableType', {
+          tableId: this.id, lang: this.Config.lang
+        })
+        for (const i of res.content) {
+          if (!i.isActive) {
+            i.isActive = false
+          }
         }
+        this.categories = res.content
+        this.dishes = await getAllDishesWithCache()
       }
-      this.categories = res.content
-      this.dishes = this.categories.reduce((cry, i) => {
-        if (i.dishes) {
-          const tmp = i.dishes.map(d => {
-            if (d.isFree === '1') {
-              d.price = 0
-            }
-            return d
-          })
-          return cry.concat(tmp)
-        }
-        return cry
-      }, [])
     },
     orderOneDish: function (code) {
       this.dishQuery(code)
@@ -568,6 +519,7 @@ export default {
         apply.push(item)
       }
       dish.apply = apply
+      mod = {}
       this.addDish(dish, parseInt(this.count))
       UIStatus = UIState.Init
       blockReady()
@@ -600,7 +552,7 @@ export default {
       } else if (this.cartListModel.list.length > 0) {
         this.cartListModel.clear()
       } else if (UIStatus === UIState.Init) {
-        goHome()
+        this.goHome()
       }
       blockReady()
     },
@@ -653,6 +605,7 @@ export default {
       checkOut(this.id, print, payMethod, tipIncome, memberCardId)
     },
     jumpToTable: function (tableId, tableName) {
+      this.goHomeCallBack()
       jumpToTable(tableId, tableName)
       this.initialUI()
     },
@@ -681,7 +634,9 @@ export default {
       if (Swal.isVisible()) {
         return
       }
-      this.$refs.ins.focus()
+      this.$nextTick(() => {
+        this.$refs.ins.focus()
+      })
     },
     async refreshTables () {
       this.areas = await getActiveTables()
@@ -728,10 +683,13 @@ export default {
           this.getOrderedDish()
         } else {
           this.breakCount++
+          console.log(this.breakCount)
           if (this.breakCount > 2) {
-            showTimedAlert('info',
-              findInString('JSTableGetTableDetailFailed') + res.info,
-              1000, goHome)
+            if (!Swal.isVisible()) {
+              showTimedAlert('info',
+                findInString('JSTableGetTableDetailFailed') + res.info,
+                1000, this.goHome)
+            }
           }
         }
       })
@@ -845,7 +803,7 @@ export default {
           this.initialUI()
           toast(findInString('orderSuccess'), () => {
             if (this.Config.jumpToHomeWhenOrder) {
-              goHome()
+              this.goHome()
             }
           })
         } else {
@@ -886,6 +844,32 @@ export default {
         l.classList.remove('focus')
         l.classList.add('normal')
       }
+    },
+    realInitial () {
+      this.version = version
+      this.breakCount = 0
+      AssginToStringClass('version', version)
+      resolveBestIP(() => {
+        this.Config = getConfig()
+        for (const i in this.Strings[this.Config.lang]) {
+          AssginToStringClass(i, this.Strings[this.Config.lang][i])
+        }
+        getConsumeTypeList(() => {
+          [setInterval(this.autoGetFocus, 1000),
+            setInterval(this.refreshTables, 5000),
+            setInterval(this.getTableDetail, 3000)].map(addToTimerList)
+          window.onkeydown = this.listenKeyDown
+          UIStatus = UIState.Init
+          document.getElementById('instruction').focus()
+          this.getCategory()
+          setGlobalTableId(this.id)
+          AssginToStringClass('tableNumber', this.tableName)
+          blockReady()
+          this.initialUI()
+          this.refreshTables()
+          this.getTableDetail()
+        })
+      })
     }
   },
   computed: {
@@ -919,6 +903,11 @@ export default {
       return this.dishes
     }
   },
+  watch: {
+    refresh: function (val) {
+      this.realInitial()
+    }
+  },
   beforeUpdate: function () {
     if (this.cartListModel.list.length === 0) {
       this.lastDish = { name: '' }
@@ -926,29 +915,7 @@ export default {
     }
   },
   mounted: function () {
-    this.version = version
-    this.breakCount = 0
-    AssginToStringClass('version', version)
-    resolveBestIP(() => {
-      this.Config = getConfig()
-      for (const i in this.Strings[this.Config.lang]) {
-        AssginToStringClass(i, this.Strings[this.Config.lang][i])
-      }
-      getConsumeTypeList(() => {
-        this.focusTimer = [setInterval(this.autoGetFocus, 1000),
-          setInterval(this.refreshTables, 5000)]
-        window.onkeydown = this.listenKeyDown
-        UIStatus = UIState.Init
-        document.getElementById('instruction').focus()
-        this.getCategory()
-        setGlobalTableId(this.id)
-        AssginToStringClass('tableNumber', this.tableName)
-        blockReady()
-        this.initialUI()
-        this.refreshTables()
-        setTimeout(this.getTableDetail, 1000)
-      })
-    })
+    this.realInitial()
   }
 }
 </script>
@@ -965,10 +932,10 @@ export default {
         margin-left: 12px;
         margin-top: 12px;
         height: 100%;
-        max-height: calc(100vh - 60px);
+        max-height: calc(100vh);
         border-radius: 5px;
         width: 100%;
-        max-width: 400px;
+        max-width: 340px;
         overflow-y: scroll;
         box-shadow: 4px 10px 20px 0 rgba(220, 224, 239, 0.59);
     }
@@ -1108,6 +1075,7 @@ export default {
     }
 
     .dishListContainer {
+        max-height: calc(100vh - 24px);
         margin-top: 12px;
         width: 100%;
     }
@@ -1218,11 +1186,10 @@ export default {
     }
 
     .categoryBlock {
-        margin-top: 5px;
         width: max-content;
         cursor: pointer;
         background: white;
-        padding: 8px 12px;
+        padding: 8px 8px;
         font-size: 16px;
         border-radius: 5px;
         font-weight: 600;
@@ -1233,12 +1200,6 @@ export default {
 
     .categoryBlock.active {
         background: #367aeb;
-        color: white;
-
-    }
-
-    .categoryBlock:hover {
-        background: #357aeb;
         color: white;
         -webkit-box-shadow: 0 3px 8px 0 #d0d2d9;
         box-shadow: 0 3px 8px 0 #d0d2d9;
@@ -1314,13 +1275,6 @@ export default {
         overflow-x: hidden;
     }
 
-    .categoryList {
-        padding: 12px 0;
-        width: fit-content;
-        flex-wrap: wrap;
-        display: flex;
-    }
-
     .dishCardList {
         margin-bottom: 60px;
         width: 100%;
@@ -1339,7 +1293,8 @@ export default {
     }
 
     .dishCardListContainer {
-        height: 800px;
+        width: 100%;
+        height: calc(100vh - 124px);
     }
 
     .ikTitle {
@@ -1359,7 +1314,7 @@ export default {
     .bottomCart {
         position: fixed;
         width: 100%;
-        max-width: 400px;
+        max-width: 340px;
     }
 
     .normalPos {
@@ -1376,9 +1331,10 @@ export default {
     }
 
     #splitOrderContainer {
-        max-width: 700px;
-        top: 60px;
+        max-width: 512px;
+        top: 0;
         right: 352px;
+        z-index: 5;
     }
 
     #dishModification {
@@ -1408,7 +1364,7 @@ export default {
     }
 
     .panelF {
-        height: calc(100vh - 48px);
+        height: calc(100vh);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
