@@ -15,6 +15,13 @@ Vue.filter('priceDisplay',
     return parseFloat(price).toFixed(2).replace('.', ',')
   }
 )
+Vue.directive('show-local', {
+  bind: function (el) {
+    if (StaticSetting.isOnlineVersion) {
+      el.style.display = 'none'
+    }
+  }
+})
 
 async function initial () {
   await initialAadenBase(StaticSetting)

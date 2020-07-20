@@ -1,6 +1,6 @@
 <template>
     <v-sheet rounded :elevation="2" class="fill-height pa-2">
-        <div class="d-flex fill-height">
+        <div class="d-flex fill-height" style="max-height: 700px">
             <div style="width: 480px" class="calculator pa-2 d-flex flex-column fill-height">
                 <v-sheet :elevation="2" class="display pa-4 d-flex
                  justify-space-between align-end">

@@ -3,7 +3,10 @@ import router from '../router'
 import { ego, hillo } from 'innerken-utils'
 import i18n from '../i18n'
 import { _Config } from './LocalGlobalSettings'
-
+const { ipcRenderer } = require('electron')
+export function reload () {
+  ipcRenderer.send('reload')
+}
 const Config = _Config
 
 export function getConfig () {
@@ -52,7 +55,7 @@ export async function getAllDishes () {
 // const ipcRenderer = require('electron').ipcRenderer
 
 export function tryToReport () {
-  getData('https://' + Config.IP + '/PHP/AccessLog.php?op=reportStatus')
+  getData(Config.Protocol + Config.IP + '/PHP/AccessLog.php?op=reportStatus')
     .then(res => {
       if (res.status === 'good') {
         // console.info('reportGood', res)

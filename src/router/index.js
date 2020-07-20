@@ -30,7 +30,7 @@ const router = new VueRouter({
 let count = 0
 count++
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   count += 1
   clearAllTimer()
   if (!to.params.refresh) {

@@ -83,9 +83,84 @@
                                 <v-icon color="white">mdi-calendar-text</v-icon>
                                 <span class="ml-1 S_orderNumber"></span>
                             </span>
+                            <v-menu
+                                    v-model="menu"
+                                    :close-on-content-click="false"
+                                    :nudge-width="200"
+                                    offset-x
+                            >
+                                <template v-slot:activator="{ on, attrs }">
+                                    <v-btn
+                                            icon
+                                            color="white"
+                                            v-bind="attrs"
+                                            v-on="on"
+                                    >
+                                        <v-icon>mdi-map</v-icon>
+                                    </v-btn>
+                                </template>
+
+                                <v-card>
+                                    <v-list>
+                                        <v-list-item>
+                                        </v-list-item>
+                                    </v-list>
+                                    <v-divider></v-divider>
+                                    <v-list>
+                                        <v-list-item>
+                                            <v-list-item-title>
+                                                {{ rawAddressInfo.firstName }} {{ rawAddressInfo.lastName }}
+                                            </v-list-item-title>
+                                        </v-list-item>
+                                        <v-list-item>
+                                            <v-list-item-content>
+                                                <div> {{ rawAddressInfo.addressLine1 }}</div>
+                                                <div> {{ rawAddressInfo.addressline2 }}</div>
+                                                <div> {{ rawAddressInfo.city }} {{ rawAddressInfo.plz }}</div>
+                                                <div><span class="font-weight-bold">Email: </span>{{
+                                                    rawAddressInfo.email }}
+                                                </div>
+                                                <div><span class="font-weight-bold">Phone: </span>{{ rawAddressInfo.tel
+                                                    }}
+                                                </div>
+                                                <span class="font-weight-bold">Lieferzeit: </span>
+                                                {{ rawAddressInfo.date }}
+                                                {{ rawAddressInfo.time }}
+                                                {{ rawAddressInfo.note }}
+                                                <div class="chip" v-show="rawAddressInfo.reason">
+                                                    {{ rawAddressInfo.deliveryMethod }}
+                                                </div>
+                                                <div class="chip" v-show="rawAddressInfo.reason">
+                                                    {{ rawAddressInfo.reason }}
+                                                </div>
+                                            </v-list-item-content>
+                                        </v-list-item>
+                                    </v-list>
+
+                                    <v-card-actions>
+                                        <v-spacer></v-spacer>
+
+                                        <v-btn text @click="menu = false">Cancel</v-btn>
+                                        <v-btn color="primary" text @click="menu = false">Save</v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-menu>
+
                         </div>
                     </v-card>
                     <div class="py-4 px-9">
+                        <div v-show-local class="spaceBetween">
+                            <div class="verticalInfoRowLabel S_tableInfoLabelTime"></div>
+                            <div class="verticalInfoRowText S_startTime"></div>
+                        </div>
+                        <div v-show-local class="mt-1 spaceBetween">
+                            <div class="verticalInfoRowLabel S_tableInfoLabelSeat"></div>
+                            <div class="verticalInfoRowText S_seatTimes"></div>
+                        </div>
+                        <div v-show-local class="mt-1 typeLabel">
+                            <span class="S_type"> </span>/<span class="S_servantName"> </span>
+                        </div>
+
                         <div class="d-flex justify-space-between align-center">
                             <div>
                                 <v-icon color="black" x-large>mdi-currency-usd</v-icon>
@@ -118,7 +193,12 @@
                                     </div>
                                 </div>
                             </template>
-
+                            <div @click="
+requestOutTable" class="tableCard notUsed" style="background: #367aeb;color:white">
+                                <div class="tableCardName">
+                                    <v-icon color="white">mdi-plus</v-icon>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -146,20 +226,22 @@
                                         <div class="text S_discount"></div>
                                     </div>
                                 </div>
-                                <!--                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(3)">-->
-                                <!--                                    <div class="innerItem">-->
-                                <!--                                        <div class="icon"><i class="material-icons">swap_horiz</i></div>-->
-                                <!--                                        <div class="text S_tableChange"></div>-->
-                                <!--                                    </div>-->
 
-                                <!--                                </div>-->
-                                <!--                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(4)">-->
-                                <!--                                    <div class="innerItem">-->
-                                <!--                                        <div class="icon"><i class="material-icons">merge_type</i></div>-->
-                                <!--                                        <div class="text S_tableMerge"></div>-->
-                                <!--                                    </div>-->
+                                <div v-show-local class="floatMenuPanelItem valign-wrapper"
+                                     @click="insDecodeButtonList(3)">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">swap_horiz</i></div>
+                                        <div class="text S_tableChange"></div>
+                                    </div>
+                                </div>
+                                <div v-show-local class="floatMenuPanelItem valign-wrapper"
+                                     @click="insDecodeButtonList(4)">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">merge_type</i></div>
+                                        <div class="text S_tableMerge"></div>
+                                    </div>
+                                </div>
 
-                                <!--                                </div>-->
                                 <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(5)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">account_balance_wallet</i></div>
@@ -239,7 +321,6 @@ import {
   findConsumeTypeById,
   findElement,
   findInString,
-  getActiveTables,
   getConfig,
   getConsumeTypeList,
   getData,
@@ -252,6 +333,7 @@ import {
   popAuthorize,
   postData,
   remove,
+  requestOutTable,
   resolveBestIP,
   setGlobalTableId,
   showConfirm,
@@ -278,7 +360,7 @@ import ModificationDrawer from '../components/ModificationDrawer'
 import { getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import CheckOutDrawer from '../components/CheckOutDrawer'
-import { getAllDishesWithCache } from '../oldjs/StaticModel'
+import { getActiveTables, getAllDishesWithCache } from '../oldjs/StaticModel'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 
 const UIState = {
@@ -314,6 +396,7 @@ export default {
   },
   data: function () {
     return {
+      menu: false,
       loading: true,
       breakCount: 0,
       checkOutType: 'checkOut',
@@ -448,6 +531,7 @@ export default {
         this.activeCategory = null
       }
     },
+    requestOutTable,
     removeFromSplitOrder: function (index) {
       const realItem = this.splitOrderListModel.list[index]
       this.splitOrderListModel.add(realItem, -1)

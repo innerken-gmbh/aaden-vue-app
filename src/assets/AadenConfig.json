@@ -9,5 +9,7 @@
   "defaultExpand": true,
   "useOpenTablePrompt": false,
   "checkOutUsePassword": false,
-  "Protocol": "https://"
+  "Protocol": "https://",
+  "isOnlineVersion": false,
+  "isQuickBuyVersion": true
 }

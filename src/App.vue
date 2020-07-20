@@ -627,7 +627,7 @@ export default {
         margin-right: 4px;
         margin-top: 4px;
         width: 48px;
-    font-weight: bold;
+        font-weight: bold;
         height: 48px;
         display: flex;
         justify-items: center;
@@ -647,7 +647,6 @@ export default {
 
     .collapse .tableCardName {
         width: 100%;
-        font-size: 18px;
         text-align: center;
     }
 
