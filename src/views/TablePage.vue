@@ -954,6 +954,13 @@ export default {
 </script>
 
 <style scoped>
+    .collapse .areaC {
+        flex-grow: 1;
+        width: 100%;
+        height: 100%;
+        padding: 12px 0;
+    }
+
     .center-panel {
         margin-left: 12px;
         margin-top: 12px;

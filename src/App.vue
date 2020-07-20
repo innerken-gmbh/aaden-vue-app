@@ -600,12 +600,6 @@ export default {
         font-size: 18px !important;
     }
 
-    .collapse .areaC {
-        width: 100%;
-        height: 100%;
-        padding: 12px 0;
-    }
-
     .collapse .areaTableContainer {
         display: flex;
         flex-wrap: wrap;
