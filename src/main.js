@@ -22,6 +22,13 @@ Vue.directive('show-local', {
     }
   }
 })
+Vue.directive('hide-quick-buy', {
+  bind: function (el) {
+    if (StaticSetting.isQuickBuyVersion) {
+      el.style.display = 'none'
+    }
+  }
+})
 
 async function initial () {
   await initialAadenBase(StaticSetting)

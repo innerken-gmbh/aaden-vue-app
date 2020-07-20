@@ -14,22 +14,43 @@
                 </transition>
             </div>
             <div v-cloak class="dishListContainer" id="dishListContainer">
-                <div class="d-flex flex-wrap pa-2">
-                    <div v-dragscroll style="z-index: 4">
-                        <v-card class="ikTitle"><span class="S_classification">分类</span><span
-                                class="strong S_information">信息</span>
-                        </v-card>
-                        <v-sheet rounded style="background: transparent"
-                                 class="d-flex flex-wrap pt-1 pb-2 px-1 mr-2 mt-1">
-                            <template v-for="category of categories">
-                                <v-sheet large v-bind:key="category.id+'categorys'" class="categoryBlock mt-1"
-                                         @click="setActiveCategories(category)"
-                                         v-bind:class="{'active  elevation-5':category.isActive}">
-                                    <div class="name">{{category.name}}</div>
-                                </v-sheet>
+                <div class="d-flex flex-wrap px-2">
+                    <div v-dragscroll style="z-index: 4;width: 100%">
+                        <v-tabs
+                                center-active
+                                show-arrows
+                                v-model="activeDCT"
+                        >
+                            <v-tab style="font-size: 16px">
+                                全部
+                            </v-tab>
+                            <template v-for="ct of dct">
+                                <v-tab v-bind:key="ct.id+'categorytypes'"
+                                       style="font-size: 16px"
+                                >
+                                    <div class="font-weight-bold">{{ct.name}}</div>
+                                </v-tab>
                             </template>
-                        </v-sheet>
+                        </v-tabs>
                     </div>
+
+                    <v-tabs
+                            center-active
+                            show-arrows
+                            v-model="activeCategory"
+                    >
+                        <v-tab style="font-size: 16px">
+                            全部
+                        </v-tab>
+                        <template v-for="category of filteredC">
+                            <v-tab v-bind:key="category.id+'categorytypes'"
+                                   style="font-size: 16px"
+                            >
+                                <div class="font-weight-bold">{{category.name}}</div>
+                            </v-tab>
+                        </template>
+                    </v-tabs>
+
                     <div v-dragscroll class="dragscroll dishCardListContainer">
                         <div class="dishCardList">
                             <template v-for="dish of filteredDish">
@@ -49,9 +70,9 @@
             </div>
             <div id="newDishContainerTP">
                 <transition name="fade" appear>
-                    <v-sheet style="box-shadow: -5px 0px 8px #bfbfbf" v-dragscroll v-if="cartListModel.list.length>0"
-                             class="white bottomCart surface"
-                             id="newDishContainer">
+                    <v-card style="box-shadow: -5px 0px 8px #bfbfbf" v-dragscroll v-if="cartListModel.list.length>0"
+                            class="white bottomCart surface"
+                            id="newDishContainer">
                         <dish-card-list
                                 :color="'#707070'"
                                 :show-edit="true" :click-callback="removeDish"
@@ -62,12 +83,15 @@
                                 <div v-if="af" class="lastDish">
                                   <span class="lastDishName"
                                   >{{lastDish.name}}</span>
-                                    &times;
-                                    {{lastCount}}
+                                    &times;{{lastCount}}
                                 </div>
                             </template>
                         </dish-card-list>
-                    </v-sheet>
+                        <v-card-actions class="d-flex">
+                            <v-btn @click="cartListModel.clear()" dark color="error">取消</v-btn>
+                            <v-btn class="flex-grow-1" @click="orderDish" dark color="#367aeb">确认</v-btn>
+                        </v-card-actions>
+                    </v-card>
                 </transition>
             </div>
             <div class="panelF">
@@ -151,11 +175,11 @@
                     <div class="py-4 px-9">
                         <div v-show-local class="spaceBetween">
                             <div class="verticalInfoRowLabel S_tableInfoLabelTime"></div>
-                            <div class="verticalInfoRowText S_startTime"></div>
+                            <div class="verticalInfoRowText">{{tableDetailInfo.createTimestamp}}</div>
                         </div>
                         <div v-show-local class="mt-1 spaceBetween">
                             <div class="verticalInfoRowLabel S_tableInfoLabelSeat"></div>
-                            <div class="verticalInfoRowText S_seatTimes"></div>
+                            <div class="verticalInfoRowText">{{tableDetailInfo.satCount}}</div>
                         </div>
                         <div v-show-local class="mt-1 typeLabel">
                             <span class="S_type"> </span>/<span class="S_servantName"> </span>
@@ -194,9 +218,9 @@
                                 </div>
                             </template>
                             <div @click="
-requestOutTable" class="tableCard notUsed" style="background: #367aeb;color:white">
+requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background: transparent">
                                 <div class="tableCardName">
-                                    <v-icon color="white">mdi-plus</v-icon>
+                                    <v-icon color="#367aeb">mdi-plus</v-icon>
                                 </div>
                             </div>
                         </div>
@@ -206,19 +230,20 @@ requestOutTable" class="tableCard notUsed" style="background: #367aeb;color:whit
                     <div class="hintPanel">
                         <div class="left-panel">
                             <div class="floatMenuPanel" id="listOfFunction">
-                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(0)">
+                                <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
+                                     @click="insDecodeButtonList(0)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">arrow_back</i></div>
                                         <div class="text S_backToHome"></div>
                                     </div>
 
                                 </div>
-                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(1)">
+                                <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
+                                     @click="insDecodeButtonList(1)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">restaurant</i></div>
                                         <div class="text S_dishOrder"></div>
                                     </div>
-
                                 </div>
                                 <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(2)">
                                     <div class="innerItem" style="">
@@ -227,14 +252,14 @@ requestOutTable" class="tableCard notUsed" style="background: #367aeb;color:whit
                                     </div>
                                 </div>
 
-                                <div v-show-local class="floatMenuPanelItem valign-wrapper"
+                                <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
                                      @click="insDecodeButtonList(3)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">swap_horiz</i></div>
                                         <div class="text S_tableChange"></div>
                                     </div>
                                 </div>
-                                <div v-show-local class="floatMenuPanelItem valign-wrapper"
+                                <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
                                      @click="insDecodeButtonList(4)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">merge_type</i></div>
@@ -249,7 +274,8 @@ requestOutTable" class="tableCard notUsed" style="background: #367aeb;color:whit
                                     </div>
 
                                 </div>
-                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(6)">
+                                <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
+                                     @click="insDecodeButtonList(6)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">assignment_turned_in</i></div>
                                         <div class="text S_QuickBill"></div>
@@ -261,7 +287,7 @@ requestOutTable" class="tableCard notUsed" style="background: #367aeb;color:whit
                         </div>
 
                     </div>
-                    <div class="inputArea">
+                    <div v-if="!Config.isQuickBuyVersion" class="inputArea">
                         <div class="input-field ">
                             <v-text-field ref="ins" color="black" v-model="buffer"
                                           placeholder="instruction.." id="instruction"
@@ -326,7 +352,6 @@ import {
   getData,
   goodRequest,
   isBlocking,
-  jumpTo,
   jumpToTable,
   logError,
   logErrorAndPop,
@@ -343,7 +368,7 @@ import {
   toast
 } from '../oldjs/common'
 import { version } from './../../package.json'
-
+import { getActiveTables, getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import Swal from 'sweetalert2'
 import hillo from 'innerken-utils/Utlis/request'
 import {
@@ -357,11 +382,11 @@ import {
 import { dragscroll } from 'vue-dragscroll'
 import DishCardList from '../components/DishCardList'
 import ModificationDrawer from '../components/ModificationDrawer'
-import { getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import CheckOutDrawer from '../components/CheckOutDrawer'
-import { getActiveTables, getAllDishesWithCache } from '../oldjs/StaticModel'
+import { getAllDishesWithCache, goHome } from '../oldjs/StaticModel'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
+import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 
 const UIState = {
   Init: 0,
@@ -418,6 +443,7 @@ export default {
       dishes: [],
       categories: [],
       activeCategory: null,
+      activeDCT: null,
       /**/
       takeawayInfoShow: false,
       rawAddressInfo: { reason: '' },
@@ -431,7 +457,9 @@ export default {
       splitOrderListModel: StandardDishesListFactory(),
       orderListModel: StandardDishesListFactory(),
       cartListModel: StandardDishesListFactory(),
-      cartOrder: []
+      cartOrder: [],
+      tableDetailInfo: {},
+      dct: []
     }
   },
   beforeDestroy () {
@@ -440,7 +468,7 @@ export default {
   methods: {
     goHome () {
       this.goHomeCallBack()
-      jumpTo('index')
+      goHome()
     },
     goHomeCallBack () {
       clearAllTimer()
@@ -490,8 +518,20 @@ export default {
       this.dish = dish
       this.count = count
       UIStatus = UIState.commandShow
-      this.$refs.ins.blur()
+      if (!this.Config.isQuickBuyVersion) {
+        this.$refs.ins.blur()
+      }
       this.modificationShow = true
+    },
+    async getDCT () {
+      if (this.dct.length === 0) {
+        this.dct = (await CategoryType.getList()).map(i => {
+          if (!i.isActive) {
+            i.isActive = false
+          }
+          return i
+        })
+      }
     },
     async getCategory () {
       if (this.categories.length === 0) {
@@ -517,20 +557,7 @@ export default {
       }
       return ins
     },
-    setActiveCategories: function (category) {
-      if (!category.isActive) {
-        this.activeCategory = category
-        for (const i of this.categories) {
-          i.isActive = false
-        }
-        category.isActive = true
-      } else {
-        for (const i of this.categories) {
-          i.isActive = false
-        }
-        this.activeCategory = null
-      }
-    },
+
     requestOutTable,
     removeFromSplitOrder: function (index) {
       const realItem = this.splitOrderListModel.list[index]
@@ -628,7 +655,9 @@ export default {
         this.resetList()
         listIndex = -1
         UIStatus = UIState.Init
-        this.$refs.ins.focus()
+        if (!this.Config.isQuickBuyVersion) {
+          this.$refs.ins.focus()
+        }
       } else if (this.modificationShow) {
         this.cancel()
       } else if (this.splitOrderListModel.list.length > 0) {
@@ -732,6 +761,7 @@ export default {
       }).then(res => {
         if (goodRequest(res)) {
           const infos = res.content
+          this.tableDetailInfo = infos
           AssginToStringClass('seatTimes', infos.satCount)
           AssginToStringClass('servantName', infos.order.counsumeTypeStatusName)
           OrderId = infos.order.id
@@ -939,13 +969,16 @@ export default {
           AssginToStringClass(i, this.Strings[this.Config.lang][i])
         }
         getConsumeTypeList(() => {
-          [setInterval(this.autoGetFocus, 1000),
-            setInterval(this.refreshTables, 5000),
+          [setInterval(this.refreshTables, 5000),
             setInterval(this.getTableDetail, 3000)].map(addToTimerList)
+          if (!this.Config.isQuickBuyVersion) {
+            addToTimerList(setInterval(this.autoGetFocus, 1000))
+            document.getElementById('instruction').focus()
+          }
           window.onkeydown = this.listenKeyDown
           UIStatus = UIState.Init
-          document.getElementById('instruction').focus()
           this.getCategory()
+          this.getDCT()
           setGlobalTableId(this.id)
           AssginToStringClass('tableNumber', this.tableName)
           blockReady()
@@ -972,19 +1005,36 @@ export default {
     tableNewDishTHDelete: function () {
       return findInString('tableNewDishTHDelete')
     },
+    filteredC: function () {
+      if (this.activeDCT) {
+        const dct = this.dct[this.activeDCT - 1]
+        return this.categories.filter((item) => {
+          return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
+        })
+      }
+      return this.categories
+    },
     filteredDish: function () {
+      let list = this.dishes
+      if (this.activeDCT) {
+        const dct = this.dct[this.activeDCT - 1]
+        list = list.filter((item) => {
+          return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
+        })
+      }
       if (this.activeCategory) {
-        return this.dishes.filter((item) => {
-          return item.categoryId === this.activeCategory.id
+        const c = this.categories[this.activeCategory - 1]
+        list = list.filter((item) => {
+          return item.categoryId === c.id
         })
       }
       if (this.buffer !== '' && !this.buffer.includes('/')) {
         const [buffer] = this.buffer.split('*')
-        return this.dishes.filter((item) => {
+        list = list.filter((item) => {
           return item.dishName.includes(buffer) || item.code.includes(buffer)
         })
       }
-      return this.dishes
+      return list
     }
   },
   watch: {
@@ -1013,12 +1063,13 @@ export default {
     }
 
     .center-panel {
-        margin-left: 12px;
-        margin-top: 12px;
+        margin-left: 4px;
+        margin-top: 4px;
         height: 100%;
         max-height: calc(100vh);
         border-radius: 5px;
         width: 100%;
+        min-width: 340px;
         max-width: 340px;
         overflow-y: scroll;
         box-shadow: 4px 10px 20px 0 rgba(220, 224, 239, 0.59);
@@ -1160,7 +1211,6 @@ export default {
 
     .dishListContainer {
         max-height: calc(100vh - 24px);
-        margin-top: 12px;
         width: 100%;
     }
 
@@ -1360,7 +1410,7 @@ export default {
     }
 
     .dishCardList {
-        margin-bottom: 60px;
+        margin-bottom: 120px;
         width: 100%;
         flex-wrap: wrap;
         display: flex;
@@ -1448,13 +1498,13 @@ export default {
     }
 
     .panelF {
-        height: calc(100vh);
+        margin-top: 4px;
+        height: calc(100vh - 4px);
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         width: 100%;
         max-width: 340px;
-        padding-left: 10px;
     }
 
     .verticalInfoRow {

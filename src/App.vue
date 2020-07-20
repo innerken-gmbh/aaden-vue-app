@@ -338,10 +338,6 @@ export default {
         padding-bottom: 18px;
     }
 
-    .hintPanel {
-        padding-bottom: 24px;
-    }
-
     .infoContainer {
         margin: 12px;
         border-radius: 5px;

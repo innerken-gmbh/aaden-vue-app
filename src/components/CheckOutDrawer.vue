@@ -23,7 +23,8 @@
 import DishCardList from './DishCardList'
 import CheckOutCalculator from './CheckOutCalculator'
 import { hillo } from 'innerken-utils'
-import { findInString, jumpTo, toast } from '../oldjs/common'
+import { findInString, toast } from '../oldjs/common'
+import { goHome } from '../oldjs/StaticModel'
 
 export default {
   name: 'CheckOutDrawer',
@@ -94,7 +95,7 @@ export default {
         toast(findInString('JSTableCheckOutSuccess'))
         this.cancel()
         if (this.checkOutType === 'checkOut') {
-          jumpTo('index.html')
+          goHome()
         }
       }
     }

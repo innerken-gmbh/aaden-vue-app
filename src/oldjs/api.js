@@ -2,13 +2,13 @@ import {
   blockReady,
   fastSweetAlertRequest,
   findInString,
-  jumpTo,
   loadingComplete,
   popAuthorize,
   requestApi,
   RequestMethod,
   toast
 } from './common'
+import { goHome } from './StaticModel'
 
 export function splitOrder (discountStr = '', id, items,
   initialUI, print,
@@ -72,7 +72,7 @@ export function checkOut (tableId, print = 1,
     (res) => {
       toast(findInString('JSTableCheckOutSuccess'))
       blockReady()
-      jumpTo('index.html')
+      goHome()
     },
     false, false
   )

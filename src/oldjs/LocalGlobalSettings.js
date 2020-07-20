@@ -6,7 +6,7 @@ const localConfig = require('@/assets/AadenConfig.json')
 const StaticSetting = Object.assign(localConfig, settings.get('config'))
 const urlLang = IKUtils.getQueryString('lang')
 // console.log(StaticSetting.lang)
-StaticSetting.lang = urlLang || 'ZH'
+StaticSetting.lang = urlLang || StaticSetting.lang
 // console.log(StaticSetting.lang)
 let Config = {}
 Config.IP = 'localhost'
