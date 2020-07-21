@@ -261,7 +261,7 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                         </div>
 
                     </div>
-                    <div v-if="!Config.FMCVersion" class="inputArea">
+                    <div v-hide-quick-buy class="inputArea">
                         <div class="input-field ">
                             <v-text-field ref="ins" color="black" v-model="buffer"
                                           placeholder="instruction.." id="instruction"
@@ -1041,7 +1041,7 @@ export default {
     activeDCT: function () {
       this.activeCategory = 0
     },
-    refresh: function (val) {
+    refresh: function () {
       this.realInitial()
     }
   },

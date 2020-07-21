@@ -17,14 +17,14 @@ Vue.filter('priceDisplay',
 )
 Vue.directive('show-quick-buy', {
   bind: function (el) {
-    if (GlobalConfig.FMCVersion) {
+    if (!GlobalConfig.FMCVersion) {
       el.style.display = 'none'
     }
   }
 })
 Vue.directive('hide-quick-buy', {
   bind: function (el) {
-    if (!GlobalConfig.FMCVersion) {
+    if (GlobalConfig.FMCVersion) {
       el.style.display = 'none'
     }
   }
