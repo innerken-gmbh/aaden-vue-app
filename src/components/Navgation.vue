@@ -22,7 +22,7 @@
                 </div>
                 <div class="splitter"></div>
                 <v-sheet class="appName">
-                    <span v-show-local>OV-</span>
+                    <span v-show-local>FMC-</span>
                     {{version}}
                 </v-sheet>
 

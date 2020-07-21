@@ -1,41 +1,46 @@
-import { IKUtils } from 'innerken-utils'
-import settings from 'electron-settings'
-import { reload } from './common'
+const defaultConfig = require('@/assets/AadenConfig.json')
+let Config = Object.assign({}, defaultConfig)
 
-const localConfig = require('@/assets/AadenConfig.json')
-const StaticSetting = Object.assign(localConfig, settings.get('config'))
-const urlLang = IKUtils.getQueryString('lang')
-// console.log(StaticSetting.lang)
-StaticSetting.lang = urlLang || StaticSetting.lang
-// console.log(StaticSetting.lang)
-let Config = {}
-Config.IP = 'localhost'
-Config.Dir = ''
-Config.REALROOT = `https://${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
-Config = Object.assign(Config, StaticSetting)
-Config.PHPROOT = `${Config.REALROOT}/PHP/`
-Config.lang = StaticSetting.lang
+import('electron-settings').then(settings => {
+  const localConfig = settings.get('config')
+  Config = Object.assign(Config, localConfig)
+  Config.settings = settings
+}).catch(e => {
+  console.error('no local Config Available')
+})
+
 window.Config = Config
 window.useCurrentConfig = useCurrentConfig
 window.hardReload = hardReload
 window.setDeviceId = setDeviceId
 
+// console.log(StaticSetting.lang)
+
+export function reload () {
+  if (!Config.isOnlineVersion) {
+    const { ipcRenderer } = require('electron')
+    ipcRenderer.send('reload')
+  } else {
+    window.location.reload(true)
+  }
+}
+
 function useCurrentConfig () {
-  settings.set('config', Config)
+  Config.settings.set('config', Config)
   reload()
 }
 
 function hardReload () {
-  settings.deleteAll()
+  Config.settings.deleteAll()
 }
 
 function setDeviceId (id) {
-  settings.set('config.DeviceId', id)
+  Config.settings.set('config.DeviceId', id)
   reload()
 }
 
 export function changeLanguage (l) {
-  settings.set('config.lang', l)
+  Config.settings.set('config.lang', l)
   reload()
 }
 
@@ -44,13 +49,10 @@ let debugCounter = 0
 export function toggleDebug () {
   debugCounter++
   if (debugCounter > 10) {
-    settings.set('config.Debug', !settings.get('config.Debug'))
+    Config.settings.set('config.Debug', !Config.settings.get('config.Debug'))
     reload()
     debugCounter = 0
   }
 }
 
-export const _Config = Config
-
-StaticSetting.fetch = false
-export default StaticSetting
+export const GlobalConfig = Config

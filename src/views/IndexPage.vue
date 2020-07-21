@@ -125,7 +125,6 @@ import {
   findInString,
   getActiveTables,
   getAllDishes,
-  getConfig,
   getConsumeTypeList,
   jumpToTable,
   oldJumpTo,
@@ -137,7 +136,7 @@ import {
 import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
-import StaticSetting from '../oldjs/LocalGlobalSettings'
+import { GlobalConfig } from '../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 
 export default {
@@ -153,14 +152,14 @@ export default {
   },
   data: function () {
     return {
-      onlyActive: getConfig().isOnlineVersion,
+      onlyActive: GlobalConfig.isOnlineVersion,
       reservations: [],
       areas: [],
       seen: true,
       buffer: '',
       ins: {},
       dishes: [],
-      Config: getConfig(),
+      Config: GlobalConfig,
       Strings,
       focusTimer: null
     }
@@ -232,7 +231,7 @@ export default {
       }
     },
     toManage () {
-      oldJumpTo('admin/index.html', StaticSetting)
+      oldJumpTo('admin/index.html', GlobalConfig)
     },
     autoGetFocus () {
       if (Swal.isVisible()) {
@@ -243,8 +242,8 @@ export default {
   },
   mounted: function () {
     resolveBestIP(() => {
-      for (const i in this.Strings[this.Config.lang]) {
-        AssginToStringClass(i, this.Strings[this.Config.lang][i])
+      for (const i in this.Strings[GlobalConfig.lang]) {
+        AssginToStringClass(i, this.Strings[GlobalConfig.lang][i])
       }
       getConsumeTypeList(() => {
         window.onkeydown = this.listenKeyDown

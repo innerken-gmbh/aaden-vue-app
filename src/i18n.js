@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import StaticSetting from './oldjs/LocalGlobalSettings'
+import { GlobalConfig } from './oldjs/LocalGlobalSettings'
 
 Vue.use(VueI18n)
 
@@ -18,7 +18,7 @@ function loadLocaleMessages () {
 }
 
 export default new VueI18n({
-  locale: StaticSetting.lang.toUpperCase(),
+  locale: GlobalConfig.lang.toUpperCase(),
   fallbackLocale: 'de',
   messages: loadLocaleMessages()
 })

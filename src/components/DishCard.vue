@@ -27,23 +27,25 @@
                     </div>
 
                 </div>
-                <div v-if="dish.note" class="dishNote">
-                    <v-icon color="primary" small class="mr-2">mdi-pencil</v-icon>
-                    {{dish.note}}
-                </div>
                 <div v-if="dish.displayApply.length>0" class="dishMod">
                     <div class="d-flex subtitle-2 justify-space-between grey--text text--darken-2"
                          v-bind:key="'mod_order-i'+i+'value'+ap.value" v-for="(ap,i) in dish.displayApply">
                         <div>{{ap.groupName}}:{{ap.value}}</div>
                         <div>
                             <template v-if="ap.priceInfo&&ap.priceInfo>0">
-                                (<price-text :price="ap.priceInfo"/>)
+                                (
+                                <price-text :price="ap.priceInfo"/>
+                                )
                             </template>
                         </div>
                     </div>
                 </div>
+                <div v-if="dish.note" class="dishNote">
+                    <v-icon color="primary" small class="mr-1">mdi-pencil</v-icon>
+                    {{dish.note}}
+                </div>
             </div>
-            <div :style="{color }" class="dishCount">&times;{{dish.count}}
+            <div :style="{color}" class="dishCount">&times;{{dish.count}}
             </div>
         </div>
         <div class="editRow">
@@ -159,7 +161,7 @@ export default {
     }
 
     .dishNote {
-        max-width: calc(100% - 45px);
+        font-size: 14px;
         margin-left: 48px;
         text-overflow: ellipsis;
         overflow: hidden;

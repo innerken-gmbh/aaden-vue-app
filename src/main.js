@@ -7,7 +7,7 @@ import vuetify from './plugins/vuetify'
 import 'material-design-icons/iconfont/material-icons.css'
 import Settings, { initialAadenBase } from 'aaden-base-model/lib/Models/GlobalSettings'
 
-import StaticSetting from './oldjs/LocalGlobalSettings'
+import { GlobalConfig } from './oldjs/LocalGlobalSettings'
 
 Vue.config.productionTip = false
 Vue.filter('priceDisplay',
@@ -17,21 +17,21 @@ Vue.filter('priceDisplay',
 )
 Vue.directive('show-local', {
   bind: function (el) {
-    if (StaticSetting.isOnlineVersion) {
+    if (GlobalConfig.isOnlineVersion) {
       el.style.display = 'none'
     }
   }
 })
 Vue.directive('hide-quick-buy', {
   bind: function (el) {
-    if (StaticSetting.isQuickBuyVersion) {
+    if (GlobalConfig.isQuickBuyVersion) {
       el.style.display = 'none'
     }
   }
 })
 
 async function initial () {
-  await initialAadenBase(StaticSetting)
+  await initialAadenBase(GlobalConfig)
   console.log(Settings, 'Main')
   Settings.lang = function () {
     return i18n.locale.toUpperCase()

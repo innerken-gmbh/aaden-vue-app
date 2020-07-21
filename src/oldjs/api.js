@@ -1,14 +1,6 @@
-import {
-  blockReady,
-  fastSweetAlertRequest,
-  findInString,
-  loadingComplete,
-  popAuthorize,
-  requestApi,
-  RequestMethod,
-  toast
-} from './common'
+import { blockReady, fastSweetAlertRequest, findInString, loadingComplete, popAuthorize, toast } from './common'
 import { goHome } from './StaticModel'
+import { hillo } from 'innerken-utils'
 
 export function splitOrder (discountStr = '', id, items,
   initialUI, print,
@@ -25,7 +17,7 @@ export function splitOrder (discountStr = '', id, items,
     printCount = 2
   }
   discountStr = (discountStr ?? '').indexOf('p') !== -1 ? discountStr : ''
-  requestApi('Complex.php?op=splitOrder', {
+  hillo.post('Complex.php?op=splitOrder', {
     payMethod,
     tipIncome: tipIncome || 0,
     tableId: id,
@@ -34,7 +26,7 @@ export function splitOrder (discountStr = '', id, items,
     withTitle,
     printCount,
     memberCardId: memberCardId ?? null
-  }, RequestMethod.POST, () => {
+  }).then(res => {
     initialUI()
   })
 }
@@ -58,24 +50,18 @@ export function checkOut (tableId, print = 1,
     withTitle = 1
     printCount = 2
   }
-  requestApi(
-    'Complex.php?op=checkOut',
-    {
-      withTitle: withTitle,
-      printCount: printCount,
-      tableId: tableId,
-      payMethod: payMethod,
-      tipIncome: tipIncome || 0,
-      memberCardId: memberCardId ?? null
-    },
-    RequestMethod.POST,
-    (res) => {
-      toast(findInString('JSTableCheckOutSuccess'))
-      blockReady()
-      goHome()
-    },
-    false, false
-  )
+  hillo.post('Complex.php?op=checkOut', {
+    withTitle: withTitle,
+    printCount: printCount,
+    tableId: tableId,
+    payMethod: payMethod,
+    tipIncome: tipIncome || 0,
+    memberCardId: memberCardId ?? null
+  }).then(res => {
+    toast(findInString('JSTableCheckOutSuccess'))
+    blockReady()
+    goHome()
+  })
 }
 
 export function deleteDishes (id, items, initialUI) {

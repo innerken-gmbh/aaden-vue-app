@@ -356,7 +356,6 @@ import {
   logError,
   logErrorAndPop,
   popAuthorize,
-  postData,
   remove,
   requestOutTable,
   resolveBestIP,
@@ -387,6 +386,7 @@ import CheckOutDrawer from '../components/CheckOutDrawer'
 import { getAllDishesWithCache, goHome } from '../oldjs/StaticModel'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
+import { GlobalConfig } from '../oldjs/LocalGlobalSettings'
 
 const UIState = {
   Init: 0,
@@ -450,7 +450,7 @@ export default {
       /**/
       areas: [],
       Strings: Strings,
-      Config: getConfig(),
+      Config: GlobalConfig,
       buffer: '',
       payment: [],
       //* */
@@ -518,7 +518,7 @@ export default {
       this.dish = dish
       this.count = count
       UIStatus = UIState.commandShow
-      if (!this.Config.isQuickBuyVersion) {
+      if (!GlobalConfig.isQuickBuyVersion) {
         this.$refs.ins.blur()
       }
       this.modificationShow = true
@@ -536,7 +536,7 @@ export default {
     async getCategory () {
       if (this.categories.length === 0) {
         const res = await hillo.get('Category.php?op=withTableType', {
-          tableId: this.id, lang: this.Config.lang
+          tableId: this.id, lang: GlobalConfig.lang
         })
         for (const i of res.content) {
           if (!i.isActive) {
@@ -655,7 +655,7 @@ export default {
         this.resetList()
         listIndex = -1
         UIStatus = UIState.Init
-        if (!this.Config.isQuickBuyVersion) {
+        if (!GlobalConfig.isQuickBuyVersion) {
           this.$refs.ins.focus()
         }
       } else if (this.modificationShow) {
@@ -700,7 +700,7 @@ export default {
           this.jumpToPayment()
           break
         case 6:
-          if (this.Config.checkOutUsePassword) {
+          if (GlobalConfig.checkOutUsePassword) {
             popAuthorize('', () => {
               this.checkOut()
             }, true)
@@ -729,7 +729,7 @@ export default {
         this.checkOutModel.loadTTDishList(this.splitOrderListModel.list)
         this.checkOutType = 'splitOrder'
       }
-      if (this.Config.checkOutUsePassword) {
+      if (GlobalConfig.checkOutUsePassword) {
         popAuthorize('', async () => {
           await realEnd()
         }, true)
@@ -755,7 +755,7 @@ export default {
       this.areas = await getActiveTables()
     },
     getTableDetail () {
-      getData(this.Config.PHPROOT + 'Tables.php', {
+      getData(GlobalConfig.PHPROOT + 'Tables.php', {
         op: 'currentInfo',
         id: this.id
       }).then(res => {
@@ -908,21 +908,20 @@ export default {
     },
     orderDish () {
       showLoading()
-      postData(this.Config.PHPROOT + 'Complex.php?op=addDishesToTable', {
+      hillo.post('Complex.php?op=addDishesToTable', {
         params: JSON.stringify(this.cartListModel.list),
         tableId: this.id
-      }).then(res => {
-        if (goodRequest(res)) {
-          this.cartListModel.clear()
-          this.initialUI()
-          toast(findInString('orderSuccess'), () => {
-            if (this.Config.jumpToHomeWhenOrder) {
-              this.goHome()
-            }
-          })
-        } else {
-          logError(findInString('JSTableOrderFailed') + res.info)
-        }
+      }).then(() => {
+        this.cartListModel.clear()
+        this.initialUI()
+        toast(findInString('orderSuccess'), () => {
+          if (GlobalConfig.jumpToHomeWhenOrder) {
+            this.goHome()
+          }
+        })
+      }).catch(res => {
+        logError(findInString('JSTableOrderFailed') + res.info)
+      }).finally(() => {
         blockReady()
       })
     },
@@ -934,7 +933,7 @@ export default {
         this.discountStr = ''
       }
       setTimeout(async () => {
-        if (this.Config.checkOutUsePassword) {
+        if (GlobalConfig.checkOutUsePassword) {
           popAuthorize('', async () => {
             await realCheckOut()
           }, true)
@@ -964,14 +963,14 @@ export default {
       this.breakCount = 0
       AssginToStringClass('version', version)
       resolveBestIP(() => {
-        this.Config = getConfig()
-        for (const i in this.Strings[this.Config.lang]) {
-          AssginToStringClass(i, this.Strings[this.Config.lang][i])
+        this.Config = GlobalConfig
+        for (const i in this.Strings[GlobalConfig.lang]) {
+          AssginToStringClass(i, this.Strings[GlobalConfig.lang][i])
         }
         getConsumeTypeList(() => {
           [setInterval(this.refreshTables, 5000),
             setInterval(this.getTableDetail, 3000)].map(addToTimerList)
-          if (!this.Config.isQuickBuyVersion) {
+          if (!GlobalConfig.isQuickBuyVersion) {
             addToTimerList(setInterval(this.autoGetFocus, 1000))
             document.getElementById('instruction').focus()
           }

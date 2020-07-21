@@ -1,7 +1,7 @@
 import hillo from 'innerken-utils/Utlis/request'
 
 import i18n from '../i18n'
-import StaticSetting from './LocalGlobalSettings'
+import { GlobalConfig } from './LocalGlobalSettings'
 import { getActiveTables, jumpTo, jumpToTable, requestOutTable } from './common'
 
 let dishesList = []
@@ -18,7 +18,7 @@ export async function getAllDishesWithCache (force = false) {
 }
 
 export async function goHome () {
-  if (StaticSetting.isQuickBuyVersion) {
+  if (GlobalConfig.isQuickBuyVersion) {
     const t = (await getActiveTables()).reduce((arr, i) => {
       return arr.concat(i.tables)
     }, []).find(f => parseInt(f.usageStatus) !== 0)

@@ -2,12 +2,9 @@ import Swal from 'sweetalert2'
 import router from '../router'
 import { ego, hillo } from 'innerken-utils'
 import i18n from '../i18n'
-import { _Config } from './LocalGlobalSettings'
-const { ipcRenderer } = require('electron')
-export function reload () {
-  ipcRenderer.send('reload')
-}
-const Config = _Config
+import { GlobalConfig } from './LocalGlobalSettings'
+
+const Config = GlobalConfig
 
 export function getConfig () {
   return Config
@@ -204,22 +201,14 @@ async function shouldOpenTable (openingTable) {
 }
 
 function informOpenTable (password, number, personCount, childCount) {
-  requestApi(
-    'Complex.php?op=openTable',
+  hillo.post('Complex.php?op=openTable',
     {
       tableId: number,
       pw: Config.usePassword ? password : '',
       personCount: personCount,
       childCount: childCount
-    },
-    'POST',
-    (res) => {
-      jumpToTable(res.content.tableId, res.content.tableName)
-    },
-    (res) => {
-      logErrorAndPop(Strings[Config.lang].JSIndexRequestOutTableFailed + res.info)
-    }
-  )
+    }).then(res => jumpToTable(res.content.tableId, res.content.tableName))
+    .catch(err => logErrorAndPop(findInString('JSIndexRequestOutTableFailed') + err.info))
 }
 
 export async function openTablePrompt () {
@@ -297,22 +286,16 @@ export function openTableCallback (openingTable, guestCount, childCount, consume
 }
 
 export function informOpenJpTable (password, number, personCount, childCount, adultDishId) {
-  requestApi(
-    'Complex.php?op=openJapanBuffetTable',
-    {
-      tableId: number,
-      pw: password,
-      adultCount: personCount,
-      childCount: childCount,
-      adultDishId: adultDishId
-    }, 'POST',
-    (res) => {
-      jumpToTable(res.content.tableId, res.content.tableName)
-    },
-    (res) => {
-      logErrorAndPop(Strings[Config.lang].JSIndexRequestOutTableFailed + res.info)
-    }
-  )
+  hillo.post('Complex.php?op=openJapanBuffetTable', {
+    tableId: number,
+    pw: password,
+    adultCount: personCount,
+    childCount: childCount,
+    adultDishId: adultDishId
+  }).then(res => jumpToTable(res.content.tableId, res.content.tableName))
+    .catch(err => {
+      logErrorAndPop(findInString('JSIndexRequestOutTableFailed') + err.info)
+    })
 }
 
 function initialConfig () {
@@ -600,26 +583,6 @@ export function findElement (id) {
   return document.getElementById(id)
 }
 
-export function sortAlphaNum (a, b) {
-  const reA = /[^a-zA-Z]/g
-  const reN = /[^0-9]/g
-  const aA = a.code.replace(reA, '')
-  const bA = b.code.replace(reA, '')
-  if (aA === bA) {
-    const aN = parseInt(a.code.replace(reN, ''), 10)
-    const bN = parseInt(b.code.replace(reN, ''), 10)
-    return aN === bN ? 0 : aN > bN ? 1 : -1
-  } else {
-    return aA > bA ? 1 : -1
-  }
-}
-
-export function isNotANumber (inputData) {
-  // isNaN(inputData)不能判断空串或一个空格
-  // 如果是一个空串或是一个空格，而isNaN是做为数字0进行处理的，而parseInt与parseFloat是返回一个错误消息，这个isNaN检查不严密而导致的。
-  return parseFloat(inputData).toString() !== 'NaN'
-}
-
 export function logError (t) {
   //   M.toast({html: t, classes:'rounded', displayLength:3000});
   toastError(t)
@@ -632,44 +595,6 @@ export function logErrorAndPop (t) {
   if (blockReady) {
     blockReady()
   }
-}
-
-export function requestApi (url, data, method, onGood, onBad,
-  hideLoading = true, goodText,
-  fullUrl = false) {
-  if (!hideLoading) {
-    showLoading()
-  }
-  if (Config.Debug) {
-    // console.log("网络请求：" + url, data)
-  }
-  data.chaos = timeStampNow()
-  data.lang = Config.lang
-  url = `${Config.PHPROOT + url}`
-  const prom = method === RequestMethod.GET ? getData(url, data) : postData(url, data)
-  prom.then(res => {
-    if (Config.Debug) {
-      // console.log("请求结果:", res)
-    }
-    if (goodRequest(res)) {
-      if (!hideLoading) {
-        if (!goodText) {
-          loadingComplete()
-        } else {
-          toast(goodText)
-        }
-      }
-      if (onGood) {
-        onGood(res)
-      }
-    } else {
-      logErrorAndPop('加载失败，原因是' + res.info)
-      if (onBad) {
-        onBad()
-      }
-    }
-    blockReady()
-  })
 }
 
 export function showTimedAlert (type, title, time = 1000, callback = null) {
