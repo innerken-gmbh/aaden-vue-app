@@ -100,7 +100,7 @@ export async function popDiscountPanel (id, initialUI) {
   const res = await fastSweetAlertRequest(findInString('JSTableAdditionPopDiscountInfo'), 'text',
     'Complex.php?op=setDiscount', 'discountStr', {
       tableId: id
-    }, 'POST')
+    }, 'POST', false)
   if (res) {
     initialUI()
   }

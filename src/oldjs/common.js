@@ -440,14 +440,17 @@ export function getData (url, data) {
  * @param {string|number} dataName
  * @param {*} dataObj
  * @param {string} method
- * @param {(function(...[*]=))|initialUI} callback
  * @param {boolean} allowEmpty
+ * @param body
  */
-export async function fastSweetAlertRequest (title, input, url, dataName, dataObj, method = 'POST', allowEmpty = false) {
+export async function fastSweetAlertRequest
+(title, input, url, dataName, dataObj, method = 'POST', allowEmpty = false,
+  body = null) {
   url = `${Config.PHPROOT + url}`
   dataObj[dataName] = ''
   const result = await Swal.fire({
     title: title,
+    html: body,
     input: input,
     inputAttributes: {
       autocapitalize: 'off'

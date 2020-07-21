@@ -6,7 +6,7 @@
   "usePassword": false,
   "UseBossPassword": false,
   "resolveIP": true,
-  "defaultPassword": "111",
+  "defaultPassword": "",
   "lang": "ZH",
   "defaultExpand": true,
   "useOpenTablePrompt": false,
@@ -14,5 +14,5 @@
   "jumpToHomeWhenOrder": false,
   "Protocol": "https://",
   "isOnlineVersion": false,
-  "FMCVersion": true
+  "FMCVersion": false
 }
