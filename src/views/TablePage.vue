@@ -15,24 +15,24 @@
             </div>
             <div v-cloak class="dishListContainer" id="dishListContainer">
                 <div class="d-flex flex-wrap px-2">
-                    <div v-dragscroll style="z-index: 4;width: 100%">
-                        <v-tabs
-                                center-active
-                                show-arrows
-                                v-model="activeDCT"
-                        >
-                            <v-tab style="font-size: 16px">
-                                全部
+
+                    <v-tabs
+                            grow
+                            center-active
+                            show-arrows
+                            v-model="activeDCT"
+                    >
+                        <v-tab style="font-size: 16px">
+                            全部
+                        </v-tab>
+                        <template v-for="ct of dct">
+                            <v-tab v-bind:key="ct.id+'categorytypes'"
+                                   style="font-size: 16px"
+                            >
+                                <div class="font-weight-bold">{{ct.name}}</div>
                             </v-tab>
-                            <template v-for="ct of dct">
-                                <v-tab v-bind:key="ct.id+'categorytypes'"
-                                       style="font-size: 16px"
-                                >
-                                    <div class="font-weight-bold">{{ct.name}}</div>
-                                </v-tab>
-                            </template>
-                        </v-tabs>
-                    </div>
+                        </template>
+                    </v-tabs>
 
                     <v-tabs
                             center-active
@@ -1022,12 +1022,15 @@ export default {
           return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
         })
       }
+      console.log(list, 'DCT')
       if (this.activeCategory) {
-        const c = this.categories[this.activeCategory - 1]
+        const c = this.filteredC[this.activeCategory - 1]
+        console.log(c)
         list = list.filter((item) => {
-          return item.categoryId === c.id
+          return parseInt(item.categoryId) === parseInt(c.id)
         })
       }
+      console.log(list, 'FilterCategory')
       if (this.buffer !== '' && !this.buffer.includes('/')) {
         const [buffer] = this.buffer.split('*')
         list = list.filter((item) => {
@@ -1210,8 +1213,8 @@ export default {
     }
 
     .dishListContainer {
-        max-height: calc(100vh - 24px);
-        width: 100%;
+        max-height: calc(100vh);
+        width: calc(100vw - 352px - 352px);
     }
 
     .dishList {
