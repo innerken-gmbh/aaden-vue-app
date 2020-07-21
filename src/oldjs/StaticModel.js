@@ -18,7 +18,7 @@ export async function getAllDishesWithCache (force = false) {
 }
 
 export async function goHome () {
-  if (GlobalConfig.isQuickBuyVersion) {
+  if (GlobalConfig.FMCVersion) {
     const t = (await getActiveTables()).reduce((arr, i) => {
       return arr.concat(i.tables)
     }, []).find(f => parseInt(f.usageStatus) !== 0)

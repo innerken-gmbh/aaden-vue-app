@@ -13,9 +13,8 @@
                     </div>
                 </transition>
             </div>
-            <div v-cloak class="dishListContainer" id="dishListContainer">
-                <div class="d-flex flex-wrap px-2">
-
+            <v-card :elevation="0" color="transparent" v-cloak class="dishListContainer" id="dishListContainer">
+                <v-toolbar dense>
                     <v-tabs
                             grow
                             center-active
@@ -33,7 +32,8 @@
                             </v-tab>
                         </template>
                     </v-tabs>
-
+                </v-toolbar>
+                <v-toolbar dense>
                     <v-tabs
                             center-active
                             show-arrows
@@ -50,50 +50,24 @@
                             </v-tab>
                         </template>
                     </v-tabs>
-
-                    <div v-dragscroll class="dragscroll dishCardListContainer">
-                        <div class="dishCardList">
-                            <template v-for="dish of filteredDish">
-                                <v-sheet :key="'dish'+dish.code" class="dishBlock" @click="orderOneDish(dish.code)">
-                                    <div class="spaceBetween" style="align-items: center">
-                                        <div class="code">{{dish.code}}<span class="red--text"
-                                                                             v-if="dish.haveMod>0">*</span>
-                                        </div>
-                                        <div class="price">{{dish.isFree==='1'?'Frei':dish.price}}</div>
+                </v-toolbar>
+                <div v-dragscroll class="dragscroll dishCardListContainer">
+                    <div class="dishCardList">
+                        <template v-for="dish of filteredDish">
+                            <v-sheet :key="'dish'+dish.code" class="dishBlock" @click="orderOneDish(dish.code)">
+                                <div class="spaceBetween" style="align-items: center">
+                                    <div class="code">{{dish.code}}<span class="red--text"
+                                                                         v-if="dish.haveMod>0">*</span>
                                     </div>
-                                    <div class="name">{{dish.dishName}}</div>
-                                </v-sheet>
-                            </template>
-                        </div>
+                                    <div class="price">{{dish.isFree==='1'?'Frei':dish.price}}</div>
+                                </div>
+                                <div class="name">{{dish.dishName}}</div>
+                            </v-sheet>
+                        </template>
                     </div>
                 </div>
-            </div>
-            <div id="newDishContainerTP">
-                <transition name="fade" appear>
-                    <v-card style="box-shadow: -5px 0px 8px #bfbfbf" v-dragscroll v-if="cartListModel.list.length>0"
-                            class="white bottomCart surface"
-                            id="newDishContainer">
-                        <dish-card-list
-                                :color="'#707070'"
-                                :show-edit="true" :click-callback="removeDish"
-                                :orders="cartListModel.list"
-                                :default-expand="Config.defaultExpand"
-                                :title="$t('tableNewDishTitle')">
-                            <template v-slot:after-title="af">
-                                <div v-if="af" class="lastDish">
-                                  <span class="lastDishName"
-                                  >{{lastDish.name}}</span>
-                                    &times;{{lastCount}}
-                                </div>
-                            </template>
-                        </dish-card-list>
-                        <v-card-actions class="d-flex">
-                            <v-btn @click="cartListModel.clear()" dark color="error">取消</v-btn>
-                            <v-btn class="flex-grow-1" @click="orderDish" dark color="#367aeb">确认</v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </transition>
-            </div>
+            </v-card>
+
             <div class="panelF">
                 <div style="z-index: 1" class="infoPanel surface shadowForInsPanel">
                     <v-card class="topRow">
@@ -173,15 +147,15 @@
                         </div>
                     </v-card>
                     <div class="py-4 px-9">
-                        <div v-show-local class="spaceBetween">
+                        <div v-hide-quick-buy class="spaceBetween">
                             <div class="verticalInfoRowLabel S_tableInfoLabelTime"></div>
                             <div class="verticalInfoRowText">{{tableDetailInfo.createTimestamp}}</div>
                         </div>
-                        <div v-show-local class="mt-1 spaceBetween">
+                        <div v-hide-quick-buy class="mt-1 spaceBetween">
                             <div class="verticalInfoRowLabel S_tableInfoLabelSeat"></div>
                             <div class="verticalInfoRowText">{{tableDetailInfo.satCount}}</div>
                         </div>
-                        <div v-show-local class="mt-1 typeLabel">
+                        <div v-hide-quick-buy class="mt-1 typeLabel">
                             <span class="S_type"> </span>/<span class="S_servantName"> </span>
                         </div>
 
@@ -287,7 +261,7 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                         </div>
 
                     </div>
-                    <div v-if="!Config.isQuickBuyVersion" class="inputArea">
+                    <div v-if="!Config.FMCVersion" class="inputArea">
                         <div class="input-field ">
                             <v-text-field ref="ins" color="black" v-model="buffer"
                                           placeholder="instruction.." id="instruction"
@@ -297,6 +271,30 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                 </div>
             </div>
         </main>
+        <transition name="fade" appear>
+            <v-card style="box-shadow: -5px 0px 8px #bfbfbf" v-dragscroll v-if="cartListModel.list.length>0"
+                    class="white bottomCart surface"
+                    id="newDishContainer">
+                <dish-card-list
+                        :color="'#707070'"
+                        :show-edit="true" :click-callback="removeDish"
+                        :orders="cartListModel.list"
+                        :default-expand="Config.defaultExpand"
+                        :title="$t('tableNewDishTitle')">
+                    <template v-slot:after-title="af">
+                        <div v-if="af" class="lastDish">
+                                  <span class="lastDishName"
+                                  >{{lastDish.name}}</span>
+                            &times;{{lastCount}}
+                        </div>
+                    </template>
+                </dish-card-list>
+                <v-card-actions class="d-flex">
+                    <v-btn @click="cartListModel.clear()" dark color="error">取消</v-btn>
+                    <v-btn class="flex-grow-1" @click="orderDish" dark color="#367aeb">确认</v-btn>
+                </v-card-actions>
+            </v-card>
+        </transition>
         <transition appear name="fade">
             <div v-show="splitOrderListModel.list.length>0" class="bottomCart surface" style="background: #f5f6fa;"
                  v-cloak
@@ -518,7 +516,7 @@ export default {
       this.dish = dish
       this.count = count
       UIStatus = UIState.commandShow
-      if (!GlobalConfig.isQuickBuyVersion) {
+      if (!GlobalConfig.FMCVersion) {
         this.$refs.ins.blur()
       }
       this.modificationShow = true
@@ -655,7 +653,7 @@ export default {
         this.resetList()
         listIndex = -1
         UIStatus = UIState.Init
-        if (!GlobalConfig.isQuickBuyVersion) {
+        if (!GlobalConfig.FMCVersion) {
           this.$refs.ins.focus()
         }
       } else if (this.modificationShow) {
@@ -970,7 +968,7 @@ export default {
         getConsumeTypeList(() => {
           [setInterval(this.refreshTables, 5000),
             setInterval(this.getTableDetail, 3000)].map(addToTimerList)
-          if (!GlobalConfig.isQuickBuyVersion) {
+          if (!GlobalConfig.FMCVersion) {
             addToTimerList(setInterval(this.autoGetFocus, 1000))
             document.getElementById('instruction').focus()
           }
@@ -1040,6 +1038,9 @@ export default {
     }
   },
   watch: {
+    activeDCT: function () {
+      this.activeCategory = 0
+    },
     refresh: function (val) {
       this.realInitial()
     }
@@ -1057,6 +1058,12 @@ export default {
 </script>
 
 <style scoped>
+    .main {
+        display: flex;
+        width: 100vw;
+        justify-content: space-between;
+    }
+
     .collapse .areaC {
         flex-grow: 1;
         width: 100%;
@@ -1070,9 +1077,8 @@ export default {
         height: 100%;
         max-height: calc(100vh);
         border-radius: 5px;
-        width: 100%;
-        min-width: 340px;
-        max-width: 340px;
+        flex: 0 0 340px;
+        width: 340px;
         overflow-y: scroll;
         box-shadow: 4px 10px 20px 0 rgba(220, 224, 239, 0.59);
     }
@@ -1213,7 +1219,9 @@ export default {
 
     .dishListContainer {
         max-height: calc(100vh);
-        width: calc(100vw - 352px - 352px);
+        width: calc(100vw - 340px - 352px);
+        flex-grow: 1;
+        flex-shrink: 1;
     }
 
     .dishList {
@@ -1343,7 +1351,7 @@ export default {
     }
 
     .dishBlock {
-        height: 120px;
+        height: 112px;
         width: calc(16.6% - 12px);
         margin-top: 12px;
         cursor: pointer;
@@ -1382,7 +1390,7 @@ export default {
     }
 
     .dishBlock .name {
-        margin-top: 12px;
+        margin-top: 8px;
         font-family: "Roboto", "Helvetica", "Arial", sans-serif;
         display: flex;
         width: 100%;
@@ -1430,7 +1438,7 @@ export default {
 
     .dishCardListContainer {
         width: 100%;
-        height: calc(100vh - 124px);
+        height: calc(100vh - 96px);
     }
 
     .ikTitle {
@@ -1503,10 +1511,10 @@ export default {
         margin-top: 4px;
         height: calc(100vh - 4px);
         display: flex;
+        flex-shrink: 0;
         flex-direction: column;
         justify-content: space-between;
-        width: 100%;
-        max-width: 340px;
+        width: 340px;
     }
 
     .verticalInfoRow {

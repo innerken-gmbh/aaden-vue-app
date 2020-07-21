@@ -15,16 +15,16 @@ Vue.filter('priceDisplay',
     return parseFloat(price).toFixed(2).replace('.', ',')
   }
 )
-Vue.directive('show-local', {
+Vue.directive('show-quick-buy', {
   bind: function (el) {
-    if (GlobalConfig.isOnlineVersion) {
+    if (GlobalConfig.FMCVersion) {
       el.style.display = 'none'
     }
   }
 })
 Vue.directive('hide-quick-buy', {
   bind: function (el) {
-    if (GlobalConfig.isQuickBuyVersion) {
+    if (!GlobalConfig.FMCVersion) {
       el.style.display = 'none'
     }
   }

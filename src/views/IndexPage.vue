@@ -21,7 +21,7 @@
                         <div :key="area.name" v-cloak v-for="area in realArea" class="area">
                             <div>
                                 <div class="areaTitle">{{area.areaName}}</div>
-                                <div class="areaTableContainer" :style="Config.isOnlineVersion?
+                                <div class="areaTableContainer" :style="Config.FMCVersion?
                                 'grid-template-rows: repeat(4, 124px);':'grid-template-rows: repeat(6, 124px);'">
                                     <template v-for="table in area.tables">
                                         <div v-bind:key="table.name">
@@ -152,7 +152,7 @@ export default {
   },
   data: function () {
     return {
-      onlyActive: GlobalConfig.isOnlineVersion,
+      onlyActive: GlobalConfig.FMCVersion,
       reservations: [],
       areas: [],
       seen: true,

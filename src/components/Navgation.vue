@@ -3,13 +3,13 @@
         <div class="white elevation-3 avesNav d-flex justify-space-between">
             <div class=" flex-Container">
 
-                <div v-show-local class="languageSwitch">
+                <div class="languageSwitch">
                     <div @click="changeLanguage('ZH')" class="S_langZH">中</div>
                     <div @click="changeLanguage('EN')" class="S_langEN">英</div>
                     <div @click="changeLanguage('DE')" class="S_langDE">德</div>
                 </div>
 
-                <div v-show-local class="splitter"></div>
+                <div  class="splitter"></div>
 
                 <div class="timeDisplay">
                     <div class="timeFont">
@@ -22,12 +22,12 @@
                 </div>
                 <div class="splitter"></div>
                 <v-sheet class="appName">
-                    <span v-show-local>FMC-</span>
+                    <span v-show-quick-buy>FMC-</span>
                     {{version}}
                 </v-sheet>
 
-                <div v-show-local class="splitter"></div>
-                <div v-show-local @click="toggleDebug()" class="adbIcon">
+                <div v-hide-quick-buy class="splitter"></div>
+                <div v-hide-quick-buy @click="toggleDebug()" class="adbIcon">
                     <i class="material-icons littleIcon">adb</i>
                 </div>
 
