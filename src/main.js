@@ -31,7 +31,7 @@ Vue.directive('hide-quick-buy', {
 })
 
 async function initial () {
-  console.log('initialed', GlobalConfig)
+  console.log('initialed', GlobalConfig.Protocol)
   await initialAadenBase(GlobalConfig)
   console.log(Settings, 'Main')
   Settings.lang = function () {

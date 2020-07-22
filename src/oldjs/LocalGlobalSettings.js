@@ -1,7 +1,7 @@
 const defaultConfig = require('@/assets/AadenConfig.json')
 let GlobalConfig = Object.assign({}, defaultConfig)
 
-if (!GlobalConfig.isFMCVersion) {
+if (!GlobalConfig.FMCVersion) {
   GlobalConfig.Protocol = 'http://'
 }
 

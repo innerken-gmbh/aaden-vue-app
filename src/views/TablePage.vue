@@ -284,8 +284,8 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
         <transition name="fade" appear>
             <v-card style="box-shadow: -5px 0px 8px #bfbfbf" v-dragscroll v-if="cartListModel.list.length>0"
                     class="white bottomCart surface"
-                    :style="{top:Config.isFMCVersion?'0':'unset',
-                    bottom:!Config.isFMCVersion?'unset':'0'}"
+                    :style="{top:Config.FMCVersion?'0':'unset',
+                    bottom:!Config.FMCVersion?'unset':'0'}"
                     id="newDishContainer">
                 <dish-card-list
                         :extra-height="'64px'"
