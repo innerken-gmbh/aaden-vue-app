@@ -16,7 +16,7 @@
             <v-card :elevation="0" color="transparent" v-cloak class="dishListContainer" id="dishListContainer">
                 <v-toolbar rounded dense>
                     <v-tabs
-                           background-color="black"
+                            background-color="black"
                             dark
                             grow
                             center-active
@@ -56,7 +56,7 @@
                 <div v-dragscroll class="dragscroll dishCardListContainer">
                     <div class="dishCardList">
                         <template v-for="dish of filteredDish">
-                            <v-sheet :key="'dish'+dish.code" class="dishBlock" @click="orderOneDish(dish.code)">
+                            <v-card :key="'dish'+dish.code" class="dishBlock" @click="orderOneDish(dish.code)">
                                 <div class="spaceBetween" style="align-items: center">
                                     <div class="code">{{dish.code}}<span class="red--text"
                                                                          v-if="dish.haveMod>0">*</span>
@@ -64,7 +64,7 @@
                                     <div class="price">{{dish.isFree==='1'?'Frei':dish.price}}</div>
                                 </div>
                                 <div class="name">{{dish.dishName}}</div>
-                            </v-sheet>
+                            </v-card>
                         </template>
                     </div>
                 </div>
@@ -207,6 +207,13 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                     <div class="hintPanel">
                         <div class="left-panel">
                             <div class="floatMenuPanel" id="listOfFunction">
+                                <div v-show-quick-buy class="floatMenuPanelItem valign-wrapper"
+                                     @click="toManage()">
+                                    <div class="innerItem">
+                                        <div class="icon"><i class="material-icons">arrow_back</i></div>
+                                        <div class="text">CHEF</div>
+                                    </div>
+                                </div>
                                 <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
                                      @click="insDecodeButtonList(0)">
                                     <div class="innerItem">
@@ -360,6 +367,7 @@ import {
   jumpToTable,
   logError,
   logErrorAndPop,
+  oldJumpTo,
   popAuthorize,
   remove,
   requestOutTable,
@@ -471,6 +479,9 @@ export default {
     this.goHomeCallBack()
   },
   methods: {
+    toManage () {
+      popAuthorize('', oldJumpTo('admin/index.html', GlobalConfig))
+    },
     goHome () {
       this.goHomeCallBack()
       goHome()
@@ -1079,11 +1090,7 @@ export default {
     }
 
     .center-panel {
-        height: 100%;
-        max-height: calc(100vh);
-        flex: 0 0 340px;
         width: 340px;
-        overflow-y: scroll;
     }
 
     .spaceBetween {
@@ -1221,6 +1228,7 @@ export default {
     }
 
     .dishListContainer {
+        margin-left: 4px;
         max-height: calc(100vh);
         width: calc(100vw - 340px - 352px);
         flex-grow: 1;
@@ -1353,33 +1361,31 @@ export default {
 
     }
 
+    .dishCardList {
+        padding-top: 12px;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        margin-bottom: 120px;
+        width: 100%;
+        grid-gap: 6px;
+    }
+
     .dishBlock {
         height: 112px;
-        width: calc(16.6% - 12px);
-        margin-top: 12px;
         cursor: pointer;
         padding: 5px 12px;
         background: white;
-        -webkit-box-shadow: 0 3px 3px #d0d2d9;
-        box-shadow: 0 3px 3px #d0d2d9;
-        border-radius: 5px;
-        margin-right: 12px;
     }
 
     @media screen and (max-width: 1600px ) {
-        .dishBlock {
-            width: calc(25% - 12px);
-            margin-top: 12px;
-            margin-right: 12px;
+        .dishCardList {
+            grid-template-columns: repeat(5, 1fr);
         }
     }
 
     @media screen and (max-width: 1200px ) {
-        .dishBlock {
-
-            width: calc(33% - 12px);
-            margin-top: 12px;
-            margin-right: 12px;
+        .dishCardList {
+            grid-template-columns: repeat(4, 1fr);
         }
     }
 
@@ -1404,22 +1410,8 @@ export default {
         align-items: center;
     }
 
-    .dishBlock:active {
-        background: #367aeb;
-        color: white;
-        -webkit-box-shadow: 0 3px 10px 0 rgba(0, 86, 255, 0.54);
-        box-shadow: 0 3px 10px 0 rgba(0, 86, 255, 0.54);
-    }
-
     .dragscroll {
         overflow-x: hidden;
-    }
-
-    .dishCardList {
-        margin-bottom: 120px;
-        width: 100%;
-        flex-wrap: wrap;
-        display: flex;
     }
 
     .popMenu {

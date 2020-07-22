@@ -208,8 +208,8 @@ export default {
     }
 
     .floatMenuPanel {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
     }
 
     .indexTab {
@@ -232,10 +232,6 @@ export default {
         font-weight: 600;
         font-size: 12px;
         padding: 8px 0;
-        width: calc(33% - 6px);
-        margin-right: 6px;
-        margin-top: 6px;
-
     }
 
     .floatMenuPanelItem.focus {
@@ -258,7 +254,6 @@ export default {
 
     .innerItem {
         background: center / contain no-repeat;
-        width: 100px;
         color: #367aeb;
         height: 60px;
         font-size: 18px;

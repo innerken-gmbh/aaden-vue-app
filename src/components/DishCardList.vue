@@ -2,27 +2,23 @@
     <v-card v-if="count>0" style="max-height: calc(100vh - 64px)">
         <v-toolbar
                 tile
-                dense
+                dense class="font-weight-bold"
                 :color="color" dark>
-            <div class="d-flex flex-grow-1 justify-space-between dishListTitle">
-                <div class="d-flex">
-                    <slot name="after-title" :expand="expand"><span class="mr-1">{{title}}</span></slot>
-                </div>
-                <div class="d-flex">
-                    <div class="d-flex align-center">
-                        <v-icon color="white">mdi-cash-usd</v-icon>
-                        <span class="ml-1">{{total | priceDisplay}}</span>
-                        <v-icon color="white" class="ml-6">mdi-food</v-icon>
-                        <span class="ml-1">{{count}}</span>
-                    </div>
-                </div>
+
+            <slot name="after-title" :expand="expand">
+                <span class="mr-1">{{title}}</span>
+            </slot>
+            <v-spacer/>
+            <div class="d-flex align-center">
+                <v-icon color="white">mdi-cash-usd</v-icon>
+                <span class="ml-1">{{total | priceDisplay}}</span>
+                <v-icon color="white" class="ml-6">mdi-food</v-icon>
+                <span class="ml-1">{{count}}</span>
             </div>
-            <div class="pr-1 d-flex align-center">
-                <v-btn color="white" @click="expand=!expand" text x-small>
-                    <v-icon v-if="!expand">mdi-unfold-more-horizontal</v-icon>
-                    <v-icon v-else>mdi-unfold-less-horizontal</v-icon>
-                </v-btn>
-            </div>
+            <v-btn icon dark @click="expand=!expand">
+                <v-icon v-if="!expand">mdi-unfold-more-horizontal</v-icon>
+                <v-icon v-else>mdi-unfold-less-horizontal</v-icon>
+            </v-btn>
         </v-toolbar>
         <transition name="fade">
             <div v-dragscroll v-if="expand" class="orderDishList"
@@ -94,7 +90,6 @@ export default {
   },
   computed: {
     total: function () {
-      console.log(`calc(100vh - 48px - ${this.extraHeight})`)
       let totalPrice = 0
       for (const a of this.orders) {
         totalPrice += parseFloat(parseInt(a.count) * parseFloat(a.realPrice))
@@ -113,8 +108,5 @@ export default {
 </script>
 
 <style scoped>
-    .dishListTitle {
-        font-weight: bold;
-        padding: 12px 12px;
-    }
+
 </style>
