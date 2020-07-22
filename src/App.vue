@@ -327,7 +327,6 @@ export default {
 
     .infoPanel {
         width: 100%;
-        min-width: 340px;
         border-radius: 0 0 0 80px;
     }
 

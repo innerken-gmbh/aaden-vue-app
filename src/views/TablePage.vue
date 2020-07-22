@@ -14,8 +14,10 @@
                 </transition>
             </div>
             <v-card :elevation="0" color="transparent" v-cloak class="dishListContainer" id="dishListContainer">
-                <v-toolbar dense>
+                <v-toolbar rounded dense>
                     <v-tabs
+                           background-color="black"
+                            dark
                             grow
                             center-active
                             show-arrows
@@ -33,7 +35,7 @@
                         </template>
                     </v-tabs>
                 </v-toolbar>
-                <v-toolbar dense>
+                <v-toolbar rounded dense>
                     <v-tabs
                             center-active
                             show-arrows
@@ -68,16 +70,17 @@
                 </div>
             </v-card>
 
-            <div class="panelF">
-                <div style="z-index: 1" class="infoPanel surface shadowForInsPanel">
-                    <v-card class="topRow">
+            <div :style="{width:Config.isPMCVersion?'340px':'280px'}" class="panelF">
+                <v-card style="z-index: 1" class="infoPanel shadowForInsPanel">
+                    <v-toolbar tile dense :color="'#367aeb'" style="color: white">
                         <div class="bigTableName z-depth-2">{{tableName}}</div>
+                        <v-spacer></v-spacer>
                         <div class="d-flex">
-                            <span class="icon-line">
+                            <span v-hide-quick-buy class="icon-line">
                                 <v-icon color="white">mdi-account-outline</v-icon>
                                 <span class="ml-1 S_personCount"></span>
                             </span>
-                            <span class="icon-line ml-4">
+                            <span class="icon-line ml-2">
                                 <v-icon color="white">mdi-calendar-text</v-icon>
                                 <span class="ml-1 S_orderNumber"></span>
                             </span>
@@ -145,8 +148,8 @@
                             </v-menu>
 
                         </div>
-                    </v-card>
-                    <div class="py-4 px-9">
+                    </v-toolbar>
+                    <div class="pa-3">
                         <div v-hide-quick-buy class="spaceBetween">
                             <div class="verticalInfoRowLabel S_tableInfoLabelTime"></div>
                             <div class="verticalInfoRowText">{{tableDetailInfo.createTimestamp}}</div>
@@ -172,7 +175,7 @@
 
                     </div>
 
-                </div>
+                </v-card>
                 <div v-cloak class="collapse areaC dragscroll flex-grow-1" v-dragscroll id="areaC">
                     <div v-cloak v-bind:key="'area'+area.areaName" v-for="area in areas" class="area">
                         <div class="areaTitle">{{area.areaName}}</div>
@@ -274,8 +277,11 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
         <transition name="fade" appear>
             <v-card style="box-shadow: -5px 0px 8px #bfbfbf" v-dragscroll v-if="cartListModel.list.length>0"
                     class="white bottomCart surface"
+                    :style="{top:Config.isFMCVersion?'0':'unset',
+                    bottom:!Config.isFMCVersion?'unset':'0'}"
                     id="newDishContainer">
                 <dish-card-list
+                        :extra-height="'64px'"
                         :color="'#707070'"
                         :show-edit="true" :click-callback="removeDish"
                         :orders="cartListModel.list"
@@ -289,10 +295,11 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                         </div>
                     </template>
                 </dish-card-list>
-                <v-card-actions class="d-flex">
+                <v-toolbar dense>
                     <v-btn @click="cartListModel.clear()" dark color="error">取消</v-btn>
                     <v-btn class="flex-grow-1" @click="orderDish" dark color="#367aeb">确认</v-btn>
-                </v-card-actions>
+                </v-toolbar>
+
             </v-card>
         </transition>
         <transition appear name="fade">
@@ -1072,15 +1079,11 @@ export default {
     }
 
     .center-panel {
-        margin-left: 4px;
-        margin-top: 4px;
         height: 100%;
         max-height: calc(100vh);
-        border-radius: 5px;
         flex: 0 0 340px;
         width: 340px;
         overflow-y: scroll;
-        box-shadow: 4px 10px 20px 0 rgba(220, 224, 239, 0.59);
     }
 
     .spaceBetween {
@@ -1458,7 +1461,7 @@ export default {
     .bottomCart {
         position: fixed;
         width: 100%;
-        max-width: 340px;
+        max-width: 335px;
     }
 
     .normalPos {
@@ -1468,10 +1471,10 @@ export default {
     }
 
     #newDishContainer {
-        max-height: calc(100vh - 60px);
+        max-height: calc(100vh - 4px);
         overflow: hidden;
         bottom: 0;
-        left: 12px;
+        left: 4px;
     }
 
     #splitOrderContainer {
@@ -1508,13 +1511,13 @@ export default {
     }
 
     .panelF {
-        margin-top: 4px;
         height: calc(100vh - 4px);
+        margin-left: 4px;
         display: flex;
         flex-shrink: 0;
         flex-direction: column;
         justify-content: space-between;
-        width: 340px;
+        width: 300px;
     }
 
     .verticalInfoRow {
