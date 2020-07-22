@@ -78,7 +78,7 @@
                     </template>
                 </div>
                 <div style="height: 300px">
-                    <template v-if="remainTotal===0">
+                    <template v-if="equals(remainTotal,0)">
 
                         <v-sheet class="my-6">
                             <h4>
@@ -163,13 +163,13 @@ export default {
       if (this.remainTotal >= 0) {
         return [
           [1, 2, 3, 'mdi-minus'],
-          [4, 5, 6, 'mdi-restart'],
+          [4, 5, 6, 'mdi-backspace'],
           [7, 8, 9, 'mdi-credit-card-outline'],
           ['mdi-dots-horizontal', 0, 'mdi-circle-small', 'mdi-cash-usd']]
       } else {
         return [
           [1, 2, 3, 'mdi-minus'],
-          [4, 5, 6, 'mdi-restart'],
+          [4, 5, 6, 'mdi-backspace'],
           [7, 8, 9, 'mdi-bell'],
           ['mdi-dots-horizontal', 0, 'mdi-circle-small', 'mdi-cash-usd']]
       }
@@ -183,6 +183,9 @@ export default {
     }
   },
   methods: {
+    equals (a, b) {
+      return Math.abs(a - b) < Number.EPSILON * Math.pow(2, 2)
+    },
     checkOut () {
       this.$emit('payment-submit', this.paymentLog, this.billType)
       this.clearBuffer()
@@ -229,7 +232,7 @@ export default {
         const c = this.realName[input]
         switch (c) {
           case '.':
-            this.inputBuffer += input
+            this.inputBuffer += c
             break
           case 'back':
             this.inputBuffer = this.inputBuffer.substr(0, this.inputBuffer.length - 1)

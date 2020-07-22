@@ -136,7 +136,7 @@ import {
 import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
-import { GlobalConfig } from '../oldjs/LocalGlobalSettings'
+import GlobalConfig from '../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 
 export default {

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import { GlobalConfig } from './oldjs/LocalGlobalSettings'
+import GlobalConfig from './oldjs/LocalGlobalSettings'
 
 Vue.use(VueI18n)
 

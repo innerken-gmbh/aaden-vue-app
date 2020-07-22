@@ -1,7 +1,7 @@
 import hillo from 'innerken-utils/Utlis/request'
 
 import i18n from '../i18n'
-import { GlobalConfig } from './LocalGlobalSettings'
+import GlobalConfig from './LocalGlobalSettings'
 import { getActiveTables, jumpTo, jumpToTable, requestOutTable } from './common'
 
 let dishesList = []

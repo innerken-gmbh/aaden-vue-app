@@ -1,23 +1,28 @@
 const defaultConfig = require('@/assets/AadenConfig.json')
-let Config = Object.assign({}, defaultConfig)
+let GlobalConfig = Object.assign({}, defaultConfig)
+
+if (!GlobalConfig.isFMCVersion) {
+  GlobalConfig.Protocol = 'http://'
+}
 
 import('electron-settings').then(settings => {
+  settings = settings.default
   const localConfig = settings.get('config')
-  Config = Object.assign(Config, localConfig)
-  Config.settings = settings
+  GlobalConfig = Object.assign(GlobalConfig, localConfig)
+  GlobalConfig.settings = settings
+  window.localConfig = localConfig
 }).catch(e => {
+  console.error(e)
   console.error('no local Config Available')
 })
 
-window.Config = Config
+window.Config = GlobalConfig
 window.useCurrentConfig = useCurrentConfig
 window.hardReload = hardReload
 window.setDeviceId = setDeviceId
 
-// console.log(StaticSetting.lang)
-
 export function reload () {
-  if (!Config.isOnlineVersion) {
+  if (!GlobalConfig.isOnlineVersion) {
     const { ipcRenderer } = require('electron')
     ipcRenderer.send('reload')
   } else {
@@ -26,21 +31,21 @@ export function reload () {
 }
 
 function useCurrentConfig () {
-  Config.settings.set('config', Config)
+  GlobalConfig.settings.set('config', GlobalConfig)
   reload()
 }
 
 function hardReload () {
-  Config.settings.deleteAll()
+  GlobalConfig.settings.deleteAll()
 }
 
 function setDeviceId (id) {
-  Config.settings.set('config.DeviceId', id)
+  GlobalConfig.settings.set('config.DeviceId', id)
   reload()
 }
 
 export function changeLanguage (l) {
-  Config.settings.set('config.lang', l)
+  GlobalConfig.settings.set('config.lang', l)
   reload()
 }
 
@@ -49,10 +54,10 @@ let debugCounter = 0
 export function toggleDebug () {
   debugCounter++
   if (debugCounter > 10) {
-    Config.settings.set('config.Debug', !Config.settings.get('config.Debug'))
+    GlobalConfig.settings.set('config.Debug', !GlobalConfig.settings.get('config.Debug'))
     reload()
     debugCounter = 0
   }
 }
 
-export const GlobalConfig = Config
+export default GlobalConfig

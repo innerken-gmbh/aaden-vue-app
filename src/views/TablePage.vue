@@ -391,7 +391,7 @@ import CheckOutDrawer from '../components/CheckOutDrawer'
 import { getAllDishesWithCache, goHome } from '../oldjs/StaticModel'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
-import { GlobalConfig } from '../oldjs/LocalGlobalSettings'
+import GlobalConfig from '../oldjs/LocalGlobalSettings'
 
 const UIState = {
   Init: 0,
@@ -1404,18 +1404,11 @@ export default {
         align-items: center;
     }
 
-    .dishBlock.active {
+    .dishBlock:active {
         background: #367aeb;
-        color: white;
-
-    }
-
-    .dishBlock:hover {
-        background: #357aeb;
         color: white;
         -webkit-box-shadow: 0 3px 10px 0 rgba(0, 86, 255, 0.54);
         box-shadow: 0 3px 10px 0 rgba(0, 86, 255, 0.54);
-
     }
 
     .dragscroll {

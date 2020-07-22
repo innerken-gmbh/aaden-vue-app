@@ -2,7 +2,7 @@ import Swal from 'sweetalert2'
 import router from '../router'
 import { ego, hillo } from 'innerken-utils'
 import i18n from '../i18n'
-import { GlobalConfig } from './LocalGlobalSettings'
+import GlobalConfig from './LocalGlobalSettings'
 
 const Config = GlobalConfig
 

@@ -7,7 +7,7 @@ import vuetify from './plugins/vuetify'
 import 'material-design-icons/iconfont/material-icons.css'
 import Settings, { initialAadenBase } from 'aaden-base-model/lib/Models/GlobalSettings'
 
-import { GlobalConfig } from './oldjs/LocalGlobalSettings'
+import GlobalConfig from './oldjs/LocalGlobalSettings'
 
 Vue.config.productionTip = false
 Vue.filter('priceDisplay',
@@ -31,6 +31,7 @@ Vue.directive('hide-quick-buy', {
 })
 
 async function initial () {
+  console.log('initialed', GlobalConfig)
   await initialAadenBase(GlobalConfig)
   console.log(Settings, 'Main')
   Settings.lang = function () {
