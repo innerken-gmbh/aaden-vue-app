@@ -501,9 +501,19 @@ export default {
     findInString,
     async getOrderedDish () {
       try {
+        let discountRatio = 1
         if (this.splitOrderListModel.count() === 0) {
-          this.orderListModel.loadTTDishList(await getOrderInfo(this.id))
+          const result = await getOrderInfo(this.id)
+          const discountInfo = result.filter(r => r.code === '-1')
+          this.orderListModel.loadTTDishList(result)
+          if (discountInfo.length > 0) {
+            const [discount] = discountInfo
+            discountRatio = Math.abs(parseFloat(discount.price)) / (
+              this.orderListModel.total() + Math.abs(parseFloat(discount.price))
+            )
+          }
         }
+        console.log(discountRatio)
         this.loading = false
       } catch (e) {
         this.breakCount++
@@ -1090,6 +1100,8 @@ export default {
     }
 
     .center-panel {
+        display: flex;
+        align-items:flex-end;
         width: 340px;
     }
 
