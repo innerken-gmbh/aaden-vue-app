@@ -309,8 +309,8 @@ export default {
         padding: 16px;
         width: 100%;
         height: 100%;
-        background: #367aeb;
-        color: white;
+        background: white;
+        color: black;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
