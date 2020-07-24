@@ -113,6 +113,7 @@ export async function popChangeTablePanel (tableName, initialUI) {
     }, 'POST')
   if (res) {
     initialUI()
+    goHome()
   }
 }
 
@@ -121,7 +122,9 @@ export async function popMergeTablePanel (tableName, initialUI) {
     'Tables.php?op=mergeTables', 'newTableName', {
       oldTableName: tableName
     }, 'POST')
+  console.log(res)
   if (res) {
     initialUI()
+    goHome()
   }
 }
