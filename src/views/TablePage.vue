@@ -522,7 +522,7 @@ export default {
       }
     },
     dishQuery (code, count = 1) {
-      const dish = this.dishes.find(d => d.code === code)
+      const dish = this.dishes.find(d => d.code.toLowerCase() === code.toLowerCase())
       if (dish) {
         dish.name = dish.dishName
         dish.name = dish.name.length > 28
@@ -533,7 +533,7 @@ export default {
         }
         this.addDish(dish, parseInt(count))
       } else {
-        logError(findInString('JSTableCodeNotFound'))
+        showTimedAlert('warning', findInString('JSTableCodeNotFound'), 500)
       }
       blockReady()
     },
