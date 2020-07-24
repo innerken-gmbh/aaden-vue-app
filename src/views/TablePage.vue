@@ -291,8 +291,7 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                         :color="'#707070'"
                         :show-edit="true" :click-callback="removeDish"
                         :orders="cartListModel.list"
-                        :default-expand="Config.defaultExpand"
-                        :title="$t('tableNewDishTitle')">
+                        :default-expand="Config.defaultExpand">
                     <template v-slot:after-title="af">
                         <div v-if="af" class="lastDish">
                                   <span class="lastDishName"
@@ -536,6 +535,7 @@ export default {
       } else {
         logError(findInString('JSTableCodeNotFound'))
       }
+      blockReady()
     },
     showModification (dish, count) {
       this.options = dish.modInfo
@@ -888,12 +888,14 @@ export default {
         return
       }
       if (t !== '') {
+        console.log('inputting time', t)
         if (t.startsWith('-') && t.length >= 2) {
           this.removeDishWithCode(t.substring(1))
           blockReady()
           return
         } else if (t.indexOf('*') !== -1) {
           this.dishQuery(t.split('*')[0], t.split('*')[1])
+          return
         } else if (t === '/rp') {
           hillo.post('Printer.php?op=questReprintOrder', {
             orderId: OrderId
@@ -912,6 +914,7 @@ export default {
           })
         } else {
           this.dishQuery(t)
+          return
         }
       } else {
         if (UIStatus === UIState.Init) {
@@ -1014,21 +1017,6 @@ export default {
     }
   },
   computed: {
-    tableDishListTHPrice: function () {
-      return findInString('tableDishListTHPrice')
-    },
-    tableNewDishTHCode: function () {
-      return findInString('tableNewDishTHCode')
-    },
-    tableNewDishTHName: function () {
-      return findInString('tableNewDishTHName')
-    },
-    tableNewDishTHAmount: function () {
-      return findInString('tableNewDishTHAmount')
-    },
-    tableNewDishTHDelete: function () {
-      return findInString('tableNewDishTHDelete')
-    },
     filteredC: function () {
       if (this.activeDCT) {
         const dct = this.dct[this.activeDCT - 1]
@@ -1046,19 +1034,19 @@ export default {
           return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
         })
       }
-      console.log(list, 'DCT')
       if (this.activeCategory) {
         const c = this.filteredC[this.activeCategory - 1]
-        console.log(c)
         list = list.filter((item) => {
           return parseInt(item.categoryId) === parseInt(c.id)
         })
       }
-      console.log(list, 'FilterCategory')
+
       if (this.buffer !== '' && !this.buffer.includes('/')) {
         const [buffer] = this.buffer.split('*')
         list = list.filter((item) => {
-          return item.dishName.includes(buffer) || item.code.includes(buffer)
+          return item.dishName.includes(buffer) ||
+            item.code.includes(buffer.toLowerCase()) ||
+            item.code.includes(buffer.toUpperCase())
         })
       }
       return list
@@ -1100,7 +1088,7 @@ export default {
 
     .center-panel {
         display: flex;
-        align-items:flex-end;
+        align-items: flex-end;
         width: 340px;
     }
 

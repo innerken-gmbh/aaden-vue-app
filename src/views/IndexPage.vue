@@ -169,7 +169,7 @@ export default {
       this.refreshTables()
     },
     refresh: function () {
-      this.refreshTables()
+      this.initPage()
     }
   },
   computed: {
@@ -238,25 +238,28 @@ export default {
         return
       }
       this.$refs.ins.focus()
+    },
+    initPage () {
+      resolveBestIP(() => {
+        for (const i in this.Strings[GlobalConfig.lang]) {
+          AssginToStringClass(i, this.Strings[GlobalConfig.lang][i])
+        }
+        getConsumeTypeList(() => {
+          window.onkeydown = this.listenKeyDown
+          this.refreshTables()
+
+          getAllDishes().then(res => {
+            this.dishes = res
+          })
+          setInterval(this.refreshTables, 5000)
+          const list = [setInterval(this.autoGetFocus, 1000)]
+          list.map(addToTimerList)
+        })
+      })
     }
   },
   mounted: function () {
-    resolveBestIP(() => {
-      for (const i in this.Strings[GlobalConfig.lang]) {
-        AssginToStringClass(i, this.Strings[GlobalConfig.lang][i])
-      }
-      getConsumeTypeList(() => {
-        window.onkeydown = this.listenKeyDown
-        this.refreshTables()
-
-        getAllDishes().then(res => {
-          this.dishes = res
-        })
-        setInterval(this.refreshTables, 5000)
-        const list = [setInterval(this.autoGetFocus, 1000)]
-        list.map(addToTimerList)
-      })
-    })
+    this.initPage()
   },
   beforeDestroy () {
     clearAllTimer()

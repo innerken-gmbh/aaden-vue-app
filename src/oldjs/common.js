@@ -105,6 +105,7 @@ export function blockReady () {
 }
 
 export function blocking () {
+  // console.trace()
   // console.info('blocked!')
   blocked = true
 }
