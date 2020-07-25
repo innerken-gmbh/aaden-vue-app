@@ -4,7 +4,7 @@
   "DeviceId": -1,
   "Debug": true,
   "usePassword": false,
-  "UseBossPassword": false,
+  "UseBossPassword": true,
   "resolveIP": true,
   "defaultPassword": "111",
   "lang": "ZH",
@@ -12,7 +12,7 @@
   "useOpenTablePrompt": false,
   "checkOutUsePassword": false,
   "jumpToHomeWhenOrder": false,
-  "Protocol": "https://",
+  "Protocol": "http://",
   "isOnlineVersion": false,
   "FMCVersion": false
 }

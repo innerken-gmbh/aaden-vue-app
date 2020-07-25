@@ -1,21 +1,23 @@
 const defaultConfig = require('@/assets/AadenConfig.json')
 let GlobalConfig = Object.assign({}, defaultConfig)
 
-if (!GlobalConfig.FMCVersion) {
-  GlobalConfig.Protocol = 'http://'
+if (GlobalConfig.FMCVersion) {
+  GlobalConfig.Protocol = 'https://'
 }
-
-import('electron-settings').then(settings => {
-  settings = settings.default
-  const localConfig = settings.get('config')
-  GlobalConfig = Object.assign(GlobalConfig, localConfig)
-  console.log(GlobalConfig.lang)
-  GlobalConfig.settings = settings
-  window.localConfig = localConfig
-}).catch(e => {
-  console.error(e)
-  console.error('no local Config Available')
-})
+export async function loadLocal () {
+  try {
+    const settings = (await import('electron-settings')).default
+    const localConfig = settings.get('config')
+    console.log(localConfig, 'local')
+    GlobalConfig = Object.assign(GlobalConfig, localConfig)
+    console.log(GlobalConfig.lang)
+    GlobalConfig.settings = settings
+    window.localConfig = localConfig
+  } catch (e) {
+    console.error(e)
+    console.error('no local Config Available')
+  }
+}
 
 window.Config = GlobalConfig
 window.useCurrentConfig = useCurrentConfig

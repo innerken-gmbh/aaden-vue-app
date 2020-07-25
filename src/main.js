@@ -5,9 +5,9 @@ import store from './store'
 import i18n from './i18n'
 import vuetify from './plugins/vuetify'
 import 'material-design-icons/iconfont/material-icons.css'
-import { initialAadenBase } from 'aaden-base-model/lib/Models/GlobalSettings'
+import Settings, { initialAadenBase } from 'aaden-base-model/lib/Models/GlobalSettings'
 
-import GlobalConfig from './oldjs/LocalGlobalSettings'
+import GlobalConfig, { loadLocal } from './oldjs/LocalGlobalSettings'
 
 Vue.config.productionTip = false
 Vue.filter('priceDisplay',
@@ -31,13 +31,15 @@ Vue.directive('hide-quick-buy', {
 })
 
 async function initial () {
+  await loadLocal()
   await initialAadenBase(GlobalConfig)
 
   i18n.locale = GlobalConfig.lang.toUpperCase()
   console.log(GlobalConfig, 'Main')
-  GlobalConfig.lang = function () {
+  Settings.lang = function () {
     return i18n.locale.toUpperCase()
   }
+
   new Vue({
     router,
     store,

@@ -313,7 +313,7 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                  id="splitOrderContainer">
                 <dish-card-list :default-expand="true" :orders="splitOrderListModel.list"
                                 :click-callback="removeFromSplitOrder"
-                                :title="findInString('operation')"/>
+                                :title="$t('operation')"/>
                 <div class="spaceBetween pa-2">
                     <div></div>
                     <div style="display: flex;align-items: center">
