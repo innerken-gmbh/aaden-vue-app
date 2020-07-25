@@ -89,11 +89,12 @@ export function findConsumeTypeById (id) {
 
 export function jumpToTable (tableId, tableName) {
   console.log(tableId, tableName)
-  getData(Config.PHPROOT + 'Complex.php', {
+  hillo.get('Complex.php', {
     op: 'resetTableCallStatus',
     tableId: tableId,
     chaos: timeStampNow()
   })
+
   const params = Object.assign({ id: tableId, tableId, tableName })
   jumpTo('table', params)
 }
@@ -148,7 +149,7 @@ export async function popAuthorize (type, successCallback, force = false, failed
 /** should provide a model list */
 
 export async function getActiveTables () {
-  const res = await getData(Config.PHPROOT + 'Tables.php', {
+  const res = await hillo.get('Tables.php', {
     op: 'showAllTableWithSection'
   })
   if (goodRequest(res)) {
