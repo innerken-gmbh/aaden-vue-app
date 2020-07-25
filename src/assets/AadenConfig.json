@@ -1,7 +1,7 @@
 {
   "IP": "localhost",
   "Dir": "",
-  "DeviceId": 2,
+  "DeviceId": -1,
   "Debug": true,
   "usePassword": false,
   "UseBossPassword": false,

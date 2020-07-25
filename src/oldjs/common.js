@@ -1,6 +1,6 @@
 import Swal from 'sweetalert2'
 import router from '../router'
-import { ego, hillo } from 'innerken-utils'
+import { hillo } from 'innerken-utils'
 import i18n from '../i18n'
 import GlobalConfig from './LocalGlobalSettings'
 
@@ -65,11 +65,10 @@ export function tryToReport () {
 }
 
 export function getConsumeTypeList (callback) {
-  getData(Config.PHPROOT + 'Complex.php', {
+  hillo.get('Complex.php', {
     op: 'showAllConsumeTypeInfo',
     chaos: timeStampNow()
   }).then(res => {
-    //  console.log(res, "getConsumeTypeList");
     if (goodRequest(res)) {
       consumeTypeList = res.content
       if (callback) {
@@ -300,7 +299,6 @@ export function informOpenJpTable (password, number, personCount, childCount, ad
 
 function initialConfig () {
   Config.PHPROOT = `${Config.REALROOT}/PHP/`
-  ego.initial(Config.PHPROOT)
 }
 
 export function requestOutTable () {
@@ -418,7 +416,7 @@ export function showLoading () {
 }
 
 export function getData (url, data) {
-  // console.log(url, data)
+  console.log(url, data)
   url = new URL(url)
   const defaultData = {
     chaos: timeStampNow()

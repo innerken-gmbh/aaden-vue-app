@@ -5,7 +5,7 @@ import store from './store'
 import i18n from './i18n'
 import vuetify from './plugins/vuetify'
 import 'material-design-icons/iconfont/material-icons.css'
-import Settings, { initialAadenBase } from 'aaden-base-model/lib/Models/GlobalSettings'
+import { initialAadenBase } from 'aaden-base-model/lib/Models/GlobalSettings'
 
 import GlobalConfig from './oldjs/LocalGlobalSettings'
 
@@ -31,10 +31,11 @@ Vue.directive('hide-quick-buy', {
 })
 
 async function initial () {
-  console.log('initialed', GlobalConfig.Protocol)
   await initialAadenBase(GlobalConfig)
-  console.log(Settings, 'Main')
-  Settings.lang = function () {
+
+  i18n.locale = GlobalConfig.lang.toUpperCase()
+  console.log(GlobalConfig, 'Main')
+  GlobalConfig.lang = function () {
     return i18n.locale.toUpperCase()
   }
   new Vue({
