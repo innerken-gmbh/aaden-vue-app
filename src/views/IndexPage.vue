@@ -169,7 +169,7 @@ export default {
       this.refreshTables()
     },
     refresh: function () {
-      this.refreshTables()
+      this.initPage()
     }
   },
   computed: {
@@ -238,25 +238,28 @@ export default {
         return
       }
       this.$refs.ins.focus()
+    },
+    initPage () {
+      resolveBestIP(() => {
+        for (const i in this.Strings[GlobalConfig.lang]) {
+          AssginToStringClass(i, this.Strings[GlobalConfig.lang][i])
+        }
+        getConsumeTypeList(() => {
+          window.onkeydown = this.listenKeyDown
+          this.refreshTables()
+
+          getAllDishes().then(res => {
+            this.dishes = res
+          })
+          setInterval(this.refreshTables, 5000)
+          const list = [setInterval(this.autoGetFocus, 1000)]
+          list.map(addToTimerList)
+        })
+      })
     }
   },
   mounted: function () {
-    resolveBestIP(() => {
-      for (const i in this.Strings[GlobalConfig.lang]) {
-        AssginToStringClass(i, this.Strings[GlobalConfig.lang][i])
-      }
-      getConsumeTypeList(() => {
-        window.onkeydown = this.listenKeyDown
-        this.refreshTables()
-
-        getAllDishes().then(res => {
-          this.dishes = res
-        })
-        setInterval(this.refreshTables, 5000)
-        const list = [setInterval(this.autoGetFocus, 1000)]
-        list.map(addToTimerList)
-      })
-    })
+    this.initPage()
   },
   beforeDestroy () {
     clearAllTimer()
@@ -309,8 +312,8 @@ export default {
         padding: 16px;
         width: 100%;
         height: 100%;
-        background: #367aeb;
-        color: white;
+        background: white;
+        color: black;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -330,8 +333,14 @@ export default {
         color: white !important;
         background: #F34141;
     }
+    .tableTimeLabel {
+        color: black;
+        font-size: 18px;
+        height: 25px;
+        font-weight: 900;
+    }
 
-    .onCall > .tableTimeLabel {
+    .onCall .tableTimeLabel {
         color: white;
     }
 
@@ -353,13 +362,6 @@ export default {
 
     .tableCard.notUsed .tableCardName {
         font-weight: 400;
-    }
-
-    .tableTimeLabel {
-        color: white;
-        font-size: 18px;
-        height: 25px;
-        font-weight: 900;
     }
 
     .tableIconRow > .material-icons {

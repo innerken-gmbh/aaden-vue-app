@@ -24,7 +24,7 @@
                             v-model="activeDCT"
                     >
                         <v-tab style="font-size: 16px">
-                            全部
+                            Alle
                         </v-tab>
                         <template v-for="ct of dct">
                             <v-tab v-bind:key="ct.id+'categorytypes'"
@@ -42,7 +42,7 @@
                             v-model="activeCategory"
                     >
                         <v-tab style="font-size: 16px">
-                            全部
+                            Alle
                         </v-tab>
                         <template v-for="category of filteredC">
                             <v-tab v-bind:key="category.id+'categorytypes'"
@@ -215,21 +215,20 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                                     </div>
                                 </div>
                                 <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
-                                     @click="insDecodeButtonList(0)">
+                                     @click="insDecodeButtonList(1)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">arrow_back</i></div>
                                         <div class="text S_backToHome"></div>
                                     </div>
-
                                 </div>
                                 <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
-                                     @click="insDecodeButtonList(1)">
+                                     @click="insDecodeButtonList(2)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">restaurant</i></div>
                                         <div class="text S_dishOrder"></div>
                                     </div>
                                 </div>
-                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(2)">
+                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(3)">
                                     <div class="innerItem" style="">
                                         <div class="icon"><i class="material-icons">local_offer</i></div>
                                         <div class="text S_discount"></div>
@@ -237,21 +236,21 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                                 </div>
 
                                 <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
-                                     @click="insDecodeButtonList(3)">
+                                     @click="insDecodeButtonList(4)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">swap_horiz</i></div>
                                         <div class="text S_tableChange"></div>
                                     </div>
                                 </div>
                                 <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
-                                     @click="insDecodeButtonList(4)">
+                                     @click="insDecodeButtonList(5)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">merge_type</i></div>
                                         <div class="text S_tableMerge"></div>
                                     </div>
                                 </div>
 
-                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(5)">
+                                <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(6)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">account_balance_wallet</i></div>
                                         <div class="text S_payBill"></div>
@@ -259,7 +258,7 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
 
                                 </div>
                                 <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
-                                     @click="insDecodeButtonList(6)">
+                                     @click="insDecodeButtonList(7)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">assignment_turned_in</i></div>
                                         <div class="text S_QuickBill"></div>
@@ -292,8 +291,7 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                         :color="'#707070'"
                         :show-edit="true" :click-callback="removeDish"
                         :orders="cartListModel.list"
-                        :default-expand="Config.defaultExpand"
-                        :title="$t('tableNewDishTitle')">
+                        :default-expand="Config.defaultExpand">
                     <template v-slot:after-title="af">
                         <div v-if="af" class="lastDish">
                                   <span class="lastDishName"
@@ -524,7 +522,7 @@ export default {
       }
     },
     dishQuery (code, count = 1) {
-      const dish = this.dishes.find(d => d.code === code)
+      const dish = this.dishes.find(d => d.code.toLowerCase() === code.toLowerCase())
       if (dish) {
         dish.name = dish.dishName
         dish.name = dish.name.length > 28
@@ -535,8 +533,9 @@ export default {
         }
         this.addDish(dish, parseInt(count))
       } else {
-        logError(findInString('JSTableCodeNotFound'))
+        showTimedAlert('warning', findInString('JSTableCodeNotFound'), 500)
       }
+      blockReady()
     },
     showModification (dish, count) {
       this.options = dish.modInfo
@@ -700,11 +699,11 @@ export default {
         return
       }
       switch (i) {
-        case 0: // 打单
+        case 1: // 打单
           this.back()
           blockReady()
           break
-        case 1: // 打单
+        case 2: // 打单
           if (this.cartListModel.list.length > 0) {
             this.orderDish()
             blocking()
@@ -712,20 +711,20 @@ export default {
             blockReady()
           }
           break
-        case 2:
+        case 3:
           popAuthorize('', () => popDiscountPanel(this.id, this.initialUI))
           break
-        case 3:
+        case 4:
           popAuthorize('', () => popChangeTablePanel(this.tableName, this.initialUI))
           break
-        case 4:
+        case 5:
           // 转台
           popAuthorize('', () => popMergeTablePanel(this.tableName, this.initialUI))
           break
-        case 5:
+        case 6:
           this.jumpToPayment()
           break
-        case 6:
+        case 7:
           if (GlobalConfig.checkOutUsePassword) {
             popAuthorize('', () => {
               this.checkOut()
@@ -889,12 +888,14 @@ export default {
         return
       }
       if (t !== '') {
+        console.log('inputting time', t)
         if (t.startsWith('-') && t.length >= 2) {
           this.removeDishWithCode(t.substring(1))
           blockReady()
           return
         } else if (t.indexOf('*') !== -1) {
           this.dishQuery(t.split('*')[0], t.split('*')[1])
+          return
         } else if (t === '/rp') {
           hillo.post('Printer.php?op=questReprintOrder', {
             orderId: OrderId
@@ -913,16 +914,17 @@ export default {
           })
         } else {
           this.dishQuery(t)
+          return
         }
       } else {
         if (UIStatus === UIState.Init) {
           if (this.cartListModel.list.length > 0) {
             UIStatus = UIState.OnList
-            this.highLight(1)
+            this.highLight(2)
             blockReady()
             return
           } else {
-            this.highLight(6)
+            this.highLight(7)
             UIStatus = UIState.OnList
             blockReady()
             return
@@ -1015,21 +1017,6 @@ export default {
     }
   },
   computed: {
-    tableDishListTHPrice: function () {
-      return findInString('tableDishListTHPrice')
-    },
-    tableNewDishTHCode: function () {
-      return findInString('tableNewDishTHCode')
-    },
-    tableNewDishTHName: function () {
-      return findInString('tableNewDishTHName')
-    },
-    tableNewDishTHAmount: function () {
-      return findInString('tableNewDishTHAmount')
-    },
-    tableNewDishTHDelete: function () {
-      return findInString('tableNewDishTHDelete')
-    },
     filteredC: function () {
       if (this.activeDCT) {
         const dct = this.dct[this.activeDCT - 1]
@@ -1047,19 +1034,19 @@ export default {
           return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
         })
       }
-      console.log(list, 'DCT')
       if (this.activeCategory) {
         const c = this.filteredC[this.activeCategory - 1]
-        console.log(c)
         list = list.filter((item) => {
           return parseInt(item.categoryId) === parseInt(c.id)
         })
       }
-      console.log(list, 'FilterCategory')
+
       if (this.buffer !== '' && !this.buffer.includes('/')) {
         const [buffer] = this.buffer.split('*')
         list = list.filter((item) => {
-          return item.dishName.includes(buffer) || item.code.includes(buffer)
+          return item.dishName.includes(buffer) ||
+            item.code.includes(buffer.toLowerCase()) ||
+            item.code.includes(buffer.toUpperCase())
         })
       }
       return list
@@ -1101,7 +1088,7 @@ export default {
 
     .center-panel {
         display: flex;
-        align-items:flex-end;
+        align-items: flex-end;
         width: 340px;
     }
 
