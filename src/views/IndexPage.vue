@@ -333,8 +333,14 @@ export default {
         color: white !important;
         background: #F34141;
     }
+    .tableTimeLabel {
+        color: black;
+        font-size: 18px;
+        height: 25px;
+        font-weight: 900;
+    }
 
-    .onCall > .tableTimeLabel {
+    .onCall .tableTimeLabel {
         color: white;
     }
 
@@ -356,13 +362,6 @@ export default {
 
     .tableCard.notUsed .tableCardName {
         font-weight: 400;
-    }
-
-    .tableTimeLabel {
-        color: white;
-        font-size: 18px;
-        height: 25px;
-        font-weight: 900;
     }
 
     .tableIconRow > .material-icons {

@@ -33,6 +33,7 @@ Vue.directive('hide-quick-buy', {
 async function initial () {
   console.log('initialed', GlobalConfig.Protocol)
   await initialAadenBase(GlobalConfig)
+  i18n.locale = GlobalConfig.lang.toUpperCase()
   console.log(Settings, 'Main')
   Settings.lang = function () {
     return i18n.locale.toUpperCase()

@@ -9,6 +9,7 @@ import('electron-settings').then(settings => {
   settings = settings.default
   const localConfig = settings.get('config')
   GlobalConfig = Object.assign(GlobalConfig, localConfig)
+  console.log(GlobalConfig.lang)
   GlobalConfig.settings = settings
   window.localConfig = localConfig
 }).catch(e => {

@@ -24,7 +24,7 @@
                             v-model="activeDCT"
                     >
                         <v-tab style="font-size: 16px">
-                            全部
+                            Alle
                         </v-tab>
                         <template v-for="ct of dct">
                             <v-tab v-bind:key="ct.id+'categorytypes'"
@@ -42,7 +42,7 @@
                             v-model="activeCategory"
                     >
                         <v-tab style="font-size: 16px">
-                            全部
+                            Alle
                         </v-tab>
                         <template v-for="category of filteredC">
                             <v-tab v-bind:key="category.id+'categorytypes'"
