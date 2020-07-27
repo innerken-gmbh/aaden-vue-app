@@ -41,13 +41,36 @@
                     </div>
                 </v-sheet>
                 <v-sheet :elevation="2" class="keyboard flex-grow-1 pa-4">
-                    <v-btn @click="input(i)" block x-large class="key"
-                           style="height: 100%"
-                           :elevation="2" v-for="i in keyArr.flat()"
-                           :key="'key'+i">
-                        <v-icon v-if="!isNaN(i)" x-large>mdi-numeric-{{i}}</v-icon>
-                        <v-icon x-large v-else>{{i}}</v-icon>
-                    </v-btn>
+                    <template v-for="i in keyArr.flat()">
+                        <v-btn v-if="i!=='mdi-dots-horizontal'" @click="input(i)" block x-large class="key"
+                               style="height: 100%"
+                               :elevation="2"
+                               :key="'key'+i">
+                            <v-icon v-if="!isNaN(i)" x-large>mdi-numeric-{{i}}</v-icon>
+                            <v-icon x-large v-else>{{i}}</v-icon>
+                        </v-btn>
+                        <v-menu offset-x :key="'key'+i" v-else>
+                            <template v-slot:activator="{ on, attrs }">
+                                <v-btn @click="input(i)" block x-large class="key"
+                                       style="height: 100%"
+                                       :elevation="2"
+                                       v-bind="attrs"
+                                       v-on="on"
+                                       :key="'key'+i">
+                                    <v-icon x-large>{{i}}</v-icon>
+                                </v-btn>
+                            </template>
+                            <v-list>
+                                <v-list-item
+                                        @click="input(item)"
+                                        v-for="(item, index) in extraPaymentMethod"
+                                        :key="index"
+                                >
+                                    <v-list-item-icon><v-icon>{{ item }}</v-icon></v-list-item-icon>
+                                </v-list-item>
+                            </v-list>
+                        </v-menu>
+                    </template>
                 </v-sheet>
             </div>
 
@@ -152,9 +175,12 @@ export default {
         'mdi-cash-usd': '1',
         'mdi-bell': '9',
         'mdi-credit-card-outline': '2',
+        'mdi-credit-card-wireless': '3',
+        'mdi-card-account-details': '4',
         'mdi-dots-horizontal': 'more'
       },
       inputBuffer: '',
+      extraPaymentMethod: ['mdi-credit-card-wireless', 'mdi-card-account-details'],
       paymentLog: []
     }
   },
@@ -245,6 +271,7 @@ export default {
             break
           case 'more':
             break
+          case '4':
           default:
             this.logPayment(c)
         }
