@@ -25,11 +25,11 @@
   },
   "main": "background.js",
   "dependencies": {
-    "aaden-base-model": "^0.1.25",
+    "aaden-base-model": "^0.1.27",
     "core-js": "^3.6.5",
     "electron-settings": "^3.2.0",
     "electron-updater": "^4.3.1",
-    "innerken-utils": "^1.7.21",
+    "innerken-utils": "^1.7.28",
     "material-design-icons": "^3.0.1",
     "sweetalert2": "^9.15.1",
     "vue": "^2.6.11",

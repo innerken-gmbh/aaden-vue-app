@@ -439,6 +439,7 @@ export default {
       checkOutModel: StandardDishesListFactory(),
       version: version,
       /**/
+      discountRatio: 1,
       checkoutShow: false,
       discountStr: null,
       expand: getConfig().defaultExpand,
@@ -492,7 +493,6 @@ export default {
       this.modificationShow = val
     },
     changeCheckOut: function (val) {
-      console.log(val)
       this.checkoutShow = val
       this.initialUI()
     },
@@ -511,7 +511,7 @@ export default {
             )
           }
         }
-        console.log(discountRatio)
+        this.discountRatio = discountRatio
         this.loading = false
       } catch (e) {
         this.breakCount++
@@ -522,6 +522,10 @@ export default {
       }
     },
     dishQuery (code, count = 1) {
+      if (count < 1) {
+        showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
+        return
+      }
       const dish = this.dishes.find(d => d.code.toLowerCase() === code.toLowerCase())
       if (dish) {
         dish.name = dish.dishName
@@ -533,7 +537,7 @@ export default {
         }
         this.addDish(dish, parseInt(count))
       } else {
-        showTimedAlert('warning', findInString('JSTableCodeNotFound'), 500)
+        showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
       }
       blockReady()
     },
@@ -617,6 +621,7 @@ export default {
       }
       this.orderListModel.add(item, -1)
       this.splitOrderListModel.add(item, 1)
+      console.log(this.splitOrderListModel.list)
     },
     addDish: function (dish, count = 1) {
       dish.count = count
@@ -826,7 +831,7 @@ export default {
           if (this.breakCount > 2) {
             if (!Swal.isVisible()) {
               showTimedAlert('info',
-                findInString('JSTableGetTableDetailFailed') + res.info,
+                this.$t('JSTableGetTableDetailFailed') + res.info,
                 1000, this.goHome)
             }
           }
@@ -883,6 +888,7 @@ export default {
       this.getButtonList()[index].classList.remove('normal')
       this.getButtonList()[index].focus()
     },
+    //* findInsDecode*/
     insDecode (t) {
       if (isBlocking()) {
         return
@@ -894,7 +900,8 @@ export default {
           blockReady()
           return
         } else if (t.indexOf('*') !== -1) {
-          this.dishQuery(t.split('*')[0], t.split('*')[1])
+          const [code, count] = t.split('*')
+          this.dishQuery(code, count)
           return
         } else if (t === '/rp') {
           hillo.post('Printer.php?op=questReprintOrder', {
@@ -942,13 +949,13 @@ export default {
       }).then(() => {
         this.cartListModel.clear()
         this.initialUI()
-        toast(findInString('orderSuccess'), () => {
+        toast(this.$t('orderSuccess'), () => {
           if (GlobalConfig.jumpToHomeWhenOrder) {
             this.goHome()
           }
         })
       }).catch(res => {
-        logError(findInString('JSTableOrderFailed') + res.info)
+        logError(this.$t('JSTableOrderFailed') + res.info)
       }).finally(() => {
         blockReady()
       })

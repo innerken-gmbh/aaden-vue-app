@@ -4,13 +4,12 @@ let GlobalConfig = Object.assign({}, defaultConfig)
 if (GlobalConfig.FMCVersion) {
   GlobalConfig.Protocol = 'https://'
 }
+
 export async function loadLocal () {
   try {
     const settings = (await import('electron-settings')).default
     const localConfig = settings.get('config')
-    console.log(localConfig, 'local')
     GlobalConfig = Object.assign(GlobalConfig, localConfig)
-    console.log(GlobalConfig.lang)
     GlobalConfig.settings = settings
     window.localConfig = localConfig
   } catch (e) {

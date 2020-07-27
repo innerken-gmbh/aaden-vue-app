@@ -23,7 +23,7 @@
 import DishCardList from './DishCardList'
 import CheckOutCalculator from './CheckOutCalculator'
 import { hillo } from 'innerken-utils'
-import { findInString, toast } from '../oldjs/common'
+import { toast } from '../oldjs/common'
 import { goHome } from '../oldjs/StaticModel'
 
 export default {
@@ -92,7 +92,7 @@ export default {
       const res = await hillo.post('Complex.php?op=' + this.checkOutType, checkOutData)
       console.log(res)
       if (res) {
-        toast(findInString('JSTableCheckOutSuccess'))
+        toast(this.$t('JSTableCheckOutSuccess'))
         this.cancel()
         if (this.checkOutType === 'checkOut') {
           goHome()

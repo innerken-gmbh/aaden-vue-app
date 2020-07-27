@@ -418,7 +418,7 @@ export function showLoading () {
 }
 
 export function getData (url, data) {
-  console.log(url, data)
+//  console.log(url, data)
   url = new URL(url)
   const defaultData = {
     chaos: timeStampNow()

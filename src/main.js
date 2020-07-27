@@ -34,7 +34,7 @@ async function initial () {
   await loadLocal()
   await initialAadenBase(GlobalConfig)
 
-  i18n.locale = GlobalConfig.lang.toUpperCase()
+  i18n.locale = GlobalConfig.lang.toLowerCase()
   console.log(GlobalConfig, 'Main')
   Settings.lang = function () {
     return i18n.locale.toUpperCase()
