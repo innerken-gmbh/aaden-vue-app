@@ -1,8 +1,17 @@
+import { fetchConfig } from 'aaden-base-model/lib/Models/AadenApi'
+
 const defaultConfig = require('@/assets/AadenConfig.json')
 let GlobalConfig = Object.assign({}, defaultConfig)
 
 if (GlobalConfig.FMCVersion) {
   GlobalConfig.Protocol = 'https://'
+}
+
+export async function loadNet () {
+  const netConfig = await fetchConfig()
+  console.log(netConfig, 'net')
+  GlobalConfig = Object.assign(GlobalConfig, netConfig)
+  window.netConfig = netConfig
 }
 
 export async function loadLocal () {
@@ -13,8 +22,9 @@ export async function loadLocal () {
     GlobalConfig.settings = settings
     window.localConfig = localConfig
   } catch (e) {
-    console.error(e)
-    console.error('no local Config Available')
+    console.warn(e)
+    console.warn('no local Config Available')
+    await loadNet()
   }
 }
 

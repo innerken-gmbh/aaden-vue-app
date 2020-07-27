@@ -435,7 +435,13 @@ export default {
     .center-panel {
         width: 100vw;
     }
-
+    main {
+        flex: 1 0 auto;
+        margin-top: 48px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
     /*input:focus{*/
     /*    background: red;*/
     /*    color: red !important;*/

@@ -286,14 +286,6 @@ export default {
         border: 1px solid cadetblue;
     }
 
-    main {
-        flex: 1 0 auto;
-        margin-top: 48px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-    }
-
     nav {
         height: 48px;
     }

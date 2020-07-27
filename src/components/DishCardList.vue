@@ -1,5 +1,5 @@
 <template>
-    <v-card v-if="count>0" style="max-height: calc(100vh - 64px)">
+    <v-card>
         <v-toolbar
                 tile
                 dense class="font-weight-bold"
@@ -20,24 +20,24 @@
                 <v-icon v-else>mdi-unfold-less-horizontal</v-icon>
             </v-btn>
         </v-toolbar>
-        <transition name="fade">
-            <div v-dragscroll v-if="expand" class="orderDishList"
-                 :style="{maxHeight: `calc(100vh - 48px - ${extraHeight})`,overflow:'hidden'}"
-            >
-                <div>
-                    <template v-for="(order,index) in orders">
-                        <div :key="'order'+title+order.tid+
+
+        <div v-dragscroll v-if="expand" class="orderDishList"
+             :style="{maxHeight: `calc(100vh - 48px - ${extraHeight})`,overflow:'hidden'}"
+        >
+            <div>
+                <template v-for="(order,index) in orders">
+                    <div :key="'order'+title+order.tid+
                         'code'+index+'hash'+order.hash">
-                            <dish-card
-                                    :color="color"
-                                    :click-callback="()=>clickCallback(index)"
-                                    :show-edit="showEdit"
-                                    :dish="order"/>
-                        </div>
-                    </template>
-                </div>
+                        <dish-card
+                                :color="color"
+                                :click-callback="()=>clickCallback(index)"
+                                :show-edit="showEdit"
+                                :dish="order"/>
+                    </div>
+                </template>
             </div>
-        </transition>
+        </div>
+
     </v-card>
 
 </template>
@@ -86,6 +86,11 @@ export default {
   data: function () {
     return {
       expand: this.defaultExpand
+    }
+  },
+  watch: {
+    defaultExpand: function (val) {
+      this.expand = val
     }
   },
   computed: {

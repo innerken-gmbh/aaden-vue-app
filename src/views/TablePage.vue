@@ -1,40 +1,53 @@
 <template>
     <v-app class="transparent">
-        <main class="main" style="margin-top: 0">
-            <div class="center-panel" id="mainTableContainer" v-cloak>
-                <transition name="fade">
-                    <div class="panel" v-if="!loading">
-                        <dish-card-list
-                                :default-expand="true"
-                                :orders="orderListModel.list"
-                                :click-callback="addToSplit"
-                                :title="findInString('haveOrderedDish')"
-                        />
-                    </div>
-                </transition>
+        <v-navigation-drawer v-model="leftDrawer" color="transparent" app width="340px" id="mainTableContainer">
+            <div class="panel" v-if="!loading">
+                <dish-card-list
+                        :default-expand="cartListModel.list.length===0"
+                        :orders="orderListModel.list"
+                        :click-callback="addToSplit"
+                        :title="$t('haveOrderedDish')"
+                />
             </div>
-            <v-card :elevation="0" color="transparent" v-cloak class="dishListContainer" id="dishListContainer">
-                <v-toolbar rounded dense>
-                    <v-tabs
-                            background-color="black"
-                            dark
-                            grow
-                            center-active
-                            show-arrows
-                            v-model="activeDCT"
-                    >
-                        <v-tab style="font-size: 16px">
-                            Alle
-                        </v-tab>
-                        <template v-for="ct of dct">
-                            <v-tab v-bind:key="ct.id+'categorytypes'"
-                                   style="font-size: 16px"
-                            >
-                                <div class="font-weight-bold">{{ct.name}}</div>
-                            </v-tab>
-                        </template>
-                    </v-tabs>
+            <v-card v-dragscroll
+                    v-if="cartListModel.list.length>0"
+                    class="white">
+                <dish-card-list
+                        ref="cartList"
+                        :extra-height="'96px'"
+                        :color="'#707070'"
+                        :show-edit="true" :click-callback="removeDish"
+                        :orders="cartListModel.list"
+                        :title="$t('新增菜品')"
+                        :default-expand="Config.defaultExpand">
+                </dish-card-list>
+                <v-toolbar dense>
+                    <v-btn @click="cartListModel.clear()" dark color="error">取消</v-btn>
+                    <v-btn class="flex-grow-1" @click="orderDish" dark color="#367aeb">确认</v-btn>
                 </v-toolbar>
+            </v-card>
+        </v-navigation-drawer>
+        <v-app-bar dark dense rounded app>
+            <v-tabs
+                    background-color="black"
+                    center-active
+                    show-arrows
+                    v-model="activeDCT"
+            >
+                <v-tab style="font-size: 16px">
+                    Alle
+                </v-tab>
+                <template v-for="ct of dct">
+                    <v-tab v-bind:key="ct.id+'categorytypes'"
+                           style="font-size: 16px"
+                    >
+                        <div class="font-weight-bold">{{ct.name}}</div>
+                    </v-tab>
+                </template>
+            </v-tabs>
+        </v-app-bar>
+        <v-main>
+            <v-card :elevation="0" color="transparent" v-cloak class="dishListContainer" id="dishListContainer">
                 <v-toolbar rounded dense>
                     <v-tabs
                             center-active
@@ -69,7 +82,8 @@
                     </div>
                 </div>
             </v-card>
-
+        </v-main>
+        <v-navigation-drawer v-model="rightDrawer" color="transparent" app right width="280px">
             <div :style="{width:Config.isPMCVersion?'340px':'280px'}" class="panelF">
                 <v-card style="z-index: 1" class="infoPanel shadowForInsPanel">
                     <v-toolbar tile dense :color="'#367aeb'" style="color: white">
@@ -272,48 +286,62 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                     </div>
                     <div v-hide-quick-buy class="inputArea">
                         <div class="input-field ">
-                            <v-text-field ref="ins" color="black" v-model="buffer"
-                                          placeholder="instruction.." id="instruction"
-                                          autofocus=autofocus></v-text-field>
+                            <v-autocomplete
+                                    :loading="loading"
+                                    :search-input.sync="input"
+                                    :items="autoHints"
+                                    ref="ins" color="black"
+                                    v-model="buffer"
+                                    auto-select-first
+                                    clearable
+                                    id="instruction"
+                                    autofocus=autofocus></v-autocomplete>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
-        <transition name="fade" appear>
-            <v-card style="box-shadow: -5px 0px 8px #bfbfbf" v-dragscroll v-if="cartListModel.list.length>0"
-                    class="white bottomCart surface"
-                    :style="{top:Config.FMCVersion?'0':'unset',
-                    bottom:!Config.FMCVersion?'unset':'0'}"
-                    id="newDishContainer">
-                <dish-card-list
-                        :extra-height="'64px'"
-                        :color="'#707070'"
-                        :show-edit="true" :click-callback="removeDish"
-                        :orders="cartListModel.list"
-                        :default-expand="Config.defaultExpand">
-                    <template v-slot:after-title="af">
-                        <div v-if="af" class="lastDish">
-                                  <span class="lastDishName"
-                                  >{{lastDish.name}}</span>
-                            &times;{{lastCount}}
-                        </div>
-                    </template>
-                </dish-card-list>
-                <v-toolbar dense>
-                    <v-btn @click="cartListModel.clear()" dark color="error">取消</v-btn>
-                    <v-btn class="flex-grow-1" @click="orderDish" dark color="#367aeb">确认</v-btn>
-                </v-toolbar>
-
-            </v-card>
-        </transition>
+        </v-navigation-drawer>
+        <v-fab-transition>
+            <v-badge :content="cartListModel.total()">
+                <v-btn
+                        v-if="$vuetify.breakpoint.mdAndDown"
+                        @click="leftDrawer=!leftDrawer"
+                        fixed
+                        fab
+                        large
+                        dark
+                        bottom
+                        left
+                        class="v-btn--example"
+                >
+                    <v-icon>mdi-food</v-icon>
+                </v-btn>
+            </v-badge>
+        </v-fab-transition>
+        <v-fab-transition>
+            <v-btn
+                    v-if="$vuetify.breakpoint.mdAndDown"
+                    @click="rightDrawer=!rightDrawer"
+                    fixed
+                    fab
+                    large
+                    dark
+                    bottom
+                    right
+                    class="v-btn--example"
+            >
+                <v-icon>mdi-menu</v-icon>
+            </v-btn>
+        </v-fab-transition>
         <transition appear name="fade">
             <div v-show="splitOrderListModel.list.length>0" class="bottomCart surface" style="background: #f5f6fa;"
                  v-cloak
                  id="splitOrderContainer">
-                <dish-card-list :default-expand="true" :orders="splitOrderListModel.list"
-                                :click-callback="removeFromSplitOrder"
-                                :title="$t('operation')"/>
+                <dish-card-list
+                        :extra-height="'64px'"
+                        :default-expand="true" :orders="splitOrderListModel.list"
+                        :click-callback="removeFromSplitOrder"
+                        :title="$t('operation')"/>
                 <div class="spaceBetween pa-2">
                     <div></div>
                     <div style="display: flex;align-items: center">
@@ -432,6 +460,9 @@ export default {
   },
   data: function () {
     return {
+      leftDrawer: null,
+      rightDrawer: null,
+
       menu: false,
       loading: true,
       breakCount: 0,
@@ -464,6 +495,7 @@ export default {
       Strings: Strings,
       Config: GlobalConfig,
       buffer: '',
+      input: '',
       payment: [],
       //* */
       splitOrderListModel: StandardDishesListFactory(),
@@ -580,9 +612,10 @@ export default {
       this.dishQuery(code)
     },
     readBuffer: function (clear = true) {
-      const ins = this.buffer
+      const ins = this.buffer ?? this.input
       if (clear) {
         this.buffer = ''
+        this.input = ''
       }
       return ins
     },
@@ -1024,6 +1057,48 @@ export default {
     }
   },
   computed: {
+    autoHints: function () {
+      let availableIns = [
+        { value: '-', text: '-[code] remove Dish from cart' },
+        { value: '/', text: '/ Advanced instruction' },
+        { value: '/rp', text: '/rp ReprintOrder' },
+        { value: '/ps', text: '/ps PrintZwichenBon' }
+      ]
+      if (this.input) {
+        availableIns = availableIns.concat(this.dishesHint.normal)
+        if (this.input.startsWith('-')) {
+          availableIns = availableIns.concat(this.dishesHint.remove)
+        }
+        if (this.input.includes('*')) {
+          const [code, count] = this.input.split('*')
+          const findDish = this.dishes.filter(f => {
+            return f.code.startsWith(code)
+          })
+          if (findDish) {
+            availableIns = availableIns.concat(findDish.map(d => ({
+              value: this.input,
+              text: this.input + ' ' + d.code + ' ' +
+                d.dishName + ' x ' + (count || '[1-99]')
+            })))
+          }
+        }
+      }
+
+      return availableIns
+    },
+    dishesHint: function () {
+      const dishesHint = {}
+      dishesHint.normal = this.dishes.map(i => ({
+        value: i.code,
+        text: i.code + ' ' + i.dishName
+      }))
+      dishesHint.remove = this.dishes.map(i => ({
+        value: '-' + i.code,
+        text: '-' + i.code + ' remove: ' + i.dishName
+      }))
+
+      return dishesHint
+    },
     filteredC: function () {
       if (this.activeDCT) {
         const dct = this.dct[this.activeDCT - 1]
@@ -1047,15 +1122,17 @@ export default {
           return parseInt(item.categoryId) === parseInt(c.id)
         })
       }
-
-      if (this.buffer !== '' && !this.buffer.includes('/')) {
-        const [buffer] = this.buffer.split('*')
-        list = list.filter((item) => {
-          return item.dishName.includes(buffer) ||
-            item.code.includes(buffer.toLowerCase()) ||
-            item.code.includes(buffer.toUpperCase())
-        })
+      if (this.input) {
+        if (this.input !== '' && !this.input.includes('/')) {
+          const [buffer] = this.input.split('*')
+          list = list.filter((item) => {
+            return item.dishName.includes(buffer) ||
+              item.code.includes(buffer.toLowerCase()) ||
+              item.code.includes(buffer.toUpperCase())
+          })
+        }
       }
+
       return list
     }
   },
@@ -1080,11 +1157,6 @@ export default {
 </script>
 
 <style scoped>
-    .main {
-        display: flex;
-        width: 100vw;
-        justify-content: space-between;
-    }
 
     .collapse .areaC {
         flex-grow: 1;
@@ -1096,7 +1168,8 @@ export default {
     .center-panel {
         display: flex;
         align-items: flex-end;
-        width: 340px;
+        max-width: 340px;
+        width: 30%;
     }
 
     .spaceBetween {
@@ -1236,9 +1309,6 @@ export default {
     .dishListContainer {
         margin-left: 4px;
         max-height: calc(100vh);
-        width: calc(100vw - 340px - 352px);
-        flex-grow: 1;
-        flex-shrink: 1;
     }
 
     .dishList {
@@ -1395,6 +1465,18 @@ export default {
         }
     }
 
+    @media screen and (max-width: 1000px ) {
+        .dishCardList {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media screen and (max-width: 700px ) {
+        .dishCardList {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
     .dishBlock .code {
         font-size: 18px;
         font-weight: bold;
@@ -1459,13 +1541,6 @@ export default {
         right: 352px;
         bottom: 116px;
         padding: 12px;
-    }
-
-    #newDishContainer {
-        max-height: calc(100vh - 4px);
-        overflow: hidden;
-        bottom: 0;
-        left: 4px;
     }
 
     #splitOrderContainer {
