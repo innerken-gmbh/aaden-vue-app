@@ -333,6 +333,7 @@ export default {
         color: white !important;
         background: #F34141;
     }
+
     .tableTimeLabel {
         color: black;
         font-size: 18px;
