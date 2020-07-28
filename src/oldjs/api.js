@@ -1,6 +1,7 @@
 import { blockReady, fastSweetAlertRequest, findInString, loadingComplete, popAuthorize, toast } from './common'
 import { goHome } from './StaticModel'
 import { hillo } from 'innerken-utils'
+import i18n from '../i18n'
 
 export function splitOrder (discountStr = '', id, items,
   initialUI, print,
@@ -74,6 +75,21 @@ export function deleteDishes (id, items, initialUI) {
       }, 'POST',
       true
     )
+    if (res) {
+      loadingComplete()
+      initialUI()
+    }
+  })
+}
+
+export function dishesSetDiscount (orderId, items, initialUI) {
+  popAuthorize('', async () => {
+    const res = await fastSweetAlertRequest(i18n.t('给菜品打折'),
+      'text',
+      'Dishes.php?op=setDiscountToDishes', 'discountStr', {
+        orderId: orderId,
+        dishes: JSON.stringify(items)
+      }, 'POST')
     if (res) {
       loadingComplete()
       initialUI()

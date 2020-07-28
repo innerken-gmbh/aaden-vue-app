@@ -21,8 +21,14 @@
                         {{$t('Free')}}
                     </span>
                         <span v-else>
-                        {{dish.isFree}}
-                        {{dish.realPrice | priceDisplay}}
+                            <span v-if="!dish.tempDiscountMod">
+                                    {{dish.realPrice | priceDisplay}}
+                            </span>
+                            <span v-else>
+                                <s>{{dish.realPrice | priceDisplay}}</s>
+                                {{dish.realPrice+parseFloat(dish.tempDiscountMod) | priceDisplay}}
+                            </span>
+
                     </span>
                     </div>
 

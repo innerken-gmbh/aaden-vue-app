@@ -345,14 +345,16 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                 <div class="spaceBetween pa-2">
                     <div></div>
                     <div style="display: flex;align-items: center">
-                        <a class="ikButton ml-1 red white--text waves-effect waves-light S_cancel"
-                           v-on:click="removeAllFromSplitOrder()">取消</a>
-                        <a class="ikButton ml-1 waves-effect waves-light S_billSplit"
-                           v-on:click="needSplitOrder()">分单</a>
-                        <a class="ikButton ml-1 waves-effect waves-light S_dishCancel"
-                           v-on:click="deleteDishes()">退菜</a>
-                        <a class="ikButton ml-1 waves-effect waves-light S_tableChange"
-                           v-on:click="dishesChangeTable()">换桌</a>
+                        <a class="ikButton ml-1 red white--text waves-effect waves-light "
+                           v-on:click="removeAllFromSplitOrder()">{{$t('cancel')}}</a>
+                        <a class="ikButton ml-1 waves-effect waves-light"
+                           v-on:click="needSplitOrder()">{{$t('billSplit')}}</a>
+                        <a class="ikButton ml-1 waves-effect waves-light "
+                           v-on:click="deleteDishes()">{{$t('dishCancel')}}</a>
+                        <a class="ikButton ml-1 waves-effect waves-light "
+                           v-on:click="dishesSetDiscount()">{{$t('给菜品打折')}}</a>
+                        <a class="ikButton ml-1 waves-effect waves-light "
+                           v-on:click="dishesChangeTable()">{{$t('tableChange')}}</a>
                     </div>
 
                 </div>
@@ -412,7 +414,7 @@ import hillo from 'innerken-utils/Utlis/request'
 import {
   checkOut,
   deleteDishes,
-  dishesChangeTable,
+  dishesChangeTable, dishesSetDiscount,
   popChangeTablePanel,
   popDiscountPanel,
   popMergeTablePanel
@@ -634,6 +636,9 @@ export default {
 
     deleteDishes: function () {
       deleteDishes(this.id, this.splitOrderListModel.list, this.initialUI)
+    },
+    dishesSetDiscount: function () {
+      dishesSetDiscount(OrderId, this.splitOrderListModel.list, this.initialUI)
     },
     dishesChangeTable: function () {
       dishesChangeTable(this.tableName, this.splitOrderListModel.list, this.initialUI)
