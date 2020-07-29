@@ -1,9 +1,8 @@
 <template>
-    <v-navigation-drawer color="#f5f6fa" width="fit-content" left fixed
-                         temporary v-model="realShow">
-
-        <div class="d-flex justify-space-between pa-2 fill-height" style="">
-            <div v-if="order.count()>0" style="width: 340px">
+    <v-dialog fullscreen color="#f5f6fa" v-model="realShow"
+              hide-overlay>
+        <div class="d-flex justify-space-between fill-height" style="">
+            <div v-show="order.count()>0" style="width: 340px">
                 <dish-card-list
                         :title="'结账菜品'"
                         :default-expand="true" :orders="order.list"/>
@@ -15,8 +14,7 @@
                         :total="order.total()"/>
             </div>
         </div>
-
-    </v-navigation-drawer>
+    </v-dialog>
 </template>
 
 <script>
@@ -25,6 +23,7 @@ import CheckOutCalculator from './CheckOutCalculator'
 import { hillo } from 'innerken-utils'
 import { toast } from '../oldjs/common'
 import { goHome } from '../oldjs/StaticModel'
+import GlobalConfig from '../oldjs/LocalGlobalSettings'
 
 export default {
   name: 'CheckOutDrawer',
@@ -51,7 +50,9 @@ export default {
     }
   },
   data: function () {
-    return {}
+    return {
+      GlobalConfig: GlobalConfig
+    }
   },
   computed: {
     realShow: {

@@ -13,6 +13,5 @@
   "checkOutUsePassword": false,
   "jumpToHomeWhenOrder": false,
   "Protocol": "http://",
-  "isOnlineVersion": false,
-  "FMCVersion": false
+  "FMCVersion": true
 }

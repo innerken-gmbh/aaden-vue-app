@@ -241,14 +241,14 @@ export default {
         box-shadow: 0 3px 4px 0 rgba(0, 86, 255, 0.15);
     }
 
-    .floatMenuPanelItem:hover {
+    .floatMenuPanelItem:active {
         border-radius: 12px;
         background: #367aeb;
         color: white;
         box-shadow: 0 3px 4px 0 rgba(0, 86, 255, 0.15);
     }
 
-    .floatMenuPanelItem:hover .innerItem {
+    .floatMenuPanelItem:active .innerItem {
         color: white;
     }
 

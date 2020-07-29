@@ -1,4 +1,4 @@
-import { blockReady, fastSweetAlertRequest, findInString, loadingComplete, popAuthorize, toast } from './common'
+import { blockReady, fastSweetAlertRequest, loadingComplete, popAuthorize, toast } from './common'
 import { goHome } from './StaticModel'
 import { hillo } from 'innerken-utils'
 import i18n from '../i18n'
@@ -59,7 +59,7 @@ export function checkOut (tableId, print = 1,
     tipIncome: tipIncome || 0,
     memberCardId: memberCardId ?? null
   }).then(res => {
-    toast(findInString('JSTableCheckOutSuccess'))
+    toast(i18n.t('JSTableCheckOutSuccess'))
     blockReady()
     goHome()
   })
@@ -67,7 +67,7 @@ export function checkOut (tableId, print = 1,
 
 export function deleteDishes (id, items, initialUI) {
   popAuthorize('boss', async () => {
-    const res = await fastSweetAlertRequest(findInString('JSTableAdditionPopReturnDishInfo'),
+    const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopReturnDishInfo'),
       'text',
       'Complex.php?op=deleteDishes', 'reason', {
         tableId: id,
@@ -99,7 +99,7 @@ export function dishesSetDiscount (orderId, items, initialUI) {
 
 export function dishesChangeTable (tableName, items, initialUI) {
   popAuthorize('boss', async () => {
-    const res = await fastSweetAlertRequest(findInString('JSTableAdditionPopChangeTableInfo'),
+    const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopChangeTableInfo'),
       'text',
       'Complex.php?op=dishesChangeTable', 'newTableName', {
         oldTableName: tableName,
@@ -113,7 +113,7 @@ export function dishesChangeTable (tableName, items, initialUI) {
 }
 
 export async function popDiscountPanel (id, initialUI) {
-  const res = await fastSweetAlertRequest(findInString('JSTableAdditionPopDiscountInfo'), 'text',
+  const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopDiscountInfo'), 'text',
     'Complex.php?op=setDiscount', 'discountStr', {
       tableId: id
     }, 'POST', false)
@@ -123,7 +123,7 @@ export async function popDiscountPanel (id, initialUI) {
 }
 
 export async function popChangeTablePanel (tableName, initialUI) {
-  const res = await fastSweetAlertRequest(findInString('JSTableAdditionPopChangeTableInfo'), 'text',
+  const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopChangeTableInfo'), 'text',
     'Tables.php?op=change', 'newTableName', {
       oldTableName: tableName
     }, 'POST')
@@ -134,7 +134,7 @@ export async function popChangeTablePanel (tableName, initialUI) {
 }
 
 export async function popMergeTablePanel (tableName, initialUI) {
-  const res = await fastSweetAlertRequest(findInString('JSTableAdditionPopMergeTableInfo'), 'text',
+  const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopMergeTableInfo'), 'text',
     'Tables.php?op=mergeTables', 'newTableName', {
       oldTableName: tableName
     }, 'POST')

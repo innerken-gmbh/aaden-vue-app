@@ -1,7 +1,6 @@
 <template>
-    <v-navigation-drawer color="#f5f6fa" width="fit-content" right fixed
-                         temporary v-model="realShow">
-        <div>
+    <v-bottom-sheet fullscreen hide-overlay v-model="realShow">
+        <v-card>
             <dish-modification
                     ref="modification"
                     @modification-submit="submit($event,dish)"
@@ -17,8 +16,8 @@
                     </v-row>
                 </template>
             </dish-modification>
-        </div>
-    </v-navigation-drawer>
+        </v-card>
+    </v-bottom-sheet>
 </template>
 
 <script>
@@ -61,6 +60,9 @@ export default {
       this.mod(mod, dish)
       this.realShow = false
     }
+  },
+  mounted () {
+    console.log('create')
   }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
     <v-app class="transparent">
-        <v-navigation-drawer v-model="leftDrawer" color="transparent" app width="340px" id="mainTableContainer">
+        <v-navigation-drawer :value="true" color="transparent" stateless app width="340px" id="mainTableContainer">
             <div class="panel" v-if="!loading">
                 <dish-card-list
                         :default-expand="cartListModel.list.length===0"
@@ -47,7 +47,7 @@
             </v-tabs>
         </v-app-bar>
         <v-main>
-            <v-card :elevation="0" color="transparent" v-cloak class="dishListContainer" id="dishListContainer">
+            <v-card elevation="0" color="transparent" v-cloak class="dishListContainer" id="dishListContainer">
                 <v-toolbar rounded dense>
                     <v-tabs
                             center-active
@@ -83,7 +83,7 @@
                 </div>
             </v-card>
         </v-main>
-        <v-navigation-drawer v-model="rightDrawer" color="transparent" app right width="280px">
+        <v-navigation-drawer :value="true" stateless color="transparent" app right width="280px">
             <div :style="{width:Config.isPMCVersion?'340px':'280px'}" class="panelF">
                 <v-card style="z-index: 1" class="infoPanel shadowForInsPanel">
                     <v-toolbar tile dense :color="'#367aeb'" style="color: white">
@@ -92,11 +92,13 @@
                         <div class="d-flex">
                             <span v-hide-quick-buy class="icon-line">
                                 <v-icon color="white">mdi-account-outline</v-icon>
-                                <span class="ml-1 S_personCount"></span>
+                                <span class="ml-1">{{tableDetailInfo.personCount}}</span>
                             </span>
                             <span class="icon-line ml-2">
                                 <v-icon color="white">mdi-calendar-text</v-icon>
-                                <span class="ml-1 S_orderNumber"></span>
+                                <span class="ml-1">
+                                    {{tableDetailInfo.order.id}}
+                                </span>
                             </span>
                             <v-menu
                                     v-model="menu"
@@ -165,15 +167,16 @@
                     </v-toolbar>
                     <div class="pa-3">
                         <div v-hide-quick-buy class="spaceBetween">
-                            <div class="verticalInfoRowLabel S_tableInfoLabelTime"></div>
+                            <div class="verticalInfoRowLabel">{{$t('tableInfoLabelTime')}}</div>
                             <div class="verticalInfoRowText">{{tableDetailInfo.createTimestamp}}</div>
                         </div>
                         <div v-hide-quick-buy class="mt-1 spaceBetween">
-                            <div class="verticalInfoRowLabel S_tableInfoLabelSeat"></div>
+                            <div class="verticalInfoRowLabel">{{$t('tableInfoLabelSeat')}}</div>
                             <div class="verticalInfoRowText">{{tableDetailInfo.satCount}}</div>
                         </div>
                         <div v-hide-quick-buy class="mt-1 typeLabel">
-                            <span class="S_type"> </span>/<span class="S_servantName"> </span>
+                            <span>{{tableDetailInfo.consumeTypeName}}</span
+                            >/<span>{{tableDetailInfo.order.consumeTypeStatusName}}</span>
                         </div>
 
                         <div class="d-flex justify-space-between align-center">
@@ -232,20 +235,20 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                                      @click="insDecodeButtonList(1)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">arrow_back</i></div>
-                                        <div class="text S_backToHome"></div>
+                                        <div class="text">{{$t('backToHome')}}</div>
                                     </div>
                                 </div>
                                 <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
                                      @click="insDecodeButtonList(2)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">restaurant</i></div>
-                                        <div class="text S_dishOrder"></div>
+                                        <div class="text">{{$t('dishOrder')}}</div>
                                     </div>
                                 </div>
                                 <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(3)">
                                     <div class="innerItem" style="">
                                         <div class="icon"><i class="material-icons">local_offer</i></div>
-                                        <div class="text S_discount"></div>
+                                        <div class="text ">{{$t('discount')}}</div>
                                     </div>
                                 </div>
 
@@ -253,21 +256,21 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                                      @click="insDecodeButtonList(4)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">swap_horiz</i></div>
-                                        <div class="text S_tableChange"></div>
+                                        <div class="text">{{$t('tableChange')}}</div>
                                     </div>
                                 </div>
                                 <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
                                      @click="insDecodeButtonList(5)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">merge_type</i></div>
-                                        <div class="text S_tableMerge"></div>
+                                        <div class="text">{{$t('tableMerge')}}</div>
                                     </div>
                                 </div>
 
                                 <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(6)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">account_balance_wallet</i></div>
-                                        <div class="text S_payBill"></div>
+                                        <div class="text">{{$t('payBill')}}</div>
                                     </div>
 
                                 </div>
@@ -275,7 +278,7 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                                      @click="insDecodeButtonList(7)">
                                     <div class="innerItem">
                                         <div class="icon"><i class="material-icons">assignment_turned_in</i></div>
-                                        <div class="text S_QuickBill"></div>
+                                        <div class="text">{{$t('QuickBill')}}</div>
                                     </div>
 
                                 </div>
@@ -301,38 +304,6 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                 </div>
             </div>
         </v-navigation-drawer>
-        <v-fab-transition>
-            <v-badge :content="cartListModel.total()">
-                <v-btn
-                        v-if="$vuetify.breakpoint.mdAndDown"
-                        @click="leftDrawer=!leftDrawer"
-                        fixed
-                        fab
-                        large
-                        dark
-                        bottom
-                        left
-                        class="v-btn--example"
-                >
-                    <v-icon>mdi-food</v-icon>
-                </v-btn>
-            </v-badge>
-        </v-fab-transition>
-        <v-fab-transition>
-            <v-btn
-                    v-if="$vuetify.breakpoint.mdAndDown"
-                    @click="rightDrawer=!rightDrawer"
-                    fixed
-                    fab
-                    large
-                    dark
-                    bottom
-                    right
-                    class="v-btn--example"
-            >
-                <v-icon>mdi-menu</v-icon>
-            </v-btn>
-        </v-fab-transition>
         <transition appear name="fade">
             <div v-show="splitOrderListModel.list.length>0" class="bottomCart surface" style="background: #f5f6fa;"
                  v-cloak
@@ -379,18 +350,13 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
 <script>
 
 import {
-  AssginToStringClass,
   blocking,
   blockReady,
   createOrEnterTable,
   fastSweetAlertRequest,
   findConsumeTypeById,
   findElement,
-  findInString,
-  getConfig,
   getConsumeTypeList,
-  getData,
-  goodRequest,
   isBlocking,
   jumpToTable,
   logError,
@@ -399,7 +365,6 @@ import {
   popAuthorize,
   remove,
   requestOutTable,
-  resolveBestIP,
   setGlobalTableId,
   showConfirm,
   showLoading,
@@ -414,7 +379,8 @@ import hillo from 'innerken-utils/Utlis/request'
 import {
   checkOut,
   deleteDishes,
-  dishesChangeTable, dishesSetDiscount,
+  dishesChangeTable,
+  dishesSetDiscount,
   popChangeTablePanel,
   popDiscountPanel,
   popMergeTablePanel
@@ -424,7 +390,7 @@ import DishCardList from '../components/DishCardList'
 import ModificationDrawer from '../components/ModificationDrawer'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import CheckOutDrawer from '../components/CheckOutDrawer'
-import { getAllDishesWithCache, goHome } from '../oldjs/StaticModel'
+import { findDish, getAllDishesWithCache, goHome } from '../oldjs/StaticModel'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
@@ -440,7 +406,6 @@ const DefaultAddressInfo = {
   reason: ''
 }
 let listIndex = -1
-let OrderId = -1
 
 // endregion
 export default {
@@ -475,9 +440,7 @@ export default {
       discountRatio: 1,
       checkoutShow: false,
       discountStr: null,
-      expand: getConfig().defaultExpand,
-      lastDish: { name: '' },
-      lastCount: 0,
+      expand: GlobalConfig.defaultExpand,
       focusTimer: null,
       options: [],
       dishName: '',
@@ -504,7 +467,9 @@ export default {
       orderListModel: StandardDishesListFactory(),
       cartListModel: StandardDishesListFactory(),
       cartOrder: [],
-      tableDetailInfo: {},
+      tableDetailInfo: {
+        order: { id: -1 }
+      },
       dct: []
     }
   },
@@ -530,7 +495,6 @@ export default {
       this.checkoutShow = val
       this.initialUI()
     },
-    findInString,
     async getOrderedDish () {
       try {
         let discountRatio = 1
@@ -556,11 +520,12 @@ export default {
       }
     },
     dishQuery (code, count = 1) {
+      console.time('Dish')
       if (count < 1) {
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
         return
       }
-      const dish = this.dishes.find(d => d.code.toLowerCase() === code.toLowerCase())
+      const dish = findDish(code)
       if (dish) {
         dish.name = dish.dishName
         dish.name = dish.name.length > 28
@@ -574,6 +539,7 @@ export default {
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
       }
       blockReady()
+      console.timeEnd('Dish')
     },
     showModification (dish, count) {
       this.options = dish.modInfo
@@ -638,7 +604,7 @@ export default {
       deleteDishes(this.id, this.splitOrderListModel.list, this.initialUI)
     },
     dishesSetDiscount: function () {
-      dishesSetDiscount(OrderId, this.splitOrderListModel.list, this.initialUI)
+      dishesSetDiscount(this.tableDetailInfo.order.id, this.splitOrderListModel.list, this.initialUI)
     },
     dishesChangeTable: function () {
       dishesChangeTable(this.tableName, this.splitOrderListModel.list, this.initialUI)
@@ -659,13 +625,11 @@ export default {
       }
       this.orderListModel.add(item, -1)
       this.splitOrderListModel.add(item, 1)
-      console.log(this.splitOrderListModel.list)
     },
     addDish: function (dish, count = 1) {
       dish.count = count
+
       this.cartListModel.add(dish, count)
-      this.lastDish = dish
-      this.lastCount = count
     },
     clear: function () {
       this.cartListModel.clear()
@@ -822,59 +786,49 @@ export default {
     async refreshTables () {
       this.areas = await getActiveTables()
     },
-    getTableDetail () {
-      getData(GlobalConfig.PHPROOT + 'Tables.php', {
-        op: 'currentInfo',
-        id: this.id
-      }).then(res => {
-        if (goodRequest(res)) {
-          const infos = res.content
-          this.tableDetailInfo = infos
-          AssginToStringClass('seatTimes', infos.satCount)
-          AssginToStringClass('servantName', infos.order.counsumeTypeStatusName)
-          OrderId = infos.order.id
-          AssginToStringClass('orderNumber', infos.order.id)
-          AssginToStringClass('type', findConsumeTypeById(infos.consumeTypeId).name)
-          AssginToStringClass('startTime', infos.createTimestamp)
-          AssginToStringClass('personCount', infos.personCount)
-          let addressInfo = null
-          if (infos.order.rawAddressInfo) {
-            addressInfo = Object.assign(DefaultAddressInfo, JSON.parse(infos.order.rawAddressInfo))
-            if (addressInfo) {
-              this.rawAddressInfo = addressInfo
-            }
-          }
-          if (infos.order.discountStr) {
-            this.discountStr = infos.order.discountStr
-          }
-          if (!Swal.isVisible() && parseInt(infos.order.consumeTypeStatusId) < 2) {
-            // 'renderAddress(addressInfo)'
-            const confirmHtml = ''
-            showConfirm(confirmHtml, () => {
-              fastSweetAlertRequest('请输入可以完成的时间，该时间会被客户收到', 'text',
-                'Orders.php?op=acceptTakeawayOrder', 'reason',
-                { tableId: this.id })
-            },
-            () => {
-              fastSweetAlertRequest('请输入拒绝接单的理由', 'text',
-                'Orders.php?op=rejectTakeAwayOrder', 'reason',
-                { tableId: this.id })
-            }, '是否接下此单？'
-            )
-          }
-          this.getOrderedDish()
-        } else {
-          this.breakCount++
-          console.log(this.breakCount)
-          if (this.breakCount > 2) {
-            if (!Swal.isVisible()) {
-              showTimedAlert('info',
-                this.$t('JSTableGetTableDetailFailed') + res.info,
-                1000, this.goHome)
-            }
+    async getTableDetail () {
+      try {
+        const res = await hillo.silentGet('Tables.php', {
+          op: 'currentInfo',
+          id: this.id
+        }, { noDebug: true })
+        this.tableDetailInfo = res.content
+        this.tableDetailInfo.consumeTypeName = findConsumeTypeById(this.tableDetailInfo.consumeTypeId).name
+        if (this.tableDetailInfo.order.rawAddressInfo) {
+          const addressInfo = Object.assign(DefaultAddressInfo, JSON.parse(this.tableDetailInfo.order.rawAddressInfo))
+          if (addressInfo) {
+            this.rawAddressInfo = addressInfo
           }
         }
-      })
+        if (this.tableDetailInfo.order.discountStr) {
+          this.discountStr = this.tableDetailInfo.order.discountStr
+        }
+        if (!Swal.isVisible() && parseInt(this.tableDetailInfo.order.consumeTypeStatusId) < 2) {
+          // 'renderAddress(addressInfo)'
+          const confirmHtml = ''
+          showConfirm(confirmHtml, () => {
+            fastSweetAlertRequest('请输入可以完成的时间，该时间会被客户收到', 'text',
+              'Orders.php?op=acceptTakeawayOrder', 'reason',
+              { tableId: this.id })
+          },
+          () => {
+            fastSweetAlertRequest('请输入拒绝接单的理由', 'text',
+              'Orders.php?op=rejectTakeAwayOrder', 'reason',
+              { tableId: this.id })
+          }, '是否接下此单？'
+          )
+        }
+        this.getOrderedDish()
+      } catch (e) {
+        this.breakCount++
+        if (this.breakCount > 2) {
+          if (!Swal.isVisible()) {
+            showTimedAlert('info',
+              this.$t('JSTableGetTableDetailFailed') + e.info,
+              1000, this.goHome)
+          }
+        }
+      }
     },
     listenKeyDown (e) {
       if (Swal.isVisible()) {
@@ -932,7 +886,6 @@ export default {
         return
       }
       if (t !== '') {
-        console.log('inputting time', t)
         if (t.startsWith('-') && t.length >= 2) {
           this.removeDishWithCode(t.substring(1))
           blockReady()
@@ -943,14 +896,14 @@ export default {
           return
         } else if (t === '/rp') {
           hillo.post('Printer.php?op=questReprintOrder', {
-            orderId: OrderId
+            orderId: this.tableDetailInfo.order.id
           }).then(res => {
             toast()
             blockReady()
           })
         } else if (t === '/ps') {
           hillo.post('BackendData.php?op=reprintOrder', {
-            id: OrderId,
+            id: this.tableDetailInfo.order.id,
             withTitle: 0,
             printCount: 1
           }).then(res => {
@@ -1031,34 +984,25 @@ export default {
         l.classList.add('normal')
       }
     },
-    realInitial () {
-      this.version = version
+    async realInitial () {
       this.breakCount = 0
-      AssginToStringClass('version', version)
-      resolveBestIP(() => {
-        this.Config = GlobalConfig
-        for (const i in this.Strings[GlobalConfig.lang]) {
-          AssginToStringClass(i, this.Strings[GlobalConfig.lang][i])
-        }
-        getConsumeTypeList(() => {
-          [setInterval(this.refreshTables, 5000),
-            setInterval(this.getTableDetail, 3000)].map(addToTimerList)
-          if (!GlobalConfig.FMCVersion) {
-            addToTimerList(setInterval(this.autoGetFocus, 1000))
-            document.getElementById('instruction').focus()
-          }
-          window.onkeydown = this.listenKeyDown
-          UIStatus = UIState.Init
-          this.getCategory()
-          this.getDCT()
-          setGlobalTableId(this.id)
-          AssginToStringClass('tableNumber', this.tableName)
-          blockReady()
-          this.initialUI()
-          this.refreshTables()
-          this.getTableDetail()
-        })
-      })
+      this.Config = GlobalConfig
+      await getConsumeTypeList()
+      const list = [setInterval(this.refreshTables, 5000), setInterval(this.getTableDetail, 3000)]
+      list.map(addToTimerList)
+      if (!GlobalConfig.FMCVersion) {
+        addToTimerList(setInterval(this.autoGetFocus, 1000))
+        document.getElementById('instruction').focus()
+      }
+      window.onkeydown = this.listenKeyDown
+      UIStatus = UIState.Init
+      this.getCategory()
+      this.getDCT()
+      setGlobalTableId(this.id)
+      blockReady()
+      this.initialUI()
+      this.refreshTables()
+      this.getTableDetail()
     }
   },
   computed: {
@@ -1115,6 +1059,7 @@ export default {
     },
     filteredDish: function () {
       let list = this.dishes
+      console.log(list)
       if (this.activeDCT) {
         const dct = this.dct[this.activeDCT - 1]
         list = list.filter((item) => {
@@ -1147,12 +1092,6 @@ export default {
     },
     refresh: function () {
       this.realInitial()
-    }
-  },
-  beforeUpdate: function () {
-    if (this.cartListModel.list.length === 0) {
-      this.lastDish = { name: '' }
-      this.lastCount = 0
     }
   },
   mounted: function () {
@@ -1235,60 +1174,6 @@ export default {
 
     }
 
-    .totalDisplayBlock {
-        padding-top: 8px;
-        display: flex;
-        font-size: 20px;
-        font-weight: bold;
-        justify-content: flex-end;
-
-    }
-
-    .totalDisplayInnerBlock > .S_totalPrice {
-        margin-top: -6px;
-        margin-left: 12px;
-    }
-
-    .totalDisplayInnerBlock {
-        padding: 0 5px;
-        height: 30px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        color: #367aeb;
-        border-bottom: 1px solid #367aeb;
-
-    }
-
-    .dot {
-        background: #367aeb;
-        width: 10px;
-        height: 10px;
-        border-radius: 5px;
-    }
-
-    .pop2Container {
-        z-index: 1500;
-        left: 123px;
-        width: 700px;
-        height: 802px;
-        padding: 57px 53px;
-        position: fixed;
-        top: 107px;
-        border-radius: 14px;
-        -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
-        box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
-    }
-
-    .tableTitle {
-        width: fit-content;
-        color: #367aeb;
-        border-radius: 5px;
-        font-size: 18px;
-        font-weight: 900;
-        padding: 8px;
-    }
-
     tr:hover {
         background: #f8f8f8;
     }
@@ -1301,145 +1186,13 @@ export default {
         padding: 0 6px;
     }
 
-    .smallTableContainer {
-        padding: 8px;
-        overflow-y: scroll;
-        overflow-x: hidden;
-    }
-
-    .pointer {
-        cursor: pointer;
-    }
-
     .dishListContainer {
         margin-left: 4px;
         max-height: calc(100vh);
     }
 
-    .dishList {
-        width: 331px;
-    }
-
-    .code3Row {
-        font-weight: bolder;
-        text-align: center;
-    }
-
-    .name3Row {
-        text-align: center;
-        cursor: pointer;
-    }
-
-    .sizeOfDisCount {
-        width: 625px;
-        height: 285px;
-
-        padding: 0;
-    }
-
-    .inputWithDesc {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .discountContent {
-        margin-top: 28px;
-        width: 206px;
-    }
-
-    .midLine {
-        width: 1px;
-        height: 216px;
-        border: 1px solid rgba(54, 122, 235, 1);
-        opacity: 0.46;
-
-        position: absolute;
-        top: 53px;
-        left: 313px;
-
-    }
-
-    .leftHalf {
-        margin-top: 64px;
-        margin-left: 60px;
-    }
-
-    .discountInput {
-        width: 188px !important;
-    }
-
-    .hints {
-        width: 206px;
-        height: 101px;
-        border: 1px solid rgba(54, 122, 235, 1);
-        border-radius: 5px;
-        padding: 10px;
-        font-size: 12px;
-        font-weight: 600;
-        line-height: 16px;
-        color: rgba(54, 122, 235, 0.36);
-        margin-top: 131px;
-        margin-right: 61px;
-    }
-
-    .modification {
-        margin-top: 12px;
-    }
-
-    .popRow {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-    }
-
     .input-field > label {
         font-size: 14px;
-    }
-
-    .rightLittlePopContainer.sizeOfCheckOut {
-        width: 625px;
-        height: 351px;
-        padding-right: 91px;
-        padding-left: 91px;
-    }
-
-    .popRow.sec {
-        margin-top: 24px;
-    }
-
-    .popRow > .confirmContainer {
-        margin-top: 0;
-    }
-
-    .cartTotal {
-        padding: 8px;
-        font-size: 18px;
-        font-weight: bold;
-    }
-
-    .botLine {
-        padding-right: 60px;
-    }
-
-    .categoryBlock {
-        width: max-content;
-        cursor: pointer;
-        background: white;
-        padding: 8px 8px;
-        font-size: 16px;
-        border-radius: 5px;
-        font-weight: 600;
-        -webkit-box-shadow: 0 3px 8px 0 #d0d2d9;
-        box-shadow: 0 3px 8px 0 #d0d2d9;
-        margin-right: 7px;
-    }
-
-    .categoryBlock.active {
-        background: #367aeb;
-        color: white;
-        -webkit-box-shadow: 0 3px 8px 0 #d0d2d9;
-        box-shadow: 0 3px 8px 0 #d0d2d9;
-
     }
 
     .dishCardList {
@@ -1456,6 +1209,10 @@ export default {
         cursor: pointer;
         padding: 5px 12px;
         background: white;
+    }
+
+    .dishBlock:active {
+        background: #d0d2d9;
     }
 
     @media screen and (max-width: 1600px ) {
@@ -1522,30 +1279,10 @@ export default {
         height: calc(100vh - 96px);
     }
 
-    .ikTitle {
-        color: white;
-        background: #367aeb;
-        font-size: 18px;
-        font-weight: bold;
-        border-radius: 5px;
-        padding: 6px 12px;
-        width: fit-content;
-    }
-
-    .ikTitle .strong {
-        font-weight: bold;
-    }
-
     .bottomCart {
         position: fixed;
         width: 100%;
         max-width: 335px;
-    }
-
-    .normalPos {
-        right: 352px;
-        bottom: 116px;
-        padding: 12px;
     }
 
     #splitOrderContainer {
@@ -1555,30 +1292,11 @@ export default {
         z-index: 5;
     }
 
-    #dishModification {
-        padding: 12px;
-        right: 352px;
-        top: 60px;
-    }
-
     .panel {
         width: 100%;
         box-shadow: 0 3px 6px rgba(0, 25, 244, 0.1);
         border-radius: 5px;
         background: #f2f4f7;
-    }
-
-    .generalPanel {
-        padding: 12px;
-    }
-
-    .takeawayFloat {
-        position: fixed;
-        right: 0;
-        top: 48px;
-        background: white;
-        width: 300px;
-        padding: 12px;
     }
 
     .panelF {
@@ -1604,18 +1322,6 @@ export default {
         font-weight: 600;
     }
 
-    .verticalSpaceBetween {
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: column;
-        justify-content: space-between
-    }
-
-    .rightAlign {
-        width: 100%;
-        text-align: right;
-    }
-
     .typeLabel {
         font-size: 18px;
         font-weight: 600;
@@ -1628,38 +1334,6 @@ export default {
         width: 100%;
         padding-right: 4px;
         color: #367aeb;
-    }
-
-    .iconButton {
-        width: 36px;
-        height: 36px;
-        background: #58be8b;
-        color: white;
-        cursor: pointer;
-        border-radius: 5px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 3px 6px rgba(0, 25, 244, 0.1);
-    }
-
-    .lastDishName {
-        display: inline-block;
-        overflow: hidden;
-        max-width: 110px;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .lastDish {
-        font-size: 18px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-    }
-
-    .totalRed {
-        color: #fd7f41;
     }
 
     .ikButton {
@@ -1684,28 +1358,6 @@ export default {
     }
 
     .ikButton:active {
-        background: #367aeb;
-        color: white;
-    }
-
-    .button {
-        margin-left: 12px;
-    }
-
-    .inputAreaCheckOut {
-        width: 100%;
-        margin-top: 12px;
-    }
-
-    .swal2-input[type=number] {
-        max-width: unset !important;
-    }
-
-    .topRow {
-        padding: 12px 24px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
         background: #367aeb;
         color: white;
     }

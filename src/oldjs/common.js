@@ -6,40 +6,12 @@ import GlobalConfig from './LocalGlobalSettings'
 
 const Config = GlobalConfig
 
-export function getConfig () {
-  return Config
-}
-
-export const RequestMethod = {
-  GET: 'GET',
-  POST: 'POST'
-}
 export let TableId = null
 let blocked = false
 const TOASTTIME = 700
 
 let consumeTypeList = []
 let Dishes = []
-
-export function postData (url, data) {
-  // Default options are marked with *
-  const formData = new FormData()
-  for (const i in data) {
-    formData.append(i, data[i])
-  }
-  return fetch(url, {
-    body: formData, // must match 'Content-Type' header
-    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'same-origin', // include, same-origin, *omit
-    method: 'POST', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, cors, *same-origin
-    redirect: 'follow', // manual, *follow, error
-    referrer: 'no-referrer' // *client, no-referrer
-  }).then(response => {
-    blockReady()
-    return response.json()
-  }) // parses response to JSON
-}
 
 export async function getAllDishes () {
   const res = await hillo.get('Dishes.php', { lang: i18n.locale.toUpperCase() })
@@ -64,18 +36,14 @@ export function tryToReport () {
     })
 }
 
-export function getConsumeTypeList (callback) {
-  hillo.get('Complex.php', {
-    op: 'showAllConsumeTypeInfo',
-    chaos: timeStampNow()
-  }).then(res => {
-    if (goodRequest(res)) {
-      consumeTypeList = res.content
-      if (callback) {
-        callback()
-      }
-    }
-  })
+export async function getConsumeTypeList () {
+  if (consumeTypeList.length === 0) {
+    const res = await hillo.get('Complex.php', {
+      op: 'showAllConsumeTypeInfo',
+      chaos: timeStampNow()
+    })
+    consumeTypeList = res.content
+  }
 }
 
 export function findConsumeTypeById (id) {
@@ -129,7 +97,7 @@ export async function popAuthorize (type, successCallback, force = false, failed
       return
     }
   }
-  const res = await fastSweetAlertRequest(findInString('popAuthTitle'), 'password',
+  const res = await fastSweetAlertRequest(i18n.t('popAuthTitle'), 'password',
     'Servant.php'
     , 'pw', {
       op: type === 'boss' ? 'checkBoss' : 'checkServant',
@@ -182,7 +150,7 @@ export function createOrEnterTable (number) {
     if (res.content[0].usageStatus === '0') {
       popAuthorize('', () => shouldOpenTable(res.content[0].id))
     } else if (res.content[0].usageStatus === '1') {
-      toast(findInString('JSIndexCreateTableEnterTable') + number,
+      toast(i18n.t('JSIndexCreateTableEnterTable') + number,
         () => {
           jumpToTable(res.content[0].id, res.content[0].name)
         })
@@ -209,25 +177,25 @@ function informOpenTable (password, number, personCount, childCount) {
       personCount: personCount,
       childCount: childCount
     }).then(res => jumpToTable(res.content.tableId, res.content.tableName))
-    .catch(err => logErrorAndPop(findInString('JSIndexRequestOutTableFailed') + err.info))
+    .catch(err => logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + err.info))
 }
 
 export async function openTablePrompt () {
   const res = await Swal.mixin({
-    confirmButtonText: findInString('nextStep') + ' &rarr;',
+    confirmButtonText: i18n.t('nextStep') + ' &rarr;',
     showCancelButton: true,
     progressSteps: ['1', '2', '3']
   }).queue([
     {
-      title: findInString('popLabelGuestCount'),
+      title: i18n.t('popLabelGuestCount'),
       input: 'text'
     },
     {
-      title: findInString('popLabelChildCount'),
+      title: i18n.t('popLabelChildCount'),
       input: 'text'
     },
     {
-      title: findInString('popTypeLabel'),
+      title: i18n.t('popTypeLabel'),
       input: 'select',
       inputOptions: {
         ...consumeTypeList.reduce((cry, i) => {
@@ -295,73 +263,24 @@ export function informOpenJpTable (password, number, personCount, childCount, ad
     adultDishId: adultDishId
   }).then(res => jumpToTable(res.content.tableId, res.content.tableName))
     .catch(err => {
-      logErrorAndPop(findInString('JSIndexRequestOutTableFailed') + err.info)
+      logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + err.info)
     })
 }
 
-function initialConfig () {
-  Config.PHPROOT = `${Config.REALROOT}/PHP/`
-}
-
 export function requestOutTable () {
-  postData(Config.PHPROOT + 'Complex.php?op=openTakeawayTable', {
+  hillo.post('Complex.php?op=openTakeawayTable', {
     pw: Config.defaultPassword,
     personCount: 0
-
   }).then(res => {
     if (goodRequest(res)) {
       jumpToTable(res.content.tableId, res.content.tableName)
     } else {
-      logErrorAndPop(findInString('JSIndexRequestOutTableFailed') + res.info)
+      logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + res.info)
     }
   })
 }
 
-export function resolveBestIP (callback) {
-  if (!Config.resolveIP) {
-    initialConfig()
-    if (callback) {
-      callback()
-    }
-    return
-  }
-  if (Config.DeviceId === -1) {
-    console.error('DeviceIdNotSet,Go Offline')
-    initialConfig()
-    if (callback) {
-      callback()
-    }
-    console.error('You are In Offline Mode')
-    return
-  }
-
-  getData('https://innerken.com/iplogger/', {
-    op: 'findBestIp',
-    deviceId: Config.DeviceId
-  }).then(res => {
-    if (goodRequest(res)) {
-      Config.IP = res.content
-      Config.REALROOT = `${Config.Protocol}${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
-      initialConfig()
-    } else {
-      Config.REALROOT = `${Config.Protocol}${Config.IP}${(Config.Dir.length > 0 ? '/' + Config.Dir : '')}`
-      initialConfig()
-    }
-    if (callback) {
-      callback()
-    }
-  })
-}
-
-export function findInString (str) {
-  if (Strings) {
-    return Strings[Config.lang][str]
-  } else {
-    return str
-  }
-}
-
-export function showConfirm (str, callback, fCallback, title = findInString('areYouSure')) {
+export function showConfirm (str, callback, fCallback, title = i18n.t('areYouSure')) {
   Swal.fire({
     title: title,
     html: str,
@@ -369,8 +288,8 @@ export function showConfirm (str, callback, fCallback, title = findInString('are
     showCancelButton: true,
     confirmButtonColor: '#3085d6',
     cancelButtonColor: '#d33',
-    confirmButtonText: findInString('yesIAm'),
-    cancelButtonText: findInString('cancel')
+    confirmButtonText: i18n.t('yesIAm'),
+    cancelButtonText: i18n.t('cancel')
   }).then((result) => {
     if (result.value) {
       if (callback) {
@@ -405,12 +324,12 @@ export function toast (str, callback, type) {
 }
 
 export function loadingComplete () {
-  toast(findInString('Loading SuccessFully'))
+  toast(i18n.t('Loading SuccessFully'))
 }
 
 export function showLoading () {
   Swal.fire({
-    title: findInString('loading'),
+    title: i18n.t('loading'),
     allowOutsideClick: () => !Swal.isLoading(),
     allowEscapeKey: false
   })
@@ -446,7 +365,6 @@ export function getData (url, data) {
 export async function fastSweetAlertRequest
 (title, input, url, dataName, dataObj, method = 'POST', allowEmpty = false,
   body = null) {
-  url = `${Config.PHPROOT + url}`
   dataObj[dataName] = ''
   const result = await Swal.fire({
     title: title,
@@ -456,7 +374,7 @@ export async function fastSweetAlertRequest
       autocapitalize: 'off'
     },
     showCancelButton: true,
-    confirmButtonText: findInString('confirm'),
+    confirmButtonText: i18n.t('confirm'),
     showLoaderOnConfirm: true,
     preConfirm: (data) => {
       if (!data && !allowEmpty) {
@@ -464,31 +382,23 @@ export async function fastSweetAlertRequest
       }
       dataObj[dataName] = data
       if (method === 'POST') {
-        return postData(url, dataObj)
+        return hillo.post(url, dataObj, { silent: true })
           .then(response => {
-            if (goodRequest(response)) {
-              return response
-            } else {
-              throw new Error(response.info)
-            }
+            return response
           })
           .catch(error => {
             Swal.showValidationMessage(
-              `Request failed: ${error}`
+              `Request failed: ${error.info}`
             )
           })
       } else {
-        return getData(url, dataObj)
+        return hillo.silentGet(url, dataObj)
           .then(response => {
-            if (goodRequest(response)) {
-              return response
-            } else {
-              throw new Error(response.info)
-            }
+            return response
           })
           .catch(error => {
             Swal.showValidationMessage(
-              `Request failed: ${error}`
+              `Request failed: ${error.info}`
             )
           })
       }
@@ -502,16 +412,6 @@ export async function fastSweetAlertRequest
   }
 }
 
-export function toastMore (str, content) {
-  Swal.fire({
-    icon: 'success',
-    title: str,
-    content: content,
-    showConfirmButton: false,
-    timer: TOASTTIME
-  })
-}
-
 export function toastError (str) {
   Swal.fire({
     icon: 'error',
@@ -519,14 +419,6 @@ export function toastError (str) {
     showConfirmButton: true
 
   })
-}
-
-export function copyObject (item) {
-  const d = {}
-  for (const i of Object.keys(item)) {
-    d[i] = item[i]
-  }
-  return d
 }
 
 export function goodRequest (res) { // Return Res.status==good

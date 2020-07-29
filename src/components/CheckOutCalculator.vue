@@ -42,7 +42,8 @@
                 </v-sheet>
                 <v-sheet :elevation="2" class="keyboard flex-grow-1 pa-4">
                     <template v-for="i in keyArr.flat()">
-                        <v-btn v-if="i!=='mdi-dots-horizontal'" @click="input(i)" block x-large class="key"
+                        <v-btn :ripple="false" v-if="i!=='mdi-dots-horizontal'" @click="input(i)" block x-large
+                               class="key"
                                style="height: 100%"
                                :elevation="2"
                                :key="'key'+i">
@@ -66,16 +67,16 @@
                                         v-for="(item, index) in extraPaymentMethod"
                                         :key="index"
                                 >
-                                    <v-list-item-icon><v-icon>{{ item }}</v-icon></v-list-item-icon>
+                                    <v-list-item-icon>
+                                        <v-icon>{{ item }}</v-icon>
+                                    </v-list-item-icon>
                                 </v-list-item>
                             </v-list>
                         </v-menu>
                     </template>
                 </v-sheet>
             </div>
-
-            <div v-if="paymentLog.length>0"
-                 style="width: calc(100vw - 340px - 24px - 480px)"
+            <div style="width: calc(100vw - 340px - 24px - 480px)"
                  class="paymentLog pa-2">
                 <div class="my-3">
                     <h3>结账记录</h3>
@@ -101,47 +102,46 @@
                     </template>
                 </div>
                 <div style="height: 300px">
-                    <template v-if="equals(remainTotal,0)">
-
-                        <v-sheet class="my-6">
-                            <h4>
-                                {{$t('tableCheckOutBillTypeLabel')}}
-                            </h4>
-                            <v-sheet class="my-2" style="background: transparent">
-                                <v-chip-group
-                                        v-model="billType"
-                                        mandatory column
-                                        active-class="primary--text">
-                                    <v-chip x-large label>
-                                        {{$t('tableCheckOutBillTypeOptionNormal')}}
-                                    </v-chip>
-                                    <v-chip x-large label>
-                                        {{$t('tableCheckOutBillTypeOptionCompany')}}
-                                    </v-chip>
-                                    <v-chip x-large label>
-                                        {{$t('tableCheckOutBillTypeOption3')}}
-                                    </v-chip>
-                                </v-chip-group>
-                            </v-sheet>
+                    <v-sheet class="my-6">
+                        <h4>
+                            {{$t('tableCheckOutBillTypeLabel')}}
+                        </h4>
+                        <v-sheet class="my-2" style="background: transparent">
+                            <v-chip-group
+                                    v-model="billType"
+                                    mandatory column
+                                    active-class="primary--text">
+                                <v-chip x-large label>
+                                    {{$t('tableCheckOutBillTypeOptionNormal')}}
+                                </v-chip>
+                                <v-chip x-large label>
+                                    {{$t('tableCheckOutBillTypeOptionCompany')}}
+                                </v-chip>
+                                <v-chip x-large label>
+                                    {{$t('tableCheckOutBillTypeOption3')}}
+                                </v-chip>
+                            </v-chip-group>
                         </v-sheet>
-                        <v-divider class="my-3"></v-divider>
-                        <div style="height: 120px;display: grid;grid-template-columns: 1fr 1fr">
-                            <div class="pa-2">
-                                <v-btn tile fab
-                                       outlined
-                                       @click="cancel"
-                                       color="error" block x-large>
-                                    {{$t('cancel')}}
-                                </v-btn>
-                            </div>
-                            <div class="pa-2">
-                                <v-btn color="success"
-                                       @click="checkOut"
-                                       tile fab block x-large> {{$t('tableCheckOutConfirm')}}
-                                </v-btn>
-                            </div>
+                    </v-sheet>
+                    <v-divider class="my-3"></v-divider>
+                    <div style="height: 120px;display: grid;grid-template-columns: 1fr 1fr">
+                        <div class="pa-2">
+                            <v-btn tile fab
+                                   outlined
+                                   @click="cancel"
+                                   color="error" block x-large>
+                                {{$t('cancel')}}
+                            </v-btn>
                         </div>
-                    </template>
+                        <div class="pa-2">
+                            <v-btn color="success"
+                                   @click="checkOut"
+                                   elevation="0"
+                                   :disabled="!equals(remainTotal,0)"
+                                   tile fab block x-large> {{$t('tableCheckOutConfirm')}}
+                            </v-btn>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -267,7 +267,8 @@ export default {
             this.clearBuffer()
             break
           case 'reverse':
-            this.inputBuffer = '-' + this.inputBuffer
+
+            this.inputBuffer = this.inputBuffer.startsWith('-') ? this.inputBuffer.substr(1) : ('-' + this.inputBuffer)
             break
           case 'more':
             break

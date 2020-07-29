@@ -96,7 +96,7 @@
                             <div @click="popAuthorize('', requestOutTable)" class="floatMenuPanelItem">
                                 <div class="innerItem ">
                                     <div class="icon"><i class="material-icons">shopping_basket</i></div>
-                                    <div class="text S_takeaway">外卖</div>
+                                    <div class="text">{{$t('takeaway')}}</div>
                                 </div>
                             </div>
                         </div>
@@ -119,18 +119,14 @@
 
 <script>
 import {
-  AssginToStringClass,
   blockReady,
   createOrEnterTable,
-  findInString,
-  getActiveTables,
   getAllDishes,
   getConsumeTypeList,
   jumpToTable,
   oldJumpTo,
   popAuthorize,
   requestOutTable,
-  resolveBestIP,
   Strings
 } from '../oldjs/common'
 import Swal from 'sweetalert2'
@@ -138,7 +134,7 @@ import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
-
+import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 export default {
   name: 'IndexPage',
   directives: {
@@ -183,7 +179,6 @@ export default {
   },
   methods: {
     popAuthorize,
-    findInString,
     createTable: createOrEnterTable,
     jumpToTable,
     requestOutTable,
@@ -239,23 +234,16 @@ export default {
       }
       this.$refs.ins.focus()
     },
-    initPage () {
-      resolveBestIP(() => {
-        for (const i in this.Strings[GlobalConfig.lang]) {
-          AssginToStringClass(i, this.Strings[GlobalConfig.lang][i])
-        }
-        getConsumeTypeList(() => {
-          window.onkeydown = this.listenKeyDown
-          this.refreshTables()
+    async initPage () {
+      await getConsumeTypeList()
 
-          getAllDishes().then(res => {
-            this.dishes = res
-          })
-          setInterval(this.refreshTables, 5000)
-          const list = [setInterval(this.autoGetFocus, 1000)]
-          list.map(addToTimerList)
-        })
+      window.onkeydown = this.listenKeyDown
+      this.refreshTables()
+      getAllDishes().then(res => {
+        this.dishes = res
       })
+      const list = [setInterval(this.autoGetFocus, 1000), setInterval(this.refreshTables, 5000)]
+      list.map(addToTimerList)
     }
   },
   mounted: function () {
@@ -435,6 +423,7 @@ export default {
     .center-panel {
         width: 100vw;
     }
+
     main {
         flex: 1 0 auto;
         margin-top: 48px;
@@ -442,6 +431,7 @@ export default {
         flex-direction: row;
         justify-content: space-between;
     }
+
     /*input:focus{*/
     /*    background: red;*/
     /*    color: red !important;*/

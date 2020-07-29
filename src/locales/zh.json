@@ -371,5 +371,7 @@
   "haveOrderedDish": "已点菜品",
   "billSplit": "分单",
   "dishCancel": "退菜",
-  "operation": "操作"
+  "operation": "操作",
+  "给菜品打折": "给菜品打折",
+  "新增菜品": "新增菜品"
 }

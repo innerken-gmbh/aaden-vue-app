@@ -4,9 +4,9 @@
             <div class=" flex-Container">
 
                 <div class="languageSwitch">
-                    <div @click="changeLanguage('ZH')" class="S_langZH">中</div>
-                    <div @click="changeLanguage('EN')" class="S_langEN">英</div>
-                    <div @click="changeLanguage('DE')" class="S_langDE">德</div>
+                    <div @click="changeLanguage('ZH')" >{{$t('langZH')}}</div>
+                    <div @click="changeLanguage('EN')" >{{$t('langEN')}}</div>
+                    <div @click="changeLanguage('DE')">{{$t('langDE')}}</div>
                 </div>
 
                 <div  class="splitter"></div>
@@ -17,8 +17,8 @@
                     </div>
                 </div>
                 <div class="splitter"></div>
-                <div class="appName S_appName">
-                    Aaden Kasse
+                <div class="appName">
+                    {{$t('appName')}}
                 </div>
                 <div class="splitter"></div>
                 <v-sheet class="appName">
