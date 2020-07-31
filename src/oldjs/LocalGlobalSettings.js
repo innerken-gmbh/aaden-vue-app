@@ -1,8 +1,10 @@
 import { fetchConfig } from 'aaden-base-model/lib/Models/AadenApi'
 
 const defaultConfig = require('@/assets/AadenConfig.json')
+
 let GlobalConfig = Object.assign({}, defaultConfig)
-if (GlobalConfig.FMCVersion) {
+
+if (isWeb()) {
   GlobalConfig.Protocol = 'https://'
 }
 
@@ -74,9 +76,7 @@ function updateSetting (key, value) {
 }
 
 async function loadNet () {
-  const netConfig = await fetchConfig()
-  console.log(netConfig, 'Found Network Config:--')
-  return netConfig
+  return await fetchConfig()
 }
 
 function loadUrl () {
@@ -95,7 +95,7 @@ export async function loadConfig () {
   const localConfig = localManager.getAll()
   const electronConfig = electronManager.getAll()
   const urlConfig = loadUrl()
-  console.log({ netConfig, localConfig, electronConfig, urlConfig })
+  console.log({ GlobalConfig, netConfig, localConfig, electronConfig, urlConfig })
   GlobalConfig = Object.assign(GlobalConfig, netConfig, localConfig, electronConfig, urlConfig)
   GlobalConfig.settingManager = electronManager.ok ? electronManager : localManager
   window.Config = GlobalConfig
@@ -127,7 +127,7 @@ function hardReload () {
   GlobalConfig.settingManager.deleteAll()
 }
 
-function setDeviceId (id) {
+export function setDeviceId (id) {
   updateSetting('DeviceId', id)
   reload()
 }

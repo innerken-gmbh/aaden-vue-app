@@ -365,13 +365,15 @@
   "backToHome": "Startseite",
   "dishOrder": "Bestellen",
   "tableChange": "Wechseln",
-  "tableMerge": "Verschmelzen",
+  "tableMerge": "Verschmelz",
   "payBill": "Bezahlen",
   "QuickBill": "SchnellBZ",
   "default": "|Default:",
   "nextStep": "Nächstes",
-  "haveOrderedDish": "Bestellte Gerichte",
+  "haveOrderedDish": "Bestellen",
   "billSplit": "Getrennt",
   "dishCancel": "löschen",
-  "operation": "Betriebs"
+  "operation": "Betriebs",
+  "给菜品打折": "Rabatt",
+  "新增菜品": "Kart"
 }

@@ -1,7 +1,7 @@
 <template>
-    <v-dialog fullscreen color="#f5f6fa" v-model="realShow"
-              hide-overlay>
-        <div class="d-flex justify-space-between fill-height" style="">
+    <v-dialog fullscreen v-model="realShow"
+              >
+        <v-card color="white" class="d-flex justify-space-between fill-height">
             <div v-show="order.count()>0" style="width: 340px">
                 <dish-card-list
                         :title="'结账菜品'"
@@ -13,7 +13,7 @@
                         @payment-submit="checkOut"
                         :total="order.total()"/>
             </div>
-        </div>
+        </v-card>
     </v-dialog>
 </template>
 
@@ -69,7 +69,6 @@ export default {
       this.realShow = false
     },
     async checkOut (paymentLog, billType) {
-      console.log(paymentLog, billType)
       const print = parseInt(billType)
       let withTitle = 0
       let printCount = 1
@@ -91,7 +90,6 @@ export default {
       }
 
       const res = await hillo.post('Complex.php?op=' + this.checkOutType, checkOutData)
-      console.log(res)
       if (res) {
         toast(this.$t('JSTableCheckOutSuccess'))
         this.cancel()

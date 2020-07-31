@@ -2,7 +2,7 @@
     <v-sheet rounded :elevation="2" class="fill-height pa-2">
         <div class="d-flex fill-height" style="max-height: 700px">
             <div style="width: 480px" class="calculator pa-2 d-flex flex-column fill-height">
-                <v-sheet :elevation="2" class="display pa-4 d-flex
+                <v-sheet style="width: 100%" :elevation="2" class="display pa-4 d-flex
                  justify-space-between align-end">
                     <div>
                         <div class="totalBlock">
@@ -70,6 +70,11 @@
                                     <v-list-item-icon>
                                         <v-icon>{{ item }}</v-icon>
                                     </v-list-item-icon>
+                                    <v-list-item-content>
+                                        <v-list-item-title>
+                                            {{extraPaymentMethodName[index]}}
+                                        </v-list-item-title>
+                                    </v-list-item-content>
                                 </v-list-item>
                             </v-list>
                         </v-menu>
@@ -84,7 +89,7 @@
                 <div class="my-3" v-dragscroll style="max-height: 460px;overflow:hidden">
                     <template v-for="(paymentInfo,index) in paymentLog">
                         <v-sheet :key="'price'+paymentInfo.hash" :elevation="0"
-                                 class="d-flex justify-space-between pa-2 my-1">
+                                style="width: 100%" class="d-flex justify-space-between pa-2 my-1">
                             <h2 class="font-weight-bold"
                                 style="font-size: 24px">
                                 {{ paymentInfo.price|priceDisplay }}
@@ -181,6 +186,7 @@ export default {
       },
       inputBuffer: '',
       extraPaymentMethod: ['mdi-credit-card-wireless', 'mdi-card-account-details'],
+      extraPaymentMethodName: ['KreditCard', 'Gutschein'],
       paymentLog: []
     }
   },
@@ -238,7 +244,6 @@ export default {
     },
     logPayment (type) {
       const price = this.readBuffer()
-      console.log(type)
       const icon = Object.entries(this.realName).find(([k, v]) => v === type)[0]
       const hash = this.paymentLog.length + 'p' + price + 'icon' + icon
       this.paymentLog.push({

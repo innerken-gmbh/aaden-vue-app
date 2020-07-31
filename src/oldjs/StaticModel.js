@@ -20,7 +20,6 @@ export async function getAllDishesWithCache (force = false) {
       res.content.forEach(d => {
         dishesDictionary[d.code.toLowerCase()] = d
       })
-      console.log(dishesDictionary)
       dishesList = StandardDishesListFactory().formatList(res.content)
     }
   }
@@ -32,7 +31,6 @@ export async function goHome () {
     const t = (await getActiveTables()).reduce((arr, i) => {
       return arr.concat(i.tables)
     }, []).find(f => parseInt(f.usageStatus) !== 0)
-    console.log(t)
     if (!t) {
       requestOutTable()
     } else {

@@ -21,7 +21,7 @@
                         <div :key="area.name" v-cloak v-for="area in realArea" class="area">
                             <div>
                                 <div class="areaTitle">{{area.areaName}}</div>
-                                <div class="areaTableContainer" :style="Config.FMCVersion?
+                                <div class="areaTableContainer" :style="windowHeight<=978?
                                 'grid-template-rows: repeat(4, 124px);':'grid-template-rows: repeat(6, 124px);'">
                                     <template v-for="table in area.tables">
                                         <div v-bind:key="table.name">
@@ -93,7 +93,9 @@
                 <div class="insPanel surface">
                     <div class="hintPanel">
                         <div class="floatMenuPanel">
-                            <div @click="popAuthorize('', requestOutTable)" class="floatMenuPanelItem">
+                            <div @click="popAuthorize('',
+                             requestOutTable)"
+                                 class="floatMenuPanelItem">
                                 <div class="innerItem ">
                                     <div class="icon"><i class="material-icons">shopping_basket</i></div>
                                     <div class="text">{{$t('takeaway')}}</div>
@@ -132,7 +134,7 @@ import {
 import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
-import GlobalConfig from '../oldjs/LocalGlobalSettings'
+import GlobalConfig, { setDeviceId } from '../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 export default {
@@ -169,6 +171,10 @@ export default {
     }
   },
   computed: {
+    windowHeight: function () {
+      console.log(window.innerHeight)
+      return window.innerHeight
+    },
     realArea: function () {
       const only = this.onlyActive
       return this.areas.map(a => {
@@ -216,7 +222,15 @@ export default {
     },
     insDecode (t) {
       if (t !== '') {
-        if (t === 'w') {
+        const escapeStr = '--//'
+        if (t.startsWith(escapeStr)) {
+          console.log(t)
+          t = t.substr(escapeStr.length)
+          if (t.startsWith('d')) {
+            t = t.substr(1)
+            setDeviceId(t)
+          }
+        } else if (t === 'w') {
           popAuthorize('', requestOutTable)
         } else if (t === 'l') {
           popAuthorize('', this.toManage)
@@ -235,9 +249,9 @@ export default {
       this.$refs.ins.focus()
     },
     async initPage () {
+      window.onkeydown = this.listenKeyDown
       await getConsumeTypeList()
 
-      window.onkeydown = this.listenKeyDown
       this.refreshTables()
       getAllDishes().then(res => {
         this.dishes = res

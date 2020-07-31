@@ -303,7 +303,7 @@ export function showConfirm (str, callback, fCallback, title = i18n.t('areYouSur
   })
 }
 
-export function toast (str, callback, type) {
+export function toast (str = 'Ok', callback, type) {
   const Toast = Swal.mixin({
     toast: true,
     position: 'top',
@@ -366,6 +366,21 @@ export async function fastSweetAlertRequest
 (title, input, url, dataName, dataObj, method = 'POST', allowEmpty = false,
   body = null) {
   dataObj[dataName] = ''
+  const callBack = function (method, data) {
+    const request = method === 'POST' ? hillo.post : hillo.silentGet
+    dataObj[dataName] = data
+    return request(url, dataObj, { silent: true })
+      .then(response => {
+        return response
+      })
+      .catch(error => {
+        console.log(error)
+        Swal.showValidationMessage(
+          `Request failed: ${error.data.info}`
+        )
+      })
+  }
+
   const result = await Swal.fire({
     title: title,
     html: body,
@@ -380,28 +395,7 @@ export async function fastSweetAlertRequest
       if (!data && !allowEmpty) {
         return false
       }
-      dataObj[dataName] = data
-      if (method === 'POST') {
-        return hillo.post(url, dataObj, { silent: true })
-          .then(response => {
-            return response
-          })
-          .catch(error => {
-            Swal.showValidationMessage(
-              `Request failed: ${error.info}`
-            )
-          })
-      } else {
-        return hillo.silentGet(url, dataObj)
-          .then(response => {
-            return response
-          })
-          .catch(error => {
-            Swal.showValidationMessage(
-              `Request failed: ${error.info}`
-            )
-          })
-      }
+      return callBack(method, data)
     },
     allowOutsideClick: () => !Swal.isLoading()
   })

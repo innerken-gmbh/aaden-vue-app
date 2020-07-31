@@ -1,37 +1,47 @@
 <template>
-    <v-sheet @click="clickCallback(false)" class="dishCard container--fluid">
-        <div class="d-flex justify-space-between">
+    <v-sheet  class="dishCard container--fluid">
+        <div @click="checkIfOpen" style="width: 100%" class="d-flex justify-space-between">
             <div class="dishInfo">
                 <div class="basicInfo d-flex">
                     <div class="d-flex">
                         <div class='codeRow'>
                             {{dish.code}}
                         </div>
-                        <div class='dishName'>
+                        <div class='dishName' :style="{maxWidth:showEdit?'140px':'200px'}">
                             {{dish.name}}
                         </div>
-                        <div v-if="showEdit" class="edit">
+                        <template v-if="showEdit" >
                             <v-btn small @click.stop="editNote(dish)" icon>
                                 <v-icon>mdi-pencil-circle</v-icon>
                             </v-btn>
-                        </div>
+                        </template>
+                        <template v-if="showNumber">
+                            <v-btn small icon @click.stop="dish.change(-1)">
+                                <v-icon>
+                                    mdi-minus-circle
+                                </v-icon>
+                            </v-btn>
+                            <v-btn small icon  @click.stop="dish.change(1)">
+                                <v-icon>
+                                    mdi-plus-circle
+                                </v-icon>
+                            </v-btn>
+                        </template>
                     </div>
                     <div class='d-flex'>
                     <span v-if="dish.isFree==='1'">
                         {{$t('Free')}}
                     </span>
                         <span v-else>
-                            <span v-if="!dish.tempDiscountMod">
-                                    {{dish.realPrice | priceDisplay}}
+                             <span v-if="(dish.tempDiscountMod)&&(Math.abs(parseFloat(dish.tempDiscountMod))>0)">
+                                <s style="font-size: xx-small">{{dish.originalPrice | priceDisplay}}</s>
+                                {{dish.realPrice | priceDisplay}}
                             </span>
                             <span v-else>
-                                <s>{{dish.realPrice | priceDisplay}}</s>
-                                {{dish.realPrice+parseFloat(dish.tempDiscountMod) | priceDisplay}}
+                                    {{dish.realPrice | priceDisplay}}
                             </span>
-
                     </span>
                     </div>
-
                 </div>
                 <div v-if="dish.displayApply.length>0" class="dishMod">
                     <div class="d-flex subtitle-2 justify-space-between grey--text text--darken-2"
@@ -54,8 +64,35 @@
             <div :style="{color}" class="dishCount">&times;{{dish.count}}
             </div>
         </div>
-        <div class="editRow">
+        <div v-if="expand" class="editRow elevation-3">
+            <div class="d-flex align-center" style="width: 100%">
+                <v-slider
+                        dense
+                        hide-details
+                        v-model="clickNumber"
+                        thumb-label
+                        min="1"
+                        :max="dish.count"
+                >
+                    <template v-slot:prepend>
+                        <v-icon
+                                @click="decrement"
+                        >
+                            mdi-minus
+                        </v-icon>
+                    </template>
 
+                    <template v-slot:append>
+                        <v-icon
+                                @click="increment"
+                        >
+                            mdi-plus
+                        </v-icon>
+                    </template>
+                </v-slider>
+                <span class="ml-4">&times;{{clickNumber}}</span>
+                <v-btn class="ml-3" @click="click" icon><v-icon>mdi-arrow-right-circle</v-icon></v-btn>
+            </div>
         </div>
     </v-sheet>
 </template>
@@ -82,6 +119,10 @@ export default {
       type: Boolean,
       default: false
     },
+    showNumber: {
+      type: Boolean,
+      default: false
+    },
     color: {
       type: String,
       default: '#367aeb'
@@ -96,14 +137,16 @@ export default {
       noteEdit: true,
       note: '',
       sumCount: null,
-      count: null
+      count: null,
+      clickNumber: 1,
+      expand: false
     }, { ...this.dish })
   },
   computed: {
-    clickCallBack () {
+    clickCall () {
       return (force) => {
         if (force || !this.showEdit) {
-          return this.clickCallBack
+          return this.clickCallback
         } else {
           return () => {
           }
@@ -112,12 +155,34 @@ export default {
     }
   },
   methods: {
+    checkIfOpen () {
+      if (this.dish.count > 1) {
+        this.expand = !this.expand
+      } else {
+        this.clickCallback()
+      }
+    },
+    decrement () {
+      if (this.clickNumber > 0) {
+        this.clickNumber--
+      }
+    },
+    increment () {
+      if (this.clickNumber < this.dish.count) {
+        this.clickNumber++
+      }
+    },
+    click () {
+      for (let i = 0; i < this.clickNumber; i++) {
+        this.clickCallback()
+      }
+    },
     async editNote () {
       const note = await Swal.fire({
         title: 'Note',
-        input: 'text'
+        input: 'text',
+        inputValue: this.dish.note
       })
-      console.log(note)
       this.$set(this.dish, 'note', note.value)
       // dish.note = note.value
     }
@@ -134,26 +199,27 @@ export default {
     }
 
     .dishInfo {
+        width: 100%;
         max-width: calc(100% - 45px);
         font-size: 18px;
     }
 
     .basicInfo {
-        padding: 8px 24px;
+        padding: 8px 12px;
+        padding-right: 0;
         width: 100%;
         justify-content: space-between;
     }
 
     .dishName {
-        max-width: 150px;
-        overflow: hidden;
+        max-width: 140px;
+        word-wrap:break-word;
         text-overflow: ellipsis;
-        white-space: nowrap;
     }
 
     .codeRow {
         font-weight: 900;
-        width: 48px;
+        width: 32px;
     }
 
     .dishCount {
@@ -168,11 +234,13 @@ export default {
 
     .dishNote {
         font-size: 14px;
-        margin-left: 48px;
+        margin-left: 32px;
         text-overflow: ellipsis;
         overflow: hidden;
+        border-bottom: 1px solid #6b6b6b;
+        margin-bottom: 4px;
         white-space: nowrap;
-        padding: 8px 24px;
+        padding: 4px 8px;
     }
 
     .dishMod {
@@ -180,8 +248,13 @@ export default {
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
-        margin-left: 48px;
+        margin-left: 32px;
         padding: 2px 30px;
+    }
+
+    .editRow{
+        padding-left: 24px;
+        padding-right: 8px;
     }
 
 </style>

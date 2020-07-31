@@ -6,7 +6,6 @@ import i18n from '../i18n'
 export function splitOrder (discountStr = '', id, items,
   initialUI, print,
   payMethod, tipIncome, memberCardId) {
-  console.log(arguments)
   print = parseInt(print)
   let withTitle = 0
   let printCount = 1
@@ -138,7 +137,6 @@ export async function popMergeTablePanel (tableName, initialUI) {
     'Tables.php?op=mergeTables', 'newTableName', {
       oldTableName: tableName
     }, 'POST')
-  console.log(res)
   if (res) {
     initialUI()
     goHome()

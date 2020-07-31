@@ -638,24 +638,6 @@ export default {
         font-weight: 600;
     }
 
-    .dishCard {
-        margin-top: 8px;
-        background: white;
-        border-radius: 5px;
-        box-shadow: 0px 3px 4px 0 rgba(220, 224, 239, 0.59);
-    }
-
-    .dishInfo {
-        width: 100%;
-        font-size: 18px;
-    }
-
-    .basicInfo {
-        padding: 8px 30px;
-        width: 100%;
-        justify-content: space-between;
-    }
-
     .codeRow {
         font-weight: 900;
         width: 48px;

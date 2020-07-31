@@ -60,9 +60,6 @@ export default {
       this.mod(mod, dish)
       this.realShow = false
     }
-  },
-  mounted () {
-    console.log('create')
   }
 }
 </script>

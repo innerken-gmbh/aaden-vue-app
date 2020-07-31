@@ -30,6 +30,7 @@
                         'code'+index+'hash'+order.hash">
                         <dish-card
                                 :color="color"
+                                :show-number="showNumber"
                                 :click-callback="()=>clickCallback(index)"
                                 :show-edit="showEdit"
                                 :dish="order"/>
@@ -69,6 +70,10 @@ export default {
       type: Function,
       default: () => {
       }
+    },
+    showNumber: {
+      type: Boolean,
+      default: false
     },
     defaultExpand: {
       type: Boolean,

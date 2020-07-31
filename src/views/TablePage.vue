@@ -14,6 +14,7 @@
                     class="white">
                 <dish-card-list
                         ref="cartList"
+                        :show-number="true"
                         :extra-height="'96px'"
                         :color="'#707070'"
                         :show-edit="true" :click-callback="removeDish"
@@ -22,8 +23,8 @@
                         :default-expand="Config.defaultExpand">
                 </dish-card-list>
                 <v-toolbar dense>
-                    <v-btn @click="cartListModel.clear()" dark color="error">取消</v-btn>
-                    <v-btn class="flex-grow-1" @click="orderDish" dark color="#367aeb">确认</v-btn>
+                    <v-btn @click="cartListModel.clear()" dark color="error">{{$t('cancel')}}</v-btn>
+                    <v-btn class="flex-grow-1" @click="orderDish" dark color="#367aeb">{{$t('confirm')}}</v-btn>
                 </v-toolbar>
             </v-card>
         </v-navigation-drawer>
@@ -47,7 +48,8 @@
             </v-tabs>
         </v-app-bar>
         <v-main>
-            <v-card elevation="0" color="transparent" v-cloak class="dishListContainer" id="dishListContainer">
+            <v-card elevation="0" color="transparent" v-cloak
+                    class="dishListContainer" id="dishListContainer">
                 <v-toolbar rounded dense>
                     <v-tabs
                             center-active
@@ -69,21 +71,25 @@
                 <div v-dragscroll class="dragscroll dishCardListContainer">
                     <div class="dishCardList">
                         <template v-for="dish of filteredDish">
-                            <v-card :key="'dish'+dish.code" class="dishBlock" @click="orderOneDish(dish.code)">
-                                <div class="spaceBetween" style="align-items: center">
-                                    <div class="code">{{dish.code}}<span class="red--text"
-                                                                         v-if="dish.haveMod>0">*</span>
+                            <v-sheet :elevation="1" :key="'dish'+dish.code" class="dishBlock"
+                                     @click="orderOneDish(dish.code)">
+                                <div class="spaceBetween"
+                                     style="align-items: center;flex-wrap: wrap">
+                                    <div class="code">{{dish.code}}<span
+                                            class="red--text"
+                                             v-if="dish.haveMod>0">*</span>
                                     </div>
                                     <div class="price">{{dish.isFree==='1'?'Frei':dish.price}}</div>
                                 </div>
                                 <div class="name">{{dish.dishName}}</div>
-                            </v-card>
+                            </v-sheet>
                         </template>
                     </div>
                 </div>
             </v-card>
         </v-main>
-        <v-navigation-drawer :value="true" stateless color="transparent" app right width="280px">
+        <v-navigation-drawer :value="true" stateless color="transparent" app
+                             right width="280px">
             <div :style="{width:Config.isPMCVersion?'340px':'280px'}" class="panelF">
                 <v-card style="z-index: 1" class="infoPanel shadowForInsPanel">
                     <v-toolbar tile dense :color="'#367aeb'" style="color: white">
@@ -304,33 +310,31 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                 </div>
             </div>
         </v-navigation-drawer>
-        <transition appear name="fade">
-            <div v-show="splitOrderListModel.list.length>0" class="bottomCart surface" style="background: #f5f6fa;"
-                 v-cloak
-                 id="splitOrderContainer">
-                <dish-card-list
-                        :extra-height="'64px'"
-                        :default-expand="true" :orders="splitOrderListModel.list"
-                        :click-callback="removeFromSplitOrder"
-                        :title="$t('operation')"/>
-                <div class="spaceBetween pa-2">
-                    <div></div>
-                    <div style="display: flex;align-items: center">
-                        <a class="ikButton ml-1 red white--text waves-effect waves-light "
-                           v-on:click="removeAllFromSplitOrder()">{{$t('cancel')}}</a>
-                        <a class="ikButton ml-1 waves-effect waves-light"
-                           v-on:click="needSplitOrder()">{{$t('billSplit')}}</a>
-                        <a class="ikButton ml-1 waves-effect waves-light "
-                           v-on:click="deleteDishes()">{{$t('dishCancel')}}</a>
-                        <a class="ikButton ml-1 waves-effect waves-light "
-                           v-on:click="dishesSetDiscount()">{{$t('给菜品打折')}}</a>
-                        <a class="ikButton ml-1 waves-effect waves-light "
-                           v-on:click="dishesChangeTable()">{{$t('tableChange')}}</a>
-                    </div>
-
+        <div v-show="splitOrderListModel.list.length>0" class="bottomCart surface"
+             style="background: #f5f6fa;"
+             v-cloak
+             id="splitOrderContainer">
+            <dish-card-list
+                    :extra-height="'64px'"
+                    :default-expand="true" :orders="splitOrderListModel.list"
+                    :click-callback="removeFromSplitOrder"
+                    :title="$t('operation')"/>
+            <div class="spaceBetween pa-2">
+                <div></div>
+                <div style="display: flex;align-items: center;flex-wrap: wrap">
+                    <a class="ikButton ml-1 red white--text waves-effect waves-light "
+                       v-on:click="removeAllFromSplitOrder()">{{$t('cancel')}}</a>
+                    <a class="ikButton ml-1 waves-effect waves-light"
+                       v-on:click="needSplitOrder()">{{$t('billSplit')}}</a>
+                    <a class="ikButton ml-1 waves-effect waves-light "
+                       v-on:click="deleteDishes()">{{$t('dishCancel')}}</a>
+                    <a class="ikButton ml-1 waves-effect waves-light "
+                       v-on:click="dishesSetDiscount()">{{$t('给菜品打折')}}</a>
+                    <a class="ikButton ml-1 waves-effect waves-light "
+                       v-on:click="dishesChangeTable()">{{$t('tableChange')}}</a>
                 </div>
             </div>
-        </transition>
+        </div>
         <ModificationDrawer
                 @visibility-changed="changeModification"
                 :modification-show="modificationShow"
@@ -363,11 +367,9 @@ import {
   logErrorAndPop,
   oldJumpTo,
   popAuthorize,
-  remove,
   requestOutTable,
   setGlobalTableId,
   showConfirm,
-  showLoading,
   showTimedAlert,
   Strings,
   toast
@@ -394,6 +396,7 @@ import { findDish, getAllDishesWithCache, goHome } from '../oldjs/StaticModel'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
+import { IKUtils } from 'innerken-utils'
 
 const UIState = {
   Init: 0,
@@ -508,7 +511,9 @@ export default {
               this.orderListModel.total() + Math.abs(parseFloat(discount.price))
             )
           }
+          // console.log(result)
         }
+
         this.discountRatio = discountRatio
         this.loading = false
       } catch (e) {
@@ -587,10 +592,9 @@ export default {
       }
       return ins
     },
-
     requestOutTable,
     removeFromSplitOrder: function (index) {
-      const realItem = this.splitOrderListModel.list[index]
+      const realItem = IKUtils.deepCopy(this.splitOrderListModel.list[index])
       this.splitOrderListModel.add(realItem, -1)
       this.orderListModel.add(realItem, 1)
     },
@@ -599,7 +603,6 @@ export default {
         this.removeFromSplitOrder(0)
       }
     },
-
     deleteDishes: function () {
       deleteDishes(this.id, this.splitOrderListModel.list, this.initialUI)
     },
@@ -618,7 +621,7 @@ export default {
       return totalPrice.toFixed(2)
     },
     addToSplit: function (index) {
-      const item = this.orderListModel.list[index]
+      const item = IKUtils.deepCopy(this.orderListModel.list[index])
       if (item.code === '-1') {
         logErrorAndPop('折扣菜品不能被加入到分单里')
         return
@@ -628,7 +631,6 @@ export default {
     },
     addDish: function (dish, count = 1) {
       dish.count = count
-
       this.cartListModel.add(dish, count)
     },
     clear: function () {
@@ -643,16 +645,15 @@ export default {
       return -1
     },
     removeDish: function (index) {
-      remove(this.cartListModel.list, index)
+      this.cartListModel.add(this.cartListModel.list[index], -1)
     },
     removeDishWithCode: function (code) {
-      remove(this.cartListModel.list, this.findDishByCode(code))
+      this.removeDish(this.findDishByCode(code))
     },
     submitModification: function (mod, dish) {
       const apply = []
       for (const i of dish.modInfo) {
-        const item = {}
-        item.groupId = i.id
+        const item = { groupId: i.id }
         item.selectId = i.selectValue.filter((s, index) => {
           return [(mod[i.id] ?? [])].flat().includes(index)
         })
@@ -661,7 +662,7 @@ export default {
         }
         apply.push(item)
       }
-      dish.apply = apply
+      dish.apply = apply// here we add a apply
       mod = {}
       this.addDish(dish, parseInt(this.count))
       UIStatus = UIState.Init
@@ -933,18 +934,15 @@ export default {
       blocking()
     },
     orderDish () {
-      showLoading()
       hillo.post('Complex.php?op=addDishesToTable', {
         params: JSON.stringify(this.cartListModel.list),
         tableId: this.id
       }).then(() => {
         this.cartListModel.clear()
         this.initialUI()
-        toast(this.$t('orderSuccess'), () => {
-          if (GlobalConfig.jumpToHomeWhenOrder) {
-            this.goHome()
-          }
-        })
+        if (GlobalConfig.jumpToHomeWhenOrder) {
+          this.goHome()
+        }
       }).catch(res => {
         logError(this.$t('JSTableOrderFailed') + res.info)
       }).finally(() => {
@@ -988,8 +986,8 @@ export default {
       this.breakCount = 0
       this.Config = GlobalConfig
       await getConsumeTypeList()
-      const list = [setInterval(this.refreshTables, 5000), setInterval(this.getTableDetail, 3000)]
-      list.map(addToTimerList)
+      // const list = [setInterval(this.refreshTables, 5000), setInterval(this.getTableDetail, 10000)]
+      // list.map(addToTimerList)
       if (!GlobalConfig.FMCVersion) {
         addToTimerList(setInterval(this.autoGetFocus, 1000))
         document.getElementById('instruction').focus()
@@ -1008,7 +1006,6 @@ export default {
   computed: {
     autoHints: function () {
       let availableIns = [
-        { value: '-', text: '-[code] remove Dish from cart' },
         { value: '/', text: '/ Advanced instruction' },
         { value: '/rp', text: '/rp ReprintOrder' },
         { value: '/ps', text: '/ps PrintZwichenBon' }
@@ -1059,7 +1056,6 @@ export default {
     },
     filteredDish: function () {
       let list = this.dishes
-      console.log(list)
       if (this.activeDCT) {
         const dct = this.dct[this.activeDCT - 1]
         list = list.filter((item) => {
@@ -1205,7 +1201,7 @@ export default {
     }
 
     .dishBlock {
-        height: 112px;
+        height: 124px;
         cursor: pointer;
         padding: 5px 12px;
         background: white;
@@ -1288,7 +1284,7 @@ export default {
     #splitOrderContainer {
         max-width: 512px;
         top: 0;
-        right: 352px;
+        right: 280px;
         z-index: 5;
     }
 
@@ -1338,7 +1334,7 @@ export default {
 
     .ikButton {
         background: white;
-        padding: 8px 24px;
+        padding: 8px 12px;
         cursor: pointer;
         box-shadow: 0 3px 6px rgba(0, 25, 244, 0.1);
         color: black;
