@@ -2,7 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import IndexPage from '../views/IndexPage'
 import TablePage from '../views/TablePage'
-import { clearAllTimer } from '../oldjs/Timer'
+import { clearAllTimer } from '@/oldjs/Timer'
 
 Vue.use(VueRouter)
 

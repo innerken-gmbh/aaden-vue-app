@@ -6,7 +6,7 @@
     grid-template-columns: calc(40vw - 12px);
     grid-auto-columns:  calc(33vw - 12px);
     grid-gap: 4px;
-    grid-auto-flow: column;
+    grid-auto-flow: row;
   min-width: 300px;
   overflow: scroll;
 ">
@@ -22,7 +22,7 @@
                             :mandatory="item.required==='1'" column
                             :multiple="item.multiSelect==='1'"
                             active-class="primary--text">
-                        <v-chip x-large :ripple="false" label :key="'mod111'+index"
+                        <v-chip large :ripple="false" label :key="'mod111'+index"
                                 v-for="(s,index) in item.select">
                             {{s.text}}{{s.priceInfo}}
                         </v-chip>

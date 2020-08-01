@@ -1,6 +1,6 @@
 <template>
-    <v-bottom-sheet fullscreen hide-overlay v-model="realShow">
-        <v-card>
+    <v-navigation-drawer width="300px" temporary right hide-overlay v-model="realShow" fixed>
+        <v-card class="fill-height">
             <dish-modification
                     ref="modification"
                     @modification-submit="submit($event,dish)"
@@ -17,7 +17,7 @@
                 </template>
             </dish-modification>
         </v-card>
-    </v-bottom-sheet>
+    </v-navigation-drawer>
 </template>
 
 <script>
