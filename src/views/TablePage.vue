@@ -984,8 +984,8 @@ export default {
       this.breakCount = 0
       this.Config = GlobalConfig
       await getConsumeTypeList()
-      // const list = [setInterval(this.refreshTables, 5000), setInterval(this.getTableDetail, 10000)]
-      // list.map(addToTimerList)
+      const list = [setInterval(this.refreshTables, 5000), setInterval(this.getTableDetail, 10000)]
+      list.map(addToTimerList)
       if (!GlobalConfig.FMCVersion) {
         addToTimerList(setInterval(this.autoGetFocus, 1000))
         document.getElementById('instruction').focus()

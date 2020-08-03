@@ -134,7 +134,7 @@ import {
 import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
-import GlobalConfig, { setDeviceId } from '../oldjs/LocalGlobalSettings'
+import GlobalConfig, { setDeviceId, useCurrentConfig } from '../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 export default {
@@ -229,6 +229,13 @@ export default {
           if (t.startsWith('d')) {
             t = t.substr(1)
             setDeviceId(t)
+          }
+          if (t === 'c') {
+            GlobalConfig.Protocol = 'http://'
+            useCurrentConfig()
+          } else if (t === 'h') {
+            GlobalConfig.Protocol = 'https://'
+            useCurrentConfig()
           }
         } else if (t === 'w') {
           popAuthorize('', requestOutTable)

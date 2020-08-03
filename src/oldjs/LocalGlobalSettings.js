@@ -4,9 +4,9 @@ const defaultConfig = require('@/assets/AadenConfig.json')
 
 let GlobalConfig = Object.assign({}, defaultConfig)
 
-if (isWeb()) {
-  GlobalConfig.Protocol = 'https://'
-}
+// if (isWeb()) {
+//   GlobalConfig.Protocol = 'https://'
+// }
 
 function localStorageManager () {
   const get = function (key) {
@@ -118,7 +118,7 @@ export function reload () {
   }
 }
 
-function useCurrentConfig () {
+export function useCurrentConfig () {
   GlobalConfig.settingManager.setAll(GlobalConfig)
   reload()
 }
