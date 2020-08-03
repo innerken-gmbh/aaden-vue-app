@@ -32,6 +32,7 @@ module.exports = {
       enableInSFC: true
     }
   },
+  publicPath: './',
   transpileDependencies: [
     'vuetify'
   ]
