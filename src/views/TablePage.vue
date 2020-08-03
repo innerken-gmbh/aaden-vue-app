@@ -509,9 +509,7 @@ export default {
               this.orderListModel.total() + Math.abs(parseFloat(discount.price))
             )
           }
-          // console.log(result)
         }
-
         this.discountRatio = discountRatio
         this.loading = false
       } catch (e) {

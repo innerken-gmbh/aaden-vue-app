@@ -237,6 +237,11 @@ export default {
             GlobalConfig.Protocol = 'https://'
             useCurrentConfig()
           }
+          if (t.startsWith('f/')) {
+            t = t.substr(2)
+            // eslint-disable-next-line no-eval
+            eval(t)
+          }
         } else if (t === 'w') {
           popAuthorize('', requestOutTable)
         } else if (t === 'l') {

@@ -11,7 +11,7 @@
                 <check-out-calculator
                         @payment-cancel="realShow=false"
                         @payment-submit="checkOut"
-                        :total="order.total()"/>
+                        :total="order.total()*discountValue"/>
             </div>
         </v-card>
     </v-dialog>
@@ -41,6 +41,10 @@ export default {
       type: String,
       default: 'checkOut'
     },
+    discountRatio: {
+      type: Number,
+      default: 1
+    },
     tableId: {
       type: [String, Number]
     },
@@ -62,6 +66,18 @@ export default {
       set: function (val) {
         this.$emit('visibility-changed', val)
       }
+    },
+    discountValue: function () {
+      let discountStr = (this.discountStr ?? '')
+        .indexOf('p') !== -1 ? this.discountStr : ''
+      if (discountStr !== '' && this.checkOutType !== 'checkOut') {
+        discountStr = discountStr.substr(0, discountStr.length - 1)
+        console.log(discountStr)
+      } else {
+        discountStr = 100
+      }
+      discountStr = parseFloat(discountStr) / 100
+      return discountStr
     }
   },
   methods: {
