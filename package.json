@@ -3,25 +3,18 @@
   "version": "0.2.7",
   "private": true,
   "description": "全新构建的Aaden Vue版本，重新启航，更加牢靠！",
+  "author": "juhaodong@gmail.com",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "update": "dotenv -e .env.local -- release-it --ci --no-npm-publish",
-    "release": "sudo snap install snapcraft --classic && snapcraft login --with log && vue-cli-service electron:build --linux snap --publish always",
     "electron:build": "vue-cli-service electron:build --linux snap --publish always",
     "electron:serve": "vue-cli-service electron:serve",
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'",
     "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/innerken-gmbh/aaden-vue-app.git"
-  },
-  "author": "juhaodong@gmail.com",
-  "bugs": {
-    "url": "https://github.com/innerken-gmbh/aaden-vue-app/issues"
+    "postuninstall": "electron-builder install-app-deps",
+    "release": "sudo snap install snapcraft --classic && snapcraft login --with log && vue-cli-service electron:build --linux snap --publish always",
+    "update": "dotenv -e .env.local -- release-it --ci --no-npm-publish"
   },
   "main": "background.js",
   "dependencies": {
@@ -31,6 +24,7 @@
     "electron-updater": "^4.3.1",
     "innerken-utils": "^1.7.28",
     "material-design-icons": "^3.0.1",
+    "register-service-worker": "^1.7.1",
     "sweetalert2": "^9.15.1",
     "vue": "^2.6.11",
     "vue-dragscroll": "^2.1.0",
@@ -43,6 +37,7 @@
     "@intlify/vue-i18n-loader": "^1.0.0",
     "@vue/cli-plugin-babel": "^4.4.0",
     "@vue/cli-plugin-eslint": "^4.4.0",
+    "@vue/cli-plugin-pwa": "^4.4.6",
     "@vue/cli-plugin-router": "^4.4.0",
     "@vue/cli-plugin-vuex": "^4.4.4",
     "@vue/cli-service": "^4.4.0",
@@ -86,6 +81,9 @@
     "last 2 versions",
     "not dead"
   ],
+  "bugs": {
+    "url": "https://github.com/innerken-gmbh/aaden-vue-app/issues"
+  },
   "homepage": "http://aaden.online",
   "release-it": {
     "git": {
@@ -95,5 +93,9 @@
     "github": {
       "release": true
     }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/innerken-gmbh/aaden-vue-app.git"
   }
 }

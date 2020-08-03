@@ -1,14 +1,20 @@
 <template>
-    <div class="pa-2">
-        <slot name="before"></slot>
-        <div style="display: grid;max-height: calc(100vh - 150px);
-    grid-template-rows: auto auto;
-    grid-template-columns: calc(40vw - 12px);
-    grid-auto-columns:  calc(33vw - 12px);
+    <div class="pa-2 fill-height d-flex flex-wrap flex-column">
+        <div style="width: 100%">
+            <slot name="before"></slot>
+        </div>
+
+        <div style="display: grid;
+    flex-grow: 1;
+    max-height: calc( 100vh - 150px);
     grid-gap: 4px;
-    grid-auto-flow: row;
+    grid-template-rows: repeat(2,minmax(min-content,auto));
+    grid-auto-flow: column;
+    grid-auto-rows: min-content;
+    grid-auto-columns: 350px;
+    justify-content: center;
+    align-items: start;
   min-width: 300px;
-  overflow: scroll;
 ">
             <template v-for="item in computedOption">
                 <v-sheet style="background: transparent"
@@ -30,7 +36,7 @@
                 </v-sheet>
             </template>
         </div>
-        <v-toolbar style="width: 100%;margin-left: -8px" absolute bottom color="white">
+        <v-toolbar style="width: 100%;margin-left: -8px;flex-grow: 0" color="white">
             <div style="display: grid;grid-template-columns: 1fr 1fr;width: 100%">
                 <v-btn x-large
                        block
@@ -74,6 +80,7 @@ export default {
           item.selectValue = item.selectValue.split(',')
           item.priceInfo = item.priceInfo.split(',')
         }
+        console.log(item.priceInfo)
 
         item.selectName.forEach((name, index) => {
           item.select.push({
@@ -84,6 +91,8 @@ export default {
         })
         realModInfo.push(item)
       })
+      console.log(this.options)
+      console.log(realModInfo)
       return realModInfo
     }
   },

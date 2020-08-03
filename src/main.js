@@ -8,6 +8,7 @@ import 'material-design-icons/iconfont/material-icons.css'
 import Settings, { initialAadenBase } from 'aaden-base-model/lib/Models/GlobalSettings'
 
 import GlobalConfig, { loadConfig } from './oldjs/LocalGlobalSettings'
+import './registerServiceWorker'
 
 Vue.config.productionTip = false
 Vue.filter('priceDisplay',

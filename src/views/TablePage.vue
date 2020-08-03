@@ -191,13 +191,11 @@
                             </div>
                             <div class="verticalInfoRow">
                                 <div v-cloak class="verticalInfoRowBigText">
-                                    {{calculateOrderTableTotal()}}
+                                    {{orderListModel.total()|priceDisplay}}
                                 </div>
                             </div>
                         </div>
-
                     </div>
-
                 </v-card>
                 <div v-cloak class="collapse areaC dragscroll flex-grow-1" v-dragscroll id="areaC">
                     <div v-cloak v-bind:key="'area'+area.areaName" v-for="area in areas" class="area">
