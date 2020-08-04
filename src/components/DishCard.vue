@@ -143,23 +143,19 @@ export default {
     }, { ...this.dish })
   },
   computed: {
-    clickCall () {
-      return (force) => {
-        if (force || !this.showEdit) {
-          return this.clickCallback
-        } else {
-          return () => {
-          }
-        }
-      }
-    }
   },
   methods: {
+    callCallBack () {
+      console.log(this.dish.code)
+      if (this.dish.code !== '-1') {
+        this.clickCallback()
+      }
+    },
     checkIfOpen () {
       if (this.dish.count > 1) {
         this.expand = !this.expand
       } else {
-        this.clickCallback()
+        this.callCallBack()
       }
     },
     decrement () {
@@ -174,7 +170,9 @@ export default {
     },
     click () {
       for (let i = 0; i < this.clickNumber; i++) {
-        this.clickCallback()
+        if (this.code !== '-1') {
+          this.callCallBack()
+        }
       }
     },
     async editNote () {

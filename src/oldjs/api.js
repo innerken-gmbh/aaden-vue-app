@@ -121,6 +121,12 @@ export async function popDiscountPanel (id, initialUI) {
   }
 }
 
+export async function setDiscountToTable (tableId, discountStr) {
+  return hillo.post('Complex.php?op=setDiscount', {
+    tableId, discountStr
+  })
+}
+
 export async function popChangeTablePanel (tableName, initialUI) {
   const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopChangeTableInfo'), 'text',
     'Tables.php?op=change', 'newTableName', {

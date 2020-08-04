@@ -4,6 +4,7 @@
         <v-card color="white" class="d-flex justify-space-between fill-height">
             <div v-show="order.count()>0" style="width: 340px">
                 <dish-card-list
+                        :discount-ratio="discountRatio"
                         :title="'结账菜品'"
                         :default-expand="true" :orders="order.list"/>
             </div>
@@ -11,7 +12,7 @@
                 <check-out-calculator
                         @payment-cancel="realShow=false"
                         @payment-submit="checkOut"
-                        :total="order.total()*discountValue"/>
+                        :total="order.total()*(1-discountRatio)"/>
             </div>
         </v-card>
     </v-dialog>
@@ -24,6 +25,7 @@ import { hillo } from 'innerken-utils'
 import { toast } from '../oldjs/common'
 import { goHome } from '../oldjs/StaticModel'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
+import { setDiscountToTable } from '../oldjs/api'
 
 export default {
   name: 'CheckOutDrawer',
@@ -66,18 +68,6 @@ export default {
       set: function (val) {
         this.$emit('visibility-changed', val)
       }
-    },
-    discountValue: function () {
-      let discountStr = (this.discountStr ?? '')
-        .indexOf('p') !== -1 ? this.discountStr : ''
-      if (discountStr !== '' && this.checkOutType !== 'checkOut') {
-        discountStr = discountStr.substr(0, discountStr.length - 1)
-        console.log(discountStr)
-      } else {
-        discountStr = 100
-      }
-      discountStr = parseFloat(discountStr) / 100
-      return discountStr
     }
   },
   methods: {
@@ -94,19 +84,29 @@ export default {
       if (print > 1) {
         printCount = 2
       }
-      const discountStr = (this.discountStr ?? '')
-        .indexOf('p') !== -1 ? this.discountStr : ''
+
       const checkOutData = {
         tableId: this.tableId,
         dishes: JSON.stringify(this.order.list),
         withTitle,
         printCount,
         paymentLog: JSON.stringify(paymentLog),
-        discountStr
+        discountStr: ''
+      }
+      if (this.discountRatio !== 0) {
+        checkOutData.discountStr = (this.discountStr ?? '')
+          .indexOf('p') !== -1 ? this.discountStr : (this.order.total() * this.discountRatio).toFixed(2)
       }
 
       const res = await hillo.post('Complex.php?op=' + this.checkOutType, checkOutData)
       if (res) {
+        if (this.checkOutType !== 'checkOut') {
+          if (!checkOutData.discountStr.includes('p') && this.discountStr) {
+            const remainDiscount = parseFloat(this.discountStr) - parseFloat(checkOutData.discountStr)
+            console.log(remainDiscount)
+            setDiscountToTable(this.tableId, remainDiscount)
+          }
+        }
         toast(this.$t('JSTableCheckOutSuccess'))
         this.cancel()
         if (this.checkOutType === 'checkOut') {

@@ -89,7 +89,7 @@
                 <div class="my-3" v-dragscroll style="max-height: 460px;overflow:hidden">
                     <template v-for="(paymentInfo,index) in paymentLog">
                         <v-sheet :key="'price'+paymentInfo.hash" :elevation="0"
-                                style="width: 100%" class="d-flex justify-space-between pa-2 my-1">
+                                 style="width: 100%" class="d-flex justify-space-between pa-2 my-1">
                             <h2 class="font-weight-bold"
                                 style="font-size: 24px">
                                 {{ paymentInfo.price|priceDisplay }}
@@ -272,7 +272,6 @@ export default {
             this.clearBuffer()
             break
           case 'reverse':
-
             this.inputBuffer = this.inputBuffer.startsWith('-') ? this.inputBuffer.substr(1) : ('-' + this.inputBuffer)
             break
           case 'more':

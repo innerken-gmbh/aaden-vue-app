@@ -11,7 +11,7 @@
     grid-template-rows: repeat(2,minmax(min-content,auto));
     grid-auto-flow: column;
     grid-auto-rows: min-content;
-    grid-auto-columns: 350px;
+    grid-auto-columns: 500px;
     justify-content: center;
     align-items: start;
   min-width: 300px;

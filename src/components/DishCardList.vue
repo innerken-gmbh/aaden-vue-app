@@ -25,7 +25,7 @@
              :style="{maxHeight: `calc(100vh - 48px - ${extraHeight})`,overflow:'hidden'}"
         >
             <div>
-                <template v-for="(order,index) in orders">
+                <template v-for="(order,index) in realOrder">
                     <div :key="'order'+title+order.tid+
                         'code'+index+'hash'+order.hash">
                         <dish-card
@@ -75,6 +75,10 @@ export default {
       type: Boolean,
       default: false
     },
+    discountRatio: {
+      type: Number,
+      default: 0
+    },
     defaultExpand: {
       type: Boolean,
       default: false
@@ -99,9 +103,16 @@ export default {
     }
   },
   computed: {
-    total: function () {
+    originTotal: function () {
       let totalPrice = 0
       for (const a of this.orders) {
+        totalPrice += parseFloat(parseInt(a.count) * parseFloat(a.realPrice))
+      }
+      return totalPrice
+    },
+    total: function () {
+      let totalPrice = 0
+      for (const a of this.realOrder) {
         totalPrice += parseFloat(parseInt(a.count) * parseFloat(a.realPrice))
       }
       return totalPrice
@@ -112,6 +123,20 @@ export default {
         count += parseInt(a.count)
       }
       return count
+    },
+    realOrder: function () {
+      const realOrder = [].concat(this.orders)
+      if (this.discountRatio !== 0) {
+        const discountDish = {
+          name: 'Rabbat:' + this.discountRatio.toFixed(2),
+          code: '-1',
+          realPrice: -(this.originTotal * this.discountRatio),
+          count: 1,
+          displayApply: []
+        }
+        realOrder.push(discountDish)
+      }
+      return realOrder
     }
   }
 }

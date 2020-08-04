@@ -3,6 +3,7 @@
         <v-navigation-drawer :value="true" color="transparent" stateless app width="340px" id="mainTableContainer">
             <div class="panel" v-if="!loading">
                 <dish-card-list
+                        :discount-ratio="discountRatio"
                         :default-expand="cartListModel.list.length===0"
                         :orders="orderListModel.list"
                         :click-callback="addToSplit"
@@ -24,7 +25,7 @@
                 </dish-card-list>
                 <v-toolbar dense>
                     <v-btn @click="cartListModel.clear()" dark color="error">{{$t('cancel')}}</v-btn>
-                    <v-btn class="flex-grow-1" @click="orderDish" dark color="#367aeb">{{$t('confirm')}}</v-btn>
+                    <v-btn class="flex-grow-1" @click="orderDish(cartListModel.list)" dark color="#367aeb">{{$t('confirm')}}</v-btn>
                 </v-toolbar>
             </v-card>
         </v-navigation-drawer>
@@ -191,7 +192,7 @@
                             </div>
                             <div class="verticalInfoRow">
                                 <div v-cloak class="verticalInfoRowBigText">
-                                    {{orderListModel.total()|priceDisplay}}
+                                    {{orderListModel.total()*(1-discountRatio)|priceDisplay}}
                                 </div>
                             </div>
                         </div>
@@ -314,6 +315,7 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
              id="splitOrderContainer">
             <dish-card-list
                     :extra-height="'64px'"
+                    :discount-ratio="discountRatio"
                     :default-expand="true" :orders="splitOrderListModel.list"
                     :click-callback="removeFromSplitOrder"
                     :title="$t('operation')"/>
@@ -345,6 +347,7 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                 :check-out-type="checkOutType"
                 :table-id="id"
                 :discount-str="discountStr"
+                :discount-ratio="discountRatio"
                 :visible="checkoutShow"/>
     </v-app>
 </template>
@@ -498,19 +501,18 @@ export default {
     },
     async getOrderedDish () {
       try {
-        let discountRatio = 1
         if (this.splitOrderListModel.count() === 0) {
+          let discountRatio = 0
           const result = await getOrderInfo(this.id)
           const discountInfo = result.filter(r => r.code === '-1')
-          this.orderListModel.loadTTDishList(result)
+          const noDiscount = result.filter(r => r.code !== '-1')
+          this.orderListModel.loadTTDishList(noDiscount)
           if (discountInfo.length > 0) {
             const [discount] = discountInfo
-            discountRatio = Math.abs(parseFloat(discount.price)) / (
-              this.orderListModel.total() + Math.abs(parseFloat(discount.price))
-            )
+            discountRatio = Math.abs(parseFloat(discount.price)) / this.orderListModel.total()
           }
+          this.discountRatio = discountRatio
         }
-        this.discountRatio = discountRatio
         this.loading = false
       } catch (e) {
         this.breakCount++
@@ -521,7 +523,6 @@ export default {
       }
     },
     dishQuery (code, count = 1) {
-      console.time('Dish')
       if (count < 1) {
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
         return
@@ -540,7 +541,6 @@ export default {
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
       }
       blockReady()
-      console.timeEnd('Dish')
     },
     showModification (dish, count) {
       this.options = dish.modInfo
@@ -627,6 +627,10 @@ export default {
     },
     addDish: function (dish, count = 1) {
       dish.count = count
+      if (!GlobalConfig.useCart) {
+        this.orderDish([dish])
+        return
+      }
       this.cartListModel.add(dish, count)
     },
     clear: function () {
@@ -709,7 +713,7 @@ export default {
           break
         case 2: // 打单
           if (this.cartListModel.list.length > 0) {
-            this.orderDish()
+            this.orderDish(this.cartListModel.list)
             blocking()
           } else {
             blockReady()
@@ -929,9 +933,9 @@ export default {
       }
       blocking()
     },
-    orderDish () {
+    orderDish (order = this.cartListModel.list) {
       hillo.post('Complex.php?op=addDishesToTable', {
-        params: JSON.stringify(this.cartListModel.list),
+        params: JSON.stringify(order),
         tableId: this.id
       }).then(() => {
         this.cartListModel.clear()
