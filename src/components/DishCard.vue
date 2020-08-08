@@ -75,7 +75,6 @@
               mdi-minus
             </v-icon>
           </template>
-
           <template v-slot:append>
             <v-icon
                 @click="increment"

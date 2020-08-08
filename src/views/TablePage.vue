@@ -86,8 +86,8 @@
                 :title="$t('haveOrderedDish')"
             />
             <v-toolbar dense>
-              <v-btn @click="insDecodeButtonList(3)">{{ $t('discount') }}</v-btn>
-              <v-btn class="flex-grow-1" @click="insDecodeButtonList(6)" dark>{{ $t('payBill') }}
+              <v-btn @click="insDecodeButtonList(3)"><v-icon dark>mdi-sale</v-icon>{{ $t('discount') }}</v-btn>
+              <v-btn  class="flex-grow-1" @click="insDecodeButtonList(6)" dark><v-icon dark left>mdi-clipboard-check</v-icon>{{ $t('payBill') }}
               </v-btn>
             </v-toolbar>
           </v-card>
@@ -114,7 +114,7 @@
         <v-card style="z-index: 1" class="infoPanel shadowForInsPanel">
           <v-toolbar dark tile dense :color="'#367aeb'" style="color: white">
 
-            <div class="bigTableName z-depth-2">{{ tableName }}</div>
+            <div class="bigTableName z-depth-2">{{ tableDetailInfo.tableBasicInfo.name }}</div>
             <v-spacer></v-spacer>
             <div class="d-flex">
                             <span v-hide-quick-buy class="icon-line">
@@ -210,7 +210,7 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
               <v-card>
                 <v-toolbar dark tile dense :color="'#367aeb'" style="color: white">
 
-                  <div class="bigTableName z-depth-2">{{ tableName }}</div>
+                  <div class="bigTableName z-depth-2">{{ tableDetailInfo.tableBasicInfo.name }}</div>
                   <v-spacer></v-spacer>
                   <div class="d-flex">
                             <span v-hide-quick-buy class="icon-line">
@@ -507,7 +507,8 @@ export default {
       cartListModel: StandardDishesListFactory(),
       cartOrder: [],
       tableDetailInfo: {
-        order: { id: -1 }
+        order: { id: -1 },
+        tableBasicInfo: { name: '' }
       },
       dct: []
     }
@@ -639,7 +640,7 @@ export default {
       dishesSetDiscount(this.tableDetailInfo.order.id, this.splitOrderListModel.list, this.initialUI)
     },
     dishesChangeTable: function () {
-      dishesChangeTable(this.tableName, this.splitOrderListModel.list, this.initialUI)
+      dishesChangeTable(this.tableDetailInfo.tableBasicInfo.name, this.splitOrderListModel.list, this.initialUI)
     },
     calculateOrderTableTotal: function () {
       let totalPrice = 0
