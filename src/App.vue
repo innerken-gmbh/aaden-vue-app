@@ -319,9 +319,7 @@ export default {
 
     .insPanel {
         width: 100%;
-
         padding: 12px;
-        padding-bottom: 18px;
     }
 
     .infoContainer {

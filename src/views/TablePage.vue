@@ -18,6 +18,17 @@
           </v-tab>
         </template>
       </v-tabs>
+      <v-autocomplete
+          dark
+          :search-input.sync="input"
+          :items="autoHints"
+          prepend-inner-icon="mdi-magnify"
+          ref="ins"
+          v-model="buffer"
+          hide-details
+          auto-select-first
+          clearable
+          autofocus=autofocus></v-autocomplete>
     </v-app-bar>
     <v-main>
       <v-card elevation="0" color="transparent" v-cloak
@@ -60,25 +71,33 @@
         </div>
       </v-card>
     </v-main>
-    <v-navigation-drawer :value="true" stateless color="transparent" app
+    <v-navigation-drawer stateless :value="true" permanent color="transparent" app
                          right width="300px">
       <div class="ml-1 d-flex justify-space-between flex-column fill-height">
         <div class="panel">
-          <dish-card-list
-              :discount-ratio="discountRatio"
-              :default-expand="cartListModel.list.length===0"
-              :orders="orderListModel.list"
-              :click-callback="addToSplit"
-              :extra-height="'154px'"
-              :title="$t('haveOrderedDish')"
-          />
+          <v-card v-dragscroll
+                  class="white">
+            <dish-card-list
+                :discount-ratio="discountRatio"
+                :default-expand="cartListModel.list.length===0"
+                :orders="orderListModel.list"
+                :click-callback="addToSplit"
+                :extra-height="'96px'"
+                :title="$t('haveOrderedDish')"
+            />
+            <v-toolbar dense>
+              <v-btn @click="insDecodeButtonList(3)">{{ $t('discount') }}</v-btn>
+              <v-btn class="flex-grow-1" @click="insDecodeButtonList(6)" dark>{{ $t('payBill') }}
+              </v-btn>
+            </v-toolbar>
+          </v-card>
           <v-card v-dragscroll
                   v-if="cartListModel.list.length>0"
                   class="white">
             <dish-card-list
                 ref="cartList"
                 :show-number="true"
-                :extra-height="'250px'"
+                :extra-height="'196px'"
                 :color="'#707070'"
                 :show-edit="true" :click-callback="removeDish"
                 :orders="cartListModel.list"
@@ -93,7 +112,8 @@
           </v-card>
         </div>
         <v-card style="z-index: 1" class="infoPanel shadowForInsPanel">
-          <v-toolbar tile dense :color="'#367aeb'" style="color: white">
+          <v-toolbar dark tile dense :color="'#367aeb'" style="color: white">
+
             <div class="bigTableName z-depth-2">{{ tableName }}</div>
             <v-spacer></v-spacer>
             <div class="d-flex">
@@ -107,98 +127,9 @@
                                     {{ tableDetailInfo.order.id }}
                                 </span>
                             </span>
-              <v-menu
-                  v-model="menu"
-                  :close-on-content-click="false"
-                  :nudge-width="200"
-                  offset-x
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                      icon
-                      color="white"
-                      v-bind="attrs"
-                      v-on="on"
-                  >
-                    <v-icon>mdi-map</v-icon>
-                  </v-btn>
-                </template>
-
-                <v-card>
-                  <v-list>
-                    <v-list-item>
-                    </v-list-item>
-                  </v-list>
-                  <v-divider></v-divider>
-                  <v-list>
-                    <v-list-item>
-                      <v-list-item-title>
-                        {{ rawAddressInfo.firstName }} {{ rawAddressInfo.lastName }}
-                      </v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <div> {{ rawAddressInfo.addressLine1 }}</div>
-                        <div> {{ rawAddressInfo.addressline2 }}</div>
-                        <div> {{ rawAddressInfo.city }} {{ rawAddressInfo.plz }}</div>
-                        <div><span class="font-weight-bold">Email: </span>{{
-                            rawAddressInfo.email
-                          }}
-                        </div>
-                        <div><span class="font-weight-bold">Phone: </span>{{
-                            rawAddressInfo.tel
-                          }}
-                        </div>
-                        <span class="font-weight-bold">Lieferzeit: </span>
-                        {{ rawAddressInfo.date }}
-                        {{ rawAddressInfo.time }}
-                        {{ rawAddressInfo.note }}
-                        <div class="chip" v-show="rawAddressInfo.reason">
-                          {{ rawAddressInfo.deliveryMethod }}
-                        </div>
-                        <div class="chip" v-show="rawAddressInfo.reason">
-                          {{ rawAddressInfo.reason }}
-                        </div>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
-
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-
-                    <v-btn text @click="menu = false">Cancel</v-btn>
-                    <v-btn color="primary" text @click="menu = false">Save</v-btn>
-                  </v-card-actions>
-                </v-card>
-              </v-menu>
-
             </div>
+            <v-app-bar-nav-icon @click="showTableList=!showTableList"></v-app-bar-nav-icon>
           </v-toolbar>
-          <div v-if="!Config.FMCVersion" class="pa-3">
-            <div v-hide-quick-buy class="spaceBetween">
-              <div class="verticalInfoRowLabel">{{ $t('tableInfoLabelTime') }}</div>
-              <div class="verticalInfoRowText">{{ tableDetailInfo.createTimestamp }}</div>
-            </div>
-            <div v-hide-quick-buy class="mt-1 spaceBetween">
-              <div class="verticalInfoRowLabel">{{ $t('tableInfoLabelSeat') }}</div>
-              <div class="verticalInfoRowText">{{ tableDetailInfo.satCount }}</div>
-            </div>
-            <div v-hide-quick-buy class="mt-1 typeLabel">
-                            <span>{{ tableDetailInfo.consumeTypeName }}</span
-                            >/<span>{{ tableDetailInfo.order.consumeTypeStatusName }}</span>
-            </div>
-
-            <div class="d-flex justify-space-between align-center">
-              <div>
-                <v-icon color="black" x-large>mdi-currency-usd</v-icon>
-              </div>
-              <div class="verticalInfoRow">
-                <div v-cloak class="verticalInfoRowBigText">
-                  {{ orderListModel.total() * (1 - discountRatio)|priceDisplay }}
-                </div>
-              </div>
-            </div>
-          </div>
         </v-card>
       </div>
     </v-navigation-drawer>
@@ -243,11 +174,11 @@
         :discount-ratio="discountRatio"
         :visible="checkoutShow"/>
     <v-bottom-sheet inset v-model="showTableList">
-      <v-card>
+      <v-card color="#f6f6f6">
         <v-card-text>
           <v-row>
             <v-col cols="6">
-              <v-card class="areaC collapse pa-2" v-dragscroll>
+              <div style="max-height: 466px; overflow: hidden" class="collapse pa-2" v-dragscroll>
                 <div v-cloak v-bind:key="'area'+area.areaName" v-for="area in areas" class="area">
                   <div class="areaTitle">{{ area.areaName }}</div>
                   <div class="areaTableContainer">
@@ -273,90 +204,180 @@ requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background:
                     </div>
                   </div>
                 </div>
-              </v-card>
+              </div>
             </v-col>
             <v-col cols="6">
-              <div style="z-index: 1;" class="insPanel surface">
-                <div class="hintPanel">
-                  <div class="left-panel">
-                    <div class="floatMenuPanel" id="listOfFunction">
-                      <div
-                          @click="showTableList=!showTableList"
-                          v-show-quick-buy class="floatMenuPanelItem valign-wrapper"
+              <v-card>
+                <v-toolbar dark tile dense :color="'#367aeb'" style="color: white">
+
+                  <div class="bigTableName z-depth-2">{{ tableName }}</div>
+                  <v-spacer></v-spacer>
+                  <div class="d-flex">
+                            <span v-hide-quick-buy class="icon-line">
+                                <v-icon color="white">mdi-account-outline</v-icon>
+                                <span class="ml-1">{{ tableDetailInfo.personCount }}</span>
+                            </span>
+                    <span class="icon-line ml-2">
+                                <v-icon color="white">mdi-calendar-text</v-icon>
+                                <span class="ml-1">
+                                    {{ tableDetailInfo.order.id }}
+                                </span>
+                            </span>
+                  </div>
+                  <v-menu
+                      v-model="menu"
+                      :close-on-content-click="false"
+                      :nudge-width="200"
+                      offset-x
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                          icon
+                          color="white"
+                          v-bind="attrs"
+                          v-on="on"
                       >
-                        <div class="innerItem">
-                          <div class="icon"><i class="material-icons">menu</i></div>
-                          <div class="text">Menu</div>
-                        </div>
-                      </div>
-                      <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
-                           @click="insDecodeButtonList(1)">
-                        <div class="innerItem">
-                          <div class="icon"><i class="material-icons">arrow_back</i></div>
-                          <div class="text">{{ $t('backToHome') }}</div>
-                        </div>
-                      </div>
-                      <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
-                           @click="insDecodeButtonList(2)">
-                        <div class="innerItem">
-                          <div class="icon"><i class="material-icons">restaurant</i></div>
-                          <div class="text">{{ $t('dishOrder') }}</div>
-                        </div>
-                      </div>
-                      <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(3)">
-                        <div class="innerItem" style="">
-                          <div class="icon"><i class="material-icons">local_offer</i></div>
-                          <div class="text ">{{ $t('discount') }}</div>
-                        </div>
-                      </div>
+                        <v-icon>mdi-map</v-icon>
+                      </v-btn>
+                    </template>
 
-                      <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
-                           @click="insDecodeButtonList(4)">
-                        <div class="innerItem">
-                          <div class="icon"><i class="material-icons">swap_horiz</i></div>
-                          <div class="text">{{ $t('tableChange') }}</div>
-                        </div>
-                      </div>
-                      <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
-                           @click="insDecodeButtonList(5)">
-                        <div class="innerItem">
-                          <div class="icon"><i class="material-icons">merge_type</i></div>
-                          <div class="text">{{ $t('tableMerge') }}</div>
-                        </div>
-                      </div>
+                    <v-card>
+                      <v-list>
+                        <v-list-item>
+                        </v-list-item>
+                      </v-list>
+                      <v-divider></v-divider>
+                      <v-list>
+                        <v-list-item>
+                          <v-list-item-title>
+                            {{ rawAddressInfo.firstName }} {{ rawAddressInfo.lastName }}
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item>
+                          <v-list-item-content>
+                            <div> {{ rawAddressInfo.addressLine1 }}</div>
+                            <div> {{ rawAddressInfo.addressline2 }}</div>
+                            <div> {{ rawAddressInfo.city }} {{ rawAddressInfo.plz }}</div>
+                            <div><span class="font-weight-bold">Email: </span>{{
+                                rawAddressInfo.email
+                              }}
+                            </div>
+                            <div><span class="font-weight-bold">Phone: </span>{{
+                                rawAddressInfo.tel
+                              }}
+                            </div>
+                            <span class="font-weight-bold">Lieferzeit: </span>
+                            {{ rawAddressInfo.date }}
+                            {{ rawAddressInfo.time }}
+                            {{ rawAddressInfo.note }}
+                            <div class="chip" v-show="rawAddressInfo.reason">
+                              {{ rawAddressInfo.deliveryMethod }}
+                            </div>
+                            <div class="chip" v-show="rawAddressInfo.reason">
+                              {{ rawAddressInfo.reason }}
+                            </div>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
 
-                      <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(6)">
-                        <div class="innerItem">
-                          <div class="icon"><i class="material-icons">account_balance_wallet</i></div>
-                          <div class="text">{{ $t('payBill') }}</div>
-                        </div>
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
 
+                        <v-btn text @click="menu = false">Cancel</v-btn>
+                        <v-btn color="primary" text @click="menu = false">Save</v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-menu>
+
+                </v-toolbar>
+                <v-card-text>
+                  <div v-hide-quick-buy class="spaceBetween">
+                    <div class="verticalInfoRowLabel">{{ $t('tableInfoLabelTime') }}</div>
+                    <div class="verticalInfoRowText">{{ tableDetailInfo.createTimestamp }}</div>
+                  </div>
+                  <div v-hide-quick-buy class="mt-1 spaceBetween">
+                    <div class="verticalInfoRowLabel">{{ $t('tableInfoLabelSeat') }}</div>
+                    <div class="verticalInfoRowText">{{ tableDetailInfo.satCount }}</div>
+                  </div>
+                  <div v-hide-quick-buy class="mt-1 typeLabel">
+              <span>{{ tableDetailInfo.consumeTypeName }}</span
+              >/<span>{{ tableDetailInfo.order.consumeTypeStatusName }}</span>
+                  </div>
+                  <div class="d-flex justify-space-between align-center">
+                    <div>
+                      <v-icon color="black" x-large>mdi-currency-usd</v-icon>
+                    </div>
+                    <div class="verticalInfoRow">
+                      <div v-cloak class="verticalInfoRowBigText">
+                        {{ orderListModel.total() * (1 - discountRatio)|priceDisplay }}
                       </div>
-                      <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
-                           @click="insDecodeButtonList(7)">
-                        <div class="innerItem">
-                          <div class="icon"><i class="material-icons">assignment_turned_in</i></div>
-                          <div class="text">{{ $t('QuickBill') }}</div>
-                        </div>
-
-                      </div>
-
+                    </div>
+                  </div>
+                </v-card-text>
+              </v-card>
+              <div style="z-index: 1;" class="insPanel surface">
+                <div class="floatMenuPanel" id="listOfFunction">
+                  <div
+                      @click="toManage"
+                      v-show-quick-buy class="floatMenuPanelItem valign-wrapper"
+                  >
+                    <div class="innerItem">
+                      <div class="icon"><i class="material-icons">arrow_back</i></div>
+                      <div class="text">Chef</div>
+                    </div>
+                  </div>
+                  <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
+                       @click="insDecodeButtonList(1)">
+                    <div class="innerItem">
+                      <div class="icon"><i class="material-icons">arrow_back</i></div>
+                      <div class="text">{{ $t('backToHome') }}</div>
+                    </div>
+                  </div>
+                  <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
+                       @click="insDecodeButtonList(2)">
+                    <div class="innerItem">
+                      <div class="icon"><i class="material-icons">restaurant</i></div>
+                      <div class="text">{{ $t('dishOrder') }}</div>
+                    </div>
+                  </div>
+                  <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(3)">
+                    <div class="innerItem" style="">
+                      <div class="icon"><i class="material-icons">local_offer</i></div>
+                      <div class="text ">{{ $t('discount') }}</div>
                     </div>
                   </div>
 
-                </div>
-                <div v-hide-quick-buy class="inputArea">
-                  <div class="input-field ">
-                    <v-autocomplete
-                        :search-input.sync="input"
-                        :items="autoHints"
-                        ref="ins" color="black"
-                        v-model="buffer"
-                        auto-select-first
-                        clearable
-                        id="instruction"
-                        autofocus=autofocus></v-autocomplete>
+                  <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
+                       @click="insDecodeButtonList(4)">
+                    <div class="innerItem">
+                      <div class="icon"><i class="material-icons">swap_horiz</i></div>
+                      <div class="text">{{ $t('tableChange') }}</div>
+                    </div>
                   </div>
+                  <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
+                       @click="insDecodeButtonList(5)">
+                    <div class="innerItem">
+                      <div class="icon"><i class="material-icons">merge_type</i></div>
+                      <div class="text">{{ $t('tableMerge') }}</div>
+                    </div>
+                  </div>
+
+                  <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(6)">
+                    <div class="innerItem">
+                      <div class="icon"><i class="material-icons">account_balance_wallet</i></div>
+                      <div class="text">{{ $t('payBill') }}</div>
+                    </div>
+
+                  </div>
+                  <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
+                       @click="insDecodeButtonList(7)">
+                    <div class="innerItem">
+                      <div class="icon"><i class="material-icons">assignment_turned_in</i></div>
+                      <div class="text">{{ $t('QuickBill') }}</div>
+                    </div>
+
+                  </div>
+
                 </div>
               </div>
             </v-col>
@@ -968,7 +989,6 @@ export default {
       list.map(addToTimerList)
       if (!GlobalConfig.FMCVersion) {
         addToTimerList(setInterval(this.autoGetFocus, 1000))
-        document.getElementById('instruction').focus()
       }
       window.onkeydown = this.listenKeyDown
       UIStatus = UIState.Init
@@ -989,7 +1009,7 @@ export default {
         { value: '/ps', text: '/ps PrintZwichenBon' }
       ]
       if (this.input) {
-        availableIns = availableIns.concat(this.dishesHint.normal)
+        availableIns = availableIns.concat(this.dishesHint.normal.filter(f => f.value.startsWith(this.input)))
         if (this.input.startsWith('-')) {
           availableIns = availableIns.concat(this.dishesHint.remove)
         }
@@ -1262,7 +1282,7 @@ tr:hover {
 #splitOrderContainer {
   max-width: 512px;
   top: 0;
-  right: 280px;
+  right: 300px;
   z-index: 5;
 }
 
