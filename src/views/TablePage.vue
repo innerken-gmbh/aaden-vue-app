@@ -86,8 +86,13 @@
                 :title="$t('haveOrderedDish')"
             />
             <v-toolbar dense>
-              <v-btn @click="insDecodeButtonList(3)"><v-icon dark>mdi-sale</v-icon>{{ $t('discount') }}</v-btn>
-              <v-btn  class="flex-grow-1" @click="insDecodeButtonList(6)" dark><v-icon dark left>mdi-clipboard-check</v-icon>{{ $t('payBill') }}
+              <v-btn @click="insDecodeButtonList(3)">
+                <v-icon dark>mdi-sale</v-icon>
+                {{ $t('discount') }}
+              </v-btn>
+              <v-btn class="flex-grow-1" @click="insDecodeButtonList(6)" dark>
+                <v-icon dark left>mdi-clipboard-check</v-icon>
+                {{ $t('payBill') }}
               </v-btn>
             </v-toolbar>
           </v-card>
@@ -407,6 +412,7 @@ import {
   requestOutTable,
   setGlobalTableId,
   showConfirm,
+  showConfirmAsyn,
   showTimedAlert,
   Strings,
   toast
@@ -615,7 +621,7 @@ export default {
       this.dishQuery(code)
     },
     readBuffer: function (clear = true) {
-      const ins = this.buffer ?? this.input
+      const ins = this.buffer === '' ? this.input : this.buffer
       if (clear) {
         this.buffer = ''
         this.input = ''
@@ -881,7 +887,7 @@ export default {
       }
     },
     //* findInsDecode*/
-    insDecode (t) {
+    async insDecode (t) {
       if (isBlocking()) {
         return
       }
@@ -917,14 +923,28 @@ export default {
       } else {
         if (UIStatus === UIState.Init) {
           if (this.cartListModel.list.length > 0) {
-            UIStatus = UIState.OnList
-            this.highLight(2)
-            blockReady()
+            setTimeout(async () => {
+              const res = await showConfirmAsyn('将购物车中的菜品加入订单?')
+              if (res.value) {
+                this.orderDish(this.cartListModel.list)
+              }
+              blockReady()
+            }, 10)
             return
           } else {
-            this.highLight(7)
-            UIStatus = UIState.OnList
-            blockReady()
+            setTimeout(async () => {
+              const res = await showConfirmAsyn('是否使用现金,0小费,普通账单结账?')
+              if (res.value) {
+                if (GlobalConfig.checkOutUsePassword) {
+                  popAuthorize('', () => {
+                    this.checkOut()
+                  }, true)
+                } else {
+                  this.checkOut()
+                }
+              }
+              blockReady()
+            }, 10)
             return
             // checkOut();
           }
@@ -1004,12 +1024,13 @@ export default {
   },
   computed: {
     autoHints: function () {
-      let availableIns = [
-        { value: '/', text: '/ Advanced instruction' },
-        { value: '/rp', text: '/rp ReprintOrder' },
-        { value: '/ps', text: '/ps PrintZwichenBon' }
-      ]
+      let availableIns = []
       if (this.input) {
+        availableIns = availableIns.concat([
+          { value: '/', text: '/ Advanced instruction' },
+          { value: '/rp', text: '/rp ReprintOrder' },
+          { value: '/ps', text: '/ps PrintZwichenBon' }
+        ])
         availableIns = availableIns.concat(this.dishesHint.normal.filter(f => f.value.startsWith(this.input)))
         if (this.input.startsWith('-')) {
           availableIns = availableIns.concat(this.dishesHint.remove)
