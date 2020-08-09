@@ -1,125 +1,116 @@
 <template>
-    <v-app>
-        <Navgation>
-            <template slot="right-slot">
-                <div class="">
-                    <div style="height: 48px" class="d-flex justify-center align-center fill-height">
-                        <v-switch v-model="onlyActive" color="red"></v-switch>
-                        <div class="splitter-no-margin mx-1"></div>
-                        <v-btn outlined
-                               color="#367aeb" @click="popAuthorize('boss',toManage)">
-                            {{$t('indexTabBoss')}}
-                        </v-btn>
-                    </div>
-                </div>
-            </template>
-        </Navgation>
-        <main>
-            <div class="center-panel" id="centerPanel">
-                <div v-dragscroll class="tableDisplay">
-                    <div v-cloak class="areaC" id="areaC">
-                        <div :key="area.name" v-cloak v-for="area in realArea" class="area">
-                            <div>
-                                <div class="areaTitle">{{area.areaName}}</div>
-                                <div class="areaTableContainer" :style="windowHeight<=978?
-                                'grid-template-rows: repeat(4, 124px);':'grid-template-rows: repeat(6, 124px);'">
-                                    <template v-for="table in area.tables">
-                                        <div v-bind:key="table.name">
-                                            <div v-if="table.usageStatus==='1'" class="tableCard"
-                                                 v-bind:class="{
+  <v-app>
+    <v-system-bar app>
+      {{ $t('appName') }}
+      Version <span v-show-quick-buy>FMC-</span>
+      {{ version }}
+      <v-spacer></v-spacer>
+      <time-display/>
+    </v-system-bar>
+    <Navgation>
+      <template slot="left">
+        <v-app-bar-nav-icon>
+          <v-icon @click="popAuthorize('boss',toManage)">mdi-home-analytics</v-icon>
+        </v-app-bar-nav-icon>
+      </template>
+      <template slot="right-slot">
+        <v-toolbar-items class="mx-1">
+          <v-btn  @click="popAuthorize('',
+                             requestOutTable)">
+            <v-icon left>mdi-truck-fast</v-icon>
+            {{ $t('takeaway') }}
+          </v-btn>
+          <v-btn :color="onlyActive?'primary':'transparent'" @click="onlyActive=!onlyActive">
+            只看活跃
+          </v-btn>
+        </v-toolbar-items>
+        <v-text-field ref="ins" v-model="buffer"
+                      single-line
+                      hide-details
+                      clearable
+                      class="flex-grow-0"
+                      prepend-inner-icon="mdi-magnify"
+                      placeholder="instruction.."
+                      autofocus></v-text-field>
+      </template>
+    </Navgation>
+    <v-main>
+      <div class="center-panel" id="centerPanel">
+        <div v-dragscroll class="tableDisplay">
+          <div v-cloak class="areaC" id="areaC">
+            <div :key="area.name" v-cloak v-for="area in realArea" class="area">
+              <div class="areaTitle">{{ area.areaName }}</div>
+              <div class="areaTableContainer">
+                <template v-for="table in area.tables">
+                  <div v-bind:key="table.name">
+                    <div v-if="table.usageStatus==='1'" class="tableCard"
+                         v-bind:class="{
                                 onCall:parseInt(table.callService)===1
                                   }"
-                                                 v-on:click='jumpToTable(table.tableId,table.tableName)'>
-                                                <div class="">
-                                                    <div class="tableCardName">{{table.tableName}}</div>
-                                                </div>
-                                                <div class="d-flex justify-space-between">
-                                                    <div class="">
-                                                        <template
-                                                                v-if="table.consumeType!=='4'&&table.consumeType!=='6'">
-                                                            <div v-if="table.consumeType!=='2'" class="tableIconRow">
-                                                                <i class="icon material-icons">person_outline</i>
-                                                                <div class="text">{{table.seatCount}}</div>
-                                                            </div>
-                                                            <div class="tableIconRow">
-                                                                <i class="icon material-icons">notifications_none</i>
-                                                                <div class="text">
-                                                                    {{table.dishCount===null?0:table.dishCount}}
-                                                                </div>
-                                                            </div>
-                                                        </template>
-                                                        <template
-                                                                v-if="table.consumeType==='4'||table.consumeType==='6'">
-                                                            <div class="tableIconRow">
-                                                                <i class="icon material-icons">person_outline</i>
-                                                                <div class="text">{{table.seatCount}}</div>
-                                                            </div>
-                                                            <div class="tableIconRow">
-                                                                <i class="icon material-icons">child_care</i>
-                                                                <div class="text">{{table.childCount}}</div>
-                                                            </div>
-                                                        </template>
-                                                    </div>
-                                                    <div class="text-right">
-                                                        <div class="tableStatusContainer tableBold">
+                         v-on:click='jumpToTable(table.tableId,table.tableName)'>
+                      <div class="">
+                        <div class="tableCardName">{{ table.tableName }}</div>
+                      </div>
+                      <div class="d-flex justify-space-between">
+                        <div class="">
+                          <template
+                              v-if="table.consumeType!=='4'&&table.consumeType!=='6'">
+                            <div v-if="table.consumeType!=='2'" class="tableIconRow">
+                              <i class="icon material-icons">person_outline</i>
+                              <div class="text">{{ table.seatCount }}</div>
+                            </div>
+                            <div class="tableIconRow">
+                              <i class="icon material-icons">notifications_none</i>
+                              <div class="text">
+                                {{ table.dishCount === null ? 0 : table.dishCount }}
+                              </div>
+                            </div>
+                          </template>
+                          <template
+                              v-if="table.consumeType==='4'||table.consumeType==='6'">
+                            <div class="tableIconRow">
+                              <i class="icon material-icons">person_outline</i>
+                              <div class="text">{{ table.seatCount }}</div>
+                            </div>
+                            <div class="tableIconRow">
+                              <i class="icon material-icons">child_care</i>
+                              <div class="text">{{ table.childCount }}</div>
+                            </div>
+                          </template>
+                        </div>
+                        <div class="text-right">
+                          <div class="tableStatusContainer tableBold">
                                                             <span style="border-bottom: 0.2px solid white;">
-                                                                      {{ table.consumeTypeName}}
+                                                                      {{ table.consumeTypeName }}
                                                             </span>
-                                                        </div>
-                                                        <div class="tableTimeLabel">
-                                                            <span class="tableBold">{{table.createTimestamp}}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div v-else @click="createTable(table.tableName)"
-                                                 class="tableCard notUsed">
-                                                <div class="tableCardName">
-                                                    {{table.tableName}}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </template>
-
-                                </div>
-                            </div>
+                          </div>
+                          <div class="tableTimeLabel">
+                            <span class="tableBold">{{ table.createTimestamp }}</span>
+                          </div>
                         </div>
-
+                      </div>
                     </div>
-                </div>
+                    <div v-else @click="createTable(table.tableName)"
+                         class="tableCard notUsed">
+                      <div class="tableCardName">
+                        {{ table.tableName }}
+                      </div>
+                    </div>
+                  </div>
+                </template>
+
+              </div>
             </div>
-            <div class="right-panel ">
-                <div></div>
-                <div class="insPanel surface">
-                    <div class="hintPanel">
-                        <div class="floatMenuPanel">
-                            <div @click="popAuthorize('',
-                             requestOutTable)"
-                                 class="floatMenuPanelItem">
-                                <div class="innerItem ">
-                                    <div class="icon"><i class="material-icons">shopping_basket</i></div>
-                                    <div class="text">{{$t('takeaway')}}</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="inputArea">
-                        <div class="insInput ">
-                            <div class="input-field ">
-                                <v-text-field color="black" ref="ins" v-model="buffer"
-                                              placeholder="instruction.." id="instruction"
-                                              autofocus=autofocus></v-text-field>
-                            </div>
-                        </div>
-                    </div>
+          </div>
 
-                </div>
-            </div>
-        </main>
-    </v-app>
+        </div>
+      </div>
+    </v-main>
+  </v-app>
 </template>
 
 <script>
+import { version } from '../../package.json'
 import {
   blockReady,
   createOrEnterTable,
@@ -137,12 +128,14 @@ import { dragscroll } from 'vue-dragscroll'
 import GlobalConfig, { setDeviceId, useCurrentConfig } from '../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
+import TimeDisplay from '@/components/TimeDisplay'
+
 export default {
   name: 'IndexPage',
   directives: {
     dragscroll
   },
-  components: { Navgation },
+  components: { TimeDisplay, Navgation },
   props: {
     refresh: {
       type: Number
@@ -150,12 +143,14 @@ export default {
   },
   data: function () {
     return {
+      version: version,
       onlyActive: GlobalConfig.FMCVersion,
       reservations: [],
       areas: [],
       seen: true,
       buffer: '',
       ins: {},
+      time: '',
       dishes: [],
       Config: GlobalConfig,
       Strings,
@@ -282,185 +277,171 @@ export default {
 </script>
 
 <style scoped>
-    .tableDisplay {
+.tableDisplay {
+  height: calc(100vh - 72px);
+  overflow: scroll;
+}
 
-        /* margin-left: 155px; */
+.tableDisplay::-webkit-scrollbar {
+  width: 0 !important
+}
 
-        height: calc(100vh - 48px);
-        /* width: calc(100vw - 330px - 100px); */
-        overflow: scroll;
-    }
+.areaTableContainer {
+  max-height: calc(100vh - 100px);
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(1, 124px);
+  grid-template-rows: repeat(auto-fill, 124px);
+  grid-auto-columns: 124px;
+  grid-auto-rows: 124px;
+  grid-auto-flow: column;
+  grid-gap: 16px;
+  margin-bottom: 12px;
 
-    .tableDisplay::-webkit-scrollbar {
-        width: 0 !important
-    }
+}
 
-    .area {
+.table-card-content-m {
+  vertical-align: middle;
+  font-weight: 100;
+  font-size: 20px;
+  line-height: 30px;
+}
 
-        margin-right: 14px;
+.tableCard {
+  padding: 16px;
+  width: 100%;
+  height: 100%;
+  background: white;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 6px 8px #d0d2d9;
+}
 
-    }
+.tableCard.notUsed {
+  background: transparent;
+  color: #6b6b6b;
+  border: 3px dotted #e2e3e5;
+  box-shadow: none;
+}
 
-    .areaTableContainer {
-        max-height: 900px;
-        margin-top: 36px;
-        display: grid;
-        grid-template-columns: repeat(1, 124px);
+.tableCard.onCall {
+  color: white !important;
+  background: #F34141;
+}
 
-        grid-auto-columns: 124px;
-        grid-auto-rows: 124px;
-        grid-auto-flow: column;
-        grid-gap: 16px;
-        margin-bottom: 55px;
+.tableTimeLabel {
+  color: black;
+  font-size: 18px;
+  height: 25px;
+  font-weight: 900;
+}
 
-    }
+.onCall .tableTimeLabel {
+  color: white;
+}
 
-    .table-card-content-m {
-        vertical-align: middle;
-        font-weight: 100;
-        font-size: 20px;
-        line-height: 30px;
-    }
+.onCall > .tableIconContainer > .tableIconRow > .material-icons {
+  color: white;
+}
 
-    .tableCard {
-        padding: 16px;
-        width: 100%;
-        height: 100%;
-        background: white;
-        color: black;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        cursor: pointer;
-        border-radius: 8px;
-        box-shadow: 0 6px 8px #d0d2d9;
-    }
+.tableBold {
+  font-weight: 600;
+}
 
-    .tableCard.notUsed {
-        background: transparent;
-        color: #6b6b6b;
-        border: 3px dotted #e2e3e5;
-        box-shadow: none;
-    }
+.tableCardName {
+  line-height: 23px;
+  font-size: 28px;
+  text-align: left;
+  font-family: Roboto, "Axure Handwriting", sans-serif;
+  font-weight: 600;
+}
 
-    .tableCard.onCall {
-        color: white !important;
-        background: #F34141;
-    }
+.tableCard.notUsed .tableCardName {
+  font-weight: 400;
+}
 
-    .tableTimeLabel {
-        color: black;
-        font-size: 18px;
-        height: 25px;
-        font-weight: 900;
-    }
+.tableIconRow > .material-icons {
+  font-size: 20px;
+  margin-right: 2px;
+}
 
-    .onCall .tableTimeLabel {
-        color: white;
-    }
+.tableIconRow {
+  width: 42px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 400;
+}
 
-    .onCall > .tableIconContainer > .tableIconRow > .material-icons {
-        color: white;
-    }
+.tableStatusContainer {
+  font-size: 18px;
+  height: 25px;
+  font-weight: 400;
+}
 
-    .tableBold {
-        font-weight: 600;
-    }
+.areaTitle {
+  font-size: 16px;
+  font-weight: 600;
+}
 
-    .tableCardName {
-        line-height: 23px;
-        font-size: 28px;
-        text-align: left;
-        font-family: Roboto, "Axure Handwriting", sans-serif;
-        font-weight: 600;
-    }
+.select-wrapper > ul {
+  z-index: 0;
+  top: -48px;
+  width: 152px;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0px 3px 6px rgba(0, 86, 255, 0.08);
+  opacity: 1;
+  border-radius: 0px 0px 5px 5px;
+}
 
-    .tableCard.notUsed .tableCardName {
-        font-weight: 400;
-    }
+.select-wrapper > ul > li {
+  border-bottom: 0.3px solid rgba(112, 112, 112, 0.38);;
+}
 
-    .tableIconRow > .material-icons {
-        font-size: 20px;
-        margin-right: 2px;
-    }
+.select-dropdown.dropdown-content li.selected {
+  background: rgba(255, 255, 255, 1);
+}
 
-    .tableIconRow {
-        width: 42px;
-        height: 25px;
-        display: flex;
-        align-items: center;
-        font-size: 16px;
-        font-weight: 400;
-    }
+.dropdown-content li > a, .dropdown-content li > span {
+  padding: 13px 16px;
+  color: #4b4b4b;
+  font-weight: 200;
+  font-size: inherit;
+  line-height: inherit;
+}
 
-    .tableStatusContainer {
-        font-size: 18px;
-        height: 25px;
-        font-weight: 400;
-    }
+.dropdown-content li {
+  height: 45px;
+  min-height: unset;
+}
 
-    .areaTitle {
-        font-size: 16px;
-        font-weight: 600;
-    }
+.areaC {
+  margin-top: 12px;
+  margin-left: 12px;
+  display: flex;
+  width: max-content;
+}
 
-    .select-wrapper > ul {
-        z-index: 0;
-        top: -48px;
-        width: 152px;
-        background: rgba(255, 255, 255, 1);
-        box-shadow: 0px 3px 6px rgba(0, 86, 255, 0.08);
-        opacity: 1;
-        border-radius: 0px 0px 5px 5px;
-    }
+.area {
+  max-height: calc(100vh - 72px);
+  margin-right: 14px;
+}
+.area:last-child {
+  margin-right: 380px;
+}
 
-    .select-wrapper > ul > li {
-        border-bottom: 0.3px solid rgba(112, 112, 112, 0.38);;
-    }
+.center-panel {
+  width: 100vw;
+}
 
-    .select-dropdown.dropdown-content li.selected {
-        background: rgba(255, 255, 255, 1);
-    }
-
-    .dropdown-content li > a, .dropdown-content li > span {
-        padding: 13px 16px;
-        color: #4b4b4b;
-        font-weight: 200;
-        font-size: inherit;
-        line-height: inherit;
-    }
-
-    .dropdown-content li {
-        height: 45px;
-        min-height: unset;
-    }
-
-    .areaC {
-        margin-top: 24px;
-        margin-left: 24px;
-        display: flex;
-        width: max-content;
-    }
-
-    .area:last-child {
-        margin-right: 380px;
-    }
-
-    .center-panel {
-        width: 100vw;
-    }
-
-    main {
-        flex: 1 0 auto;
-        margin-top: 48px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-    }
-
-    /*input:focus{*/
-    /*    background: red;*/
-    /*    color: red !important;*/
-    /*}*/
+/*input:focus{*/
+/*    background: red;*/
+/*    color: red !important;*/
+/*}*/
 
 </style>
