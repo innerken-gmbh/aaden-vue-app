@@ -75,7 +75,7 @@
         </div>
       </v-card>
     </v-main>
-    <v-navigation-drawer stateless :value="true" permanent color="transparent" app
+    <v-navigation-drawer stateless value="1" color="transparent" app
                          right width="300px">
       <div class="ml-1 d-flex justify-space-between flex-column fill-height">
         <!--          菜品列表容器-->
