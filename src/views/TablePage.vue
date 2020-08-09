@@ -101,8 +101,8 @@
                 :show-number="true"
                 :extra-height="'196px'"
                 :color="'#707070'"
-                :show-edit="true" :click-callback="removeDish"
                 :orders="cartListModel.list"
+                :show-edit="true" :click-callback="removeDish"
                 :title="$t('新增菜品')"
                 :default-expand="Config.defaultExpand">
             </dish-card-list>
@@ -682,11 +682,15 @@ export default {
     },
     addDish: function (dish, count = 1) {
       dish.count = count
+      console.time('dish')
       if (!GlobalConfig.useCart) {
         this.orderDish([dish])
         return
       }
-      this.cartListModel.add(dish, count)
+      setTimeout(() => {
+        this.cartListModel.add(dish, count)
+      }, 1)
+      console.timeEnd('dish')
     },
     clear: function () {
       this.cartListModel.clear()
@@ -1366,11 +1370,6 @@ tr:hover {
   font-size: 18px;
   font-weight: bold;
   border-radius: 5px;
-}
-
-.ikButton:hover {
-  background: #367aeb;
-  color: white;
 }
 
 .ikButton:focus {

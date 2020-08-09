@@ -5,19 +5,40 @@
         <v-icon>mdi-home-analytics</v-icon>
       </v-app-bar-nav-icon>
     </slot>
-
-    <div class="languageSwitch">
-      <div @click="changeLanguage('ZH')">{{ $t('langZH') }}</div>
-      <div @click="changeLanguage('EN')">{{ $t('langEN') }}</div>
-      <div @click="changeLanguage('DE')">{{ $t('langDE') }}</div>
-    </div>
-
-    <v-btn  v-hide-quick-buy @click="toggleDebug()" icon><v-icon>
-      mdi-android-debug-bridge
-    </v-icon></v-btn>
+    <v-btn v-hide-quick-buy @click="toggleDebug()" icon>
+      <v-icon>
+        mdi-android-debug-bridge
+      </v-icon>
+    </v-btn>
     <v-spacer></v-spacer>
     <slot name="right-slot">
     </slot>
+    <v-menu
+        left
+        bottom
+    >
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+            icon
+            v-bind="attrs"
+            v-on="on"
+        >
+          <v-icon>mdi-dots-vertical</v-icon>
+        </v-btn>
+      </template>
+      <v-list>
+        <v-list-item
+        >
+          <v-list-item-title @click="changeLanguage('ZH')">{{ $t('langZH') }}</v-list-item-title>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-title @click="changeLanguage('EN')">{{ $t('langEN') }}</v-list-item-title>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-title @click="changeLanguage('DE')">{{ $t('langDE') }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
 
   </v-app-bar>
 </template>
