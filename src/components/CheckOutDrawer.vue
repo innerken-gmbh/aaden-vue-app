@@ -1,5 +1,5 @@
 <template>
-    <v-dialog fullscreen v-model="realShow"
+    <v-bottom-sheet fullscreen v-model="realShow"
               >
         <v-card color="white" class="d-flex justify-space-between fill-height">
             <div v-show="order.count()>0" style="width: 340px">
@@ -15,7 +15,7 @@
                         :total="order.total()*(1-discountRatio)"/>
             </div>
         </v-card>
-    </v-dialog>
+    </v-bottom-sheet>
 </template>
 
 <script>

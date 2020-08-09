@@ -1,23 +1,17 @@
 <template>
-    <v-navigation-drawer width="fit-content" temporary right hide-overlay v-model="realShow" fixed>
-        <v-card class="fill-height">
-            <dish-modification
-                    ref="modification"
-                    @modification-submit="submit($event,dish)"
-                    @modification-cancel="realShow=false"
-                    :options="dish.modInfo">
-                <template v-slot:before>
-                    <v-row>
-                        <v-col cols="12">
-                            <h2>
-                                {{dish.name}}
-                            </h2>
-                        </v-col>
-                    </v-row>
-                </template>
-            </dish-modification>
-        </v-card>
-    </v-navigation-drawer>
+  <v-navigation-drawer width="fit-content" temporary left fixed v-model="realShow">
+    <v-card class="fill-height">
+      <dish-modification
+          ref="modification"
+          @modification-submit="submit($event,dish)"
+          @modification-cancel="realShow=false"
+          :options="dish.modInfo">
+        <template v-slot:before>
+         <span class="font-weight-black"> {{ dish.name }}</span>
+        </template>
+      </dish-modification>
+    </v-card>
+  </v-navigation-drawer>
 </template>
 
 <script>

@@ -1,6 +1,10 @@
 <template>
   <v-app class="transparent">
+
     <v-app-bar dark dense rounded app>
+      <v-app-bar-nav-icon @click="back">
+        <v-icon>mdi-home</v-icon>
+      </v-app-bar-nav-icon>
       <v-tabs
           background-color="black"
           center-active
@@ -74,7 +78,9 @@
     <v-navigation-drawer stateless :value="true" permanent color="transparent" app
                          right width="300px">
       <div class="ml-1 d-flex justify-space-between flex-column fill-height">
+        <!--          菜品列表容器-->
         <div class="panel">
+          <!--          菜品列表-->
           <v-card v-dragscroll
                   class="white">
             <dish-card-list
@@ -85,17 +91,8 @@
                 :extra-height="'96px'"
                 :title="$t('haveOrderedDish')"
             />
-            <v-toolbar dense>
-              <v-btn @click="insDecodeButtonList(3)">
-                <v-icon dark>mdi-sale</v-icon>
-                {{ $t('discount') }}
-              </v-btn>
-              <v-btn class="flex-grow-1" @click="insDecodeButtonList(6)" dark>
-                <v-icon dark left>mdi-clipboard-check</v-icon>
-                {{ $t('payBill') }}
-              </v-btn>
-            </v-toolbar>
           </v-card>
+          <!--          购物车-->
           <v-card v-dragscroll
                   v-if="cartListModel.list.length>0"
                   class="white">
@@ -116,7 +113,22 @@
             </v-toolbar>
           </v-card>
         </div>
+
         <v-card style="z-index: 1" class="infoPanel shadowForInsPanel">
+          <v-toolbar dense>
+            <v-toolbar-title class="title">
+              €{{ orderListModel.total() * (1 - discountRatio)|priceDisplay }}
+            </v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn @click="insDecodeButtonList(3)">
+              <v-icon dark>mdi-sale</v-icon>
+              {{ $t('discount') }}
+            </v-btn>
+            <v-btn @click="insDecodeButtonList(6)" dark>
+              <v-icon dark left>mdi-clipboard-check</v-icon>
+              {{ $t('payBill') }}
+            </v-btn>
+          </v-toolbar>
           <v-toolbar dark tile dense :color="'#367aeb'" style="color: white">
 
             <div class="bigTableName z-depth-2">{{ tableDetailInfo.tableBasicInfo.name }}</div>
@@ -138,6 +150,7 @@
         </v-card>
       </div>
     </v-navigation-drawer>
+
     <div v-show="splitOrderListModel.list.length>0" class="bottomCart surface"
          style="background: #f5f6fa;"
          v-cloak
@@ -164,12 +177,14 @@
         </div>
       </div>
     </div>
+
     <ModificationDrawer
         @visibility-changed="changeModification"
         :modification-show="modificationShow"
         :dish="dish"
         :mod="submitModification"
     />
+
     <check-out-drawer
         @visibility-changed="changeCheckOut"
         :order="checkOutModel"
@@ -891,7 +906,7 @@ export default {
       if (isBlocking()) {
         return
       }
-      if (t !== '') {
+      if (t !== '' && t !== null) {
         if (t.startsWith('-') && t.length >= 2) {
           this.removeDishWithCode(t.substring(1))
           blockReady()
