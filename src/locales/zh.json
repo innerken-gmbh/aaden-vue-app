@@ -368,10 +368,10 @@
   "QuickBill": "快速结账",
   "default": "|默认:",
   "nextStep": "下一步",
-  "haveOrderedDish": "已点菜品",
+  "haveOrderedDish": "已点",
   "billSplit": "分单",
   "dishCancel": "退菜",
   "operation": "操作",
-  "给菜品打折": "给菜品打折",
-  "新增菜品": "新增菜品"
+  "给菜品打折": "打折",
+  "新增菜品": "新增"
 }

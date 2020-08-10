@@ -1,24 +1,27 @@
 <template>
-  <v-card elevation="0">
-    <v-toolbar dense color="primary" dark>
-      <v-app-bar-nav-icon @click="cancel"><v-icon>mdi-close</v-icon></v-app-bar-nav-icon>
-      <v-toolbar-title>
-        <slot name="before"></slot>
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn
-          ref="submit"
-          icon
-          large
-          @click="submitModification"
-            >
-        <v-icon>mdi-check</v-icon>
-      </v-btn>
-      <v-toolbar-items></v-toolbar-items>
-
-    </v-toolbar>
-    <v-card-text>
-      <div style="display: grid;
+    <v-card elevation="0">
+        <v-toolbar dense  dark>
+            <v-app-bar-nav-icon @click="cancel">
+                <v-icon>mdi-close</v-icon>
+            </v-app-bar-nav-icon>
+            <v-toolbar-title>
+                <slot name="before"></slot>
+            </v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-toolbar-items>
+                <v-btn
+                        color="primary"
+                        ref="submit"
+                        large
+                        @click="submitModification"
+                >
+                    <v-icon left>mdi-check</v-icon>
+                    {{$t('confirm') }}
+                </v-btn>
+            </v-toolbar-items>
+        </v-toolbar>
+        <v-card-text>
+            <div style="display: grid;
     grid-gap: 4px;
     grid-template-rows: repeat(2,minmax(min-content,auto));
     grid-auto-flow: column dense;
@@ -28,30 +31,30 @@
     align-items: start;
   min-width: 300px;
 ">
-        <template v-for="item in computedOption">
-          <v-sheet style="background: transparent;max-width: 340px"
-                   :key="'mod2'+item.id" class="pa-1">
-            <h4 :key="'mod2head'+item.id">
-              {{
-                `${item.name}${item.required === '1' ?
-                    `:${item.select[0].text}` : ``}`
-              }}
-            </h4>
-            <v-chip-group
-                v-model="mod[item.id]"
-                :mandatory="item.required==='1'" column
-                :multiple="item.multiSelect==='1'"
-                active-class="primary--text">
-              <v-chip large :ripple="false" label :key="'mod111'+index"
-                      v-for="(s,index) in item.select">
-                {{ s.text }}{{ s.priceInfo }}
-              </v-chip>
-            </v-chip-group>
-          </v-sheet>
-        </template>
-      </div>
-    </v-card-text>
-  </v-card>
+                <template v-for="item in computedOption">
+                    <v-sheet style="background: transparent;max-width: 340px"
+                             :key="'mod2'+item.id" class="pa-1">
+                        <h4 :key="'mod2head'+item.id">
+                            {{
+                            `${item.name}${item.required === '1' ?
+                            `:${item.select[0].text}` : ``}`
+                            }}
+                        </h4>
+                        <v-chip-group
+                                v-model="mod[item.id]"
+                                :mandatory="item.required==='1'" column
+                                :multiple="item.multiSelect==='1'"
+                                active-class="primary--text">
+                            <v-chip large :ripple="false" label :key="'mod111'+index"
+                                    v-for="(s,index) in item.select">
+                                {{ s.text }}{{ s.priceInfo }}
+                            </v-chip>
+                        </v-chip-group>
+                    </v-sheet>
+                </template>
+            </div>
+        </v-card-text>
+    </v-card>
 
 </template>
 
@@ -60,7 +63,6 @@ export default {
   name: 'DishModification',
   props: {
     options: {
-      type: Array,
       default: () => []
     }
   },
@@ -112,12 +114,12 @@ export default {
 </script>
 
 <style scoped>
-.hideWhenNoteActiveChip {
-  display: none;
-}
+    .hideWhenNoteActiveChip {
+        display: none;
+    }
 
-.v-chip--active .hideWhenNoteActiveChip {
-  display: unset;
-}
+    .v-chip--active .hideWhenNoteActiveChip {
+        display: unset;
+    }
 
 </style>

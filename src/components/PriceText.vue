@@ -11,11 +11,9 @@ export default {
   name: 'PriceText',
   props: {
     price: {
-      type: [String, Number],
       default: '0'
     },
     displayZero: {
-      type: Boolean,
       default: false
     }
   }

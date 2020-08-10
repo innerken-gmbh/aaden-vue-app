@@ -1,157 +1,154 @@
 <template>
-    <v-sheet rounded :elevation="2" class="fill-height pa-2">
-        <div class="d-flex fill-height" style="max-height: 700px">
-            <div style="width: 480px" class="calculator pa-2 d-flex flex-column fill-height">
-                <v-sheet style="width: 100%" :elevation="2" class="display pa-4 d-flex
+    <div class="d-flex fill-height" style="max-height: 700px">
+        <div style="width: 480px;" class="calculator pa-2 d-flex flex-column fill-height">
+            <v-sheet style="width: 100%" :elevation="2" class="display pa-4 d-flex
                  justify-space-between align-end">
-                    <div>
-                        <div class="totalBlock">
-                            <div>
-                                <v-chip dark label color="primary" small>
-                                    应付总额
-                                </v-chip>
-                            </div>
-                            <span class="totalNumber">
+                <div>
+                    <div class="totalBlock">
+                        <div>
+                            <v-chip dark label color="primary" small>
+                                应付总额
+                            </v-chip>
+                        </div>
+                        <span class="totalNumber">
                            {{total|priceDisplay}}
                         </span>
-                        </div>
-                        <div class="totalBlock">
-                            <div>
-                                <v-chip dark label class="font-weight-bold" color="error" small>
-                                    剩余总额
-                                </v-chip>
-                            </div>
-                            <span class="totalNumber">
-                           {{remainTotal|priceDisplay}}
-                        </span>
-                        </div>
                     </div>
                     <div class="totalBlock">
                         <div>
-                            <v-chip dark label color="success">
-                                将要支付
+                            <v-chip dark label class="font-weight-bold" color="error" small>
+                                剩余总额
                             </v-chip>
                         </div>
-                        <div style="width:240px;height: 64px">
-                            <v-text-field height="64px" reverse solo
-                                          class="payingNumber py-1 text-right"
-                                          v-model="inputBuffer"
-                                          :placeholder="''+remainTotal.toFixed(2)"/>
-                        </div>
-                    </div>
-                </v-sheet>
-                <v-sheet :elevation="2" class="keyboard flex-grow-1 pa-4">
-                    <template v-for="i in keyArr.flat()">
-                        <v-btn :ripple="false" v-if="i!=='mdi-dots-horizontal'" @click="input(i)" block x-large
-                               class="key"
-                               style="height: 100%"
-                               :elevation="2"
-                               :key="'key'+i">
-                            <v-icon v-if="!isNaN(i)" x-large>mdi-numeric-{{i}}</v-icon>
-                            <v-icon x-large v-else>{{i}}</v-icon>
-                        </v-btn>
-                        <v-menu offset-x :key="'key'+i" v-else>
-                            <template v-slot:activator="{ on, attrs }">
-                                <v-btn @click="input(i)" block x-large class="key"
-                                       style="height: 100%"
-                                       :elevation="2"
-                                       v-bind="attrs"
-                                       v-on="on"
-                                       :key="'key'+i">
-                                    <v-icon x-large>{{i}}</v-icon>
-                                </v-btn>
-                            </template>
-                            <v-list>
-                                <v-list-item
-                                        @click="input(item)"
-                                        v-for="(item, index) in extraPaymentMethod"
-                                        :key="index"
-                                >
-                                    <v-list-item-icon>
-                                        <v-icon>{{ item }}</v-icon>
-                                    </v-list-item-icon>
-                                    <v-list-item-content>
-                                        <v-list-item-title>
-                                            {{extraPaymentMethodName[index]}}
-                                        </v-list-item-title>
-                                    </v-list-item-content>
-                                </v-list-item>
-                            </v-list>
-                        </v-menu>
-                    </template>
-                </v-sheet>
-            </div>
-            <div style="width: calc(100vw - 340px - 24px - 480px)"
-                 class="paymentLog pa-2">
-                <div class="my-3">
-                    <h3>结账记录</h3>
-                </div>
-                <div class="my-3" v-dragscroll style="max-height: 460px;overflow:hidden">
-                    <template v-for="(paymentInfo,index) in paymentLog">
-                        <v-sheet :key="'price'+paymentInfo.hash" :elevation="0"
-                                 style="width: 100%" class="d-flex justify-space-between pa-2 my-1">
-                            <h2 class="font-weight-bold"
-                                style="font-size: 24px">
-                                {{ paymentInfo.price|priceDisplay }}
-                            </h2>
-                            <div>
-                                <v-btn text color="success">
-                                    <v-icon large>{{paymentInfo.icon}}</v-icon>
-                                </v-btn>
-                                <v-btn @click="withdrawPayment(index)" icon color="error">
-                                    <v-icon>mdi-close</v-icon>
-                                </v-btn>
-                            </div>
-                        </v-sheet>
-                        <v-divider :key="'d'+paymentInfo.hash"></v-divider>
-                    </template>
-                </div>
-                <div style="height: 300px">
-                    <v-sheet class="my-6">
-                        <h4>
-                            {{$t('tableCheckOutBillTypeLabel')}}
-                        </h4>
-                        <v-sheet class="my-2" style="background: transparent">
-                            <v-chip-group
-                                    v-model="billType"
-                                    mandatory column
-                                    active-class="primary--text">
-                                <v-chip x-large label>
-                                    {{$t('tableCheckOutBillTypeOptionNormal')}}
-                                </v-chip>
-                                <v-chip x-large label>
-                                    {{$t('tableCheckOutBillTypeOptionCompany')}}
-                                </v-chip>
-                                <v-chip x-large label>
-                                    {{$t('tableCheckOutBillTypeOption3')}}
-                                </v-chip>
-                            </v-chip-group>
-                        </v-sheet>
-                    </v-sheet>
-                    <v-divider class="my-3"></v-divider>
-                    <div style="height: 120px;display: grid;grid-template-columns: 1fr 1fr">
-                        <div class="pa-2">
-                            <v-btn tile fab
-                                   outlined
-                                   @click="cancel"
-                                   color="error" block x-large>
-                                {{$t('cancel')}}
-                            </v-btn>
-                        </div>
-                        <div class="pa-2">
-                            <v-btn color="success"
-                                   @click="checkOut"
-                                   elevation="0"
-                                   :disabled="!equals(remainTotal,0)"
-                                   tile fab block x-large> {{$t('tableCheckOutConfirm')}}
-                            </v-btn>
-                        </div>
+                        <span class="totalNumber">
+                           {{remainTotal|priceDisplay}}
+                        </span>
                     </div>
                 </div>
-            </div>
-
+                <div class="totalBlock">
+                    <div>
+                        <v-chip dark label color="success">
+                            将要支付
+                        </v-chip>
+                    </div>
+                    <div style="width:240px;height: 64px">
+                        <v-text-field height="64px" reverse solo
+                                      class="payingNumber py-1 text-right"
+                                      v-model="inputBuffer"
+                                      :placeholder="''+remainTotal.toFixed(2)"/>
+                    </div>
+                </div>
+            </v-sheet>
+            <v-sheet :elevation="2" class="keyboard flex-grow-1 pa-4">
+                <template v-for="i in keyArr.flat()">
+                    <v-btn :ripple="false" v-if="i!=='mdi-dots-horizontal'" @click="input(i)" block x-large
+                           class="key"
+                           style="height: 100%"
+                           :elevation="2"
+                           :key="'key'+i">
+                        <v-icon v-if="!isNaN(i)" x-large>mdi-numeric-{{i}}</v-icon>
+                        <v-icon x-large v-else>{{i}}</v-icon>
+                    </v-btn>
+                    <v-menu offset-x :key="'key'+i" v-else>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn @click="input(i)" block x-large class="key"
+                                   style="height: 100%"
+                                   :elevation="2"
+                                   v-bind="attrs"
+                                   v-on="on"
+                                   :key="'key'+i">
+                                <v-icon x-large>{{i}}</v-icon>
+                            </v-btn>
+                        </template>
+                        <v-list>
+                            <v-list-item
+                                    @click="input(item)"
+                                    v-for="(item, index) in extraPaymentMethod"
+                                    :key="index"
+                            >
+                                <v-list-item-icon>
+                                    <v-icon>{{ item }}</v-icon>
+                                </v-list-item-icon>
+                                <v-list-item-content>
+                                    <v-list-item-title>
+                                        {{extraPaymentMethodName[index]}}
+                                    </v-list-item-title>
+                                </v-list-item-content>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </template>
+            </v-sheet>
         </div>
-    </v-sheet>
+        <div style="width: calc(100vw - 340px - 480px)"
+             class="paymentLog pa-2">
+            <div class="my-3">
+                <h3>结账记录</h3>
+            </div>
+            <div class="my-3" v-dragscroll style="max-height: 460px;overflow:hidden">
+                <template v-for="(paymentInfo,index) in paymentLog">
+                    <v-sheet :key="'price'+paymentInfo.hash" :elevation="0"
+                             style="width: 100%" class="d-flex justify-space-between pa-2 my-1">
+                        <h2 class="font-weight-bold"
+                            style="font-size: 24px">
+                            {{ paymentInfo.price|priceDisplay }}
+                        </h2>
+                        <div>
+                            <v-btn text color="success">
+                                <v-icon large>{{paymentInfo.icon}}</v-icon>
+                            </v-btn>
+                            <v-btn @click="withdrawPayment(index)" icon color="error">
+                                <v-icon>mdi-close</v-icon>
+                            </v-btn>
+                        </div>
+                    </v-sheet>
+                    <v-divider :key="'d'+paymentInfo.hash"></v-divider>
+                </template>
+            </div>
+            <div style="height: 300px">
+                <v-sheet class="my-6">
+                    <h4>
+                        {{$t('tableCheckOutBillTypeLabel')}}
+                    </h4>
+                    <v-sheet class="my-2" style="background: transparent">
+                        <v-chip-group
+                                v-model="billType"
+                                mandatory column
+                                active-class="primary--text">
+                            <v-chip x-large label>
+                                {{$t('tableCheckOutBillTypeOptionNormal')}}
+                            </v-chip>
+                            <v-chip x-large label>
+                                {{$t('tableCheckOutBillTypeOptionCompany')}}
+                            </v-chip>
+                            <v-chip x-large label>
+                                {{$t('tableCheckOutBillTypeOption3')}}
+                            </v-chip>
+                        </v-chip-group>
+                    </v-sheet>
+                </v-sheet>
+                <v-divider class="my-3"></v-divider>
+                <div style="height: 120px;display: grid;grid-template-columns: 1fr 1fr">
+                    <div class="pa-2">
+                        <v-btn tile fab
+                               outlined
+                               @click="cancel"
+                               color="error" block x-large>
+                            {{$t('cancel')}}
+                        </v-btn>
+                    </div>
+                    <div class="pa-2">
+                        <v-btn color="success"
+                               @click="checkOut"
+                               elevation="0"
+                               :disabled="!equals(remainTotal,0)"
+                               tile fab block x-large> {{$t('tableCheckOutConfirm')}}
+                        </v-btn>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -162,7 +159,6 @@ export default {
   name: 'CheckOutCalculator',
   props: {
     total: {
-      type: [String, Number],
       default: 0
     }
   },

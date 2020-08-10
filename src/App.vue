@@ -1,7 +1,9 @@
 <template>
-    <keep-alive>
-        <router-view/>
-    </keep-alive>
+    <transition name="slide">
+        <keep-alive>
+            <router-view/>
+        </keep-alive>
+    </transition>
 </template>
 
 <script>
@@ -37,6 +39,13 @@ export default {
         position: fixed;
         top: 0;
         z-index: 1001;
+    }
+
+    .floatMenuPanel {
+        padding: 12px;
+        grid-gap: 4px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
     }
 
     .floatMenuPanelItem {

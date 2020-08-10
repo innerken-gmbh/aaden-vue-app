@@ -24,17 +24,14 @@ export default {
   },
   props: {
     dish: {
-      type: Object,
       default: () => {
       }
     },
     mod: {
-      type: Function,
       default: () => {
       }
     },
     modificationShow: {
-      type: Boolean,
       default: false
     }
   },

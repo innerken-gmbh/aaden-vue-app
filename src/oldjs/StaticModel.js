@@ -17,10 +17,10 @@ export async function getAllDishesWithCache (force = false) {
     const res = await hillo.get('Dishes.php', { lang: i18n.locale.toUpperCase() })
     dishesList.length = 0
     if (res.content.length > 0) {
-      res.content.forEach(d => {
+      dishesList = StandardDishesListFactory().formatList(res.content)
+      dishesList.forEach(d => {
         dishesDictionary[d.code.toLowerCase()] = d
       })
-      dishesList = StandardDishesListFactory().formatList(res.content)
     }
   }
   return dishesList

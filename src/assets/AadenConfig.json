@@ -12,7 +12,7 @@
   "useOpenTablePrompt": false,
   "checkOutUsePassword": false,
   "jumpToHomeWhenOrder": false,
-  "Protocol": "http://",
-  "FMCVersion": false,
+  "Protocol": "https://",
+  "FMCVersion": true,
   "useCart": true
 }

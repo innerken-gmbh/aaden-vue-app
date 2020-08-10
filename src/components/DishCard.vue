@@ -1,6 +1,6 @@
 <template>
-  <v-sheet class="dishCard container--fluid">
-    <div @click="checkIfOpen" style="width: 100%" class="d-flex justify-space-between">
+  <div class="dishCard">
+    <div @click="checkIfOpen" class="d-flex justify-space-between">
       <div class="dishInfo">
         <div class="basicInfo d-flex">
           <div class="d-flex align-start justify-start">
@@ -10,17 +10,6 @@
             <div class='dishName' :style="{maxWidth:showEdit?'140px':'200px'}">
               {{ dish.name }}
             </div>
-            <template v-if="showEdit">
-              <v-icon @click.stop="editNote(dish)">mdi-pencil-circle</v-icon>
-            </template>
-            <template v-if="showNumber">
-              <v-icon @click.stop="dish.change(-1)">
-                mdi-minus-circle
-              </v-icon>
-              <v-icon @click.stop="dish.change(1)">
-                mdi-plus-circle
-              </v-icon>
-            </template>
           </div>
           <div class='d-flex'>
                     <span v-if="dish.isFree==='1'">
@@ -37,7 +26,7 @@
                     </span>
           </div>
         </div>
-        <div v-if="dish.displayApply.length>0" class="dishMod">
+        <div v-show="dish.displayApply.length>0" class="dishMod">
           <div class="d-flex subtitle-2 justify-space-between grey--text text--darken-2"
                v-bind:key="'mod_order-i'+i+'value'+ap.value" v-for="(ap,i) in dish.displayApply">
             <div>{{ ap.groupName }}:{{ ap.value }}</div>
@@ -50,7 +39,7 @@
             </div>
           </div>
         </div>
-        <div v-if="dish.note" class="dishNote">
+        <div v-show="dish.note" class="dishNote">
           <v-icon color="primary" small class="mr-1">mdi-pencil</v-icon>
           {{ dish.note }}
         </div>
@@ -58,7 +47,20 @@
       <div :style="{color}" class="dishCount">&times;{{ dish.count }}
       </div>
     </div>
-    <div v-if="expand" class="editRow elevation-3">
+    <div v-show="expand" class="editRow elevation-3">
+      <div v-if="showEdit" class="py-2">
+        <template>
+          <v-icon @click.stop="editNote(dish)">mdi-pencil-circle</v-icon>
+        </template>
+        <template v-if="showNumber">
+          <v-icon @click.stop="dish.change(-1)">
+            mdi-minus-circle
+          </v-icon>
+          <v-icon @click.stop="dish.change(1)">
+            mdi-plus-circle
+          </v-icon>
+        </template>
+      </div>
       <div class="d-flex align-center" style="width: 100%">
         <v-slider
             dense
@@ -85,11 +87,11 @@
         </v-slider>
         <span class="ml-4">&times;{{ clickNumber }}</span>
         <v-btn class="ml-3" @click="click" icon>
-          <v-icon>mdi-arrow-right-circle</v-icon>
+          <v-icon>mdi-clipboard-edit</v-icon>
         </v-btn>
       </div>
     </div>
-  </v-sheet>
+  </div>
 </template>
 
 <script>
@@ -101,25 +103,20 @@ export default {
   components: { PriceText },
   props: {
     dish: {
-      type: Object,
       default: () => {
       }
     },
     clickCallback: {
-      type: Function,
       default: () => {
       }
     },
     showEdit: {
-      type: Boolean,
       default: false
     },
     showNumber: {
-      type: Boolean,
       default: false
     },
     color: {
-      type: String,
       default: '#367aeb'
     }
   },
@@ -146,7 +143,7 @@ export default {
       }
     },
     checkIfOpen () {
-      if (this.dish.count > 1) {
+      if (this.dish.count > 1 || this.showEdit) {
         this.expand = !this.expand
       } else {
         this.callCallBack()
@@ -183,11 +180,11 @@ export default {
 </script>
 
 <style scoped>
+
 .dishCard {
   margin-top: 4px;
   background: white;
-  border-radius: 5px;
-  box-shadow: 0 3px 4px 0 rgba(220, 224, 239, 0.59);
+  border-bottom: 1px solid #e2e3e5;
 }
 
 .dishInfo {

@@ -1,33 +1,32 @@
 <template>
     <v-card>
         <v-toolbar
+                dense
                 tile
-                dense class="font-weight-bold"
+                class="font-weight-bold"
                 :color="color" dark>
 
-            <slot name="after-title" :expand="expand">
-                <span class="mr-1">{{title}}</span>
-            </slot>
+            <v-toolbar-title>{{title}}</v-toolbar-title>
+
             <v-spacer/>
             <div class="d-flex align-center">
                 <v-icon color="white">mdi-cash-usd</v-icon>
                 <span class="ml-1">{{total | priceDisplay}}</span>
-                <v-icon color="white" class="ml-6">mdi-food</v-icon>
+                <v-icon color="white" class="ml-3">mdi-food</v-icon>
                 <span class="ml-1">{{count}}</span>
             </div>
-            <v-btn icon dark @click="expand=!expand">
+            <v-btn icon small @click="expand=!expand">
                 <v-icon v-if="!expand">mdi-unfold-more-horizontal</v-icon>
                 <v-icon v-else>mdi-unfold-less-horizontal</v-icon>
             </v-btn>
         </v-toolbar>
 
-        <div v-dragscroll v-if="expand" class="orderDishList"
+        <div v-dragscroll v-show="expand" class="orderDishList"
              :style="{maxHeight: `calc(100vh - 48px - ${extraHeight})`,overflow:'hidden'}"
         >
             <div>
                 <template v-for="(order,index) in realOrder">
-                    <div :key="'order'+title+order.tid+
-                        'code'+index+'hash'+order.hash">
+                    <div :key="'order'+title+order.identity+order.hash">
                         <dish-card
                                 :color="color"
                                 :show-number="showNumber"
@@ -40,7 +39,6 @@
         </div>
 
     </v-card>
-
 </template>
 
 <script>
@@ -55,40 +53,31 @@ export default {
   },
   props: {
     title: {
-      type: String,
       default: ''
     },
     extraHeight: {
-      type: String,
       default: '0px'
     },
     orders: {
-      type: Array,
       default: () => []
     },
     clickCallback: {
-      type: Function,
       default: () => {
       }
     },
     showNumber: {
-      type: Boolean,
       default: false
     },
     discountRatio: {
-      type: Number,
       default: 0
     },
     defaultExpand: {
-      type: Boolean,
       default: false
     },
     showEdit: {
-      type: Boolean,
       default: false
     },
     color: {
-      type: String,
       default: '#367aeb'
     }
   },

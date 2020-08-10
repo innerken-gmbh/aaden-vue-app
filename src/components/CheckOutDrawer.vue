@@ -1,25 +1,15 @@
 <template>
-    <v-bottom-sheet fullscreen v-model="realShow"
-              >
-        <v-card color="white" class="d-flex justify-space-between fill-height">
-            <div v-show="order.count()>0" style="width: 340px">
-                <dish-card-list
-                        :discount-ratio="discountRatio"
-                        :title="'结账菜品'"
-                        :default-expand="true" :orders="order.list"/>
-            </div>
-            <div class="flex-grow-1 px-2">
-                <check-out-calculator
-                        @payment-cancel="realShow=false"
-                        @payment-submit="checkOut"
-                        :total="order.total()*(1-discountRatio)"/>
-            </div>
+    <v-navigation-drawer width="fit-content" temporary fixed left v-model="realShow">
+        <v-card class="fill-height">
+            <check-out-calculator
+                    @payment-cancel="realShow=false"
+                    @payment-submit="checkOut"
+                    :total="order.total()*(1-discountRatio)"/>
         </v-card>
-    </v-bottom-sheet>
+    </v-navigation-drawer>
 </template>
 
 <script>
-import DishCardList from './DishCardList'
 import CheckOutCalculator from './CheckOutCalculator'
 import { hillo } from 'innerken-utils'
 import { toast } from '../oldjs/common'
@@ -29,29 +19,22 @@ import { setDiscountToTable } from '../oldjs/api'
 
 export default {
   name: 'CheckOutDrawer',
-  components: { CheckOutCalculator, DishCardList },
+  components: { CheckOutCalculator },
   props: {
     order: {
-      type: Object,
       default: () => ({ total: () => 0, count: () => 0 })
     },
     visible: {
-      type: Boolean,
       default: true
     },
     checkOutType: {
-      type: String,
       default: 'checkOut'
     },
     discountRatio: {
-      type: Number,
       default: 1
     },
-    tableId: {
-      type: [String, Number]
-    },
+    tableId: {},
     discountStr: {
-      type: String,
       default: ''
     }
   },
