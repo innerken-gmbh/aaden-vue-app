@@ -63,7 +63,7 @@
             <v-main>
                 <v-card elevation="0" color="transparent" v-cloak
                         class="dishListContainer" id="dishListContainer">
-                    <v-toolbar rounded dense>
+                    <v-toolbar  rounded dense>
                         <v-tabs
                                 center-active
                                 show-arrows
@@ -73,8 +73,8 @@
                                 Alle
                             </v-tab>
                             <template v-for="category of filteredC">
-                                <v-tab v-bind:key="category.id+'categorytypes'"
-                                       style="font-size: 16px"
+                                <v-tab v-bind:key="'categorytypes'+category.id"
+                                     :class="category.color"  :style="{fontSize: '16px'}"
                                 >
                                     <div class="font-weight-bold">{{ category.name }}</div>
                                 </v-tab>
@@ -85,14 +85,15 @@
                         <div class="dishCardList">
                             <template v-for="dish of filteredDish">
                                 <v-sheet rounded outlined :key="'dish'+dish.code"
+                                         :class="dish.displayColor"
                                          class="dishBlock d-flex flex-wrap flex-column justify-space-between"
                                          @click="orderOneDish(dish.code)">
                                     <div class="name">{{ dish.dishName }}</div>
                                     <div class="spaceBetween"
                                          style="align-items: center;flex-wrap: wrap">
-                                        <div class="code">{{ dish.code }}<span
-                                                class="red--text"
-                                                v-if="dish.haveMod>0">*</span>
+                                        <div class="code">
+                                            <span v-code-hide>{{ dish.code }}</span>
+                                            <span class="red--text" v-if="dish.haveMod>0">*</span>
                                         </div>
                                         <div class="price">{{ dish.isFree === '1' ? 'Frei' : dish.price }}</div>
                                     </div>
@@ -134,10 +135,9 @@
                                     :default-expand="Config.defaultExpand">
                             </dish-card-list>
                             <v-toolbar dense>
-                                <v-btn @click="cartListModel.clear()" dark color="error">{{ $t('cancel') }}</v-btn>
-                                <v-btn class="flex-grow-1" @click="orderDish(cartListModel.list)" dark color="#367aeb">
-                                    {{
-                                    $t('confirm') }}
+                                <v-btn @click="cartListModel.clear()" class="mr-1" outlined color="error">{{ $t('cancel') }}</v-btn>
+                                <v-btn class="flex-grow-1" @click="orderDish(cartListModel.list)" dark>
+                                    {{ $t('confirm') }}
                                 </v-btn>
                             </v-toolbar>
                         </v-card>
@@ -470,6 +470,7 @@ import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
 import { IKUtils } from 'innerken-utils'
 import Navgation from '../components/Navgation'
+import CategoryColor from '../oldjs/CategoryColor'
 
 const DefaultAddressInfo = {
   reason: ''
@@ -637,6 +638,16 @@ export default {
         }
         this.categories = res.content
         this.dishes = await getAllDishesWithCache()
+        this.categories.forEach((c, i) => {
+          c.dishes = []
+          c.color = CategoryColor[i]
+          this.dishes.forEach(d => {
+            if (parseInt(d.categoryId) === parseInt(c.id)) {
+              d.displayColor = c.color
+              c.dishes.push(d)
+            }
+          })
+        })
       }
     },
     orderOneDish: function (code) {
@@ -1052,16 +1063,20 @@ export default {
       return dishesHint
     },
     filteredC: function () {
+      let c = this.categories
+      c = c.filter(c => c.dishes?.length > 0)
       if (this.activeDCT) {
         const dct = this.dct[this.activeDCT - 1]
-        return this.categories.filter((item) => {
+        return c.filter((item) => {
           return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
         })
       }
-      return this.categories
+      return c
     },
     filteredDish: function () {
-      let list = this.dishes
+      let list = this.filteredC.reduce((arr, i) => {
+        return arr.concat(i.dishes)
+      }, [])
       if (this.activeDCT) {
         const dct = this.dct[this.activeDCT - 1]
         list = list.filter((item) => {

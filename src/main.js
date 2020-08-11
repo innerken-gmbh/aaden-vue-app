@@ -31,6 +31,14 @@ Vue.directive('hide-quick-buy', {
   }
 })
 
+Vue.directive('code-hide', {
+  bind: function (el) {
+    if (GlobalConfig.hideCode) {
+      el.style.display = 'none'
+    }
+  }
+})
+
 async function initial () {
   await loadConfig()
   await initialAadenBase(GlobalConfig)
