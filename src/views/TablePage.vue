@@ -72,8 +72,10 @@
                             <v-card-text>
                                 <v-row>
                                     <v-col cols="6">
-                                        <div style="max-height:calc(100vh - 124px); overflow: hidden" class="collapse pa-2" v-dragscroll>
-                                            <div v-cloak v-bind:key="'area'+area.areaName" v-for="area in areas" class="area">
+                                        <div style="max-height:calc(100vh - 124px); overflow: hidden"
+                                             class="collapse pa-2" v-dragscroll>
+                                            <div v-cloak v-bind:key="'area'+area.areaName" v-for="area in areas"
+                                                 class="area">
                                                 <div class="areaTitle">{{ area.areaName }}</div>
                                                 <div class="areaTableContainer">
                                                     <template v-for="(table) in area.tables">
@@ -81,7 +83,9 @@
                                                             <div v-if="table.usageStatus==='1'" class="tableCard"
                                                                  v-bind:class="{onCall:parseInt(table.callService)===1}"
                                                                  v-on:click='jumpToTable(table.tableId,table.tableName)'>
-                                                                <div class="tableCardName tableBold">{{ table.tableName }}</div>
+                                                                <div class="tableCardName tableBold">{{ table.tableName
+                                                                    }}
+                                                                </div>
                                                             </div>
                                                             <div v-else @click="createTable(table.tableName)"
                                                                  class="tableCard notUsed">
@@ -141,14 +145,16 @@
                                                         <v-list>
                                                             <v-list-item>
                                                                 <v-list-item-title>
-                                                                    {{ rawAddressInfo.firstName }} {{ rawAddressInfo.lastName }}
+                                                                    {{ rawAddressInfo.firstName }} {{
+                                                                    rawAddressInfo.lastName }}
                                                                 </v-list-item-title>
                                                             </v-list-item>
                                                             <v-list-item>
                                                                 <v-list-item-content>
                                                                     <div> {{ rawAddressInfo.addressLine1 }}</div>
                                                                     <div> {{ rawAddressInfo.addressline2 }}</div>
-                                                                    <div> {{ rawAddressInfo.city }} {{ rawAddressInfo.plz }}
+                                                                    <div> {{ rawAddressInfo.city }} {{
+                                                                        rawAddressInfo.plz }}
                                                                     </div>
                                                                     <div><span class="font-weight-bold">Email: </span>{{
                                                                         rawAddressInfo.email
@@ -176,7 +182,8 @@
                                                             <v-spacer></v-spacer>
 
                                                             <v-btn text @click="menu = false">Cancel</v-btn>
-                                                            <v-btn color="primary" text @click="menu = false">Save</v-btn>
+                                                            <v-btn color="primary" text @click="menu = false">Save
+                                                            </v-btn>
                                                         </v-card-actions>
                                                     </v-card>
                                                 </v-menu>
@@ -184,12 +191,17 @@
                                             </v-toolbar>
                                             <v-card-text>
                                                 <div class="spaceBetween">
-                                                    <div class="verticalInfoRowLabel">{{ $t('tableInfoLabelTime') }}</div>
-                                                    <div class="verticalInfoRowText">{{ tableDetailInfo.createTimestamp }}</div>
+                                                    <div class="verticalInfoRowLabel">{{ $t('tableInfoLabelTime') }}
+                                                    </div>
+                                                    <div class="verticalInfoRowText">{{ tableDetailInfo.createTimestamp
+                                                        }}
+                                                    </div>
                                                 </div>
                                                 <div class="mt-1 spaceBetween">
-                                                    <div class="verticalInfoRowLabel">{{ $t('tableInfoLabelSeat') }}</div>
-                                                    <div class="verticalInfoRowText">{{ tableDetailInfo.satCount }}</div>
+                                                    <div class="verticalInfoRowLabel">{{ $t('tableInfoLabelSeat') }}
+                                                    </div>
+                                                    <div class="verticalInfoRowText">{{ tableDetailInfo.satCount }}
+                                                    </div>
                                                 </div>
                                                 <div class="mt-1 typeLabel">
                                             <span>{{ tableDetailInfo.consumeTypeName }}</span
@@ -201,7 +213,8 @@
                                                     </div>
                                                     <div class="verticalInfoRow">
                                                         <div v-cloak class="verticalInfoRowBigText">
-                                                            {{ orderListModel.total() * (1 - discountRatio)|priceDisplay }}
+                                                            {{ orderListModel.total() * (1 - discountRatio)|priceDisplay
+                                                            }}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -221,7 +234,8 @@
                                                         class="floatMenuPanelItem valign-wrapper"
                                                 >
                                                     <div class="innerItem">
-                                                        <div class="icon"><i class="material-icons">account_balance</i></div>
+                                                        <div class="icon"><i class="material-icons">account_balance</i>
+                                                        </div>
                                                         <div class="text">Chef</div>
                                                     </div>
                                                 </div>
@@ -272,7 +286,8 @@
                     <div v-dragscroll class="dragscroll dishCardListContainer">
                         <div class="dishCardList">
                             <template v-for="dish of filteredDish">
-                                <v-sheet rounded outlined :key="'dish'+dish.code"
+                                <v-sheet rounded
+                                         :key="'dish'+dish.code"
                                          :class="dish.displayColor"
                                          class="dishBlock d-flex flex-wrap flex-column justify-space-between"
                                          @click="orderOneDish(dish.code)">
@@ -283,7 +298,11 @@
                                             <span v-code-hide>{{ dish.code }}</span>
                                             <span class="red--text" v-if="dish.haveMod>0">*</span>
                                         </div>
-                                        <div class="price">{{ dish.isFree === '1' ? 'Frei' : dish.price }}</div>
+                                        <div class="price d-flex align-center">
+                                            <v-chip label small style="font-size: 16px; " color="red" dark class=" px-2 mr-1"
+                                                  v-show="dish.count>0">{{dish.count}} &times;</v-chip>
+                                            {{ dish.isFree === '1' ? 'Frei' : dish.price }}
+                                        </div>
                                     </div>
                                 </v-sheet>
                             </template>
@@ -610,6 +629,7 @@ export default {
         }
         this.categories = res.content
         this.dishes = await getAllDishesWithCache()
+        const listOfDishOrderbyCategory = []
         this.categories.forEach((c, i) => {
           c.dishes = []
           c.color = CategoryColor[i]
@@ -617,9 +637,11 @@ export default {
             if (parseInt(d.categoryId) === parseInt(c.id)) {
               d.displayColor = c.color
               c.dishes.push(d)
+              listOfDishOrderbyCategory.push(d)
             }
           })
         })
+        this.cartListModel.setDishList(this.dishes)
       }
     },
     orderOneDish: function (code) {
@@ -663,7 +685,6 @@ export default {
       this.splitOrderListModel.add(item, 1)
     },
     addDish: function (dish, count = 1) {
-      console.time('dish')
       if (!GlobalConfig.useCart) {
         this.orderDish([dish])
         return
@@ -671,7 +692,6 @@ export default {
       setTimeout(() => {
         this.cartListModel.add(dish, count)
       }, 1)
-      console.timeEnd('dish')
     },
     clear: function () {
       this.cartListModel.clear()
@@ -973,7 +993,6 @@ export default {
     },
     createTable: createOrEnterTable,
     async realInitial () {
-      console.log('requestInitial')
       this.showTableList = false
       this.breakCount = 0
       this.Config = GlobalConfig
@@ -1045,10 +1064,13 @@ export default {
       }
       return c
     },
-    filteredDish: function () {
-      let list = this.filteredC.reduce((arr, i) => {
+    listDishOrderByCategory: function () {
+      return this.filteredC.reduce((arr, i) => {
         return arr.concat(i.dishes)
       }, [])
+    },
+    filteredDish: function () {
+      let list = this.listDishOrderByCategory
       if (this.activeDCT) {
         const dct = this.dct[this.activeDCT - 1]
         list = list.filter((item) => {
