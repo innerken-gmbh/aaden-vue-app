@@ -38,11 +38,12 @@
                 </template>
                 <template slot="right-slot">
                     <div class="d-flex align-center justify-space-between" style="min-width: 236px">
-                          <span class="bigTableName mr-2">
-                        {{ tableDetailInfo.tableBasicInfo.name }}
-                    </span>
+                        <span class="bigTableName">
+                            {{ tableDetailInfo.tableBasicInfo.name }}
+                        </span>
+                        <v-icon @click="requestOutTable">mdi-calendar-plus</v-icon>
                         <div class="d-flex">
-                            <span v-hide-quick-buy class="icon-line">
+                            <span class="icon-line">
                                 <v-icon color="white">mdi-account-outline</v-icon>
                                 <span class="ml-1">{{ tableDetailInfo.personCount }}</span>
                             </span>
@@ -53,17 +54,204 @@
                                 </span>
                             </span>
                         </div>
+
                     </div>
 
                 </template>
                 <template slot="after-menu">
-                    <v-app-bar-nav-icon @click="showTableList=!showTableList"></v-app-bar-nav-icon>
+                    <v-menu v-model="showTableList">
+                        <template #activator="{on,attrs}">
+                            <v-app-bar-nav-icon v-on="on" v-bind="attrs"/>
+                        </template>
+                        <v-card max-width="50vw">
+                            <v-toolbar dense>
+                                <v-toolbar-title>菜单</v-toolbar-title>
+                                <v-spacer/>
+                                <v-icon>mdi-close</v-icon>
+                            </v-toolbar>
+                            <v-card-text>
+                                <v-row>
+                                    <v-col cols="6">
+                                        <div style="max-height:calc(100vh - 124px); overflow: hidden" class="collapse pa-2" v-dragscroll>
+                                            <div v-cloak v-bind:key="'area'+area.areaName" v-for="area in areas" class="area">
+                                                <div class="areaTitle">{{ area.areaName }}</div>
+                                                <div class="areaTableContainer">
+                                                    <template v-for="(table) in area.tables">
+                                                        <div :key="'table'+table.tableName">
+                                                            <div v-if="table.usageStatus==='1'" class="tableCard"
+                                                                 v-bind:class="{onCall:parseInt(table.callService)===1}"
+                                                                 v-on:click='jumpToTable(table.tableId,table.tableName)'>
+                                                                <div class="tableCardName tableBold">{{ table.tableName }}</div>
+                                                            </div>
+                                                            <div v-else @click="createTable(table.tableName)"
+                                                                 class="tableCard notUsed">
+                                                                <div class="tableCardName">
+                                                                    {{ table.tableName }}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <v-card>
+                                            <v-toolbar dark tile dense :color="'#367aeb'" style="color: white">
+
+                                                <div class="bigTableName z-depth-2">
+                                                    {{ tableDetailInfo.tableBasicInfo.name }}
+                                                </div>
+                                                <v-spacer></v-spacer>
+                                                <div class="d-flex">
+                                             <span v-hide-quick-buy class="icon-line">
+                                                <v-icon color="white">mdi-account-outline</v-icon>
+                                                <span class="ml-1">{{ tableDetailInfo.personCount }}</span>
+                                            </span>
+                                                    <span class="icon-line ml-2">
+                                                <v-icon color="white">mdi-calendar-text</v-icon>
+                                                <span class="ml-1">
+                                                     {{ tableDetailInfo.order.id }}
+                                                </span>
+                                             </span>
+                                                </div>
+                                                <v-menu
+                                                        v-model="menu"
+                                                        :close-on-content-click="false"
+                                                        :nudge-width="200"
+                                                        offset-x
+                                                >
+                                                    <template v-slot:activator="{ on, attrs }">
+                                                        <v-btn
+                                                                icon
+                                                                color="white"
+                                                                v-bind="attrs"
+                                                                v-on="on"
+                                                        >
+                                                            <v-icon>mdi-map</v-icon>
+                                                        </v-btn>
+                                                    </template>
+
+                                                    <v-card>
+                                                        <v-list>
+                                                            <v-list-item>
+                                                            </v-list-item>
+                                                        </v-list>
+                                                        <v-divider></v-divider>
+                                                        <v-list>
+                                                            <v-list-item>
+                                                                <v-list-item-title>
+                                                                    {{ rawAddressInfo.firstName }} {{ rawAddressInfo.lastName }}
+                                                                </v-list-item-title>
+                                                            </v-list-item>
+                                                            <v-list-item>
+                                                                <v-list-item-content>
+                                                                    <div> {{ rawAddressInfo.addressLine1 }}</div>
+                                                                    <div> {{ rawAddressInfo.addressline2 }}</div>
+                                                                    <div> {{ rawAddressInfo.city }} {{ rawAddressInfo.plz }}
+                                                                    </div>
+                                                                    <div><span class="font-weight-bold">Email: </span>{{
+                                                                        rawAddressInfo.email
+                                                                        }}
+                                                                    </div>
+                                                                    <div><span class="font-weight-bold">Phone: </span>{{
+                                                                        rawAddressInfo.tel
+                                                                        }}
+                                                                    </div>
+                                                                    <span class="font-weight-bold">Lieferzeit: </span>
+                                                                    {{ rawAddressInfo.date }}
+                                                                    {{ rawAddressInfo.time }}
+                                                                    {{ rawAddressInfo.note }}
+                                                                    <div class="chip" v-show="rawAddressInfo.reason">
+                                                                        {{ rawAddressInfo.deliveryMethod }}
+                                                                    </div>
+                                                                    <div class="chip" v-show="rawAddressInfo.reason">
+                                                                        {{ rawAddressInfo.reason }}
+                                                                    </div>
+                                                                </v-list-item-content>
+                                                            </v-list-item>
+                                                        </v-list>
+
+                                                        <v-card-actions>
+                                                            <v-spacer></v-spacer>
+
+                                                            <v-btn text @click="menu = false">Cancel</v-btn>
+                                                            <v-btn color="primary" text @click="menu = false">Save</v-btn>
+                                                        </v-card-actions>
+                                                    </v-card>
+                                                </v-menu>
+                                                <!--外卖地址显示-->
+                                            </v-toolbar>
+                                            <v-card-text>
+                                                <div class="spaceBetween">
+                                                    <div class="verticalInfoRowLabel">{{ $t('tableInfoLabelTime') }}</div>
+                                                    <div class="verticalInfoRowText">{{ tableDetailInfo.createTimestamp }}</div>
+                                                </div>
+                                                <div class="mt-1 spaceBetween">
+                                                    <div class="verticalInfoRowLabel">{{ $t('tableInfoLabelSeat') }}</div>
+                                                    <div class="verticalInfoRowText">{{ tableDetailInfo.satCount }}</div>
+                                                </div>
+                                                <div class="mt-1 typeLabel">
+                                            <span>{{ tableDetailInfo.consumeTypeName }}</span
+                                            >/<span>{{ tableDetailInfo.order.counsumeTypeStatusName }}</span>
+                                                </div>
+                                                <div class="d-flex justify-space-between align-center">
+                                                    <div>
+                                                        <v-icon color="black" x-large>mdi-currency-usd</v-icon>
+                                                    </div>
+                                                    <div class="verticalInfoRow">
+                                                        <div v-cloak class="verticalInfoRowBigText">
+                                                            {{ orderListModel.total() * (1 - discountRatio)|priceDisplay }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </v-card-text>
+                                        </v-card>
+                                        <div class="insPanel surface">
+                                            <div class="floatMenuPanel">
+                                                <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
+                                                     @click="insDecodeButtonList(1)">
+                                                    <div class="innerItem">
+                                                        <div class="icon"><i class="material-icons">arrow_back</i></div>
+                                                        <div class="text">{{ $t('backToHome') }}</div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                        @click="toManage"
+                                                        class="floatMenuPanelItem valign-wrapper"
+                                                >
+                                                    <div class="innerItem">
+                                                        <div class="icon"><i class="material-icons">account_balance</i></div>
+                                                        <div class="text">Chef</div>
+                                                    </div>
+                                                </div>
+                                                <div class="floatMenuPanelItem valign-wrapper"
+                                                     @click="insDecodeButtonList(4)">
+                                                    <div class="innerItem">
+                                                        <div class="icon"><i class="material-icons">swap_horiz</i></div>
+                                                        <div class="text">{{ $t('tableChange') }}</div>
+                                                    </div>
+                                                </div>
+                                                <div class="floatMenuPanelItem valign-wrapper"
+                                                     @click="insDecodeButtonList(5)">
+                                                    <div class="innerItem">
+                                                        <div class="icon"><i class="material-icons">merge_type</i></div>
+                                                        <div class="text">{{ $t('tableMerge') }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </v-col>
+                                </v-row>
+                            </v-card-text>
+                        </v-card>
+                    </v-menu>
                 </template>
             </navgation>
             <v-main>
                 <v-card elevation="0" color="transparent" v-cloak
                         class="dishListContainer" id="dishListContainer">
-                    <v-toolbar  rounded dense>
+                    <v-toolbar rounded dense>
                         <v-tabs
                                 center-active
                                 show-arrows
@@ -74,7 +262,7 @@
                             </v-tab>
                             <template v-for="category of filteredC">
                                 <v-tab v-bind:key="'categorytypes'+category.id"
-                                     :class="category.color"  :style="{fontSize: '16px'}"
+                                       :class="category.color" :style="{fontSize: '16px'}"
                                 >
                                     <div class="font-weight-bold">{{ category.name }}</div>
                                 </v-tab>
@@ -135,7 +323,9 @@
                                     :default-expand="Config.defaultExpand">
                             </dish-card-list>
                             <v-toolbar dense>
-                                <v-btn @click="cartListModel.clear()" class="mr-1" outlined color="error">{{ $t('cancel') }}</v-btn>
+                                <v-btn @click="cartListModel.clear()" class="mr-1" outlined color="error">{{
+                                    $t('cancel') }}
+                                </v-btn>
                                 <v-btn class="flex-grow-1" @click="orderDish(cartListModel.list)" dark>
                                     {{ $t('confirm') }}
                                 </v-btn>
@@ -143,7 +333,7 @@
                         </v-card>
                     </div>
 
-                    <v-card style="z-index: 1" class="infoPanel shadowForInsPanel">
+                    <v-card>
                         <v-toolbar dense>
                             <v-toolbar-title class="title">
                                 €{{ orderListModel.total() * (1 - discountRatio)|priceDisplay }}
@@ -201,224 +391,6 @@
                     :discount-str="discountStr"
                     :discount-ratio="discountRatio"
                     :visible="checkoutShow"/>
-            <v-bottom-sheet inset v-model="showTableList">
-                <v-card color="#f6f6f6">
-                    <v-card-text>
-                        <v-row>
-                            <v-col cols="6">
-                                <div style="max-height: 466px; overflow: hidden" class="collapse pa-2" v-dragscroll>
-                                    <div v-cloak v-bind:key="'area'+area.areaName" v-for="area in areas" class="area">
-                                        <div class="areaTitle">{{ area.areaName }}</div>
-                                        <div class="areaTableContainer">
-                                            <template v-for="(table) in area.tables">
-                                                <div :key="'table'+table.tableName">
-                                                    <div v-if="table.usageStatus==='1'" class="tableCard"
-                                                         v-bind:class="{onCall:parseInt(table.callService)===1}"
-                                                         v-on:click='jumpToTable(table.tableId,table.tableName)'>
-                                                        <div class="tableCardName tableBold">{{ table.tableName }}</div>
-                                                    </div>
-                                                    <div v-else @click="createTable(table.tableName)"
-                                                         class="tableCard notUsed">
-                                                        <div class="tableCardName">
-                                                            {{ table.tableName }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </template>
-                                            <div @click="
-requestOutTable" class="tableCard" style="border: 1px dotted #367aeb;background: transparent">
-                                                <div class="tableCardName">
-                                                    <v-icon color="#367aeb">mdi-plus</v-icon>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </v-col>
-                            <v-col cols="6">
-                                <v-card>
-                                    <v-toolbar dark tile dense :color="'#367aeb'" style="color: white">
-
-                                        <div class="bigTableName z-depth-2">{{ tableDetailInfo.tableBasicInfo.name }}
-                                        </div>
-                                        <v-spacer></v-spacer>
-                                        <div class="d-flex">
-                            <span v-hide-quick-buy class="icon-line">
-                                <v-icon color="white">mdi-account-outline</v-icon>
-                                <span class="ml-1">{{ tableDetailInfo.personCount }}</span>
-                            </span>
-                                            <span class="icon-line ml-2">
-                                <v-icon color="white">mdi-calendar-text</v-icon>
-                                <span class="ml-1">
-                                    {{ tableDetailInfo.order.id }}
-                                </span>
-                            </span>
-                                        </div>
-                                        <v-menu
-                                                v-model="menu"
-                                                :close-on-content-click="false"
-                                                :nudge-width="200"
-                                                offset-x
-                                        >
-                                            <template v-slot:activator="{ on, attrs }">
-                                                <v-btn
-                                                        icon
-                                                        color="white"
-                                                        v-bind="attrs"
-                                                        v-on="on"
-                                                >
-                                                    <v-icon>mdi-map</v-icon>
-                                                </v-btn>
-                                            </template>
-
-                                            <v-card>
-                                                <v-list>
-                                                    <v-list-item>
-                                                    </v-list-item>
-                                                </v-list>
-                                                <v-divider></v-divider>
-                                                <v-list>
-                                                    <v-list-item>
-                                                        <v-list-item-title>
-                                                            {{ rawAddressInfo.firstName }} {{ rawAddressInfo.lastName }}
-                                                        </v-list-item-title>
-                                                    </v-list-item>
-                                                    <v-list-item>
-                                                        <v-list-item-content>
-                                                            <div> {{ rawAddressInfo.addressLine1 }}</div>
-                                                            <div> {{ rawAddressInfo.addressline2 }}</div>
-                                                            <div> {{ rawAddressInfo.city }} {{ rawAddressInfo.plz }}
-                                                            </div>
-                                                            <div><span class="font-weight-bold">Email: </span>{{
-                                                                rawAddressInfo.email
-                                                                }}
-                                                            </div>
-                                                            <div><span class="font-weight-bold">Phone: </span>{{
-                                                                rawAddressInfo.tel
-                                                                }}
-                                                            </div>
-                                                            <span class="font-weight-bold">Lieferzeit: </span>
-                                                            {{ rawAddressInfo.date }}
-                                                            {{ rawAddressInfo.time }}
-                                                            {{ rawAddressInfo.note }}
-                                                            <div class="chip" v-show="rawAddressInfo.reason">
-                                                                {{ rawAddressInfo.deliveryMethod }}
-                                                            </div>
-                                                            <div class="chip" v-show="rawAddressInfo.reason">
-                                                                {{ rawAddressInfo.reason }}
-                                                            </div>
-                                                        </v-list-item-content>
-                                                    </v-list-item>
-                                                </v-list>
-
-                                                <v-card-actions>
-                                                    <v-spacer></v-spacer>
-
-                                                    <v-btn text @click="menu = false">Cancel</v-btn>
-                                                    <v-btn color="primary" text @click="menu = false">Save</v-btn>
-                                                </v-card-actions>
-                                            </v-card>
-                                        </v-menu>
-
-                                    </v-toolbar>
-                                    <v-card-text>
-                                        <div v-hide-quick-buy class="spaceBetween">
-                                            <div class="verticalInfoRowLabel">{{ $t('tableInfoLabelTime') }}</div>
-                                            <div class="verticalInfoRowText">{{ tableDetailInfo.createTimestamp }}</div>
-                                        </div>
-                                        <div v-hide-quick-buy class="mt-1 spaceBetween">
-                                            <div class="verticalInfoRowLabel">{{ $t('tableInfoLabelSeat') }}</div>
-                                            <div class="verticalInfoRowText">{{ tableDetailInfo.satCount }}</div>
-                                        </div>
-                                        <div v-hide-quick-buy class="mt-1 typeLabel">
-              <span>{{ tableDetailInfo.consumeTypeName }}</span
-              >/<span>{{ tableDetailInfo.order.consumeTypeStatusName }}</span>
-                                        </div>
-                                        <div class="d-flex justify-space-between align-center">
-                                            <div>
-                                                <v-icon color="black" x-large>mdi-currency-usd</v-icon>
-                                            </div>
-                                            <div class="verticalInfoRow">
-                                                <div v-cloak class="verticalInfoRowBigText">
-                                                    {{ orderListModel.total() * (1 - discountRatio)|priceDisplay }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </v-card-text>
-                                </v-card>
-                                <div class="insPanel surface">
-                                    <div class="floatMenuPanel">
-                                        <div v-hide-quick-buy class="floatMenuPanelItem valign-wrapper"
-                                             @click="insDecodeButtonList(1)">
-                                            <div class="innerItem">
-                                                <div class="icon"><i class="material-icons">arrow_back</i></div>
-                                                <div class="text">{{ $t('backToHome') }}</div>
-                                            </div>
-                                        </div>
-                                        <div
-                                                @click="toManage"
-                                                class="floatMenuPanelItem valign-wrapper"
-                                        >
-                                            <div class="innerItem">
-                                                <div class="icon"><i class="material-icons">account_balance</i></div>
-                                                <div class="text">Chef</div>
-                                            </div>
-                                        </div>
-
-                                        <div class="floatMenuPanelItem valign-wrapper"
-                                             @click="insDecodeButtonList(2)">
-                                            <div class="innerItem">
-                                                <div class="icon"><i class="material-icons">restaurant</i></div>
-                                                <div class="text">{{ $t('dishOrder') }}</div>
-                                            </div>
-                                        </div>
-                                        <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(3)">
-                                            <div class="innerItem" style="">
-                                                <div class="icon"><i class="material-icons">local_offer</i></div>
-                                                <div class="text ">{{ $t('discount') }}</div>
-                                            </div>
-                                        </div>
-
-                                        <div class="floatMenuPanelItem valign-wrapper"
-                                             @click="insDecodeButtonList(4)">
-                                            <div class="innerItem">
-                                                <div class="icon"><i class="material-icons">swap_horiz</i></div>
-                                                <div class="text">{{ $t('tableChange') }}</div>
-                                            </div>
-                                        </div>
-                                        <div class="floatMenuPanelItem valign-wrapper"
-                                             @click="insDecodeButtonList(5)">
-                                            <div class="innerItem">
-                                                <div class="icon"><i class="material-icons">merge_type</i></div>
-                                                <div class="text">{{ $t('tableMerge') }}</div>
-                                            </div>
-                                        </div>
-
-                                        <div class="floatMenuPanelItem valign-wrapper" @click="insDecodeButtonList(6)">
-                                            <div class="innerItem">
-                                                <div class="icon"><i class="material-icons">account_balance_wallet</i>
-                                                </div>
-                                                <div class="text">{{ $t('payBill') }}</div>
-                                            </div>
-
-                                        </div>
-                                        <div class="floatMenuPanelItem valign-wrapper"
-                                             @click="insDecodeButtonList(7)">
-                                            <div class="innerItem">
-                                                <div class="icon"><i class="material-icons">assignment_turned_in</i>
-                                                </div>
-                                                <div class="text">{{ $t('QuickBill') }}</div>
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </v-col>
-                        </v-row>
-                    </v-card-text>
-                </v-card>
-            </v-bottom-sheet>
         </template>
     </v-app>
 </template>

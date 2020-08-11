@@ -1,6 +1,6 @@
 <template>
     <v-card elevation="0">
-        <v-toolbar dense  dark>
+        <v-toolbar dark>
             <v-app-bar-nav-icon @click="cancel">
                 <v-icon>mdi-close</v-icon>
             </v-app-bar-nav-icon>
@@ -12,7 +12,7 @@
                 <v-btn
                         color="primary"
                         ref="submit"
-                        large
+                        x-large
                         @click="submitModification"
                 >
                     <v-icon left>mdi-check</v-icon>
@@ -55,7 +55,6 @@
             </div>
         </v-card-text>
     </v-card>
-
 </template>
 
 <script>
@@ -81,8 +80,6 @@ export default {
           item.selectValue = item.selectValue.split(',')
           item.priceInfo = item.priceInfo.split(',')
         }
-        console.log(item.priceInfo)
-
         item.selectName.forEach((name, index) => {
           item.select.push({
             text: `${name}`,
@@ -92,8 +89,6 @@ export default {
         })
         realModInfo.push(item)
       })
-      console.log(this.options)
-      console.log(realModInfo)
       return realModInfo
     }
   },

@@ -119,13 +119,13 @@ export default {
         align-items: center;
         background: transparent;
         color: #367aeb;
-        border-radius: 5px;
         cursor: pointer;
     }
 
     .collapse .tableCard.notUsed {
         background: white;
         font-weight: 400;
+        border-radius: 5px;
         box-shadow: 0 3px 6px #d0d2d9;
         color: black;
     }

@@ -14,5 +14,6 @@
   "jumpToHomeWhenOrder": false,
   "Protocol": "https://",
   "FMCVersion": true,
-  "useCart": true
+  "useCart": true,
+  "hideCode": true
 }
