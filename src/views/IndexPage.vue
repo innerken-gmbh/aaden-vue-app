@@ -243,7 +243,7 @@ export default {
       }
     },
     toManage () {
-      oldJumpTo('admin/index.html', GlobalConfig)
+      oldJumpTo('admin/index.html', { DeviceId: GlobalConfig.DeviceId, lang: GlobalConfig.lang })
     },
     autoGetFocus () {
       if (Swal.isVisible()) {
