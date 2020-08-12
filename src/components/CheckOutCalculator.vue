@@ -175,14 +175,15 @@ export default {
         'mdi-circle-small': '.',
         'mdi-cash-usd': '1',
         'mdi-bell': '9',
+        'mdi-cards': '10',
         'mdi-credit-card-outline': '2',
         'mdi-credit-card-wireless': '3',
         'mdi-card-account-details': '4',
         'mdi-dots-horizontal': 'more'
       },
       inputBuffer: '',
-      extraPaymentMethod: ['mdi-credit-card-wireless', 'mdi-card-account-details'],
-      extraPaymentMethodName: ['KreditCard', 'Gutschein'],
+      extraPaymentMethod: ['mdi-credit-card-wireless', 'mdi-card-account-details', 'mdi-cards'],
+      extraPaymentMethodName: ['KreditCard', 'Gutschein', 'SumUp'],
       paymentLog: []
     }
   },
@@ -272,7 +273,17 @@ export default {
             break
           case 'more':
             break
-          case '4':
+          case '10':
+            window.open('sumupmerchant://pay/1.0?' +
+              'affiliate-key=7ca84f17-84a5-4140-8df6-6ebeed8540fc&' +
+              'app-id=com.example.myapp&' +
+              'total=' + this.readBuffer() + '&currency=EUR' +
+              '&title=Taxi Ride' +
+              '&receipt-mobilephone=+3531234567890' +
+              '&receipt-email=customer@mail.com' +
+              '&callback=https://aaden.io')
+            this.logPayment(c)
+            break
           default:
             this.logPayment(c)
         }

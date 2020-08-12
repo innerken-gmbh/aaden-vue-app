@@ -296,11 +296,11 @@
                                          style="align-items: center;flex-wrap: wrap">
                                         <div class="code">
                                             <span v-code-hide>{{ dish.code }}</span>
+                                            <v-chip label small style="font-size: 16px; " color="red" dark class=" px-2 mr-1"
+                                                    v-show="dish.count>0">{{dish.count}}</v-chip>
                                             <span class="red--text" v-if="dish.haveMod>0">*</span>
                                         </div>
                                         <div class="price d-flex align-center">
-                                            <v-chip label small style="font-size: 16px; " color="red" dark class=" px-2 mr-1"
-                                                  v-show="dish.count>0">{{dish.count}} &times;</v-chip>
                                             {{ dish.isFree === '1' ? 'Frei' : dish.price }}
                                         </div>
                                     </div>
@@ -629,18 +629,23 @@ export default {
         }
         this.categories = res.content
         this.dishes = await getAllDishesWithCache()
-        const listOfDishOrderbyCategory = []
         this.categories.forEach((c, i) => {
           c.dishes = []
-          c.color = CategoryColor[i]
           this.dishes.forEach(d => {
             if (parseInt(d.categoryId) === parseInt(c.id)) {
-              d.displayColor = c.color
               c.dishes.push(d)
-              listOfDishOrderbyCategory.push(d)
             }
           })
         })
+        this.categories = this.categories.filter(c => c.dishes?.length > 0).map((c, i) => {
+          c.color = CategoryColor[i]
+          c.dishes.map(d => {
+            d.displayColor = c.color
+            return d
+          })
+          return c
+        })
+
         this.cartListModel.setDishList(this.dishes)
       }
     },
@@ -710,7 +715,7 @@ export default {
     removeDishWithCode: function (code) {
       this.removeDish(this.findDishByCode(code))
     },
-    submitModification: function (mod, dish) {
+    submitModification: function (mod, dish, count) {
       const apply = []
       for (const i of dish.modInfo) {
         const item = { groupId: i.id }
@@ -724,7 +729,7 @@ export default {
       }
       dish.apply = apply// here we add a apply
       mod = {}
-      this.addDish(dish, parseInt(this.count))
+      this.addDish(dish, count ?? parseInt(this.count))
       blockReady()
     },
     cancel: function () {
@@ -1054,8 +1059,8 @@ export default {
       return dishesHint
     },
     filteredC: function () {
-      let c = this.categories
-      c = c.filter(c => c.dishes?.length > 0)
+      const c = this.categories
+
       if (this.activeDCT) {
         const dct = this.dct[this.activeDCT - 1]
         return c.filter((item) => {

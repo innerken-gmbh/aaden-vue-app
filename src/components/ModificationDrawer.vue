@@ -3,7 +3,7 @@
     <v-card class="fill-height">
       <dish-modification
           ref="modification"
-          @modification-submit="submit($event,dish)"
+          @modification-submit="submit(...$event,dish)"
           @modification-cancel="realShow=false"
           :options="dish.modInfo">
         <template v-slot:before>
@@ -47,8 +47,9 @@ export default {
     }
   },
   methods: {
-    submit: function (mod, dish) {
-      this.mod(mod, dish)
+    submit: function (mod, count, dish) {
+      console.log(mod)
+      this.mod(mod, dish, count)
       this.realShow = false
     }
   }

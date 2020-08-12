@@ -113,7 +113,7 @@ export default {
       default: false
     },
     color: {
-      default: '#367aeb'
+      default: 'grey darken-4'
     }
   },
   data: function () {

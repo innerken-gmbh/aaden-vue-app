@@ -9,6 +9,9 @@
             </v-toolbar-title>
             <v-spacer></v-spacer>
             <v-toolbar-items>
+                <v-btn icon @click="count>0?count--:null"><v-icon>mdi-minus</v-icon></v-btn>
+                <v-btn style="font-size: 24px" x-large light>{{count}}</v-btn>
+                <v-btn icon @click="count++" ><v-icon>mdi-plus</v-icon></v-btn>
                 <v-btn
                         color="primary"
                         ref="submit"
@@ -67,6 +70,7 @@ export default {
   },
   data: function () {
     return {
+      count: 1,
       mod: {}
     }
   },
@@ -94,10 +98,12 @@ export default {
   },
   methods: {
     cancel () {
+      this.count = 1
       this.$emit('modification-cancel')
     },
     submitModification () {
-      this.$emit('modification-submit', this.mod)
+      this.$emit('modification-submit', [this.mod, this.count])
+      this.count = 1
     }
   },
   mounted () {

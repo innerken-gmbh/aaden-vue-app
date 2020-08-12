@@ -1,8 +1,10 @@
 import { fetchConfig } from 'aaden-base-model/lib/Models/AadenApi'
 
 const defaultConfig = require('@/assets/AadenConfig.json')
-
+const sumupInfo = require('@/assets/aaden.web.app.json')
 let GlobalConfig = Object.assign({}, defaultConfig)
+
+GlobalConfig.sumupInfo = sumupInfo
 
 // if (isWeb()) {
 //   GlobalConfig.Protocol = 'https://'
