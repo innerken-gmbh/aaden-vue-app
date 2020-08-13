@@ -78,7 +78,11 @@ function updateSetting (key, value) {
 }
 
 async function loadNet () {
-  return await fetchConfig()
+  try {
+    return await fetchConfig()
+  } catch (e) {
+    return {}
+  }
 }
 
 function loadUrl () {
