@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer width="fit-content" temporary hide-overlay left fixed v-model="realShow">
+  <v-navigation-drawer width="fit-content" temporary left fixed v-model="realShow">
     <v-card class="fill-height">
       <dish-modification
           ref="modification"
