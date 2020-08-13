@@ -3,26 +3,23 @@
         <v-overlay z-index="1000" opacity="1" :value="loading">
             <v-progress-circular indeterminate size="64"></v-progress-circular>
         </v-overlay>
-        <v-system-bar app>
-            {{ $t('appName') }}
-            Version <span v-show-quick-buy>FMC-</span>
-            {{ version }}
-            <v-spacer></v-spacer>
-            <time-display/>
-        </v-system-bar>
         <Navgation>
             <template slot="left">
                 <v-app-bar-nav-icon>
                     <v-icon @click="popAuthorize('boss',toManage)">mdi-home-analytics</v-icon>
                 </v-app-bar-nav-icon>
-                <v-btn v-hide-quick-buy @click="toggleDebug()" icon>
-                    <v-icon>
-                        mdi-android-debug-bridge
-                    </v-icon>
-                </v-btn>
+                <v-toolbar-title> {{ $t('appName') }} Version <span v-show-quick-buy>FMC-</span>
+                    {{ version }}
+                </v-toolbar-title>
             </template>
             <template slot="right-slot">
+                <time-display/>
                 <v-toolbar-items class="mx-1">
+                    <v-btn v-hide-quick-buy @click="toggleDebug()" icon>
+                        <v-icon>
+                            mdi-android-debug-bridge
+                        </v-icon>
+                    </v-btn>
                     <v-btn @click="popAuthorize('',
                              requestOutTable)">
                         <v-icon left>mdi-truck-fast</v-icon>
@@ -120,7 +117,7 @@ import {
 import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
-import GlobalConfig, { setDeviceId, useCurrentConfig } from '../oldjs/LocalGlobalSettings'
+import GlobalConfig, { setDeviceId, toggleDebug, useCurrentConfig } from '../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import TimeDisplay from '@/components/TimeDisplay'
@@ -178,6 +175,7 @@ export default {
     popAuthorize,
     createTable: createOrEnterTable,
     jumpToTable,
+    toggleDebug,
     requestOutTable,
     initialUI () {
       this.$refs.ins.focus()
@@ -215,7 +213,6 @@ export default {
       if (t !== '') {
         const escapeStr = '--//'
         if (t.startsWith(escapeStr)) {
-          console.log(t)
           t = t.substr(escapeStr.length)
           if (t.startsWith('d')) {
             t = t.substr(1)
@@ -291,7 +288,7 @@ export default {
         grid-auto-columns: 108px;
         grid-auto-rows: 108px;
         grid-auto-flow: column;
-        grid-gap: 8px;
+        grid-gap: 10px;
         margin-bottom: 12px;
 
     }
@@ -304,7 +301,7 @@ export default {
     }
 
     .tableCard {
-        padding: 8px;
+        padding: 10px;
         width: 100%;
         height: 100%;
         background: white;
@@ -326,7 +323,7 @@ export default {
 
     .tableCard.onCall {
         color: white !important;
-        background: #F34141;
+        background: #fd7f4e;
     }
 
     .tableCard:active {
@@ -417,6 +414,7 @@ export default {
     }
 
     .center-panel {
+        background: #f6f6f6;
         width: 100vw;
     }
 

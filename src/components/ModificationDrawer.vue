@@ -48,7 +48,6 @@ export default {
   },
   methods: {
     submit: function (mod, count, dish) {
-      console.log(mod)
       this.mod(mod, dish, count)
       this.realShow = false
     }
