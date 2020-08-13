@@ -213,7 +213,7 @@ export default {
   },
   methods: {
     equals (a, b) {
-      return Math.abs(a - b) < Number.EPSILON * Math.pow(2, 2)
+      return Math.abs(a - b) < 0.001
     },
     checkOut () {
       this.$emit('payment-submit', this.paymentLog, this.billType)

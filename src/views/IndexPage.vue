@@ -160,7 +160,6 @@ export default {
   },
   computed: {
     windowHeight: function () {
-      console.log(window.innerHeight)
       return window.innerHeight
     },
     realArea: function () {
@@ -271,7 +270,7 @@ export default {
 
 <style scoped>
     .tableDisplay {
-        height: calc(100vh - 72px);
+        height: calc(100vh - 48px);
         overflow: scroll;
     }
 
@@ -405,7 +404,7 @@ export default {
     }
 
     .area {
-        max-height: calc(100vh - 72px);
+        max-height: calc(100vh - 48px);
         margin-right: 14px;
     }
 
