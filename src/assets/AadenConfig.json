@@ -12,8 +12,8 @@
   "useOpenTablePrompt": false,
   "checkOutUsePassword": false,
   "jumpToHomeWhenOrder": false,
-  "Protocol": "https://",
-  "FMCVersion": true,
+  "Protocol": "http://",
+  "FMCVersion": false,
   "useCart": true,
   "hideCode": true
 }

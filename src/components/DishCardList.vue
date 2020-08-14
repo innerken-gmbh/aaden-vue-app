@@ -5,9 +5,7 @@
                 tile
                 class="font-weight-bold"
                 :color="color" dark>
-
             <v-toolbar-title>{{title}}</v-toolbar-title>
-
             <v-spacer/>
             <div class="d-flex align-center">
                 <v-icon color="white">mdi-cash-usd</v-icon>
@@ -52,14 +50,18 @@ export default {
     dragscroll
   },
   props: {
+    dishListModel: {
+      default: () => ({
+        list: [],
+        total: () => 0,
+        count: () => 0
+      })
+    },
     title: {
       default: ''
     },
     extraHeight: {
       default: '0px'
-    },
-    orders: {
-      default: () => []
     },
     clickCallback: {
       default: () => {
@@ -93,37 +95,30 @@ export default {
   },
   computed: {
     originTotal: function () {
-      let totalPrice = 0
-      for (const a of this.orders) {
-        totalPrice += parseFloat(parseInt(a.count) * parseFloat(a.realPrice))
-      }
-      return totalPrice
+      return this.dishListModel.list.length > 0 ? this.dishListModel.total() : 0
     },
     total: function () {
-      let totalPrice = 0
-      for (const a of this.realOrder) {
-        totalPrice += parseFloat(parseInt(a.count) * parseFloat(a.realPrice))
-      }
-      return totalPrice
+      return this.originTotal + (this.discountDish?.realPrice ?? 0)
     },
     count: function () {
-      let count = 0
-      for (const a of this.orders) {
-        count += parseInt(a.count)
-      }
-      return count
+      return this.dishListModel.list.length > 0 ? this.dishListModel.count() : 0
     },
-    realOrder: function () {
-      const realOrder = [].concat(this.orders)
+    discountDish: function () {
       if (this.discountRatio !== 0) {
-        const discountDish = {
+        return {
           name: 'Rabbat:' + this.discountRatio.toFixed(2),
           code: '-1',
           realPrice: -(this.originTotal * this.discountRatio),
           count: 1,
           displayApply: []
         }
-        realOrder.push(discountDish)
+      }
+      return undefined
+    },
+    realOrder: function () {
+      const realOrder = [].concat(this.dishListModel.list)
+      if (this.discountDish) {
+        realOrder.push(this.discountDish)
       }
       return realOrder
     }

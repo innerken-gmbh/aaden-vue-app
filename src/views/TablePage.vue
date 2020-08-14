@@ -285,25 +285,31 @@ grid-template-columns: calc(100vw - 300px) 300px">
                         <div v-dragscroll class="dragscroll dishCardListContainer">
                             <div class="dishCardList">
                                 <template v-for="dish of filteredDish">
-                                    <v-sheet rounded
-                                             :key="'dish'+dish.code"
-                                             :class="dish.displayColor"
-                                             class="dishBlock d-flex flex-wrap flex-column justify-space-between"
-                                             @click="orderOneDish(dish.code)">
-                                        <div class="name">{{ dish.dishName }}</div>
-                                        <div class="spaceBetween"
-                                             style="align-items: center;flex-wrap: wrap">
-                                            <div class="code">
-                                                <span v-code-hide>{{ dish.code }}</span>
-                                                <v-chip label small style="font-size: 16px; " color="red" dark class=" px-2 mr-1"
-                                                        v-show="dish.count>0">{{dish.count}}</v-chip>
-                                                <span class="red--text" v-if="dish.haveMod>0">*</span>
+                                    <v-lazy   :options="{threshold: .5}"
+                                              min-height="108px"
+                                              height="100%"
+                                              transition="fade-transition"
+                                              :key="'dish'+dish.code">
+                                        <v-sheet rounded
+                                                 :class="dish.displayColor"
+                                                 class="dishBlock d-flex flex-wrap flex-column fill-height justify-space-between"
+                                                 @click.stop="orderOneDish(dish.code)">
+                                            <div class="name">{{ dish.dishName }}</div>
+                                            <div class="spaceBetween"
+                                                 style="align-items: center;flex-wrap: wrap">
+                                                <div class="code">
+                                                    <span v-code-hide>{{ dish.code }}</span>
+                                                    <v-chip label small style="font-size: 16px; " color="red" dark class=" px-2 mr-1"
+                                                            v-show="dish.count>0">{{dish.count}}</v-chip>
+                                                    <span class="red--text" v-if="dish.haveMod>0">*</span>
+                                                </div>
+                                                <div class="price d-flex align-center">
+                                                    {{ dish.isFree === '1' ? 'Frei' : dish.price }}
+                                                </div>
                                             </div>
-                                            <div class="price d-flex align-center">
-                                                {{ dish.isFree === '1' ? 'Frei' : dish.price }}
-                                            </div>
-                                        </div>
-                                    </v-sheet>
+                                        </v-sheet>
+                                    </v-lazy>
+
                                 </template>
                             </div>
                         </div>
@@ -315,9 +321,9 @@ grid-template-columns: calc(100vw - 300px) 300px">
                             <v-card v-dragscroll
                                     class="white">
                                 <dish-card-list
+                                        :dish-list-model="orderListModel"
                                         :discount-ratio="discountRatio"
                                         :default-expand="cartListModel.list.length===0"
-                                        :orders="orderListModel.list"
                                         :click-callback="addToSplit"
                                         :extra-height="'96px'"
                                         :title="$t('haveOrderedDish')"
@@ -332,7 +338,7 @@ grid-template-columns: calc(100vw - 300px) 300px">
                                         :show-number="true"
                                         :extra-height="'196px'"
                                         :color="'#707070'"
-                                        :orders="cartListModel.list"
+                                        :dish-list-model="cartListModel"
                                         :show-edit="true" :click-callback="removeDish"
                                         :title="$t('新增菜品')"
                                         :default-expand="Config.defaultExpand">
@@ -373,7 +379,8 @@ grid-template-columns: calc(100vw - 300px) 300px">
                 <dish-card-list
                         :extra-height="'64px'"
                         :discount-ratio="discountRatio"
-                        :default-expand="true" :orders="splitOrderListModel.list"
+                        :default-expand="true"
+                        :dish-list-model="splitOrderListModel"
                         :click-callback="removeFromSplitOrder"
                         :title="$t('operation')"/>
                 <div class="spaceBetween pa-2">
@@ -641,7 +648,6 @@ export default {
           })
           return c
         })
-
         this.cartListModel.setDishList(this.dishes)
       }
     },
@@ -692,7 +698,6 @@ export default {
       }
       setTimeout(() => {
         this.cartListModel.add(dish, count)
-        console.log(dish.identity)
       }, 1)
     },
     clear: function () {
@@ -735,10 +740,9 @@ export default {
       blockReady()
     },
     initialUI () {
+      this.getTableDetail()
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
-      this.getTableDetail()
-      // getOrderedDish();
       blockReady()
     },
     back () {
@@ -996,14 +1000,12 @@ export default {
     },
     createTable: createOrEnterTable,
     async realInitial () {
+      await getConsumeTypeList()
       this.showTableList = false
       this.breakCount = 0
-      this.Config = GlobalConfig
-      await getConsumeTypeList()
-
       if (!GlobalConfig.FMCVersion) {
         addToTimerList(setInterval(this.getTableDetail, 10000))
-        addToTimerList(setInterval(this.autoGetFocus, 1000))
+        // addToTimerList(setInterval(this.autoGetFocus, 1000))
       }
       window.onkeydown = this.listenKeyDown
       this.getCategory()
@@ -1111,7 +1113,8 @@ export default {
       this.realInitial()
     }
   },
-  mounted () {
+  async created () {
+    this.Config = GlobalConfig
     this.realInitial()
   }
 }

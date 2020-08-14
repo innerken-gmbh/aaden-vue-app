@@ -1,12 +1,12 @@
 <template>
-    <v-navigation-drawer width="fit-content" temporary fixed left v-model="realShow">
+    <v-dialog width="fit-content" temporary fixed left v-model="realShow">
         <v-card class="fill-height">
             <check-out-calculator
                     @payment-cancel="realShow=false"
                     @payment-submit="checkOut"
                     :total="order.total()*(1-discountRatio)"/>
         </v-card>
-    </v-navigation-drawer>
+    </v-dialog>
 </template>
 
 <script>
