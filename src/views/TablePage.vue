@@ -259,114 +259,113 @@
                     </v-menu>
                 </template>
             </navgation>
-            <v-main>
-                <v-card elevation="0" color="transparent" v-cloak
-                        class="dishListContainer" id="dishListContainer">
-                    <v-toolbar rounded dense>
-                        <v-tabs
-                                center-active
-                                show-arrows
-                                v-model="activeCategory"
-                        >
-                            <v-tab style="font-size: 16px">
-                                Alle
-                            </v-tab>
-                            <template v-for="category of filteredC">
-                                <v-tab style="text-transform: capitalize" v-bind:key="'categorytypes'+category.id"
-                                       :class="category.color" :style="{fontSize: '16px'}"
-                                >
-                                    <div class="font-weight-bold">{{ category.name }}</div>
+            <v-main >
+                <div style="display: grid;
+grid-template-columns: calc(100vw - 300px) 300px">
+                    <v-card elevation="0" color="transparent" v-cloak
+                            class="dishListContainer" id="dishListContainer">
+                        <v-toolbar rounded dense>
+                            <v-tabs
+                                    center-active
+                                    show-arrows
+                                    v-model="activeCategory"
+                            >
+                                <v-tab style="font-size: 16px">
+                                    Alle
                                 </v-tab>
-                            </template>
-                        </v-tabs>
-                    </v-toolbar>
-                    <div v-dragscroll class="dragscroll dishCardListContainer">
-                        <div class="dishCardList">
-                            <template v-for="dish of filteredDish">
-                                <v-sheet rounded
-                                         :key="'dish'+dish.code"
-                                         :class="dish.displayColor"
-                                         class="dishBlock d-flex flex-wrap flex-column justify-space-between"
-                                         @click="orderOneDish(dish.code)">
-                                    <div class="name">{{ dish.dishName }}</div>
-                                    <div class="spaceBetween"
-                                         style="align-items: center;flex-wrap: wrap">
-                                        <div class="code">
-                                            <span v-code-hide>{{ dish.code }}</span>
-                                            <v-chip label small style="font-size: 16px; " color="red" dark class=" px-2 mr-1"
-                                                    v-show="dish.count>0">{{dish.count}}</v-chip>
-                                            <span class="red--text" v-if="dish.haveMod>0">*</span>
+                                <template v-for="category of filteredC">
+                                    <v-tab style="text-transform: capitalize" v-bind:key="'categorytypes'+category.id"
+                                           :class="category.color" :style="{fontSize: '16px'}"
+                                    >
+                                        <div class="font-weight-bold">{{ category.name }}</div>
+                                    </v-tab>
+                                </template>
+                            </v-tabs>
+                        </v-toolbar>
+                        <div v-dragscroll class="dragscroll dishCardListContainer">
+                            <div class="dishCardList">
+                                <template v-for="dish of filteredDish">
+                                    <v-sheet rounded
+                                             :key="'dish'+dish.code"
+                                             :class="dish.displayColor"
+                                             class="dishBlock d-flex flex-wrap flex-column justify-space-between"
+                                             @click="orderOneDish(dish.code)">
+                                        <div class="name">{{ dish.dishName }}</div>
+                                        <div class="spaceBetween"
+                                             style="align-items: center;flex-wrap: wrap">
+                                            <div class="code">
+                                                <span v-code-hide>{{ dish.code }}</span>
+                                                <v-chip label small style="font-size: 16px; " color="red" dark class=" px-2 mr-1"
+                                                        v-show="dish.count>0">{{dish.count}}</v-chip>
+                                                <span class="red--text" v-if="dish.haveMod>0">*</span>
+                                            </div>
+                                            <div class="price d-flex align-center">
+                                                {{ dish.isFree === '1' ? 'Frei' : dish.price }}
+                                            </div>
                                         </div>
-                                        <div class="price d-flex align-center">
-                                            {{ dish.isFree === '1' ? 'Frei' : dish.price }}
-                                        </div>
-                                    </div>
-                                </v-sheet>
-                            </template>
+                                    </v-sheet>
+                                </template>
+                            </div>
                         </div>
-                    </div>
-                </v-card>
-            </v-main>
-            <v-navigation-drawer clipped stateless value="true" color="transparent" app
-                                 right width="300px">
-                <div class="ml-1 d-flex justify-space-between flex-column fill-height">
-                    <!--          菜品列表容器-->
-                    <div class="panel">
-                        <!--          菜品列表-->
-                        <v-card v-dragscroll
-                                class="white">
-                            <dish-card-list
-                                    :discount-ratio="discountRatio"
-                                    :default-expand="cartListModel.list.length===0"
-                                    :orders="orderListModel.list"
-                                    :click-callback="addToSplit"
-                                    :extra-height="'96px'"
-                                    :title="$t('haveOrderedDish')"
-                            />
-                        </v-card>
-                        <!--          购物车-->
-                        <v-card v-dragscroll
-                                v-show="cartListModel.list.length>0"
-                                class="white">
-                            <dish-card-list
-                                    ref="cartList"
-                                    :show-number="true"
-                                    :extra-height="'196px'"
-                                    :color="'#707070'"
-                                    :orders="cartListModel.list"
-                                    :show-edit="true" :click-callback="removeDish"
-                                    :title="$t('新增菜品')"
-                                    :default-expand="Config.defaultExpand">
-                            </dish-card-list>
+                    </v-card>
+                    <div  class="ml-1 d-flex justify-space-between flex-column fill-height">
+                        <!--          菜品列表容器-->
+                        <div class="panel">
+                            <!--          菜品列表-->
+                            <v-card v-dragscroll
+                                    class="white">
+                                <dish-card-list
+                                        :discount-ratio="discountRatio"
+                                        :default-expand="cartListModel.list.length===0"
+                                        :orders="orderListModel.list"
+                                        :click-callback="addToSplit"
+                                        :extra-height="'96px'"
+                                        :title="$t('haveOrderedDish')"
+                                />
+                            </v-card>
+                            <!--          购物车-->
+                            <v-card v-dragscroll
+                                    v-show="cartListModel.list.length>0"
+                                    class="white">
+                                <dish-card-list
+                                        ref="cartList"
+                                        :show-number="true"
+                                        :extra-height="'196px'"
+                                        :color="'#707070'"
+                                        :orders="cartListModel.list"
+                                        :show-edit="true" :click-callback="removeDish"
+                                        :title="$t('新增菜品')"
+                                        :default-expand="Config.defaultExpand">
+                                </dish-card-list>
+                                <v-toolbar dense>
+                                    <v-btn @click="cartListModel.clear()" class="mr-1" outlined color="error">{{
+                                        $t('cancel') }}
+                                    </v-btn>
+                                    <v-btn class="flex-grow-1" @click="orderDish(cartListModel.list)" dark>
+                                        {{ $t('confirm') }}
+                                    </v-btn>
+                                </v-toolbar>
+                            </v-card>
+                        </div>
+                        <v-card>
                             <v-toolbar dense>
-                                <v-btn @click="cartListModel.clear()" class="mr-1" outlined color="error">{{
-                                    $t('cancel') }}
+                                <v-toolbar-title class="title">
+                                    €{{ orderListModel.total() * (1 - discountRatio)|priceDisplay }}
+                                </v-toolbar-title>
+                                <v-spacer></v-spacer>
+                                <v-btn @click="insDecodeButtonList(3)">
+                                    <v-icon dark>mdi-sale</v-icon>
+                                    {{ $t('discount') }}
                                 </v-btn>
-                                <v-btn class="flex-grow-1" @click="orderDish(cartListModel.list)" dark>
-                                    {{ $t('confirm') }}
+                                <v-btn @click="insDecodeButtonList(6)" dark>
+                                    <v-icon dark left>mdi-calculator-variant</v-icon>
+                                    {{ $t('payBill') }}
                                 </v-btn>
                             </v-toolbar>
                         </v-card>
                     </div>
-
-                    <v-card>
-                        <v-toolbar dense>
-                            <v-toolbar-title class="title">
-                                €{{ orderListModel.total() * (1 - discountRatio)|priceDisplay }}
-                            </v-toolbar-title>
-                            <v-spacer></v-spacer>
-                            <v-btn @click="insDecodeButtonList(3)">
-                                <v-icon dark>mdi-sale</v-icon>
-                                {{ $t('discount') }}
-                            </v-btn>
-                            <v-btn @click="insDecodeButtonList(6)" dark>
-                                <v-icon dark left>mdi-calculator-variant</v-icon>
-                                {{ $t('payBill') }}
-                            </v-btn>
-                        </v-toolbar>
-                    </v-card>
                 </div>
-            </v-navigation-drawer>
+            </v-main>
             <div v-show="splitOrderListModel.list.length>0" class="bottomCart surface"
                  style="background: #f5f6fa;"
                  v-cloak
@@ -1109,6 +1108,9 @@ export default {
     refresh: function () {
       this.realInitial()
     }
+  },
+  mounted () {
+    this.realInitial()
   }
 }
 </script>

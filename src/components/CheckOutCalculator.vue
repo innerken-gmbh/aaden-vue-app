@@ -7,7 +7,7 @@
                     <div class="totalBlock">
                         <div>
                             <v-chip dark label color="primary" small>
-                                应付总额
+                                {{$t("应付总额")}}
                             </v-chip>
                         </div>
                         <span class="totalNumber">
@@ -17,7 +17,7 @@
                     <div class="totalBlock">
                         <div>
                             <v-chip dark label class="font-weight-bold" color="error" small>
-                                剩余总额
+                                {{$t("剩余总额")}}
                             </v-chip>
                         </div>
                         <span class="totalNumber">
@@ -28,7 +28,7 @@
                 <div class="totalBlock">
                     <div>
                         <v-chip dark label color="success">
-                            将要支付
+                            {{$t("将要支付")}}
                         </v-chip>
                     </div>
                     <div style="width:240px;height: 64px">
@@ -83,7 +83,7 @@
         <div style="width: calc(100vw - 340px - 480px)"
              class="paymentLog pa-2">
             <div class="my-3">
-                <h3>结账记录</h3>
+                <h3>{{$t("结账记录")}}</h3>
             </div>
             <div class="my-3" v-dragscroll style="max-height: 460px;overflow:hidden">
                 <template v-for="(paymentInfo,index) in paymentLog">

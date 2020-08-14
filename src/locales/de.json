@@ -375,5 +375,9 @@
   "dishCancel": "löschen",
   "operation": "Betriebs",
   "给菜品打折": "Rabatt",
-  "新增菜品": "Kart"
+  "新增菜品": "Kart",
+  "应付总额": "SUMME",
+  "剩余总额": "VERBLEIBENDE",
+  "将要支付": "BEZAHL",
+  "结账记录": "LOG"
 }
