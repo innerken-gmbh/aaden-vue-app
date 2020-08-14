@@ -692,6 +692,7 @@ export default {
       }
       setTimeout(() => {
         this.cartListModel.add(dish, count)
+        console.log(dish.identity)
       }, 1)
     },
     clear: function () {
@@ -724,6 +725,7 @@ export default {
         apply.push(item)
       }
       dish.apply = apply// here we add a apply
+      dish.forceFormat = true
       mod = {}
       this.addDish(dish, count ?? parseInt(this.count))
       blockReady()

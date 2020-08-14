@@ -26,17 +26,18 @@
                         {{ $t('takeaway') }}
                     </v-btn>
                     <v-btn :color="onlyActive?'primary':'transparent'" @click="onlyActive=!onlyActive">
-                        只看活跃
+                        {{ $t('只看活跃') }}
                     </v-btn>
                 </v-toolbar-items>
-                <v-text-field ref="ins" v-model="buffer"
-                              single-line
-                              hide-details
-                              clearable
-                              class="flex-grow-0"
-                              prepend-inner-icon="mdi-magnify"
-                              placeholder="instruction.."
-                              autofocus></v-text-field>
+                <v-text-field
+                        ref="ins" v-model="buffer"
+                        single-line
+                        hide-details
+                        clearable
+                        class="flex-grow-0"
+                        prepend-inner-icon="mdi-magnify"
+                        placeholder="instruction.."
+                        autofocus/>
             </template>
         </Navgation>
         <v-main>

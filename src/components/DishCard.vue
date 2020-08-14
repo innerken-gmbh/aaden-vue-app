@@ -133,7 +133,6 @@ export default {
   computed: {},
   methods: {
     callCallBack () {
-      console.log(this.dish.code)
       if (this.dish.code !== '-1') {
         this.clickCallback()
       }
