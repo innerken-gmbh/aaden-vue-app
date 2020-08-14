@@ -1,8 +1,5 @@
 <template>
-    <v-app class="transparent">
-        <v-overlay z-index="1000" opacity="1" :value="loading">
-            <v-progress-circular indeterminate size="64"></v-progress-circular>
-        </v-overlay>
+    <v-app>
         <template v-cloak>
             <navgation>
                 <template slot="left">
@@ -275,7 +272,7 @@
                                 Alle
                             </v-tab>
                             <template v-for="category of filteredC">
-                                <v-tab v-bind:key="'categorytypes'+category.id"
+                                <v-tab style="text-transform: capitalize" v-bind:key="'categorytypes'+category.id"
                                        :class="category.color" :style="{fontSize: '16px'}"
                                 >
                                     <div class="font-weight-bold">{{ category.name }}</div>
@@ -1112,13 +1109,6 @@ export default {
     refresh: function () {
       this.realInitial()
     }
-  },
-  activated () {
-    this.loading = true
-    this.realInitial()
-    setTimeout(() => {
-      this.loading = false
-    }, 700)
   }
 }
 </script>

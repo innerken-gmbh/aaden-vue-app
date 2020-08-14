@@ -325,11 +325,6 @@ export default {
         background: #fd7f4e;
     }
 
-    .tableCard:active {
-        color: white;
-        background: #367aeb;
-    }
-
     .tableBold {
         font-weight: 600;
     }
