@@ -1369,6 +1369,7 @@ export default {
     }
 
     .bigTableName {
+        white-space:nowrap;
         font-size: 36px;
         font-weight: bold;
     }
