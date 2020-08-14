@@ -634,7 +634,7 @@ export default {
           })
         })
         this.categories = this.categories.filter(c => c.dishes?.length > 0).map((c, i) => {
-          c.color = CategoryColor[i]
+          c.color = CategoryColor[i % (CategoryColor.length - 1)]
           c.dishes.map(d => {
             d.displayColor = c.color
             return d
