@@ -15,5 +15,6 @@
   "Protocol": "http://",
   "FMCVersion": false,
   "useCart": true,
+  "useColor": false,
   "hideCode": true
 }

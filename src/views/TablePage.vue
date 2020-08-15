@@ -626,7 +626,9 @@ export default {
           c.dishesCount = this.dishes.filter(d => parseInt(d.categoryId) === parseInt(c.id)).length
           return c.dishesCount > 0
         }).map((c, i) => {
-          c.color = CategoryColor[i % (CategoryColor.length - 1)]
+          if (GlobalConfig.useColor) {
+            c.color = CategoryColor[i % (CategoryColor.length - 1)]
+          }
           return c
         })
         this.dishes = this.categories.reduce((arr, i) => {
