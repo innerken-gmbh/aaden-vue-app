@@ -1,7 +1,7 @@
 {
   "name": "Aaden PWA App",
   "short_name": "Aaden",
-  "start_url": "/",
+  "start_url": "/App",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#367aeb",

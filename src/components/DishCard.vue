@@ -130,7 +130,6 @@ export default {
       expand: false
     }, { ...this.dish })
   },
-  computed: {},
   methods: {
     callCallBack () {
       if (this.dish.code !== '-1') {

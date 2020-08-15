@@ -1,5 +1,5 @@
 <template>
-    <v-dialog width="fit-content" temporary fixed left v-model="realShow">
+    <v-dialog width="fit-content" fullscreen v-model="realShow">
         <v-card class="fill-height">
             <check-out-calculator
                     @payment-cancel="realShow=false"

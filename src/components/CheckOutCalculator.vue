@@ -80,7 +80,7 @@
                 </template>
             </v-sheet>
         </div>
-        <div style="width: calc(100vw - 340px - 480px)"
+        <div style="width: calc(100vw - 200px - 480px)"
              class="paymentLog pa-2">
             <div class="my-3">
                 <h3>{{$t("结账记录")}}</h3>
