@@ -1200,7 +1200,7 @@ tr:hover {
 .dishCardList {
   padding-top: 12px;
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(8, 1fr);
   grid-auto-rows: 108px;
   margin-bottom: 120px;
   width: 100%;
