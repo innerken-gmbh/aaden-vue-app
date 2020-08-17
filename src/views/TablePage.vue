@@ -333,7 +333,7 @@ grid-template-columns: calc(100vw - 300px) 300px">
                     </v-card>
                     <div class="ml-1 d-flex justify-space-between flex-column fill-height">
                         <!--          菜品列表容器-->
-                        <div class="panel">
+                        <div>
                             <!--          菜品列表-->
                             <v-card v-dragscroll
                                     class="white">
@@ -372,6 +372,11 @@ grid-template-columns: calc(100vw - 300px) 300px">
                                     </v-btn>
                                 </v-toolbar>
                             </v-card>
+                            <v-toolbar bottom floating absolute v-if="this.tableDetailInfo.order.consumeTypeStatusId<2">
+                                <v-btn @click="acceptOrder" dark color="#367aeb" class="flex-grow-1">{{$t('接受')}}
+                                </v-btn>
+                                <v-btn @click="rejectOrder">{{$t('拒绝')}}</v-btn>
+                            </v-toolbar>
                         </div>
                         <v-card>
                             <v-toolbar dense>
@@ -450,7 +455,6 @@ import {
   popAuthorize,
   requestOutTable,
   setGlobalTableId,
-  showConfirm,
   showConfirmAsyn,
   showTimedAlert,
   Strings,
@@ -879,21 +883,6 @@ export default {
         if (this.tableDetailInfo.order.discountStr) {
           this.discountStr = this.tableDetailInfo.order.discountStr
         }
-        if (!Swal.isVisible() && parseInt(this.tableDetailInfo.order.consumeTypeStatusId) < 2) {
-          // 'renderAddress(addressInfo)'
-          const confirmHtml = ''
-          showConfirm(confirmHtml, () => {
-            fastSweetAlertRequest('请输入可以完成的时间，该时间会被客户收到', 'text',
-              'Orders.php?op=acceptTakeawayOrder', 'reason',
-              { tableId: this.id })
-          },
-          () => {
-            fastSweetAlertRequest('请输入拒绝接单的理由', 'text',
-              'Orders.php?op=rejectTakeAwayOrder', 'reason',
-              { tableId: this.id })
-          }, '是否接下此单？'
-          )
-        }
         this.getOrderedDish()
       } catch (e) {
         this.breakCount++
@@ -905,6 +894,18 @@ export default {
           }
         }
       }
+    },
+    async acceptOrder () {
+      await fastSweetAlertRequest('请输入可以完成的时间，该时间会被客户收到', 'text',
+        'Orders.php?op=acceptTakeawayOrder', 'reason',
+        { tableId: this.id })
+      this.initialUI()
+    },
+    async rejectOrder () {
+      await fastSweetAlertRequest('请输入拒绝接单的理由', 'text',
+        'Orders.php?op=rejectTakeAwayOrder', 'reason',
+        { tableId: this.id })
+      this.initialUI()
     },
     listenKeyDown (e) {
       if (Swal.isVisible()) {
@@ -936,7 +937,7 @@ export default {
         } else if (t === '/rp') {
           hillo.post('Printer.php?op=questReprintOrder', {
             orderId: this.tableDetailInfo.order.id
-          }).then(res => {
+          }).then(() => {
             toast()
             blockReady()
           })
@@ -945,7 +946,7 @@ export default {
             id: this.tableDetailInfo.order.id,
             withTitle: 0,
             printCount: 1
-          }).then(res => {
+          }).then(() => {
             toast()
             blockReady()
           })
@@ -1139,23 +1140,9 @@ export default {
         padding: 12px 0;
     }
 
-    .center-panel {
-        display: flex;
-        align-items: flex-end;
-        max-width: 340px;
-        width: 30%;
-    }
-
     .spaceBetween {
         display: flex;
         justify-content: space-between;
-    }
-
-    .tableContainer {
-        overflow-x: hidden;
-        max-height: calc(100vh - 200px);
-        padding: 4px 8px;
-        overflow-y: scroll;
     }
 
     th {
@@ -1170,19 +1157,6 @@ export default {
 
     td, th {
         padding: 8px 4px;
-    }
-
-    .infoContainer {
-        padding: 5.5px 0;
-    }
-
-    .infoRow {
-        padding: 5.5px 12px;
-        margin: 0;
-    }
-
-    .focus .innerItem {
-        color: white;
     }
 
     ::-webkit-scrollbar {
@@ -1320,13 +1294,6 @@ export default {
         top: 0;
         right: 300px;
         z-index: 5;
-    }
-
-    .panel {
-        width: 100%;
-        box-shadow: 0 3px 6px rgba(0, 25, 244, 0.1);
-        border-radius: 5px;
-        background: #f2f4f7;
     }
 
     .verticalInfoRow {

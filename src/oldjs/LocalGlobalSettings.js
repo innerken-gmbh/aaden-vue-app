@@ -1,14 +1,22 @@
 import { fetchConfig } from 'aaden-base-model/lib/Models/AadenApi'
+import { IKUtils } from 'innerken-utils'
 
 const defaultConfig = require('@/assets/AadenConfig.json')
-const sumupInfo = require('@/assets/aaden.web.app.json')
 let GlobalConfig = Object.assign({}, defaultConfig)
+
+export const NeededKeys = Object.keys(defaultConfig)
+const sumupInfo = require('@/assets/aaden.web.app.json')
 
 GlobalConfig.sumupInfo = sumupInfo
 
-// if (isWeb()) {
-//   GlobalConfig.Protocol = 'https://'
-// }
+function filterNeededKey (config) {
+  const saveConfig = IKUtils.deepCopy(config)
+  const deleteKeys = Object.keys(saveConfig).filter(k => typeof defaultConfig[k] === 'undefined')
+  deleteKeys.forEach(k => {
+    delete saveConfig[k]
+  })
+  return saveConfig
+}
 
 function localStorageManager () {
   const get = function (key) {
@@ -74,7 +82,9 @@ async function electronSettingManager () {
 }
 
 function updateSetting (key, value) {
-  GlobalConfig.settingManager.set(key, value)
+  if (NeededKeys.includes(key)) {
+    GlobalConfig.settingManager.set(key, value)
+  }
 }
 
 async function loadNet () {
@@ -125,11 +135,11 @@ export function reload () {
 }
 
 export function useCurrentConfig () {
-  GlobalConfig.settingManager.setAll(GlobalConfig)
+  GlobalConfig.settingManager.setAll(filterNeededKey(GlobalConfig))
   reload()
 }
 
-function hardReload () {
+export function hardReload () {
   GlobalConfig.settingManager.deleteAll()
 }
 
@@ -141,17 +151,6 @@ export function setDeviceId (id) {
 export function changeLanguage (l) {
   updateSetting('lang', l)
   reload()
-}
-
-let debugCounter = 0
-
-export function toggleDebug () {
-  debugCounter++
-  if (debugCounter > 10) {
-    updateSetting('Debug', !GlobalConfig.settingManager.get('Debug'))
-    reload()
-    debugCounter = 0
-  }
 }
 
 export default GlobalConfig

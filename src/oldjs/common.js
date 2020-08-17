@@ -24,7 +24,7 @@ export async function getAllDishes () {
 // const ipcRenderer = require('electron').ipcRenderer
 
 export function tryToReport () {
-  getData(Config.Protocol + Config.IP + '/PHP/AccessLog.php?op=reportStatus')
+  getData(Config.Protocol + Config.Base + '/PHP/AccessLog.php?op=reportStatus')
     .then(res => {
       if (res.status === 'good') {
         // console.info('reportGood', res)
@@ -337,15 +337,6 @@ export function toast (str = 'Ok', callback, type) {
 
 export function loadingComplete () {
   toast(i18n.t('Loading SuccessFully'))
-}
-
-export function showLoading () {
-  Swal.fire({
-    title: i18n.t('loading'),
-    allowOutsideClick: () => !Swal.isLoading(),
-    allowEscapeKey: false
-  })
-  Swal.showLoading()
 }
 
 export function getData (url, data) {

@@ -87,8 +87,8 @@
   "JSTableAdditionPopReturnDishText": "Gericht zurückgeben/Bestellung stornieren ",
   "JSTableAdditionMergeTableFailed": "Tischzusammensetzung fehlgeschlagen:",
   "JSTableAdditionChangeTableFailed": "Tischwechseln fehlgeschlagen",
-  "title": "Honest Kasse System",
-  "appName": "Aaden Kasse",
+  "title": "Aaden Kasse",
+  "appName": "Aaden Kasse App",
   "indexTabBoss": "Chef",
   "indexTabDineIn": "Im Restaurant",
   "indexTabTakeaway": "Außer Haus",
@@ -381,5 +381,8 @@
   "将要支付": "BEZAHL",
   "结账记录": "LOG",
   "只看活跃": "Aktive",
-  "开新单": "NEUE"
+  "开新单": "NEUE",
+  "Chef": "Chef",
+  "接受": "Annehmen",
+  "拒绝": "Ablehnen"
 }
