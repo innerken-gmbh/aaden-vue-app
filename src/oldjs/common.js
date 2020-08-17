@@ -110,6 +110,7 @@ export async function popAuthorize (type, successCallback, force = false, failed
       failedCallback()
     }
   }
+  return res
 } // Request element password,authorized
 
 /** should provide a model list */
