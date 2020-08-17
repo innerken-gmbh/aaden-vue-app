@@ -1267,16 +1267,6 @@ export default {
         overflow-x: hidden;
     }
 
-    .popMenu {
-        background: white;
-        -webkit-box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
-        box-shadow: 0 3px 8px 0 rgba(0, 86, 255, 0.08);
-        border-radius: 5px;
-        margin-left: 12px;
-        height: 100%;
-        width: 100%;
-    }
-
     .dishCardListContainer {
         background: #f6f6f6;
         width: 100%;
@@ -1294,33 +1284,6 @@ export default {
         top: 0;
         right: 300px;
         z-index: 5;
-    }
-
-    .verticalInfoRow {
-        padding: 0 8px;
-    }
-
-    .verticalInfoRowLabel {
-        font-size: 14px;
-    }
-
-    .verticalInfoRowText {
-        font-size: 16px;
-        font-weight: 600;
-    }
-
-    .typeLabel {
-        font-size: 18px;
-        font-weight: 600;
-    }
-
-    .verticalInfoRowBigText {
-        font-weight: 900;
-        font-size: 48px;
-        text-align: right;
-        width: 100%;
-        padding-right: 4px;
-        color: #367aeb;
     }
 
     .ikButton {
