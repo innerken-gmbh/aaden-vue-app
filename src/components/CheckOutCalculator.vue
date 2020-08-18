@@ -1,7 +1,7 @@
 <template>
-    <div class="d-flex fill-height" style="max-height: 700px">
-        <div style="width: 480px;" class="calculator pa-2 d-flex flex-column fill-height">
-            <v-sheet style="width: 100%" :elevation="2" class="display pa-4 d-flex
+    <div class="d-flex">
+        <div style="width: 480px;height: 700px" class="calculator pa-2 d-flex flex-column fill-height">
+            <v-card style="width: 100%" class="display pa-4 d-flex
                  justify-space-between align-end">
                 <div>
                     <div class="totalBlock">
@@ -38,8 +38,9 @@
                                       :placeholder="''+remainTotal.toFixed(2)"/>
                     </div>
                 </div>
-            </v-sheet>
-            <v-sheet :elevation="2" class="keyboard flex-grow-1 pa-4">
+            </v-card>
+            <v-sheet elevation="2" class="keyboard flex-grow-1 pa-4">
+<!--                keyBoard-->
                 <template v-for="i in keyArr.flat()">
                     <v-btn :ripple="false" v-if="i!=='mdi-dots-horizontal'" @click="input(i)" block x-large
                            class="key"
@@ -80,8 +81,7 @@
                 </template>
             </v-sheet>
         </div>
-        <div style="width: calc(100vw - 200px - 480px)"
-             class="paymentLog pa-2">
+        <div style="width: calc(100vw - 200px - 480px)" class="paymentLog pa-2">
             <div class="my-3">
                 <h3>{{$t("结账记录")}}</h3>
             </div>

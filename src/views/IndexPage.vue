@@ -104,22 +104,23 @@
                             <div class="areaTableContainer">
                                 <template v-for="table in area.tables">
                                     <div v-bind:key="table.name">
-                                        <div v-if="table.usageStatus==='1'" class="tableCard"
-                                             :class="{onCall:parseInt(table.callService)===1}"
+                                        <v-card v-if="table.usageStatus==='1'"
+                                             class="tableCard"
+                                             :dark="getColorLightness(parseInt(table.callService)===1?restaurantInfo.callColor:
+                                             restaurantInfo.tableColor)<128"
+                                             :color="parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor"
                                              @click='jumpToTable(table.tableId,table.tableName)'>
                                             <div class="tableCardName">{{ table.tableName }}</div>
                                             <div class="d-flex justify-space-between">
                                                 <div>
-                                                    <template v-if="table.consumeType!=='4'&&table.consumeType!=='6'">
-                                                        <div v-if="table.consumeType!=='2'" class="tableIconRow">
-                                                            <i class="icon material-icons">person_outline</i>
-                                                            <div class="text">{{ table.seatCount }}</div>
+                                                    <template v-if="['1','2','3','5'].includes(table.consumeType)">
+                                                        <div class="d-flex align-center" v-if="table.consumeType!=='2'" >
+                                                            <v-icon small>mdi-account</v-icon>
+                                                            <span class="ml-1">{{ table.seatCount }}</span>
                                                         </div>
-                                                        <div class="tableIconRow">
-                                                            <i class="icon material-icons">notifications_none</i>
-                                                            <div class="text">
-                                                                {{ table.dishCount === null ? 0 : table.dishCount }}
-                                                            </div>
+                                                        <div class="d-flex align-center" v-if="table.consumeType!=='2'" >
+                                                            <v-icon small>mdi-silverware-fork-knife</v-icon>
+                                                            <span class="ml-1">{{ table.dishCount === null ? 0 : table.dishCount }}</span>
                                                         </div>
                                                     </template>
                                                     <template v-if="table.consumeType==='4'||table.consumeType==='6'">
@@ -137,7 +138,7 @@
                                                     <span class="tableBold">{{ table.createTimestamp }}</span>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </v-card>
                                         <div v-else @click="createTable(table.tableName)"
                                              class="tableCard notUsed">
                                             <div class="tableCardName">
@@ -173,10 +174,11 @@ import {
 import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
-import GlobalConfig, { NeededKeys, setDeviceId, useCurrentConfig, hardReload } from '../oldjs/LocalGlobalSettings'
+import GlobalConfig, { hardReload, NeededKeys, setDeviceId, useCurrentConfig } from '../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import TimeDisplay from '@/components/TimeDisplay'
+import { getColorLightness, getRestaurantInfo } from '../oldjs/api'
 
 export default {
   name: 'IndexPage',
@@ -199,6 +201,10 @@ export default {
       areas: [],
       seen: true,
       buffer: '',
+      restaurantInfo: {
+        tableColor: '#fff',
+        callColor: '#f06800'
+      },
       ins: {},
       time: '',
       dishes: [],
@@ -226,6 +232,7 @@ export default {
     }
   },
   methods: {
+    getColorLightness,
     useCurrentConfig,
     hardReload,
     popAuthorize,
@@ -305,18 +312,17 @@ export default {
     },
     async initPage () {
       window.onkeydown = this.listenKeyDown
-      await getConsumeTypeList()
-
       this.refreshTables()
-      getAllDishes().then(res => {
-        this.dishes = res
-      })
+      getAllDishes()
       const list = [setInterval(this.autoGetFocus, 1000), setInterval(this.refreshTables, 5000)]
       list.map(addToTimerList)
     }
   },
-  mounted: function () {
+  mounted: async function () {
     this.initPage()
+    await getConsumeTypeList()
+    this.restaurantInfo = Object.assign(this.restaurantInfo, (await getRestaurantInfo()).content[0])
+    console.log(this.restaurantInfo)
   },
   beforeDestroy () {
     clearAllTimer()
@@ -359,8 +365,6 @@ export default {
         padding: 10px;
         width: 100%;
         height: 100%;
-        background: white;
-        color: black;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -374,11 +378,6 @@ export default {
         color: #6b6b6b;
         border: 3px dotted #e2e3e5;
         box-shadow: none;
-    }
-
-    .tableCard.onCall {
-        color: white !important;
-        background: #fd7f4e;
     }
 
     .tableBold {

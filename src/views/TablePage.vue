@@ -3,7 +3,7 @@
         <template v-cloak>
             <navgation>
                 <template slot="left">
-                    <v-app-bar-nav-icon @click="back">
+                    <v-app-bar-nav-icon class="primary v-btn--tile" @click="back">
                         <v-icon>mdi-home</v-icon>
                     </v-app-bar-nav-icon>
                     <v-tabs show-arrows
@@ -61,7 +61,7 @@
                             <v-app-bar-nav-icon v-on="on" v-bind="attrs"/>
                         </template>
                         <v-card color="#f6f6f6" max-width="50vw">
-                            <v-toolbar dense dark color="#367aeb">
+                            <v-toolbar dense dark color="primary">
                                 <div class="bigTableName mr-4">
                                     {{ tableDetailInfo.tableBasicInfo.name }}
                                 </div>
@@ -363,31 +363,42 @@ grid-template-columns: calc(100vw - 300px) 300px">
                                         :default-expand="Config.defaultExpand">
                                 </dish-card-list>
                                 <v-toolbar dense>
-                                    <v-btn @click="cartListModel.clear()" class="mr-1" outlined color="error">{{
-                                        $t('cancel')
-                                        }}
-                                    </v-btn>
-                                    <v-btn class="flex-grow-1" @click="orderDish(cartListModel.list)" dark>
-                                        {{ $t('confirm') }}
-                                    </v-btn>
+                                    <v-toolbar-items class="flex-grow-1 mx-n3">
+                                        <v-btn @click="cartListModel.clear()" class="mr-1" color="error">
+                                            <v-icon>
+                                                mdi-trash-can
+                                            </v-icon>
+                                        </v-btn>
+                                        <v-btn @click="orderDish(cartListModel.list,false)" class="mr-1" dark>
+                                            <v-icon>mdi-printer-off</v-icon>
+                                        </v-btn>
+                                        <v-btn color="primary" class="flex-grow-1"
+                                               @click="orderDish(cartListModel.list)" dark>
+                                            <v-icon left>mdi-printer</v-icon>{{ $t('confirm') }}
+                                        </v-btn>
+                                    </v-toolbar-items>
                                 </v-toolbar>
                             </v-card>
                             <v-toolbar bottom floating absolute v-if="this.tableDetailInfo.order.consumeTypeStatusId<2">
-                                <v-btn @click="acceptOrder" dark color="#367aeb" class="flex-grow-1">{{$t('接受')}}
-                                </v-btn>
-                                <v-btn @click="rejectOrder">{{$t('拒绝')}}</v-btn>
+                                <v-toolbar-items>
+                                    <v-btn @click="acceptOrder" dark color="primary" class="flex-grow-1">{{$t('接受')}}
+                                    </v-btn>
+                                    <v-btn @click="rejectOrder">{{$t('拒绝')}}</v-btn>
+                                </v-toolbar-items>
                             </v-toolbar>
                         </div>
                         <v-card>
                             <v-toolbar dense>
-                                <v-btn @click="insDecodeButtonList(3)">
-                                    <v-icon dark>mdi-sale</v-icon>
-                                    {{ $t('discount') }}
-                                </v-btn>
-                                <v-btn class="flex-grow-1" @click="insDecodeButtonList(6)" dark>
-                                    <v-icon dark left>mdi-calculator-variant</v-icon>
-                                    {{ $t('payBill') }}
-                                </v-btn>
+                                <v-toolbar-items class="flex-grow-1 mx-n3">
+                                    <v-btn @click="insDecodeButtonList(3)">
+                                        <v-icon>mdi-sale</v-icon>
+                                        {{ $t('discount') }}
+                                    </v-btn>
+                                    <v-btn color="primary" dark class="flex-grow-1 ml-1" @click="insDecodeButtonList(6)" >
+                                        <v-icon  left>mdi-calculator-variant</v-icon>
+                                        {{ $t('payBill') }}
+                                    </v-btn>
+                                </v-toolbar-items>
                             </v-toolbar>
                         </v-card>
                     </div>
@@ -655,8 +666,7 @@ export default {
         this.dishes = await getAllDishesWithCache()
         this.staticDishes = IKUtils.deepCopy(this.dishes)
         this.categories = res.content.filter(c => {
-          c.dishesCount = this.dishes.filter(d => parseInt(d.categoryId) === parseInt(c.id)).length
-          return c.dishesCount > 0
+          return c.dishes.length > 0
         }).map((c, i) => {
           if (GlobalConfig.useColor) {
             c.color = CategoryColor[i % (CategoryColor.length - 1)]
@@ -986,10 +996,11 @@ export default {
       }
       blocking()
     },
-    orderDish (order = this.cartListModel.list) {
+    orderDish (order = this.cartListModel.list, print = true) {
       hillo.post('Complex.php?op=addDishesToTable', {
         params: JSON.stringify(order),
-        tableId: this.id
+        tableId: this.id,
+        printingKitchenBon: print ? 1 : 0
       }).then(() => {
         this.cartListModel.clear()
         this.initialUI()

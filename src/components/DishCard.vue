@@ -21,8 +21,8 @@
                      </span>
                 </span>
             </div>
-            <div :style="{color}" class="dishCount">&times;{{ dish.count }}
-            </div>
+            <span class="dishCount">&times;{{ dish.count }}
+            </span>
         </div>
         <div>
             <div v-show="dish.displayApply.length>0" class="dishMod">
@@ -111,9 +111,6 @@ export default {
     },
     showNumber: {
       default: false
-    },
-    color: {
-      default: 'grey darken-4'
     }
   },
   data: function () {
