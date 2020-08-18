@@ -141,7 +141,7 @@
                         <v-btn color="success"
                                @click="checkOut"
                                elevation="0"
-                               :disabled="!equals(remainTotal,0)"
+                               :disabled="!equals(remainTotal,0)||paymentLog.length===0"
                                tile fab block x-large> {{$t('tableCheckOutConfirm')}}
                         </v-btn>
                     </div>
@@ -289,9 +289,6 @@ export default {
         }
       }
     }
-  },
-  async mounted () {
-    // this.paymentMethods = (await Payment.getList())
   }
 }
 </script>
