@@ -1,6 +1,7 @@
 <template>
   <v-card>
     <v-toolbar
+       @click="expand=!expand"
         dense
         tile
         class="font-weight-bold"
@@ -13,7 +14,7 @@
         <v-icon color="white" class="ml-3">mdi-food</v-icon>
         <span class="ml-1">{{ count }}</span>
       </div>
-      <v-btn icon small @click="expand=!expand">
+      <v-btn icon small>
         <v-icon v-if="!expand">mdi-unfold-more-horizontal</v-icon>
         <v-icon v-else>mdi-unfold-less-horizontal</v-icon>
       </v-btn>
