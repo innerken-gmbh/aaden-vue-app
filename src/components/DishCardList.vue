@@ -124,5 +124,21 @@ export default {
 </script>
 
 <style scoped>
+  ::-webkit-scrollbar {
+    height: 80%;
+    margin-top: 20%;
+    width: 6px;
+  }
 
+  ::-webkit-scrollbar-thumb {
+    background: url("/Resources/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
+    width: 6px;
+    cursor: pointer;
+    height: 56px;
+
+  }
+
+  ::-webkit-scrollbar-track {
+    width: 10px;
+  }
 </style>

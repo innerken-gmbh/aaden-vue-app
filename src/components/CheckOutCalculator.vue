@@ -154,6 +154,7 @@
 <script>
 
 import { dragscroll } from 'vue-dragscroll'
+import { fastSweetAlertRequest } from '../oldjs/common'
 
 export default {
   name: 'CheckOutCalculator',
@@ -228,32 +229,46 @@ export default {
     clearBuffer () {
       this.inputBuffer = ''
     },
-    readBuffer () {
+    readBuffer (clear = true) {
       if (this.inputBuffer === '') {
         return this.remainTotal
       }
       const read = parseFloat(this.inputBuffer.trim())
-      this.clearBuffer()
+      if (clear) {
+        this.clearBuffer()
+      }
       if (isNaN(read)) {
         return 0
       }
       return read
     },
-    logPayment (type) {
+    async logPayment (type) {
       const price = this.readBuffer()
       const icon = Object.entries(this.realName).find(([k, v]) => v === type)[0]
       const hash = this.paymentLog.length + 'p' + price + 'icon' + icon
-      this.paymentLog.push({
+      const obj = {
         id: type,
         price,
         icon,
         hash
-      })
+      }
+      if (parseInt(type) === 4) {
+        const res = await fastSweetAlertRequest('Bitte Gutschein Id Gaben.',
+          'number', 'MemberCard.php?op=check', 'id',
+          { amount: price }, 'GET')
+        if (res.content) {
+          obj.memberCardId = res.content
+        } else {
+          return
+        }
+      }
+
+      this.paymentLog.push(obj)
     },
     withdrawPayment (index) {
       this.paymentLog.splice(index, 1)
     },
-    input (input) {
+    async input (input) {
       if (!isNaN(parseInt(input))) {
         this.inputBuffer += input
       } else {

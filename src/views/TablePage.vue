@@ -374,7 +374,8 @@ grid-template-columns: calc(100vw - 300px) 300px">
                                         </v-btn>
                                         <v-btn color="primary" class="flex-grow-1"
                                                @click="orderDish(cartListModel.list)" dark>
-                                            <v-icon left>mdi-printer</v-icon>{{ $t('confirm') }}
+                                            <v-icon left>mdi-printer</v-icon>
+                                            {{ $t('confirm') }}
                                         </v-btn>
                                     </v-toolbar-items>
                                 </v-toolbar>
@@ -394,8 +395,9 @@ grid-template-columns: calc(100vw - 300px) 300px">
                                         <v-icon>mdi-sale</v-icon>
                                         {{ $t('discount') }}
                                     </v-btn>
-                                    <v-btn color="primary" dark class="flex-grow-1 ml-1" @click="insDecodeButtonList(6)" >
-                                        <v-icon  left>mdi-calculator-variant</v-icon>
+                                    <v-btn color="primary" dark class="flex-grow-1 ml-1"
+                                           @click="insDecodeButtonList(6)">
+                                        <v-icon left>mdi-calculator-variant</v-icon>
                                         {{ $t('payBill') }}
                                     </v-btn>
                                 </v-toolbar-items>
@@ -404,33 +406,48 @@ grid-template-columns: calc(100vw - 300px) 300px">
                     </div>
                 </div>
             </v-main>
-            <div v-show="splitOrderListModel.list.length>0" class="bottomCart surface"
-                 style="background: #f5f6fa;"
-                 v-cloak
-                 id="splitOrderContainer">
-                <dish-card-list
-                        :extra-height="'64px'"
-                        :discount-ratio="discountRatio"
-                        :default-expand="true"
-                        :dish-list-model="splitOrderListModel"
-                        :click-callback="removeFromSplitOrder"
-                        :title="$t('operation')"/>
-                <div class="spaceBetween pa-2">
-                    <div></div>
-                    <div style="display: flex;align-items: center;flex-wrap: wrap">
-                        <a class="ikButton ml-1 red white--text waves-effect waves-light "
-                           v-on:click="removeAllFromSplitOrder()">{{ $t('cancel') }}</a>
-                        <a class="ikButton ml-1 waves-effect waves-light"
-                           v-on:click="needSplitOrder()">{{ $t('billSplit') }}</a>
-                        <a class="ikButton ml-1 waves-effect waves-light "
-                           v-on:click="deleteDishes()">{{ $t('dishCancel') }}</a>
-                        <a class="ikButton ml-1 waves-effect waves-light "
-                           v-on:click="dishesSetDiscount()">{{ $t('给菜品打折') }}</a>
-                        <a class="ikButton ml-1 waves-effect waves-light "
-                           v-on:click="dishesChangeTable()">{{ $t('tableChange') }}</a>
+            <template v-if="splitOrderListModel.list.length>0">
+                <div class="bottomCart d-flex surface"
+                     style="background: #f5f6fa;"
+                     v-cloak
+                     id="splitOrderContainer">
+                    <div class="pa-1 d-flex flex-column">
+                        <v-btn x-large color="error" class=" mt-1 " @click="removeAllFromSplitOrder()">
+                            <v-icon left>mdi-trash-can</v-icon>
+                            {{ $t('cancel') }}
+                        </v-btn>
+                        <v-btn x-large class=" mt-1 " @click="needSplitOrder()">
+                            <v-icon left>mdi-set-split</v-icon>
+                            {{ $t('billSplit') }}
+                        </v-btn>
+                        <v-btn x-large class=" mt-1 "
+                               v-on:click="deleteDishes()">
+                            <v-icon left>mdi-calendar-remove</v-icon>
+                            {{ $t('dishCancel') }}
+                        </v-btn>
+                        <v-btn x-large class=" mt-1 "
+                               v-on:click="dishesSetDiscount()">
+                            <v-icon left>mdi-sale</v-icon>
+                            {{ $t('给菜品打折') }}
+                        </v-btn>
+                        <v-btn x-large class="  mt-1"
+                               v-on:click="dishesChangeTable()">
+                            <v-icon left>mdi-inbox-arrow-up</v-icon>
+                            {{ $t('tableChange') }}
+                        </v-btn>
                     </div>
+                    <dish-card-list
+                            class="flex-grow-1"
+                            extra-height="64px"
+                            :discount-ratio="discountRatio"
+                            :default-expand="true"
+                            :dish-list-model="splitOrderListModel"
+                            :click-callback="removeFromSplitOrder"
+                            :title="$t('operation')"/>
+
                 </div>
-            </div>
+            </template>
+
             <ModificationDrawer
                     @visibility-changed="changeModification"
                     :modification-show="modificationShow"
@@ -613,7 +630,7 @@ export default {
         }
       }
     },
-    dishQuery (code, count = 1) {
+    async dishQuery (code, count = 1) {
       if (count < 1) {
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
         return
@@ -627,6 +644,7 @@ export default {
           this.showModification(dish, count)
           return
         }
+
         this.addDish(dish, parseInt(count))
       } else {
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
@@ -725,7 +743,21 @@ export default {
       this.orderListModel.add(item, -1)
       this.splitOrderListModel.add(item, 1)
     },
-    addDish: function (dish, count = 1) {
+    addDish: async function (dish, count = 1) {
+      console.log(dish.code.toLowerCase())
+      if (dish.code.toLowerCase().includes('ea')) {
+        dish.originPrice = (await Swal.fire({
+          title: 'Bitte Preis Eingabe',
+          input: 'number',
+          inputAttributes: {
+            min: 0,
+            step: 0.01
+          }
+        })).value
+
+        dish.price = dish.originPrice
+        dish.forceFormat = true
+      }
       if (!GlobalConfig.useCart) {
         this.orderDish([dish])
         return
@@ -1144,6 +1176,24 @@ export default {
 
 <style scoped>
 
+    ::-webkit-scrollbar {
+        height: 80%;
+        margin-top: 20%;
+        width: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: url("/Resources/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
+        width: 6px;
+        cursor: pointer;
+        height: 56px;
+
+    }
+
+    ::-webkit-scrollbar-track {
+        width: 10px;
+    }
+
     .collapse .areaC {
         flex-grow: 1;
         width: 100%;
@@ -1168,25 +1218,6 @@ export default {
 
     td, th {
         padding: 8px 4px;
-    }
-
-    ::-webkit-scrollbar {
-        height: 80%;
-        margin-top: 20%;
-        width: 6px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: url("/Resources/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
-        width: 6px;
-        cursor: pointer;
-        height: 56px;
-
-    }
-
-    ::-webkit-scrollbar-track {
-        width: 10px;
-
     }
 
     tr:hover {
@@ -1286,14 +1317,13 @@ export default {
 
     .bottomCart {
         position: fixed;
-        width: 100%;
-        max-width: 335px;
+        width: calc(100vw - 304px);
+        height: calc(100vh - 8px);
     }
 
     #splitOrderContainer {
-        max-width: 512px;
         top: 0;
-        right: 300px;
+        right: 304px;
         z-index: 5;
     }
 
@@ -1304,6 +1334,7 @@ export default {
         box-shadow: 0 3px 6px rgba(0, 25, 244, 0.1);
         color: black;
         font-size: 18px;
+        width: 100%;
         font-weight: bold;
         border-radius: 5px;
     }

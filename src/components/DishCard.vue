@@ -1,6 +1,6 @@
 <template>
-    <div class="dishCard">
-        <div @click="checkIfOpen" class="px-2 py-1 pr-0 d-flex justify-space-between align-baseline">
+    <div @click="checkIfOpen" class="dishCard">
+        <div  class="px-2 py-1 pr-0 d-flex justify-space-between align-baseline">
             <div v-code-hide class='codeRow'>
                 {{ dish.code }}
             </div>
@@ -13,7 +13,7 @@
                 </span>
                 <span v-else>
                      <span v-if="(dish.tempDiscountMod)&&(Math.abs(parseFloat(dish.tempDiscountMod))>0)">
-                         <s style="font-size: xx-small">{{ dish.originalPrice | priceDisplay }}</s>
+                         <s style="font-size: xx-small">{{ dish.originPrice | priceDisplay }}</s>
                          {{ dish.realPrice | priceDisplay }}
                      </span>
                      <span v-else>
@@ -31,9 +31,7 @@
                     <div>{{ ap.groupName }}:{{ ap.value }}</div>
                     <div>
                         <template v-if="ap.priceInfo&&ap.priceInfo>0">
-                            (
-                            <price-text :price="ap.priceInfo"/>
-                            )
+                            (<price-text :price="ap.priceInfo"/>)
                         </template>
                     </div>
                 </div>
@@ -55,37 +53,42 @@
                     <v-icon @click.stop="dish.change(1)">
                         mdi-plus-circle
                     </v-icon>
+                    <v-icon @click.stop="dish.change(-dish.count)">
+                        mdi-trash-can
+                    </v-icon>
                 </template>
             </div>
-            <div class="d-flex align-center" style="width: 100%">
-                <v-slider
-                        dense
-                        hide-details
-                        v-model="clickNumber"
-                        thumb-label
-                        min="1"
-                        :max="dish.count"
-                >
-                    <template v-slot:prepend>
-                        <v-icon
-                                @click="decrement"
-                        >
-                            mdi-minus
-                        </v-icon>
-                    </template>
-                    <template v-slot:append>
-                        <v-icon
-                                @click="increment"
-                        >
-                            mdi-plus
-                        </v-icon>
-                    </template>
-                </v-slider>
-                <span class="ml-4">&times;{{ clickNumber }}</span>
-                <v-btn class="ml-3" @click="click" icon>
-                    <v-icon>mdi-clipboard-edit</v-icon>
-                </v-btn>
-            </div>
+            <template v-if="!showEdit">
+                <div @click.stop class="d-flex align-center" style="width: 100%">
+                    <v-slider
+                            dense
+                            hide-details
+                            v-model="clickNumber"
+                            thumb-label
+                            min="1"
+                            :max="dish.count"
+                    >
+                        <template v-slot:prepend>
+                            <v-icon
+                                    @click.stop="decrement"
+                            >
+                                mdi-minus
+                            </v-icon>
+                        </template>
+                        <template v-slot:append>
+                            <v-icon
+                                    @click.stop="increment"
+                            >
+                                mdi-plus
+                            </v-icon>
+                        </template>
+                    </v-slider>
+                    <span class="ml-4">&times;{{ clickNumber }}</span>
+                    <v-btn class="ml-3" @click="click" icon>
+                        <v-icon>mdi-clipboard-edit</v-icon>
+                    </v-btn>
+                </div>
+            </template>
         </div>
     </div>
 </template>

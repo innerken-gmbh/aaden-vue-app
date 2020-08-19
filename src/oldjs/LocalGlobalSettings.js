@@ -7,7 +7,7 @@ GlobalConfig.sumupInfo = sumupInfo
 export let NeededKeys = []
 
 export async function loadConfig () {
-  GlobalConfig = await AadenBaseConfig(defaultConfig)
+  GlobalConfig = Object.assign(GlobalConfig, await AadenBaseConfig(defaultConfig))
   NeededKeys = GlobalConfig.neededKeys
   window.Config = GlobalConfig
 }
@@ -34,12 +34,12 @@ export function hardReload () {
   GlobalConfig.hardReload()
 }
 export function setDeviceId (id) {
-  GlobalConfig.updateSetting('DeviceId', id)
+  GlobalConfig.updateSettings('DeviceId', id)
   reload()
 }
 export function changeLanguage (l) {
-  GlobalConfig.updateSetting('lang', l)
+  GlobalConfig.updateSettings('lang', l)
   reload()
 }
-
+console.log(GlobalConfig)
 export default GlobalConfig

@@ -366,7 +366,8 @@ export function getData (url, data) {
  * @param body
  */
 export async function fastSweetAlertRequest
-(title, input, url, dataName, dataObj, method = 'POST', allowEmpty = false,
+(title, input, url, dataName,
+  dataObj, method = 'POST', allowEmpty = false,
   body = null) {
   dataObj[dataName] = ''
   const callBack = function (method, data) {
