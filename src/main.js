@@ -5,7 +5,7 @@ import store from './store'
 import i18n from './i18n'
 import vuetify from './plugins/vuetify'
 import 'material-design-icons/iconfont/material-icons.css'
-import GlobalSetting, { initialAadenBase } from 'aaden-base-model/lib/Models/GlobalSettings'
+import GlobalSetting from 'aaden-base-model/lib/Models/GlobalSettings'
 
 import GlobalConfig, { loadConfig } from './oldjs/LocalGlobalSettings'
 import './registerServiceWorker'
@@ -41,7 +41,6 @@ Vue.directive('code-hide', {
 
 async function initial () {
   await loadConfig()
-  await initialAadenBase(GlobalConfig)
   i18n.locale = GlobalConfig.lang.toLowerCase()
   GlobalSetting.lang = function () {
     return i18n.locale.toUpperCase()

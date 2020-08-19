@@ -4,7 +4,6 @@
   "Debug": true,
   "usePassword": false,
   "UseBossPassword": true,
-  "resolveIP": true,
   "defaultPassword": "111",
   "lang": "ZH",
   "defaultExpand": true,
