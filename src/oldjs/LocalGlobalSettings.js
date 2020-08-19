@@ -27,19 +27,23 @@ export function reload () {
     window.location.reload(true)
   }
 }
+
 export function useCurrentConfig () {
-  GlobalConfig.useCurrentConfig()
+  GlobalConfig.useCurrentConfig(GlobalConfig)
 }
+
 export function hardReload () {
   GlobalConfig.hardReload()
 }
+
 export function setDeviceId (id) {
   GlobalConfig.updateSettings('DeviceId', id)
   reload()
 }
+
 export function changeLanguage (l) {
   GlobalConfig.updateSettings('lang', l)
   reload()
 }
-console.log(GlobalConfig)
+
 export default GlobalConfig

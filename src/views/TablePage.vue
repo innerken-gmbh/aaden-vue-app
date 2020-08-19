@@ -507,7 +507,7 @@ import ModificationDrawer from '../components/ModificationDrawer'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import CheckOutDrawer from '../components/CheckOutDrawer'
 import { findDish, getAllDishesWithCache, goHome } from '../oldjs/StaticModel'
-import { clearAllTimer } from '../oldjs/Timer'
+import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
 import { IKUtils } from 'innerken-utils'
@@ -895,6 +895,7 @@ export default {
       }
     },
     autoGetFocus () {
+      console.log('run')
       if (this.modificationShow || this.checkoutShow) {
         return
       }
@@ -1068,6 +1069,9 @@ export default {
       this.showTableList = false
       this.breakCount = 0
       window.onkeydown = this.listenKeyDown
+      if (GlobalConfig.getFocus) {
+        addToTimerList(setInterval(this.autoGetFocus, 1000))
+      }
       this.getCategory()
       this.getDCT()
       setGlobalTableId(this.id)
@@ -1163,7 +1167,7 @@ export default {
     activeDCT: function () {
       this.activeCategory = 0
     },
-    refresh: function () {
+    refresh: function (val) {
       this.realInitial()
     }
   },

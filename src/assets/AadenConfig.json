@@ -5,6 +5,7 @@
   "usePassword": false,
   "UseBossPassword": true,
   "defaultPassword": "111",
+  "getFocus": false,
   "lang": "ZH",
   "defaultExpand": true,
   "useOpenTablePrompt": false,

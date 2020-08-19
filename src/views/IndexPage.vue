@@ -314,7 +314,10 @@ export default {
       window.onkeydown = this.listenKeyDown
       this.refreshTables()
       getAllDishes()
-      const list = [setInterval(this.autoGetFocus, 1000), setInterval(this.refreshTables, 5000)]
+      const list = [setInterval(this.refreshTables, 5000)]
+      if (GlobalConfig.getFocus) {
+        list.push(setInterval(this.autoGetFocus, 1000))
+      }
       list.map(addToTimerList)
     }
   },
