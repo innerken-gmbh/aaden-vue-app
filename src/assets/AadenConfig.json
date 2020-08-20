@@ -15,5 +15,6 @@
   "FMCVersion": false,
   "useCart": true,
   "useColor": false,
-  "hideCode": true
+  "hideCode": true,
+  "gridSize": "108"
 }

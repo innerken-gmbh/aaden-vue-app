@@ -101,7 +101,10 @@
                     <div v-cloak class="areaC" id="areaC">
                         <div :key="area.name" v-cloak v-for="area in realArea" class="area">
                             <div class="areaTitle">{{ area.areaName }}</div>
-                            <div class="areaTableContainer">
+                            <div class="areaTableContainer" :style="{
+                              gridAutoColumns:Config.gridSize+'px',
+                             gridTemplateRows:'repeat(auto-fill,'+Config.gridSize+'px)'
+                            }">
                                 <template v-for="table in area.tables">
                                     <div v-bind:key="table.name">
                                         <v-card v-if="table.usageStatus==='1'"
@@ -118,7 +121,7 @@
                                                             <v-icon small>mdi-account</v-icon>
                                                             <span class="ml-1">{{ table.seatCount }}</span>
                                                         </div>
-                                                        <div class="d-flex align-center" v-if="table.consumeType!=='2'" >
+                                                        <div class="d-flex align-center">
                                                             <v-icon small>mdi-silverware-fork-knife</v-icon>
                                                             <span class="ml-1">{{ table.dishCount === null ? 0 : table.dishCount }}</span>
                                                         </div>
@@ -308,6 +311,9 @@ export default {
       if (Swal.isVisible()) {
         return
       }
+      if (this.menu) {
+        return
+      }
       this.$refs.ins.focus()
     },
     async initPage () {
@@ -347,10 +353,8 @@ export default {
         max-height: calc(100vh - 100px);
         margin-top: 18px;
         display: grid;
-        grid-template-columns: repeat(1, 108px);
         grid-template-rows: repeat(auto-fill, 108px);
         grid-auto-columns: 108px;
-        grid-auto-rows: 108px;
         grid-auto-flow: column;
         grid-gap: 10px;
         margin-bottom: 12px;
@@ -365,9 +369,9 @@ export default {
     }
 
     .tableCard {
-        padding: 10px;
         width: 100%;
         height: 100%;
+        padding: 10px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
