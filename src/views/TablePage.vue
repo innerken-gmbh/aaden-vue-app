@@ -898,7 +898,6 @@ export default {
       }
     },
     autoGetFocus () {
-      console.log('run')
       if (this.modificationShow || this.checkoutShow) {
         return
       }
@@ -933,25 +932,27 @@ export default {
       } catch (e) {
         this.breakCount++
         if (this.breakCount > 2) {
-          if (!Swal.isVisible()) {
+          if (this.$route.name !== 'index') {
             showTimedAlert('info',
-              this.$t('JSTableGetTableDetailFailed') + e.info,
+              this.$t('JSTableGetTableDetailFailed') + e.data?.info,
               1000, this.goHome)
           }
+        } else {
+          setTimeout(this.getTableDetail, 5000)
         }
       }
     },
     async acceptOrder () {
-      await fastSweetAlertRequest('请输入可以完成的时间，该时间会被客户收到', 'text',
-        'Orders.php?op=acceptTakeawayOrder', 'reason',
-        { tableId: this.id })
+      await hillo.post('Orders.php?op=acceptTakeawayOrder', { tableId: this.id, reason: 'ok' })
       this.initialUI()
     },
     async rejectOrder () {
-      await fastSweetAlertRequest('请输入拒绝接单的理由', 'text',
+      const res = await fastSweetAlertRequest('Bitte ein Ground Eingabe', 'text',
         'Orders.php?op=rejectTakeAwayOrder', 'reason',
         { tableId: this.id })
-      this.initialUI()
+      if (res) {
+        this.goHome()
+      }
     },
     listenKeyDown (e) {
       if (Swal.isVisible()) {
