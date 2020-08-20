@@ -108,16 +108,16 @@
                                 <template v-for="table in area.tables">
                                     <div v-bind:key="table.name">
                                         <v-card v-if="table.usageStatus==='1'"
-                                             class="tableCard"
-                                             :dark="getColorLightness(parseInt(table.callService)===1?restaurantInfo.callColor:
+                                                class="tableCard"
+                                                :dark="getColorLightness(parseInt(table.callService)===1?restaurantInfo.callColor:
                                              restaurantInfo.tableColor)<128"
-                                             :color="parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor"
-                                             @click='jumpToTable(table.tableId,table.tableName)'>
+                                                :color="parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor"
+                                                @click='jumpToTable(table.tableId,table.tableName)'>
                                             <div class="tableCardName">{{ table.tableName }}</div>
                                             <div class="d-flex justify-space-between">
                                                 <div>
                                                     <template v-if="['1','2','3','5'].includes(table.consumeType)">
-                                                        <div class="d-flex align-center" v-if="table.consumeType!=='2'" >
+                                                        <div class="d-flex align-center" v-if="table.consumeType!=='2'">
                                                             <v-icon small>mdi-account</v-icon>
                                                             <span class="ml-1">{{ table.seatCount }}</span>
                                                         </div>
@@ -138,7 +138,12 @@
                                                     </template>
                                                 </div>
                                                 <div>
-                                                    <span class="tableBold">{{ table.createTimestamp }}</span>
+                                                    <div class="tableIconRow">
+                                                        <span class="tableBold">{{ table.createTimestamp }}</span>
+                                                    </div>
+                                                    <div class="tableIconRow">
+                                                        <span class="tableBold">{{findConsumeTypeById(table.consumeType)}}</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </v-card>
@@ -165,7 +170,7 @@
 import { version } from '../../package.json'
 import {
   blockReady,
-  createOrEnterTable,
+  createOrEnterTable, findConsumeTypeById,
   getAllDishes,
   getConsumeTypeList,
   jumpToTable,
@@ -235,6 +240,9 @@ export default {
     }
   },
   methods: {
+    findConsumeTypeById (id) {
+      return findConsumeTypeById(id).name
+    },
     getColorLightness,
     useCurrentConfig,
     hardReload,

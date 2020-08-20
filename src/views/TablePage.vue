@@ -380,26 +380,27 @@ grid-template-columns: calc(100vw - 300px) 300px">
                                     </v-toolbar-items>
                                 </v-toolbar>
                             </v-card>
-                            <v-toolbar bottom floating absolute v-if="this.tableDetailInfo.order.consumeTypeStatusId<2">
-                                <v-toolbar-items>
-                                    <v-btn @click="acceptOrder" dark color="primary" class="flex-grow-1">{{$t('接受')}}
-                                    </v-btn>
-                                    <v-btn @click="rejectOrder">{{$t('拒绝')}}</v-btn>
-                                </v-toolbar-items>
-                            </v-toolbar>
                         </div>
                         <v-card>
                             <v-toolbar dense>
                                 <v-toolbar-items class="flex-grow-1 mx-n3">
-                                    <v-btn @click="insDecodeButtonList(3)">
-                                        <v-icon>mdi-sale</v-icon>
-                                        {{ $t('discount') }}
-                                    </v-btn>
-                                    <v-btn color="primary" dark class="flex-grow-1 ml-1"
-                                           @click="insDecodeButtonList(6)">
-                                        <v-icon left>mdi-calculator-variant</v-icon>
-                                        {{ $t('payBill') }}
-                                    </v-btn>
+                                    <template v-if="this.tableDetailInfo.order.consumeTypeStatusId<2">
+                                        <v-btn @click="acceptOrder" dark color="error" class="flex-grow-1">{{$t('接受')}}
+                                        </v-btn>
+                                        <v-btn @click="rejectOrder">{{$t('拒绝')}}</v-btn>
+                                    </template>
+                                    <template v-else>
+                                        <v-btn @click="insDecodeButtonList(3)">
+                                            <v-icon>mdi-sale</v-icon>
+                                            {{ $t('discount') }}
+                                        </v-btn>
+                                        <v-btn color="primary" dark class="flex-grow-1 ml-1"
+                                               @click="insDecodeButtonList(6)">
+                                            <v-icon left>mdi-calculator-variant</v-icon>
+                                            {{ $t('payBill') }}
+                                        </v-btn>
+                                    </template>
+
                                 </v-toolbar-items>
                             </v-toolbar>
                         </v-card>
@@ -407,44 +408,46 @@ grid-template-columns: calc(100vw - 300px) 300px">
                 </div>
             </v-main>
             <template v-if="splitOrderListModel.list.length>0">
-                <div class="bottomCart d-flex surface"
-                     style="background: #f5f6fa;"
+                <div class="bottomCart surface d-flex justify-end"
+                     style="background: rgba(0,0,0,0.4);"
                      v-cloak
+                     @click="removeAllFromSplitOrder"
                      id="splitOrderContainer">
-                    <div class="pa-1 d-flex flex-column">
-                        <v-btn x-large color="error" class=" mt-1 " @click="removeAllFromSplitOrder()">
-                            <v-icon left>mdi-trash-can</v-icon>
-                            {{ $t('cancel') }}
-                        </v-btn>
-                        <v-btn x-large class=" mt-1 " @click="needSplitOrder()">
-                            <v-icon left>mdi-set-split</v-icon>
-                            {{ $t('billSplit') }}
-                        </v-btn>
-                        <v-btn x-large class=" mt-1 "
-                               v-on:click="deleteDishes()">
-                            <v-icon left>mdi-calendar-remove</v-icon>
-                            {{ $t('dishCancel') }}
-                        </v-btn>
-                        <v-btn x-large class=" mt-1 "
-                               v-on:click="dishesSetDiscount()">
-                            <v-icon left>mdi-sale</v-icon>
-                            {{ $t('给菜品打折') }}
-                        </v-btn>
-                        <v-btn x-large class="  mt-1"
-                               v-on:click="dishesChangeTable()">
-                            <v-icon left>mdi-inbox-arrow-up</v-icon>
-                            {{ $t('tableChange') }}
-                        </v-btn>
+                    <div @click.stop class="d-flex" style="max-width: 600px;width: 50vw">
+                        <div class="pa-1 d-flex flex-column">
+                            <v-btn x-large color="error" class=" mt-1 " @click="removeAllFromSplitOrder()">
+                                <v-icon left>mdi-close-circle</v-icon>
+                                {{ $t('cancel') }}
+                            </v-btn>
+                            <v-btn x-large class=" mt-1 " @click="needSplitOrder()">
+                                <v-icon left>mdi-set-split</v-icon>
+                                {{ $t('billSplit') }}
+                            </v-btn>
+                            <v-btn x-large class=" mt-1 "
+                                   v-on:click="deleteDishes()">
+                                <v-icon left>mdi-calendar-remove</v-icon>
+                                {{ $t('dishCancel') }}
+                            </v-btn>
+                            <v-btn x-large class=" mt-1 "
+                                   v-on:click="dishesSetDiscount()">
+                                <v-icon left>mdi-sale</v-icon>
+                                {{ $t('给菜品打折') }}
+                            </v-btn>
+                            <v-btn x-large class="  mt-1"
+                                   v-on:click="dishesChangeTable()">
+                                <v-icon left>mdi-inbox-arrow-up</v-icon>
+                                {{ $t('tableChange') }}
+                            </v-btn>
+                        </div>
+                        <dish-card-list
+                                class="flex-grow-1"
+                                extra-height="64px"
+                                :discount-ratio="discountRatio"
+                                :default-expand="true"
+                                :dish-list-model="splitOrderListModel"
+                                :click-callback="removeFromSplitOrder"
+                                :title="$t('operation')"/>
                     </div>
-                    <dish-card-list
-                            class="flex-grow-1"
-                            extra-height="64px"
-                            :discount-ratio="discountRatio"
-                            :default-expand="true"
-                            :dish-list-model="splitOrderListModel"
-                            :click-callback="removeFromSplitOrder"
-                            :title="$t('operation')"/>
-
                 </div>
             </template>
 
@@ -1322,7 +1325,7 @@ export default {
     .bottomCart {
         position: fixed;
         width: calc(100vw - 304px);
-        height: calc(100vh - 8px);
+        height: 100vh;
     }
 
     #splitOrderContainer {
