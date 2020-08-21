@@ -16,5 +16,6 @@
   "useCart": true,
   "useColor": false,
   "hideCode": true,
-  "gridSize": "108"
+  "gridSize": "140",
+  "gridSizeX": "100"
 }

@@ -101,29 +101,39 @@
                     <div v-cloak class="areaC" id="areaC">
                         <div :key="area.name" v-cloak v-for="area in realArea" class="area">
                             <div class="areaTitle">{{ area.areaName }}</div>
-                            <div class="areaTableContainer" :style="{
-                              gridAutoColumns:Config.gridSize+'px',
-                             gridTemplateRows:'repeat(auto-fill,'+Config.gridSize+'px)'
+                            <div class="areaTableContainer"
+                                 :style="{
+                              gridTemplateRows:'repeat(auto-fill,'+Config.gridSize+'px)',
+                              gridAutoColumns:Config.gridSizeX+'px'
                             }">
                                 <template v-for="table in area.tables">
                                     <div v-bind:key="table.name">
                                         <v-card v-if="table.usageStatus==='1'"
                                                 class="tableCard"
-                                                :dark="getColorLightness(parseInt(table.callService)===1?restaurantInfo.callColor:
-                                             restaurantInfo.tableColor)<128"
-                                                :color="parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor"
                                                 @click='jumpToTable(table.tableId,table.tableName)'>
                                             <div class="tableCardName">{{ table.tableName }}</div>
-                                            <div class="d-flex justify-space-between">
-                                                <div>
+                                            <div>
+                                                <div class="d-flex justify-space-between">
+                                                    <div class="tableIconRow">
+                                                        <span class="tableBold">{{ table.createTimestamp }}</span>
+                                                    </div>
+                                                    <div class="tableIconRow justify-end">
+                                                        <span :style="{color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}" class="tableBold">{{findConsumeTypeById(table.consumeType)}}</span>
+                                                    </div>
+                                                </div>
+                                                <v-card
+                                                        :dark="getColorLightness(parseInt(table.callService)===1?restaurantInfo.callColor:
+                                             restaurantInfo.tableColor)<128"
+                                                        :color="parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor"
+                                                       tile class="d-flex justify-space-between px-2 py-1 rounded-b-lg rounded-tr-lg">
                                                     <template v-if="['1','2','3','5'].includes(table.consumeType)">
-                                                        <div class="d-flex align-center" v-if="table.consumeType!=='2'">
-                                                            <v-icon small>mdi-account</v-icon>
-                                                            <span class="ml-1">{{ table.seatCount }}</span>
-                                                        </div>
                                                         <div class="d-flex align-center">
                                                             <v-icon small>mdi-silverware-fork-knife</v-icon>
                                                             <span class="ml-1">{{ table.dishCount === null ? 0 : table.dishCount }}</span>
+                                                        </div>
+                                                        <div class="d-flex align-center" v-if="table.consumeType!=='2'">
+                                                            <v-icon small>mdi-account</v-icon>
+                                                            <span>{{ table.seatCount }}</span>
                                                         </div>
                                                     </template>
                                                     <template v-if="table.consumeType==='4'||table.consumeType==='6'">
@@ -136,16 +146,9 @@
                                                             <div class="text">{{ table.childCount }}</div>
                                                         </div>
                                                     </template>
-                                                </div>
-                                                <div>
-                                                    <div class="tableIconRow">
-                                                        <span class="tableBold">{{ table.createTimestamp }}</span>
-                                                    </div>
-                                                    <div class="tableIconRow">
-                                                        <span class="tableBold">{{findConsumeTypeById(table.consumeType)}}</span>
-                                                    </div>
-                                                </div>
+                                                </v-card>
                                             </div>
+
                                         </v-card>
                                         <div v-else @click="createTable(table.tableName)"
                                              class="tableCard notUsed">
@@ -361,8 +364,6 @@ export default {
         max-height: calc(100vh - 100px);
         margin-top: 18px;
         display: grid;
-        grid-template-rows: repeat(auto-fill, 108px);
-        grid-auto-columns: 108px;
         grid-auto-flow: column;
         grid-gap: 10px;
         margin-bottom: 12px;
@@ -379,7 +380,7 @@ export default {
     .tableCard {
         width: 100%;
         height: 100%;
-        padding: 10px;
+        padding: 8px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
