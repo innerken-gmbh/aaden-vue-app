@@ -23,14 +23,15 @@
                         </template>
                     </v-tabs>
                     <v-autocomplete
+                            hide-details
+                            auto-select-first
+                            hide-no-data
                             class="mr-5"
                             :search-input.sync="input"
                             :items="autoHints"
                             prepend-inner-icon="mdi-magnify"
                             ref="ins"
                             v-model="buffer"
-                            hide-details
-                            auto-select-first
                     />
                 </template>
                 <template slot="right-slot">
@@ -330,7 +331,8 @@ grid-template-columns: calc(100vw - 300px) 300px">
                             </div>
                         </div>
                     </v-card>
-                    <div class="ml-1 d-flex justify-space-between flex-column fill-height">
+                    <div class="ml-1 d-flex justify-space-between
+                    flex-column fill-height">
                         <!--          菜品列表容器-->
                         <div>
                             <!--          菜品列表-->
@@ -1083,7 +1085,9 @@ export default {
       this.initialUI()
     },
     updateFilteredDish () {
-      this.debounce(() => { this.filteredDish = this.filterDish() })
+      this.debounce(() => {
+        this.filteredDish = this.filterDish()
+      })
     },
     debounce: debounce((f) => {
       f()
