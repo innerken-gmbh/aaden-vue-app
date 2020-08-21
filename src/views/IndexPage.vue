@@ -1,8 +1,5 @@
 <template>
     <v-app>
-        <v-overlay z-index="1000" opacity="1" :value="loading">
-            <v-progress-circular indeterminate size="64"></v-progress-circular>
-        </v-overlay>
         <Navgation>
             <template slot="left">
                 <v-app-bar-nav-icon>
@@ -121,7 +118,7 @@
                                                         <span :style="{color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}" class="tableBold">{{findConsumeTypeById(table.consumeType)}}</span>
                                                     </div>
                                                 </div>
-                                                <v-card
+                                                <v-card elevation="0"
                                                         :dark="getColorLightness(parseInt(table.callService)===1?restaurantInfo.callColor:
                                              restaurantInfo.tableColor)<128"
                                                         :color="parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor"
@@ -219,7 +216,6 @@ export default {
       ins: {},
       time: '',
       dishes: [],
-      loading: false,
       Config: GlobalConfig,
       Strings,
       focusTimer: null
