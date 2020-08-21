@@ -187,7 +187,6 @@ import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import TimeDisplay from '@/components/TimeDisplay'
 import { getColorLightness, getRestaurantInfo } from '../oldjs/api'
-
 export default {
   name: 'IndexPage',
   directives: {
@@ -255,13 +254,11 @@ export default {
     },
     async refreshTables () {
       this.areas = await getActiveTables()
-      // console.log(this.areas)
     },
     listenKeyDown (e) {
       if (Swal.isVisible()) {
         return
       }
-      // console.log(e);
       switch (e.key) {
         case 'Escape':
           this.back()
@@ -338,11 +335,11 @@ export default {
     this.initPage()
     await getConsumeTypeList()
     this.restaurantInfo = Object.assign(this.restaurantInfo, (await getRestaurantInfo()).content[0])
-    console.log(this.restaurantInfo)
   },
   beforeDestroy () {
     clearAllTimer()
   }
+
 }
 </script>
 

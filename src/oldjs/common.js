@@ -378,7 +378,6 @@ export async function fastSweetAlertRequest
         return response
       })
       .catch(error => {
-        console.log(error)
         Swal.showValidationMessage(
           `Request failed: ${error.data.info}`
         )
