@@ -748,7 +748,6 @@ export default {
       this.splitOrderListModel.add(item, 1)
     },
     addDish: async function (dish, count = 1) {
-      console.log(dish.code.toLowerCase())
       if (dish.code.toLowerCase().includes('ea')) {
         dish.originPrice = (await Swal.fire({
           title: 'Bitte Preis Eingabe',
