@@ -326,7 +326,6 @@ grid-template-columns: calc(100vw - 300px) 300px">
                                             </div>
                                         </div>
                                     </v-lazy>
-
                                 </template>
                             </div>
                         </div>
@@ -516,6 +515,7 @@ import GlobalConfig from '../oldjs/LocalGlobalSettings'
 import { IKUtils } from 'innerken-utils'
 import Navgation from '../components/Navgation'
 import CategoryColor from '../oldjs/CategoryColor'
+import { debounce } from 'lodash-es'
 
 const DefaultAddressInfo = {
   reason: ''
@@ -586,7 +586,8 @@ export default {
         order: { id: -1 },
         tableBasicInfo: { name: '' }
       },
-      dct: []
+      dct: [],
+      filteredDish: [{ name: '', code: '', price: '', count: '' }]
     }
   },
   beforeDestroy () {
@@ -1081,6 +1082,41 @@ export default {
       setGlobalTableId(this.id)
       blockReady()
       this.initialUI()
+    },
+    updateFilteredDish () {
+      this.debounce(() => { this.filteredDish = this.filterDish() })
+    },
+    debounce: debounce((f) => {
+      f()
+    }, 300),
+    filterDish () {
+      if (!(this.activeDCT || this.activeCategory || this.input)) {
+        return this.dishes
+      }
+      let list = this.dishes
+      if (this.activeDCT) {
+        const dct = this.dct[this.activeDCT - 1]
+        list = list.filter((item) => {
+          return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
+        })
+      }
+      if (this.activeCategory) {
+        const c = this.filteredC[this.activeCategory - 1]
+        list = list.filter((item) => {
+          return parseInt(item.categoryId) === parseInt(c.id)
+        })
+      }
+      if (this.input) {
+        if (this.input !== '' && !this.input.includes('/')) {
+          const [buffer] = this.input.split('*')
+          return list.filter((item) => {
+            return item.dishName.includes(buffer) ||
+              item.code.includes(buffer.toLowerCase()) ||
+              item.code.includes(buffer.toUpperCase())
+          })
+        }
+      }
+      return list
     }
   },
   computed: {
@@ -1133,35 +1169,6 @@ export default {
         })
       }
       return this.categories
-    },
-    filteredDish: function () {
-      if (!(this.activeDCT || this.activeCategory || this.input)) {
-        return this.dishes
-      }
-      let list = this.dishes
-      if (this.activeDCT) {
-        const dct = this.dct[this.activeDCT - 1]
-        list = list.filter((item) => {
-          return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
-        })
-      }
-      if (this.activeCategory) {
-        const c = this.filteredC[this.activeCategory - 1]
-        list = list.filter((item) => {
-          return parseInt(item.categoryId) === parseInt(c.id)
-        })
-      }
-      if (this.input) {
-        if (this.input !== '' && !this.input.includes('/')) {
-          const [buffer] = this.input.split('*')
-          list = list.filter((item) => {
-            return item.dishName.includes(buffer) ||
-              item.code.includes(buffer.toLowerCase()) ||
-              item.code.includes(buffer.toUpperCase())
-          })
-        }
-      }
-      return list
     }
   },
   watch: {
@@ -1170,6 +1177,16 @@ export default {
     },
     activeDCT: function () {
       this.activeCategory = 0
+      this.updateFilteredDish()
+    },
+    dishes: function () {
+      this.updateFilteredDish()
+    },
+    activeCategory: function () {
+      this.updateFilteredDish()
+    },
+    input: function () {
+      this.updateFilteredDish()
     },
     refresh: function (val) {
       this.realInitial()
