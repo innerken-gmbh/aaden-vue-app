@@ -1109,16 +1109,19 @@ export default {
           return parseInt(item.categoryId) === parseInt(c.id)
         })
       }
-      if (this.input) {
-        if (this.input !== '' && !this.input.includes('/')) {
-          const [buffer] = this.input.split('*')
-          return list.filter((item) => {
-            return item.dishName.includes(buffer) ||
-              item.code.includes(buffer.toLowerCase()) ||
-              item.code.includes(buffer.toUpperCase())
-          })
+      if (this.Config.dishLookUp) {
+        if (this.input) {
+          if (this.input !== '' && !this.input.includes('/')) {
+            const [buffer] = this.input.split('*')
+            return list.filter((item) => {
+              return item.dishName.includes(buffer) ||
+                  item.code.includes(buffer.toLowerCase()) ||
+                  item.code.includes(buffer.toUpperCase())
+            })
+          }
         }
       }
+
       return list
     }
   },

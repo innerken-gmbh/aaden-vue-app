@@ -17,5 +17,6 @@
   "useColor": false,
   "hideCode": true,
   "gridSize": "140",
+  "dishLookUp": true,
   "gridSizeX": "100"
 }
