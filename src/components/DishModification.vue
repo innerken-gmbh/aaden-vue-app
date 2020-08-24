@@ -1,5 +1,7 @@
 <template>
-    <v-card elevation="0">
+    <v-card elevation="0"
+            style="min-height: 100%;min-width: 100%;
+            margin: 0 !important;padding: 0!important;">
         <v-toolbar dark>
             <v-app-bar-nav-icon @click="cancel">
                 <v-icon>mdi-close</v-icon>
@@ -9,9 +11,13 @@
             </v-toolbar-title>
             <v-spacer></v-spacer>
             <v-toolbar-items>
-                <v-btn icon @click="count>0?count--:null"><v-icon>mdi-minus</v-icon></v-btn>
+                <v-btn icon @click="count>0?count--:null">
+                    <v-icon>mdi-minus</v-icon>
+                </v-btn>
                 <v-btn style="font-size: 24px" x-large light>{{count}}</v-btn>
-                <v-btn icon @click="count++" ><v-icon>mdi-plus</v-icon></v-btn>
+                <v-btn icon @click="count++">
+                    <v-icon>mdi-plus</v-icon>
+                </v-btn>
                 <v-btn
                         color="primary"
                         ref="submit"
@@ -23,8 +29,7 @@
                 </v-btn>
             </v-toolbar-items>
         </v-toolbar>
-        <v-card-text>
-            <div style="display: grid;
+        <v-card-text style="display: grid;
     grid-gap: 4px;
     grid-template-rows: repeat(2,minmax(min-content,auto));
     grid-auto-flow: column dense;
@@ -33,30 +38,31 @@
     justify-content: center;
     align-items: start;
   min-width: 300px;
+  max-width: 100vw;
+  overflow-y: scroll;
 ">
-                <template v-for="item in computedOption">
-                    <v-sheet style="background: transparent;max-width:450px"
-                             :key="'mod2'+item.id" class="pa-1">
-                        <h4 :key="'mod2head'+item.id">
-                            {{
-                            `${item.name}${item.required === '1' ?
-                            `:${item.select[0].text}` : ``}`
-                            }}
-                        </h4>
-                        <v-chip-group
-                                v-model="mod[item.id]"
-                                :mandatory="item.required==='1'" column
-                                :multiple="item.multiSelect==='1'"
-                                active-class="primary--text"
-                        >
-                            <v-chip large :ripple="false" label :key="'mod111'+index"
-                                    v-for="(s,index) in item.select">
-                                {{ s.text }}{{ s.priceInfo }}
-                            </v-chip>
-                        </v-chip-group>
-                    </v-sheet>
-                </template>
-            </div>
+            <template v-for="item in computedOption">
+                <v-sheet style="background: transparent;max-width:420px"
+                         :key="'mod2'+item.id" class="pa-1">
+                    <h4 :key="'mod2head'+item.id">
+                        {{
+                        `${item.name}${item.required === '1' ?
+                        `:${item.select[0].text}` : ``}`
+                        }}
+                    </h4>
+                    <v-chip-group
+                            v-model="mod[item.id]"
+                            :mandatory="item.required==='1'" column
+                            :multiple="item.multiSelect==='1'"
+                            active-class="primary--text"
+                    >
+                        <v-chip large :ripple="false" label :key="'mod111'+index"
+                                v-for="(s,index) in item.select">
+                            {{ s.text }}{{ s.priceInfo }}
+                        </v-chip>
+                    </v-chip-group>
+                </v-sheet>
+            </template>
         </v-card-text>
     </v-card>
 </template>

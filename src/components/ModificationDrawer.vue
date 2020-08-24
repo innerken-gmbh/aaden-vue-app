@@ -1,7 +1,5 @@
 <template>
-    <v-dialog content-class="noFullScreen"
-              v-model="realShow">
-        <v-card style="min-height: 100%;min-width: 100%;margin: 0 !important;padding: 0!important;">
+    <v-dialog content-class="noFullScreen" v-model="realShow">
             <dish-modification
                     ref="modification"
                     @modification-submit="submit(...$event,dish)"
@@ -11,7 +9,7 @@
                     <span class="font-weight-black"> {{ dish.name }}</span>
                 </template>
             </dish-modification>
-        </v-card>
+
     </v-dialog>
 </template>
 

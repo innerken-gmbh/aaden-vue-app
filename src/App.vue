@@ -148,6 +148,7 @@ export default {
         height: 100%;
         margin: 0;
         max-height: unset !important;
+        max-width: 100vw;
         width: fit-content;
     }
 </style>
