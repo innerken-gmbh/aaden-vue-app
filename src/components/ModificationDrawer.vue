@@ -1,6 +1,7 @@
 <template>
-    <v-dialog width="fit-content" temporary left fixed v-model="realShow">
-        <v-card class="fill-height">
+    <v-dialog content-class="noFullScreen"
+              v-model="realShow">
+        <v-card style="min-height: 100%;min-width: 100%;margin: 0 !important;padding: 0!important;">
             <dish-modification
                     ref="modification"
                     @modification-submit="submit(...$event,dish)"
@@ -56,5 +57,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

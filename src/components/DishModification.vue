@@ -35,7 +35,7 @@
   min-width: 300px;
 ">
                 <template v-for="item in computedOption">
-                    <v-sheet style="background: transparent;max-width: 340px"
+                    <v-sheet style="background: transparent;max-width:450px"
                              :key="'mod2'+item.id" class="pa-1">
                         <h4 :key="'mod2head'+item.id">
                             {{
@@ -47,7 +47,8 @@
                                 v-model="mod[item.id]"
                                 :mandatory="item.required==='1'" column
                                 :multiple="item.multiSelect==='1'"
-                                active-class="primary--text">
+                                active-class="primary--text"
+                        >
                             <v-chip large :ripple="false" label :key="'mod111'+index"
                                     v-for="(s,index) in item.select">
                                 {{ s.text }}{{ s.priceInfo }}
