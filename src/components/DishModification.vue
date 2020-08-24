@@ -29,7 +29,7 @@
                 </v-btn>
             </v-toolbar-items>
         </v-toolbar>
-        <v-card-text    style="display: grid;
+        <v-card-text style="display: grid;
         grid-gap: 4px;
         grid-template-rows: repeat(2,minmax(min-content,auto));
         grid-auto-flow: column dense;
@@ -42,8 +42,7 @@
         overflow-y: scroll;
         ">
             <template v-for="item in computedOption">
-                <v-sheet style="background: transparent;max-width:420px"
-                         :key="'mod2'+item.id" class="pa-1">
+                <div :key="'mod2'+item.id" class="pa-1" style="max-width: 420px">
                     <h4 :key="'mod2head'+item.id">
                         {{
                         `${item.name}${item.required === '1' ?
@@ -51,8 +50,10 @@
                         }}
                     </h4>
                     <v-chip-group
+                            column
+                            style="width: fit-content;"
                             v-model="mod[item.id]"
-                            :mandatory="item.required==='1'" column
+                            :mandatory="item.required==='1'"
                             :multiple="item.multiSelect==='1'"
                             active-class="primary--text"
                     >
@@ -61,7 +62,7 @@
                             {{ s.text }}{{ s.priceInfo }}
                         </v-chip>
                     </v-chip-group>
-                </v-sheet>
+                </div>
             </template>
         </v-card-text>
     </v-card>
@@ -128,6 +129,11 @@ export default {
 
     .v-chip--active .hideWhenNoteActiveChip {
         display: unset;
+    }
+
+    .v-chip-group--column .v-slide-group__content {
+        display: grid;
+        grid-template-columns: repeat(3, 100px);
     }
 
 </style>
