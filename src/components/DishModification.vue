@@ -29,18 +29,18 @@
                 </v-btn>
             </v-toolbar-items>
         </v-toolbar>
-        <v-card-text style="display: grid;
-    grid-gap: 4px;
-    grid-template-rows: repeat(2,minmax(min-content,auto));
-    grid-auto-flow: column dense;
-    grid-auto-rows: min-content;
-    grid-auto-columns: max-content;
-    justify-content: center;
-    align-items: start;
-  min-width: 300px;
-  max-width: 100vw;
-  overflow-y: scroll;
-">
+        <v-card-text    style="display: grid;
+        grid-gap: 4px;
+        grid-template-rows: repeat(2,minmax(min-content,auto));
+        grid-auto-flow: column dense;
+        grid-auto-rows: 200px;
+        grid-auto-columns: max-content;
+        justify-content: center;
+        align-items: start;
+        min-width: 300px;
+        max-width: 100vw;
+        overflow-y: scroll;
+        ">
             <template v-for="item in computedOption">
                 <v-sheet style="background: transparent;max-width:420px"
                          :key="'mod2'+item.id" class="pa-1">
