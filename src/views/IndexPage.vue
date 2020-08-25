@@ -72,6 +72,59 @@
                             </v-card-actions>
                         </v-card>
                     </v-menu>
+                    <v-menu
+                            v-if="falsePrinterList.length>0"
+                            v-model="menu1"
+                            :nudge-width="600"
+                            :max-height="600"
+                    >
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn v-bind="attrs"
+                                   v-on="on"
+                                   icon>
+                                <v-icon>
+                                    mdi-printer-off
+                                </v-icon>
+                                <template v-if="falsePrinterList.length>0">
+                                    {{falsePrinterList.length}}
+                                </template>
+                            </v-btn>
+                            <v-btn v-bind="attrs"
+                                   v-on="on"
+                                   icon
+                                   v-if="printingList.length>0">
+                                <v-icon :left="printingList.length>0">mdi-printer</v-icon>
+                                <template v-if="printingList.length>0">
+                                    {{printingList.length}}
+                                </template>
+                            </v-btn>
+                        </template>
+                        <v-card>
+                            <v-toolbar dense dark color="primary">
+                                <v-toolbar-title>{{$t('UnsuccessPrinterList')}}</v-toolbar-title>
+                                <v-spacer/>
+                                <v-icon>mdi-close</v-icon>
+                            </v-toolbar>
+                            <v-list dense>
+                                <v-list-item
+                                        v-for="(key, index) in falsePrinterList"
+                                        :key="index"
+                                >
+                                    <v-icon color="primary">mdi-text-box-remove</v-icon>
+                                    <v-list-item-content class="pl-1">
+                                        {{$t('订单号')}} {{key.orderId}}
+                                    </v-list-item-content>
+                                    <v-list-item-content>
+                                        {{key.printStatusString}}
+                                    </v-list-item-content>
+                                    <v-list-item-content>
+                                        {{key.BonTypeString}}
+                                    </v-list-item-content>
+                                    <v-btn icon text @click="reprintBon(key)"><v-icon color="primary">mdi-printer</v-icon></v-btn>
+                                </v-list-item>
+                            </v-list>
+                        </v-card>
+                    </v-menu>
                     <v-btn @click="popAuthorize('',
                              requestOutTable)">
                         <v-icon left>mdi-truck-fast</v-icon>
@@ -173,6 +226,7 @@ import {
   createOrEnterTable, findConsumeTypeById,
   getAllDishes,
   getConsumeTypeList,
+  getFalsePrinterList,
   jumpToTable,
   oldJumpTo,
   popAuthorize,
@@ -185,8 +239,10 @@ import { dragscroll } from 'vue-dragscroll'
 import GlobalConfig, { hardReload, NeededKeys, setDeviceId, useCurrentConfig } from '../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
+import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
 import TimeDisplay from '@/components/TimeDisplay'
 import { getColorLightness, getRestaurantInfo } from '../oldjs/api'
+
 export default {
   name: 'IndexPage',
   directives: {
@@ -202,6 +258,7 @@ export default {
     return {
       NeededKeys,
       menu: null,
+      menu1: null,
       version: version,
       onlyActive: GlobalConfig.FMCVersion,
       reservations: [],
@@ -217,7 +274,9 @@ export default {
       dishes: [],
       Config: GlobalConfig,
       Strings,
-      focusTimer: null
+      focusTimer: null,
+      falsePrinterList: [],
+      printingList: []
     }
   },
   watch: {
@@ -254,6 +313,13 @@ export default {
     },
     async refreshTables () {
       this.areas = await getActiveTables()
+    },
+    async refreshPrinterList () {
+      this.falsePrinterList = await getFalsePrinterList()
+      this.printingList = this.falsePrinterList.filter(item => item.printStatus === '4')
+    },
+    async reprintBon (item) {
+      await PrinterList.reprint(item)
     },
     listenKeyDown (e) {
       if (Swal.isVisible()) {
@@ -323,8 +389,9 @@ export default {
     async initPage () {
       window.onkeydown = this.listenKeyDown
       this.refreshTables()
+      this.refreshPrinterList()
       getAllDishes()
-      const list = [setInterval(this.refreshTables, 5000)]
+      const list = [setInterval(this.refreshTables, 5000), setInterval(this.refreshPrinterList, 5000)]
       if (GlobalConfig.getFocus) {
         list.push(setInterval(this.autoGetFocus, 1000))
       }
