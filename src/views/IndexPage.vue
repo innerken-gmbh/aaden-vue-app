@@ -10,10 +10,18 @@
                 </v-toolbar-title>
             </template>
             <template slot="right-slot">
-                <time-display/>
+                <time-display class="mx-1"/>
                 <v-toolbar-items class="mx-1">
+                    <v-btn v-if="printingList.length>0">
+                        <v-icon>mdi-printer</v-icon>
+                        <template>
+                            {{printingList.length}}
+                        </template>
+                    </v-btn>
                     <v-menu
-                            v-model="menu"
+                            v-if="hasBadPrint"
+                            v-model="menu1"
+                            offset-y
                             :close-on-content-click="false"
                             :nudge-width="300"
                             :max-height="600"
@@ -21,112 +29,43 @@
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn v-bind="attrs"
                                    v-on="on"
-                                   icon>
-                                <v-icon>
-                                    mdi-cog-outline
-                                </v-icon>
-                            </v-btn>
-                        </template>
-                        <v-card color="white">
-                            <v-list>
-                                <v-list-item>
-                                    <v-list-item-avatar tile>
-                                        <img src="@/assets/logo.png">
-                                    </v-list-item-avatar>
-                                    <v-list-item-content>
-                                        <v-list-item-title>Aaden App</v-list-item-title>
-                                        <v-list-item-subtitle>
-                                            Version <span v-show-quick-buy>FMC-</span>{{ version }}
-                                        </v-list-item-subtitle>
-                                    </v-list-item-content>
-
-                                    <v-list-item-action>
-                                        <v-icon>mdi-heart</v-icon>
-                                    </v-list-item-action>
-                                </v-list-item>
-                            </v-list>
-                            <v-divider></v-divider>
-                            <v-list dense>
-                                <template v-for="key in NeededKeys">
-                                    <v-list-item dense :key="'config'+key">
-                                        <v-list-item-title>{{key}}</v-list-item-title>
-                                        <template v-if="typeof Config[key]==='boolean'">
-                                            <v-list-item-action>
-                                                <v-switch v-model="Config[key]" color="purple"></v-switch>
-                                            </v-list-item-action>
-                                        </template>
-                                        <template v-else>
-                                            <v-list-item-action>
-                                                <v-text-field v-model="Config[key]" color="purple"></v-text-field>
-                                            </v-list-item-action>
-                                        </template>
-                                    </v-list-item>
-                                </template>
-                            </v-list>
-
-                            <v-card-actions>
-                                <v-btn text @click="hardReload">Clear</v-btn>
-                                <v-spacer></v-spacer>
-                                <v-btn text @click="menu = false">Cancel</v-btn>
-                                <v-btn color="primary" text @click="useCurrentConfig">Save</v-btn>
-                            </v-card-actions>
-                        </v-card>
-                    </v-menu>
-                    <v-menu
-                            v-if="falsePrinterList.length>0"
-                            v-model="menu1"
-                            :nudge-width="600"
-                            :max-height="600"
-                    >
-                        <template v-slot:activator="{ on, attrs }">
-                            <v-btn v-bind="attrs"
-                                   v-on="on"
-                                   icon>
+                                   color="error">
                                 <v-icon>
                                     mdi-printer-off
                                 </v-icon>
-                                <template v-if="falsePrinterList.length>0">
-                                    {{falsePrinterList.length}}
-                                </template>
-                            </v-btn>
-                            <v-btn v-bind="attrs"
-                                   v-on="on"
-                                   icon
-                                   v-if="printingList.length>0">
-                                <v-icon :left="printingList.length>0">mdi-printer</v-icon>
-                                <template v-if="printingList.length>0">
-                                    {{printingList.length}}
-                                </template>
+                                {{falsePrinterList.length}}
                             </v-btn>
                         </template>
                         <v-card>
                             <v-toolbar dense dark color="primary">
                                 <v-toolbar-title>{{$t('UnsuccessPrinterList')}}</v-toolbar-title>
                                 <v-spacer/>
-                                <v-icon>mdi-close</v-icon>
+                                <v-icon @click="reprintAll">mdi-reload</v-icon>
+                                <v-icon @click="menu1=!menu1">mdi-close</v-icon>
                             </v-toolbar>
-                            <v-list dense>
+                            <v-list>
                                 <v-list-item
                                         v-for="(key, index) in falsePrinterList"
                                         :key="index"
                                 >
-                                    <v-icon color="primary">mdi-text-box-remove</v-icon>
-                                    <v-list-item-content class="pl-1">
-                                        {{$t('订单号')}} {{key.orderId}}
-                                    </v-list-item-content>
+                                    <v-list-item-icon>
+                                        <v-icon  color="primary">mdi-text-box-remove</v-icon>
+                                    </v-list-item-icon>
                                     <v-list-item-content>
-                                        {{key.printStatusString}}
+                                        <v-list-item-title>
+                                           {{key.orderId}}: {{key.printStatusString}}
+                                        </v-list-item-title>
                                     </v-list-item-content>
-                                    <v-list-item-content>
-                                        {{key.BonTypeString}}
-                                    </v-list-item-content>
-                                    <v-btn icon text @click="reprintBon(key)"><v-icon color="primary">mdi-printer</v-icon></v-btn>
+                                    <v-list-item-action>
+                                        <v-btn icon text @click="reprintBon(key)">
+                                            <v-icon color="primary">mdi-printer</v-icon>
+                                        </v-btn>
+                                    </v-list-item-action>
                                 </v-list-item>
                             </v-list>
                         </v-card>
                     </v-menu>
-                    <v-btn @click="popAuthorize('',
-                             requestOutTable)">
+                    <v-btn @click="popAuthorize('',requestOutTable)">
                         <v-icon left>mdi-truck-fast</v-icon>
                         {{ $t('takeaway') }}
                     </v-btn>
@@ -143,6 +82,66 @@
                         prepend-inner-icon="mdi-magnify"
                         placeholder="instruction.."
                         autofocus/>
+                <v-menu
+                        v-model="menu"
+                        :close-on-content-click="false"
+                        :nudge-width="300"
+                        :max-height="600"
+                >
+                    <template v-slot:activator="{ on, attrs }">
+                        <v-btn v-bind="attrs"
+                               v-on="on"
+                               icon>
+                            <v-icon>
+                                mdi-cog-outline
+                            </v-icon>
+                        </v-btn>
+                    </template>
+                    <v-card color="white">
+                        <v-list>
+                            <v-list-item>
+                                <v-list-item-avatar tile>
+                                    <img src="@/assets/logo.png">
+                                </v-list-item-avatar>
+                                <v-list-item-content>
+                                    <v-list-item-title>Aaden App</v-list-item-title>
+                                    <v-list-item-subtitle>
+                                        Version <span v-show-quick-buy>FMC-</span>{{ version }}
+                                    </v-list-item-subtitle>
+                                </v-list-item-content>
+
+                                <v-list-item-action>
+                                    <v-icon>mdi-heart</v-icon>
+                                </v-list-item-action>
+                            </v-list-item>
+                        </v-list>
+                        <v-divider></v-divider>
+                        <v-list dense>
+                            <template v-for="key in NeededKeys">
+                                <v-list-item dense :key="'config'+key">
+                                    <v-list-item-title>{{key}}</v-list-item-title>
+                                    <template v-if="typeof Config[key]==='boolean'">
+                                        <v-list-item-action>
+                                            <v-switch v-model="Config[key]" color="purple"></v-switch>
+                                        </v-list-item-action>
+                                    </template>
+                                    <template v-else>
+                                        <v-list-item-action>
+                                            <v-text-field v-model="Config[key]" color="purple"></v-text-field>
+                                        </v-list-item-action>
+                                    </template>
+                                </v-list-item>
+                            </template>
+                        </v-list>
+
+                        <v-card-actions>
+                            <v-btn text @click="hardReload">Clear</v-btn>
+                            <v-spacer></v-spacer>
+                            <v-btn text @click="menu = false">Cancel</v-btn>
+                            <v-btn color="primary" text @click="useCurrentConfig">Save</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-menu>
             </template>
         </Navgation>
         <v-main>
@@ -168,14 +167,16 @@
                                                         <span class="tableBold">{{ table.createTimestamp }}</span>
                                                     </div>
                                                     <div class="tableIconRow justify-end">
-                                                        <span :style="{color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}" class="tableBold">{{findConsumeTypeById(table.consumeType)}}</span>
+                                                        <span :style="{color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}"
+                                                              class="tableBold">{{findConsumeTypeById(table.consumeType)}}</span>
                                                     </div>
                                                 </div>
                                                 <v-card elevation="0"
                                                         :dark="getColorLightness(parseInt(table.callService)===1?restaurantInfo.callColor:
                                              restaurantInfo.tableColor)<128"
                                                         :color="parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor"
-                                                       tile class="d-flex justify-space-between px-2 py-1 rounded-b-lg rounded-tr-lg">
+                                                        tile
+                                                        class="d-flex justify-space-between px-2 py-1 rounded-b rounded-tr">
                                                     <template v-if="['1','2','3','5'].includes(table.consumeType)">
                                                         <div class="d-flex align-center">
                                                             <v-icon small>mdi-silverware-fork-knife</v-icon>
@@ -223,7 +224,8 @@
 import { version } from '../../package.json'
 import {
   blockReady,
-  createOrEnterTable, findConsumeTypeById,
+  createOrEnterTable,
+  findConsumeTypeById,
   getAllDishes,
   getConsumeTypeList,
   getFalsePrinterList,
@@ -237,7 +239,7 @@ import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
 import GlobalConfig, { hardReload, NeededKeys, setDeviceId, useCurrentConfig } from '../oldjs/LocalGlobalSettings'
-import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
+import { addToTimerList, clearAllTimer, printNow } from '../oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
 import TimeDisplay from '@/components/TimeDisplay'
@@ -294,9 +296,13 @@ export default {
         a.tables = a.tables.filter(t => !only || t.usageStatus === '1')
         return a
       }).filter(a => a.tables.length > 0)
+    },
+    hasBadPrint () {
+      return this.falsePrinterList ? this.falsePrinterList.length > 0 : false
     }
   },
   methods: {
+    printNow,
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
     },
@@ -315,8 +321,14 @@ export default {
       this.areas = await getActiveTables()
     },
     async refreshPrinterList () {
-      this.falsePrinterList = await getFalsePrinterList()
-      this.printingList = this.falsePrinterList.filter(item => item.printStatus === '4')
+      const res = (await getFalsePrinterList()) ?? []
+      this.falsePrinterList = res.filter(item => {
+        return item.printStatus !== '4'
+      })
+      this.printingList = res.filter(item => item.printStatus === '4') ?? []
+    },
+    reprintAll (items) {
+      this.falsePrinterList.map(PrinterList.reprint)
     },
     async reprintBon (item) {
       await PrinterList.reprint(item)
@@ -391,6 +403,7 @@ export default {
       this.refreshTables()
       this.refreshPrinterList()
       getAllDishes()
+      await getConsumeTypeList()
       const list = [setInterval(this.refreshTables, 5000), setInterval(this.refreshPrinterList, 5000)]
       if (GlobalConfig.getFocus) {
         list.push(setInterval(this.autoGetFocus, 1000))
@@ -400,7 +413,7 @@ export default {
   },
   mounted: async function () {
     this.initPage()
-    await getConsumeTypeList()
+
     this.restaurantInfo = Object.assign(this.restaurantInfo, (await getRestaurantInfo()).content[0])
   },
   beforeDestroy () {

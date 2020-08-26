@@ -511,7 +511,7 @@ import ModificationDrawer from '../components/ModificationDrawer'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import CheckOutDrawer from '../components/CheckOutDrawer'
 import { findDish, getAllDishesWithCache, goHome } from '../oldjs/StaticModel'
-import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
+import { addToTimerList, clearAllTimer, printNow } from '../oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
 import { IKUtils } from 'innerken-utils'
@@ -1051,6 +1051,7 @@ export default {
       }).finally(() => {
         blockReady()
       })
+      printNow()
     },
     jumpToPayment () {
       const realCheckOut = async () => {
@@ -1115,8 +1116,8 @@ export default {
             const [buffer] = this.input.split('*')
             return list.filter((item) => {
               return item.dishName.includes(buffer) ||
-                  item.code.includes(buffer.toLowerCase()) ||
-                  item.code.includes(buffer.toUpperCase())
+                item.code.includes(buffer.toLowerCase()) ||
+                item.code.includes(buffer.toUpperCase())
             })
           }
         }

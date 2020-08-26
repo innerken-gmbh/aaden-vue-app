@@ -4,7 +4,7 @@ import { hillo } from 'innerken-utils'
 import i18n from '../i18n'
 import GlobalConfig from './LocalGlobalSettings'
 import PrintStatus from './PrintStatus'
-import BonTypeModel from './BonTypeModel'
+
 const Config = GlobalConfig
 
 export let TableId = null
@@ -13,7 +13,6 @@ const TOASTTIME = 700
 
 let consumeTypeList = []
 let Dishes = []
-let falsePrinterList = []
 
 export async function getAllDishes () {
   const res = await hillo.get('Dishes.php', { lang: i18n.locale.toUpperCase() })
@@ -162,19 +161,15 @@ export function createOrEnterTable (number) {
 }
 
 export async function getFalsePrinterList () {
-  const res = await hillo.get('PrintRecord.php', {
+  const falsePrinterList = (await hillo.get('PrintRecord.php', {
     op: 'showAbnormalRecords'
-  })
-  falsePrinterList = res.content
-  falsePrinterList.forEach((item, i) => {
-    item.printStatusString = i18n.t(PrintStatus.getList().find(n => n.id === parseInt(item.printStatus)).name)
-    if (item.printBonClass !== null) {
-      console.log(item.printBonClass, 'item.printBonClass')
-      item.BonTypeString = i18n.t(BonTypeModel.getList().find(n => n.id === parseInt(item.printBonClass)).name)
-    } else {
-      item.BonTypeString = 'NULL'
-    }
-  })
+  })).content
+  if (falsePrinterList) {
+    falsePrinterList.forEach((item, i) => {
+      item.printStatusString = i18n.t(PrintStatus.getList().find(n => n.id === parseInt(item.printStatus)).name)
+    })
+  }
+
   return falsePrinterList
 }
 
