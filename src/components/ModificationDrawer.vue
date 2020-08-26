@@ -1,6 +1,5 @@
 <template>
-    <v-dialog width="fit-content" temporary left fixed v-model="realShow">
-        <v-card class="fill-height">
+    <v-dialog content-class="noFullScreen" v-model="realShow">
             <dish-modification
                     ref="modification"
                     @modification-submit="submit(...$event,dish)"
@@ -10,7 +9,7 @@
                     <span class="font-weight-black"> {{ dish.name }}</span>
                 </template>
             </dish-modification>
-        </v-card>
+
     </v-dialog>
 </template>
 
@@ -56,5 +55,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

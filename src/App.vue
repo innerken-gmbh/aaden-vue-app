@@ -141,4 +141,14 @@ export default {
         font-weight: 600;
     }
 
+    .noFullScreen{
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100%;
+        margin: 0;
+        max-height: unset !important;
+        max-width: 100vw;
+        width: fit-content;
+    }
 </style>

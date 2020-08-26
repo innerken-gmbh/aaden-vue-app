@@ -52,7 +52,7 @@ export function findConsumeTypeById (id) {
       return i
     }
   }
-  return null
+  return { name: '' }
 }
 
 export function jumpToTable (tableId, tableName) {
