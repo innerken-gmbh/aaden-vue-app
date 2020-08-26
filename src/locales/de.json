@@ -384,5 +384,14 @@
   "开新单": "NEUE",
   "Chef": "Chef",
   "接受": "Annehmen",
-  "拒绝": "Ablehnen"
+  "拒绝": "Ablehnen",
+  "打印失败": "Druckfehler",
+  "打印成功": "Druckerfolg",
+  "验证错误": "Verifizierungsfehler",
+  "单子格式不合规范": "Bon-Format entspricht nicht den Spezifikationen",
+  "正在打印": "Drucken...",
+  "网络错误": "Netzwerkfehler",
+  "等待商米打印机打印": "Warten auf den Druck des SUNMI-Druckers",
+  "UnsuccessPrinterList": "Ausdruck fehlgeschlagen",
+  "订单号": "Bestellnr."
 }
