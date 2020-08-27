@@ -87,10 +87,12 @@ export default {
       const realModInfo = []
       this.options.forEach(item => {
         item.select = []
-        if (!Array.isArray(item.selectName)) {
-          item.selectName = item.selectName.split(',')
-          item.selectValue = item.selectValue.split(',')
-          item.priceInfo = item.priceInfo.split(',')
+        if (item.selectName) {
+          if (!Array.isArray(item.selectName)) {
+            item.selectName = (item.selectName?.split(',')) ?? []
+            item.selectValue = (item.selectValue?.split(',')) ?? []
+            item.priceInfo = (item.priceInfo?.split(',')) ?? []
+          }
         }
         item.selectName.forEach((name, index) => {
           item.select.push({
