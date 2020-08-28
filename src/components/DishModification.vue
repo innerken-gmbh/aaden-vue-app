@@ -93,15 +93,15 @@ export default {
             item.selectValue = (item.selectValue?.split(',')) ?? []
             item.priceInfo = (item.priceInfo?.split(',')) ?? []
           }
-        }
-        item.selectName.forEach((name, index) => {
-          item.select.push({
-            text: `${name}`,
-            value: item.selectValue[index],
-            priceInfo: parseFloat(item.priceInfo[index]) === 0 ? '' : `(€${parseFloat(item.priceInfo[index]).toFixed(2)})`
+          item.selectName.forEach((name, index) => {
+            item.select.push({
+              text: `${name}`,
+              value: item.selectValue[index],
+              priceInfo: parseFloat(item.priceInfo[index]) === 0 ? '' : `(€${parseFloat(item.priceInfo[index]).toFixed(2)})`
+            })
           })
-        })
-        realModInfo.push(item)
+          realModInfo.push(item)
+        }
       })
       return realModInfo
     }
