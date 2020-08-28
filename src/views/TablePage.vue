@@ -791,14 +791,16 @@ export default {
     submitModification: function (mod, dish, count) {
       const apply = []
       for (const i of dish.modInfo) {
-        const item = { groupId: i.id }
-        item.selectId = i.selectValue.filter((s, index) => {
-          return [(mod[i.id] ?? [])].flat().includes(index)
-        })
-        if (i.required === '1' && item.selectId === '') {
-          item.selectId = i.selectValue[0]
+        if (i.selectValue) {
+          const item = { groupId: i.id }
+          item.selectId = i.selectValue.filter((s, index) => {
+            return [(mod[i.id] ?? [])].flat().includes(index)
+          })
+          if (i.required === '1' && item.selectId === '') {
+            item.selectId = i.selectValue[0]
+          }
+          apply.push(item)
         }
-        apply.push(item)
       }
       dish.apply = apply// here we add a apply
       dish.forceFormat = true
