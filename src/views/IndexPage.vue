@@ -387,7 +387,7 @@ export default {
       }
     },
     toManage () {
-      oldJumpTo('admin/index.html', { DeviceId: GlobalConfig.DeviceId, lang: GlobalConfig.lang })
+      oldJumpTo('admin/index.html', { DeviceId: GlobalConfig.DeviceId, lang: GlobalConfig.lang, Base: GlobalConfig.Base })
     },
     autoGetFocus () {
       if (Swal.isVisible()) {

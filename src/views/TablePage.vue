@@ -598,7 +598,7 @@ export default {
   methods: {
     popAuthorize,
     toManage () {
-      oldJumpTo('admin/index.html', { DeviceId: GlobalConfig.DeviceId, lang: GlobalConfig.lang })
+      oldJumpTo('admin/index.html', { DeviceId: GlobalConfig.DeviceId, lang: GlobalConfig.lang, Base: GlobalConfig.Base })
     },
     goHome () {
       this.goHomeCallBack()
