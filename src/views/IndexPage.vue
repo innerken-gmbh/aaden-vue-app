@@ -81,7 +81,7 @@
                         class="flex-grow-0"
                         prepend-inner-icon="mdi-magnify"
                         placeholder="instruction.."
-                        autofocus/>
+                        :autofocus="Config.getFocus"/>
                 <v-menu
                         v-model="menu"
                         :close-on-content-click="false"
