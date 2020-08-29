@@ -35,7 +35,7 @@
                     />
                 </template>
                 <template slot="right-slot">
-                    <div class="d-flex align-center justify-space-between" style="min-width: 236px">
+                    <div class="d-flex align-center justify-space-between" style="min-width: 184px">
                         <span class="bigTableName">
                             {{ tableDetailInfo.tableBasicInfo.name }}
                         </span>
@@ -59,7 +59,9 @@
                 <template slot="after-menu">
                     <v-menu v-model="showTableList">
                         <template #activator="{on,attrs}">
-                            <v-app-bar-nav-icon v-on="on" v-bind="attrs"/>
+                          <v-toolbar-items class="ml-1 mr-n3">
+                            <v-btn color="primary"  v-on="on" v-bind="attrs"><v-icon left>mdi-menu</v-icon>MENU</v-btn>
+                          </v-toolbar-items>
                         </template>
                         <v-card color="#f6f6f6" max-width="50vw">
                             <v-toolbar dense dark color="primary">
@@ -73,7 +75,6 @@
                                         {{$t('开新单')}}
                                     </v-btn>
                                 </v-toolbar-items>
-
                                 <div class="d-flex ml-1">
                                              <span v-hide-quick-buy class="icon-line">
                                                 <v-icon color="white">mdi-account-outline</v-icon>
@@ -156,7 +157,11 @@
                                         </v-card-actions>
                                     </v-card>
                                 </v-menu>
-                                <v-icon>mdi-close</v-icon>
+                              <v-toolbar-items>
+                                <v-btn>
+                                  <v-icon>mdi-close</v-icon>
+                                </v-btn>
+                              </v-toolbar-items>
                             </v-toolbar>
                             <v-card-text>
                                 <v-row>
