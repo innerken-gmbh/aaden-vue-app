@@ -287,7 +287,7 @@
 grid-template-columns: calc(100vw - 300px) 300px">
                     <v-card elevation="0" color="transparent" v-cloak
                             class="dishListContainer" id="dishListContainer">
-                        <v-toolbar rounded dense>
+                        <v-toolbar rounded>
                             <v-tabs
                                     center-active
                                     show-arrows
@@ -1351,7 +1351,7 @@ export default {
     .dishCardListContainer {
         background: #f6f6f6;
         width: 100%;
-        height: calc(100vh - 96px);
+        height: calc(100vh - 112px);
     }
 
     .bottomCart {

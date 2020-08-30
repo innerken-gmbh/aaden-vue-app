@@ -42,18 +42,19 @@
             </div>
         </div>
         <div v-show="expand" class="editRow elevation-3">
-            <div v-if="showEdit" class="py-2">
+            <div v-if="showEdit" class="py-2 d-flex">
                 <template>
-                    <v-icon @click.stop="editNote(dish)">mdi-pencil-circle</v-icon>
+                    <v-icon large @click.stop="editNote(dish)">mdi-pencil-circle</v-icon>
                 </template>
                 <template v-if="showNumber">
-                    <v-icon @click.stop="dish.change(-1)">
+                    <v-icon large @click.stop="dish.change(-1)">
                         mdi-minus-circle
                     </v-icon>
-                    <v-icon @click.stop="dish.change(1)">
+                    <v-icon large @click.stop="dish.change(1)">
                         mdi-plus-circle
                     </v-icon>
-                    <v-icon @click.stop="dish.change(-dish.count)">
+                    <v-spacer></v-spacer>
+                    <v-icon large @click.stop="dish.change(-dish.count)">
                         mdi-trash-can
                     </v-icon>
                 </template>
