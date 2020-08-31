@@ -1,4 +1,4 @@
-<template>
+<template functional>
 <span>
        <span v-if="price>0">+{{price | priceDisplay}}</span>
        <span v-else-if="price<0">-{{price | priceDisplay}}</span>
