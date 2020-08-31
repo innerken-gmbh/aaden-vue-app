@@ -623,7 +623,7 @@ export default {
       try {
         if (this.splitOrderListModel.count() === 0 && this.cartListModel.count() === 0) {
           let discountRatio = 0
-          const result = await getOrderInfo(this.id)
+          const result = await getOrderInfo(this.id, GlobalConfig.usePrintModAsName)
           const discountInfo = result.filter(r => r.code === '-1')
           const noDiscount = result.filter(r => r.code !== '-1')
           this.orderListModel.loadTTDishList(noDiscount)

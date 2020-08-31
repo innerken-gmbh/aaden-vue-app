@@ -14,7 +14,8 @@ export function findDish (code) {
 
 export async function getAllDishesWithCache (force = false) {
   if (force || dishesList.length === 0) {
-    const res = await hillo.get('Dishes.php', { lang: i18n.locale.toUpperCase() })
+    const res = await hillo.get('Dishes.php',
+      { lang: i18n.locale.toUpperCase(), usePrintModAsName: GlobalConfig.usePrintModAsName | 0 })
     dishesList.length = 0
     if (res.content.length > 0) {
       dishesList = StandardDishesListFactory().formatList(res.content)

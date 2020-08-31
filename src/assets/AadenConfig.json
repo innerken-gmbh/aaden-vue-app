@@ -11,6 +11,7 @@
   "useOpenTablePrompt": false,
   "checkOutUsePassword": false,
   "jumpToHomeWhenOrder": false,
+  "usePrintModAsName": false,
   "Protocol": "http://",
   "FMCVersion": false,
   "useCart": true,
