@@ -1,6 +1,6 @@
 <template>
     <div @click="checkIfOpen" class="dishCard">
-        <div  class="px-2 py-1 pr-0 d-flex justify-space-between align-baseline">
+        <div class="px-2 py-1 pr-0 d-flex justify-space-between align-baseline">
             <div v-code-hide class='codeRow'>
                 {{ dish.code }}
             </div>
@@ -31,7 +31,7 @@
                     <div>{{ ap.groupName }}:{{ ap.value }}</div>
                     <div>
                         <template v-if="ap.priceInfo&&ap.priceInfo>0">
-                            (<price-text :price="ap.priceInfo"/>)
+                            {{ap.priceInfo | priceDisplay}}
                         </template>
                     </div>
                 </div>
@@ -44,14 +44,14 @@
         <div v-show="expand" class="editRow elevation-3">
             <div v-if="showEdit" class="py-2 d-flex">
                 <template>
-                    <v-icon  class="mr-2" large @click.stop="editNote(dish)">mdi-pencil-circle</v-icon>
+                    <v-icon class="mr-2" large @click.stop="editNote(dish)">mdi-pencil-circle</v-icon>
                 </template>
                 <template v-if="showNumber">
 
                     <v-icon class="mr-2" large @click.stop="dish.change(-1)">
                         mdi-minus-circle
                     </v-icon>
-                    <v-icon  large @click.stop="dish.change(1)">
+                    <v-icon large @click.stop="dish.change(1)">
                         mdi-plus-circle
                     </v-icon>
                     <v-spacer></v-spacer>
@@ -96,12 +96,10 @@
 </template>
 
 <script>
-import PriceText from './PriceText'
 import Swal from 'sweetalert2'
 
 export default {
   name: 'DishCard',
-  components: { PriceText },
   props: {
     dish: {
       default: () => {

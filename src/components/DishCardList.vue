@@ -6,7 +6,7 @@
         tile
         class="font-weight-bold"
         :color="color" dark>
-      <v-toolbar-title>{{ title }}</v-toolbar-title>
+      <v-app-bar-nav-icon><v-icon>{{ title }}</v-icon></v-app-bar-nav-icon>
       <v-spacer/>
       <div class="d-flex align-center">
         <v-icon color="white">mdi-cash-usd</v-icon>
@@ -14,10 +14,6 @@
         <v-icon color="white" class="ml-3">mdi-food</v-icon>
         <span class="ml-1">{{ count }}</span>
       </div>
-      <v-btn icon small>
-        <v-icon v-if="!expand">mdi-unfold-more-horizontal</v-icon>
-        <v-icon v-else>mdi-unfold-less-horizontal</v-icon>
-      </v-btn>
     </v-toolbar>
 
     <div v-dragscroll v-show="expand" class="orderDishList"

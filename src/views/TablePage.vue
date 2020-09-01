@@ -350,7 +350,7 @@ grid-template-columns: calc(100vw - 300px) 300px">
                                             :default-expand="cartListModel.list.length===0"
                                             :click-callback="addToSplit"
                                             :extra-height="'96px'"
-                                            :title="$t('haveOrderedDish')"
+                                            title="mdi-calendar"
                                     />
                                 </keep-alive>
                             </v-card>
@@ -365,7 +365,7 @@ grid-template-columns: calc(100vw - 300px) 300px">
                                         :color="'#707070'"
                                         :dish-list-model="cartListModel"
                                         :show-edit="true" :click-callback="removeDish"
-                                        :title="$t('新增菜品')"
+                                        title="mdi-calendar-plus"
                                         :default-expand="Config.defaultExpand">
                                 </dish-card-list>
                                 <v-toolbar dense>
@@ -452,7 +452,7 @@ grid-template-columns: calc(100vw - 300px) 300px">
                                 :default-expand="true"
                                 :dish-list-model="splitOrderListModel"
                                 :click-callback="removeFromSplitOrder"
-                                :title="$t('operation')"/>
+                                title="mdi-calendar-edit"/>
                     </div>
                 </div>
             </template>
