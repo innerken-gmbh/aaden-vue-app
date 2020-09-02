@@ -352,10 +352,22 @@ grid-template-columns: calc(100vw - 300px) 300px">
                                             :discount-ratio="discountRatio"
                                             :default-expand="cartListModel.list.length===0"
                                             :click-callback="addToSplit"
-                                            :extra-height="'96px'"
+                                            :extra-height="'144px'"
                                             title="mdi-calendar"
                                     />
                                 </keep-alive>
+                                <v-toolbar dense v-if="cartListModel.list.length===0">
+                                    <v-toolbar-items class="flex-grow-1 mx-n3">
+                                        <v-btn @click="reprintOrder" class="flex-grow-1">
+                                            <v-icon left>mdi-printer</v-icon>
+                                            {{ $t('重新打印') }}
+                                        </v-btn>
+                                        <v-btn @click="zwitchenBon">
+                                            <v-icon left>mdi-printer-pos</v-icon>
+                                            ZwichenBon
+                                        </v-btn>
+                                    </v-toolbar-items>
+                                </v-toolbar>
                             </v-card>
                             <!--          购物车-->
                             <v-card v-dragscroll
@@ -983,6 +995,24 @@ export default {
           break
       }
     },
+    reprintOrder () {
+      hillo.post('Printer.php?op=questReprintOrder', {
+        orderId: this.tableDetailInfo.order.id
+      }).then(() => {
+        toast()
+        blockReady()
+      })
+    },
+    zwitchenBon () {
+      hillo.post('BackendData.php?op=reprintOrder', {
+        id: this.tableDetailInfo.order.id,
+        withTitle: 0,
+        printCount: 1
+      }).then(() => {
+        toast()
+        blockReady()
+      })
+    },
     //* findInsDecode*/
     async insDecode (t) {
       if (isBlocking()) {
@@ -998,21 +1028,9 @@ export default {
           this.dishQuery(code, count)
           return
         } else if (t === '/rp') {
-          hillo.post('Printer.php?op=questReprintOrder', {
-            orderId: this.tableDetailInfo.order.id
-          }).then(() => {
-            toast()
-            blockReady()
-          })
+          this.reprintOrder()
         } else if (t === '/ps') {
-          hillo.post('BackendData.php?op=reprintOrder', {
-            id: this.tableDetailInfo.order.id,
-            withTitle: 0,
-            printCount: 1
-          }).then(() => {
-            toast()
-            blockReady()
-          })
+          this.zwitchenBon()
         } else {
           this.dishQuery(t)
           return

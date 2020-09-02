@@ -393,5 +393,6 @@
   "网络错误": "Netzwerkfehler",
   "等待商米打印机打印": "Warten auf den Druck des SUNMI-Druckers",
   "UnsuccessPrinterList": "Ausdruck fehlgeschlagen",
-  "订单号": "Bestellnr."
+  "订单号": "Bestellnr.",
+  "重新打印": "Erneut drucken"
 }
