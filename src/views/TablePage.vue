@@ -59,9 +59,12 @@
                 <template slot="after-menu">
                     <v-menu v-model="showTableList">
                         <template #activator="{on,attrs}">
-                          <v-toolbar-items class="ml-1 mr-n3">
-                            <v-btn color="primary"  v-on="on" v-bind="attrs"><v-icon left>mdi-menu</v-icon>MENU</v-btn>
-                          </v-toolbar-items>
+                            <v-toolbar-items class="ml-1 mr-n3">
+                                <v-btn color="primary" v-on="on" v-bind="attrs">
+                                    <v-icon left>mdi-menu</v-icon>
+                                    MENU
+                                </v-btn>
+                            </v-toolbar-items>
                         </template>
                         <v-card color="#f6f6f6" max-width="50vw">
                             <v-toolbar dense dark color="primary">
@@ -157,11 +160,11 @@
                                         </v-card-actions>
                                     </v-card>
                                 </v-menu>
-                              <v-toolbar-items>
-                                <v-btn>
-                                  <v-icon>mdi-close</v-icon>
-                                </v-btn>
-                              </v-toolbar-items>
+                                <v-toolbar-items>
+                                    <v-btn>
+                                        <v-icon>mdi-close</v-icon>
+                                    </v-btn>
+                                </v-toolbar-items>
                             </v-toolbar>
                             <v-card-text>
                                 <v-row>
@@ -603,7 +606,11 @@ export default {
   methods: {
     popAuthorize,
     toManage () {
-      oldJumpTo('admin/index.html', { DeviceId: GlobalConfig.DeviceId, lang: GlobalConfig.lang, Base: GlobalConfig.Base })
+      oldJumpTo('admin/index.html', {
+        DeviceId: GlobalConfig.DeviceId,
+        lang: GlobalConfig.lang,
+        Base: GlobalConfig.Base
+      })
     },
     goHome () {
       this.goHomeCallBack()
@@ -1315,6 +1322,7 @@ export default {
     }
 
     .dishBlock {
+        height: 108px;
         cursor: pointer;
         padding: 5px 12px;
         background: white;

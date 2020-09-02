@@ -1,45 +1,50 @@
 <template>
-  <v-card>
-    <v-toolbar
-       @click="expand=!expand"
-        dense
-        tile
-        class="font-weight-bold"
-        :color="color" dark>
-      <v-app-bar-nav-icon><v-icon>{{ title }}</v-icon></v-app-bar-nav-icon>
-      <v-spacer/>
-      <div class="d-flex align-center">
-        <v-icon color="white">mdi-cash-usd</v-icon>
-        <span class="ml-1">{{ total | priceDisplay }}</span>
-        <v-icon color="white" class="ml-3">mdi-food</v-icon>
-        <span class="ml-1">{{ count }}</span>
-      </div>
-    </v-toolbar>
+    <v-card>
+        <v-toolbar
+                @click="expand=!expand"
+                dense
+                tile
+                class="font-weight-bold"
+                :color="color" dark>
+            <v-app-bar-nav-icon>
+                <v-icon>{{ title }}</v-icon>
+            </v-app-bar-nav-icon>
+            <v-spacer/>
+            <div class="d-flex align-center">
+                <v-icon color="white">mdi-cash-usd</v-icon>
+                <span class="ml-1">{{ total | priceDisplay }}</span>
+                <v-icon color="white" class="ml-3">mdi-food</v-icon>
+                <span class="ml-1">{{ count }}</span>
+            </div>
+        </v-toolbar>
 
-    <div v-dragscroll v-show="expand" class="orderDishList"
-         :style="{maxHeight: `calc(100vh - 48px - ${extraHeight})`}"
-         style="overflow-y: scroll"
-    >
+        <div v-dragscroll v-show="expand" class="orderDishList"
+             :style="{maxHeight: `calc(100vh - 48px - ${extraHeight})`}"
+             style="overflow-y: scroll"
+        >
+            <template v-for="(order,index) in dishListModel.list">
+              <div     @click="checkIfOpen(index)"   :key="'order'+title+order.identity" >
+                <dish-card
+                        :expand="index===expandIndex"
+                        :color="color"
+                        :show-number="showNumber"
+                        @op-clicked="expandIndex=null"
+                        :click-callback="()=>clickCallback(index)"
+                        :show-edit="showEdit"
+                        :dish="order"/>
+              </div>
+            </template>
+            <template v-if="discountDish!=null">
+                <dish-card
+                        :color="color"
+                        :show-number="showNumber"
+                        :show-edit="showEdit"
+                        :dish="discountDish"/>
+            </template>
 
-      <template v-for="(order,index) in dishListModel.list">
-        <dish-card :key="'order'+title+order.identity"
-                   :color="color"
-                   :show-number="showNumber"
-                   :click-callback="()=>clickCallback(index)"
-                   :show-edit="showEdit"
-                   :dish="order"/>
-      </template>
-      <template v-if="discountDish!=null">
-        <dish-card
-            :color="color"
-            :show-number="showNumber"
-            :show-edit="showEdit"
-            :dish="discountDish"/>
-      </template>
+        </div>
 
-    </div>
-
-  </v-card>
+    </v-card>
 </template>
 
 <script>
@@ -79,12 +84,28 @@ export default {
   },
   data: function () {
     return {
-      expand: this.defaultExpand
+      expand: this.defaultExpand,
+      expandIndex: null
     }
   },
   watch: {
     defaultExpand: function (val) {
       this.expand = val
+    }
+  },
+  methods: {
+    checkIfOpen (index) {
+      const dish = this.dishListModel.list[index]
+      if (dish.count > 1 || this.showEdit) {
+        if (this.expandIndex === index) {
+          this.expandIndex = null
+        } else {
+          this.expandIndex = index
+        }
+      } else {
+        this.clickCallback(index)
+        this.expandIndex = null
+      }
     }
   },
   computed: {
@@ -108,33 +129,27 @@ export default {
         }
       }
       return null
-    },
-    realOrder: function () {
-      if (this.discountDish) {
-        return this.dishListModel.list.concat([this.discountDish])
-      }
-      return this.dishListModel.list
     }
   }
 }
 </script>
 
 <style scoped>
-  ::-webkit-scrollbar {
-    height: 80%;
-    margin-top: 20%;
-    width: 6px;
-  }
+    ::-webkit-scrollbar {
+        height: 80%;
+        margin-top: 20%;
+        width: 6px;
+    }
 
-  ::-webkit-scrollbar-thumb {
-    background: url("/Resources/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
-    width: 6px;
-    cursor: pointer;
-    height: 56px;
+    ::-webkit-scrollbar-thumb {
+        background: url("/Resources/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
+        width: 6px;
+        cursor: pointer;
+        height: 56px;
 
-  }
+    }
 
-  ::-webkit-scrollbar-track {
-    width: 10px;
-  }
+    ::-webkit-scrollbar-track {
+        width: 10px;
+    }
 </style>

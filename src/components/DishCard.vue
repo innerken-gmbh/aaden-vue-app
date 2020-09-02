@@ -1,5 +1,5 @@
 <template>
-    <div @click="checkIfOpen" class="dishCard">
+    <div class="dishCard">
         <div class="px-2 py-1 pr-0 d-flex justify-space-between align-baseline">
             <div v-code-hide class='codeRow'>
                 {{ dish.code }}
@@ -44,7 +44,10 @@
         <div v-show="expand" class="editRow elevation-3">
             <div v-if="showEdit" class="py-2 d-flex">
                 <template>
-                    <v-icon class="mr-2" large @click.stop="editNote(dish)">mdi-pencil-circle</v-icon>
+                    <v-icon class="mr-2" large
+                            @click.stop="editNote(dish)">
+                        mdi-pencil-circle
+                    </v-icon>
                 </template>
                 <template v-if="showNumber">
 
@@ -114,7 +117,8 @@ export default {
     },
     showNumber: {
       default: false
-    }
+    },
+    expand: { default: false }
   },
   data: function () {
     return Object.assign({
@@ -126,21 +130,13 @@ export default {
       note: '',
       sumCount: null,
       count: null,
-      clickNumber: this.dish.count,
-      expand: false
+      clickNumber: this.dish.count
     }, { ...this.dish })
   },
   methods: {
     callCallBack () {
       if (this.dish.code !== '-1') {
         this.clickCallback()
-      }
-    },
-    checkIfOpen () {
-      if (this.dish.count > 1 || this.showEdit) {
-        this.expand = !this.expand
-      } else {
-        this.callCallBack()
       }
     },
     decrement () {
@@ -154,10 +150,9 @@ export default {
       }
     },
     click () {
+      this.$emit('op-clicked')
       for (let i = 0; i < this.clickNumber; i++) {
-        if (this.code !== '-1') {
-          this.callCallBack()
-        }
+        this.callCallBack()
       }
     },
     async editNote () {
