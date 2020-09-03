@@ -471,7 +471,34 @@ grid-template-columns: calc(100vw - 300px) 300px">
                     </div>
                 </div>
             </template>
-
+            <v-dialog max-width="600px" v-model="discountModelShow">
+                <v-card>
+                    <v-toolbar>
+                        <v-toolbar-title>折扣</v-toolbar-title>
+                        <v-spacer></v-spacer>
+                        <v-icon @click="discountModelShow=!discountModelShow">mdi-close</v-icon>
+                    </v-toolbar>
+                    <v-tabs v-model="localDiscountType" vertical>
+                        <v-tab>现金</v-tab>
+                        <v-tab>百分比</v-tab>
+                        <v-tab-item>
+                            <v-card-text>
+                                <v-text-field autofocus label="金额"
+                                           messages="zB.: 12.34"   v-model="localDiscountStr"></v-text-field>
+                            </v-card-text>
+                        </v-tab-item>
+                        <v-tab-item>
+                            <v-card-text>
+                                <v-text-field autofocus label="百分比"
+                                            messages="1-99"  v-model="localDiscountStr"></v-text-field>
+                            </v-card-text>
+                        </v-tab-item>
+                    </v-tabs>
+                    <v-card-actions>
+                       <v-spacer></v-spacer> <v-btn @click="submitDiscount">确定</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
             <ModificationDrawer
                     @visibility-changed="changeModification"
                     :modification-show="modificationShow"
@@ -522,7 +549,6 @@ import {
   dishesChangeTable,
   dishesSetDiscount,
   popChangeTablePanel,
-  popDiscountPanel,
   popMergeTablePanel
 } from '../oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
@@ -609,7 +635,10 @@ export default {
         tableBasicInfo: { name: '' }
       },
       dct: [],
-      filteredDish: [{ name: '', code: '', price: '', count: '' }]
+      filteredDish: [{ name: '', code: '', price: '', count: '' }],
+      discountModelShow: null,
+      localDiscountStr: '',
+      localDiscountType: ''
     }
   },
   beforeDestroy () {
@@ -837,13 +866,16 @@ export default {
       blockReady()
     },
     initialUI () {
+      this.discountModelShow = false
       this.getTableDetail()
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
       blockReady()
     },
     back () {
-      if (this.modificationShow) {
+      if (this.discountModelShow) {
+        this.discountModelShow = false
+      } else if (this.modificationShow) {
         this.cancel()
       } else if (this.checkoutShow) {
         this.checkoutShow = false
@@ -875,7 +907,9 @@ export default {
           }
           break
         case 3:
-          popAuthorize('', () => popDiscountPanel(this.id, this.initialUI))
+          popAuthorize('', () => {
+            this.discountModelShow = true
+          })
           break
         case 4:
           popAuthorize('', () => popChangeTablePanel(this.tableName, this.initialUI))
@@ -899,6 +933,14 @@ export default {
         default:
       }
     },
+    async submitDiscount () {
+      const discountStr = this.localDiscountStr + (this.localDiscountType === 1 ? 'p' : '')
+      await hillo.post('Complex.php?op=setDiscount', { tableId: this.id, discountStr })
+      this.localDiscountStr = ''
+      this.localDiscountType = 0
+      this.initialUI()
+    },
+
     checkOut (print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
       if (!memberCardId) {
         memberCardId = null
@@ -926,7 +968,7 @@ export default {
       }
     },
     autoGetFocus () {
-      if (this.modificationShow || this.checkoutShow) {
+      if (this.modificationShow || this.checkoutShow || this.discountModelShow) {
         return
       }
       if (Swal.isVisible()) {
@@ -1036,7 +1078,10 @@ export default {
           return
         }
       } else {
-        if (!this.checkoutShow && !this.modificationShow) {
+        if (this.discountModelShow) {
+          this.submitDiscount()
+          blockReady()
+        } else if (!this.checkoutShow && !this.modificationShow) {
           if (this.cartListModel.list.length > 0) {
             setTimeout(async () => {
               const res = await showConfirmAsyn('将购物车中的菜品加入订单?')
