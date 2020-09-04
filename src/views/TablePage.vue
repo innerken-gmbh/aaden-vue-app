@@ -57,7 +57,7 @@
 
                 </template>
                 <template slot="after-menu">
-                    <v-menu v-model="showTableList">
+                    <v-menu offset-y v-model="menuShow">
                         <template #activator="{on,attrs}">
                             <v-toolbar-items class="ml-1 mr-n3">
                                 <v-btn color="primary" v-on="on" v-bind="attrs">
@@ -66,7 +66,7 @@
                                 </v-btn>
                             </v-toolbar-items>
                         </template>
-                        <v-card color="#f6f6f6" max-width="50vw">
+                        <v-card color="#f6f6f6" min-width="400px" max-width="50vw">
                             <v-toolbar dense dark color="primary">
                                 <div class="bigTableName mr-4">
                                     {{ tableDetailInfo.tableBasicInfo.name }}
@@ -90,76 +90,6 @@
                                                 </span>
                                              </span>
                                 </div>
-                                <v-menu
-                                        v-model="menu"
-                                        :close-on-content-click="false"
-                                        :nudge-width="200"
-                                        offset-x
-                                >
-                                    <template v-slot:activator="{ on, attrs }">
-                                        <v-btn
-                                                icon
-                                                color="white"
-                                                v-bind="attrs"
-                                                v-on="on"
-                                        >
-                                            <v-icon>mdi-map</v-icon>
-                                        </v-btn>
-                                    </template>
-
-                                    <v-card>
-                                        <v-list>
-                                            <v-list-item>
-                                            </v-list-item>
-                                        </v-list>
-                                        <v-divider></v-divider>
-                                        <v-list>
-                                            <v-list-item>
-                                                <v-list-item-title>
-                                                    {{ rawAddressInfo.firstName }} {{
-                                                    rawAddressInfo.lastName
-                                                    }}
-                                                </v-list-item-title>
-                                            </v-list-item>
-                                            <v-list-item>
-                                                <v-list-item-content>
-                                                    <div> {{ rawAddressInfo.addressLine1 }}</div>
-                                                    <div> {{ rawAddressInfo.addressline2 }}</div>
-                                                    <div> {{ rawAddressInfo.city }} {{
-                                                        rawAddressInfo.plz
-                                                        }}
-                                                    </div>
-                                                    <div><span class="font-weight-bold">Email: </span>{{
-                                                        rawAddressInfo.email
-                                                        }}
-                                                    </div>
-                                                    <div><span class="font-weight-bold">Phone: </span>{{
-                                                        rawAddressInfo.tel
-                                                        }}
-                                                    </div>
-                                                    <span class="font-weight-bold">Lieferzeit: </span>
-                                                    {{ rawAddressInfo.date }}
-                                                    {{ rawAddressInfo.time }}
-                                                    {{ rawAddressInfo.note }}
-                                                    <div class="chip" v-show="rawAddressInfo.reason">
-                                                        {{ rawAddressInfo.deliveryMethod }}
-                                                    </div>
-                                                    <div class="chip" v-show="rawAddressInfo.reason">
-                                                        {{ rawAddressInfo.reason }}
-                                                    </div>
-                                                </v-list-item-content>
-                                            </v-list-item>
-                                        </v-list>
-
-                                        <v-card-actions>
-                                            <v-spacer></v-spacer>
-
-                                            <v-btn text @click="menu = false">Cancel</v-btn>
-                                            <v-btn color="primary" text @click="menu = false">Save
-                                            </v-btn>
-                                        </v-card-actions>
-                                    </v-card>
-                                </v-menu>
                                 <v-toolbar-items>
                                     <v-btn>
                                         <v-icon>mdi-close</v-icon>
@@ -210,6 +140,7 @@
                                                     </v-list-item-content>
                                                 </v-list-item>
                                                 <v-divider></v-divider>
+
                                                 <v-list-item @click="insDecodeButtonList(1)">
                                                     <v-list-item-icon>
                                                         <v-icon>mdi-arrow-left</v-icon>
@@ -246,6 +177,43 @@
                                                         <v-list-item-title>{{ $t('tableMerge') }}</v-list-item-title>
                                                     </v-list-item-content>
                                                 </v-list-item>
+                                                <v-divider></v-divider>
+                                                <v-list-item>
+                                                    <v-list-item-title>
+                                                        {{ rawAddressInfo.firstName }} {{
+                                                        rawAddressInfo.lastName
+                                                        }}
+                                                    </v-list-item-title>
+                                                </v-list-item>
+                                                <v-list-item>
+                                                    <v-list-item-content>
+                                                        <div> {{ rawAddressInfo.addressLine1 }}</div>
+                                                        <div> {{ rawAddressInfo.addressline2 }}</div>
+                                                        <div> {{ rawAddressInfo.city }} {{
+                                                            rawAddressInfo.plz
+                                                            }}
+                                                        </div>
+                                                        <div><span class="font-weight-bold">Email: </span>{{
+                                                            rawAddressInfo.email
+                                                            }}
+                                                        </div>
+                                                        <div><span class="font-weight-bold">Phone: </span>{{
+                                                            rawAddressInfo.tel
+                                                            }}
+                                                        </div>
+                                                        <span class="font-weight-bold">Lieferzeit: </span>
+                                                        {{ rawAddressInfo.date }}
+                                                        {{ rawAddressInfo.time }}
+                                                        {{ rawAddressInfo.note }}
+                                                        <div class="chip" v-show="rawAddressInfo.reason">
+                                                            {{ rawAddressInfo.deliveryMethod }}
+                                                        </div>
+                                                        <div class="chip" v-show="rawAddressInfo.reason">
+                                                            {{ rawAddressInfo.reason }}
+                                                        </div>
+                                                    </v-list-item-content>
+                                                </v-list-item>
+
                                             </v-list>
                                         </v-card>
 
@@ -253,7 +221,7 @@
                                     <v-col cols="6">
                                         <div style="max-height:calc(100vh - 124px); overflow: hidden"
                                              class="collapse pa-2" v-dragscroll>
-                                            <div v-cloak v-bind:key="'area'+area.areaName" v-for="area in areas"
+                                            <div v-bind:key="'area'+area.areaName" v-for="area in areas"
                                                  class="area">
                                                 <div class="areaTitle">{{ area.areaName }}</div>
                                                 <div class="areaTableContainer">
@@ -484,18 +452,19 @@ grid-template-columns: calc(100vw - 300px) 300px">
                         <v-tab-item>
                             <v-card-text>
                                 <v-text-field autofocus label="金额"
-                                           messages="zB.: 12.34"   v-model="localDiscountStr"></v-text-field>
+                                              messages="zB.: 12.34" v-model="localDiscountStr"></v-text-field>
                             </v-card-text>
                         </v-tab-item>
                         <v-tab-item>
                             <v-card-text>
                                 <v-text-field autofocus label="百分比"
-                                            messages="1-99"  v-model="localDiscountStr"></v-text-field>
+                                              messages="1-99" v-model="localDiscountStr"></v-text-field>
                             </v-card-text>
                         </v-tab-item>
                     </v-tabs>
                     <v-card-actions>
-                       <v-spacer></v-spacer> <v-btn @click="submitDiscount">确定</v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn @click="submitDiscount">确定</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -530,16 +499,14 @@ import {
   jumpToTable,
   logError,
   logErrorAndPop,
-  oldJumpTo,
   popAuthorize,
   requestOutTable,
   setGlobalTableId,
   showConfirmAsyn,
   showTimedAlert,
-  Strings,
-  toast
+  toast,
+  toManage
 } from '../oldjs/common'
-import { version } from './../../package.json'
 import { getActiveTables, getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import Swal from 'sweetalert2'
 import hillo from 'innerken-utils/Utlis/request'
@@ -589,54 +556,46 @@ export default {
   },
   data: function () {
     return {
-      loading: true,
-      showTableList: null,
-      leftDrawer: null,
-      rightDrawer: null,
-      menu: false,
+      menuShow: null, // 控制菜单是否显示
+      checkoutShow: false,
+      modificationShow: false,
+      discountModelShow: null,
+
       breakCount: 0,
       checkOutType: 'checkOut',
       checkOutModel: StandardDishesListFactory(),
-      version: version,
       /**/
       discountRatio: 1,
-      checkoutShow: false,
       discountStr: null,
-      expand: GlobalConfig.defaultExpand,
-      focusTimer: null,
-      options: [],
-      dishName: '',
+
       dish: {},
       count: 1,
-      modificationShow: false,
-      /**/
+
+      /* 存储菜品和过滤的信息 */
+      dct: [],
       dishes: [],
       staticDishes: [],
       categories: [],
       activeCategory: null,
       activeDCT: null,
+      filteredDish: [{ name: '', code: '', price: '', count: '' }],
       /**/
-      takeawayInfoShow: false,
       rawAddressInfo: { reason: '' },
       /**/
       areas: [],
-      Strings: Strings,
       Config: GlobalConfig,
+      /* input**/
       buffer: '',
       input: '',
-      payment: [],
       //* */
       splitOrderListModel: StandardDishesListFactory(),
       orderListModel: StandardDishesListFactory(),
       cartListModel: StandardDishesListFactory(),
-      cartOrder: [],
       tableDetailInfo: {
         order: { id: -1 },
         tableBasicInfo: { name: '' }
       },
-      dct: [],
-      filteredDish: [{ name: '', code: '', price: '', count: '' }],
-      discountModelShow: null,
+
       localDiscountStr: '',
       localDiscountType: ''
     }
@@ -646,13 +605,7 @@ export default {
   },
   methods: {
     popAuthorize,
-    toManage () {
-      oldJumpTo('admin/index.html', {
-        DeviceId: GlobalConfig.DeviceId,
-        lang: GlobalConfig.lang,
-        Base: GlobalConfig.Base
-      })
-    },
+    toManage,
     goHome () {
       this.goHomeCallBack()
       goHome()
@@ -689,7 +642,7 @@ export default {
         }
       }
     },
-    async dishQuery (code, count = 1) {
+    async findAndOrderDish (code, count = 1) {
       if (count < 1) {
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
         return
@@ -711,8 +664,6 @@ export default {
       blockReady()
     },
     showModification (dish, count) {
-      this.options = dish.modInfo
-      this.dishName = dish.name
       this.dish = dish
       this.count = count
       if (!GlobalConfig.FMCVersion) {
@@ -763,7 +714,7 @@ export default {
       }
     },
     orderOneDish: function (code) {
-      this.dishQuery(code)
+      this.findAndOrderDish(code)
     },
     readBuffer: function (clear = true) {
       const ins = this.buffer === '' ? this.input : this.buffer
@@ -1067,14 +1018,14 @@ export default {
           return
         } else if (t.indexOf('*') !== -1) {
           const [code, count] = t.split('*')
-          this.dishQuery(code, count)
+          this.findAndOrderDish(code, count)
           return
         } else if (t === '/rp') {
           this.reprintOrder()
         } else if (t === '/ps') {
           this.zwitchenBon()
         } else {
-          this.dishQuery(t)
+          this.findAndOrderDish(t)
           return
         }
       } else {
@@ -1106,29 +1057,28 @@ export default {
               blockReady()
             }, 10)
             return
-            // checkOut();
           }
         }
       }
       blocking()
     },
-    orderDish (order = this.cartListModel.list, print = true) {
-      hillo.post('Complex.php?op=addDishesToTable', {
-        params: JSON.stringify(order),
-        tableId: this.id,
-        printingKitchenBon: print ? 1 : 0
-      }).then(() => {
+    async orderDish (order = this.cartListModel.list, print = true) {
+      try {
+        await hillo.post('Complex.php?op=addDishesToTable', {
+          params: JSON.stringify(order),
+          tableId: this.id,
+          printingKitchenBon: print ? 1 : 0
+        })
+        printNow()
         this.cartListModel.clear()
         this.initialUI()
         if (GlobalConfig.jumpToHomeWhenOrder) {
           this.goHome()
         }
-      }).catch(res => {
-        logError(this.$t('JSTableOrderFailed') + res.info)
-      }).finally(() => {
-        blockReady()
-      })
-      printNow()
+      } catch (res) {
+        logError(this.$t('JSTableOrderFailed') + res.data.info)
+      }
+      blockReady()
     },
     jumpToPayment () {
       const realCheckOut = async () => {
@@ -1150,7 +1100,7 @@ export default {
     createTable: createOrEnterTable,
     async realInitial () {
       await getConsumeTypeList()
-      this.showTableList = false
+      this.menuShow = false
       this.breakCount = 0
       window.onkeydown = this.listenKeyDown
       if (GlobalConfig.getFocus) {
@@ -1187,7 +1137,7 @@ export default {
           return parseInt(item.categoryId) === parseInt(c.id)
         })
       }
-      if (this.Config.dishLookUp) {
+      if (GlobalConfig.dishLookUp) {
         if (this.input) {
           if (this.input !== '' && !this.input.includes('/')) {
             const [buffer] = this.input.split('*')
@@ -1199,7 +1149,6 @@ export default {
           }
         }
       }
-
       return list
     }
   },
@@ -1256,7 +1205,7 @@ export default {
     }
   },
   watch: {
-    showTableList: function () {
+    menuShow: function () {
       this.refreshTables()
     },
     activeDCT: function () {
@@ -1272,12 +1221,11 @@ export default {
     input: function () {
       this.updateFilteredDish()
     },
-    refresh: function (val) {
+    refresh: function () {
       this.realInitial()
     }
   },
   async created () {
-    this.Config = GlobalConfig
     this.realInitial()
   }
 }
@@ -1435,28 +1383,6 @@ export default {
         top: 0;
         right: 304px;
         z-index: 5;
-    }
-
-    .ikButton {
-        background: white;
-        padding: 8px 12px;
-        cursor: pointer;
-        box-shadow: 0 3px 6px rgba(0, 25, 244, 0.1);
-        color: black;
-        font-size: 18px;
-        width: 100%;
-        font-weight: bold;
-        border-radius: 5px;
-    }
-
-    .ikButton:focus {
-        background: #367aeb;
-        color: white;
-    }
-
-    .ikButton:active {
-        background: #367aeb;
-        color: white;
     }
 
     .bigTableName {

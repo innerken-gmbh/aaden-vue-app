@@ -190,7 +190,7 @@ function informOpenTable (password, number, personCount, childCount) {
       personCount: personCount,
       childCount: childCount
     }).then(res => jumpToTable(res.content.tableId, res.content.tableName))
-    .catch(err => logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + err.info))
+    .catch(err => logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + err))
 }
 
 export async function openTablePrompt () {
@@ -429,6 +429,14 @@ export function toastError (str) {
     title: str,
     showConfirmButton: true
 
+  })
+}
+
+export function toManage () {
+  oldJumpTo('admin/index.html', {
+    DeviceId: GlobalConfig.DeviceId,
+    lang: GlobalConfig.lang,
+    Base: GlobalConfig.Base
   })
 }
 
