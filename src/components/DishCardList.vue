@@ -6,9 +6,9 @@
                 tile
                 class="font-weight-bold"
                 :color="color" dark>
-            <v-app-bar-nav-icon>
-                <v-icon>{{ title }}</v-icon>
-            </v-app-bar-nav-icon>
+            <v-toolbar-title>
+              {{ title }}
+            </v-toolbar-title>
             <v-spacer/>
             <div class="d-flex align-center">
                 <v-icon color="white">mdi-cash-usd</v-icon>

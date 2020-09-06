@@ -160,7 +160,7 @@
                                         <v-card v-if="table.usageStatus==='1'"
                                                 class="tableCard"
                                                 @click='jumpToTable(table.tableId,table.tableName)'>
-                                            <div class="tableCardName">{{ table.tableName }}</div>
+                                            <div :style="{fontSize:Config.tableCardFontSize+'px'}" class="tableCardName">{{ table.tableName }}</div>
                                             <div>
                                                 <div class="d-flex justify-space-between">
                                                     <div class="tableIconRow">
@@ -203,7 +203,7 @@
                                         </v-card>
                                         <div v-else @click="createTable(table.tableName)"
                                              class="tableCard notUsed">
-                                            <div class="tableCardName">
+                                            <div :style="{fontSize:Config.tableCardFontSize+'px'}" class="tableCardName">
                                                 {{ table.tableName }}
                                             </div>
                                         </div>
@@ -465,7 +465,7 @@ export default {
     .tableCard.notUsed {
         background: transparent;
         color: #6b6b6b;
-        border: 3px dotted #e2e3e5;
+        border: 3px solid #e2e3e5;
         box-shadow: none;
     }
 
@@ -474,7 +474,6 @@ export default {
     }
 
     .tableCardName {
-        line-height: 23px;
         font-size: 28px;
         text-align: left;
         font-family: Roboto, "Axure Handwriting", sans-serif;

@@ -146,6 +146,17 @@
                         </v-btn>
                     </div>
                 </div>
+                <div style="height: 120px">
+                  <h4>{{$t('或者使用0小费,现金,普通账单进行')}}</h4>
+                  <div class="pa-2">
+                    <v-btn color="primary"
+                           @click="checkOut"
+                           elevation="0"
+                           :disabled="paymentLog.length!==0"
+                           tile fab block x-large> {{$t('QuickBill')}}
+                    </v-btn>
+                  </div>
+                </div>
             </div>
         </div>
     </div>
