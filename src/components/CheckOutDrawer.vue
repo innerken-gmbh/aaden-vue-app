@@ -58,7 +58,7 @@ export default {
     cancel () {
       this.realShow = false
     },
-    async checkOut (paymentLog, billType) {
+    async checkOut (paymentLog = [], billType) {
       const print = parseInt(billType)
       let withTitle = 0
       let printCount = 1
@@ -77,6 +77,10 @@ export default {
         payMethod: 1,
         paymentLog: JSON.stringify(paymentLog),
         discountStr: ''
+      }
+
+      if (paymentLog.length === 0) {
+        delete checkOutData.paymentLog
       }
       if (this.discountRatio !== 0) {
         checkOutData.discountStr = (this.discountStr ?? '')
