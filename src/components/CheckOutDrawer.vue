@@ -74,6 +74,7 @@ export default {
         dishes: JSON.stringify(this.order.list),
         withTitle,
         printCount,
+        payMethod: 1,
         paymentLog: JSON.stringify(paymentLog),
         discountStr: ''
       }
