@@ -187,7 +187,7 @@
                                                             <span>{{ table.seatCount }}</span>
                                                         </div>
                                                     </template>
-                                                    <template v-if="table.consumeType==='4'||table.consumeType==='6'">
+                                                    <template v-else>
                                                         <div class="tableIconRow">
                                                             <i class="icon material-icons">person_outline</i>
                                                             <div class="text">{{ table.seatCount }}</div>
