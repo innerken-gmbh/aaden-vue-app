@@ -788,7 +788,9 @@ export default {
         dish.forceFormat = true
       }
       if (!GlobalConfig.useCart) {
-        this.orderDish([dish])
+        const tmp = IKUtils.deepCopy(dish)
+        tmp.count = 1
+        this.orderDish([tmp])
         return
       }
       setTimeout(() => {
