@@ -7,7 +7,7 @@
                 class="font-weight-bold"
                 :color="color" dark>
             <v-toolbar-title>
-              {{ title }}
+                {{ title }}
             </v-toolbar-title>
             <v-spacer/>
             <div class="d-flex align-center">
@@ -23,16 +23,16 @@
              style="overflow-y: scroll"
         >
             <template v-for="(order,index) in dishListModel.list">
-              <div     @click="checkIfOpen(index)"   :key="'order'+title+order.identity" >
-                <dish-card
-                        :expand="index===expandIndex"
-                        :color="color"
-                        :show-number="showNumber"
-                        @op-clicked="expandIndex=null"
-                        :click-callback="()=>clickCallback(index)"
-                        :show-edit="showEdit"
-                        :dish="order"/>
-              </div>
+                <div @click="checkIfOpen(index)" :key="'order'+title+order.identity">
+                    <dish-card
+                            :expand="index===expandIndex"
+                            :color="color"
+                            :show-number="showNumber"
+                            @op-clicked="expandIndex=null"
+                            :click-callback="()=>{expandIndex=null;clickCallback(index)}"
+                            :show-edit="showEdit"
+                            :dish="order"/>
+                </div>
             </template>
             <template v-if="discountDish!=null">
                 <dish-card

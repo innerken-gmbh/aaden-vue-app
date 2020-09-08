@@ -61,6 +61,7 @@
                                 <v-item :key="'mod111'+index" #default="{active,toggle}">
 
                                     <v-card :ripple="false"
+                                            tile
                                             max-width="150px"
                                             min-height="56px"
                                             :color="active?'primary':''"
