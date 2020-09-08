@@ -42,58 +42,42 @@
             </div>
         </div>
         <div v-show="expand" class="editRow elevation-3">
-            <div v-if="showEdit" class="py-2 d-flex">
-                <template>
-                    <v-icon class="mr-2" large
-                            @click.stop="editNote(dish)">
-                        mdi-pencil-circle
-                    </v-icon>
-                </template>
-                <template v-if="showNumber">
+            <v-toolbar @click.stop dense flat>
+                <template v-if="showEdit">
+                    <template>
+                        <v-icon class="mr-2" large
+                                @click.stop="editNote(dish)">
+                            mdi-pencil-circle
+                        </v-icon>
+                    </template>
+                    <template v-if="showNumber">
 
-                    <v-icon class="mr-2" large @click.stop="dish.change(-1)">
-                        mdi-minus-circle
-                    </v-icon>
-                    <v-icon large @click.stop="dish.change(1)">
-                        mdi-plus-circle
-                    </v-icon>
-                    <v-spacer></v-spacer>
-                    <v-icon large @click.stop="dish.change(-dish.count)">
-                        mdi-trash-can
-                    </v-icon>
+                        <v-icon class="mr-2" large @click.stop="dish.change(-1)">
+                            mdi-minus-circle
+                        </v-icon>
+                        <v-icon large @click.stop="dish.change(1)">
+                            mdi-plus-circle
+                        </v-icon>
+                        <v-spacer></v-spacer>
+                        <v-icon large @click.stop="dish.change(-dish.count)">
+                            mdi-trash-can
+                        </v-icon>
+                    </template>
                 </template>
-            </div>
-            <template v-if="!showEdit">
-                <div @click.stop class="d-flex align-center" style="width: 100%">
-                    <v-slider
-                            dense
-                            hide-details
-                            v-model="clickNumber"
-                            thumb-label
-                            min="1"
-                            :max="dish.count"
-                    >
-                        <template v-slot:prepend>
-                            <v-icon
-                                    @click.stop="decrement"
-                            >
-                                mdi-minus
-                            </v-icon>
-                        </template>
-                        <template v-slot:append>
-                            <v-icon
-                                    @click.stop="increment"
-                            >
-                                mdi-plus
-                            </v-icon>
-                        </template>
-                    </v-slider>
-                    <span class="ml-4">&times;{{ clickNumber }}</span>
-                    <v-btn class="ml-3" @click="click" icon>
-                        <v-icon>mdi-clipboard-edit</v-icon>
-                    </v-btn>
-                </div>
-            </template>
+                <template v-else>
+                    <v-toolbar-items class="flex-grow-1">
+                        <v-btn class="flex-grow-1">
+                            <span @click="callCallBack" style="font-size: 18px">&times;1</span>
+                        </v-btn>
+                        <v-btn>
+                            <span @click="callCallBack(5)" style="font-size: 18px">&times;5</span>
+                        </v-btn>
+                        <v-btn color="primary">
+                            <span @click="callCallBack(dish.count)" style="font-size: 18px">Alle</span>
+                        </v-btn>
+                    </v-toolbar-items>
+                </template>
+            </v-toolbar>
         </div>
     </div>
 </template>
@@ -120,39 +104,15 @@ export default {
     },
     expand: { default: false }
   },
-  data: function () {
-    return Object.assign({
-      modInfos: {},
-      hasMod: 0,
-      apply: [],
-      noteShow: false,
-      noteEdit: true,
-      note: '',
-      sumCount: null,
-      count: null,
-      clickNumber: this.dish.count
-    }, { ...this.dish })
-  },
   methods: {
-    callCallBack () {
+    callCallBack (count = 1) {
+      if (count > this.dish.count) {
+        count = this.dish.count
+      }
       if (this.dish.code !== '-1') {
-        this.clickCallback()
-      }
-    },
-    decrement () {
-      if (this.clickNumber > 0) {
-        this.clickNumber--
-      }
-    },
-    increment () {
-      if (this.clickNumber < this.dish.count) {
-        this.clickNumber++
-      }
-    },
-    click () {
-      this.$emit('op-clicked')
-      for (let i = 0; i < this.clickNumber; i++) {
-        this.callCallBack()
+        for (let i = 0; i < count; i++) {
+          this.clickCallback()
+        }
       }
     },
     async editNote () {
@@ -220,8 +180,6 @@ export default {
     }
 
     .editRow {
-        padding-left: 24px;
-        padding-right: 8px;
     }
 
 </style>

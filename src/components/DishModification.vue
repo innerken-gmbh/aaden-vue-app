@@ -42,26 +42,44 @@
         overflow-y: scroll;
         ">
             <template v-for="item in computedOption">
-                <div :key="'mod2'+item.id" class="pa-1" style="max-width: 420px">
+                <div :key="'mod2'+item.id" class="mx-2 my-4" style="max-width: 450px">
                     <h4 :key="'mod2head'+item.id">
                         {{
                         `${item.name}${item.required === '1' ?
                         `:${item.select[0].text}` : ``}`
                         }}
                     </h4>
-                    <v-chip-group
-                            column
-                            style="width: fit-content;"
+                    <v-item-group
                             v-model="mod[item.id]"
                             :mandatory="item.required==='1'"
                             :multiple="item.multiSelect==='1'"
-                            active-class="primary--text"
+                            active-class="active"
                     >
-                        <v-chip large :ripple="false" label :key="'mod111'+index"
-                                v-for="(s,index) in item.select">
-                            {{ s.text }}{{ s.priceInfo }}
-                        </v-chip>
-                    </v-chip-group>
+                        <div style="display: flex;flex-wrap: wrap">
+
+                            <template v-for="(s,index) in item.select">
+                                <v-item :key="'mod111'+index" #default="{active,toggle}">
+
+                                    <v-card :ripple="false"
+                                            max-width="150px"
+                                            min-height="56px"
+                                            :color="active?'primary':''"
+                                            @click="activeCallback(toggle,item,index)">
+                                        <div class="ma-2" style="font-size: 18px">{{ s.text }}{{ s.priceInfo }}</div>
+                                        <template v-if="active&&item.required!=='1'">
+                                            <v-card-actions>
+                                                <v-spacer></v-spacer>
+                                                <v-btn color="error" @click.stop="addCount(item.id,index)" right>
+                                                    <span style="font-size: 18px" class="font-weight-bold">&times;{{selectCount[item.id][index]}}</span>
+                                                </v-btn>
+                                            </v-card-actions>
+                                        </template>
+                                    </v-card>
+
+                                </v-item>
+                            </template>
+                        </div>
+                    </v-item-group>
                 </div>
             </template>
         </v-card-text>
@@ -78,6 +96,7 @@ export default {
   },
   data: function () {
     return {
+      selectCount: {},
       count: 1,
       mod: {}
     }
@@ -94,11 +113,13 @@ export default {
             item.priceInfo = (item.priceInfo?.split(',')) ?? []
           }
           item.selectName.forEach((name, index) => {
-            item.select.push({
+            const select = {
               text: `${name}`,
               value: item.selectValue[index],
-              priceInfo: parseFloat(item.priceInfo[index]) === 0 ? '' : `(€${parseFloat(item.priceInfo[index]).toFixed(2)})`
-            })
+              priceInfo: parseFloat(item.priceInfo[index]) === 0 ? '' : `(€${parseFloat(item.priceInfo[index]).toFixed(2)})`,
+              count: 0
+            }
+            item.select.push(select)
           })
           realModInfo.push(item)
         }
@@ -107,12 +128,46 @@ export default {
     }
   },
   methods: {
+    addCount (groupId, index) {
+      this.selectCount[groupId][index]++
+    },
+    activeCallback (callback, group, index) {
+      const groupId = group.id
+      if (!this.selectCount[groupId]) {
+        this.$set(this.selectCount, groupId, {})
+      }
+      if (group.required === '1') {
+        for (const k in this.selectCount[groupId]) {
+          this.selectCount[groupId][k] = 0
+        }
+      }
+      this.$set(this.selectCount[groupId], index, 1)
+      callback()
+    },
     cancel () {
       this.count = 1
       this.$emit('modification-cancel')
     },
     submitModification () {
-      this.$emit('modification-submit', [this.mod, this.count])
+      let realMod = []
+      for (const groupId in this.selectCount) {
+        for (const selectIndex in this.selectCount[groupId]) {
+          for (let i = 0; i < this.selectCount[groupId][selectIndex]; i++) {
+            realMod.push({
+              groupId,
+              selectIndex
+            })
+          }
+        }
+      }
+      this.mod = {}
+
+      this.$nextTick(() => {
+        this.selectCount = {}
+      })
+      this.$emit('modification-submit', [realMod, this.count])
+      realMod = []
+
       this.count = 1
     }
   },
@@ -129,8 +184,9 @@ export default {
         display: none;
     }
 
-    .v-chip--active .hideWhenNoteActiveChip {
-        display: unset;
+    .active {
+        background: #367aeb;
+        color: white;
     }
 
     .v-chip-group--column .v-slide-group__content {
