@@ -305,7 +305,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                                                 :key="'dish'+dish.code">
                                             <div :class="dish.displayColor"
                                                  class="dishBlock d-flex flex-column fill-height justify-space-between"
-                                                 @click.stop="orderOneDish(dish.code)">
+                                                 @click="orderOneDish(dish.code)">
                                                 <div class="name">{{ dish.dishName }}</div>
                                                 <div class="spaceBetween"
                                                      style="align-items: center;flex-wrap: wrap">

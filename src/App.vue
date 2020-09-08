@@ -141,7 +141,7 @@ export default {
         font-weight: 600;
     }
 
-    .noFullScreen{
+    .noFullScreen {
         position: fixed;
         left: 0;
         top: 0;
