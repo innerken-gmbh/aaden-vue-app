@@ -776,8 +776,7 @@ export default {
             step: 0.01
           }
         })).value
-
-        if (isNaN(dish.originPrice)) {
+        if (dish.originPrice === '') {
           dish.originPrice = 0
         }
 
