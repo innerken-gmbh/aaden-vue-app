@@ -30,9 +30,8 @@
             </v-toolbar-items>
         </v-toolbar>
         <v-card-text style="display: grid;
-        height: calc(100vh - 64px);
         grid-gap: 4px;
-        grid-template-rows: repeat(auto-fill,150px);
+        grid-template-rows: repeat(2,minmax(min-content,auto));
         grid-auto-flow: column dense;
         grid-auto-rows: 200px;
         grid-auto-columns: max-content;
