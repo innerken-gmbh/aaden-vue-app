@@ -149,6 +149,6 @@ export default {
         margin: 0;
         max-height: unset !important;
         max-width: 100vw;
-        width: fit-content;
+        min-width: calc(100vw - 300px);
     }
 </style>

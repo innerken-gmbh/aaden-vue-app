@@ -29,20 +29,20 @@
                 </v-btn>
             </v-toolbar-items>
         </v-toolbar>
-        <v-card-text style="display: grid;
-        grid-gap: 4px;
-        grid-template-rows: repeat(2,minmax(min-content,auto));
-        grid-auto-flow: column dense;
-        grid-auto-rows: 200px;
-        grid-auto-columns: max-content;
-        justify-content: center;
-        align-items: start;
+        <div
+                class="pa-2"
+                ref="containerCard"
+                style="
+        height: calc(100vh - 64px);
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
         min-width: 300px;
         max-width: 100vw;
-        overflow-y: scroll;
+        overflow-x: scroll;
         ">
             <template v-for="item in computedOption">
-                <div :key="'mod2'+item.id" class="mx-2 my-4" style="max-width: 450px">
+                <div :key="'mod2'+item.id" style="max-width: 450px">
                     <h4 :key="'mod2head'+item.id">
                         {{
                         `${item.name}${item.required === '1' ?
@@ -56,17 +56,16 @@
                             active-class="active"
                     >
                         <div style="display: flex;flex-wrap: wrap">
-
                             <template v-for="(s,index) in item.select">
                                 <v-item :key="'mod111'+index" #default="{active,toggle}">
-
                                     <v-card :ripple="false"
                                             tile
-                                            max-width="150px"
-                                            min-height="56px"
+                                            class="d-flex flex-column"
+                                            max-width="144px"
+                                            :height="item.multiSelect==='1'?'120px':'auto'"
                                             :color="active?'primary':''"
                                             @click="activeCallback(toggle,item,index)">
-                                        <div class="ma-2" style="font-size: 18px">{{ s.text }}{{ s.priceInfo }}</div>
+                                        <div class="ma-2 flex-grow-1" style="font-size: 18px">{{ s.text }}{{ s.priceInfo }}</div>
                                         <template v-if="active&&item.required!=='1'">
                                             <v-card-actions>
                                                 <v-spacer></v-spacer>
@@ -83,7 +82,7 @@
                     </v-item-group>
                 </div>
             </template>
-        </v-card-text>
+        </div>
     </v-card>
 </template>
 
@@ -99,12 +98,15 @@ export default {
     return {
       selectCount: {},
       count: 1,
-      mod: {}
+      mod: {},
+      containerHeight: 0
     }
   },
   computed: {
     computedOption: function () {
       const realModInfo = []
+      const height = this.containerHeight
+      console.log(height)
       this.options.forEach(item => {
         item.select = []
         if (item.selectName) {
@@ -123,6 +125,15 @@ export default {
             item.select.push(select)
           })
           realModInfo.push(item)
+        }
+      })
+      realModInfo.sort((a, b) => {
+        if (a.required === '1') {
+          return -1
+        } else if (a.select.length === 1) {
+          return -1
+        } else {
+          return 1
         }
       })
       return realModInfo
@@ -168,13 +179,14 @@ export default {
       })
       this.$emit('modification-submit', [realMod, this.count])
       realMod = []
-
       this.count = 1
     }
   },
   mounted () {
     this.$nextTick(() => {
       this.$refs.submit.$el.focus()
+      this.containerHeight = document.body.clientHeight - 64 - 8
+      console.log(this.containerHeight)
     })
   }
 }
