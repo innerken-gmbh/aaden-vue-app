@@ -386,7 +386,8 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                                         <v-btn @click="rejectOrder">{{ $t('拒绝') }}</v-btn>
                                     </template>
                                     <template v-else>
-                                        <v-btn :disabled="this.cartListModel.count()!==0"  @click="insDecodeButtonList(3)">
+                                        <v-btn :disabled="this.cartListModel.count()!==0"
+                                               @click="insDecodeButtonList(3)">
                                             <v-icon>mdi-sale</v-icon>
                                             {{ $t('discount') }}
                                         </v-btn>
@@ -775,6 +776,10 @@ export default {
             step: 0.01
           }
         })).value
+
+        if (isNaN(dish.originPrice)) {
+          dish.originPrice = 0
+        }
 
         dish.price = dish.originPrice
         dish.forceFormat = true
