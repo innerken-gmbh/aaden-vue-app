@@ -264,7 +264,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                             <v-sheet elevation="3" v-dragscroll style="max-height: calc(100vh - 48px);overflow: hidden">
                                 <v-list dense>
                                     <v-list-item-group mandatory v-model="activeCategory">
-                                        <v-list-item>
+                                        <v-list-item @click="changeCategory(-1)">
                                             <v-list-item-content class="font-weight-black">
                                                 Alle
                                             </v-list-item-content>
@@ -272,6 +272,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                                         <template v-for="category of filteredC">
                                             <v-list-item style="text-transform: capitalize"
                                                          v-bind:key="'categorytypes'+category.id"
+                                                         @click="changeCategory(category.id)"
                                                          :class="category.color" :style="{fontSize: '16px'}"
                                             >
                                                 <v-list-item-content>{{ category.name }}</v-list-item-content>
@@ -280,22 +281,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                                     </v-list-item-group>
                                 </v-list>
                             </v-sheet>
-                            <!--              <v-tabs vertical-->
-                            <!--                      center-active-->
-                            <!--                      show-arrows-->
-                            <!--                      v-model="activeCategory"-->
-                            <!--              >-->
-                            <!--                <v-tab style="font-size: 16px">-->
 
-                            <!--                </v-tab>-->
-                            <!--                <template v-for="category of filteredC">-->
-                            <!--                  <v-tab style="text-transform: capitalize" v-bind:key="'categorytypes'+category.id"-->
-                            <!--                         :class="category.color" :style="{fontSize: '16px'}"-->
-                            <!--                  >-->
-                            <!--                    <div class="font-weight-bold">{{ category.name }}</div>-->
-                            <!--                  </v-tab>-->
-                            <!--                </template>-->
-                            <!--              </v-tabs>-->
                             <div v-dragscroll class="dragscroll dishCardListContainer">
                                 <div class="dishCardList">
                                     <template v-for="dish of filteredDish">
@@ -598,6 +584,7 @@ export default {
       staticDishes: [],
       categories: [],
       activeCategory: null,
+      activeCategoryId: 0,
       activeDCT: null,
       filteredDish: [{ name: '', code: '', price: '', count: '' }],
       /**/
@@ -625,6 +612,9 @@ export default {
     this.goHomeCallBack()
   },
   methods: {
+    changeCategory (id) {
+      this.activeCategoryId = id
+    },
     popAuthorize,
     toManage,
     goHome () {
@@ -1152,7 +1142,7 @@ export default {
       f()
     }, 300),
     filterDish () {
-      if (!(this.activeDCT || this.activeCategory || this.input)) {
+      if (!(this.activeDCT || this.activeCategoryId || this.input)) {
         return this.dishes
       }
       let list = this.dishes
@@ -1163,9 +1153,8 @@ export default {
         })
       }
       if (this.activeCategory) {
-        const c = this.filteredC[this.activeCategory - 1]
         list = list.filter((item) => {
-          return parseInt(item.categoryId) === parseInt(c.id)
+          return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
         })
       }
       if (GlobalConfig.dishLookUp) {
@@ -1246,7 +1235,8 @@ export default {
     dishes: function () {
       this.updateFilteredDish()
     },
-    activeCategory: function () {
+    activeCategory: function (val) {
+      console.log(val)
       this.filteredDish = this.filterDish()
     },
     input: function () {
