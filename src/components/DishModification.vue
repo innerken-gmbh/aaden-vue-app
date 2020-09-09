@@ -98,8 +98,7 @@ export default {
     return {
       selectCount: {},
       count: 1,
-      mod: {},
-      containerHeight: 0
+      mod: {}
     }
   },
   computed: {
@@ -185,8 +184,6 @@ export default {
   mounted () {
     this.$nextTick(() => {
       this.$refs.submit.$el.focus()
-      this.containerHeight = document.body.clientHeight - 64 - 8
-      console.log(this.containerHeight)
     })
   }
 }
