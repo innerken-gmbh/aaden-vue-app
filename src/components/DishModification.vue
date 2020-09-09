@@ -67,7 +67,7 @@
                                         <template v-if="active&&item.required!=='1'">
                                             <v-card-actions>
                                                 <v-spacer></v-spacer>
-                                                <v-btn color="error" @click.stop="addCount(item.id,index)" right>
+                                                <v-btn @click.stop="addCount(item.id,index)" right>
                                                     <span style="font-size: 18px" class="font-weight-bold">&times;{{selectCount[item.id][index]}}</span>
                                                 </v-btn>
                                             </v-card-actions>
