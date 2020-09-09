@@ -44,10 +44,7 @@
             <template v-for="item in computedOption">
                 <div :key="'mod2'+item.id" style="max-width: 450px">
                     <h4 :key="'mod2head'+item.id">
-                        {{
-                        `${item.name}${item.required === '1' ?
-                        `:${item.select[0].text}` : ``}`
-                        }}
+                        {{ `${item.name}${item.required === '1' ? `:${item.select[0].text}` : ``}`}}
                     </h4>
                     <v-item-group
                             v-model="mod[item.id]"
@@ -65,7 +62,8 @@
                                             :height="item.multiSelect==='1'?'120px':'auto'"
                                             :color="active?'primary':''"
                                             @click="activeCallback(toggle,item,index)">
-                                        <div class="ma-2 flex-grow-1" style="font-size: 18px">{{ s.text }}{{ s.priceInfo }}</div>
+                                        <div class="ma-2 flex-grow-1" style="font-size: 18px">{{ s.text }}{{ s.priceInfo }}
+                                        </div>
                                         <template v-if="active&&item.required!=='1'">
                                             <v-card-actions>
                                                 <v-spacer></v-spacer>

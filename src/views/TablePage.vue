@@ -386,11 +386,12 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                                         <v-btn @click="rejectOrder">{{ $t('拒绝') }}</v-btn>
                                     </template>
                                     <template v-else>
-                                        <v-btn @click="insDecodeButtonList(3)">
+                                        <v-btn :disabled="this.cartListModel.count()!==0"  @click="insDecodeButtonList(3)">
                                             <v-icon>mdi-sale</v-icon>
                                             {{ $t('discount') }}
                                         </v-btn>
-                                        <v-btn color="primary" dark class="flex-grow-1 ml-1"
+                                        <v-btn :disabled="this.cartListModel.count()!==0"
+                                               color="primary" class="flex-grow-1 ml-1"
                                                @click="insDecodeButtonList(6)">
                                             <v-icon left>mdi-calculator-variant</v-icon>
                                             {{ $t('payBill') }}
