@@ -28,8 +28,7 @@
                             :expand="index===expandIndex"
                             :color="color"
                             :show-number="showNumber"
-                            @op-clicked="expandIndex=null"
-                            :click-callback="()=>{expandIndex=null;clickCallback(index)}"
+                            :click-callback="()=>_clickCallBack(index,order)"
                             :show-edit="showEdit"
                             :dish="order"/>
                 </div>
@@ -94,6 +93,12 @@ export default {
     }
   },
   methods: {
+    _clickCallBack (index, dish) {
+      if (dish.count === 0) {
+        this.expandIndex = null
+      }
+      this.clickCallback(index)
+    },
     checkIfOpen (index) {
       const dish = this.dishListModel.list[index]
       if (dish.count > 1 || this.showEdit) {

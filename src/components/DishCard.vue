@@ -67,7 +67,7 @@
                 <template v-else>
                     <v-toolbar-items class="flex-grow-1">
                         <v-btn class="flex-grow-1">
-                            <span @click="callCallBack" style="font-size: 18px">&times;1</span>
+                            <span @click="callCallBack(1)" style="font-size: 18px">&times;1</span>
                         </v-btn>
                         <v-btn>
                             <span @click="callCallBack(5)" style="font-size: 18px">&times;5</span>
