@@ -33,6 +33,7 @@ jobs:
       - run: |
           cd admin
           mkdir dist
+          touch dist/data.txt
           cd ..
           cd public
           rm -rf admin
