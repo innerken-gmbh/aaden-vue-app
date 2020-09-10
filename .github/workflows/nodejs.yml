@@ -40,6 +40,7 @@ jobs:
           echo 'MAIN'
           cd public
           rm -rf admin
+          mkdir admin
           mv ../../admin/dist/* admin
           cd ..
           git add .
