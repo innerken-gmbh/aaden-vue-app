@@ -31,8 +31,8 @@ jobs:
 
       - run: |
           cd admin
-          mkdir dist
-          touch dist/data.txt
+          npm ci
+          npm run admin-build
           cd ..
           cd public
           rm -rf admin
