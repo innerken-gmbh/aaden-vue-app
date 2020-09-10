@@ -45,8 +45,8 @@ jobs:
           git config --global user.name "CI BOT InnerKen"
           git add .
           git commit -m 'AUTO USE LATEST EMBEDED BUILD'
-          git branch temp-branch
-          git checkout origin/master
+          git branch -b temp-branch
+          git checkout master
           git merge temp-branch
           git push origin master
       - run: ls
