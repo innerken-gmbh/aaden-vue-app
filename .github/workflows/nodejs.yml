@@ -38,6 +38,13 @@ jobs:
           ls
           cd ..
           echo 'MAIN'
+          cd public
+          rm -rf admin
+          mv ../../admin/dist/* admin
+          cd ..
+          git add .
+          git commit -m 'AUTO USE LATEST EMBEDED BUILD'
+          git push origin
           ls
       - run: ls
 #    - run: npm run release --if-present
