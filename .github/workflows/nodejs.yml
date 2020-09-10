@@ -38,10 +38,10 @@ jobs:
           cd public
           rm -rf admin
           mkdir admin
-          mv ../../admin/dist/* admin
           cd ..
-          cd ..
-          ls
+          mv admin/dist/* public/admin
+          ls public/admin
+          ls src/oldjs
           git config --global user.email "admin@innerken.com"
           git config --global user.name "CI BOT InnerKen"
           git add .
