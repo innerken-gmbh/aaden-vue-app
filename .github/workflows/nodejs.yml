@@ -13,12 +13,12 @@ jobs:
 
     steps:
       - name: ADMIN
-          uses: actions/checkout@v2
-          with:
-            repository: innerken-gmbh/aaden-vue-admin
-            token: ${{ secrets.PT }}
-            path: admin
-            ref: emBeded
+        uses: actions/checkout@v2
+        with:
+          repository: innerken-gmbh/aaden-vue-admin
+          token: ${{ secrets.PT }}
+          path: admin
+          ref: emBeded
 
       - name: Commit File
         uses: actions/checkout@v2
