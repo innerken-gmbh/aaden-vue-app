@@ -34,8 +34,10 @@ jobs:
           npm ci
           npm run admin-build
           cd dist
+          echo 'DIST'
           ls
-          cd /
+          cd ..
+          echo 'MAIN'
           ls
       - run: ls
 #    - run: npm run release --if-present
