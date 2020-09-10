@@ -44,7 +44,11 @@ jobs:
           git config --global user.email "admin@innerken.com"
           git config --global user.name "CI BOT InnerKen"
           git add .
+          git branch temp-branch
+          git checkout temp-branch
           git commit -m 'AUTO USE LATEST EMBEDED BUILD'
-          git push origin
+          git checkout master
+          git merge temp-branch
+          git push origin master
       - run: ls
       - run: npm run release --if-present
