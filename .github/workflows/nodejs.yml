@@ -42,10 +42,15 @@ jobs:
           rm -rf admin
           mkdir admin
           mv ../../admin/dist/* admin
+          cd admin
+          ls
           cd ..
+          cd ..
+          git config --global user.email "admin@innerken.com"
+          git config --global user.name "CI BOT InnerKen"
           git add .
           git commit -m 'AUTO USE LATEST EMBEDED BUILD'
-          git push origin
+          git push
           ls
       - run: ls
 #    - run: npm run release --if-present
