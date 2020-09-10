@@ -66,14 +66,14 @@
                 </template>
                 <template v-else>
                     <v-toolbar-items class="flex-grow-1">
-                        <v-btn class="flex-grow-1">
-                            <span @click="callCallBack(1)" style="font-size: 18px">&times;1</span>
+                        <v-btn  @click="callCallBack(1)"  class="flex-grow-1">
+                            <span style="font-size: 18px">&times;1</span>
                         </v-btn>
-                        <v-btn>
-                            <span @click="callCallBack(5)" style="font-size: 18px">&times;5</span>
+                        <v-btn  @click="callCallBack(5)">
+                            <span style="font-size: 18px">&times;5</span>
                         </v-btn>
-                        <v-btn color="primary">
-                            <span @click="callCallBack(dish.count)" style="font-size: 18px">Alle</span>
+                        <v-btn  @click="callCallBack(dish.count)" color="primary">
+                            <span style="font-size: 18px">Alle</span>
                         </v-btn>
                     </v-toolbar-items>
                 </template>

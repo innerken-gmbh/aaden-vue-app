@@ -35,7 +35,7 @@
                     />
                 </template>
                 <template slot="right-slot">
-                    <div class="d-flex align-center justify-space-between" style="min-width: 184px">
+                    <div class="d-flex align-center justify-space-between" style="min-width: 172px">
                         <span class="bigTableName">
                             {{ tableDetailInfo.tableBasicInfo.name }}
                         </span>
