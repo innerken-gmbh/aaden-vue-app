@@ -12,6 +12,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      - name: Commit File
+        uses: actions/checkout@v2
+
       - name: ADMIN
         uses: actions/checkout@v2
         with:
@@ -19,9 +23,6 @@ jobs:
           token: ${{ secrets.PT }}
           path: admin
           ref: emBeded
-
-      - name: Commit File
-        uses: actions/checkout@v2
 
       - name: Use Node.js 14.x
         uses: actions/setup-node@v1
@@ -32,8 +33,13 @@ jobs:
           cd admin
           npm ci
           npm run admin-build
+          ls
           cd ..
+          ls
           echo 'MAIN'
+          cd ..
+          ls
+          echo 'FATHER'
           cd public
           rm -rf admin
           mkdir admin
