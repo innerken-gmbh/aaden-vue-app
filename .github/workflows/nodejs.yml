@@ -46,6 +46,8 @@ jobs:
           git add .
           git commit -m 'AUTO USE LATEST EMBEDED BUILD'
           git checkout -b temp-branch
+          echo "ref"
+          echo ${{ github.ref }}
           git checkout ${{ github.ref }}
           git merge temp-branch
           git push origin master
