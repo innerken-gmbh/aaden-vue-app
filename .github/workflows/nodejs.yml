@@ -52,4 +52,5 @@ jobs:
           git merge temp-branch
           git push
       - run: ls
+      - run: npm ci
       - run: npm run release --if-present
