@@ -14,7 +14,6 @@ jobs:
     steps:
       - name: Commit File
         uses: actions/checkout@v2
-        with:
 
       - name: ADMIN
         uses: actions/checkout@v2
