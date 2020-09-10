@@ -12,11 +12,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js 14.x
-      uses: actions/setup-node@v1
-      with:
-        node-version: 14.x
-    - run: npm ci
-    - run: ls
+      - name: Commit File
+        uses: actions/checkout@v2
+        with:
+
+      - name: ADMIN
+        uses: actions/checkout@v2
+        with:
+          repository: innerken-gmbh/aaden-vue-admin
+          token: ${{ secrets.PT }}
+          path: admin
+          ref: emBeded
+
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+
+
+      - run: |
+          cd admin
+          npm ci
+          npm run admin-build
+          cd dist
+          ls
+          cd /
+          ls
+      - run: ls
 #    - run: npm run release --if-present
