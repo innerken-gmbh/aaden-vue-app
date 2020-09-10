@@ -45,6 +45,6 @@ jobs:
           git config --global user.name "CI BOT InnerKen"
           git add .
           git commit -m 'AUTO USE LATEST EMBEDED BUILD'
-          git push
+          git push origin
       - run: ls
       - run: npm run release --if-present
