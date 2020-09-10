@@ -4,8 +4,7 @@
 name: Node.js CI
 
 on:
-  push:
-    branches: [ master ]
+  push
 
 jobs:
   build:
@@ -19,4 +18,5 @@ jobs:
       with:
         node-version: 14.x
     - run: npm ci
-    - run: npm run release --if-present
+    - run: ls
+#    - run: npm run release --if-present
