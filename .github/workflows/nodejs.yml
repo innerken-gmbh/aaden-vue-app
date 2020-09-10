@@ -33,23 +33,19 @@ jobs:
           cd admin
           npm ci
           npm run admin-build
-          ls
           cd ..
-          ls
           echo 'MAIN'
-          cd ..
-          ls
-          echo 'FATHER'
           cd public
           rm -rf admin
           mkdir admin
           mv ../../admin/dist/* admin
           cd ..
+          cd ..
+          ls
           git config --global user.email "admin@innerken.com"
           git config --global user.name "CI BOT InnerKen"
           git add .
           git commit -m 'AUTO USE LATEST EMBEDED BUILD'
           git push
-          ls
       - run: ls
 #    - run: npm run release --if-present
