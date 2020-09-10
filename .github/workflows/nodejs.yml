@@ -46,4 +46,4 @@ jobs:
           git commit -m 'AUTO USE LATEST EMBEDED BUILD'
           git push
       - run: ls
-#      - run: npm run release --if-present
+      - run: npm run release --if-present
