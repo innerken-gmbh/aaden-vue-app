@@ -32,9 +32,7 @@ jobs:
 
       - run: |
           cd admin
-#          npm ci
           mkdir dist
-#          npm run admin-build
           cd ..
           cd public
           rm -rf admin
