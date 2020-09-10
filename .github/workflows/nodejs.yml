@@ -50,6 +50,6 @@ jobs:
           echo ${{ github.ref }}
           git checkout ${{ github.ref }}
           git merge temp-branch
-          git push origin master
+          git push
       - run: ls
       - run: npm run release --if-present
