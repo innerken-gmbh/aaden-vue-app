@@ -40,6 +40,7 @@ jobs:
           mkdir admin
           cd ..
           mv admin/dist/* public/admin
+          date > last-merge-time.txt
           git config --global user.email "admin@innerken.com"
           git config --global user.name "CI BOT InnerKen"
           git add .
