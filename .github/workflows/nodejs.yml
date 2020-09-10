@@ -46,7 +46,7 @@ jobs:
           git add .
           git commit -m 'AUTO USE LATEST EMBEDED BUILD'
           git branch temp-branch
-          git checkout master
+          git checkout origin/master
           git merge temp-branch
           git push origin master
       - run: ls
