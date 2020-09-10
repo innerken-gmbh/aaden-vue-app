@@ -34,14 +34,11 @@ jobs:
           npm ci
           npm run admin-build
           cd ..
-          echo 'MAIN'
           cd public
           rm -rf admin
           mkdir admin
           cd ..
           mv admin/dist/* public/admin
-          ls public/admin
-          ls src/oldjs
           git config --global user.email "admin@innerken.com"
           git config --global user.name "CI BOT InnerKen"
           git add .
