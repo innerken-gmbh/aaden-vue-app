@@ -1,6 +1,6 @@
 <template>
-    <div class="dishCard">
-        <div class="px-2 py-1 pr-0 d-flex justify-space-between align-baseline">
+    <div class="dishCard mx-1">
+        <div class="px-1 py-1 pr-0 d-flex justify-space-between align-baseline">
             <div v-code-hide class='codeRow'>
                 {{ dish.code }}
             </div>
@@ -133,7 +133,7 @@ export default {
     .dishCard {
         margin-top: 4px;
         background: white;
-        border-bottom: 1px solid #e2e3e5;
+        border-bottom: 2px dashed #e2e3e5;
     }
 
     .dishCount {
@@ -167,7 +167,7 @@ export default {
         border-bottom: 1px solid #6b6b6b;
         margin-bottom: 4px;
         white-space: nowrap;
-        padding: 2px 8px;
+        padding: 2px 4px;
     }
 
     .dishMod {
@@ -175,7 +175,7 @@ export default {
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
-        padding: 2px 8px;
+        padding: 2px 4px;
         padding-right: 0;
     }
 
