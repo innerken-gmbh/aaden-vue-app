@@ -2,8 +2,8 @@
     <v-app>
         <Navgation>
             <template slot="left">
-                <v-app-bar-nav-icon>
-                    <v-icon @click="popAuthorize('boss',toManage)">mdi-home-analytics</v-icon>
+                <v-app-bar-nav-icon  @click="popAuthorize('boss',toManage)">
+                    <v-icon>mdi-home-analytics</v-icon>
                 </v-app-bar-nav-icon>
                 <v-toolbar-title>
                     {{ $t('appName') }}
