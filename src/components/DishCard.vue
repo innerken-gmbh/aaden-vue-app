@@ -1,7 +1,7 @@
 <template>
     <div class="dishCard mx-1">
         <div class="px-1 py-1 pr-0 d-flex justify-space-between align-baseline">
-            <div v-code-hide class='codeRow'>
+            <div v-code-hide class='codeRow mr-2'>
                 {{ dish.code }}
             </div>
             <div class="flex-grow-1 d-flex justify-space-between">
@@ -156,8 +156,8 @@ export default {
 
     .codeRow {
         font-weight: 900;
-        width: 27px;
         flex-shrink: 0;
+        white-space: nowrap;
     }
 
     .dishNote {
