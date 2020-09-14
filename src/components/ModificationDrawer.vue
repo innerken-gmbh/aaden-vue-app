@@ -1,15 +1,14 @@
 <template>
     <v-dialog content-class="noFullScreen" v-model="realShow">
-            <dish-modification
-                    ref="modification"
-                    @modification-submit="submit(...$event,dish)"
-                    @modification-cancel="realShow=false"
-                    :options="dish.modInfo">
-                <template v-slot:before>
-                    <span class="font-weight-black"> {{ dish.name }}</span>
-                </template>
-            </dish-modification>
-
+        <dish-modification
+                ref="modification"
+                @modification-submit="submit(...$event,dish)"
+                @modification-cancel="realShow=false"
+                :options="dish.modInfo">
+            <template v-slot:before>
+                <span class="font-weight-black"> {{ dish.name }}</span>
+            </template>
+        </dish-modification>
     </v-dialog>
 </template>
 
