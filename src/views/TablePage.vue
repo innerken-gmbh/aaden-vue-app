@@ -1093,8 +1093,7 @@ export default {
         await hillo.post('Complex.php?op=addDishesToTable', {
           params: JSON.stringify(order),
           tableId: this.id,
-          printingKitchenBon: print ? 1 : 0,
-          reprintCount: GlobalConfig.defaultReprintCount ?? 0
+          printingKitchenBon: print ? 1 : 0
         })
 
         printNow()

@@ -20,6 +20,5 @@
   "gridSize": "140",
   "dishLookUp": true,
   "gridSizeX": "100",
-  "tableCardFontSize": "28",
-  "defaultReprintCount": 0
+  "tableCardFontSize": "28"
 }
