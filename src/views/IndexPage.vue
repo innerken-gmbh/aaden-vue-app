@@ -2,7 +2,7 @@
     <v-app>
         <Navgation>
             <template slot="left">
-                <v-app-bar-nav-icon  @click="popAuthorize('boss',toManage)">
+                <v-app-bar-nav-icon @click="popAuthorize('boss',toManage)">
                     <v-icon>mdi-home-analytics</v-icon>
                 </v-app-bar-nav-icon>
                 <v-toolbar-title>
@@ -49,11 +49,11 @@
                                         :key="index"
                                 >
                                     <v-list-item-icon>
-                                        <v-icon  color="primary">mdi-text-box-remove</v-icon>
+                                        <v-icon color="primary">mdi-text-box-remove</v-icon>
                                     </v-list-item-icon>
                                     <v-list-item-content>
                                         <v-list-item-title>
-                                           {{key.orderId}}: {{key.printStatusString}}
+                                            {{key.orderId}}: {{key.printStatusString}}
                                         </v-list-item-title>
                                     </v-list-item-content>
                                     <v-list-item-action>
@@ -160,7 +160,9 @@
                                         <v-card v-if="table.usageStatus==='1'"
                                                 class="tableCard"
                                                 @click='jumpToTable(table.tableId,table.tableName)'>
-                                            <div :style="{fontSize:Config.tableCardFontSize+'px'}" class="tableCardName">{{ table.tableName }}</div>
+                                            <div :style="{fontSize:Config.tableCardFontSize+'px'}"
+                                                 class="tableCardName">{{ table.tableName }}
+                                            </div>
                                             <div>
                                                 <div class="d-flex justify-space-between">
                                                     <div class="tableIconRow">
@@ -203,7 +205,8 @@
                                         </v-card>
                                         <div v-else @click="createTable(table.tableName)"
                                              class="tableCard notUsed">
-                                            <div :style="{fontSize:Config.tableCardFontSize+'px'}" class="tableCardName">
+                                            <div :style="{fontSize:Config.tableCardFontSize+'px'}"
+                                                 class="tableCardName">
                                                 {{ table.tableName }}
                                             </div>
                                         </div>
@@ -239,7 +242,7 @@ import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
 import GlobalConfig, { hardReload, NeededKeys, setDeviceId, useCurrentConfig } from '../oldjs/LocalGlobalSettings'
-import { addToTimerList, clearAllTimer, printNow } from '../oldjs/Timer'
+import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
 import TimeDisplay from '@/components/TimeDisplay'
@@ -302,7 +305,6 @@ export default {
     }
   },
   methods: {
-    printNow,
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
     },
@@ -387,7 +389,11 @@ export default {
       }
     },
     toManage () {
-      oldJumpTo('admin/index.html', { DeviceId: GlobalConfig.DeviceId, lang: GlobalConfig.lang, Base: GlobalConfig.Base })
+      oldJumpTo('admin/index.html', {
+        DeviceId: GlobalConfig.DeviceId,
+        lang: GlobalConfig.lang,
+        Base: GlobalConfig.Base
+      })
     },
     autoGetFocus () {
       if (Swal.isVisible()) {
