@@ -273,7 +273,8 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                                             <v-list-item style="text-transform: capitalize;font-size: 16px"
                                                          v-bind:key="'categorytypes'+category.id"
                                                          @click="changeCategory(category.id)"
-                                                         :style="{backgroundColor:category.color}"
+                                                         :style="{backgroundColor:category.color,
+                                                            color:getColorLightness(category.color)>128?'#000 !important':'#fff !important'}"
                                             >
                                                 <v-list-item-content>{{ category.name }}</v-list-item-content>
                                             </v-list-item>
@@ -289,7 +290,9 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                                                 min-height="108px"
                                                 height="100%"
                                                 :key="'dish'+dish.code">
-                                            <div :style="{backgroundColor:dish.displayColor}"
+                                            <div :style="{backgroundColor:dish.displayColor,
+                                            color:getColorLightness(dish.displayColor)>128?'#000':'#fff'
+                                            }"
                                                  class="dishBlock d-flex flex-column fill-height justify-space-between"
                                                  @click="orderOneDish(dish.code)">
                                                 <div class="name">{{ dish.dishName }}</div>
@@ -523,7 +526,7 @@ import {
   checkOut,
   deleteDishes,
   dishesChangeTable,
-  dishesSetDiscount,
+  dishesSetDiscount, getColorLightness,
   popChangeTablePanel,
   popMergeTablePanel
 } from '../oldjs/api'
@@ -613,6 +616,7 @@ export default {
     this.goHomeCallBack()
   },
   methods: {
+    getColorLightness,
     changeCategory (id) {
       this.activeCategoryId = id
     },
@@ -709,7 +713,9 @@ export default {
           return c.dishes.length > 0
         }).map((c, i) => {
           if (GlobalConfig.useColor) {
-            c.color = c.color === '' ? '#fff' : c.color
+            c.color = c.color === '' ? '#FFFFFF' : c.color
+          } else {
+            c.color = '#FFFFFF'
           }
           return c
         })
@@ -1245,7 +1251,6 @@ export default {
       this.updateFilteredDish()
     },
     activeCategory: function (val) {
-      console.log(val)
       this.filteredDish = this.filterDish()
     },
     input: function () {

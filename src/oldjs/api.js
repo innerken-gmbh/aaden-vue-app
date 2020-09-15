@@ -154,9 +154,13 @@ export async function getRestaurantInfo () {
 }
 
 export function getColorLightness (c) {
-  const rgb = parseInt(c.substring(1), 16) // convert rrggbb to decimal
-  const r = (rgb >> 16) & 0xff // extract red
-  const g = (rgb >> 8) & 0xff // extract green
-  const b = (rgb >> 0) & 0xff // extract blue
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+  if (c?.startsWith('#')) {
+    const rgb = parseInt(c.substring(1), 16) // convert rrggbb to decimal
+    const r = (rgb >> 16) & 0xff // extract red
+    const g = (rgb >> 8) & 0xff // extract green
+    const b = (rgb >> 0) & 0xff // extract blue
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+  } else {
+    return 0
+  }
 }
