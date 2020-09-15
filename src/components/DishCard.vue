@@ -51,7 +51,6 @@
                         </v-icon>
                     </template>
                     <template v-if="showNumber">
-
                         <v-icon class="mr-2" large @click.stop="dish.change(-1)">
                             mdi-minus-circle
                         </v-icon>
@@ -59,6 +58,10 @@
                             mdi-plus-circle
                         </v-icon>
                         <v-spacer></v-spacer>
+                        <v-icon class="mr-2" large v-if="dish.haveMod>0"
+                                @click.stop="editCallBack">
+                            mdi-cog
+                        </v-icon>
                         <v-icon large @click.stop="dish.change(-dish.count)">
                             mdi-trash-can
                         </v-icon>
@@ -66,13 +69,13 @@
                 </template>
                 <template v-else>
                     <v-toolbar-items class="flex-grow-1">
-                        <v-btn  @click="callCallBack(1)"  class="flex-grow-1">
+                        <v-btn @click="callCallBack(1)" class="flex-grow-1">
                             <span style="font-size: 18px">&times;1</span>
                         </v-btn>
-                        <v-btn  @click="callCallBack(5)">
+                        <v-btn @click="callCallBack(5)">
                             <span style="font-size: 18px">&times;5</span>
                         </v-btn>
-                        <v-btn  @click="callCallBack(dish.count)" color="primary">
+                        <v-btn @click="callCallBack(dish.count)" color="primary">
                             <span style="font-size: 18px">Alle</span>
                         </v-btn>
                     </v-toolbar-items>
@@ -105,6 +108,10 @@ export default {
     expand: { default: false }
   },
   methods: {
+    editCallBack () {
+      this.dish.edit()
+      this.dish.change(-1)
+    },
     callCallBack (count = 1) {
       if (count > this.dish.count) {
         count = this.dish.count

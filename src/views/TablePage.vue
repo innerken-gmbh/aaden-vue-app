@@ -270,10 +270,10 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                                             </v-list-item-content>
                                         </v-list-item>
                                         <template v-for="category of filteredC">
-                                            <v-list-item style="text-transform: capitalize"
+                                            <v-list-item style="text-transform: capitalize;font-size: 16px"
                                                          v-bind:key="'categorytypes'+category.id"
                                                          @click="changeCategory(category.id)"
-                                                         :class="category.color" :style="{fontSize: '16px'}"
+                                                         :style="{backgroundColor:category.color}"
                                             >
                                                 <v-list-item-content>{{ category.name }}</v-list-item-content>
                                             </v-list-item>
@@ -289,7 +289,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                                                 min-height="108px"
                                                 height="100%"
                                                 :key="'dish'+dish.code">
-                                            <div :class="dish.displayColor"
+                                            <div :style="{backgroundColor:dish.displayColor}"
                                                  class="dishBlock d-flex flex-column fill-height justify-space-between"
                                                  @click="orderOneDish(dish.code)">
                                                 <div class="name">{{ dish.dishName }}</div>
@@ -538,7 +538,6 @@ import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
 import { IKUtils } from 'innerken-utils'
 import Navgation from '../components/Navgation'
-import CategoryColor from '../oldjs/CategoryColor'
 import { debounce } from 'lodash-es'
 
 const DefaultAddressInfo = {
@@ -710,7 +709,7 @@ export default {
           return c.dishes.length > 0
         }).map((c, i) => {
           if (GlobalConfig.useColor) {
-            c.color = CategoryColor[i % (CategoryColor.length - 1)]
+            c.color = c.color === '' ? '#fff' : c.color
           }
           return c
         })
@@ -835,7 +834,11 @@ export default {
       dish.apply = mod// here we add a apply
       dish.forceFormat = true
       _mod = {}
+
       this.addDish(dish, count ?? parseInt(this.count))
+      dish.edit = () => {
+        this.showModification(dish, 1)
+      }
       blockReady()
     },
     cancel: function () {

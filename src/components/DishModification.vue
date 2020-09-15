@@ -58,17 +58,20 @@
                                     <v-card :ripple="false"
                                             tile
                                             class="d-flex flex-column"
-                                            max-width="144px"
+                                            width="144px"
                                             :height="item.multiSelect==='1'?'120px':'auto'"
                                             :color="active?'primary':''"
                                             @click="activeCallback(toggle,item,index)">
-                                        <div class="ma-2 flex-grow-1" style="font-size: 18px">{{ s.text }}{{ s.priceInfo }}
+                                        <div class="ma-2 flex-grow-1" style="font-size: 18px">
+                                            {{ s.text }}{{ s.priceInfo }}
                                         </div>
                                         <template v-if="active&&item.required!=='1'">
                                             <v-card-actions>
                                                 <v-spacer></v-spacer>
                                                 <v-btn @click.stop="addCount(item.id,index)" right>
-                                                    <span style="font-size: 18px" class="font-weight-bold">&times;{{selectCount[item.id][index]}}</span>
+                                                    <span style="font-size: 18px" class="font-weight-bold">
+                                                        &times;{{selectCount[item.id][index]}}
+                                                    </span>
                                                 </v-btn>
                                             </v-card-actions>
                                         </template>
@@ -102,8 +105,6 @@ export default {
   computed: {
     computedOption: function () {
       const realModInfo = []
-      const height = this.containerHeight
-      console.log(height)
       this.options.forEach(item => {
         item.select = []
         if (item.selectName) {
@@ -116,7 +117,7 @@ export default {
             const select = {
               text: `${name}`,
               value: item.selectValue[index],
-              priceInfo: parseFloat(item.priceInfo[index]) === 0 ? '' : `(€${parseFloat(item.priceInfo[index]).toFixed(2)})`,
+              priceInfo: parseFloat(item.priceInfo[index]) === 0 ? '' : ` €${parseFloat(item.priceInfo[index]).toFixed(2)}`,
               count: 0
             }
             item.select.push(select)
