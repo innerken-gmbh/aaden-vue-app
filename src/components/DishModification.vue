@@ -1,5 +1,6 @@
 <template>
     <v-card elevation="0"
+            color="#f8f8f8"
             style="min-height: 100%;min-width: 100%;
             margin: 0 !important;padding: 0!important;">
         <v-toolbar dark>
@@ -57,8 +58,8 @@
                                 <v-item :key="'mod111'+index" #default="{active,toggle}">
                                     <v-card :ripple="false"
                                             tile
-                                            class="d-flex flex-column"
-                                            width="144px"
+                                            class="d-flex flex-column ma-1"
+                                            width="136px"
                                             :height="item.multiSelect==='1'?'120px':'auto'"
                                             :color="active?'primary':''"
                                             @click="activeCallback(toggle,item,index)">
