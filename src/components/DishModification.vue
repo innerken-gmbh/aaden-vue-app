@@ -31,9 +31,9 @@
             </v-toolbar-items>
         </v-toolbar>
         <div
-            class="pa-2"
-            ref="containerCard"
-            style="
+                class="pa-2"
+                ref="containerCard"
+                style="
         height: calc(100vh - 64px);
         display: flex;
         flex-direction: column;
