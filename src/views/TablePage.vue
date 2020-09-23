@@ -3,9 +3,12 @@
         <template v-cloak>
             <navgation>
                 <template slot="left">
-                    <v-app-bar-nav-icon class="primary v-btn--tile" @click="back">
-                        <v-icon>mdi-home</v-icon>
-                    </v-app-bar-nav-icon>
+                    <v-toolbar-items>
+                        <v-btn  tile class="primary ml-n3 mr-2" @click="back">
+                            <v-icon>mdi-home</v-icon> HOME
+                        </v-btn>
+                    </v-toolbar-items>
+
                     <v-tabs show-arrows
                             class="flex-shrink-1"
                             style="width: calc(100% - 500px)"
