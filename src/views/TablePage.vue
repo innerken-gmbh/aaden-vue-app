@@ -4,8 +4,9 @@
             <navgation>
                 <template slot="left">
                     <v-toolbar-items>
-                        <v-btn  tile class="primary ml-n3 mr-2" @click="back">
-                            <v-icon>mdi-home</v-icon> HOME
+                        <v-btn tile class="primary ml-n3 mr-2" @click="back">
+                            <v-icon>mdi-home</v-icon>
+                            HOME
                         </v-btn>
                     </v-toolbar-items>
 
@@ -262,7 +263,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                             style=" max-height: calc(100vh - 48px);">
                         <div style="display: grid;grid-template-columns: 144px auto;grid-gap: 8px;">
                             <v-sheet elevation="3" v-dragscroll style="max-height: calc(100vh - 48px);overflow: hidden">
-                                <v-list dense>
+                                <v-list>
                                     <v-list-item-group mandatory v-model="activeCategory">
                                         <v-list-item @click="changeCategory(-1)">
                                             <v-list-item-content class="font-weight-black">
@@ -618,7 +619,10 @@ export default {
   },
   methods: {
     getColorLightness,
-    changeCategory (id) {
+    changeCategory (id, toggle) {
+      if (toggle) {
+        toggle()
+      }
       this.activeCategoryId = id
     },
     popAuthorize,
@@ -699,15 +703,20 @@ export default {
           const idToRank = (id) => {
             let rank = 0
             switch (id) {
-              case 8:rank = 0
+              case 8:
+                rank = 0
                 break
-              case 9:rank = 4
+              case 9:
+                rank = 4
                 break
-              case 10:rank = 5
+              case 10:
+                rank = 5
                 break
-              case 11:rank = 3
+              case 11:
+                rank = 3
                 break
-              case 12:rank = 1
+              case 12:
+                rank = 1
                 break
             }
             return rank
