@@ -591,7 +591,7 @@ export default {
       categories: [],
       activeCategory: null,
       activeCategoryId: 0,
-      activeDCT: null,
+      activeDCT: 0,
       filteredDish: [{ name: '', code: '', price: '', count: '' }],
       /**/
       rawAddressInfo: { reason: '' },
