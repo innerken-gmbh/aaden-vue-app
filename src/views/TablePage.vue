@@ -723,7 +723,7 @@ export default {
           }
           const [ra, rb] = [a.id, b.id].map(idToRank)
           return ra > rb ? -1 : 1
-        }).filter(i => i.childCount > 0)
+        }).filter(i => typeof i.childCount === 'undefined' || i.childCount > 0)
         console.log(this.dct)
       }
     },
