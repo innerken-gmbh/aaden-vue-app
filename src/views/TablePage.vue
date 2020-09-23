@@ -11,9 +11,6 @@
                             style="width: calc(100% - 500px)"
                             v-model="activeDCT"
                     >
-                        <v-tab style="font-size: 16px">
-                            Alle
-                        </v-tab>
                         <template v-for="ct of dct">
                             <v-tab v-bind:key="ct.id+'categorytypes'"
                                    style="font-size: 16px"
@@ -526,7 +523,8 @@ import {
   checkOut,
   deleteDishes,
   dishesChangeTable,
-  dishesSetDiscount, getColorLightness,
+  dishesSetDiscount,
+  getColorLightness,
   popChangeTablePanel,
   popMergeTablePanel
 } from '../oldjs/api'
@@ -694,7 +692,27 @@ export default {
             i.isActive = false
           }
           return i
-        })
+        }).sort((a, b) => {
+          const idToRank = (id) => {
+            let rank = 0
+            switch (id) {
+              case 8:rank = 0
+                break
+              case 9:rank = 4
+                break
+              case 10:rank = 5
+                break
+              case 11:rank = 3
+                break
+              case 12:rank = 1
+                break
+            }
+            return rank
+          }
+          const [ra, rb] = [a.id, b.id].map(idToRank)
+          return ra > rb ? -1 : 1
+        }).filter(i => i.childCount > 0)
+        console.log(this.dct)
       }
     },
     async getCategory () {
@@ -1161,12 +1179,12 @@ export default {
         return this.dishes
       }
       let list = this.dishes
-      if (this.activeDCT) {
-        const dct = this.dct[this.activeDCT - 1]
-        list = list.filter((item) => {
-          return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
-        })
-      }
+
+      const dct = this.dct[this.activeDCT]
+      list = list.filter((item) => {
+        return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
+      })
+
       if (this.activeCategory) {
         list = list.filter((item) => {
           return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
@@ -1230,13 +1248,10 @@ export default {
       return dishesHint
     },
     filteredC: function () {
-      if (this.activeDCT) {
-        const dct = this.dct[this.activeDCT - 1]
-        return this.categories.filter((item) => {
-          return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
-        })
-      }
-      return this.categories
+      const dct = this.dct[this.activeDCT]
+      return this.categories.filter((item) => {
+        return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
+      })
     }
   },
   watch: {
