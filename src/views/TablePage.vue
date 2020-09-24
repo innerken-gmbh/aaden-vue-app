@@ -744,7 +744,7 @@ export default {
       }
     },
     async getCategory () {
-      if (this.categories.length === 0) {
+      if (this.categories.length === 0 || !GlobalConfig.FMCVersion) {
         const res = await hillo.get('Category.php?op=withTableType', {
           tableId: this.id, lang: GlobalConfig.lang
         })
