@@ -476,9 +476,11 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                         </v-tab-item>
                     </v-tabs>
                     <v-card-actions>
-                        <template v-for="d in predefinedDiscount">
-                            <v-btn @click="sendDiscount(d)" :key="d">-{{d.replace('p','%')}}</v-btn>
-                        </template>
+                        <div class="d-flex flex-wrap">
+                            <template v-for="d in predefinedDiscount">
+                                <v-btn @click="sendDiscount(d)" :key="d">-{{d.replace('p','%')}}</v-btn>
+                            </template>
+                        </div>
                         <v-spacer></v-spacer>
                         <v-btn @click="submitDiscount">确定</v-btn>
                     </v-card-actions>
@@ -630,6 +632,9 @@ export default {
       this.getAllPredefinedDiscount()
       if (!this.predefinedDiscount.includes(str)) {
         this.predefinedDiscount.push(str)
+        if (this.predefinedDiscount.length > 10) {
+          this.predefinedDiscount.shift()
+        }
         // console.log(this.predefinedDiscount.join(','))
         GlobalConfig.updateSettings('predefinedDiscount', this.predefinedDiscount.join(','))
         this.getAllPredefinedDiscount()
