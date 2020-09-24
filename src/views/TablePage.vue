@@ -476,6 +476,9 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                         </v-tab-item>
                     </v-tabs>
                     <v-card-actions>
+                        <template v-for="d in predefinedDiscount">
+                            <v-btn @click="sendDiscount(d)" :key="d">-{{d.replace('p','%')}}</v-btn>
+                        </template>
                         <v-spacer></v-spacer>
                         <v-btn @click="submitDiscount">确定</v-btn>
                     </v-card-actions>
@@ -611,13 +614,27 @@ export default {
       },
 
       localDiscountStr: '',
-      localDiscountType: ''
+      localDiscountType: '',
+      predefinedDiscount: []
     }
   },
   beforeDestroy () {
     this.goHomeCallBack()
   },
   methods: {
+    getAllPredefinedDiscount () {
+      this.predefinedDiscount = (GlobalConfig.getSettings('predefinedDiscount') ?? '').split(',').filter(t => t !== '')
+      // console.log(this.predefinedDiscount, 'Discount')
+    },
+    addNewPredefinedDiscount (str) {
+      this.getAllPredefinedDiscount()
+      if (!this.predefinedDiscount.includes(str)) {
+        this.predefinedDiscount.push(str)
+        // console.log(this.predefinedDiscount.join(','))
+        GlobalConfig.updateSettings('predefinedDiscount', this.predefinedDiscount.join(','))
+        this.getAllPredefinedDiscount()
+      }
+    },
     getColorLightness,
     changeCategory (id, toggle) {
       if (toggle) {
@@ -724,7 +741,6 @@ export default {
           const [ra, rb] = [a.id, b.id].map(idToRank)
           return ra > rb ? -1 : 1
         }).filter(i => typeof i.childCount === 'undefined' || i.childCount > 0)
-        console.log(this.dct)
       }
     },
     async getCategory () {
@@ -886,6 +902,7 @@ export default {
       this.getTableDetail()
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
+      this.getAllPredefinedDiscount()
       blockReady()
     },
     back () {
@@ -951,9 +968,13 @@ export default {
     },
     async submitDiscount () {
       const discountStr = this.localDiscountStr + (this.localDiscountType === 1 ? 'p' : '')
-      await hillo.post('Complex.php?op=setDiscount', { tableId: this.id, discountStr })
+      this.addNewPredefinedDiscount(discountStr)
+      await this.sendDiscount(discountStr)
       this.localDiscountStr = ''
       this.localDiscountType = 0
+    },
+    async sendDiscount (discountStr) {
+      await hillo.post('Complex.php?op=setDiscount', { tableId: this.id, discountStr })
       this.initialUI()
     },
 

@@ -49,7 +49,7 @@
                                         :key="index"
                                 >
                                     <v-list-item-icon>
-                                        <v-icon color="primary">mdi-text-box-remove</v-icon>
+                                        <v-icon>mdi-text-box-remove</v-icon>
                                     </v-list-item-icon>
                                     <v-list-item-content>
                                         <v-list-item-title>
@@ -329,7 +329,7 @@ export default {
       })
       this.printingList = res.filter(item => item.printStatus === '4') ?? []
     },
-    reprintAll (items) {
+    reprintAll () {
       this.falsePrinterList.map(PrinterList.reprint)
     },
     async reprintBon (item) {

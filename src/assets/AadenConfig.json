@@ -20,5 +20,6 @@
   "gridSize": "140",
   "dishLookUp": true,
   "gridSizeX": "100",
-  "tableCardFontSize": "28"
+  "tableCardFontSize": "28",
+  "discountPredefine": ""
 }

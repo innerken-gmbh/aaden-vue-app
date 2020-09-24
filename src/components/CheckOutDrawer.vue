@@ -92,7 +92,7 @@ export default {
         if (this.checkOutType !== 'checkOut') {
           if (!checkOutData.discountStr.includes('p') && this.discountStr) {
             const remainDiscount = parseFloat(this.discountStr) - parseFloat(checkOutData.discountStr)
-            console.log(remainDiscount)
+            // console.log(remainDiscount)
             setDiscountToTable(this.tableId, remainDiscount)
           }
         }
