@@ -1200,6 +1200,8 @@ export default {
       }
       this.getCategory()
       this.getDCT()
+      this.activeDCT = 0
+      this.updateFilteredDish()
       setGlobalTableId(this.id)
       blockReady()
       this.initialUI()
@@ -1213,9 +1215,6 @@ export default {
       f()
     }, 300),
     filterDish () {
-      if (!(this.activeDCT || this.activeCategoryId || this.input)) {
-        return this.dishes
-      }
       let list = this.dishes
 
       const dct = this.dct[this.activeDCT]
@@ -1228,6 +1227,7 @@ export default {
           return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
         })
       }
+
       if (GlobalConfig.dishLookUp) {
         if (this.input) {
           if (this.input !== '' && !this.input.includes('/')) {
@@ -1240,6 +1240,7 @@ export default {
           }
         }
       }
+
       return list
     }
   },
