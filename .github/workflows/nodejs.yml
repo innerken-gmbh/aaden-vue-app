@@ -44,7 +44,7 @@ jobs:
           git config --global user.name "CI BOT InnerKen"
           git add .
           git checkout -b temp-branch
-          git commit -m 'AUTO USE LATEST APP BUILD'
+          git commit -m 'AUTO USE LATEST EMBEDED BUILD'
           echo "ref"
           echo ${{ github.ref }}
           git checkout master
