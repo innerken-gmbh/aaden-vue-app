@@ -43,7 +43,7 @@
         overflow-x: scroll;
         ">
             <template v-for="item in computedOption">
-                <div :key="'mod2'+item.id" style="max-width: 450px">
+                <div :key="'mod2'+item.id" style="max-width: 400px">
                     <h4 :key="'mod2head'+item.id">
                         {{ `${item.name}${item.required === '1' ? `:${item.select[0].text}` : ``}`}}
                     </h4>
@@ -59,7 +59,7 @@
                                     <v-card :ripple="false"
                                             tile
                                             class="d-flex flex-column ma-1"
-                                            width="136px"
+                                            width="124px"
                                             :height="item.multiSelect==='1'?'120px':'auto'"
                                             :color="active?'primary':''"
                                             @click="activeCallback(toggle,item,index)">
