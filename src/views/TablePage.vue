@@ -490,6 +490,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                     @visibility-changed="changeModification"
                     :modification-show="modificationShow"
                     :dish="dish"
+                    :old-mod="oldMod"
                     :mod="submitModification"
             />
             <check-out-drawer
@@ -578,6 +579,8 @@ export default {
       checkoutShow: false,
       modificationShow: false,
       discountModelShow: null,
+
+      oldMod: null,
 
       breakCount: 0,
       checkOutType: 'checkOut',
@@ -706,11 +709,16 @@ export default {
       }
       blockReady()
     },
-    showModification (dish, count) {
+    showModification (dish, count, mod = null) {
       this.dish = dish
       this.count = count
       if (!GlobalConfig.FMCVersion) {
         this.$refs.ins.blur()
+      }
+      if (mod) {
+        this.oldMod = mod
+      } else {
+        this.oldMod = null
       }
       this.modificationShow = true
     },
@@ -722,26 +730,9 @@ export default {
           }
           return i
         }).sort((a, b) => {
+          const rank = GlobalConfig.defaultSort.split(',')
           const idToRank = (id) => {
-            let rank = 0
-            switch (id) {
-              case 8:
-                rank = 0
-                break
-              case 9:
-                rank = 4
-                break
-              case 10:
-                rank = 5
-                break
-              case 11:
-                rank = 3
-                break
-              case 12:
-                rank = 1
-                break
-            }
-            return rank
+            return 10 - rank.indexOf(id.toString())
           }
           const [ra, rb] = [a.id, b.id].map(idToRank)
           return ra > rb ? -1 : 1
@@ -866,7 +857,7 @@ export default {
     removeDishWithCode: function (code) {
       this.removeDish(this.findDishByCode(code))
     },
-    submitModification: function (_mod, dish, count) {
+    submitModification: function (_mod, dish, count, saveInfo) {
       const mod = IKUtils.deepCopy(_mod)
       const groupDict = IKUtils.deepCopy(dish.modInfo.reduce((obj, m) => {
         obj[m.id] = m
@@ -891,10 +882,9 @@ export default {
       dish.apply = mod// here we add a apply
       dish.forceFormat = true
       _mod = {}
-
       this.addDish(dish, count ?? parseInt(this.count))
       dish.edit = () => {
-        this.showModification(dish, 1)
+        this.showModification(dish, 1, saveInfo)
       }
       blockReady()
     },

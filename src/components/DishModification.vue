@@ -62,7 +62,7 @@
                                             width="124px"
                                             :height="item.multiSelect==='1'?'120px':'auto'"
                                             :color="active?'primary':''"
-                                            @click="activeCallback(toggle,item,index)">
+                                            @click="activeCallback(active,toggle,item,index)">
                                         <div class="ma-2 flex-grow-1" style="font-size: 18px">
                                             {{ s.text }}{{ s.priceInfo }}
                                         </div>
@@ -94,6 +94,19 @@ export default {
   props: {
     options: {
       default: () => []
+    },
+    oldMod: {
+      default: () => {
+      }
+    }
+  },
+  watch: {
+    oldMod (val) {
+      if (val) {
+        const decodeVal = JSON.parse(val)
+        this.mod = decodeVal.mod
+        this.selectCount = decodeVal.selectCount
+      }
     }
   },
   data: function () {
@@ -142,17 +155,23 @@ export default {
     addCount (groupId, index) {
       this.selectCount[groupId][index]++
     },
-    activeCallback (callback, group, index) {
+    activeCallback (active, callback, group, index) {
       const groupId = group.id
       if (!this.selectCount[groupId]) {
         this.$set(this.selectCount, groupId, {})
       }
-      if (group.required === '1') {
-        for (const k in this.selectCount[groupId]) {
-          this.selectCount[groupId][k] = 0
+      const nextState = !active
+
+      if (nextState) {
+        if (group.required === '1') {
+          for (const k in this.selectCount[groupId]) {
+            this.selectCount[groupId][k] = 0
+          }
         }
+        this.$set(this.selectCount[groupId], index, 1)
+      } else {
+        this.$set(this.selectCount[groupId], index, 0)
       }
-      this.$set(this.selectCount[groupId], index, 1)
       callback()
     },
     cancel () {
@@ -161,6 +180,7 @@ export default {
     },
     submitModification () {
       let realMod = []
+      const saveInfo = JSON.stringify({ selectCount: this.selectCount, mod: this.mod })
       for (const groupId in this.selectCount) {
         for (const selectIndex in this.selectCount[groupId]) {
           for (let i = 0; i < this.selectCount[groupId][selectIndex]; i++) {
@@ -172,11 +192,10 @@ export default {
         }
       }
       this.mod = {}
-
       this.$nextTick(() => {
         this.selectCount = {}
       })
-      this.$emit('modification-submit', [realMod, this.count])
+      this.$emit('modification-submit', [realMod, this.count, saveInfo])
       realMod = []
       this.count = 1
     }

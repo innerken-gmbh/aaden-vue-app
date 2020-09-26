@@ -2,6 +2,7 @@
     <v-dialog content-class="noFullScreen" v-model="realShow">
         <dish-modification
                 ref="modification"
+                :old-mod="oldMod"
                 @modification-submit="submit(...$event,dish)"
                 @modification-cancel="realShow=false"
                 :options="dish.modInfo">
@@ -29,6 +30,10 @@ export default {
       default: () => {
       }
     },
+    oldMod: {
+      default: () => {
+      }
+    },
     modificationShow: {
       default: false
     }
@@ -45,8 +50,8 @@ export default {
     }
   },
   methods: {
-    submit: function (mod, count, dish) {
-      this.mod(mod, dish, count)
+    submit: function (mod, count, saveInfo, dish) {
+      this.mod(mod, dish, count, saveInfo)
       this.realShow = false
     }
   }
