@@ -190,7 +190,7 @@ function informOpenTable (password, number, personCount, childCount) {
       personCount: personCount,
       childCount: childCount
     }).then(res => jumpToTable(res.content.tableId, res.content.tableName))
-    .catch(err => logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + err))
+    .catch(err => logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + err?.data?.info))
 }
 
 export async function openTablePrompt () {
