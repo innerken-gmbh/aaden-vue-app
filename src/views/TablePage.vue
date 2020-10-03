@@ -744,7 +744,6 @@ export default {
         const res = await hillo.get('Category.php?op=withTableType', {
           tableId: this.id, lang: GlobalConfig.lang
         })
-        
         for (const i of res.content) {
           if (!i.isActive) {
             i.isActive = false
