@@ -296,7 +296,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                                             }"
                                                  class="dishBlock d-flex flex-column fill-height justify-space-between"
                                                  @click="orderOneDish(dish.code)">
-                                                <div class="name">{{ dish.dishName }}</div>
+                                                <div :style="{fontSize:Config.dishBlockFontSize+'px'}" class="name">{{ dish.dishName }}</div>
                                                 <div class="spaceBetween"
                                                      style="align-items: center;flex-wrap: wrap">
                                                     <div class="code">
@@ -858,30 +858,8 @@ export default {
       this.removeDish(this.findDishByCode(code))
     },
     submitModification: function (_mod, dish, count, saveInfo) {
-      const mod = IKUtils.deepCopy(_mod)
-      const groupDict = IKUtils.deepCopy(dish.modInfo.reduce((obj, m) => {
-        obj[m.id] = m
-        return obj
-      }, {}))
-
-      for (let i of mod) {
-        const group = groupDict[i.groupId]
-        group.hasValue = true
-        i = Object.assign(i, group)
-        i.groupId = group.id
-        i.selectId = [group.selectValue[i.selectIndex]]
-      }
-      for (const key in groupDict) {
-        const item = groupDict[key]
-        if (item.required === '1' && !item.hasValue) {
-          item.groupId = item.id
-          item.selectId = [item.selectValue[0]]
-          mod.push(item)
-        }
-      }
-      dish.apply = mod// here we add a apply
+      dish.apply = _mod// here we add a apply
       dish.forceFormat = true
-      _mod = {}
       this.addDish(dish, count ?? parseInt(this.count))
       dish.edit = () => {
         this.showModification(dish, 1, saveInfo)

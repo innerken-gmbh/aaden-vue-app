@@ -2,12 +2,13 @@
     <v-dialog content-class="noFullScreen" v-model="realShow">
         <dish-modification
                 ref="modification"
+                :showing="realShow"
                 :old-mod="oldMod"
                 @modification-submit="submit(...$event,dish)"
                 @modification-cancel="realShow=false"
                 :options="dish.modInfo">
-            <template v-slot:before>
-                <span class="font-weight-black"> {{ dish.name }}</span>
+            <template v-slot:before="{price}">
+                <span class="font-weight-black"> {{ dish.name }} €{{parseFloat(dish.price)+price | priceDisplay}}</span>
             </template>
         </dish-modification>
     </v-dialog>

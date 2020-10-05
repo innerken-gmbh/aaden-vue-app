@@ -1,39 +1,38 @@
 <template>
-    <v-card elevation="0"
-            color="#f8f8f8"
-            style="min-height: 100%;min-width: 100%;
+  <v-card elevation="0"
+          color="#f8f8f8"
+          style="min-height: 100%;min-width: 100%;
             margin: 0 !important;padding: 0!important;">
-        <v-toolbar dark>
-            <v-app-bar-nav-icon @click="cancel">
-                <v-icon>mdi-close</v-icon>
-            </v-app-bar-nav-icon>
-            <v-toolbar-title>
-                <slot name="before"></slot>
-            </v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-toolbar-items>
-                <v-btn icon @click="count>0?count--:null">
-                    <v-icon>mdi-minus</v-icon>
-                </v-btn>
-                <v-btn style="font-size: 24px" x-large light>{{count}}</v-btn>
-                <v-btn icon @click="count++">
-                    <v-icon>mdi-plus</v-icon>
-                </v-btn>
-                <v-btn
-                        color="primary"
-                        ref="submit"
-                        x-large
-                        @click="submitModification"
-                >
-                    <v-icon left>mdi-check</v-icon>
-                    {{$t('confirm') }}
-                </v-btn>
-            </v-toolbar-items>
-        </v-toolbar>
-        <div
-                class="pa-2"
-                ref="containerCard"
-                style="
+    <v-toolbar dark>
+      <v-app-bar-nav-icon @click="cancel">
+        <v-icon>mdi-close</v-icon>
+      </v-app-bar-nav-icon>
+      <v-toolbar-title class="flex-grow-1">
+        <slot v-bind:price="addPrice" name="before"></slot>
+      </v-toolbar-title>
+      <v-toolbar-items>
+        <v-btn icon @click="count>0?count--:null">
+          <v-icon>mdi-minus</v-icon>
+        </v-btn>
+        <v-btn style="font-size: 24px" x-large light>{{ count }}</v-btn>
+        <v-btn icon @click="count++">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+        <v-btn
+            color="primary"
+            ref="submit"
+            x-large
+            @click="submitModification"
+        >
+          <v-icon left>mdi-check</v-icon>
+          {{ $t('confirm') }}
+        </v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
+    <div
+        class="pa-2"
+        ref="containerCard"
+        style="
         height: calc(100vh - 64px);
         display: flex;
         flex-direction: column;
@@ -42,53 +41,55 @@
         max-width: 100vw;
         overflow-x: scroll;
         ">
-            <template v-for="item in computedOption">
-                <div :key="'mod2'+item.id" style="max-width: 400px">
-                    <h4 :key="'mod2head'+item.id">
-                        {{ `${item.name}${item.required === '1' ? `:${item.select[0].text}` : ``}`}}
-                    </h4>
-                    <v-item-group
-                            v-model="mod[item.id]"
-                            :mandatory="item.required==='1'"
-                            :multiple="item.multiSelect==='1'"
-                            active-class="active"
-                    >
-                        <div style="display: flex;flex-wrap: wrap">
-                            <template v-for="(s,index) in item.select">
-                                <v-item :key="'mod111'+index" #default="{active,toggle}">
-                                    <v-card :ripple="false"
-                                            tile
-                                            class="d-flex flex-column ma-1"
-                                            width="124px"
-                                            :height="item.multiSelect==='1'?'120px':'auto'"
-                                            :color="active?'primary':''"
-                                            @click="activeCallback(active,toggle,item,index)">
-                                        <div class="ma-2 flex-grow-1" style="font-size: 18px">
-                                            {{ s.text }}{{ s.priceInfo }}
-                                        </div>
-                                        <template v-if="active&&item.required!=='1'">
-                                            <v-card-actions>
-                                                <v-spacer></v-spacer>
-                                                <v-btn @click.stop="addCount(item.id,index)" right>
+      <template v-for="item in computedOption">
+        <div :key="'mod2'+item.id" style="max-width: 400px">
+          <h4 :key="'mod2head'+item.id">
+            {{ `${item.name}${item.required === '1' ? `:${item.select[0].text}` : ``}` }}
+          </h4>
+          <v-item-group
+              v-model="mod[item.id]"
+              :mandatory="item.required==='1'"
+              :multiple="item.multiSelect==='1'"
+              active-class="active"
+          >
+            <div style="display: flex;flex-wrap: wrap">
+              <template v-for="(s,index) in item.select">
+                <v-item :key="'mod111'+index" #default="{active,toggle}">
+                  <v-card :ripple="false"
+                          tile
+                          class="d-flex flex-column ma-1"
+                          width="124px"
+                          :height="item.multiSelect==='1'?'120px':'auto'"
+                          :color="active?'primary':''"
+                          @click="activeCallback(active,toggle,item,index)">
+                    <div class="ma-2 flex-grow-1" style="font-size: 18px">
+                      {{ s.text }}{{ s.priceInfo }}
+                    </div>
+                    <template v-if="active&&item.required!=='1'">
+                      <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn @click.stop="addCount(item.id,index)" right>
                                                     <span style="font-size: 18px" class="font-weight-bold">
-                                                        &times;{{selectCount[item.id][index]}}
+                                                        &times;{{ selectCount[item.id][index] }}
                                                     </span>
-                                                </v-btn>
-                                            </v-card-actions>
-                                        </template>
-                                    </v-card>
+                        </v-btn>
+                      </v-card-actions>
+                    </template>
+                  </v-card>
 
-                                </v-item>
-                            </template>
-                        </div>
-                    </v-item-group>
-                </div>
-            </template>
+                </v-item>
+              </template>
+            </div>
+          </v-item-group>
         </div>
-    </v-card>
+      </template>
+    </div>
+  </v-card>
 </template>
 
 <script>
+import { IKUtils } from 'innerken-utils'
+
 export default {
   name: 'DishModification',
   props: {
@@ -98,14 +99,19 @@ export default {
     oldMod: {
       default: () => {
       }
-    }
+    },
+    showing: {}
   },
   watch: {
-    oldMod (val) {
+    showing (val) {
       if (val) {
-        const decodeVal = JSON.parse(val)
-        this.mod = decodeVal.mod
-        this.selectCount = decodeVal.selectCount
+        if (this.oldMod) {
+          const decodeVal = JSON.parse(this.oldMod)
+          this.mod = decodeVal.mod
+          this.selectCount = decodeVal.selectCount
+        }
+      } else {
+        this.clear()
       }
     }
   },
@@ -132,7 +138,8 @@ export default {
               text: `${name}`,
               value: item.selectValue[index],
               priceInfo: parseFloat(item.priceInfo[index]) === 0 ? '' : ` €${parseFloat(item.priceInfo[index]).toFixed(2)}`,
-              count: 0
+              count: 0,
+              price: parseFloat(item.priceInfo[index] ?? 0)
             }
             item.select.push(select)
           })
@@ -149,6 +156,27 @@ export default {
         }
       })
       return realModInfo
+    },
+    realMod: function () {
+      const realMod = []
+      for (const groupId in this.selectCount) {
+        for (const selectIndex in this.selectCount[groupId]) {
+          const groupInfo = this.selectCount[groupId][selectIndex]
+          for (let i = 0; i < groupInfo; i++) {
+            realMod.push({
+              groupId,
+              selectIndex
+            })
+          }
+        }
+      }
+      return realMod
+    },
+    addPrice: function () {
+      return this.realMod.reduce((total, i) => {
+        total += this.findModItemUseGroupIdAndIndex(i.groupId, i.selectIndex)?.price ?? 0
+        return total
+      }, 0) ?? 0
     }
   },
   methods: {
@@ -178,25 +206,46 @@ export default {
       this.count = 1
       this.$emit('modification-cancel')
     },
-    submitModification () {
-      let realMod = []
-      const saveInfo = JSON.stringify({ selectCount: this.selectCount, mod: this.mod })
-      for (const groupId in this.selectCount) {
-        for (const selectIndex in this.selectCount[groupId]) {
-          for (let i = 0; i < this.selectCount[groupId][selectIndex]; i++) {
-            realMod.push({
-              groupId,
-              selectIndex
-            })
-          }
-        }
+    findModItemUseGroupIdAndIndex (groupId, index) {
+      return this.computedOption.find(g => parseInt(g.id) === parseInt(groupId)).select[index]
+    },
+    clear () {
+      for (const key in this.mod) {
+        this.mod[key] = null
       }
-      this.mod = {}
       this.$nextTick(() => {
         this.selectCount = {}
       })
-      this.$emit('modification-submit', [realMod, this.count, saveInfo])
-      realMod = []
+    },
+    submitModification () {
+      const saveInfo = JSON.stringify({ selectCount: this.selectCount, mod: this.mod })
+
+      const mod = IKUtils.deepCopy(this.realMod)
+      const groupDict = IKUtils.deepCopy(this.computedOption.reduce((obj, m) => {
+        obj[m.id] = m
+        return obj
+      }, {}))
+
+      for (let i of mod) {
+        const group = groupDict[i.groupId]
+        group.hasValue = true
+        i = Object.assign(i, group)
+        i.groupId = group.id
+        i.selectId = [group.selectValue[i.selectIndex]]
+      }
+
+      for (const key in groupDict) {
+        const item = groupDict[key]
+        if (item.required === '1' && !item.hasValue) {
+          item.groupId = item.id
+          item.selectId = [item.selectValue[0]]
+          mod.push(item)
+        }
+      }
+
+      this.clear()
+
+      this.$emit('modification-submit', [mod, this.count, saveInfo])
       this.count = 1
     }
   },
@@ -209,18 +258,18 @@ export default {
 </script>
 
 <style scoped>
-    .hideWhenNoteActiveChip {
-        display: none;
-    }
+.hideWhenNoteActiveChip {
+  display: none;
+}
 
-    .active {
-        background: #367aeb;
-        color: white;
-    }
+.active {
+  background: #367aeb;
+  color: white;
+}
 
-    .v-chip-group--column .v-slide-group__content {
-        display: grid;
-        grid-template-columns: repeat(3, 100px);
-    }
+.v-chip-group--column .v-slide-group__content {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+}
 
 </style>

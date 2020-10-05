@@ -22,5 +22,6 @@
   "gridSizeX": "100",
   "tableCardFontSize": "28",
   "predefinedDiscount": "",
-  "defaultSort": "10,9,8,11,12"
+  "defaultSort": "10,9,8,11,12",
+  "dishBlockFontSize": "18"
 }
