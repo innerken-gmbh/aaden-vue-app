@@ -42,7 +42,7 @@
         overflow-x: scroll;
         ">
       <template v-for="item in computedOption">
-        <div :key="'mod2'+item.id" style="max-width: 400px">
+        <div :key="'mod2'+item.id" :style="{maxWidth:item.select.length>10?'400px':'270px'}">
           <h4 :key="'mod2head'+item.id">
             {{ `${item.name}${item.required === '1' ? `:${item.select[0].text}` : ``}` }}
           </h4>
