@@ -59,7 +59,7 @@
                           tile
                           class="d-flex flex-column ma-1"
                           width="124px"
-                          :height="item.multiSelect==='1'?'120px':'auto'"
+                          :min-height="item.multiSelect==='1'?'120px':'auto'"
                           :color="active?'primary':''"
                           @click="activeCallback(active,toggle,item,index)">
                     <div class="ma-2 flex-grow-1" style="font-size: 18px">
@@ -76,7 +76,6 @@
                       </v-card-actions>
                     </template>
                   </v-card>
-
                 </v-item>
               </template>
             </div>
