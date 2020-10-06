@@ -203,6 +203,7 @@ export default {
     },
     cancel () {
       this.count = 1
+      this.clear()
       this.$emit('modification-cancel')
     },
     findModItemUseGroupIdAndIndex (groupId, index) {
