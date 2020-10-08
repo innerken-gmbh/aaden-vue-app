@@ -88,6 +88,7 @@
 
 <script>
 import { IKUtils } from 'innerken-utils'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 export default {
   name: 'DishModification',
@@ -145,15 +146,18 @@ export default {
           realModInfo.push(item)
         }
       })
-      realModInfo.sort((a, b) => {
-        if (a.required === '1') {
-          return -1
-        } else if (a.select.length === 1) {
-          return -1
-        } else {
-          return 1
-        }
-      })
+      if (GlobalConfig.useAttributeSort) {
+        realModInfo.sort((a, b) => {
+          if (a.required === '1') {
+            return -1
+          } else if (a.select.length === 1) {
+            return -1
+          } else {
+            return 1
+          }
+        })
+      }
+
       return realModInfo
     },
     realMod: function () {
