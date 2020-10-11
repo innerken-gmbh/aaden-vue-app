@@ -402,7 +402,9 @@ export default {
       if (this.menu) {
         return
       }
-      this.$refs.ins.focus()
+      if (this.$refs.ins !== document.activeElement) {
+        this.$refs.ins.focus()
+      }
     },
     async initPage () {
       window.onkeydown = this.listenKeyDown
