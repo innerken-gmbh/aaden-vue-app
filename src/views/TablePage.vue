@@ -441,6 +441,11 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                 <v-icon left>mdi-inbox-arrow-up</v-icon>
                 {{ $t('tableChange') }}
               </v-btn>
+              <v-btn x-large class="  mt-1"
+                     v-on:click="printZwichenBon()">
+                <v-icon left>mdi-bandcamp</v-icon>
+                {{ $t('Zwichen') }}
+              </v-btn>
             </div>
             <dish-card-list
                 class="flex-grow-1"
@@ -537,7 +542,8 @@ import {
   dishesSetDiscount,
   getColorLightness,
   popChangeTablePanel,
-  popMergeTablePanel
+  popMergeTablePanel,
+  printZwichenBon
 } from '../oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
 import DishCardList from '../components/DishCardList'
@@ -804,6 +810,9 @@ export default {
     },
     dishesChangeTable: function () {
       dishesChangeTable(this.tableDetailInfo.tableBasicInfo.name, this.splitOrderListModel.list, this.initialUI)
+    },
+    printZwichenBon: function () {
+      printZwichenBon(this.id, this.splitOrderListModel.list)
     },
     addToSplit: function (index) {
       const item = IKUtils.deepCopy(this.orderListModel.list[index])

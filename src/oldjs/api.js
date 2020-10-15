@@ -96,6 +96,12 @@ export function dishesSetDiscount (orderId, items, initialUI) {
   })
 }
 
+export function printZwichenBon (tableId, items) {
+  return hillo.get('Orders.php?op=printZwichenBonUseDishesList', {
+    tableId, dishes: JSON.stringify(items)
+  })
+}
+
 export function dishesChangeTable (tableName, items, initialUI) {
   popAuthorize('boss', async () => {
     const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopChangeTableInfo'),
