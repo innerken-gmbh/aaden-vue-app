@@ -85,7 +85,7 @@ export function setGlobalTableId (id) {
   TableId = id
 }
 
-export async function popAuthorize (type, successCallback, force = false, failedCallback) {
+export async function popAuthorize (type, successCallback, force = false, failedCallback, tableId = false) {
   if (!force) {
     if (!GlobalConfig.usePassword && type !== 'boss') {
       successCallback()
@@ -100,7 +100,7 @@ export async function popAuthorize (type, successCallback, force = false, failed
     'Servant.php'
     , 'pw', {
       op: type === 'boss' ? 'checkBoss' : 'checkServant',
-      tableId: TableId
+      tableId: tableId ?? TableId
     }, 'GET', false)
   if (res) {
     if (successCallback) {
@@ -148,7 +148,7 @@ function reloadTables (arrOfT) {
 export function openOrEnterTable (number) {
   hillo.get('Tables.php', { name: number }).then(res => {
     if (res.content[0].usageStatus === '0') {
-      popAuthorize('', () => shouldOpenTable(res.content[0].id))
+      popAuthorize('', () => shouldOpenTable(res.content[0].id), false, false, res.content[0].id)
     } else if (res.content[0].usageStatus === '1') {
       const enterTable = () => {
         toast(i18n.t('JSIndexCreateTableEnterTable') + number)
@@ -157,7 +157,7 @@ export function openOrEnterTable (number) {
       if (GlobalConfig.useEnterTablePermissionCheck) {
         popAuthorize('', () => {
           enterTable()
-        })
+        }, false, false, res.content[0].id)
       } else {
         enterTable()
       }
