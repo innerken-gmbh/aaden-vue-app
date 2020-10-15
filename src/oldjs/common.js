@@ -150,8 +150,17 @@ export function openOrEnterTable (number) {
     if (res.content[0].usageStatus === '0') {
       popAuthorize('', () => shouldOpenTable(res.content[0].id))
     } else if (res.content[0].usageStatus === '1') {
-      toast(i18n.t('JSIndexCreateTableEnterTable') + number)
-      jumpToTable(res.content[0].id, res.content[0].name)
+      const enterTable = () => {
+        toast(i18n.t('JSIndexCreateTableEnterTable') + number)
+        jumpToTable(res.content[0].id, res.content[0].name)
+      }
+      if (GlobalConfig.useEnterTablePermissionCheck) {
+        popAuthorize('', () => {
+          enterTable()
+        })
+      } else {
+        enterTable()
+      }
     }
   }).catch(err => {
     logErrorAndPop(Strings[Config.lang].JSIndexCreateTableTableNotFound + err)
