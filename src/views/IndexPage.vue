@@ -159,7 +159,7 @@
                                     <div v-bind:key="table.name">
                                         <v-card v-if="table.usageStatus==='1'"
                                                 class="tableCard"
-                                                @click='jumpToTable(table.tableId,table.tableName)'>
+                                                @click='openOrEnterTable(table.tableName)'>
                                             <div :style="{fontSize:Config.tableCardFontSize+'px'}"
                                                  class="tableCardName">{{ table.tableName }}
                                             </div>
@@ -203,7 +203,7 @@
                                             </div>
 
                                         </v-card>
-                                        <div v-else @click="createTable(table.tableName)"
+                                        <div v-else @click="openOrEnterTable(table.tableName)"
                                              class="tableCard notUsed">
                                             <div :style="{fontSize:Config.tableCardFontSize+'px'}"
                                                  class="tableCardName">
@@ -227,26 +227,25 @@
 import { version } from '../../package.json'
 import {
   blockReady,
-  createOrEnterTable,
+  openOrEnterTable,
   findConsumeTypeById,
   getAllDishes,
   getConsumeTypeList,
   getFalsePrinterList,
-  jumpToTable,
   oldJumpTo,
   popAuthorize,
   requestOutTable,
   Strings
-} from '../oldjs/common'
+} from '@/oldjs/common'
 import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
 import GlobalConfig, { hardReload, NeededKeys, setDeviceId, useCurrentConfig } from '../oldjs/LocalGlobalSettings'
-import { addToTimerList, clearAllTimer } from '../oldjs/Timer'
+import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
 import TimeDisplay from '@/components/TimeDisplay'
-import { getColorLightness, getRestaurantInfo } from '../oldjs/api'
+import { getColorLightness, getRestaurantInfo } from '@/oldjs/api'
 
 export default {
   name: 'IndexPage',
@@ -312,8 +311,7 @@ export default {
     useCurrentConfig,
     hardReload,
     popAuthorize,
-    createTable: createOrEnterTable,
-    jumpToTable,
+    openOrEnterTable: openOrEnterTable,
     requestOutTable,
     initialUI () {
       this.$refs.ins.focus()
@@ -384,7 +382,7 @@ export default {
         } else if (t === 'l') {
           popAuthorize('', this.toManage)
         } else {
-          this.createTable(t)
+          this.openOrEnterTable(t)
         }
       }
     },

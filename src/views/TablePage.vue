@@ -516,7 +516,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
 import {
   blocking,
   blockReady,
-  createOrEnterTable,
+  openOrEnterTable,
   fastSweetAlertRequest,
   findConsumeTypeById,
   getConsumeTypeList,
@@ -1169,7 +1169,7 @@ export default {
         }
       }, 20)
     },
-    createTable: createOrEnterTable,
+    createTable: openOrEnterTable,
     async realInitial () {
       await getConsumeTypeList()
       this.menuShow = false

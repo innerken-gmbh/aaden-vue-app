@@ -87,11 +87,11 @@ export function setGlobalTableId (id) {
 
 export async function popAuthorize (type, successCallback, force = false, failedCallback) {
   if (!force) {
-    if (!Config.UsePassword && type !== 'boss') {
+    if (!GlobalConfig.usePassword && type !== 'boss') {
       successCallback()
       return
     }
-    if (!Config.UseBossPassword && type === 'boss') {
+    if (!GlobalConfig.UseBossPassword && type === 'boss') {
       successCallback()
       return
     }
@@ -145,15 +145,13 @@ function reloadTables (arrOfT) {
   return areaData
 }
 
-export function createOrEnterTable (number) {
+export function openOrEnterTable (number) {
   hillo.get('Tables.php', { name: number }).then(res => {
     if (res.content[0].usageStatus === '0') {
       popAuthorize('', () => shouldOpenTable(res.content[0].id))
     } else if (res.content[0].usageStatus === '1') {
-      toast(i18n.t('JSIndexCreateTableEnterTable') + number,
-        () => {
-          jumpToTable(res.content[0].id, res.content[0].name)
-        })
+      toast(i18n.t('JSIndexCreateTableEnterTable') + number)
+      jumpToTable(res.content[0].id, res.content[0].name)
     }
   }).catch(err => {
     logErrorAndPop(Strings[Config.lang].JSIndexCreateTableTableNotFound + err)
