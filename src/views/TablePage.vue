@@ -1366,7 +1366,6 @@ tr:hover {
   padding-top: 12px;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  grid-auto-rows: 108px;
   margin-bottom: 120px;
   width: 100%;
   grid-gap: 6px;
@@ -1391,7 +1390,6 @@ tr:hover {
 }
 
 .dishBlock {
-  height: 108px;
   cursor: pointer;
   padding: 5px 12px;
   background: white;
