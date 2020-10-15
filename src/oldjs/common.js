@@ -104,7 +104,7 @@ export async function popAuthorize (type, successCallback, force = false, failed
     }, 'GET', false)
   if (res) {
     if (successCallback) {
-      successCallback()
+      successCallback(res?.originalData)
     }
   } else {
     if (failedCallback) {
@@ -148,7 +148,7 @@ function reloadTables (arrOfT) {
 export function openOrEnterTable (number) {
   hillo.get('Tables.php', { name: number }).then(res => {
     if (res.content[0].usageStatus === '0') {
-      popAuthorize('', () => shouldOpenTable(res.content[0].id), false, false, res.content[0].id)
+      popAuthorize('', (pw) => shouldOpenTable(res.content[0].id, pw), false, false, res.content[0].id)
     } else if (res.content[0].usageStatus === '1') {
       const enterTable = () => {
         toast(i18n.t('JSIndexCreateTableEnterTable') + number)
@@ -180,13 +180,13 @@ export async function getFalsePrinterList () {
   return falsePrinterList
 }
 
-async function shouldOpenTable (openingTable) {
+async function shouldOpenTable (openingTable, pw) {
   if (!Config.useOpenTablePrompt) {
-    openTableCallback(openingTable, 1, 0, 1)
+    openTableCallback(openingTable, pw, 1, 0, 1)
     return
   }
   const result = await openTablePrompt()
-  openTableCallback(openingTable, ...result)
+  openTableCallback(openingTable, pw, ...result)
 }
 
 function informOpenTable (password, number, personCount, childCount) {
@@ -255,19 +255,19 @@ export function parseIntAndSetDefault (val, de = 0) {
   return number
 }
 
-export function openTableCallback (openingTable, guestCount, childCount, consumeType, adultDishId) {
+export function openTableCallback (openingTable, pw, guestCount, childCount, consumeType, adultDishId) {
   [guestCount, childCount] = [guestCount, childCount].map(parseIntAndSetDefault)
   const openTableType = parseInt(consumeType)
   switch (openTableType) {
     case 1:
-      informOpenTable(Config.defaultPassword, openingTable, guestCount, childCount)// todo 添加开桌类型
+      informOpenTable(pw, openingTable, guestCount, childCount)// todo 添加开桌类型
       break
     case 2:
       requestOutTable()
       break
     case 4:
     case 6:
-      informOpenJpTable(Config.defaultPassword, openingTable, guestCount, childCount, adultDishId)
+      informOpenJpTable(pw, openingTable, guestCount, childCount, adultDishId)
       break
     default:
       logErrorAndPop('选择了错误的开桌类型')
@@ -424,6 +424,7 @@ export async function fastSweetAlertRequest
     allowOutsideClick: () => !Swal.isLoading()
   })
   if (result.value || allowEmpty) {
+    result.value.originalData = dataObj[dataName]
     return result.value
   } else {
     return false
