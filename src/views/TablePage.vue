@@ -939,8 +939,8 @@ export default {
           break
         case 7:
           if (GlobalConfig.checkOutUsePassword) {
-            popAuthorize('', () => {
-              this.checkOut()
+            popAuthorize('', (pw) => {
+              this.checkOut(pw)
             }, true)
           } else {
             this.checkOut()
@@ -961,11 +961,11 @@ export default {
       this.initialUI()
     },
 
-    checkOut (print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
+    checkOut (pw, print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
       if (!memberCardId) {
         memberCardId = null
       }
-      checkOut(this.id, print, payMethod, tipIncome, memberCardId)
+      checkOut(pw, this.id, print, payMethod, tipIncome, memberCardId)
     },
     jumpToTable: function (tableId, tableName) {
       this.goHomeCallBack()
@@ -1118,8 +1118,8 @@ export default {
               const res = await showConfirmAsyn('是否使用现金,0小费,普通账单结账?')
               if (res.value) {
                 if (GlobalConfig.checkOutUsePassword) {
-                  popAuthorize('', () => {
-                    this.checkOut()
+                  popAuthorize('', (pw) => {
+                    this.checkOut(pw)
                   }, true)
                 } else {
                   this.checkOut()
