@@ -37,6 +37,9 @@ export default {
     tableId: {},
     discountStr: {
       default: ''
+    },
+    password: {
+      default: ''
     }
   },
   data: function () {
@@ -76,7 +79,8 @@ export default {
         printCount,
         payMethod: 1,
         paymentLog: JSON.stringify(paymentLog),
-        discountStr: ''
+        discountStr: '',
+        pw: this.password
       }
 
       if (paymentLog.length === 0) {

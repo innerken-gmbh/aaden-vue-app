@@ -498,6 +498,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
           :dish="dish"
           :old-mod="oldMod"
           :mod="submitModification"
+          :password="password"
       />
       <check-out-drawer
           @visibility-changed="changeCheckOut"
@@ -531,7 +532,7 @@ import {
   showTimedAlert,
   toast,
   toManage
-} from '../oldjs/common'
+} from '@/oldjs/common'
 import { getActiveTables, getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import Swal from 'sweetalert2'
 import hillo from 'innerken-utils/Utlis/request'
@@ -544,14 +545,14 @@ import {
   popChangeTablePanel,
   popMergeTablePanel,
   printZwichenBon
-} from '../oldjs/api'
+} from '@/oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
 import DishCardList from '../components/DishCardList'
 import ModificationDrawer from '../components/ModificationDrawer'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import CheckOutDrawer from '../components/CheckOutDrawer'
-import { findDish, getAllDishesWithCache, goHome } from '../oldjs/StaticModel'
-import { addToTimerList, clearAllTimer, printNow } from '../oldjs/Timer'
+import { findDish, getAllDishesWithCache, goHome } from '@/oldjs/StaticModel'
+import { addToTimerList, clearAllTimer, printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
 import { IKUtils } from 'innerken-utils'
@@ -624,7 +625,7 @@ export default {
         order: { id: -1 },
         tableBasicInfo: { name: '' }
       },
-
+      password: '',
       localDiscountStr: '',
       localDiscountType: '',
       predefinedDiscount: []
@@ -941,7 +942,7 @@ export default {
           if (GlobalConfig.checkOutUsePassword) {
             popAuthorize('', (pw) => {
               this.checkOut(pw)
-            }, true)
+            }, true, false, this.id)
           } else {
             this.checkOut()
           }
@@ -982,7 +983,7 @@ export default {
       if (GlobalConfig.checkOutUsePassword) {
         popAuthorize('', async () => {
           await realEnd()
-        }, true)
+        }, true, false, this.id)
       } else {
         await realEnd()
       }
@@ -1120,7 +1121,7 @@ export default {
                 if (GlobalConfig.checkOutUsePassword) {
                   popAuthorize('', (pw) => {
                     this.checkOut(pw)
-                  }, true)
+                  }, true, false, this.id)
                 } else {
                   this.checkOut()
                 }
@@ -1153,17 +1154,18 @@ export default {
       blockReady()
     },
     jumpToPayment () {
-      const realCheckOut = async () => {
+      const realCheckOut = async (pw) => {
         this.checkoutShow = true
         this.checkOutModel.loadTTDishList(this.orderListModel.list)
         this.checkOutType = 'checkOut'
         this.discountStr = ''
+        this.password = pw
       }
       setTimeout(async () => {
         if (GlobalConfig.checkOutUsePassword) {
-          popAuthorize('', async () => {
-            await realCheckOut()
-          }, true)
+          popAuthorize('', async (pw) => {
+            await realCheckOut(pw)
+          }, true, false, this.id)
         } else {
           await realCheckOut()
         }
