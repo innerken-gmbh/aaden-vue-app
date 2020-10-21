@@ -368,10 +368,10 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                         mdi-trash-can
                       </v-icon>
                     </v-btn>
-                    <v-btn @click="orderDish(cartListModel.list,false)" class="mr-1" dark>
+                    <v-btn :loading="isSendingRequest" @click="orderDish(cartListModel.list,false)" class="mr-1" dark>
                       <v-icon>mdi-printer-off</v-icon>
                     </v-btn>
-                    <v-btn color="primary" class="flex-grow-1"
+                    <v-btn :loading="isSendingRequest" color="primary" class="flex-grow-1"
                            @click="orderDish(cartListModel.list)" dark>
                       <v-icon left>mdi-printer</v-icon>
                       {{ $t('confirm') }}
@@ -517,7 +517,6 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
 import {
   blocking,
   blockReady,
-  openOrEnterTable,
   fastSweetAlertRequest,
   findConsumeTypeById,
   getConsumeTypeList,
@@ -525,6 +524,7 @@ import {
   jumpToTable,
   logError,
   logErrorAndPop,
+  openOrEnterTable,
   popAuthorize,
   requestOutTable,
   setGlobalTableId,
@@ -587,6 +587,8 @@ export default {
       checkoutShow: false,
       modificationShow: false,
       discountModelShow: null,
+
+      isSendingRequest: false,
 
       oldMod: null,
 
@@ -1136,6 +1138,7 @@ export default {
     },
     async orderDish (order = this.cartListModel.list, print = true) {
       try {
+        this.isSendingRequest = true
         await hillo.post('Complex.php?op=addDishesToTable', {
           params: JSON.stringify(order),
           tableId: this.id,
@@ -1150,6 +1153,8 @@ export default {
         }
       } catch (res) {
         logError(this.$t('JSTableOrderFailed') + res.data.info)
+      } finally {
+        this.isSendingRequest = false
       }
       blockReady()
     },
