@@ -194,7 +194,7 @@ export default {
       const nextState = !active
 
       if (nextState) {
-        if (group.required === '1') {
+        if (group.multiSelect === '0') {
           for (const k in this.selectCount[groupId]) {
             this.selectCount[groupId][k] = 0
           }
