@@ -505,6 +505,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
           :order="checkOutModel"
           :check-out-type="checkOutType"
           :table-id="id"
+          :password="password"
           :discount-str="discountStr"
           :discount-ratio="discountRatio"
           :visible="checkoutShow"/>
@@ -976,15 +977,16 @@ export default {
       this.initialUI()
     },
     needSplitOrder: async function () {
-      const realEnd = async () => {
+      const realEnd = async (pw = '') => {
+        this.password = pw
         this.checkoutShow = true
         this.checkOutModel.clear()
         this.checkOutModel.loadTTDishList(this.splitOrderListModel.list)
         this.checkOutType = 'splitOrder'
       }
       if (GlobalConfig.checkOutUsePassword) {
-        popAuthorize('', async () => {
-          await realEnd()
+        popAuthorize('', async (pw) => {
+          await realEnd(pw)
         }, true, false, this.id)
       } else {
         await realEnd()
