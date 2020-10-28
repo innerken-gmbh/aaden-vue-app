@@ -57,7 +57,7 @@
           </div>
         </template>
         <template slot="after-menu">
-          <v-menu offset-y v-model="menuShow">
+          <v-menu :disable-keys="true" :close-on-content-click="false" offset-y v-model="menuShow">
             <template #activator="{on,attrs}">
               <v-toolbar-items class="ml-1 mr-n3">
                 <v-btn color="primary" v-on="on" v-bind="attrs">
@@ -66,7 +66,7 @@
                 </v-btn>
               </v-toolbar-items>
             </template>
-            <v-card color="#f6f6f6" min-width="400px" max-width="50vw">
+            <v-card color="#f6f6f6" min-width="400px" max-width="100vw">
               <v-toolbar dense dark color="primary">
                 <div class="bigTableName mr-4">
                   {{ tableDetailInfo.tableBasicInfo.name }}
@@ -91,16 +91,91 @@
                                              </span>
                 </div>
                 <v-toolbar-items>
-                  <v-btn>
+                  <v-btn @click="menuShow=false">
                     <v-icon>mdi-close</v-icon>
                   </v-btn>
                 </v-toolbar-items>
               </v-toolbar>
               <v-card-text>
                 <v-row>
-                  <v-col cols="6">
+                  <v-col cols="3">
                     <v-card>
-                      <v-list subheader>
+                      <v-list>
+                        <v-list-item>
+                          <v-list-item-title>
+                            新增
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-divider></v-divider>
+                        <v-list-item>
+                          <v-list-item-content>
+
+                            <vuetify-google-autocomplete
+                                browser-autocomplete="off"
+                                type="search"
+                                id="map"
+                                placeholder="地址搜索"
+                                clearable
+                                v-on:placechanged="getAddressData"
+                            />
+                            <v-text-field label="电话" autocomlete="off"
+                                          type="search" v-model="rawAddressInfo.tel"></v-text-field>
+                            <v-text-field hide-details  autocomlete="off"
+                                          type="search" label="名" v-model="rawAddressInfo.firstName"></v-text-field>
+                            <v-text-field hide-details  autocomlete="off"
+                                          type="search" label="姓" v-model="rawAddressInfo.lastName"></v-text-field>
+                            <v-text-field label="地址行1" autocomlete="off"
+                                          type="search" v-model="rawAddressInfo.addressLine1"></v-text-field>
+                            <v-text-field label="地址行2"  autocomlete="off"
+                                          type="search" v-model="rawAddressInfo.addressline2"></v-text-field>
+                            <v-text-field label="城市"  autocomlete="off"
+                                          type="search" v-model="rawAddressInfo.city"></v-text-field>
+                            <v-text-field label="邮编"  autocomlete="off"
+                                          type="search" v-model="rawAddressInfo.plz"></v-text-field>
+                            <v-text-field label="邮箱"  autocomlete="off"
+                                          type="search"  v-model="rawAddressInfo.email"></v-text-field>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-col>
+                  <v-col cols="3">
+                    <v-card>
+                      <v-list>
+                        <v-list-item>
+                          <v-list-item-content>
+                            <v-autocomplete
+                                v-model="selectUser"
+                                clearable
+                                label="电话查找"
+                                autocomplete="off"
+                                type="search"
+                                auto-select-first
+                                hide-no-data
+                                cache-items
+                                :items="telHint"
+                            />
+                            <v-text-field label="日期" v-model="rawAddressInfo.date"></v-text-field>
+                            <v-text-field label="时间" v-model="rawAddressInfo.time"></v-text-field>
+                            <v-text-field label="备注" v-model="rawAddressInfo.note"></v-text-field>
+                            <v-text-field label="配送方式" v-model="rawAddressInfo.deliveryMethod"></v-text-field>
+                            <div class="chip" v-show="rawAddressInfo.reason">
+                              {{ rawAddressInfo.reason }}
+                            </div>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                      <v-card-actions>
+                        <v-btn @click="clearAddressInfo" color="error">取消</v-btn>
+                        <v-btn @click="submitNewUserInfo" color="success">新增用户</v-btn>
+                        <v-btn @click="submitRawAddressInfo" color="primary">提交</v-btn>
+                      </v-card-actions>
+                    </v-card>
+                  </v-col>
+
+                  <v-col cols="3">
+                    <v-card>
+                      <v-list  subheader>
                         <v-subheader>Information</v-subheader>
                         <v-list-item>
                           <v-list-item-icon>
@@ -179,48 +254,12 @@
                             <v-list-item-title>{{ $t('tableMerge') }}</v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
-                        <v-divider></v-divider>
-                        <v-list-item>
-                          <v-list-item-title>
-                            {{ rawAddressInfo.firstName }} {{
-                              rawAddressInfo.lastName
-                            }}
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item>
-                          <v-list-item-content>
-                            <div> {{ rawAddressInfo.addressLine1 }}</div>
-                            <div> {{ rawAddressInfo.addressline2 }}</div>
-                            <div> {{ rawAddressInfo.city }} {{
-                                rawAddressInfo.plz
-                              }}
-                            </div>
-                            <div><span class="font-weight-bold">Email: </span>{{
-                                rawAddressInfo.email
-                              }}
-                            </div>
-                            <div><span class="font-weight-bold">Phone: </span>{{
-                                rawAddressInfo.tel
-                              }}
-                            </div>
-                            <span class="font-weight-bold">Lieferzeit: </span>
-                            {{ rawAddressInfo.date }}
-                            {{ rawAddressInfo.time }}
-                            {{ rawAddressInfo.note }}
-                            <div class="chip" v-show="rawAddressInfo.reason">
-                              {{ rawAddressInfo.deliveryMethod }}
-                            </div>
-                            <div class="chip" v-show="rawAddressInfo.reason">
-                              {{ rawAddressInfo.reason }}
-                            </div>
-                          </v-list-item-content>
-                        </v-list-item>
 
                       </v-list>
                     </v-card>
 
                   </v-col>
-                  <v-col cols="6">
+                  <v-col cols="3">
                     <div style="max-height:calc(100vh - 124px); overflow: hidden"
                          class="collapse pa-2" v-dragscroll>
                       <div v-bind:key="'area'+area.areaName" v-for="area in areas"
@@ -249,7 +288,6 @@
                       </div>
                     </div>
                   </v-col>
-
                 </v-row>
               </v-card-text>
             </v-card>
@@ -561,7 +599,13 @@ import Navgation from '../components/Navgation'
 import { debounce } from 'lodash-es'
 
 const DefaultAddressInfo = {
-  reason: ''
+  reason: '',
+  addressLine1: '',
+  addressLine2: '',
+  city: '',
+  plz: '',
+  tel: '',
+  email: ''
 }
 
 // endregion
@@ -588,12 +632,11 @@ export default {
       checkoutShow: false,
       modificationShow: false,
       discountModelShow: null,
-
       isSendingRequest: false,
-
       oldMod: null,
 
       breakCount: 0,
+
       checkOutType: 'checkOut',
       checkOutModel: StandardDishesListFactory(),
       /**/
@@ -613,7 +656,7 @@ export default {
       activeDCT: 0,
       filteredDish: [{ name: '', code: '', price: '', count: '' }],
       /**/
-      rawAddressInfo: { reason: '' },
+      rawAddressInfo: DefaultAddressInfo,
       /**/
       areas: [],
       Config: GlobalConfig,
@@ -624,20 +667,58 @@ export default {
       splitOrderListModel: StandardDishesListFactory(),
       orderListModel: StandardDishesListFactory(),
       cartListModel: StandardDishesListFactory(),
+
       tableDetailInfo: {
         order: { id: -1 },
         tableBasicInfo: { name: '' }
       },
+
       password: '',
       localDiscountStr: '',
       localDiscountType: '',
-      predefinedDiscount: []
+      predefinedDiscount: [],
+
+      selectUser: null,
+      userInfo: []
     }
   },
   beforeDestroy () {
     this.goHomeCallBack()
   },
   methods: {
+    async getUserInfo () {
+      this.userInfo = (await hillo.get('Takeaway.php?op=showAllUsers')).content
+    },
+    clearAddressInfo () {
+      this.rawAddressInfo = Object.assign({}, DefaultAddressInfo)
+    },
+    async submitNewUserInfo () {
+      const info = this.rawAddressInfo
+      await hillo.post('Takeaway.php?op=addUsers', {
+        email: info.tel,
+        password: '',
+        rawInfo: JSON.stringify(info)
+      })
+      this.getUserInfo()
+      toast()
+    },
+    getAddressData (e) {
+      this.rawAddressInfo.addressLine1 = e.route + ' ' + e.street_number
+      this.rawAddressInfo.city = e.locality
+      this.rawAddressInfo.plz = e.postal_code
+    },
+    async submitRawAddressInfo () {
+      await hillo.post('Orders.php?op=updateRawAddressInfo', {
+        orderId: this.tableDetailInfo.order.id,
+        rawAddressInfo: JSON.stringify(this.rawAddressInfo)
+      })
+      const res = await hillo.get('Orders.php?op=getRawAddressInfo', {
+        orderId: this.tableDetailInfo.order.id
+      })
+      this.rawAddressInfo = JSON.parse(res.content)
+      this.menuShow = false
+      toast()
+    },
     getAllPredefinedDiscount () {
       this.predefinedDiscount = (GlobalConfig.getSettings('predefinedDiscount') ?? '').split(',').filter(t => t !== '')
       // console.log(this.predefinedDiscount, 'Discount')
@@ -993,7 +1074,7 @@ export default {
       }
     },
     autoGetFocus () {
-      if (this.modificationShow || this.checkoutShow || this.discountModelShow) {
+      if (this.modificationShow || this.checkoutShow || this.discountModelShow || this.menuShow) {
         return
       }
       if (Swal.isVisible()) {
@@ -1017,7 +1098,7 @@ export default {
         this.tableDetailInfo = res.content
         this.tableDetailInfo.consumeTypeName = findConsumeTypeById(this.tableDetailInfo.consumeTypeId).name
         if (this.tableDetailInfo.order.rawAddressInfo) {
-          const addressInfo = Object.assign(DefaultAddressInfo, JSON.parse(this.tableDetailInfo.order.rawAddressInfo))
+          const addressInfo = Object.assign({}, DefaultAddressInfo, JSON.parse(this.tableDetailInfo.order.rawAddressInfo))
           if (addressInfo) {
             this.rawAddressInfo = addressInfo
           }
@@ -1053,6 +1134,9 @@ export default {
     },
     listenKeyDown (e) {
       if (Swal.isVisible()) {
+        return
+      }
+      if (this.menuShow) {
         return
       }
       switch (e.key) {
@@ -1187,9 +1271,12 @@ export default {
       if (GlobalConfig.getFocus) {
         addToTimerList(setInterval(this.autoGetFocus, 1000))
       }
+      this.rawAddressInfo = Object.assign({}, DefaultAddressInfo)
+      this.selectUser = null
       this.getCategory()
       this.getDCT()
       this.activeDCT = 0
+      await this.getUserInfo()
       this.updateFilteredDish()
       setGlobalTableId(this.id)
       blockReady()
@@ -1234,6 +1321,13 @@ export default {
     }
   },
   computed: {
+    telHint: function () {
+      const info = this.userInfo
+      return info.reduce((arr, i) => {
+        arr.push(i.email)
+        return arr
+      }, [])
+    },
     autoHints: function () {
       let availableIns = []
       if (this.input) {
@@ -1283,6 +1377,11 @@ export default {
     }
   },
   watch: {
+    selectUser: function (val) {
+      const searchUser = this.userInfo.find(d => d.email === val)
+
+      this.rawAddressInfo = Object.assign(this.rawAddressInfo, JSON.parse(searchUser.rawInfo))
+    },
     menuShow: function () {
       this.refreshTables()
     },

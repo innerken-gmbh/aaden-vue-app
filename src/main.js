@@ -9,6 +9,12 @@ import GlobalSetting from 'aaden-base-model/lib/Models/GlobalSettings'
 
 import GlobalConfig, { loadConfig } from './oldjs/LocalGlobalSettings'
 import './registerServiceWorker'
+import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete'
+
+Vue.use(VuetifyGoogleAutocomplete, {
+  apiKey: 'AIzaSyB5lIPQQUJjjY6M-BoqUaZhF21oBbYkd9E',
+  language: 'de'// Can also be an object. E.g, for Google Maps Premium API, pass `{ client: <YOUR-CLIENT-ID> }`
+})
 
 Vue.config.productionTip = false
 Vue.filter('priceDisplay',
