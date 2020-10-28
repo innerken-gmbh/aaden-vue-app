@@ -914,7 +914,7 @@ export default {
           title: 'Bitte Preis Eingabe',
           input: 'number',
           inputAttributes: {
-            min: 0,
+            min: -1000,
             step: 0.01
           }
         })).value
