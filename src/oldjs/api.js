@@ -2,6 +2,7 @@ import { blockReady, fastSweetAlertRequest, loadingComplete, popAuthorize, toast
 import { goHome } from './StaticModel'
 import { hillo } from 'innerken-utils'
 import i18n from '../i18n'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 export function splitOrder (discountStr = '', id, items,
   initialUI, print,
@@ -68,15 +69,25 @@ export function checkOut (pw = '', tableId, print = 1,
 
 export function deleteDishes (id, items, initialUI) {
   popAuthorize('boss', async () => {
-    const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopReturnDishInfo'),
-      'text',
-      'Complex.php?op=deleteDishes', 'reason', {
+    if (GlobalConfig.useDeleteDishReason) {
+      const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopReturnDishInfo'),
+        'text',
+        'Complex.php?op=deleteDishes', 'reason', {
+          tableId: id,
+          dishes: JSON.stringify(items)
+        }, 'POST',
+        true
+      )
+      if (res) {
+        loadingComplete()
+        initialUI()
+      }
+    } else {
+      await hillo.post('Complex.php?op=deleteDishes', {
         tableId: id,
-        dishes: JSON.stringify(items)
-      }, 'POST',
-      true
-    )
-    if (res) {
+        dishes: JSON.stringify(items),
+        reason: 'falsch eingaben'
+      })
       loadingComplete()
       initialUI()
     }
