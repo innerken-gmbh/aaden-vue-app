@@ -20,5 +20,12 @@
   "gridSize": "140",
   "dishLookUp": true,
   "gridSizeX": "100",
-  "tableCardFontSize": "28"
+  "tableCardFontSize": "28",
+  "predefinedDiscount": "",
+  "defaultSort": "10,9,8,11,13",
+  "dishBlockFontSize": "18",
+  "useAttributeSort": false,
+  "useEnterTablePermissionCheck": false,
+  "useDeleteDishReason": true,
+  "autoCompletePLZ": "44575,44577,44581,44579,44357,44379,44388,44369,44627,44805"
 }

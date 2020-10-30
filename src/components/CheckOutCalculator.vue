@@ -264,11 +264,13 @@ export default {
         hash
       }
       if (parseInt(type) === 4) {
-        const res = await fastSweetAlertRequest('Bitte Gutschein Id Gaben.',
-          'number', 'MemberCard.php?op=check', 'id',
-          { amount: price }, 'GET')
+        const res = await fastSweetAlertRequest(
+          'Bitte Gutschein Id Gaben.',
+          'text', 'MemberCard.php?op=check', 'id',
+          { amount: 0 }, 'GET')
         if (res.content) {
-          obj.memberCardId = res.content
+          obj.price = parseFloat(res.content.leftAmount)
+          obj.memberCardId = res.content.id
         } else {
           return
         }

@@ -37,6 +37,9 @@ export default {
     tableId: {},
     discountStr: {
       default: ''
+    },
+    password: {
+      default: ''
     }
   },
   data: function () {
@@ -76,7 +79,8 @@ export default {
         printCount,
         payMethod: 1,
         paymentLog: JSON.stringify(paymentLog),
-        discountStr: ''
+        discountStr: '',
+        pw: this.password
       }
 
       if (paymentLog.length === 0) {
@@ -92,7 +96,7 @@ export default {
         if (this.checkOutType !== 'checkOut') {
           if (!checkOutData.discountStr.includes('p') && this.discountStr) {
             const remainDiscount = parseFloat(this.discountStr) - parseFloat(checkOutData.discountStr)
-            console.log(remainDiscount)
+            // console.log(remainDiscount)
             setDiscountToTable(this.tableId, remainDiscount)
           }
         }

@@ -2,6 +2,7 @@ import { blockReady, fastSweetAlertRequest, loadingComplete, popAuthorize, toast
 import { goHome } from './StaticModel'
 import { hillo } from 'innerken-utils'
 import i18n from '../i18n'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 export function splitOrder (discountStr = '', id, items,
   initialUI, print,
@@ -32,13 +33,14 @@ export function splitOrder (discountStr = '', id, items,
 }
 
 /**
+ * @param pw
  * @param {string} tableId
  * @param {number|string} print
  * @param {number} payMethod
  * @param {number} tipIncome
  * @param {null} memberCardId
  */
-export function checkOut (tableId, print = 1,
+export function checkOut (pw = '', tableId, print = 1,
   payMethod = 1, tipIncome = 0,
   memberCardId) {
   let withTitle = 0
@@ -56,7 +58,8 @@ export function checkOut (tableId, print = 1,
     tableId: tableId,
     payMethod: payMethod,
     tipIncome: tipIncome || 0,
-    memberCardId: memberCardId ?? null
+    memberCardId: memberCardId ?? null,
+    pw
   }).then(res => {
     toast(i18n.t('JSTableCheckOutSuccess'))
     blockReady()
@@ -66,15 +69,25 @@ export function checkOut (tableId, print = 1,
 
 export function deleteDishes (id, items, initialUI) {
   popAuthorize('boss', async () => {
-    const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopReturnDishInfo'),
-      'text',
-      'Complex.php?op=deleteDishes', 'reason', {
+    if (GlobalConfig.useDeleteDishReason) {
+      const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopReturnDishInfo'),
+        'text',
+        'Complex.php?op=deleteDishes', 'reason', {
+          tableId: id,
+          dishes: JSON.stringify(items)
+        }, 'POST',
+        true
+      )
+      if (res) {
+        loadingComplete()
+        initialUI()
+      }
+    } else {
+      await hillo.post('Complex.php?op=deleteDishes', {
         tableId: id,
-        dishes: JSON.stringify(items)
-      }, 'POST',
-      true
-    )
-    if (res) {
+        dishes: JSON.stringify(items),
+        reason: 'falsch eingaben'
+      })
       loadingComplete()
       initialUI()
     }
@@ -93,6 +106,12 @@ export function dishesSetDiscount (orderId, items, initialUI) {
       loadingComplete()
       initialUI()
     }
+  })
+}
+
+export function printZwichenBon (tableId, items) {
+  return hillo.get('Orders.php?op=printZwichenBonUseDishesList', {
+    tableId, dishes: JSON.stringify(items)
   })
 }
 
@@ -154,9 +173,13 @@ export async function getRestaurantInfo () {
 }
 
 export function getColorLightness (c) {
-  const rgb = parseInt(c.substring(1), 16) // convert rrggbb to decimal
-  const r = (rgb >> 16) & 0xff // extract red
-  const g = (rgb >> 8) & 0xff // extract green
-  const b = (rgb >> 0) & 0xff // extract blue
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+  if (c?.startsWith('#')) {
+    const rgb = parseInt(c.substring(1), 16) // convert rrggbb to decimal
+    const r = (rgb >> 16) & 0xff // extract red
+    const g = (rgb >> 8) & 0xff // extract green
+    const b = (rgb >> 0) & 0xff // extract blue
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+  } else {
+    return 0
+  }
 }

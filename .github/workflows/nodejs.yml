@@ -4,7 +4,7 @@
 name: Node.js CI
 
 on:
-  release:
+  push
 
 jobs:
   build:
@@ -32,17 +32,25 @@ jobs:
       - run: |
           cd admin
           npm ci
-          npm run admin-build
+          npm run embeded-build
           cd ..
           cd public
           rm -rf admin
           mkdir admin
           cd ..
           mv admin/dist/* public/admin
+          date > public/last-merge-time.txt
           git config --global user.email "admin@innerken.com"
           git config --global user.name "CI BOT InnerKen"
           git add .
+          git checkout -b temp-branch
           git commit -m 'AUTO USE LATEST EMBEDED BUILD'
+          echo "ref"
+          echo ${{ github.ref }}
+          git checkout master
+          echo "here check outed"
+          git merge temp-branch
           git push
       - run: ls
-#    - run: npm run release --if-present
+      - run: npm ci
+      - run: npm run release --if-present

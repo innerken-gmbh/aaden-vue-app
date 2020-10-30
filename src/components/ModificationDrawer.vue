@@ -1,15 +1,16 @@
 <template>
     <v-dialog content-class="noFullScreen" v-model="realShow">
-            <dish-modification
-                    ref="modification"
-                    @modification-submit="submit(...$event,dish)"
-                    @modification-cancel="realShow=false"
-                    :options="dish.modInfo">
-                <template v-slot:before>
-                    <span class="font-weight-black"> {{ dish.name }}</span>
-                </template>
-            </dish-modification>
-
+        <dish-modification
+                ref="modification"
+                :showing="realShow"
+                :old-mod="oldMod"
+                @modification-submit="submit(...$event,dish)"
+                @modification-cancel="realShow=false"
+                :options="dish.modInfo">
+            <template v-slot:before="{price}">
+                <span class="font-weight-black"> {{ dish.name }} €{{parseFloat(dish.price)+price | priceDisplay}}</span>
+            </template>
+        </dish-modification>
     </v-dialog>
 </template>
 
@@ -30,6 +31,10 @@ export default {
       default: () => {
       }
     },
+    oldMod: {
+      default: () => {
+      }
+    },
     modificationShow: {
       default: false
     }
@@ -46,8 +51,8 @@ export default {
     }
   },
   methods: {
-    submit: function (mod, count, dish) {
-      this.mod(mod, dish, count)
+    submit: function (mod, count, saveInfo, dish) {
+      this.mod(mod, dish, count, saveInfo)
       this.realShow = false
     }
   }
