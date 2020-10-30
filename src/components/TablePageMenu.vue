@@ -1,13 +1,5 @@
 <template>
-  <v-menu :disable-keys="true" :close-on-content-click="false" offset-y v-model="menuShow">
-    <template #activator="{on,attrs}">
-      <v-toolbar-items class="ml-1 mr-n3">
-        <v-btn color="primary" v-on="on" v-bind="attrs">
-          <v-icon left>mdi-menu</v-icon>
-          {{ $t('更多功能') }}
-        </v-btn>
-      </v-toolbar-items>
-    </template>
+  <v-dialog :disable-keys="true" :close-on-content-click="false" offset-y v-model="menuShow">
     <v-card color="#f6f6f6" min-width="400px" max-width="100vw">
       <v-toolbar dense dark color="primary">
         <div class="bigTableName mr-4">
@@ -239,12 +231,116 @@
         </v-row>
       </v-card-text>
     </v-card>
-  </v-menu>
+  </v-dialog>
 </template>
 
 <script>
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import hillo from 'innerken-utils/Utlis/request'
+import { requestOutTable, toast } from '@/oldjs/common'
+
+const DefaultAddressInfo = {
+  reason: '',
+  addressLine1: '',
+  addressLine2: '',
+  city: '',
+  plz: '',
+  tel: '',
+  email: ''
+}
 export default {
-  name: 'TablePageMenu'
+  name: 'TablePageMenu',
+  props: {
+    menuShow: {
+      type: Boolean,
+      default: false
+    },
+    tableDetailInfo: {
+      type: Object,
+      default: () => ({
+        order: { id: -1 },
+        tableBasicInfo: { name: '' }
+      })
+    },
+    rawAddressInfo: {
+      type: Object,
+      default: () => DefaultAddressInfo
+    },
+    areas: {
+      type: Array,
+      default: () => []
+    }
+  },
+  data: function () {
+    return {
+      Config: GlobalConfig,
+      selectUser: null,
+      userInfo: []
+    }
+  },
+  methods: {
+    requestOutTable,
+    saveLastTel (e) {
+      if (e != null) {
+        this.rawAddressInfo.tel = e
+      }
+    },
+    async getUserInfo () {
+      this.userInfo = (await hillo.get('Takeaway.php?op=showAllUsers')).content
+    },
+    async updateUserInfo () {
+      const info = this.rawAddressInfo
+      await hillo.post('Takeaway.php?op=updateUsers', {
+        email: info.tel,
+        password: '',
+        rawInfo: JSON.stringify(info)
+      })
+      this.getUserInfo()
+      toast()
+    },
+    async submitNewUserInfo () {
+      const info = this.rawAddressInfo
+      await hillo.post('Takeaway.php?op=addUsers', {
+        email: info.tel,
+        password: '',
+        rawInfo: JSON.stringify(info)
+      })
+      this.getUserInfo()
+      toast()
+    },
+    clearAddressInfo () {
+      this.rawAddressInfo = Object.assign({}, DefaultAddressInfo)
+    },
+    getAddressData (e) {
+      this.rawAddressInfo.addressLine1 = e.route + ' ' + e.street_number
+      this.rawAddressInfo.city = e.locality
+      this.rawAddressInfo.plz = e.postal_code
+    },
+    async submitRawAddressInfo () {
+      await hillo.post('Orders.php?op=updateRawAddressInfo', {
+        orderId: this.tableDetailInfo.order.id,
+        rawAddressInfo: JSON.stringify(this.rawAddressInfo)
+      })
+      const res = await hillo.get('Orders.php?op=getRawAddressInfo', {
+        orderId: this.tableDetailInfo.order.id
+      })
+      this.rawAddressInfo = JSON.parse(res.content)
+      this.menuShow = false
+      toast()
+    }
+  },
+  computed: {
+    userIsNew: function () {
+      return !this.userInfo.some(d => d.email === this.rawAddressInfo.tel)
+    },
+    telHint: function () {
+      const info = this.userInfo
+      return info.reduce((arr, i) => {
+        arr.push(i.email)
+        return arr
+      }, [])
+    }
+  }
 }
 </script>
 

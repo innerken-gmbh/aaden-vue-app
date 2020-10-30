@@ -4,7 +4,8 @@
 name: Node.js CI
 
 on:
-  push
+  push:
+    ['master']
 
 jobs:
   build:

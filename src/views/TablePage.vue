@@ -57,7 +57,13 @@
           </div>
         </template>
         <template slot="after-menu">
-          <table-page-menu></table-page-menu>
+          <v-toolbar-items  class="ml-1 mr-n3">
+            <v-btn @click="menuShow=!menuShow" color="primary">
+              <v-icon left>mdi-menu</v-icon>
+              {{ $t('更多功能') }}
+            </v-btn>
+          </v-toolbar-items>
+          <table-page-menu :menu-show="menuShow"></table-page-menu>
         </template>
       </navgation>
       <v-main>
@@ -422,10 +428,7 @@ export default {
       activeCategoryId: 0,
       activeDCT: 0,
       filteredDish: [{ name: '', code: '', price: '', count: '' }],
-      /**/
-      rawAddressInfo: DefaultAddressInfo,
-      /**/
-      areas: [],
+
       Config: GlobalConfig,
       /* input**/
       buffer: '',
@@ -445,6 +448,8 @@ export default {
       localDiscountType: '',
       predefinedDiscount: [],
 
+      areas: [],
+      rawAddressInfo: DefaultAddressInfo,
       selectUser: null,
       userInfo: []
     }
@@ -484,11 +489,7 @@ export default {
       this.getUserInfo()
       toast()
     },
-    getAddressData (e) {
-      this.rawAddressInfo.addressLine1 = e.route + ' ' + e.street_number
-      this.rawAddressInfo.city = e.locality
-      this.rawAddressInfo.plz = e.postal_code
-    },
+
     async submitRawAddressInfo () {
       await hillo.post('Orders.php?op=updateRawAddressInfo', {
         orderId: this.tableDetailInfo.order.id,
@@ -1156,10 +1157,8 @@ export default {
       return this.categories.filter((item) => {
         return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
       })
-    },
-    userIsNew: function () {
-      return !this.userInfo.some(d => d.email === this.rawAddressInfo.tel)
     }
+
   },
   watch: {
     selectUser: function (val) {
