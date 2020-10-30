@@ -9,7 +9,7 @@ import GlobalSetting from 'aaden-base-model/lib/Models/GlobalSettings'
 
 import GlobalConfig, { loadConfig } from './oldjs/LocalGlobalSettings'
 import './registerServiceWorker'
-import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete'
+import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
 
 Vue.use(VuetifyGoogleAutocomplete, {
   apiKey: 'AIzaSyB5lIPQQUJjjY6M-BoqUaZhF21oBbYkd9E',

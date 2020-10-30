@@ -102,41 +102,30 @@
                     <v-card>
                       <v-list>
                         <v-list-item>
-                          <v-list-item-title>
-                            新增
-                          </v-list-item-title>
-                        </v-list-item>
-                        <v-divider></v-divider>
-                        <v-list-item>
                           <v-list-item-content>
-
-                            <vuetify-google-autocomplete
-                                browser-autocomplete="off"
-                                type="search"
-                                id="map"
-                                placeholder="地址搜索"
-                                clearable
-                                v-on:placechanged="getAddressData"
-                            />
-                            <v-text-field label="电话" autocomlete="off"
+                            <v-text-field readonly disabled label="电话" autocomlete="off"
                                           type="search" v-model="rawAddressInfo.tel"></v-text-field>
-                            <v-text-field hide-details  autocomlete="off"
+                            <v-text-field hide-details autocomlete="off"
                                           type="search" label="名" v-model="rawAddressInfo.firstName"></v-text-field>
-                            <v-text-field hide-details  autocomlete="off"
+                            <v-text-field hide-details autocomlete="off"
                                           type="search" label="姓" v-model="rawAddressInfo.lastName"></v-text-field>
                             <v-text-field label="地址行1" autocomlete="off"
                                           type="search" v-model="rawAddressInfo.addressLine1"></v-text-field>
-                            <v-text-field label="地址行2"  autocomlete="off"
+                            <v-text-field label="地址行2" autocomlete="off"
                                           type="search" v-model="rawAddressInfo.addressline2"></v-text-field>
-                            <v-text-field label="城市"  autocomlete="off"
+                            <v-text-field label="城市" autocomlete="off"
                                           type="search" v-model="rawAddressInfo.city"></v-text-field>
-                            <v-text-field label="邮编"  autocomlete="off"
+                            <v-text-field label="邮编" autocomlete="off"
                                           type="search" v-model="rawAddressInfo.plz"></v-text-field>
-                            <v-text-field label="邮箱"  autocomlete="off"
-                                          type="search"  v-model="rawAddressInfo.email"></v-text-field>
+                            <v-text-field label="邮箱" autocomlete="off"
+                                          type="search" v-model="rawAddressInfo.email"></v-text-field>
                           </v-list-item-content>
                         </v-list-item>
                       </v-list>
+                      <v-card-actions>
+                        <v-btn v-if="userIsNew" @click="submitNewUserInfo" color="success">新增用户</v-btn>
+                        <v-btn v-else @click="updateUserInfo" color="warning">更新用户</v-btn>
+                      </v-card-actions>
                     </v-card>
                   </v-col>
                   <v-col cols="3">
@@ -150,10 +139,28 @@
                                 label="电话查找"
                                 autocomplete="off"
                                 type="search"
+                                @update:search-input="saveLastTel"
                                 auto-select-first
                                 hide-no-data
                                 cache-items
                                 :items="telHint"
+                            />
+                            <vuetify-google-autocomplete
+                                browser-autocomplete="off"
+                                type="search"
+                                id="map"
+                                country="DE"
+                                placeholder="地址搜索"
+                                clearable
+                                :component-restrictions="
+                                Config.autoCompletePLZ.split(',').length>0?
+                                {
+                              postalCode:
+                                Config.autoCompletePLZ.split(',')
+                            }
+                            :
+                            {postalCode: false}"
+                                v-on:placechanged="getAddressData"
                             />
                             <v-text-field label="日期" v-model="rawAddressInfo.date"></v-text-field>
                             <v-text-field label="时间" v-model="rawAddressInfo.time"></v-text-field>
@@ -167,7 +174,6 @@
                       </v-list>
                       <v-card-actions>
                         <v-btn @click="clearAddressInfo" color="error">取消</v-btn>
-                        <v-btn @click="submitNewUserInfo" color="success">新增用户</v-btn>
                         <v-btn @click="submitRawAddressInfo" color="primary">提交</v-btn>
                       </v-card-actions>
                     </v-card>
@@ -175,7 +181,7 @@
 
                   <v-col cols="3">
                     <v-card>
-                      <v-list  subheader>
+                      <v-list subheader>
                         <v-subheader>Information</v-subheader>
                         <v-list-item>
                           <v-list-item-icon>
@@ -686,11 +692,26 @@ export default {
     this.goHomeCallBack()
   },
   methods: {
+    saveLastTel (e) {
+      if (e != null) {
+        this.rawAddressInfo.tel = e
+      }
+    },
     async getUserInfo () {
       this.userInfo = (await hillo.get('Takeaway.php?op=showAllUsers')).content
     },
     clearAddressInfo () {
       this.rawAddressInfo = Object.assign({}, DefaultAddressInfo)
+    },
+    async updateUserInfo () {
+      const info = this.rawAddressInfo
+      await hillo.post('Takeaway.php?op=updateUsers', {
+        email: info.tel,
+        password: '',
+        rawInfo: JSON.stringify(info)
+      })
+      this.getUserInfo()
+      toast()
     },
     async submitNewUserInfo () {
       const info = this.rawAddressInfo
@@ -1374,13 +1395,17 @@ export default {
       return this.categories.filter((item) => {
         return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
       })
+    },
+    userIsNew: function () {
+      return !this.userInfo.some(d => d.email === this.rawAddressInfo.tel)
     }
   },
   watch: {
     selectUser: function (val) {
       const searchUser = this.userInfo.find(d => d.email === val)
-
-      this.rawAddressInfo = Object.assign(this.rawAddressInfo, JSON.parse(searchUser.rawInfo))
+      if (searchUser) {
+        this.rawAddressInfo = Object.assign(this.rawAddressInfo, JSON.parse(searchUser.rawInfo))
+      }
     },
     menuShow: function () {
       this.refreshTables()
