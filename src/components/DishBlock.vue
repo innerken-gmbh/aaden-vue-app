@@ -32,7 +32,7 @@ export default {
   name: 'DishBlock',
   props: ['displayColor', 'code', 'count',
     'isFree', 'price', 'dishName',
-    'foregroundColor', 'haveMod', 'fontSize']
+    'foreground', 'haveMod', 'fontSize']
 
 }
 </script>

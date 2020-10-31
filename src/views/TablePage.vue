@@ -105,7 +105,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                         :count="dish.count"
                         :display-color="dish.displayColor"
                         :dish-name="dish.dishName"
-                        :foreground-color="dish.foregroundColor"
+                        :foreground="dish.foreground"
                         :font-size="Config.dishBlockFontSize"
                         :have-mod="dish.haveMod"
                         :is-free="dish.isFree"
@@ -578,7 +578,7 @@ export default {
           this.dishes.forEach(d => {
             if (parseInt(d.categoryId) === parseInt(i.id)) {
               d.displayColor = i.color
-              d.foregroundColor = getColorLightness(d.displayColor) > 128 ? '#000' : '#fff'
+              d.foreground = getColorLightness(d.displayColor) > 128 ? '#000' : '#fff'
               arr.push(d)
             }
           })
