@@ -191,9 +191,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                   </template>
                   <template v-else>
                     <v-btn :disabled="this.cartListModel.count()!==0"
-                           @click=" popAuthorize('', () => {
-            this.discountModelShow = true
-          })">
+                           @click="discountShow">
                       <v-icon>mdi-sale</v-icon>
                       {{ $t('discount') }}
                     </v-btn>
@@ -500,6 +498,11 @@ export default {
           this.goHome()
         }
       }
+    },
+    discountShow () {
+      popAuthorize('', () => {
+        this.discountModelShow = true
+      })
     },
     async findAndOrderDish (code, count = 1) {
       if (count < 1) {
