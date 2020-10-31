@@ -5,7 +5,7 @@
   >
     <div :style="{
  backgroundColor:''+displayColor,
- color:''+foregroundColor,
+ color:''+foreground,
 }"
          class="dishBlock d-flex flex-column fill-height justify-space-between">
       <div :style="{fontSize:fontSize+'px'}" class="name">{{ dishName }}</div>
