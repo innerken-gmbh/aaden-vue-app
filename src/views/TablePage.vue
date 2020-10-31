@@ -57,13 +57,15 @@
           </div>
         </template>
         <template slot="after-menu">
-          <v-toolbar-items  class="ml-1 mr-n3">
+          <v-toolbar-items class="ml-1 mr-n3">
             <v-btn @click="menuShow=!menuShow" color="primary">
               <v-icon left>mdi-menu</v-icon>
               {{ $t('更多功能') }}
             </v-btn>
           </v-toolbar-items>
-          <table-page-menu :menu-show="menuShow"></table-page-menu>
+          <table-page-menu
+              :table-id="id"
+              :menu-show.sync="menuShow"/>
         </template>
       </navgation>
       <v-main>
@@ -97,31 +99,18 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
               <div v-dragscroll class="dragscroll dishCardListContainer">
                 <div class="dishCardList">
                   <template v-for="dish of filteredDish">
-                    <v-lazy :options="{threshold: .5}"
-                            min-height="108px"
-                            height="100%"
-                            :key="'dish'+dish.code">
-                      <div :style="{backgroundColor:dish.displayColor,
-                                            color:getColorLightness(dish.displayColor)>128?'#000':'#fff'
-                                            }"
-                           class="dishBlock d-flex flex-column fill-height justify-space-between"
-                           @click="orderOneDish(dish.code)">
-                        <div :style="{fontSize:Config.dishBlockFontSize+'px'}" class="name">{{ dish.dishName }}</div>
-                        <div class="spaceBetween"
-                             style="align-items: center;flex-wrap: wrap">
-                          <div class="code">
-                            <span v-code-hide>{{ dish.code }}</span>
-                            <span style="font-size: 16px;border-radius: 4px "
-                                  class=" px-2 mr-1 white--text red"
-                                  v-show="dish.count>0">{{ dish.count }}</span>
-                            <span class="red--text" v-if="dish.haveMod>0">*</span>
-                          </div>
-                          <div class="price d-flex align-center">
-                            {{ dish.isFree === '1' ? 'Frei' : dish.price }}
-                          </div>
-                        </div>
-                      </div>
-                    </v-lazy>
+                    <dish-block
+                        :key="'dish'+dish.code"
+                        :code="dish.code"
+                        :count="dish.count"
+                        :display-color="dish.displayColor"
+                        :dish-name="dish.dishName"
+                        :foreground-color="dish.foregroundColor"
+                        :font-size="Config.dishBlockFontSize"
+                        :have-mod="dish.haveMod"
+                        :is-free="dish.isFree"
+                        :price="dish.price"
+                        @click="orderOneDish(dish.code)"/>
                   </template>
                 </div>
               </div>
@@ -202,13 +191,15 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                   </template>
                   <template v-else>
                     <v-btn :disabled="this.cartListModel.count()!==0"
-                           @click="insDecodeButtonList(3)">
+                           @click=" popAuthorize('', () => {
+            this.discountModelShow = true
+          })">
                       <v-icon>mdi-sale</v-icon>
                       {{ $t('discount') }}
                     </v-btn>
                     <v-btn :disabled="this.cartListModel.count()!==0"
                            color="primary" class="flex-grow-1 ml-1"
-                           @click="insDecodeButtonList(6)">
+                           @click="jumpToPayment()">
                       <v-icon left>mdi-calculator-variant</v-icon>
                       {{ $t('payBill') }}
                     </v-btn>
@@ -335,7 +326,6 @@ import {
   jumpToTable,
   logError,
   logErrorAndPop,
-  openOrEnterTable,
   popAuthorize,
   requestOutTable,
   setGlobalTableId,
@@ -344,7 +334,7 @@ import {
   toast,
   toManage
 } from '@/oldjs/common'
-import { getActiveTables, getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
+import { getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import Swal from 'sweetalert2'
 import hillo from 'innerken-utils/Utlis/request'
 import {
@@ -353,8 +343,6 @@ import {
   dishesChangeTable,
   dishesSetDiscount,
   getColorLightness,
-  popChangeTablePanel,
-  popMergeTablePanel,
   printZwichenBon
 } from '@/oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
@@ -370,6 +358,7 @@ import { IKUtils } from 'innerken-utils'
 import Navgation from '../components/Navgation'
 import { debounce } from 'lodash-es'
 import TablePageMenu from '@/components/TablePageMenu'
+import DishBlock from '@/components/DishBlock'
 
 const DefaultAddressInfo = {
   reason: '',
@@ -387,7 +376,7 @@ export default {
   directives: {
     dragscroll
   },
-  components: { TablePageMenu, Navgation, CheckOutDrawer, ModificationDrawer, DishCardList },
+  components: { DishBlock, TablePageMenu, Navgation, CheckOutDrawer, ModificationDrawer, DishCardList },
   props: {
     id: {
       type: String
@@ -448,60 +437,13 @@ export default {
       localDiscountType: '',
       predefinedDiscount: [],
 
-      areas: [],
-      rawAddressInfo: DefaultAddressInfo,
-      selectUser: null,
-      userInfo: []
+      rawAddressInfo: DefaultAddressInfo
     }
   },
   beforeDestroy () {
-    this.goHomeCallBack()
+    clearAllTimer()
   },
   methods: {
-    saveLastTel (e) {
-      if (e != null) {
-        this.rawAddressInfo.tel = e
-      }
-    },
-    async getUserInfo () {
-      this.userInfo = (await hillo.get('Takeaway.php?op=showAllUsers')).content
-    },
-    clearAddressInfo () {
-      this.rawAddressInfo = Object.assign({}, DefaultAddressInfo)
-    },
-    async updateUserInfo () {
-      const info = this.rawAddressInfo
-      await hillo.post('Takeaway.php?op=updateUsers', {
-        email: info.tel,
-        password: '',
-        rawInfo: JSON.stringify(info)
-      })
-      this.getUserInfo()
-      toast()
-    },
-    async submitNewUserInfo () {
-      const info = this.rawAddressInfo
-      await hillo.post('Takeaway.php?op=addUsers', {
-        email: info.tel,
-        password: '',
-        rawInfo: JSON.stringify(info)
-      })
-      this.getUserInfo()
-      toast()
-    },
-
-    async submitRawAddressInfo () {
-      await hillo.post('Orders.php?op=updateRawAddressInfo', {
-        orderId: this.tableDetailInfo.order.id,
-        rawAddressInfo: JSON.stringify(this.rawAddressInfo)
-      })
-      const res = await hillo.get('Orders.php?op=getRawAddressInfo', {
-        orderId: this.tableDetailInfo.order.id
-      })
-      this.rawAddressInfo = JSON.parse(res.content)
-      this.menuShow = false
-      toast()
-    },
     getAllPredefinedDiscount () {
       this.predefinedDiscount = (GlobalConfig.getSettings('predefinedDiscount') ?? '').split(',').filter(t => t !== '')
       // console.log(this.predefinedDiscount, 'Discount')
@@ -518,7 +460,6 @@ export default {
         this.getAllPredefinedDiscount()
       }
     },
-    getColorLightness,
     changeCategory (id, toggle) {
       if (toggle) {
         toggle()
@@ -526,13 +467,10 @@ export default {
       this.activeCategoryId = id
     },
     popAuthorize,
+    getColorLightness,
     toManage,
     goHome () {
-      this.goHomeCallBack()
       goHome()
-    },
-    goHomeCallBack () {
-      clearAllTimer()
     },
     changeModification: function (val) {
       this.modificationShow = val
@@ -640,6 +578,7 @@ export default {
           this.dishes.forEach(d => {
             if (parseInt(d.categoryId) === parseInt(i.id)) {
               d.displayColor = i.color
+              d.foregroundColor = getColorLightness(d.displayColor) > 128 ? '#000' : '#fff'
               arr.push(d)
             }
           })
@@ -771,51 +710,8 @@ export default {
       } else {
         this.goHome()
       }
+
       blockReady()
-    },
-    insDecodeButtonList (i) {
-      if (isBlocking()) {
-        return
-      }
-      switch (i) {
-        case 1: // 打单
-          this.back()
-          blockReady()
-          break
-        case 2: // 打单
-          if (this.cartListModel.list.length > 0) {
-            this.orderDish(this.cartListModel.list)
-            blocking()
-          } else {
-            blockReady()
-          }
-          break
-        case 3:
-          popAuthorize('', () => {
-            this.discountModelShow = true
-          })
-          break
-        case 4:
-          popAuthorize('', () => popChangeTablePanel(this.tableName, this.initialUI))
-          break
-        case 5:
-          // 转台
-          popAuthorize('', () => popMergeTablePanel(this.tableName, this.initialUI))
-          break
-        case 6:
-          this.jumpToPayment()
-          break
-        case 7:
-          if (GlobalConfig.checkOutUsePassword) {
-            popAuthorize('', (pw) => {
-              this.checkOut(pw)
-            }, true, false, this.id)
-          } else {
-            this.checkOut()
-          }
-          break
-        default:
-      }
     },
     async submitDiscount () {
       const discountStr = this.localDiscountStr + (this.localDiscountType === 1 ? 'p' : '')
@@ -836,7 +732,6 @@ export default {
       checkOut(pw, this.id, print, payMethod, tipIncome, memberCardId)
     },
     jumpToTable: function (tableId, tableName) {
-      this.goHomeCallBack()
       jumpToTable(tableId, tableName)
       this.initialUI()
     },
@@ -869,9 +764,6 @@ export default {
         }
       })
     },
-    async refreshTables () {
-      this.areas = await getActiveTables()
-    },
     async getTableDetail () {
       try {
         const res = await hillo.silentGet('Tables.php', {
@@ -880,12 +772,6 @@ export default {
         }, { noDebug: true })
         this.tableDetailInfo = res.content
         this.tableDetailInfo.consumeTypeName = findConsumeTypeById(this.tableDetailInfo.consumeTypeId).name
-        if (this.tableDetailInfo.order.rawAddressInfo) {
-          const addressInfo = Object.assign({}, DefaultAddressInfo, JSON.parse(this.tableDetailInfo.order.rawAddressInfo))
-          if (addressInfo) {
-            this.rawAddressInfo = addressInfo
-          }
-        }
         if (this.tableDetailInfo.order.discountStr) {
           this.discountStr = this.tableDetailInfo.order.discountStr
         }
@@ -1045,7 +931,6 @@ export default {
         }
       }, 20)
     },
-    createTable: openOrEnterTable,
     async realInitial () {
       await getConsumeTypeList()
       this.menuShow = false
@@ -1054,12 +939,11 @@ export default {
       if (GlobalConfig.getFocus) {
         addToTimerList(setInterval(this.autoGetFocus, 1000))
       }
-      this.rawAddressInfo = Object.assign({}, DefaultAddressInfo)
+
       this.selectUser = null
       this.getCategory()
       this.getDCT()
       this.activeDCT = 0
-      await this.getUserInfo()
       this.updateFilteredDish()
       setGlobalTableId(this.id)
       blockReady()
@@ -1161,15 +1045,7 @@ export default {
 
   },
   watch: {
-    selectUser: function (val) {
-      const searchUser = this.userInfo.find(d => d.email === val)
-      if (searchUser) {
-        this.rawAddressInfo = Object.assign(this.rawAddressInfo, JSON.parse(searchUser.rawInfo))
-      }
-    },
-    menuShow: function () {
-      this.refreshTables()
-    },
+
     activeDCT: function () {
       this.activeCategory = 0
       this.updateFilteredDish()
@@ -1280,36 +1156,6 @@ tr:hover {
   .dishCardList {
     grid-template-columns: repeat(3, 1fr);
   }
-}
-
-.dishBlock {
-  cursor: pointer;
-  padding: 5px 12px;
-  background: white;
-}
-
-.dishBlock .code {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.dishBlock .price {
-  font-size: 18px;
-}
-
-.dishBlock .name {
-  margin-top: 8px;
-  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-  width: 100%;
-  font-size: 18px;
-  font-weight: 600;
-  overflow: hidden;
-  word-break: break-word;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-
 }
 
 .dragscroll {

@@ -146,24 +146,22 @@ export async function setDiscountToTable (tableId, discountStr) {
   })
 }
 
-export async function popChangeTablePanel (tableName, initialUI) {
+export async function popChangeTablePanel (tableName) {
   const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopChangeTableInfo'), 'text',
     'Tables.php?op=change', 'newTableName', {
       oldTableName: tableName
     }, 'POST')
   if (res) {
-    initialUI()
     goHome()
   }
 }
 
-export async function popMergeTablePanel (tableName, initialUI) {
+export async function popMergeTablePanel (tableName) {
   const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopMergeTableInfo'), 'text',
     'Tables.php?op=mergeTables', 'newTableName', {
       oldTableName: tableName
     }, 'POST')
   if (res) {
-    initialUI()
     goHome()
   }
 }

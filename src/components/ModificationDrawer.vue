@@ -1,5 +1,5 @@
 <template>
-    <v-dialog content-class="noFullScreen" v-model="realShow">
+    <v-dialog fullscreen v-model="realShow">
         <dish-modification
                 ref="modification"
                 :showing="realShow"

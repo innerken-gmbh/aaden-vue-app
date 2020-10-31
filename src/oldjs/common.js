@@ -4,6 +4,7 @@ import { hillo } from 'innerken-utils'
 import i18n from '../i18n'
 import GlobalConfig from './LocalGlobalSettings'
 import PrintStatus from './PrintStatus'
+import { clearAllTimer } from '@/oldjs/Timer'
 
 const Config = GlobalConfig
 
@@ -472,6 +473,7 @@ export function remove (arr, index) {
 }
 
 export function jumpTo (url, params) {
+  clearAllTimer()
   url = url.split('.')[0]
   router.replace({ name: url, params })
 }
