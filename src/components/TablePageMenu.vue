@@ -174,7 +174,7 @@
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item @click="popAuthorize('',
-                () => popChangeTablePanel(this.tableDetailInfo.tableBasicInfo.name))">
+                () => popChangeTablePanel(tableDetailInfo.tableBasicInfo.name))">
                     <v-list-item-icon>
                       <v-icon>mdi-swap-horizontal</v-icon>
                     </v-list-item-icon>
@@ -184,7 +184,7 @@
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item @click="popAuthorize('',
-                () => popMergeTablePanel(this.tableDetailInfo.tableBasicInfo.name))">
+                () => popMergeTablePanel(tableDetailInfo.tableBasicInfo.name))">
                     <v-list-item-icon>
                       <v-icon>mdi-merge</v-icon>
                     </v-list-item-icon>
@@ -248,6 +248,7 @@ import hillo from 'innerken-utils/Utlis/request'
 import { jumpToTable, openOrEnterTable, popAuthorize, requestOutTable, toast, toManage } from '@/oldjs/common'
 import { dragscroll } from 'vue-dragscroll'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
+import { popChangeTablePanel, popMergeTablePanel } from '@/oldjs/api'
 
 const DefaultAddressInfo = {
   reason: '',
@@ -320,6 +321,8 @@ export default {
     jumpToTable,
     toManage,
     openOrEnterTable,
+    popChangeTablePanel,
+    popMergeTablePanel,
     saveLastTel (e) {
       if (e != null) {
         this.rawAddressInfo.tel = e
