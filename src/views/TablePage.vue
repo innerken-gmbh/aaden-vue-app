@@ -358,15 +358,10 @@ import { debounce } from 'lodash-es'
 import TablePageMenu from '@/components/TablePageMenu'
 import DishBlock from '@/components/DishBlock'
 
-const DefaultAddressInfo = {
-  reason: '',
-  addressLine1: '',
-  addressLine2: '',
-  city: '',
-  plz: '',
-  tel: '',
-  email: ''
-}
+const checkoutFactory = StandardDishesListFactory()
+const splitOrderFactory = StandardDishesListFactory()
+const orderListFactory = StandardDishesListFactory()
+const cartListFactory = StandardDishesListFactory()
 
 // endregion
 export default {
@@ -398,7 +393,7 @@ export default {
       breakCount: 0,
 
       checkOutType: 'checkOut',
-      checkOutModel: StandardDishesListFactory(),
+      checkOutModel: { total: 0, count: 0, list: [] },
       /**/
       discountRatio: 1,
       discountStr: null,
@@ -421,9 +416,9 @@ export default {
       buffer: '',
       input: '',
       //* */
-      splitOrderListModel: StandardDishesListFactory(),
-      orderListModel: StandardDishesListFactory(),
-      cartListModel: StandardDishesListFactory(),
+      splitOrderListModel: splitOrderFactory,
+      orderListModel: orderListFactory,
+      cartListModel: cartListFactory,
 
       tableDetailInfo: {
         order: { id: -1 },
@@ -433,9 +428,7 @@ export default {
       password: '',
       localDiscountStr: '',
       localDiscountType: '',
-      predefinedDiscount: [],
-
-      rawAddressInfo: DefaultAddressInfo
+      predefinedDiscount: []
     }
   },
   beforeDestroy () {
@@ -742,8 +735,9 @@ export default {
       const realEnd = async (pw = '') => {
         this.password = pw
         this.checkoutShow = true
-        this.checkOutModel.clear()
-        this.checkOutModel.loadTTDishList(this.splitOrderListModel.list)
+        checkoutFactory.clear()
+        checkoutFactory.loadTTDishList(this.orderListModel.list)
+        this.checkOutModel = { total: checkoutFactory.total(), count: checkoutFactory.count(), list: checkoutFactory.list }
         this.checkOutType = 'splitOrder'
       }
       if (GlobalConfig.checkOutUsePassword) {
@@ -919,7 +913,9 @@ export default {
     jumpToPayment () {
       const realCheckOut = async (pw) => {
         this.checkoutShow = true
-        this.checkOutModel.loadTTDishList(this.orderListModel.list)
+        checkoutFactory.clear()
+        checkoutFactory.loadTTDishList(this.orderListModel.list)
+        this.checkOutModel = { total: checkoutFactory.total(), count: checkoutFactory.count(), list: checkoutFactory.list }
         this.checkOutType = 'checkOut'
         this.discountStr = ''
         this.password = pw
@@ -935,7 +931,6 @@ export default {
       }, 20)
     },
     async realInitial () {
-      await getConsumeTypeList()
       this.menuShow = false
       this.breakCount = 0
       window.onkeydown = this.listenKeyDown
@@ -945,7 +940,7 @@ export default {
 
       this.selectUser = null
       this.getCategory()
-      this.getDCT()
+
       this.activeDCT = 0
       this.updateFilteredDish()
       setGlobalTableId(this.id)
@@ -1067,6 +1062,8 @@ export default {
     }
   },
   async created () {
+    await getConsumeTypeList()
+    await this.getDCT()
     this.realInitial()
   }
 }

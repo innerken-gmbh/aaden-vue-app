@@ -1,6 +1,6 @@
 <template>
-    <div class="d-flex">
-        <div style="width: 480px;height: 700px" class="calculator pa-2 d-flex flex-column fill-height">
+    <div class="d-flex fill-height">
+        <div style="width: 480px;max-height: 700px;height: 100%" class="calculator pa-2 d-flex flex-column fill-height">
             <v-card style="width: 100%" class="display pa-4 d-flex
                  justify-space-between align-end">
                 <div>
@@ -85,7 +85,7 @@
             <div class="my-3">
                 <h3>{{$t("结账记录")}}</h3>
             </div>
-            <div class="my-3" v-dragscroll style="max-height: 460px;overflow:hidden">
+            <div class="my-3" v-dragscroll style="max-height: calc(100vh - 560px);overflow:hidden">
                 <template v-for="(paymentInfo,index) in paymentLog">
                     <v-sheet :key="'price'+paymentInfo.hash" :elevation="0"
                              style="width: 100%" class="d-flex justify-space-between pa-2 my-1">
@@ -105,7 +105,7 @@
                     <v-divider :key="'d'+paymentInfo.hash"></v-divider>
                 </template>
             </div>
-            <div style="height: 300px">
+            <div>
                 <v-sheet class="my-6">
                     <h4>
                         {{$t('tableCheckOutBillTypeLabel')}}

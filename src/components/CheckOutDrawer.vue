@@ -4,7 +4,7 @@
             <check-out-calculator
                     @payment-cancel="realShow=false"
                     @payment-submit="checkOut"
-                    :total="order.total()*(1-discountRatio)"/>
+                    :total="order.total*(1-discountRatio)"/>
         </v-card>
     </v-navigation-drawer>
 </template>
@@ -23,7 +23,7 @@ export default {
   components: { CheckOutCalculator },
   props: {
     order: {
-      default: () => ({ total: () => 0, count: () => 0 })
+      default: () => ({ total: 0, count: 0, list: [] })
     },
     visible: {
       default: true
@@ -88,7 +88,7 @@ export default {
       }
       if (this.discountRatio !== 0) {
         checkOutData.discountStr = (this.discountStr ?? '')
-          .indexOf('p') !== -1 ? this.discountStr : (this.order.total() * this.discountRatio).toFixed(2)
+          .indexOf('p') !== -1 ? this.discountStr : (this.order.total * this.discountRatio).toFixed(2)
       }
 
       const res = await hillo.post('Complex.php?op=' + this.checkOutType, checkOutData)

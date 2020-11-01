@@ -163,7 +163,7 @@
                       <div :style="{fontSize:Config.tableCardFontSize+'px'}"
                            class="tableCardName">{{ table.tableName }}
                       </div>
-                      <div>
+                      <div v-if="Config.gridSize>=84">
                         <div class="d-flex justify-space-between">
                           <div class="tableIconRow">
                             <span class="tableBold">{{ table.createTimestamp }}</span>
@@ -174,7 +174,7 @@
                                                             class="tableBold">{{ findConsumeTypeById(table.consumeType) }}</span>
                           </div>
                         </div>
-                        <v-card elevation="0"
+                        <v-card v-if="Config.gridSize>=116" elevation="0"
                                 :dark="getColorLightness(parseInt(table.callService)===1?restaurantInfo.callColor:
                                              restaurantInfo.tableColor)<128"
                                 :color="parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor"
