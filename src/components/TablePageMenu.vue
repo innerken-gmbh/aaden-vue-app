@@ -95,13 +95,8 @@
                           placeholder="地址搜索"
                           clearable
                           :component-restrictions="
-                                Config.autoCompletePLZ.split(',').length>0?
-                                {
-                              postalCode:
-                                Config.autoCompletePLZ.split(',')
-                            }
-                            :
-                            {postalCode: false}"
+                          Config.autoCompletePLZ.split(',').length>0?Config.autoCompletePLZ.split(','):
+                           false"
                           v-on:placechanged="getAddressData"
                       />
                       <v-text-field label="日期" v-model="rawAddressInfo.date"></v-text-field>
