@@ -253,6 +253,11 @@ export default {
     async loadPaymentMethods () {
       this.paymentMethods = (await Payment.getList())
         .filter(p => !includedPaymentMethods.includes(p.id))
+        .map(p => {
+          p.name = p._langsname
+          return p
+        })
+      console.log(this.paymentMethods)
       this.realName = Object.assign({}, defaultRealName)
       this.paymentMethods.forEach(p => {
         this.$set(this.realName, p.name, p.id)
