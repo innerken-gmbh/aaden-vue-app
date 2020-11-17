@@ -12,10 +12,10 @@
             {{ tableDetailInfo.tableBasicInfo.name }}
           </v-toolbar-title>
           <v-toolbar-items>
-            <v-btn v-if="userIsNew" @click="submitNewUserInfo" color="success">新增用户</v-btn>
-            <v-btn v-else @click="updateUserInfo" color="warning">更新用户</v-btn>
-            <v-btn @click="clearAddressInfo" color="error">清空</v-btn>
-            <v-btn @click="submitRawAddressInfo" dark>提交</v-btn>
+            <v-btn v-if="userIsNew" @click="submitNewUserInfo" color="success">{{ $t('新增用户') }}</v-btn>
+            <v-btn v-else @click="updateUserInfo" color="warning">{{ $t('更新用户') }}</v-btn>
+            <v-btn @click="clearAddressInfo" color="error">{{ $t('清空') }}</v-btn>
+            <v-btn @click="submitRawAddressInfo" dark>{{ $t('提交') }}</v-btn>
           </v-toolbar-items>
           <v-spacer/>
           <v-toolbar-items>
@@ -49,21 +49,21 @@
                 <v-list>
                   <v-list-item>
                     <v-list-item-content>
-                      <v-text-field readonly disabled label="电话" autocomlete="off"
+                      <v-text-field readonly disabled :label="$t('电话')" autocomlete="off"
                                     type="search" v-model="rawAddressInfo.tel"></v-text-field>
                       <v-text-field hide-details autocomlete="off"
-                                    type="search" label="名" v-model="rawAddressInfo.firstName"></v-text-field>
+                                    type="search" :label="$t('名')" v-model="rawAddressInfo.firstName"></v-text-field>
                       <v-text-field hide-details autocomlete="off"
-                                    type="search" label="姓" v-model="rawAddressInfo.lastName"></v-text-field>
-                      <v-text-field label="地址行1" autocomlete="off"
+                                    type="search" :label="$t('姓')" v-model="rawAddressInfo.lastName"></v-text-field>
+                      <v-text-field :label="$t('地址行1')" autocomlete="off"
                                     type="search" v-model="rawAddressInfo.addressLine1"></v-text-field>
-                      <v-text-field label="地址行2" autocomlete="off"
+                      <v-text-field :label="$t('地址行2')" autocomlete="off"
                                     type="search" v-model="rawAddressInfo.addressline2"></v-text-field>
-                      <v-text-field label="城市" autocomlete="off"
+                      <v-text-field :label="$t('城市')" autocomlete="off"
                                     type="search" v-model="rawAddressInfo.city"></v-text-field>
-                      <v-text-field label="邮编" autocomlete="off"
+                      <v-text-field :label="$t('邮编')" autocomlete="off"
                                     type="search" v-model="rawAddressInfo.plz"></v-text-field>
-                      <v-text-field label="邮箱" autocomlete="off"
+                      <v-text-field :label="$t('邮箱')" autocomlete="off"
                                     type="search" v-model="rawAddressInfo.email"></v-text-field>
                     </v-list-item-content>
                   </v-list-item>
@@ -78,7 +78,7 @@
                       <v-autocomplete
                           v-model="selectUser"
                           clearable
-                          label="电话查找"
+                          :label="$t('电话查找')"
                           autocomplete="off"
                           type="search"
                           @update:search-input="saveLastTel"
@@ -92,17 +92,17 @@
                           type="search"
                           id="map"
                           country="DE"
-                          placeholder="地址搜索"
+                          :placeholder="$t('地址搜索')"
                           clearable
                           :component-restrictions="
                           Config.autoCompletePLZ.split(',').length>0?Config.autoCompletePLZ.split(','):
                            false"
                           v-on:placechanged="getAddressData"
                       />
-                      <v-text-field label="日期" v-model="rawAddressInfo.date"></v-text-field>
-                      <v-text-field label="时间" v-model="rawAddressInfo.time"></v-text-field>
-                      <v-text-field label="备注" v-model="rawAddressInfo.note"></v-text-field>
-                      <v-text-field label="配送方式" v-model="rawAddressInfo.deliveryMethod"></v-text-field>
+                      <v-text-field :label="$t('日期')" v-model="rawAddressInfo.date"></v-text-field>
+                      <v-text-field :label="$t('时间')" v-model="rawAddressInfo.time"></v-text-field>
+                      <v-text-field :label="$t('备注')" v-model="rawAddressInfo.note"></v-text-field>
+                      <v-text-field :label="$t('配送方式')" v-model="rawAddressInfo.deliveryMethod"></v-text-field>
                       <div class="chip" v-show="rawAddressInfo.reason">
                         {{ rawAddressInfo.reason }}
                       </div>

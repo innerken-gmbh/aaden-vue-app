@@ -141,7 +141,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                     </v-btn>
                     <v-btn @click="zwitchenBon">
                       <v-icon left>mdi-printer-pos</v-icon>
-                      ZwichenBon
+                      ZwischenBon
                     </v-btn>
                   </v-toolbar-items>
                 </v-toolbar>
@@ -260,22 +260,22 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
       <v-dialog max-width="600px" v-model="discountModelShow">
         <v-card>
           <v-toolbar>
-            <v-toolbar-title>折扣</v-toolbar-title>
+            <v-toolbar-title>{{ $t('折扣') }}</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-icon @click="discountModelShow=!discountModelShow">mdi-close</v-icon>
           </v-toolbar>
           <v-tabs v-model="localDiscountType" vertical>
-            <v-tab>现金</v-tab>
-            <v-tab>百分比</v-tab>
+            <v-tab>{{ $t('现金') }}</v-tab>
+            <v-tab>{{ $t('百分比') }}</v-tab>
             <v-tab-item>
               <v-card-text>
-                <v-text-field autofocus label="金额"
+                <v-text-field autofocus :label="$t('金额')"
                               messages="zB.: 12.34" v-model="localDiscountStr"></v-text-field>
               </v-card-text>
             </v-tab-item>
             <v-tab-item>
               <v-card-text>
-                <v-text-field autofocus label="百分比"
+                <v-text-field autofocus :label="$t('百分比')"
                               messages="1-99" v-model="localDiscountStr"></v-text-field>
               </v-card-text>
             </v-tab-item>
@@ -287,7 +287,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
               </template>
             </div>
             <v-spacer></v-spacer>
-            <v-btn @click="submitDiscount">确定</v-btn>
+            <v-btn @click="submitDiscount">{{ $t('确定') }}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
