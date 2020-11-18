@@ -183,10 +183,26 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
               <v-toolbar dense>
                 <v-toolbar-items class="flex-grow-1 mx-n3">
                   <template v-if="this.tableDetailInfo.order.consumeTypeStatusId<2">
-                    <v-btn @click="acceptOrder" dark color="error" class="flex-grow-1">{{
-                        $t('接受')
-                      }}
-                    </v-btn>
+                    <template v-if="this.tableDetailInfo.order.consumeTypeId==='2'">
+                      <template
+                          v-for="(time) in [0,30,60,90]"
+                      >
+                        <v-btn
+                            small
+                            :key="time"
+                            color="success"
+                            @click="acceptOrderWithTime(time)"
+                        >
+                          + {{ time }}
+                        </v-btn>
+                      </template>
+                    </template>
+                    <template v-else>
+                      <v-btn @click="acceptOrder" dark color="error" class="flex-grow-1">{{
+                          $t('接受')
+                        }}
+                      </v-btn>
+                    </template>
                     <v-btn @click="rejectOrder">{{ $t('拒绝') }}</v-btn>
                   </template>
                   <template v-else>
@@ -357,6 +373,7 @@ import Navgation from '../components/Navgation'
 import { debounce } from 'lodash-es'
 import TablePageMenu from '@/components/TablePageMenu'
 import DishBlock from '@/components/DishBlock'
+import moment from 'moment'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -737,7 +754,11 @@ export default {
         this.checkoutShow = true
         checkoutFactory.clear()
         checkoutFactory.loadTTDishList(this.orderListModel.list)
-        this.checkOutModel = { total: checkoutFactory.total(), count: checkoutFactory.count(), list: checkoutFactory.list }
+        this.checkOutModel = {
+          total: checkoutFactory.total(),
+          count: checkoutFactory.count(),
+          list: checkoutFactory.list
+        }
         this.checkOutType = 'splitOrder'
       }
       if (GlobalConfig.checkOutUsePassword) {
@@ -786,9 +807,23 @@ export default {
         }
       }
     },
-    async acceptOrder () {
-      await hillo.post('Orders.php?op=acceptTakeawayOrder', { tableId: this.id, reason: 'ok' })
+    async acceptOrder (reason = 'ok') {
+      await hillo.post('Orders.php?op=acceptTakeawayOrder', {
+        tableId: this.id,
+        reason: reason
+      })
       this.initialUI()
+    },
+    async acceptOrderWithTime (time) {
+      const addressInfo = this.tableDetailInfo.tableBasicInfo.rawAddressInfo
+      let timeReal = moment()
+      if (addressInfo) {
+        if (addressInfo.date && addressInfo.time) {
+          timeReal = moment(addressInfo.date + ' ' + addressInfo.time, 'YYYY-MM-DD HH:mm')
+        }
+      }
+      timeReal.add(time, 'm')
+      await this.acceptOrder(timeReal.format('DD.MM.YYYY HH:mm'))
     },
     async rejectOrder () {
       const res = await fastSweetAlertRequest('Bitte ein Ground Eingabe', 'text',
@@ -915,7 +950,11 @@ export default {
         this.checkoutShow = true
         checkoutFactory.clear()
         checkoutFactory.loadTTDishList(this.orderListModel.list)
-        this.checkOutModel = { total: checkoutFactory.total(), count: checkoutFactory.count(), list: checkoutFactory.list }
+        this.checkOutModel = {
+          total: checkoutFactory.total(),
+          count: checkoutFactory.count(),
+          list: checkoutFactory.list
+        }
         this.checkOutType = 'checkOut'
         this.discountStr = ''
         this.password = pw
