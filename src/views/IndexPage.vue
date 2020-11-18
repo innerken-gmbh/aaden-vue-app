@@ -245,6 +245,7 @@ import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
 import TimeDisplay from '@/components/TimeDisplay'
 import { getColorLightness, getRestaurantInfo } from '@/oldjs/api'
+import { IKUtils } from 'innerken-utils'
 
 export default {
   name: 'IndexPage',
@@ -316,8 +317,23 @@ export default {
       this.$refs.ins.focus()
       blockReady()
     },
+    playSound (count = 3) {
+      count -= 1
+      if (count >= 0) {
+        setTimeout(() => {
+          IKUtils.play('/Resources/ding.m4a')
+          this.playSound(count)
+        }, 100)
+      }
+    },
     async refreshTables () {
       this.areas = await getActiveTables()
+      for (const a of this.areas) {
+        if (a.tables.some(t => t.callService === '1')) {
+          this.playSound()
+          break
+        }
+      }
     },
     async refreshPrinterList () {
       const res = (await getFalsePrinterList()) ?? []
@@ -409,7 +425,10 @@ export default {
       this.refreshPrinterList()
       getAllDishes()
       await getConsumeTypeList()
-      const list = [setInterval(this.refreshTables, 5000), setInterval(this.refreshPrinterList, 5000)]
+      const list = [
+        setInterval(this.refreshTables, 5000),
+        setInterval(this.refreshPrinterList, 5000)
+      ]
       if (GlobalConfig.getFocus) {
         list.push(setInterval(this.autoGetFocus, 1000))
       }
