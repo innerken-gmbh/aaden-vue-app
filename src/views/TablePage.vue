@@ -1117,7 +1117,7 @@ export default {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: url("/Resources/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
+  background: url("/Resource/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
   width: 6px;
   cursor: pointer;
   height: 56px;

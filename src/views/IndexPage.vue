@@ -321,7 +321,7 @@ export default {
       count -= 1
       if (count >= 0) {
         setTimeout(() => {
-          IKUtils.play('/Resources/ding.m4a')
+          IKUtils.play('/Resource/ding.m4a')
           this.playSound(count)
         }, 100)
       }
