@@ -438,7 +438,7 @@ export default {
       cartListModel: cartListFactory,
 
       tableDetailInfo: {
-        order: { id: -1 },
+        order: { id: -1, rawAddressInfo: '' },
         tableBasicInfo: { name: '' }
       },
 
@@ -815,7 +815,7 @@ export default {
       this.initialUI()
     },
     async acceptOrderWithTime (time) {
-      const addressInfo = this.tableDetailInfo.tableBasicInfo.rawAddressInfo
+      const addressInfo = JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
       let timeReal = moment()
       if (addressInfo) {
         if (addressInfo.date && addressInfo.time) {

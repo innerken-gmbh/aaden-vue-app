@@ -278,8 +278,8 @@ export default {
       areas: [],
       realShow: null,
       tableDetailInfo: {
-        order: { id: -1 },
-        tableBasicInfo: { name: '', rawAddressInfo: '' }
+        order: { id: -1, rawAddressInfo: '' },
+        tableBasicInfo: { name: '' }
       },
       loading: false
     }
