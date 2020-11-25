@@ -239,7 +239,7 @@
 
 <script>
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import hillo from 'innerken-utils/Utlis/request'
+import hillo from 'hillo'
 import { jumpToTable, openOrEnterTable, popAuthorize, requestOutTable, toast, toManage } from '@/oldjs/common'
 import { dragscroll } from 'vue-dragscroll'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'

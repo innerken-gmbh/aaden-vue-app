@@ -1,4 +1,4 @@
-import { hillo } from 'innerken-utils'
+import hillo from 'hillo'
 
 const list = []
 

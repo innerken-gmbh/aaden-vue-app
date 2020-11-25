@@ -248,7 +248,7 @@ import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
 import TimeDisplay from '@/components/TimeDisplay'
 import { fetchOrder, getColorLightness, getRestaurantInfo } from '@/oldjs/api'
-import { IKUtils } from 'innerken-utils'
+import IKUtils from 'innerken-js-utils'
 
 export default {
   name: 'IndexPage',

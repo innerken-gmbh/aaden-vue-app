@@ -350,7 +350,7 @@ import {
 } from '@/oldjs/common'
 import { getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import Swal from 'sweetalert2'
-import hillo from 'innerken-utils/Utlis/request'
+import hillo from 'hillo'
 import {
   checkOut,
   deleteDishes,
@@ -368,12 +368,13 @@ import { findDish, getAllDishesWithCache, goHome } from '@/oldjs/StaticModel'
 import { addToTimerList, clearAllTimer, printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
-import { IKUtils } from 'innerken-utils'
+
 import Navgation from '../components/Navgation'
 import { debounce } from 'lodash-es'
 import TablePageMenu from '@/components/TablePageMenu'
 import DishBlock from '@/components/DishBlock'
 import moment from 'moment'
+import IKUtils from 'innerken-js-utils'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()

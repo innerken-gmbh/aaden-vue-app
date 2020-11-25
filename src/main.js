@@ -5,8 +5,6 @@ import store from './store'
 import i18n from './i18n'
 import vuetify from './plugins/vuetify'
 import 'material-design-icons/iconfont/material-icons.css'
-import GlobalSetting from 'aaden-base-model/lib/Models/GlobalSettings'
-
 import GlobalConfig, { loadConfig } from './oldjs/LocalGlobalSettings'
 import './registerServiceWorker'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
@@ -48,9 +46,6 @@ Vue.directive('code-hide', {
 async function initial () {
   await loadConfig()
   i18n.locale = GlobalConfig.lang.toLowerCase()
-  GlobalSetting.lang = function () {
-    return i18n.locale.toUpperCase()
-  }
 
   new Vue({
     router,

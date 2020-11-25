@@ -1,4 +1,4 @@
-import { AadenBaseConfig } from 'aaden-base-model/lib/AadenSettingManager'
+import { loadBaseConfig } from 'aaden-base-model/lib/Models/GlobalSettings'
 
 const defaultConfig = require('@/assets/AadenConfig.json')
 let GlobalConfig = Object.assign({}, defaultConfig)
@@ -7,7 +7,7 @@ GlobalConfig.sumupInfo = sumupInfo
 export let NeededKeys = []
 
 export async function loadConfig () {
-  GlobalConfig = Object.assign(GlobalConfig, await AadenBaseConfig(defaultConfig))
+  GlobalConfig = Object.assign(GlobalConfig, await loadBaseConfig(defaultConfig))
   NeededKeys = GlobalConfig.neededKeys
   window.Config = GlobalConfig
 }
@@ -19,6 +19,7 @@ window.setDeviceId = setDeviceId
 export function isWeb () {
   return !process.env.IS_WEB
 }
+
 export function reload () {
   if (!isWeb()) {
     const { ipcRenderer } = require('electron')

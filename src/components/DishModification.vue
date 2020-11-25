@@ -87,8 +87,8 @@
 </template>
 
 <script>
-import { IKUtils } from 'innerken-utils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import IKUtils from 'innerken-js-utils'
 
 export default {
   name: 'DishModification',

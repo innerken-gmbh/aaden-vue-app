@@ -18,13 +18,17 @@
   },
   "main": "src/background.js",
   "dependencies": {
-    "aaden-base-model": "^0.1.83",
+    "aaden-base-model": "^0.1.99",
     "core-js": "^3.6.5",
     "electron-settings": "^3.2.0",
     "electron-updater": "^4.3.1",
+    "hillo": "^1.1.13",
+    "innerken-js-utils": "^1.0.5",
     "innerken-utils": "^1.8.7",
     "lodash-es": "^4.17.15",
     "material-design-icons": "^3.0.1",
+    "metaflow-js": "^1.0.7",
+    "moment": "^2.26.0",
     "places.js": "^1.19.0",
     "register-service-worker": "^1.7.1",
     "sweetalert2": "^9.15.1",
@@ -35,8 +39,7 @@
     "vue-router": "^3.2.0",
     "vuetify": "^2.2.11",
     "vuetify-google-autocomplete-extend": "^1.0.9",
-    "vuex": "^3.4.0",
-    "moment": "^2.26.0"
+    "vuex": "^3.4.0"
   },
   "devDependencies": {
     "@intlify/vue-i18n-loader": "^1.0.0",

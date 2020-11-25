@@ -1,6 +1,6 @@
 import { blockReady, fastSweetAlertRequest, loadingComplete, popAuthorize, toast } from './common'
 import { goHome } from './StaticModel'
-import { hillo } from 'innerken-utils'
+import hillo from 'hillo'
 import i18n from '../i18n'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 

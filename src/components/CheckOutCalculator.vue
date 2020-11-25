@@ -99,7 +99,7 @@
                   <v-icon large>{{ paymentInfo.icon }}</v-icon>
                 </template>
                 <template v-else>
-                  {{paymentInfo.icon}}
+                  {{ paymentInfo.icon }}
                 </template>
 
               </v-btn>
@@ -172,7 +172,7 @@
 
 import { dragscroll } from 'vue-dragscroll'
 import { fastSweetAlertRequest } from '@/oldjs/common'
-import Payment from 'aaden-base-model/lib/Models/Payment'
+import hillo from 'hillo'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
 const defaultRealName = {
@@ -230,7 +230,6 @@ export default {
     realExtraPaymentMethod: function () {
       const res = this.extraPaymentMethod
       res.push(...this.paymentMethods.map(p => p.icon || p.id))
-      console.log(res)
       return res
     },
     realExtraPaymentMethodName: function () {
@@ -251,13 +250,14 @@ export default {
   },
   methods: {
     async loadPaymentMethods () {
-      this.paymentMethods = (await Payment.getList())
-        .filter(p => !includedPaymentMethods.includes(p.id))
+      this.paymentMethods = (await hillo.get('PayMethod.php'))
+        .content.filter(p => !includedPaymentMethods.includes(parseInt(p.id)))
         .map(p => {
-          p.name = p._langsname
+          p.name = p.langs[0].name
           return p
         })
       console.log(this.paymentMethods)
+
       this.realName = Object.assign({}, defaultRealName)
       this.paymentMethods.forEach(p => {
         this.$set(this.realName, p.name, p.id)

@@ -1,4 +1,4 @@
-import hillo from 'innerken-utils/Utlis/request'
+import hillo from 'hillo'
 
 import i18n from '../i18n'
 import GlobalConfig from './LocalGlobalSettings'
