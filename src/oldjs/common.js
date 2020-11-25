@@ -5,6 +5,7 @@ import i18n from '../i18n'
 import GlobalConfig from './LocalGlobalSettings'
 import PrintStatus from './PrintStatus'
 import { clearAllTimer } from '@/oldjs/Timer'
+import * as moment from 'moment'
 
 const Config = GlobalConfig
 
@@ -495,12 +496,9 @@ export function oldJumpTo (url, params) {
 }
 
 export function showTime () {
-  const date = new Date()
-  let hour = '00' + date.getHours()
-  hour = hour.substr(hour.length - 2)
-  let minute = '00' + date.getMinutes()
-  minute = minute.substr(minute.length - 2)
-  return hour + ' : ' + minute
+  const date = moment()
+
+  return date.format('DD.MM.YYYY HH:mm:ss')
 }
 
 export function findElement (id) {
