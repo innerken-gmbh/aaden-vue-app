@@ -16,7 +16,7 @@
     "release": "sudo snap install snapcraft --classic && snapcraft login --with log && npm run electron:build",
     "update": "dotenv -e .env.local -- release-it --ci --no-npm-publish"
   },
-  "main": "background.js",
+  "main": "src/background.js",
   "dependencies": {
     "aaden-base-model": "^0.1.83",
     "core-js": "^3.6.5",
