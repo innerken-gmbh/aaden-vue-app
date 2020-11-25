@@ -72,6 +72,9 @@
           <v-btn :color="onlyActive?'primary':'transparent'" @click="onlyActive=!onlyActive">
             {{ $t('只看活跃') }}
           </v-btn>
+          <v-btn  @click="fetchOrder">
+            <v-icon>mdi-refresh</v-icon>
+          </v-btn>
         </v-toolbar-items>
         <v-text-field
             ref="ins" v-model="buffer"
@@ -244,7 +247,7 @@ import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
 import TimeDisplay from '@/components/TimeDisplay'
-import { getColorLightness, getRestaurantInfo } from '@/oldjs/api'
+import { fetchOrder, getColorLightness, getRestaurantInfo } from '@/oldjs/api'
 import { IKUtils } from 'innerken-utils'
 
 export default {
@@ -311,6 +314,7 @@ export default {
     useCurrentConfig,
     hardReload,
     popAuthorize,
+    fetchOrder,
     openOrEnterTable: openOrEnterTable,
     requestOutTable,
     initialUI () {

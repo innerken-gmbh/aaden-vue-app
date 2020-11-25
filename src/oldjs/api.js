@@ -32,6 +32,10 @@ export function splitOrder (discountStr = '', id, items,
   })
 }
 
+export function fetchOrder () {
+  hillo.get('CloudStuff/FetchOrdersForAllTerminal.php')
+}
+
 /**
  * @param pw
  * @param {string} tableId
