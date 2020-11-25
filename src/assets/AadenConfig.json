@@ -1,5 +1,5 @@
 {
-  "Base": "",
+  "Base": "localhost",
   "DeviceId": -1,
   "Debug": true,
   "usePassword": false,
