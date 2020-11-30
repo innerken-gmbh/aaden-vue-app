@@ -1,6 +1,6 @@
 {
   "name": "aaden-vue-app",
-  "version": "0.4.38",
+  "version": "0.4.39",
   "private": true,
   "description": "全新构建的Aaden Vue版本，重新启航，更加牢靠！",
   "author": "juhaodong@gmail.com",
@@ -16,8 +16,7 @@
     "release": "sudo snap install snapcraft --classic && snapcraft login --with log && npm run electron:build",
     "update": "dotenv -e .env.local -- release-it --ci --no-npm-publish"
   },
-  "type": "module",
-  "main": "src/background.js",
+  "main": "background.js",
   "dependencies": {
     "aaden-base-model": "^0.1.99",
     "core-js": "^3.6.5",
@@ -25,7 +24,6 @@
     "electron-updater": "^4.3.1",
     "hillo": "^1.1.13",
     "innerken-js-utils": "^1.0.5",
-    "innerken-utils": "^1.8.7",
     "lodash-es": "^4.17.15",
     "material-design-icons": "^3.0.1",
     "metaflow-js": "^1.0.7",
@@ -40,7 +38,8 @@
     "vue-router": "^3.2.0",
     "vuetify": "^2.2.11",
     "vuetify-google-autocomplete-extend": "^1.0.9",
-    "vuex": "^3.4.0"
+    "vuex": "^3.4.0",
+    "electron": "^9.0.0"
   },
   "devDependencies": {
     "@intlify/vue-i18n-loader": "^1.0.0",
@@ -54,7 +53,6 @@
     "@vue/eslint-config-standard": "^5.1.2",
     "babel-eslint": "^10.1.0",
     "dotenv-cli": "^3.1.0",
-    "electron": "^9.0.0",
     "electron-builder": "^22.6.0",
     "eslint": "^6.7.2",
     "eslint-plugin-import": "^2.20.2",
