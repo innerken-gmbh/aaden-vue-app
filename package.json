@@ -1,6 +1,6 @@
 {
   "name": "aaden-vue-app",
-  "version": "0.4.40",
+  "version": "0.4.41",
   "private": true,
   "description": "全新构建的Aaden Vue版本，重新启航，更加牢靠！",
   "author": "juhaodong@gmail.com",
@@ -38,10 +38,10 @@
     "vue-router": "^3.2.0",
     "vuetify": "^2.2.11",
     "vuetify-google-autocomplete-extend": "^1.0.9",
-    "vuex": "^3.4.0",
-    "electron": "^9.0.0"
+    "vuex": "^3.4.0"
   },
   "devDependencies": {
+    "electron": "^9.0.0",
     "@intlify/vue-i18n-loader": "^1.0.0",
     "@mdi/font": "^5.5.55",
     "@vue/cli-plugin-babel": "^4.4.0",
