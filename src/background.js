@@ -1,7 +1,7 @@
-const { app, BrowserWindow, ipcMain, protocol } = require('electron')
+import { app, BrowserWindow, ipcMain, protocol } from 'electron'
+import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
-const { createProtocol } = require('vue-cli-plugin-electron-builder/lib')
-const settings = require('electron-settings')
+import settings from 'electron-settings'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
