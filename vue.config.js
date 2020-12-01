@@ -4,7 +4,7 @@ module.exports = {
       builderOptions: {
         appId: 'com.aaden.app.vue',
         productName: 'Aaden-Vue',
-        copyright: 'Copyright © 2019', // 版权信息
+        copyright: 'Copyright InnerKen GmbH 2019', // 版权信息
         linux: {
           target: 'snap'
         },
@@ -18,7 +18,7 @@ module.exports = {
           publish: [
             {
               provider: 'snapStore',
-              channels: 'stable'
+              channels: 'candidate'
             }
           ]
         }

@@ -1,5 +1,5 @@
 {
-  "Base": "192.168.168.1",
+  "Base": "localhost",
   "DeviceId": -1,
   "Debug": true,
   "usePassword": false,
