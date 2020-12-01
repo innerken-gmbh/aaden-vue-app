@@ -1,7 +1,7 @@
-'use strict'
-import settings from 'electron-settings'
-import { app, BrowserWindow, ipcMain, protocol } from 'electron'
-import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+const { app, BrowserWindow, ipcMain, protocol } = require('electron')
+
+const { createProtocol } = require('vue-cli-plugin-electron-builder/lib')
+const settings = require('electron-settings')
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
