@@ -754,7 +754,7 @@ export default {
         this.password = pw
         this.checkoutShow = true
         checkoutFactory.clear()
-        checkoutFactory.loadTTDishList(this.orderListModel.list)
+        checkoutFactory.loadTTDishList(this.splitOrderListModel.list)
         this.checkOutModel = {
           total: checkoutFactory.total(),
           count: checkoutFactory.count(),
