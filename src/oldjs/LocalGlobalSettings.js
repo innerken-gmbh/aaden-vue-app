@@ -3,6 +3,7 @@ import { loadBaseConfig } from 'aaden-base-model/lib/Models/GlobalSettings'
 const defaultConfig = require('@/assets/AadenConfig.json')
 let GlobalConfig = Object.assign({}, defaultConfig)
 const sumupInfo = require('@/assets/aaden.web.app.json')
+
 GlobalConfig.sumupInfo = sumupInfo
 export let NeededKeys = []
 
