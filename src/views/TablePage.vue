@@ -28,6 +28,7 @@
                 class="mr-5"
                 prepend-inner-icon="mdi-magnify"
                 hide-details
+                clearable
                 ref="ins"
                 v-model="input"
             />
