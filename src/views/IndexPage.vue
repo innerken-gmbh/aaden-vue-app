@@ -162,6 +162,8 @@
                   <div v-bind:key="table.name">
                     <v-card v-if="table.usageStatus==='1'"
                             class="tableCard"
+                            :dark="getColorLightness(Config.activeCardBackground)>128"
+                            :style="{backgroundColor:Config.activeCardBackground}"
                             @click='openOrEnterTable(table.tableName)'>
                       <div :style="{fontSize:Config.tableCardFontSize+'px'}"
                            class="tableCardName">{{ table.tableName }}
@@ -173,7 +175,8 @@
                           </div>
                           <div class="tableIconRow justify-end">
                                                         <span
-                                                            :style="{color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}"
+                                                            :style="{
+                                                          color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}"
                                                             class="tableBold">{{
                                                             findConsumeTypeById(table.consumeType)
                                                           }}</span>

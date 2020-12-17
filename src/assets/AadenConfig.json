@@ -29,5 +29,6 @@
   "useDeleteDishReason": true,
   "autoCompletePLZ": "",
   "useConstantSearch": false,
-  "useAdvanceOpenTakeawayTable": false
+  "useAdvanceOpenTakeawayTable": false,
+  "activeCardBackground": "#fff"
 }
