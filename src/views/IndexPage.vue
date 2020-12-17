@@ -65,14 +65,14 @@
               </v-list>
             </v-card>
           </v-menu>
-          <v-btn @click="popAuthorize('',requestOutTable)">
+          <v-btn @click="takeawayClicked">
             <v-icon left>mdi-truck-fast</v-icon>
             {{ $t('takeaway') }}
           </v-btn>
           <v-btn :color="onlyActive?'primary':'transparent'" @click="onlyActive=!onlyActive">
             {{ $t('只看活跃') }}
           </v-btn>
-          <v-btn  @click="fetchOrder">
+          <v-btn @click="fetchOrder">
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
         </v-toolbar-items>
@@ -174,7 +174,9 @@
                           <div class="tableIconRow justify-end">
                                                         <span
                                                             :style="{color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}"
-                                                            class="tableBold">{{ findConsumeTypeById(table.consumeType) }}</span>
+                                                            class="tableBold">{{
+                                                            findConsumeTypeById(table.consumeType)
+                                                          }}</span>
                           </div>
                         </div>
                         <v-card v-if="Config.gridSize>=116" elevation="0"
@@ -222,6 +224,9 @@
         </div>
       </div>
     </v-main>
+
+      <address-form :menu-show="showOpenTakeawayTableDialog"></address-form>
+
   </v-app>
 </template>
 
@@ -249,13 +254,14 @@ import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
 import TimeDisplay from '@/components/TimeDisplay'
 import { fetchOrder, getColorLightness, getRestaurantInfo } from '@/oldjs/api'
 import IKUtils from 'innerken-js-utils'
+import AddressForm from '@/components/AddressForm'
 
 export default {
   name: 'IndexPage',
   directives: {
     dragscroll
   },
-  components: { TimeDisplay, Navgation },
+  components: { AddressForm, TimeDisplay, Navgation },
   props: {
     refresh: {
       type: Number
@@ -266,6 +272,9 @@ export default {
       NeededKeys,
       menu: null,
       menu1: null,
+
+      showOpenTakeawayTableDialog: null,
+
       version: version,
       onlyActive: GlobalConfig.FMCVersion,
       reservations: [],
@@ -307,6 +316,13 @@ export default {
     }
   },
   methods: {
+    takeawayClicked () {
+      if (GlobalConfig.useAdvanceOpenTakeawayTable) {
+        this.showOpenTakeawayTableDialog = true
+      } else {
+        popAuthorize('', requestOutTable)
+      }
+    },
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
     },

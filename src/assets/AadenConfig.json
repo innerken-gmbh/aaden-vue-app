@@ -28,5 +28,6 @@
   "useEnterTablePermissionCheck": false,
   "useDeleteDishReason": true,
   "autoCompletePLZ": "",
-  "useConstantSearch": false
+  "useConstantSearch": false,
+  "useAdvanceOpenTakeawayTable": false
 }
