@@ -27,5 +27,6 @@
   "useAttributeSort": false,
   "useEnterTablePermissionCheck": false,
   "useDeleteDishReason": true,
-  "autoCompletePLZ": ""
+  "autoCompletePLZ": "",
+  "useConstantSearch": false
 }

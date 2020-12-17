@@ -23,17 +23,29 @@
               </v-tab>
             </template>
           </v-tabs>
-          <v-autocomplete
-              hide-details
-              auto-select-first
-              hide-no-data
-              class="mr-5"
-              :search-input.sync="input"
-              :items="autoHints"
-              prepend-inner-icon="mdi-magnify"
-              ref="ins"
-              v-model="buffer"
-          />
+          <template v-if="Config.useConstantSearch">
+            <v-text-field
+                class="mr-5"
+                prepend-inner-icon="mdi-magnify"
+                hide-details
+                ref="ins"
+                v-model="input"
+            />
+          </template>
+          <template v-else>l
+            <v-autocomplete
+                hide-details
+                auto-select-first
+                hide-no-data
+                class="mr-5"
+                :search-input.sync="input"
+                :items="autoHints"
+                prepend-inner-icon="mdi-magnify"
+                ref="ins"
+                v-model="buffer"
+            />
+          </template>
+
         </template>
         <template slot="right-slot">
           <div class="d-flex align-center justify-space-between" style="min-width: 172px">
