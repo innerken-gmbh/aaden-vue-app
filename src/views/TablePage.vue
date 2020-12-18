@@ -23,29 +23,19 @@
               </v-tab>
             </template>
           </v-tabs>
-          <template v-if="Config.useConstantSearch">
-            <v-text-field
-                class="mr-5"
-                prepend-inner-icon="mdi-magnify"
-                hide-details
-                clearable
-                ref="ins"
-                v-model="input"
-            />
-          </template>
-          <template v-else>l
-            <v-autocomplete
-                hide-details
-                auto-select-first
-                hide-no-data
-                class="mr-5"
-                :search-input.sync="input"
-                :items="autoHints"
-                prepend-inner-icon="mdi-magnify"
-                ref="ins"
-                v-model="buffer"
-            />
-          </template>
+
+          <v-autocomplete
+              v-if="!Config.useTouchScreenUI"
+              hide-details
+              auto-select-first
+              hide-no-data
+              class="mr-5"
+              :search-input.sync="input"
+              :items="autoHints"
+              prepend-inner-icon="mdi-magnify"
+              ref="ins"
+              v-model="buffer"
+          />
 
         </template>
         <template slot="right-slot">
@@ -82,9 +72,8 @@
         </template>
       </navgation>
       <v-main>
-        <div style="display: grid;
-grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
-          <v-card elevation="0" color="transparent" v-cloak
+        <div style="display: flex; background: #f6f6f6;">
+          <v-card v-if="!Config.useTouchScreenUI" elevation="0" color="transparent" v-cloak class="flex-grow-1"
                   style=" max-height: calc(100vh - 48px);">
             <div style="display: grid;grid-template-columns: 144px auto;grid-gap: 8px;">
               <v-sheet elevation="3" v-dragscroll style="max-height: calc(100vh - 48px);overflow: hidden">
@@ -108,7 +97,6 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                   </v-list-item-group>
                 </v-list>
               </v-sheet>
-
               <div v-dragscroll class="dragscroll dishCardListContainer">
                 <div class="dishCardList">
                   <template v-for="dish of filteredDish">
@@ -129,8 +117,9 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
               </div>
             </div>
           </v-card>
-          <div class="ml-1 d-flex justify-space-between
-                    flex-column fill-height">
+          <div style="height: calc(100vh - 48px);width: 300px"
+               :class="Config.useTouchScreenUI?'mr-1':'ml-1'"
+               class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height">
             <!--          菜品列表容器-->
             <div>
               <!--          菜品列表-->
@@ -142,11 +131,11 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                       :discount-ratio="discountRatio"
                       :default-expand="cartListModel.list.length===0"
                       :click-callback="addToSplit"
-                      :extra-height="'144px'"
+                      :extra-height="Config.useTouchScreenUI?'96px':'144px'"
                       :title="$t('haveOrderedDish')"
                   />
                 </keep-alive>
-                <v-toolbar dense v-if="cartListModel.list.length===0">
+                <v-toolbar dense v-if="cartListModel.list.length===0&&!Config.useTouchScreenUI">
                   <v-toolbar-items class="flex-grow-1 mx-n3">
                     <v-btn @click="reprintOrder" class="flex-grow-1">
                       <v-icon left>mdi-printer</v-icon>
@@ -169,7 +158,7 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                     :extra-height="'196px'"
                     :color="'#707070'"
                     :dish-list-model="cartListModel"
-                    :show-edit="true" :click-callback="removeDish"
+                    :show-edit="!Config.useTouchScreenUI" :click-callback="removeDish"
                     :title="$t('新增菜品')"
                     :default-expand="Config.defaultExpand">
                 </dish-card-list>
@@ -231,16 +220,75 @@ grid-template-columns: calc(100vw - 300px) 300px;  background: #f6f6f6;">
                       {{ $t('payBill') }}
                     </v-btn>
                   </template>
-
                 </v-toolbar-items>
               </v-toolbar>
             </v-card>
           </div>
+          <v-card v-if="Config.useTouchScreenUI" elevation="0" color="transparent" v-cloak class="flex-grow-1 d-flex"
+                  style="height: calc(100vh - 48px);">
+
+            <div v-dragscroll class="dragscroll dishCardListContainer">
+              <div class="dishCardList">
+                <template v-for="dish of filteredDish">
+                  <dish-block
+                      :key="'dish'+dish.code"
+                      :code="dish.code"
+                      :count="dish.count"
+                      :display-color="dish.displayColor"
+                      :dish-name="dish.dishName"
+                      :foreground="dish.foreground"
+                      :font-size="Config.dishBlockFontSize"
+                      :have-mod="dish.haveMod"
+                      :is-free="dish.isFree"
+                      :price="dish.price"
+                      @click="orderOneDish(dish.code)"/>
+                </template>
+              </div>
+            </div>
+
+            <v-card width="412px" class="d-flex flex-column pa-2">
+              <div>
+                <v-btn class="my-1" color="primary" large block @click="popAuthorize('',checkOut)">
+                  <v-icon left>mdi-calculator-variant</v-icon>
+                  快速结账
+                </v-btn>
+                <v-btn @click="back" class="my-1" large block>
+                  <v-icon left>mdi-home</v-icon>
+                  回首页
+                </v-btn>
+                <v-btn class="my-1" @click="reprintOrder" large block>
+                  <v-icon left>mdi-printer</v-icon>
+                  {{ $t('重新打印') }}
+                </v-btn>
+                <v-btn class="my-1" @click="zwitchenBon" color="warning" large block>
+                  <v-icon left>mdi-printer-pos</v-icon>
+                  ZwischenBon
+                </v-btn>
+              </div>
+              <v-spacer></v-spacer>
+              <div>
+                <v-text-field
+                    class="ma-2"
+                    hide-details
+                    clearable
+                    ref="ins"
+                    v-model="displayInput"
+                />
+                <keyboard @input="numberInput" :keys="keyboardLayout"></keyboard>
+              </div>
+
+            </v-card>
+          </v-card>
         </div>
       </v-main>
       <template v-if="splitOrderListModel.list.length>0">
         <div class="bottomCart surface d-flex justify-end"
-             style="background: rgba(0,0,0,0.4);"
+             style="background: rgba(0,0,0,0.4);  top: 0;
+  right: 304px;
+  z-index: 5;"
+             :style="Config.useTouchScreenUI?{
+               left:'304px'
+             }:{}"
              v-cloak
              @click="removeAllFromSplitOrder"
              id="splitOrderContainer">
@@ -388,11 +436,21 @@ import TablePageMenu from '@/components/TablePageMenu'
 import DishBlock from '@/components/DishBlock'
 import moment from 'moment'
 import IKUtils from 'innerken-js-utils'
+import Keyboard from '@/components/Keyboard'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
 const orderListFactory = StandardDishesListFactory()
 const cartListFactory = StandardDishesListFactory()
+
+const keyboardLayout =
+    [
+      'W', 'M', 'C', 'A',
+      '7', '8', '9', 'mdi-autorenew',
+      '4', '5', '6', 'K',
+      '1', '2', '3', 'T',
+      'G', '0', 'mdi-close', 'OK'
+    ]
 
 // endregion
 export default {
@@ -400,7 +458,7 @@ export default {
   directives: {
     dragscroll
   },
-  components: { DishBlock, TablePageMenu, Navgation, CheckOutDrawer, ModificationDrawer, DishCardList },
+  components: { Keyboard, DishBlock, TablePageMenu, Navgation, CheckOutDrawer, ModificationDrawer, DishCardList },
   props: {
     id: {
       type: String
@@ -414,6 +472,9 @@ export default {
   },
   data: function () {
     return {
+      keyboardLayout,
+      displayInput: '',
+
       menuShow: null, // 控制菜单是否显示
       checkoutShow: false,
       modificationShow: false,
@@ -466,6 +527,43 @@ export default {
     clearAllTimer()
   },
   methods: {
+    numberInput (key) {
+      if (this.displayInput == null) {
+        this.displayInput = ''
+      }
+      switch (key) {
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+        case '0':
+        case 'A':
+        case 'K':
+        case 'T':
+        case 'G':
+        case 'W':
+        case 'M':
+        case 'C':
+          this.displayInput += key
+          break
+        case 'mdi-close':
+          this.displayInput += '*'
+          break
+        case 'mdi-autorenew':
+          this.displayInput = ''
+          break
+        case 'OK':
+          this.insDecode(this.displayInput)
+          this.displayInput = ''
+          break
+      }
+      this.input = this.displayInput
+    },
     getAllPredefinedDiscount () {
       this.predefinedDiscount = (GlobalConfig.getSettings('predefinedDiscount') ?? '').split(',').filter(t => t !== '')
       // console.log(this.predefinedDiscount, 'Discount')
@@ -615,6 +713,7 @@ export default {
       }
     },
     orderOneDish: function (code) {
+      this.displayInput = ''
       this.findAndOrderDish(code)
     },
     readBuffer: function (clear = true) {
@@ -1010,16 +1109,17 @@ export default {
     }, 300),
     filterDish () {
       let list = this.dishes
-
-      const dct = this.dct[this.activeDCT]
-      list = list.filter((item) => {
-        return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
-      })
-
-      if (this.activeCategory) {
+      if (!GlobalConfig.useTouchScreenUI) {
+        const dct = this.dct[this.activeDCT]
         list = list.filter((item) => {
-          return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
+          return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
         })
+
+        if (this.activeCategory) {
+          list = list.filter((item) => {
+            return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
+          })
+        }
       }
 
       if (GlobalConfig.dishLookUp) {
@@ -1187,7 +1287,7 @@ tr:hover {
 .dishCardList {
   padding-top: 12px;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   margin-bottom: 120px;
   width: 100%;
   grid-gap: 6px;
@@ -1224,12 +1324,6 @@ tr:hover {
   position: fixed;
   width: calc(100vw - 304px);
   height: 100vh;
-}
-
-#splitOrderContainer {
-  top: 0;
-  right: 304px;
-  z-index: 5;
 }
 
 .bigTableName {

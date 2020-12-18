@@ -28,7 +28,7 @@
   "useEnterTablePermissionCheck": false,
   "useDeleteDishReason": true,
   "autoCompletePLZ": "",
-  "useConstantSearch": false,
   "useAdvanceOpenTakeawayTable": false,
-  "activeCardBackground": "#fff"
+  "activeCardBackground": "#fff",
+  "useTouchScreenUI": false
 }
