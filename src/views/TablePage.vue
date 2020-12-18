@@ -225,60 +225,74 @@
             </v-card>
           </div>
           <v-card v-if="Config.useTouchScreenUI" elevation="0" color="transparent" v-cloak class="flex-grow-1 d-flex"
-                  style="height: calc(100vh - 48px);">
+                  style="height: calc(100vh - 48px);max-width: calc(100vw - 300px)">
 
-            <div v-dragscroll class="dragscroll dishCardListContainer">
-              <div class="dishCardList">
-                <template v-for="dish of filteredDish">
-                  <dish-block
-                      :key="'dish'+dish.code"
-                      :code="dish.code"
-                      :count="dish.count"
-                      :display-color="dish.displayColor"
-                      :dish-name="dish.dishName"
-                      :foreground="dish.foreground"
-                      :font-size="Config.dishBlockFontSize"
-                      :have-mod="dish.haveMod"
-                      :is-free="dish.isFree"
-                      :price="dish.price"
-                      @click="orderOneDish(dish.code)"/>
-                </template>
-              </div>
-            </div>
+              <v-card width="calc(100% - 372px)" v-dragscroll class="dragscroll dishCardListContainer ml-1">
+                <v-toolbar dense>
+                  <v-chip-group show-arrows center-active mandatory v-model="activeCategory">
+                    <v-chip  @click="changeCategory(-1)" elevation="3" v-dragscroll
+                             style=" overflow: hidden">Alle</v-chip>
+                    <template v-for="category of filteredC">
+                      <v-chip  style="text-transform: capitalize;font-size: 16px"
+                               v-bind:key="'categorytypes'+category.id"
+                               @click="changeCategory(category.id)" :style="{backgroundColor:category.color, color:getColorLightness(category.color)>128?'#000 !important':'#fff !important'}">
+                        {{ category.name }}
+                      </v-chip>
+                    </template>
+                  </v-chip-group>
+                </v-toolbar>
+                <div class="dishCardList">
+                  <template v-for="dish of filteredDish">
+                    <dish-block
+                        :key="'dish'+dish.code"
+                        :code="dish.code"
+                        :count="dish.count"
+                        :display-color="dish.displayColor"
+                        :dish-name="dish.dishName"
+                        :foreground="dish.foreground"
+                        :font-size="Config.dishBlockFontSize"
+                        :have-mod="dish.haveMod"
+                        :is-free="dish.isFree"
+                        :price="dish.price"
+                        @click="orderOneDish(dish.code)"/>
+                  </template>
+                </div>
+              </v-card>
 
-            <v-card width="412px" class="d-flex flex-column pa-2">
-              <div>
-                <v-btn class="my-1" color="primary" large block @click="popAuthorize('',checkOut)">
-                  <v-icon left>mdi-calculator-variant</v-icon>
-                  快速结账
-                </v-btn>
-                <v-btn @click="back" class="my-1" large block>
-                  <v-icon left>mdi-home</v-icon>
-                  回首页
-                </v-btn>
-                <v-btn class="my-1" @click="reprintOrder" large block>
-                  <v-icon left>mdi-printer</v-icon>
-                  {{ $t('重新打印') }}
-                </v-btn>
-                <v-btn class="my-1" @click="zwitchenBon" color="warning" large block>
-                  <v-icon left>mdi-printer-pos</v-icon>
-                  ZwischenBon
-                </v-btn>
-              </div>
-              <v-spacer></v-spacer>
-              <div>
-                <v-text-field
-                    class="ma-2"
-                    hide-details
-                    clearable
-                    style="font-size: 36px"
-                    ref="ins"
-                    v-model="displayInput"
-                />
-                <keyboard @input="numberInput" :keys="keyboardLayout"></keyboard>
-              </div>
+              <v-card width="372px" class="d-flex flex-shrink-0 flex-column pa-2">
+                <div>
+                  <v-btn class="my-1" color="primary" large block @click="popAuthorize('',checkOut)">
+                    <v-icon left>mdi-calculator-variant</v-icon>
+                    快速结账
+                  </v-btn>
+                  <v-btn @click="back" class="my-1" large block>
+                    <v-icon left>mdi-home</v-icon>
+                    回首页
+                  </v-btn>
+                  <v-btn class="my-1" @click="reprintOrder" large block>
+                    <v-icon left>mdi-printer</v-icon>
+                    {{ $t('重新打印') }}
+                  </v-btn>
+                  <v-btn class="my-1" @click="zwitchenBon" color="warning" large block>
+                    <v-icon left>mdi-printer-pos</v-icon>
+                    ZwischenBon
+                  </v-btn>
+                </div>
+                <v-spacer></v-spacer>
+                <div>
+                  <v-text-field
+                      class="ma-2"
+                      hide-details
+                      clearable
+                      style="font-size: 36px"
+                      ref="ins"
+                      v-model="displayInput"
+                  />
+                  <keyboard @input="numberInput" :keys="keyboardLayout"></keyboard>
+                </div>
 
-            </v-card>
+              </v-card>
+
           </v-card>
         </div>
       </v-main>
@@ -1110,7 +1124,7 @@ export default {
     }, 300),
     filterDish () {
       let list = this.dishes
-      if (!GlobalConfig.useTouchScreenUI) {
+      if (!GlobalConfig.useTouchScreenUI || (GlobalConfig.useTouchScreenUI && !this.displayInput)) {
         const dct = this.dct[this.activeDCT]
         list = list.filter((item) => {
           return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
@@ -1128,9 +1142,17 @@ export default {
           if (this.input !== '' && !this.input.includes('/')) {
             const [buffer] = this.input.split('*')
             return list.filter((item) => {
-              return item.dishName.includes(buffer) ||
-                  item.code.includes(buffer.toLowerCase()) ||
-                  item.code.includes(buffer.toUpperCase())
+              return item.code.startsWith(buffer.toLowerCase()) ||
+                  item.code.startsWith(buffer.toUpperCase()) ||
+                  item.dishName.startsWith(buffer)
+            }).sort((a, b) => {
+              if (a.code.length > b.code.length) {
+                return 1
+              } else if (a.code.length === b.code.length) {
+                return 0
+              } else {
+                return -1
+              }
             })
           }
         }
