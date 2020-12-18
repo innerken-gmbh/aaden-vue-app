@@ -271,6 +271,7 @@
                     class="ma-2"
                     hide-details
                     clearable
+                    style="font-size: 36px"
                     ref="ins"
                     v-model="displayInput"
                 />
