@@ -1,6 +1,6 @@
 <template>
-  <div class="d-flex fill-height">
-    <div style="width: 480px;max-height: 700px;height: 100%" class="calculator pa-2 d-flex flex-column fill-height">
+  <v-sheet dark class="d-flex fill-height">
+    <v-sheet dark style="width: 480px;max-height: 700px;height: 100%" class="calculator pa-2 d-flex flex-column fill-height">
       <v-card style="width: 100%" class="display pa-4 d-flex
                  justify-space-between align-end">
         <div>
@@ -80,7 +80,7 @@
           </v-menu>
         </template>
       </v-sheet>
-    </div>
+    </v-sheet>
     <div style="width: calc(100vw - 200px - 480px)" class="paymentLog pa-2">
       <div class="my-3">
         <h3>{{ $t('结账记录') }}</h3>
@@ -164,8 +164,9 @@
           </div>
         </div>
       </div>
+
     </div>
-  </div>
+  </v-sheet>
 </template>
 
 <script>

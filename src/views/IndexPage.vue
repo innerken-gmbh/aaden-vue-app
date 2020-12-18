@@ -6,71 +6,15 @@
           <v-icon>mdi-home-analytics</v-icon>
         </v-app-bar-nav-icon>
         <v-toolbar-title>
-          {{ $t('appName') }}
+          简繁点餐
         </v-toolbar-title>
       </template>
       <template slot="right-slot">
         <time-display class="mx-1"/>
         <v-toolbar-items class="mx-1">
-          <v-btn v-if="printingList.length>0">
-            <v-icon>mdi-printer</v-icon>
-            <template>
-              {{ printingList.length }}
-            </template>
-          </v-btn>
-          <v-menu
-              v-if="hasBadPrint"
-              v-model="menu1"
-              offset-y
-              :close-on-content-click="false"
-              :nudge-width="300"
-              :max-height="600"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs"
-                     v-on="on"
-                     color="error">
-                <v-icon>
-                  mdi-printer-off
-                </v-icon>
-                {{ falsePrinterList.length }}
-              </v-btn>
-            </template>
-            <v-card>
-              <v-toolbar dense dark color="primary">
-                <v-toolbar-title>{{ $t('UnsuccessPrinterList') }}</v-toolbar-title>
-                <v-spacer/>
-                <v-icon @click="reprintAll">mdi-reload</v-icon>
-                <v-icon @click="menu1=!menu1">mdi-close</v-icon>
-              </v-toolbar>
-              <v-list>
-                <v-list-item
-                    v-for="(key, index) in falsePrinterList"
-                    :key="index"
-                >
-                  <v-list-item-icon>
-                    <v-icon>mdi-text-box-remove</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      {{ key.orderId }}: {{ key.printStatusString }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-btn icon text @click="reprintBon(key)">
-                      <v-icon color="primary">mdi-printer</v-icon>
-                    </v-btn>
-                  </v-list-item-action>
-                </v-list-item>
-              </v-list>
-            </v-card>
-          </v-menu>
           <v-btn @click="popAuthorize('',requestOutTable)">
             <v-icon left>mdi-truck-fast</v-icon>
             {{ $t('takeaway') }}
-          </v-btn>
-          <v-btn :color="onlyActive?'primary':'transparent'" @click="onlyActive=!onlyActive">
-            {{ $t('只看活跃') }}
           </v-btn>
           <v-btn  @click="fetchOrder">
             <v-icon>mdi-refresh</v-icon>
@@ -103,13 +47,10 @@
           <v-card color="white">
             <v-list>
               <v-list-item>
-                <v-list-item-avatar tile>
-                  <img src="@/assets/logo.png">
-                </v-list-item-avatar>
                 <v-list-item-content>
-                  <v-list-item-title>Aaden App</v-list-item-title>
+                  <v-list-item-title>简繁点餐</v-list-item-title>
                   <v-list-item-subtitle>
-                    Version <span v-show-quick-buy>FMC-</span>{{ version }}
+                    Version <span>JF-</span>{{ version }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
 
@@ -163,20 +104,7 @@
                     <v-card v-if="table.usageStatus==='1'"
                             class="tableCard"
                             @click='openOrEnterTable(table.tableName)'>
-                      <div :style="{fontSize:Config.tableCardFontSize+'px'}"
-                           class="tableCardName">{{ table.tableName }}
-                      </div>
                       <div v-if="Config.gridSize>=84">
-                        <div class="d-flex justify-space-between">
-                          <div class="tableIconRow">
-                            <span class="tableBold">{{ table.createTimestamp }}</span>
-                          </div>
-                          <div class="tableIconRow justify-end">
-                                                        <span
-                                                            :style="{color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}"
-                                                            class="tableBold">{{ findConsumeTypeById(table.consumeType) }}</span>
-                          </div>
-                        </div>
                         <v-card v-if="Config.gridSize>=116" elevation="0"
                                 :dark="getColorLightness(parseInt(table.callService)===1?restaurantInfo.callColor:
                                              restaurantInfo.tableColor)<128"
@@ -204,6 +132,20 @@
                             </div>
                           </template>
                         </v-card>
+                        <div class="d-flex justify-space-between">
+                          <div class="tableIconRow">
+                            <span class="tableBold">{{ table.createTimestamp }}</span>
+                          </div>
+                          <div class="tableIconRow justify-end">
+                                                        <span
+                                                            :style="{color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}"
+                                                            class="tableBold">{{ findConsumeTypeById(table.consumeType) }}</span>
+                          </div>
+                        </div>
+
+                      </div>
+                      <div :style="{fontSize:Config.tableCardFontSize+'px'}"
+                           class="tableCardName">{{ table.tableName }}
                       </div>
 
                     </v-card>
@@ -491,9 +433,8 @@ export default {
 }
 
 .tableCard.notUsed {
-  background: transparent;
-  color: #6b6b6b;
-  border: 3px solid #e2e3e5;
+  color: white;
+  background: grey;
   box-shadow: none;
 }
 

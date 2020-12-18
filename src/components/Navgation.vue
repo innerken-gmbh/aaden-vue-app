@@ -1,5 +1,5 @@
 <template>
-    <v-app-bar clipped-right dense dark app>
+    <v-app-bar bottom clipped-right dark color="primary" app>
         <slot name="left">
             <v-app-bar-nav-icon>
                 <v-icon>mdi-home-analytics</v-icon>
