@@ -227,7 +227,7 @@
           <v-card v-if="Config.useTouchScreenUI" elevation="0" color="transparent" v-cloak class="flex-grow-1 d-flex"
                   style="height: calc(100vh - 48px);max-width: calc(100vw - 300px)">
 
-              <v-card width="calc(100% - 372px)" v-dragscroll class="dragscroll dishCardListContainer ml-1">
+              <v-card width="calc(100% - 372px)" v-dragscroll color="transparent" class="dragscroll dishCardListContainer ml-1">
                 <v-toolbar dense>
                   <v-chip-group show-arrows center-active mandatory v-model="activeCategory">
                     <v-chip  @click="changeCategory(-1)" elevation="3" v-dragscroll
@@ -1309,7 +1309,6 @@ tr:hover {
 }
 
 .dishCardList {
-  background: #efefef;
   padding-top: 12px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
