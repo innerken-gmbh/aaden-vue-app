@@ -30,7 +30,7 @@ function createWindow () {
       nodeIntegration: true
     }
   })
-  const Debug = settings.get('config.Debug')
+  const Debug = settings.getSync('config.Debug')
   console.log('Debug', Debug)
   win.setFullScreen(!Debug)
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -98,12 +98,12 @@ if (!gotTheLock) {
       //   console.error('Vue Devtools failed to install:', e.toString())
       // }
     }
-    console.log(settings.get('config'))
-    if (!settings.has('config')) {
+    console.log(settings.getSync('config'))
+    if (!settings.hasSync('config')) {
       console.log('nosetting found use Default')
-      settings.set('config', require('@/assets/AadenConfig.json'))
+      settings.setSync('config', require('@/assets/AadenConfig.json'))
     }
-    console.log(settings.get('config'), 'end-Setting')
+    console.log(settings.getSync('config'), 'end-Setting')
     createWindow()
   })
 }

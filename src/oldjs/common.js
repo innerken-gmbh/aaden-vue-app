@@ -87,7 +87,7 @@ export function setGlobalTableId (id) {
   TableId = id
 }
 
-export async function popAuthorize (type, successCallback, force = false, failedCallback, tableId = false) {
+export async function popAuthorize (type, successCallback, force = false, failedCallback, tableId = null) {
   if (!force) {
     if (!GlobalConfig.usePassword && type !== 'boss') {
       successCallback()
@@ -102,7 +102,7 @@ export async function popAuthorize (type, successCallback, force = false, failed
     'Servant.php'
     , 'pw', {
       op: type === 'boss' ? 'checkBoss' : 'checkServant',
-      tableId: tableId ?? TableId
+      tableId: tableId ?? TableId ?? null
     }, 'GET', false)
   if (res) {
     if (successCallback) {
