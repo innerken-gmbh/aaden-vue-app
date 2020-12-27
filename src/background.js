@@ -98,10 +98,12 @@ if (!gotTheLock) {
       //   console.error('Vue Devtools failed to install:', e.toString())
       // }
     }
+    console.log(settings.get('config'))
     if (!settings.has('config')) {
+      console.log('nosetting found use Default')
       settings.set('config', require('@/assets/AadenConfig.json'))
     }
-    console.log(settings.get('config'), 'Setting')
+    console.log(settings.get('config'), 'end-Setting')
     createWindow()
   })
 }

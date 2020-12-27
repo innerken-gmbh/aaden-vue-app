@@ -1308,6 +1308,7 @@ tr:hover {
 }
 
 .dishCardList {
+  background: #efefef;
   padding-top: 12px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
