@@ -830,6 +830,7 @@ export default {
       blockReady()
     },
     initialUI () {
+      this.input=''
       this.discountModelShow = false
       this.getTableDetail()
       this.cartListModel.clear()
