@@ -286,6 +286,7 @@
                       clearable
                       style="font-size: 36px"
                       ref="ins"
+                      @input="input=displayInput"
                       v-model="displayInput"
                   />
                   <keyboard @input="numberInput" :keys="keyboardLayout"></keyboard>
