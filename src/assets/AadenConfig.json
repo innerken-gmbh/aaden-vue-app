@@ -30,5 +30,6 @@
   "autoCompletePLZ": "",
   "useAdvanceOpenTakeawayTable": false,
   "activeCardBackground": "#fff",
-  "useTouchScreenUI": false
+  "useTouchScreenUI": false,
+  "useDishListMenu": true
 }

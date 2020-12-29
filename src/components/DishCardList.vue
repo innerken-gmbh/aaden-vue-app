@@ -101,7 +101,7 @@ export default {
     },
     checkIfOpen (index) {
       const dish = this.dishListModel.list[index]
-      if (dish.count > 1 && this.showEdit) {
+      if (this.showEdit || dish.count > 1) {
         if (this.expandIndex === index) {
           this.expandIndex = null
         } else {
