@@ -15,7 +15,7 @@
   "Protocol": "http://",
   "FMCVersion": false,
   "useCart": true,
-  "useColor": false,
+  "useColor": true,
   "hideCode": true,
   "gridSize": "140",
   "dishLookUp": true,

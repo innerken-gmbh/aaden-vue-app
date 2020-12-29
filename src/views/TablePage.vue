@@ -227,72 +227,75 @@
           <v-card v-if="Config.useTouchScreenUI" elevation="0" color="transparent" v-cloak class="flex-grow-1 d-flex"
                   style="height: calc(100vh - 48px);max-width: calc(100vw - 300px)">
 
-              <v-card width="calc(100% - 372px)" v-dragscroll color="transparent" class="dragscroll dishCardListContainer ml-1">
-                <v-toolbar dense>
-                  <v-chip-group show-arrows center-active mandatory v-model="activeCategory">
-                    <v-chip  @click="changeCategory(-1)" elevation="3" v-dragscroll
-                             style=" overflow: hidden">Alle</v-chip>
-                    <template v-for="category of filteredC">
-                      <v-chip  style="text-transform: capitalize;font-size: 16px"
-                               v-bind:key="'categorytypes'+category.id"
-                               @click="changeCategory(category.id)" :style="{backgroundColor:category.color, color:getColorLightness(category.color)>128?'#000 !important':'#fff !important'}">
-                        {{ category.name }}
-                      </v-chip>
-                    </template>
-                  </v-chip-group>
-                </v-toolbar>
-                <div class="dishCardList">
-                  <template v-for="dish of filteredDish">
-                    <dish-block
-                        :key="'dish'+dish.code"
-                        :code="dish.code"
-                        :count="dish.count"
-                        :display-color="dish.displayColor"
-                        :dish-name="dish.dishName"
-                        :foreground="dish.foreground"
-                        :font-size="Config.dishBlockFontSize"
-                        :have-mod="dish.haveMod"
-                        :is-free="dish.isFree"
-                        :price="dish.price"
-                        @click="orderOneDish(dish.code)"/>
+            <v-card width="calc(100% - 372px)" v-dragscroll color="transparent"
+                    class="dragscroll dishCardListContainer ml-1">
+              <v-sheet class="px-2">
+                <v-chip-group column mandatory v-model="activeCategory">
+                  <v-chip @click="changeCategory(-1)" elevation="3" v-dragscroll
+                          style=" overflow: hidden">Alle
+                  </v-chip>
+                  <template v-for="category of filteredC">
+                    <v-chip style="text-transform: capitalize;font-size: 16px"
+                            v-bind:key="'categorytypes'+category.id"
+                            @click="changeCategory(category.id)"
+                            :style="{backgroundColor:category.color, color:getColorLightness(category.color)>128?'#000 !important':'#fff !important'}">
+                      {{ category.name }}
+                    </v-chip>
                   </template>
-                </div>
-              </v-card>
+                </v-chip-group>
+              </v-sheet>
+              <div class="dishCardList">
+                <template v-for="dish of filteredDish">
+                  <dish-block
+                      :key="'dish'+dish.code"
+                      :code="dish.code"
+                      :count="dish.count"
+                      :display-color="dish.displayColor"
+                      :dish-name="dish.dishName"
+                      :foreground="dish.foreground"
+                      :font-size="Config.dishBlockFontSize"
+                      :have-mod="dish.haveMod"
+                      :is-free="dish.isFree"
+                      :price="dish.price"
+                      @click="orderOneDish(dish.code)"/>
+                </template>
+              </div>
+            </v-card>
 
-              <v-card width="372px" class="d-flex flex-shrink-0 flex-column pa-2">
-                <div>
-                  <v-btn class="my-1" color="primary" large block @click="popAuthorize('',checkOut)">
-                    <v-icon left>mdi-calculator-variant</v-icon>
-                    快速结账
-                  </v-btn>
-                  <v-btn @click="back" class="my-1" large block>
-                    <v-icon left>mdi-home</v-icon>
-                    回首页
-                  </v-btn>
-                  <v-btn class="my-1" @click="reprintOrder" large block>
-                    <v-icon left>mdi-printer</v-icon>
-                    {{ $t('重新打印') }}
-                  </v-btn>
-                  <v-btn class="my-1" @click="zwitchenBon" color="warning" large block>
-                    <v-icon left>mdi-printer-pos</v-icon>
-                    ZwischenBon
-                  </v-btn>
-                </div>
-                <v-spacer></v-spacer>
-                <div>
-                  <v-text-field
-                      class="ma-2"
-                      hide-details
-                      clearable
-                      style="font-size: 36px"
-                      ref="ins"
-                      @input="input=displayInput"
-                      v-model="displayInput"
-                  />
-                  <keyboard @input="numberInput" :keys="keyboardLayout"></keyboard>
-                </div>
+            <v-card width="372px" class="d-flex flex-shrink-0 flex-column pa-2">
+              <div>
+                <v-btn class="my-1" color="primary" large block @click="popAuthorize('',checkOut)">
+                  <v-icon left>mdi-calculator-variant</v-icon>
+                  快速结账
+                </v-btn>
+                <v-btn @click="back" class="my-1" large block>
+                  <v-icon left>mdi-home</v-icon>
+                  回首页
+                </v-btn>
+                <v-btn class="my-1" @click="reprintOrder" large block>
+                  <v-icon left>mdi-printer</v-icon>
+                  {{ $t('重新打印') }}
+                </v-btn>
+                <v-btn class="my-1" @click="zwitchenBon" color="warning" large block>
+                  <v-icon left>mdi-printer-pos</v-icon>
+                  ZwischenBon
+                </v-btn>
+              </div>
+              <v-spacer></v-spacer>
+              <div>
+                <v-text-field
+                    class="ma-2"
+                    hide-details
+                    clearable
+                    style="font-size: 36px"
+                    ref="ins"
+                    @input="input=displayInput"
+                    v-model="displayInput"
+                />
+                <keyboard @input="numberInput" :keys="keyboardLayout"></keyboard>
+              </div>
 
-              </v-card>
+            </v-card>
 
           </v-card>
         </div>
@@ -474,7 +477,15 @@ export default {
   directives: {
     dragscroll
   },
-  components: { Keyboard, DishBlock, TablePageMenu, Navgation, CheckOutDrawer, ModificationDrawer, DishCardList },
+  components: {
+    Keyboard,
+    DishBlock,
+    TablePageMenu,
+    Navgation,
+    CheckOutDrawer,
+    ModificationDrawer,
+    DishCardList
+  },
   props: {
     id: {
       type: String
@@ -501,7 +512,11 @@ export default {
       breakCount: 0,
 
       checkOutType: 'checkOut',
-      checkOutModel: { total: 0, count: 0, list: [] },
+      checkOutModel: {
+        total: 0,
+        count: 0,
+        list: []
+      },
       /**/
       discountRatio: 1,
       discountStr: null,
@@ -517,7 +532,12 @@ export default {
       activeCategory: null,
       activeCategoryId: 0,
       activeDCT: 0,
-      filteredDish: [{ name: '', code: '', price: '', count: '' }],
+      filteredDish: [{
+        name: '',
+        code: '',
+        price: '',
+        count: ''
+      }],
 
       Config: GlobalConfig,
       /* input**/
@@ -529,7 +549,10 @@ export default {
       cartListModel: cartListFactory,
 
       tableDetailInfo: {
-        order: { id: -1, rawAddressInfo: '' },
+        order: {
+          id: -1,
+          rawAddressInfo: ''
+        },
         tableBasicInfo: { name: '' }
       },
 
@@ -696,7 +719,8 @@ export default {
     async getCategory () {
       if (this.categories.length === 0 || !GlobalConfig.FMCVersion) {
         const res = await hillo.get('Category.php?op=withTableType', {
-          tableId: this.id, lang: GlobalConfig.lang
+          tableId: this.id,
+          lang: GlobalConfig.lang
         })
         for (const i of res.content) {
           if (!i.isActive) {
@@ -735,6 +759,7 @@ export default {
     readBuffer: function (clear = true) {
       const ins = this.buffer === '' ? this.input : this.buffer
       if (clear) {
+        this.displayInput = ''
         this.buffer = ''
         this.input = ''
       }
@@ -864,7 +889,10 @@ export default {
       this.localDiscountType = 0
     },
     async sendDiscount (discountStr) {
-      await hillo.post('Complex.php?op=setDiscount', { tableId: this.id, discountStr })
+      await hillo.post('Complex.php?op=setDiscount', {
+        tableId: this.id,
+        discountStr
+      })
       this.initialUI()
     },
 
@@ -1175,9 +1203,18 @@ export default {
       let availableIns = []
       if (this.input) {
         availableIns = availableIns.concat([
-          { value: '/', text: '/ Advanced instruction' },
-          { value: '/rp', text: '/rp ReprintOrder' },
-          { value: '/ps', text: '/ps PrintZwichenBon' }
+          {
+            value: '/',
+            text: '/ Advanced instruction'
+          },
+          {
+            value: '/rp',
+            text: '/rp ReprintOrder'
+          },
+          {
+            value: '/ps',
+            text: '/ps PrintZwichenBon'
+          }
         ])
         availableIns = availableIns.concat(this.dishesHint.normal.filter(f => f.value.startsWith(this.input)))
         if (this.input.startsWith('-')) {
