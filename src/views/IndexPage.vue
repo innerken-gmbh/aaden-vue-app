@@ -373,6 +373,7 @@ export default {
     },
     listenKeyDown (e) {
       if (Swal.isVisible()) {
+        Swal.clickConfirm()
         return
       }
       switch (e.key) {
