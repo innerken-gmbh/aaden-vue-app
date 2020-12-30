@@ -11,13 +11,13 @@
         <v-tab>{{ $t('百分比') }}</v-tab>
         <v-tab-item>
           <v-card-text>
-            <v-text-field readonly :label="$t('金额')"
+            <v-text-field :label="$t('金额')"
                           messages="zB.: 12.34" v-model="localDiscountStr"></v-text-field>
           </v-card-text>
         </v-tab-item>
         <v-tab-item>
           <v-card-text>
-            <v-text-field readonly :label="$t('百分比')"
+            <v-text-field :label="$t('百分比')"
                           messages="1-99" v-model="localDiscountStr"></v-text-field>
           </v-card-text>
         </v-tab-item>
