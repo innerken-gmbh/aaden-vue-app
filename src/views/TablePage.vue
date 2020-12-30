@@ -226,18 +226,18 @@
           </div>
           <v-card v-if="Config.useTouchScreenUI" elevation="0" color="transparent" v-cloak class="flex-grow-1 d-flex"
                   style="height: calc(100vh - 48px);max-width: calc(100vw - 300px)">
-
             <v-card width="calc(100% - 372px)" v-dragscroll color="transparent"
                     class="dragscroll dishCardListContainer ml-1">
               <v-sheet class="px-2">
                 <v-chip-group column mandatory v-model="activeCategory">
-                  <v-chip @click="changeCategory(-1)" elevation="3" v-dragscroll
+                  <v-chip label large @click="changeCategory(-1)" elevation="3" v-dragscroll
                           style=" overflow: hidden">Alle
                   </v-chip>
                   <template v-for="category of filteredC">
-                    <v-chip style="text-transform: capitalize;font-size: 16px"
+                    <v-chip large label
                             v-bind:key="'categorytypes'+category.id"
                             @click="changeCategory(category.id)"
+                            style="text-transform: capitalize;font-size: 18px"
                             :style="{backgroundColor:category.color, color:getColorLightness(category.color)>128?'#000 !important':'#fff !important'}">
                       {{ category.name }}
                     </v-chip>
@@ -353,40 +353,13 @@
           </div>
         </div>
       </template>
-      <v-dialog max-width="600px" v-model="discountModelShow">
-        <v-card>
-          <v-toolbar>
-            <v-toolbar-title>{{ $t('折扣') }}</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-icon @click="discountModelShow=!discountModelShow">mdi-close</v-icon>
-          </v-toolbar>
-          <v-tabs v-model="localDiscountType" vertical>
-            <v-tab>{{ $t('现金') }}</v-tab>
-            <v-tab>{{ $t('百分比') }}</v-tab>
-            <v-tab-item>
-              <v-card-text>
-                <v-text-field autofocus :label="$t('金额')"
-                              messages="zB.: 12.34" v-model="localDiscountStr"></v-text-field>
-              </v-card-text>
-            </v-tab-item>
-            <v-tab-item>
-              <v-card-text>
-                <v-text-field autofocus :label="$t('百分比')"
-                              messages="1-99" v-model="localDiscountStr"></v-text-field>
-              </v-card-text>
-            </v-tab-item>
-          </v-tabs>
-          <v-card-actions>
-            <div class="d-flex flex-wrap">
-              <template v-for="d in predefinedDiscount">
-                <v-btn @click="sendDiscount(d)" :key="d">-{{ d.replace('p', '%') }}</v-btn>
-              </template>
-            </div>
-            <v-spacer></v-spacer>
-            <v-btn @click="submitDiscount">{{ $t('确定') }}</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      <discount-dialog
+          :discount-model-show="discountModelShow"
+          :id="id"
+          :initial-u-i="initialUI"
+          ref="discount"
+          @visibility-changed="(val)=>this.discountModelShow=val"
+      />
       <ModificationDrawer
           @visibility-changed="changeModification"
           :modification-show="modificationShow"
@@ -456,6 +429,7 @@ import DishBlock from '@/components/DishBlock'
 import moment from 'moment'
 import IKUtils from 'innerken-js-utils'
 import Keyboard from '@/components/Keyboard'
+import DiscountDialog from '@/components/fragments/DiscountDialog'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -478,6 +452,7 @@ export default {
     dragscroll
   },
   components: {
+    DiscountDialog,
     Keyboard,
     DishBlock,
     TablePageMenu,
@@ -556,10 +531,7 @@ export default {
         tableBasicInfo: { name: '' }
       },
 
-      password: '',
-      localDiscountStr: '',
-      localDiscountType: '',
-      predefinedDiscount: []
+      password: ''
     }
   },
   beforeDestroy () {
@@ -603,22 +575,7 @@ export default {
       }
       this.input = this.displayInput
     },
-    getAllPredefinedDiscount () {
-      this.predefinedDiscount = (GlobalConfig.getSettings('predefinedDiscount') ?? '').split(',').filter(t => t !== '')
-      // console.log(this.predefinedDiscount, 'Discount')
-    },
-    addNewPredefinedDiscount (str) {
-      this.getAllPredefinedDiscount()
-      if (!this.predefinedDiscount.includes(str)) {
-        this.predefinedDiscount.push(str)
-        if (this.predefinedDiscount.length > 10) {
-          this.predefinedDiscount.shift()
-        }
-        // console.log(this.predefinedDiscount.join(','))
-        GlobalConfig.updateSettings('predefinedDiscount', this.predefinedDiscount.join(','))
-        this.getAllPredefinedDiscount()
-      }
-    },
+
     changeCategory (id, toggle) {
       if (toggle) {
         toggle()
@@ -860,7 +817,6 @@ export default {
       this.getTableDetail()
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
-      this.getAllPredefinedDiscount()
       blockReady()
     },
     back () {
@@ -882,18 +838,9 @@ export default {
       blockReady()
     },
     async submitDiscount () {
-      const discountStr = this.localDiscountStr + (this.localDiscountType === 1 ? 'p' : '')
-      this.addNewPredefinedDiscount(discountStr)
-      await this.sendDiscount(discountStr)
-      this.localDiscountStr = ''
-      this.localDiscountType = 0
-    },
-    async sendDiscount (discountStr) {
-      await hillo.post('Complex.php?op=setDiscount', {
-        tableId: this.id,
-        discountStr
-      })
-      this.initialUI()
+      if (this.$refs.discount) {
+        this.$refs.discount.submitDiscount()
+      }
     },
 
     checkOut (pw, print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
