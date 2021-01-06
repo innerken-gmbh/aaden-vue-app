@@ -459,7 +459,7 @@ const defaultCurrentDish = {
 }
 const keyboardLayout =
     [
-      'E', 'F', 'X', 'R',
+      'E', 'F', 'B', 'R',
       'W', 'M', 'C', 'A',
       '7', '8', '9', 'mdi-autorenew',
       '4', '5', '6', 'K',
@@ -585,7 +585,7 @@ export default {
         case 'C':
         case 'E':
         case 'F':
-        case 'X':
+        case 'B':
         case 'R':
           this.displayInput += key
           break
