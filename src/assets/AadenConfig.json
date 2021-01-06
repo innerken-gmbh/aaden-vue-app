@@ -29,7 +29,7 @@
   "useDeleteDishReason": true,
   "autoCompletePLZ": "",
   "useAdvanceOpenTakeawayTable": false,
-  "activeCardBackground": "#fff",
+  "activeCardBackground": "#ffffff",
   "useTouchScreenUI": false,
   "useDishListMenu": true
 }
