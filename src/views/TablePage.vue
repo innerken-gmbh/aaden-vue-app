@@ -4,9 +4,13 @@
       <navgation>
         <template slot="left">
           <v-toolbar-items>
-            <v-btn tile class="primary ml-n3 mr-2" @click="back">
+            <v-btn tile class="primary ml-n3" @click="back">
               <v-icon>mdi-home</v-icon>
               HOME
+            </v-btn>
+            <v-btn tile disabled class="mr-4">
+                   <v-icon left>mdi-account-outline</v-icon>
+                   {{ tableDetailInfo.servant }}
             </v-btn>
           </v-toolbar-items>
 
@@ -40,13 +44,11 @@
         </template>
         <template slot="right-slot">
           <div class="d-flex align-center justify-space-between" style="min-width: 172px">
-                        <span class="bigTableName">
+            <span class="bigTableName">
                             {{ tableDetailInfo.tableBasicInfo.name }}
                         </span>
-
             <div class="d-flex">
-
-                            <span class="icon-line">
+                            <span class="icon-line ml-2">
                                 <v-icon color="white">mdi-account-outline</v-icon>
                                 <span class="ml-1">{{ tableDetailInfo.personCount }}</span>
                             </span>
@@ -361,6 +363,7 @@
           @visibility-changed="(val)=>this.discountModelShow=val"
       />
       <ModificationDrawer
+          ref="modification"
           @visibility-changed="changeModification"
           :modification-show="modificationShow"
           :dish="dish"
@@ -634,6 +637,8 @@ export default {
           ? dish.name.substr(0, 28) + '...' : dish.name
         if (dish.haveMod > 0) {
           this.showModification(dish, count)
+          console.log('here release')
+          blockReady()
           return
         }
 
@@ -974,7 +979,9 @@ export default {
     },
     //* findInsDecode*/
     async insDecode (t) {
+      console.log('i run', t)
       if (isBlocking()) {
+        console.log('blocked')
         return
       }
       if (t !== '' && t !== null) {
@@ -998,6 +1005,11 @@ export default {
         if (this.discountModelShow) {
           this.submitDiscount()
           blockReady()
+          return
+        } else if (this.modificationShow) {
+          this.$refs.modification.forceSubmit()
+          blockReady()
+          return
         } else if (!this.checkoutShow && !this.modificationShow) {
           if (this.cartListModel.list.length > 0) {
             setTimeout(async () => {

@@ -51,6 +51,9 @@ export default {
     }
   },
   methods: {
+    forceSubmit () {
+      this.$refs.modification.submitModification()
+    },
     submit: function (mod, count, saveInfo, dish) {
       this.mod(mod, dish, count, saveInfo)
       this.realShow = false

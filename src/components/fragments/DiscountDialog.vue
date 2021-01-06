@@ -105,12 +105,12 @@ export default {
           break
       }
     },
-    getAllPredefinedDiscount () {
-      this.predefinedDiscount = (GlobalConfig.getSettings('predefinedDiscount') ?? '').split(',').filter(t => t !== '')
+    async getAllPredefinedDiscount () {
+      this.predefinedDiscount = (await GlobalConfig.getSettings('predefinedDiscount') ?? '').split(',').filter(t => t !== '')
       // console.log(this.predefinedDiscount, 'Discount')
     },
-    addNewPredefinedDiscount (str) {
-      this.getAllPredefinedDiscount()
+    async addNewPredefinedDiscount (str) {
+      await this.getAllPredefinedDiscount()
       if (!this.predefinedDiscount.includes(str)) {
         this.predefinedDiscount.push(str)
         if (this.predefinedDiscount.length > 10) {

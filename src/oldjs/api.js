@@ -170,6 +170,10 @@ export async function popMergeTablePanel (tableName) {
   }
 }
 
+export async function getServantList () {
+  return (await hillo.get('Servant.php')).content
+}
+
 export async function getRestaurantInfo () {
   return hillo.get('Restaurant.php?op=view')
 }

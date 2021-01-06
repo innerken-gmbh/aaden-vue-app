@@ -77,6 +77,7 @@
           </v-btn>
         </v-toolbar-items>
         <v-text-field
+            v-if="!Config.useTouchScreenUI"
             ref="ins" v-model="buffer"
             single-line
             hide-details
@@ -147,9 +148,9 @@
         </v-menu>
       </template>
     </Navgation>
-    <v-main>
-      <div class="center-panel" id="centerPanel">
-        <div v-dragscroll class="tableDisplay">
+    <v-main style="background: #f6f6f6;">
+      <div class="d-flex flex-nowrap" style="width: 100vw">
+        <div v-dragscroll class="tableDisplay flex-grow-1">
           <div v-cloak class="areaC" id="areaC">
             <div :key="area.name" v-cloak v-for="area in realArea" class="area">
               <div class="areaTitle">{{ area.areaName }}</div>
@@ -225,11 +226,28 @@
             </div>
           </div>
         </div>
+        <template v-if="Config.useTouchScreenUI">
+          <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
+            <v-spacer></v-spacer>
+            <div>
+              <div class="pa-2">{{ currentServant.name }}:{{ currentKeyboardFunction }}</div>
+              <v-text-field
+                  class="ma-2"
+                  hide-details
+                  clearable
+                  style="font-size: 36px"
+                  ref="ins"
+                  v-model="buffer"
+                  :autofocus="Config.getFocus"
+              />
+              <keyboard @input="numberInput" :keys="keyboardLayout"/>
+            </div>
+
+          </v-card>
+        </template>
       </div>
     </v-main>
-
-      <address-form :menu-show="showOpenTakeawayTableDialog"></address-form>
-
+    <address-form :menu-show="showOpenTakeawayTableDialog"></address-form>
   </v-app>
 </template>
 
@@ -245,7 +263,8 @@ import {
   openOrEnterTable,
   popAuthorize,
   requestOutTable,
-  Strings
+  Strings,
+  toastError
 } from '@/oldjs/common'
 import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
@@ -255,16 +274,31 @@ import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
 import TimeDisplay from '@/components/TimeDisplay'
-import { fetchOrder, getColorLightness, getRestaurantInfo } from '@/oldjs/api'
+import { fetchOrder, getColorLightness, getRestaurantInfo, getServantList } from '@/oldjs/api'
 import IKUtils from 'innerken-js-utils'
 import AddressForm from '@/components/AddressForm'
+import Keyboard from '@/components/Keyboard'
+
+const keyboardLayout =
+    [
+      'A', 'B', 'C', 'mdi-account-box',
+      '7', '8', '9', 'mdi-autorenew',
+      '4', '5', '6', 'K',
+      '1', '2', '3', 'T',
+      'D', '0', 'G', 'OK'
+    ]
+
+const keyboardFunctions = {
+  OpenTable: '输入桌号以开桌',
+  ChangeServant: '请输入新的跑堂密码'
+}
 
 export default {
   name: 'IndexPage',
   directives: {
     dragscroll
   },
-  components: { AddressForm, TimeDisplay, Navgation },
+  components: { Keyboard, AddressForm, TimeDisplay, Navgation },
   props: {
     refresh: {
       type: Number
@@ -272,12 +306,15 @@ export default {
   },
   data: function () {
     return {
+      keyboardLayout,
+      keyboardFunctions,
+      currentKeyboardFunction: keyboardFunctions.OpenTable,
       NeededKeys,
+      currentServant: { name: '' },
       menu: null,
       menu1: null,
-
       showOpenTakeawayTableDialog: null,
-
+      servantList: [],
       version: version,
       onlyActive: GlobalConfig.FMCVersion,
       reservations: [],
@@ -319,6 +356,45 @@ export default {
     }
   },
   methods: {
+    numberInput (key) {
+      if (!this.buffer) {
+        this.buffer = ''
+      }
+      switch (key) {
+        case 'A':
+        case 'B':
+        case 'D':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+        case '0':
+        case 'K':
+        case 'T':
+        case 'G':
+        case 'W':
+        case 'M':
+        case 'C':
+          this.buffer += key
+          break
+        case 'mdi-autorenew':
+          this.buffer = ''
+          break
+        case 'mdi-account-box':
+          this.currentKeyboardFunction = keyboardFunctions.ChangeServant
+          break
+        case 'OK':
+          this.insDecode(this.readBuffer())
+          this.buffer = ''
+          break
+      }
+      this.input = this.displayInput
+    },
     takeawayClicked () {
       if (GlobalConfig.useAdvanceOpenTakeawayTable) {
         this.showOpenTakeawayTableDialog = true
@@ -338,6 +414,7 @@ export default {
     requestOutTable,
     initialUI () {
       this.$refs.ins.focus()
+      this.currentKeyboardFunction = keyboardFunctions.OpenTable
       blockReady()
     },
     playSound (count = 3) {
@@ -395,33 +472,54 @@ export default {
       }
       return ins
     },
-    insDecode (t) {
-      if (t !== '') {
-        const escapeStr = '--//'
-        if (t.startsWith(escapeStr)) {
-          t = t.substr(escapeStr.length)
-          if (t.startsWith('d')) {
-            t = t.substr(1)
-            setDeviceId(t)
+    findServant (pw) {
+      if (this.servantList.length > 0) {
+        return this.servantList.find(s => s.password === pw)
+      }
+    },
+    async insDecode (t) {
+      if (this.currentKeyboardFunction === keyboardFunctions.OpenTable) {
+        if (t !== '') {
+          const escapeStr = '--//'
+          if (t.startsWith(escapeStr)) {
+            t = t.substr(escapeStr.length)
+            if (t.startsWith('d')) {
+              t = t.substr(1)
+              setDeviceId(t)
+            }
+            if (t === 'c') {
+              GlobalConfig.Protocol = 'http://'
+              useCurrentConfig()
+            } else if (t === 'h') {
+              GlobalConfig.Protocol = 'https://'
+              useCurrentConfig()
+            }
+            if (t.startsWith('f/')) {
+              t = t.substr(2)
+              // eslint-disable-next-line no-eval
+              eval(t)
+            }
+          } else if (t === 'w') {
+            popAuthorize('', requestOutTable)
+          } else if (t === 'l') {
+            popAuthorize('', this.toManage)
+          } else {
+            this.openOrEnterTable(t)
           }
-          if (t === 'c') {
-            GlobalConfig.Protocol = 'http://'
-            useCurrentConfig()
-          } else if (t === 'h') {
-            GlobalConfig.Protocol = 'https://'
-            useCurrentConfig()
+        }
+      } else {
+        if (t !== '') {
+          const servant = this.findServant(t)
+          this.readBuffer(true)
+          if (!servant) {
+            toastError('Passwort ist nicht gült')
+            return
           }
-          if (t.startsWith('f/')) {
-            t = t.substr(2)
-            // eslint-disable-next-line no-eval
-            eval(t)
-          }
-        } else if (t === 'w') {
-          popAuthorize('', requestOutTable)
-        } else if (t === 'l') {
-          popAuthorize('', this.toManage)
-        } else {
-          this.openOrEnterTable(t)
+          GlobalConfig.updateSettings('defaultPassword', t)
+          GlobalConfig.defaultPassword = t
+          console.log(GlobalConfig.defaultPassword)
+          this.currentServant = servant
+          this.currentKeyboardFunction = keyboardFunctions.OpenTable
         }
       }
     },
@@ -463,6 +561,11 @@ export default {
     this.initPage()
 
     this.restaurantInfo = Object.assign(this.restaurantInfo, (await getRestaurantInfo()).content[0])
+    this.servantList = await getServantList()
+    if (GlobalConfig.defaultPassword) {
+      this.currentServant = this.findServant(GlobalConfig.defaultPassword)
+    }
+    console.log(this.servantList)
   },
   beforeDestroy () {
     clearAllTimer()
@@ -482,7 +585,7 @@ export default {
 }
 
 .areaTableContainer {
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 112px);
   margin-top: 18px;
   display: grid;
   grid-auto-flow: column;
@@ -590,17 +693,12 @@ export default {
 }
 
 .area {
-  max-height: calc(100vh - 48px);
+  max-height: calc(100vh - 72px);
   margin-right: 14px;
 }
 
 .area:last-child {
   margin-right: 380px;
-}
-
-.center-panel {
-  background: #f6f6f6;
-  width: 100vw;
 }
 
 /*input:focus{*/
