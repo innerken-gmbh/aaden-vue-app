@@ -163,7 +163,7 @@
                   <div v-bind:key="table.name">
                     <v-card v-if="table.usageStatus==='1'"
                             class="tableCard"
-                            :dark="getColorLightness(Config.activeCardBackground)>128"
+                            :dark="getColorLightness(Config.activeCardBackground)<128"
                             :style="{backgroundColor:Config.activeCardBackground}"
                             @click='openOrEnterTable(table.tableName)'>
                       <div :style="{fontSize:Config.tableCardFontSize+'px'}"

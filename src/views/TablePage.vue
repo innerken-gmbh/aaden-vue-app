@@ -355,6 +355,21 @@
           </div>
         </div>
       </template>
+      <v-dialog max-width="300px" v-model="extraDishShow">
+        <v-card>
+          <v-card-title>  {{currentDish.name}}</v-card-title>
+          <v-card-text>
+            <v-text-field label="Preis" autofocus v-model="currentDish.currentPrice"/>
+            <v-text-field label="Name" v-model="currentDish.currentName"/>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer/>
+              <v-btn @click="addExtraDish">OK</v-btn>
+
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <discount-dialog
           :discount-model-show="discountModelShow"
           :id="id"
@@ -438,9 +453,13 @@ const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
 const orderListFactory = StandardDishesListFactory()
 const cartListFactory = StandardDishesListFactory()
-
+const defaultCurrentDish = {
+  currentName: '',
+  currentPrice: ''
+}
 const keyboardLayout =
     [
+      'E', 'F', 'X', 'R',
       'W', 'M', 'C', 'A',
       '7', '8', '9', 'mdi-autorenew',
       '4', '5', '6', 'K',
@@ -482,6 +501,7 @@ export default {
 
       menuShow: null, // 控制菜单是否显示
       checkoutShow: false,
+      extraDishShow: false,
       modificationShow: false,
       discountModelShow: null,
       isSendingRequest: false,
@@ -525,7 +545,7 @@ export default {
       splitOrderListModel: splitOrderFactory,
       orderListModel: orderListFactory,
       cartListModel: cartListFactory,
-
+      defaultCurrentDish,
       tableDetailInfo: {
         order: {
           id: -1,
@@ -533,7 +553,7 @@ export default {
         },
         tableBasicInfo: { name: '' }
       },
-
+      currentDish: defaultCurrentDish,
       password: ''
     }
   },
@@ -563,6 +583,10 @@ export default {
         case 'W':
         case 'M':
         case 'C':
+        case 'E':
+        case 'F':
+        case 'X':
+        case 'R':
           this.displayInput += key
           break
         case 'mdi-close':
@@ -637,11 +661,15 @@ export default {
           ? dish.name.substr(0, 28) + '...' : dish.name
         if (dish.haveMod > 0) {
           this.showModification(dish, count)
-          console.log('here release')
           blockReady()
           return
         }
-
+        if (dish.code.toLowerCase().includes('ea')) {
+          this.currentDish = Object.assign({}, defaultCurrentDish, dish)
+          this.extraDishShow = true
+          blockReady()
+          return
+        }
         this.addDish(dish, parseInt(count))
       } else {
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
@@ -759,23 +787,23 @@ export default {
       this.orderListModel.add(item, -1)
       this.splitOrderListModel.add(item, 1)
     },
-    addDish: async function (dish, count = 1) {
-      if (dish.code.toLowerCase().includes('ea')) {
-        dish.originPrice = (await Swal.fire({
-          title: 'Bitte Preis Eingabe',
-          input: 'number',
-          inputAttributes: {
-            min: -1000,
-            step: 0.01
-          }
-        })).value
-        if (dish.originPrice === '') {
-          dish.originPrice = 0
-        }
-
-        dish.price = dish.originPrice
-        dish.forceFormat = true
+    addExtraDish () {
+      const dish = IKUtils.deepCopy(this.currentDish)
+      if (dish.currentPrice === '') {
+        dish.currentPrice = 0
       }
+      if (dish.currentName === '') {
+        dish.currentName = dish.name
+      }
+      dish.originPrice = dish.currentPrice
+      dish.price = dish.originPrice
+      dish.forceFormat = true
+      dish.name = dish.currentName
+      this.extraDishShow = false
+      this.currentDish = { currentName: '', originPrice: '' }
+      this.addDish(dish)
+    },
+    addDish: async function (dish, count = 1) {
       if (!GlobalConfig.useCart) {
         const tmp = IKUtils.deepCopy(dish)
         tmp.count = 1
@@ -880,7 +908,8 @@ export default {
       }
     },
     autoGetFocus () {
-      if (this.modificationShow || this.checkoutShow || this.discountModelShow || this.menuShow) {
+      if (this.modificationShow || this.checkoutShow || this.discountModelShow ||
+          this.menuShow || this.extraDishShow) {
         return
       }
       if (Swal.isVisible()) {
@@ -979,9 +1008,7 @@ export default {
     },
     //* findInsDecode*/
     async insDecode (t) {
-      console.log('i run', t)
       if (isBlocking()) {
-        console.log('blocked')
         return
       }
       if (t !== '' && t !== null) {
@@ -1004,6 +1031,10 @@ export default {
       } else {
         if (this.discountModelShow) {
           this.submitDiscount()
+          blockReady()
+          return
+        } else if (this.extraDishShow) {
+          this.addExtraDish()
           blockReady()
           return
         } else if (this.modificationShow) {
