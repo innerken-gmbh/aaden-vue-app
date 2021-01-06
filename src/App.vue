@@ -29,6 +29,7 @@ export default {
     body {
         font-family: Arial, Lantinghei SC, sans-serif, serif;
         user-select: none;
+      overflow: hidden;
     }
 
     [v-cloak] {
