@@ -285,7 +285,7 @@ const keyboardLayout =
       '7', '8', '9', 'mdi-autorenew',
       '4', '5', '6', 'K',
       '1', '2', '3', 'T',
-      'D', '0', 'G', 'OK'
+      'D', '0', 'W', 'OK'
     ]
 
 const keyboardFunctions = {
