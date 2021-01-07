@@ -181,7 +181,7 @@ export async function getRestaurantInfo () {
 export function getColorLightness (c) {
   if (c?.startsWith('#')) {
     if (c.length < 5) {
-      c.append('fff')
+      c += 'fff'
     }
     const rgb = parseInt(c.substring(1), 16) // convert rrggbb to decimal
     const r = (rgb >> 16) & 0xff // extract red
