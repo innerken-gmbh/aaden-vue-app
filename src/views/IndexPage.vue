@@ -2,9 +2,13 @@
   <v-app>
     <Navgation>
       <template slot="left">
-        <v-app-bar-nav-icon @click="popAuthorize('boss',toManage)">
-          <v-icon>mdi-home-analytics</v-icon>
-        </v-app-bar-nav-icon>
+        <v-toolbar-items>
+          <v-btn tile class="primary ml-n4 mr-4" @click="popAuthorize('boss',toManage)">
+            <v-icon>mdi-home-analytics</v-icon>
+            HOME
+          </v-btn>
+        </v-toolbar-items>
+
         <v-toolbar-title>
           {{ $t('appName') }}
         </v-toolbar-title>
@@ -86,66 +90,69 @@
             prepend-inner-icon="mdi-magnify"
             placeholder="instruction.."
             :autofocus="Config.getFocus"/>
-        <v-menu
-            v-model="menu"
-            :close-on-content-click="false"
-            :nudge-width="300"
-            :max-height="600"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn v-bind="attrs"
-                   v-on="on"
-                   icon>
-              <v-icon>
-                mdi-cog-outline
-              </v-icon>
-            </v-btn>
-          </template>
-          <v-card color="white">
-            <v-list>
-              <v-list-item>
-                <v-list-item-avatar tile>
-                  <img src="@/assets/logo.png">
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title>Aaden App</v-list-item-title>
-                  <v-list-item-subtitle>
-                    Version <span v-show-quick-buy>FMC-</span>{{ version }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
+        <v-toolbar-items>
+          <v-menu
+              v-model="menu"
+              :close-on-content-click="false"
+              :nudge-width="300"
+              :max-height="600"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-bind="attrs"
+                     v-on="on"
+                     icon>
+                <v-icon>
+                  mdi-cog-outline
+                </v-icon>
+              </v-btn>
+            </template>
+            <v-card color="white">
+              <v-list>
+                <v-list-item>
+                  <v-list-item-avatar tile>
+                    <img src="@/assets/logo.png">
+                  </v-list-item-avatar>
+                  <v-list-item-content>
+                    <v-list-item-title>Aaden App</v-list-item-title>
+                    <v-list-item-subtitle>
+                      Version <span v-show-quick-buy>FMC-</span>{{ version }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
 
-                <v-list-item-action>
-                  <v-icon>mdi-heart</v-icon>
-                </v-list-item-action>
-              </v-list-item>
-            </v-list>
-            <v-divider></v-divider>
-            <v-list dense>
-              <template v-for="key in NeededKeys">
-                <v-list-item dense :key="'config'+key">
-                  <v-list-item-title>{{ key }}</v-list-item-title>
-                  <template v-if="typeof Config[key]==='boolean'">
-                    <v-list-item-action>
-                      <v-switch v-model="Config[key]" color="purple"></v-switch>
-                    </v-list-item-action>
-                  </template>
-                  <template v-else>
-                    <v-list-item-action>
-                      <v-text-field v-model="Config[key]" color="purple"></v-text-field>
-                    </v-list-item-action>
-                  </template>
+                  <v-list-item-action>
+                    <v-icon>mdi-heart</v-icon>
+                  </v-list-item-action>
                 </v-list-item>
-              </template>
-            </v-list>
+              </v-list>
+              <v-divider></v-divider>
+              <v-list dense>
+                <template v-for="key in NeededKeys">
+                  <v-list-item dense :key="'config'+key">
+                    <v-list-item-title>{{ key }}</v-list-item-title>
+                    <template v-if="typeof Config[key]==='boolean'">
+                      <v-list-item-action>
+                        <v-switch v-model="Config[key]" color="purple"></v-switch>
+                      </v-list-item-action>
+                    </template>
+                    <template v-else>
+                      <v-list-item-action>
+                        <v-text-field v-model="Config[key]" color="purple"></v-text-field>
+                      </v-list-item-action>
+                    </template>
+                  </v-list-item>
+                </template>
+              </v-list>
 
-            <v-card-actions>
-              <v-btn text @click="hardReload">Clear</v-btn>
-              <v-spacer></v-spacer>
-              <v-btn text @click="menu = false">Cancel</v-btn>
-              <v-btn color="primary" text @click="useCurrentConfig">Save</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-menu>
+              <v-card-actions>
+                <v-btn text @click="hardReload">Clear</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn text @click="menu = false">Cancel</v-btn>
+                <v-btn color="primary" text @click="useCurrentConfig">Save</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-menu>
+        </v-toolbar-items>
+
       </template>
     </Navgation>
     <v-main style="background: #f6f6f6;">

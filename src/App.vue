@@ -25,8 +25,11 @@ export default {
         background: transparent;
         color: rgba(0, 0, 0, .87);
     }
-
+    ::-webkit-scrollbar {
+      display: none;
+    }
     body {
+
         font-family: Arial, Lantinghei SC, sans-serif, serif;
         user-select: none;
       overflow: hidden;

@@ -14,7 +14,7 @@
                     bottom
             >
                 <template v-slot:activator="{ on, attrs }">
-                    <v-btn
+                    <v-btn tile
                             icon
                             v-bind="attrs"
                             v-on="on"
@@ -23,15 +23,15 @@
                     </v-btn>
                 </template>
                 <v-list>
-                    <v-list-item
+                    <v-list-item @click="changeLanguage('ZH')"
                     >
-                        <v-list-item-title @click="changeLanguage('ZH')">{{ $t('langZH') }}</v-list-item-title>
+                        <v-list-item-title >{{ $t('langZH') }}</v-list-item-title>
                     </v-list-item>
-                    <v-list-item>
-                        <v-list-item-title @click="changeLanguage('EN')">{{ $t('langEN') }}</v-list-item-title>
+                    <v-list-item  @click="changeLanguage('EN')">
+                        <v-list-item-title>{{ $t('langEN') }}</v-list-item-title>
                     </v-list-item>
-                    <v-list-item>
-                        <v-list-item-title @click="changeLanguage('DE')">{{ $t('langDE') }}</v-list-item-title>
+                    <v-list-item  @click="changeLanguage('DE')">
+                        <v-list-item-title>{{ $t('langDE') }}</v-list-item-title>
                     </v-list-item>
                 </v-list>
             </v-menu>

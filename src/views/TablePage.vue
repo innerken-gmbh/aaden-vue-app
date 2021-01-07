@@ -228,7 +228,7 @@
           </div>
           <v-card v-if="Config.useTouchScreenUI" elevation="0" color="transparent" v-cloak class="flex-grow-1 d-flex"
                   style="height: calc(100vh - 48px);max-width: calc(100vw - 300px)">
-            <v-card width="calc(100% - 372px)" v-dragscroll color="transparent"
+            <v-card width="calc(100% - 30vw)" v-dragscroll color="transparent"
                     class="dragscroll dishCardListContainer ml-1">
               <v-sheet class="px-2">
                 <v-chip-group column mandatory v-model="activeCategory">
@@ -264,16 +264,8 @@
               </div>
             </v-card>
 
-            <v-card width="372px" class="d-flex flex-shrink-0 flex-column pa-2">
+            <v-card width="30vw" class="d-flex flex-shrink-0 flex-column pa-2">
               <div>
-                <v-btn class="my-1" color="primary" large block @click="popAuthorize('',checkOut)">
-                  <v-icon left>mdi-calculator-variant</v-icon>
-                  快速结账
-                </v-btn>
-                <v-btn @click="back" class="my-1" large block>
-                  <v-icon left>mdi-home</v-icon>
-                  回首页
-                </v-btn>
                 <v-btn class="my-1" @click="reprintOrder" large block>
                   <v-icon left>mdi-printer</v-icon>
                   {{ $t('重新打印') }}
@@ -305,7 +297,7 @@
       <template v-if="splitOrderListModel.list.length>0">
         <div class="bottomCart surface d-flex justify-end"
              style="background: rgba(0,0,0,0.4);  top: 0;
-  right: 304px;
+  right: calc(30vw + 4px);
   z-index: 5;"
              :style="Config.useTouchScreenUI?{
                left:'304px'
@@ -1347,19 +1339,7 @@ tr:hover {
 
 @media screen and (max-width: 1280px ) {
   .dishCardList {
-    grid-template-columns: repeat(5, 1fr);
-  }
-}
-
-@media screen and (max-width: 1000px ) {
-  .dishCardList {
     grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media screen and (max-width: 600px ) {
-  .dishCardList {
-    grid-template-columns: repeat(3, 1fr);
   }
 }
 
