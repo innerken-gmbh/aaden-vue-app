@@ -157,7 +157,10 @@
     </Navgation>
     <v-main style="background: #f6f6f6;">
       <div class="d-flex flex-nowrap" style="width: 100vw">
-        <div v-dragscroll v-if="Config.useTableBluePrint" class=""></div>
+        <template v-if="Config.useTableBluePrint">
+            <table-blue-print :current-section="currentSection"></table-blue-print>
+        </template>
+
         <div v-dragscroll v-else class="tableDisplay flex-grow-1">
           <div v-cloak class="areaC" id="areaC">
             <div :key="area.name" v-cloak v-for="area in realArea" class="area">
@@ -236,6 +239,9 @@
         </div>
         <template v-if="Config.useTouchScreenUI">
           <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
+            <div>{{ currentSection.name }} size:{{ currentSection.sizeY * currentSection.sizeX }}</div>
+            <v-slider :label="currentSection.sizeX+''" v-model="currentSection.sizeX" min="8" max="24"></v-slider>
+            <v-slider :label="currentSection.sizeY+''" v-model="currentSection.sizeY" min="8" max="24"></v-slider>
             <v-spacer></v-spacer>
             <div>
               <div class="pa-2">{{ currentServant.name }}:{{ currentKeyboardFunction }}</div>
@@ -286,6 +292,8 @@ import { fetchOrder, getColorLightness, getRestaurantInfo, getServantList } from
 import IKUtils from 'innerken-js-utils'
 import AddressForm from '@/components/AddressForm'
 import Keyboard from '@/components/Keyboard'
+import TableBluePrint from '@/components/TableBluePrint'
+import { defaultSection } from '@/oldjs/defaultConst'
 
 const keyboardLayout =
     [
@@ -306,7 +314,7 @@ export default {
   directives: {
     dragscroll
   },
-  components: { Keyboard, AddressForm, TimeDisplay, Navgation },
+  components: { TableBluePrint, Keyboard, AddressForm, TimeDisplay, Navgation },
   props: {
     refresh: {
       type: Number
@@ -316,6 +324,7 @@ export default {
     return {
       keyboardLayout,
       keyboardFunctions,
+      currentSection: defaultSection,
       currentKeyboardFunction: keyboardFunctions.OpenTable,
       NeededKeys,
       currentServant: { name: '' },
@@ -340,7 +349,8 @@ export default {
       Strings,
       focusTimer: null,
       falsePrinterList: [],
-      printingList: []
+      printingList: [],
+      tableList: []
     }
   },
   watch: {
