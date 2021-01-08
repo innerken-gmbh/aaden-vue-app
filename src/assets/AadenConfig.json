@@ -31,5 +31,6 @@
   "useAdvanceOpenTakeawayTable": false,
   "activeCardBackground": "#ffffff",
   "useTouchScreenUI": false,
-  "useDishListMenu": true
+  "useDishListMenu": true,
+  "useTableBluePrint": false
 }

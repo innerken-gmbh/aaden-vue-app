@@ -157,8 +157,8 @@
     </Navgation>
     <v-main style="background: #f6f6f6;">
       <div class="d-flex flex-nowrap" style="width: 100vw">
-        <div v-dragscroll class=""></div>
-        <div v-dragscroll class="tableDisplay flex-grow-1">
+        <div v-dragscroll v-if="Config.useTableBluePrint" class=""></div>
+        <div v-dragscroll v-else class="tableDisplay flex-grow-1">
           <div v-cloak class="areaC" id="areaC">
             <div :key="area.name" v-cloak v-for="area in realArea" class="area">
               <div class="areaTitle">{{ area.areaName }}</div>
