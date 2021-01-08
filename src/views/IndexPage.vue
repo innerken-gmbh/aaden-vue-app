@@ -165,8 +165,7 @@
               <div class="areaTableContainer"
                    :style="{
                    gridTemplateRows:'repeat(auto-fill,'+Config.gridSize+'px)',
-                   gridAutoColumns:Config.gridSizeX+'px'
-              }">
+                   gridAutoColumns:Config.gridSizeX+'px' }">
                 <template v-for="table in area.tables">
                   <div v-bind:key="table.name">
                     <v-card v-if="table.usageStatus==='1'"
