@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "precache-manifest.a66ba947202cb22b8425f0d677fb345a.js"
+  "precache-manifest.997c77c6d3f3c4e569672f9f16dc09d0.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "aaden-admin"});
