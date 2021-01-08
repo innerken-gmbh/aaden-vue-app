@@ -157,15 +157,16 @@
     </Navgation>
     <v-main style="background: #f6f6f6;">
       <div class="d-flex flex-nowrap" style="width: 100vw">
+        <div v-dragscroll class=""></div>
         <div v-dragscroll class="tableDisplay flex-grow-1">
           <div v-cloak class="areaC" id="areaC">
             <div :key="area.name" v-cloak v-for="area in realArea" class="area">
               <div class="areaTitle">{{ area.areaName }}</div>
               <div class="areaTableContainer"
                    :style="{
-                              gridTemplateRows:'repeat(auto-fill,'+Config.gridSize+'px)',
-                              gridAutoColumns:Config.gridSizeX+'px'
-                            }">
+                   gridTemplateRows:'repeat(auto-fill,'+Config.gridSize+'px)',
+                   gridAutoColumns:Config.gridSizeX+'px'
+              }">
                 <template v-for="table in area.tables">
                   <div v-bind:key="table.name">
                     <v-card v-if="table.usageStatus==='1'"
