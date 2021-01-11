@@ -1066,6 +1066,10 @@ export default {
     async orderDish (order = this.cartListModel.list, print = true) {
       try {
         this.isSendingRequest = true
+        order.forEach(o => {
+          console.log(o)
+          o.guestNumber = 1
+        })
         await hillo.post('Complex.php?op=addDishesToTable', {
           params: JSON.stringify(order),
           tableId: this.id,

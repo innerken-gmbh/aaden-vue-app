@@ -73,7 +73,7 @@
             <v-icon left>mdi-truck-fast</v-icon>
             {{ $t('takeaway') }}
           </v-btn>
-          <v-btn :color="onlyActive?'primary':'transparent'" @click="onlyActive=!onlyActive">
+          <v-btn v-if="!Config.useTableBluePrint" :color="onlyActive?'primary':'transparent'" @click="onlyActive=!onlyActive">
             {{ $t('只看活跃') }}
           </v-btn>
           <v-btn @click="fetchOrder">
@@ -155,111 +155,177 @@
 
       </template>
     </Navgation>
-    <v-main style="background: #f6f6f6;">
+    <v-main style=" width: 100vw" >
       <div class="d-flex flex-nowrap" style="width: 100vw">
-        <template v-if="Config.useTableBluePrint">
-            <table-blue-print :current-section="currentSection"></table-blue-print>
-        </template>
+        <v-card class="flex-grow-1" >
+          <v-toolbar dense>
+            <v-tabs v-model="currentSectionIndex">
+              <template v-for="area of areas">
+                <v-tab :key="area.areaName">
+                  {{area.areaName}}
+                </v-tab>
+              </template>
 
-        <div v-dragscroll v-else class="tableDisplay flex-grow-1">
-          <div v-cloak class="areaC" id="areaC">
-            <div :key="area.name" v-cloak v-for="area in realArea" class="area">
-              <div class="areaTitle">{{ area.areaName }}</div>
-              <div class="areaTableContainer"
-                   :style="{
+            </v-tabs>
+            <v-spacer></v-spacer>
+            <v-toolbar-items class="mr-2">
+              <v-btn @click="isEditing=!isEditing" :dark="isEditing">
+                <v-icon>mdi-pencil-box</v-icon>
+              </v-btn>
+            </v-toolbar-items>
+            Size:{{ currentSection.sizeY * currentSection.sizeX }}
+          </v-toolbar>
+          <template v-if="Config.useTableBluePrint">
+            <table-blue-print
+                :show-coordinate="showCoordinate"
+                :editing="isEditing"
+                :current-table.sync="currentTable"
+                :current-section="currentSection"/>
+          </template>
+          <div v-dragscroll v-else class="tableDisplay flex-grow-1">
+            <div v-cloak class="areaC" id="areaC">
+              <div :key="area.name" v-cloak v-for="area in realArea" class="area">
+                <div class="areaTitle">{{ area.areaName }}</div>
+                <div class="areaTableContainer"
+                     :style="{
                    gridTemplateRows:'repeat(auto-fill,'+Config.gridSize+'px)',
                    gridAutoColumns:Config.gridSizeX+'px'
               }">
-                <template v-for="table in area.tables">
-                  <div v-bind:key="table.name">
-                    <v-card v-if="table.usageStatus==='1'"
-                            class="tableCard"
-                            :dark="getColorLightness(Config.activeCardBackground)<128"
-                            :style="{backgroundColor:Config.activeCardBackground}"
-                            @click='openOrEnterTable(table.tableName)'>
-                      <div :style="{fontSize:Config.tableCardFontSize+'px'}"
-                           class="tableCardName">{{ table.tableName }}
-                      </div>
-                      <div v-if="Config.gridSize>=84">
-                        <div class="d-flex justify-space-between">
-                          <div class="tableIconRow">
-                            <span class="tableBold">{{ table.createTimestamp }}</span>
-                          </div>
-                          <div class="tableIconRow justify-end">
+                  <template v-for="table in area.tables">
+                    <div v-bind:key="table.name">
+                      <v-card v-if="table.usageStatus==='1'"
+                              class="tableCard"
+                              :dark="getColorLightness(Config.activeCardBackground)<128"
+                              :style="{backgroundColor:Config.activeCardBackground}"
+                              @click='openOrEnterTable(table.tableName)'>
+                        <div :style="{fontSize:Config.tableCardFontSize+'px'}"
+                             class="tableCardName">{{ table.tableName }}
+                        </div>
+                        <div v-if="Config.gridSize>=84">
+                          <div class="d-flex justify-space-between">
+                            <div class="tableIconRow">
+                              <span class="tableBold">{{ table.createTimestamp }}</span>
+                            </div>
+                            <div class="tableIconRow justify-end">
                                                         <span
                                                             :style="{
                                                           color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}"
                                                             class="tableBold">{{
                                                             findConsumeTypeById(table.consumeType)
                                                           }}</span>
+                            </div>
                           </div>
-                        </div>
-                        <v-card v-if="Config.gridSize>=116" elevation="0"
-                                :dark="getColorLightness(parseInt(table.callService)===1?restaurantInfo.callColor:
+                          <v-card v-if="Config.gridSize>=116" elevation="0"
+                                  :dark="getColorLightness(parseInt(table.callService)===1?restaurantInfo.callColor:
                                              restaurantInfo.tableColor)<128"
-                                :color="parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor"
-                                tile
-                                class="d-flex justify-space-between px-2 py-1 rounded-b rounded-tr">
-                          <template v-if="['1','2','3','5'].includes(table.consumeType)">
-                            <div class="d-flex align-center">
-                              <v-icon small>mdi-silverware-fork-knife</v-icon>
-                              <span class="ml-1">{{ table.dishCount === null ? 0 : table.dishCount }}</span>
-                            </div>
-                            <div class="d-flex align-center" v-if="table.consumeType!=='2'">
-                              <v-icon small>mdi-account</v-icon>
-                              <span>{{ table.seatCount }}</span>
-                            </div>
-                          </template>
-                          <template v-else>
-                            <div class="tableIconRow">
-                              <i class="icon material-icons">person_outline</i>
-                              <div class="text">{{ table.seatCount }}</div>
-                            </div>
-                            <div class="tableIconRow">
-                              <i class="icon material-icons">child_care</i>
-                              <div class="text">{{ table.childCount }}</div>
-                            </div>
-                          </template>
-                        </v-card>
-                      </div>
-
-                    </v-card>
-                    <div v-else @click="openOrEnterTable(table.tableName)"
-                         class="tableCard notUsed">
-                      <div :style="{fontSize:Config.tableCardFontSize+'px'}"
-                           class="tableCardName">
-                        {{ table.tableName }}
+                                  :color="parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor"
+                                  tile
+                                  class="d-flex justify-space-between px-2 py-1 rounded-b rounded-tr">
+                            <template v-if="['1','2','3','5'].includes(table.consumeType)">
+                              <div class="d-flex align-center">
+                                <v-icon small>mdi-silverware-fork-knife</v-icon>
+                                <span class="ml-1">{{ table.dishCount === null ? 0 : table.dishCount }}</span>
+                              </div>
+                              <div class="d-flex align-center" v-if="table.consumeType!=='2'">
+                                <v-icon small>mdi-account</v-icon>
+                                <span>{{ table.seatCount }}</span>
+                              </div>
+                            </template>
+                            <template v-else>
+                              <div class="tableIconRow">
+                                <i class="icon material-icons">person_outline</i>
+                                <div class="text">{{ table.seatCount }}</div>
+                              </div>
+                              <div class="tableIconRow">
+                                <i class="icon material-icons">child_care</i>
+                                <div class="text">{{ table.childCount }}</div>
+                              </div>
+                            </template>
+                          </v-card>
+                        </div>
+                      </v-card>
+                      <div v-else @click="openOrEnterTable(table.tableName)"
+                           class="tableCard notUsed">
+                        <div :style="{fontSize:Config.tableCardFontSize+'px'}"
+                             class="tableCardName">
+                          {{ table.tableName }}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </template>
+                  </template>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </v-card>
         <template v-if="Config.useTouchScreenUI">
           <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
-            <div>{{ currentSection.name }} size:{{ currentSection.sizeY * currentSection.sizeX }}</div>
-            <v-slider :label="currentSection.sizeX+''" v-model="currentSection.sizeX" min="8" max="24"></v-slider>
-            <v-slider :label="currentSection.sizeY+''" v-model="currentSection.sizeY" min="8" max="24"></v-slider>
-            <v-spacer></v-spacer>
-            <div>
-              <div class="pa-2">{{ currentServant.name }}:{{ currentKeyboardFunction }}</div>
-              <v-text-field
-                  class="ma-2"
-                  hide-details
-                  clearable
-                  style="font-size: 36px"
-                  ref="ins"
-                  v-model="buffer"
-                  :autofocus="Config.getFocus"
-              />
-              <keyboard @input="numberInput" :keys="keyboardLayout"/>
-            </div>
+            <template v-if="isEditing">
+              <div class="flex-grow-0">
+                <v-slider hide-details label="Size-X" v-model="currentSection.sizeX" min="8" max="32">
+                  <template v-slot:append>
+                    <v-text-field
+                        hide-details
+                        v-model="currentSection.sizeX"
+                        class="mt-0 pt-0"
+                        type="number"
+                        style="width: 60px"
+                    ></v-text-field>
+                  </template>
+                </v-slider>
+                <v-slider hide-details label="Size-Y" v-model="currentSection.sizeY" min="8" max="24">
+                  <template v-slot:append>
+                    <v-text-field
+                        hide-details
+                        v-model="currentSection.sizeY"
+                        class="mt-0 pt-0"
+                        type="number"
+                        style="width: 60px"
+                    ></v-text-field>
+                  </template>
+                </v-slider>
+              </div>
+              <div v-if="currentTable" class="currentTablePanel">
+                <v-text-field  v-model="currentTable.tableName" label="当前桌名"></v-text-field>
+                <v-slider v-model="currentTable.radius" label="桌子圆角"></v-slider>
+              </div>
+            </template>
+            <template v-if="!isEditing">
+              <v-card style="overflow: scroll" class="flex-grow-1">
+                <div :key="t.id"
+                     @click="openOrEnterTable(t.tableName)"
+                     v-for="t in orderList" class="pa-2 d-flex justify-space-between align-center"
+                     style="border-bottom: 1px dotted black">
+                  <span :style="{fontSize:Config.tableCardFontSize+'px'} ">{{t.tableName}}</span>
 
+                  <div>
+                    <v-icon>mdi-account</v-icon><span class="mr-2">{{t.servantName}}</span>
+                    <v-icon>mdi-alarm</v-icon>{{t.createTimestamp}}
+                </div>
+                </div>
+              </v-card>
+            </template>
+            <v-spacer></v-spacer>
+            <div v-if="!isEditing">
+              <v-card class="mt-2">
+                <div class="pa-2">{{ currentServant.name }}:{{ currentKeyboardFunction }}</div>
+                <v-text-field
+                    class="ma-2"
+                    hide-details
+                    clearable
+                    style="font-size: 36px"
+                    ref="ins"
+                    v-model="buffer"
+                    :autofocus="Config.getFocus"
+                />
+                <keyboard @input="numberInput" :keys="keyboardLayout"/>
+              </v-card>
+
+            </div>
           </v-card>
         </template>
       </div>
+
     </v-main>
     <address-form :menu-show="showOpenTakeawayTableDialog"></address-form>
   </v-app>
@@ -322,9 +388,10 @@ export default {
   },
   data: function () {
     return {
+      isEditing: false,
+      showCoordinate: false,
       keyboardLayout,
       keyboardFunctions,
-      currentSection: defaultSection,
       currentKeyboardFunction: keyboardFunctions.OpenTable,
       NeededKeys,
       currentServant: { name: '' },
@@ -350,7 +417,10 @@ export default {
       focusTimer: null,
       falsePrinterList: [],
       printingList: [],
-      tableList: []
+      tableList: [],
+      sectionList: [],
+      currentTable: {},
+      currentSectionIndex: 0
     }
   },
   watch: {
@@ -369,8 +439,21 @@ export default {
         return a
       }).filter(a => a.tables.length > 0)
     },
+    tables: function () {
+      return this.realArea.reduce((arr, a) => {
+        arr.push(...a.tables)
+        return arr
+      }, [])
+    },
+    orderList: function () {
+      return this.tables.filter(t => t.sectionId !== this.currentSection.id &&
+          t.usageStatus === '1')
+    },
     hasBadPrint () {
       return this.falsePrinterList ? this.falsePrinterList.length > 0 : false
+    },
+    currentSection () {
+      return this.sectionList[this.currentSectionIndex] ?? defaultSection
     }
   },
   methods: {
@@ -556,7 +639,9 @@ export default {
         return
       }
       if (this.$refs.ins !== document.activeElement) {
-        this.$refs.ins.focus()
+        if (this.$refs.ins?.focus) {
+          this.$refs.ins.focus()
+        }
       }
     },
     async initPage () {
@@ -583,7 +668,6 @@ export default {
     if (GlobalConfig.defaultPassword) {
       this.currentServant = this.findServant(GlobalConfig.defaultPassword)
     }
-    console.log(this.servantList)
   },
   beforeDestroy () {
     clearAllTimer()
@@ -594,7 +678,7 @@ export default {
 
 <style scoped>
 .tableDisplay {
-  height: calc(100vh - 48px);
+  height: calc(100vh - 96px);
   overflow: scroll;
 }
 
