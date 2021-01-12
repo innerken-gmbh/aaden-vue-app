@@ -160,7 +160,8 @@
                     :extra-height="'196px'"
                     :color="'#707070'"
                     :dish-list-model="cartListModel"
-                    :show-edit="!Config.useTouchScreenUI" :click-callback="removeDish"
+                    :show-edit="!Config.useTouchScreenUI"
+                    :click-callback="removeDish"
                     :title="$t('新增菜品')"
                     :default-expand="Config.defaultExpand">
                 </dish-card-list>
