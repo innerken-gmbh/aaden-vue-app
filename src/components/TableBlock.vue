@@ -1,5 +1,5 @@
 <template>
-  <v-card @click="$emit('click')" class="d-flex flex-grow-0 align-center justify-center"
+  <div @click="$emit('click')" class="d-flex flex-grow-0 align-center justify-center"
        :style="{
     backgroundColor:backgroundColor,
     borderRadius:borderRadius,
@@ -14,7 +14,7 @@
           }">
           {{ decorText }}{{ label }}
     </span>
-  </v-card>
+  </div>
 </template>
 
 <script>
