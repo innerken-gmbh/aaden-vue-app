@@ -98,6 +98,29 @@ export function deleteDishes (id, items, initialUI) {
   })
 }
 
+export async function getTableListWithCells () {
+  return (await hillo.get('Tables.php?op=showAllTableWithCells')).content.map(t => {
+    t.cells = t.cells.map(p => {
+      p.x = parseInt(p.x)
+      p.y = parseInt(p.y)
+      return p
+    }) ?? []
+
+    return t
+  })
+}
+
+export async function addNewTable (table) {
+  table.name = table.tableName
+  table.seatCount = table?.cells?.length ?? 0
+  return (await hillo.post('Tables.php?op=add', table)).content.id
+}
+
+export async function setTableLocation (table) {
+  table.cellsJson = JSON.stringify(table.cells)
+  return (await hillo.post('Tables.php?op=setTableLocation', table))
+}
+
 export function dishesSetDiscount (orderId, items, initialUI) {
   popAuthorize('', async () => {
     const res = await fastSweetAlertRequest(i18n.t('给菜品打折'),
@@ -172,6 +195,14 @@ export async function popMergeTablePanel (tableName) {
 
 export async function getServantList () {
   return (await hillo.get('Servant.php')).content
+}
+
+export async function getSectionList () {
+  return (await hillo.get('Section.php?op=view')).content
+}
+
+export async function updateSection (section) {
+  return (await hillo.post('Section.php?op=updateSize', section))
 }
 
 export async function getRestaurantInfo () {

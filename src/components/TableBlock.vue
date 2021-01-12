@@ -1,15 +1,20 @@
 <template>
-  <div @click="$emit('click')" class="d-flex flex-grow-0 align-center justify-center"
+  <v-card @click="$emit('click')" class="d-flex flex-grow-0 align-center justify-center"
        :style="{
     backgroundColor:backgroundColor,
     borderRadius:borderRadius,
-    border:border,
+    ...border,
     margin:margin,
-  }">
-    <span style="height: 0">
+  }"
+  :elevation="elevation">
+    <span style="height: 12px"
+          :style="{
+      color:getColorLightness(backgroundColor)<128?'#fff':'#000',
+      fontSize:fontSize
+          }">
           {{ decorText }}{{ label }}
     </span>
-  </div>
+  </v-card>
 </template>
 
 <script>
@@ -18,6 +23,9 @@
 * Editing state: occupied,selectable,selected,idle
 *
 * */
+
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import { getColorLightness } from '@/oldjs/api'
 
 export default {
   name: 'TableBlock',
@@ -28,16 +36,43 @@ export default {
     isEditing: Boolean,
     cell: Object
   },
+  methods: {
+    getColorLightness
+  },
   computed: {
+    elevation () {
+      if (this.cell.tableId) {
+        return 2
+      } else {
+        return 0
+      }
+    },
     border () {
       if (this.isEditing) {
         if (this.currentState === 'selectable') {
-          return '1px dotted #9e9e9e'
+          return { border: '1px dotted #9e9e9e' }
         }
       } else {
-        return '1px dotted #9e9e9e'
+        // const borderP = '1px dotted #9e9e9e'
+        // const border = {
+        //   borderTop: borderP,
+        //   borderLeft: borderP,
+        //   borderRight: borderP,
+        //   borderBottom: borderP
+        // }
+        // const edges = ['t', 'l', 'b', 'r']
+        // edges.forEach(edge => {
+        //   if (this.cell[edge]) {
+        //     Object.keys(border).forEach(e => {
+        //       if (e[6].toLowerCase() === edge) {
+        //         border[e] = 0
+        //       }
+        //     })
+        //   }
+        // })
+        // return border
       }
-      return ''
+      return { }
     },
     decorText () {
       if (this.isEditing) {
@@ -62,11 +97,11 @@ export default {
       } else {
         switch (this.currentState) {
           case 'active':
-            return '#367aeb'
+            return GlobalConfig.activeCardBackground
           case 'call':
             return '#ff6f00'
           case 'idle':
-            return '#9e9e9e'
+            return '#efefef'
           default:
             return 'transparent'
         }
@@ -120,6 +155,9 @@ export default {
         })
         return `${radius.tl}px ${radius.tr}px ${radius.br}px ${radius.bl}px`
       }
+    },
+    fontSize () {
+      return GlobalConfig.tableCardFontSize
     }
   }
 }
