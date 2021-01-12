@@ -160,7 +160,8 @@
                     :extra-height="'196px'"
                     :color="'#707070'"
                     :dish-list-model="cartListModel"
-                    :show-edit="!Config.useTouchScreenUI" :click-callback="removeDish"
+                    :show-edit="!Config.useTouchScreenUI"
+                    :click-callback="removeDish"
                     :title="$t('新增菜品')"
                     :default-expand="Config.defaultExpand">
                 </dish-card-list>
@@ -228,7 +229,7 @@
           </div>
           <v-card v-if="Config.useTouchScreenUI" elevation="0" color="transparent" v-cloak class="flex-grow-1 d-flex"
                   style="height: calc(100vh - 48px);max-width: calc(100vw - 300px)">
-            <v-card width="calc(100% - 30vw)" v-dragscroll color="transparent"
+            <v-card width="calc(100% - 27vw)" v-dragscroll color="transparent"
                     class="dragscroll dishCardListContainer ml-1">
               <v-sheet class="px-2">
                 <v-chip-group column mandatory v-model="activeCategory">
@@ -264,7 +265,7 @@
               </div>
             </v-card>
 
-            <v-card width="30vw" class="d-flex flex-shrink-0 flex-column pa-2">
+            <v-card width="27vw" class="d-flex flex-shrink-0 flex-column pa-2">
               <div>
                 <v-btn class="my-1" @click="reprintOrder" large block>
                   <v-icon left>mdi-printer</v-icon>
@@ -1066,6 +1067,10 @@ export default {
     async orderDish (order = this.cartListModel.list, print = true) {
       try {
         this.isSendingRequest = true
+        order.forEach(o => {
+          console.log(o)
+          o.guestNumber = 1
+        })
         await hillo.post('Complex.php?op=addDishesToTable', {
           params: JSON.stringify(order),
           tableId: this.id,

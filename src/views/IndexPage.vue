@@ -73,7 +73,8 @@
             <v-icon left>mdi-truck-fast</v-icon>
             {{ $t('takeaway') }}
           </v-btn>
-          <v-btn :color="onlyActive?'primary':'transparent'" @click="onlyActive=!onlyActive">
+          <v-btn v-if="!Config.useTableBluePrint" :color="onlyActive?'primary':'transparent'"
+                 @click="onlyActive=!onlyActive">
             {{ $t('只看活跃') }}
           </v-btn>
           <v-btn @click="fetchOrder">
@@ -155,10 +156,42 @@
 
       </template>
     </Navgation>
-    <v-main style="background: #f6f6f6;">
+    <v-main style=" width: 100vw">
       <div class="d-flex flex-nowrap" style="width: 100vw">
-        <div v-dragscroll class=""></div>
-        <div v-dragscroll class="tableDisplay flex-grow-1">
+        <v-card v-if="Config.useTableBluePrint" class="flex-grow-1">
+          <v-toolbar dense >
+            <v-tabs v-model="currentSectionIndex">
+              <template v-for="area of sectionList">
+                <v-tab :key="area.id">
+                  {{ area.name }}
+                </v-tab>
+              </template>
+            </v-tabs>
+            <v-spacer></v-spacer>
+            <v-toolbar-items class="mr-2">
+              <v-btn @click="isEditing=!isEditing" :dark="isEditing">
+                <v-icon>mdi-pencil-box</v-icon>
+              </v-btn>
+              <v-btn @click="saveCurrentSection()" color="primary" v-if="isEditing">
+                <v-icon left>mdi-check</v-icon>
+                保存
+              </v-btn>
+            </v-toolbar-items>
+            Size:{{ currentSection.sizeY * currentSection.sizeX }}
+          </v-toolbar>
+          <template>
+            <table-blue-print
+                @table-clicked="openOrEnterTable"
+                @need-refresh="refreshTables"
+                :out-side-table-list="tableInCurrentSection"
+                :show-coordinate="showCoordinate"
+                :editing.sync="isEditing"
+                :current-table.sync="currentTable"
+                :current-section="currentSection"/>
+          </template>
+
+        </v-card>
+        <div v-dragscroll v-else class="tableDisplay flex-grow-1">
           <div v-cloak class="areaC" id="areaC">
             <div :key="area.name" v-cloak v-for="area in realArea" class="area">
               <div class="areaTitle">{{ area.areaName }}</div>
@@ -218,7 +251,6 @@
                           </template>
                         </v-card>
                       </div>
-
                     </v-card>
                     <div v-else @click="openOrEnterTable(table.tableName)"
                          class="tableCard notUsed">
@@ -235,21 +267,83 @@
         </div>
         <template v-if="Config.useTouchScreenUI">
           <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
-            <v-spacer></v-spacer>
-            <div>
-              <div class="pa-2">{{ currentServant.name }}:{{ currentKeyboardFunction }}</div>
-              <v-text-field
-                  class="ma-2"
-                  hide-details
-                  clearable
-                  style="font-size: 36px"
-                  ref="ins"
-                  v-model="buffer"
-                  :autofocus="Config.getFocus"
-              />
-              <keyboard @input="numberInput" :keys="keyboardLayout"/>
-            </div>
+            <template v-if="Config.useTableBluePrint">
+              <template v-if="isEditing">
+                <div class="flex-grow-0">
+                  <v-slider hide-details label="Size-X" v-model="currentSection.sizeX" min="8" max="32">
+                    <template v-slot:append>
+                      <v-text-field
+                          hide-details
+                          v-model="currentSection.sizeX"
+                          class="mt-0 pt-0"
+                          type="number"
+                          style="width: 60px"
+                      ></v-text-field>
+                    </template>
+                  </v-slider>
+                  <v-slider hide-details label="Size-Y" v-model="currentSection.sizeY" min="8" max="24">
+                    <template v-slot:append>
+                      <v-text-field
+                          hide-details
+                          v-model="currentSection.sizeY"
+                          class="mt-0 pt-0"
+                          type="number"
+                          style="width: 60px"
+                      ></v-text-field>
+                    </template>
+                  </v-slider>
+                </div>
+                <div v-if="currentTable" class="currentTablePanel">
+                  <v-text-field v-model="currentTable.tableName" label="当前桌名"></v-text-field>
+                  <v-slider v-model="currentTable.radius" label="桌子圆角"></v-slider>
+                  <v-btn @click="()=>{currentTable.cells=[];currentTable=null}">清空</v-btn>
+                </div>
+              </template>
+              <template v-if="!isEditing">
+                <v-card style="overflow: scroll" class="flex-grow-1">
+                  <div :key="t.id"
+                       @click="openOrEnterTable(t.tableName)"
+                       v-for="t in orderList" class="pa-2 d-flex justify-space-between align-center"
+                       style="border-bottom: 1px dotted black">
+                    <span :style="{fontSize:Config.tableCardFontSize+'px'} ">{{ t.tableName }}</span>
 
+                    <div>
+                      <v-icon>mdi-account</v-icon>
+                      <span class="mr-2">{{ t.servantName }}</span>
+                      <v-icon>mdi-alarm</v-icon>
+                      {{ t.createTimestamp }}
+                    </div>
+                  </div>
+                </v-card>
+              </template>
+            </template>
+
+            <v-spacer></v-spacer>
+            <template v-if="Config.useTableBluePrint">
+              <div v-if="isEditing"
+                   style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px"
+                   class="pa-2">
+                <v-card color="warning" style="width: 100%;height: 60px;" class="d-flex justify-center align-center" @click="setCurrentTable(t)" :key="t.id"
+                        v-for="t in tableInCurrentSectionWithNoCell"
+                >{{t.tableName}}</v-card>
+              </div>
+            </template>
+
+            <div v-if="!isEditing">
+              <v-card class="mt-2">
+                <div class="pa-2">{{ currentServant.name }}:{{ currentKeyboardFunction }}</div>
+                <v-text-field
+                    class="ma-2"
+                    hide-details
+                    clearable
+                    style="font-size: 36px"
+                    ref="ins"
+                    v-model="buffer"
+                    :autofocus="Config.getFocus"
+                />
+                <keyboard @input="numberInput" :keys="keyboardLayout"/>
+              </v-card>
+            </div>
           </v-card>
         </template>
       </div>
@@ -270,7 +364,7 @@ import {
   openOrEnterTable,
   popAuthorize,
   requestOutTable,
-  Strings,
+  Strings, toast,
   toastError
 } from '@/oldjs/common'
 import Swal from 'sweetalert2'
@@ -281,10 +375,20 @@ import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
 import TimeDisplay from '@/components/TimeDisplay'
-import { fetchOrder, getColorLightness, getRestaurantInfo, getServantList } from '@/oldjs/api'
+import {
+  fetchOrder,
+  getColorLightness,
+  getRestaurantInfo,
+  getSectionList,
+  getServantList, getTableListWithCells,
+  updateSection
+} from '@/oldjs/api'
 import IKUtils from 'innerken-js-utils'
 import AddressForm from '@/components/AddressForm'
 import Keyboard from '@/components/Keyboard'
+import TableBluePrint from '@/components/TableBluePrint'
+import { defaultSection } from '@/oldjs/defaultConst'
+import debounce from 'lodash-es/debounce'
 
 const keyboardLayout =
     [
@@ -305,7 +409,7 @@ export default {
   directives: {
     dragscroll
   },
-  components: { Keyboard, AddressForm, TimeDisplay, Navgation },
+  components: { TableBluePrint, Keyboard, AddressForm, TimeDisplay, Navgation },
   props: {
     refresh: {
       type: Number
@@ -313,6 +417,8 @@ export default {
   },
   data: function () {
     return {
+      isEditing: false,
+      showCoordinate: false,
       keyboardLayout,
       keyboardFunctions,
       currentKeyboardFunction: keyboardFunctions.OpenTable,
@@ -339,7 +445,11 @@ export default {
       Strings,
       focusTimer: null,
       falsePrinterList: [],
-      printingList: []
+      printingList: [],
+      tableList: [],
+      sectionList: [],
+      currentTable: null,
+      currentSectionIndex: 0
     }
   },
   watch: {
@@ -351,6 +461,9 @@ export default {
     }
   },
   computed: {
+    tableInCurrentSection () {
+      return this.tableList.filter(t => t.sectionId === this.currentSection.id)
+    },
     realArea: function () {
       const only = this.onlyActive
       return this.areas.map(a => {
@@ -358,11 +471,29 @@ export default {
         return a
       }).filter(a => a.tables.length > 0)
     },
+
+    tableInCurrentSectionWithNoCell () {
+      return this.tableInCurrentSection.filter(t => t.cells.length === 0)
+    },
+
+    orderList: function () {
+      return [this.tableList.filter(t => t.sectionId !== this.currentSection.id),
+        this.tableInCurrentSectionWithNoCell].flat().filter(t => t.usageStatus === '1')
+    },
+
     hasBadPrint () {
       return this.falsePrinterList ? this.falsePrinterList.length > 0 : false
+    },
+
+    currentSection () {
+      return this.sectionList[this.currentSectionIndex] ?? defaultSection
     }
+
   },
   methods: {
+    setCurrentTable (table) {
+      this.currentTable = table
+    },
     numberInput (key) {
       if (!this.buffer) {
         this.buffer = ''
@@ -419,6 +550,7 @@ export default {
     fetchOrder,
     openOrEnterTable: openOrEnterTable,
     requestOutTable,
+
     initialUI () {
       this.$refs.ins.focus()
       this.currentKeyboardFunction = keyboardFunctions.OpenTable
@@ -434,11 +566,15 @@ export default {
       }
     },
     async refreshTables () {
-      this.areas = await getActiveTables()
-      for (const a of this.areas) {
-        if (a.tables.some(t => t.callService === '1')) {
-          this.playSound()
-          break
+      if (GlobalConfig.useTableBluePrint) {
+        this.tableList = await getTableListWithCells()
+      } else {
+        this.areas = await getActiveTables()
+        for (const a of this.areas) {
+          if (a.tables.some(t => t.callService === '1')) {
+            this.playSound()
+            break
+          }
         }
       }
     },
@@ -530,6 +666,11 @@ export default {
         }
       }
     },
+    async saveCurrentSection () {
+      await updateSection(this.currentSection)
+      toast()
+      await getSectionList()
+    },
     toManage () {
       oldJumpTo('admin/index.html', {
         DeviceId: GlobalConfig.DeviceId,
@@ -545,8 +686,13 @@ export default {
         return
       }
       if (this.$refs.ins !== document.activeElement) {
-        this.$refs.ins.focus()
+        if (this.$refs.ins?.focus) {
+          this.$refs.ins.focus()
+        }
       }
+    },
+    async refreshSectionList () {
+      this.sectionList = await getSectionList()
     },
     async initPage () {
       window.onkeydown = this.listenKeyDown
@@ -568,11 +714,16 @@ export default {
     this.initPage()
 
     this.restaurantInfo = Object.assign(this.restaurantInfo, (await getRestaurantInfo()).content[0])
+
+    console.log(this.sectionList, 'section')
     this.servantList = await getServantList()
+    await this.refreshSectionList()
     if (GlobalConfig.defaultPassword) {
       this.currentServant = this.findServant(GlobalConfig.defaultPassword)
     }
-    console.log(this.servantList)
+  },
+  created () {
+    this.debounceUpdateSection = debounce(updateSection, 500)
   },
   beforeDestroy () {
     clearAllTimer()
@@ -583,7 +734,7 @@ export default {
 
 <style scoped>
 .tableDisplay {
-  height: calc(100vh - 48px);
+  height: calc(100vh - 96px);
   overflow: scroll;
 }
 
