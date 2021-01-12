@@ -670,6 +670,7 @@ export default {
       await updateSection(this.currentSection)
       toast()
       await getSectionList()
+      this.isEditing = false
     },
     toManage () {
       oldJumpTo('admin/index.html', {
