@@ -14,5 +14,5 @@ export function clearAllTimer () {
 export async function printNow () {
   setTimeout(() => {
     hillo.get('Printer.php?op=printAll')
-  }, 1)
+  }, 10)
 }
