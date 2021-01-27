@@ -8,13 +8,18 @@
             HOME
           </v-btn>
         </v-toolbar-items>
-
         <v-toolbar-title>
           {{ $t('appName') }}
         </v-toolbar-title>
       </template>
       <template slot="right-slot">
         <time-display class="mx-1"/>
+        <v-toolbar-items>
+          <v-btn @click="popAuthorize('',(pw)=>{salesDialogShow=true,salesPw=pw},true)">
+            <v-icon left>mdi-account-cash</v-icon>
+            {{ $t('销售额') }}
+          </v-btn>
+        </v-toolbar-items>
         <v-toolbar-items class="mx-1">
           <v-btn v-if="printingList.length>0">
             <v-icon>mdi-printer</v-icon>
@@ -159,7 +164,7 @@
     <v-main style=" width: 100vw">
       <div class="d-flex flex-nowrap" style="width: 100vw">
         <v-card v-if="Config.useTableBluePrint" class="flex-grow-1">
-          <v-toolbar dense >
+          <v-toolbar dense>
             <v-tabs v-model="currentSectionIndex">
               <template v-for="area of sectionList">
                 <v-tab :key="area.id">
@@ -317,18 +322,18 @@
                 </v-card>
               </template>
             </template>
-
             <v-spacer></v-spacer>
             <template v-if="Config.useTableBluePrint">
               <div v-if="isEditing"
                    style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px"
                    class="pa-2">
-                <v-card color="warning" style="width: 100%;height: 60px;" class="d-flex justify-center align-center" @click="setCurrentTable(t)" :key="t.id"
+                <v-card color="warning" style="width: 100%;height: 60px;" class="d-flex justify-center align-center"
+                        @click="setCurrentTable(t)" :key="t.id"
                         v-for="t in tableInCurrentSectionWithNoCell"
-                >{{t.tableName}}</v-card>
+                >{{ t.tableName }}
+                </v-card>
               </div>
             </template>
-
             <div v-if="!isEditing">
               <v-card class="mt-2">
                 <div class="pa-2">{{ currentServant.name }}:{{ currentKeyboardFunction }}</div>
@@ -349,6 +354,7 @@
       </div>
     </v-main>
     <address-form :menu-show="showOpenTakeawayTableDialog"></address-form>
+    <sales-dialog :id="salesPw" @visibility-changed="(e)=>salesDialogShow=e" :sales-dialog-show="salesDialogShow"></sales-dialog>
   </v-app>
 </template>
 
@@ -364,7 +370,8 @@ import {
   openOrEnterTable,
   popAuthorize,
   requestOutTable,
-  Strings, toast,
+  Strings,
+  toast,
   toastError
 } from '@/oldjs/common'
 import Swal from 'sweetalert2'
@@ -380,7 +387,8 @@ import {
   getColorLightness,
   getRestaurantInfo,
   getSectionList,
-  getServantList, getTableListWithCells,
+  getServantList,
+  getTableListWithCells,
   updateSection
 } from '@/oldjs/api'
 import IKUtils from 'innerken-js-utils'
@@ -389,6 +397,7 @@ import Keyboard from '@/components/Keyboard'
 import TableBluePrint from '@/components/TableBluePrint'
 import { defaultSection } from '@/oldjs/defaultConst'
 import debounce from 'lodash-es/debounce'
+import SalesDialog from '@/components/fragments/SalesDialog'
 
 const keyboardLayout =
     [
@@ -409,7 +418,7 @@ export default {
   directives: {
     dragscroll
   },
-  components: { TableBluePrint, Keyboard, AddressForm, TimeDisplay, Navgation },
+  components: { SalesDialog, TableBluePrint, Keyboard, AddressForm, TimeDisplay, Navgation },
   props: {
     refresh: {
       type: Number
@@ -449,7 +458,9 @@ export default {
       tableList: [],
       sectionList: [],
       currentTable: null,
-      currentSectionIndex: 0
+      currentSectionIndex: 0,
+      salesDialogShow: false,
+      salesPw: null
     }
   },
   watch: {
