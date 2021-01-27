@@ -68,7 +68,6 @@ export default {
       if (this.id != null) {
         const res = (await hillo.get('Servant.php?op=previewSummary', { pw: this.id })).content
         this.displayData = Object.assign({}, defaultDisplayData, res)
-        console.log(this.displayData)
       }
     }
   },
