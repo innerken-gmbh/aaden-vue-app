@@ -17,9 +17,9 @@
   "useCart": true,
   "useColor": true,
   "hideCode": true,
-  "gridSize": "140",
+  "gridSize": "80",
   "dishLookUp": true,
-  "gridSizeX": "100",
+  "gridSizeX": "80",
   "tableCardFontSize": "28",
   "predefinedDiscount": "",
   "defaultSort": "10,9,8,11,13",
@@ -29,8 +29,8 @@
   "useDeleteDishReason": true,
   "autoCompletePLZ": "",
   "useAdvanceOpenTakeawayTable": false,
-  "activeCardBackground": "#ffffff",
-  "useTouchScreenUI": false,
+  "activeCardBackground": "#367aeb",
+  "useTouchScreenUI": true,
   "useDishListMenu": true,
   "useTableBluePrint": false
 }

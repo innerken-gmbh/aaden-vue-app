@@ -1,8 +1,8 @@
 <template>
   <v-app>
     <Navgation>
-      <template slot="left">
-        <v-toolbar-items>
+      <template slot="left" >
+        <v-toolbar-items v-if="!Config.useTouchScreenUI">
           <v-btn tile class="primary ml-n4 mr-4" @click="popAuthorize('boss',toManage)">
             <v-icon>mdi-home-analytics</v-icon>
             HOME
@@ -13,13 +13,7 @@
         </v-toolbar-title>
       </template>
       <template slot="right-slot">
-        <time-display class="mx-1"/>
-        <v-toolbar-items>
-          <v-btn @click="popAuthorize('',(pw)=>{salesDialogShow=true,salesPw=pw},true)">
-            <v-icon left>mdi-account-cash</v-icon>
-            {{ $t('销售额') }}
-          </v-btn>
-        </v-toolbar-items>
+        <time-display v-if="!Config.useTouchScreenUI" class="mx-1"/>
         <v-toolbar-items class="mx-1">
           <v-btn v-if="printingList.length>0">
             <v-icon>mdi-printer</v-icon>
@@ -74,10 +68,18 @@
               </v-list>
             </v-card>
           </v-menu>
-          <v-btn @click="takeawayClicked">
-            <v-icon left>mdi-truck-fast</v-icon>
-            {{ $t('takeaway') }}
-          </v-btn>
+          <template v-if="!Config.useTouchScreenUI">
+            <v-btn @click="popAuthorize('',
+          (pw)=>{salesDialogShow=true,salesPw=pw},true)">
+              <v-icon left>mdi-account-cash</v-icon>
+              {{ $t('销售额') }}
+            </v-btn>
+            <v-btn @click="takeawayClicked">
+              <v-icon left>mdi-truck-fast</v-icon>
+              {{ $t('takeaway') }}
+            </v-btn>
+          </template>
+
           <v-btn v-if="!Config.useTableBluePrint" :color="onlyActive?'primary':'transparent'"
                  @click="onlyActive=!onlyActive">
             {{ $t('只看活跃') }}
@@ -322,6 +324,28 @@
                 </v-card>
               </template>
             </template>
+            <div style="display: grid;grid-template-columns: repeat(3,1fr)" class="pa-2">
+              <grid-button
+                  @click="popAuthorize('boss',toManage)"
+                  icon="mdi-home-analytics"
+                  text="HOME"
+              />
+
+              <grid-button
+                  @click="popAuthorize('',
+                    (pw)=>
+                    {salesDialogShow=true;salesPw=pw},true)"
+                  icon="mdi-account-cash"
+                  :text="  $t('销售额') "
+              />
+
+              <grid-button
+                  @click="takeawayClicked"
+                  icon=" mdi-truck-fast"
+                  :text="  $t('takeaway') "
+              />
+
+            </div>
             <v-spacer></v-spacer>
             <template v-if="Config.useTableBluePrint">
               <div v-if="isEditing"
@@ -398,6 +422,7 @@ import TableBluePrint from '@/components/TableBluePrint'
 import { defaultSection } from '@/oldjs/defaultConst'
 import debounce from 'lodash-es/debounce'
 import SalesDialog from '@/components/fragments/SalesDialog'
+import GridButton from '@/components/GridButton'
 
 const keyboardLayout =
     [
@@ -418,7 +443,7 @@ export default {
   directives: {
     dragscroll
   },
-  components: { SalesDialog, TableBluePrint, Keyboard, AddressForm, TimeDisplay, Navgation },
+  components: { GridButton, SalesDialog, TableBluePrint, Keyboard, AddressForm, TimeDisplay, Navgation },
   props: {
     refresh: {
       type: Number

@@ -1,11 +1,11 @@
 <template>
-  <span>
+  <span style="font-size: 26px;font-weight: bold">
       {{ time }}
   </span>
 </template>
 
 <script>
-import { showTime } from '../oldjs/common'
+import { showTime } from '@/oldjs/common'
 export default {
   name: 'TimeDisplay',
   data: function () {
