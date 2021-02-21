@@ -265,7 +265,7 @@ export function openTableCallback (openingTable, pw, guestCount, childCount, con
       informOpenTable(pw, openingTable, guestCount, childCount)// todo 添加开桌类型
       break
     case 2:
-      requestOutTable()
+      requestOutTable(pw)
       break
     case 4:
     case 6:
@@ -289,9 +289,9 @@ export function informOpenJpTable (password, number, personCount, childCount, ad
     })
 }
 
-export function requestOutTable () {
+export function requestOutTable (pw = null) {
   hillo.post('Complex.php?op=openTakeawayTable', {
-    pw: Config.defaultPassword,
+    pw: pw ?? Config.defaultPassword,
     personCount: 0
   }).then(res => {
     if (goodRequest(res)) {
