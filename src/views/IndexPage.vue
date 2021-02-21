@@ -2,15 +2,24 @@
   <v-app>
     <Navgation>
       <template slot="left">
-        <v-app-bar-nav-icon @click="popAuthorize('boss',toManage)">
-          <v-icon>mdi-home-analytics</v-icon>
-        </v-app-bar-nav-icon>
+        <v-toolbar-items>
+          <v-btn tile class="primary ml-n4 mr-4" @click="popAuthorize('boss',toManage)">
+            <v-icon>mdi-home-analytics</v-icon>
+            HOME
+          </v-btn>
+        </v-toolbar-items>
         <v-toolbar-title>
           {{ $t('appName') }}
         </v-toolbar-title>
       </template>
       <template slot="right-slot">
         <time-display class="mx-1"/>
+        <v-toolbar-items>
+          <v-btn @click="popAuthorize('',(pw)=>{salesDialogShow=true,salesPw=pw},true)">
+            <v-icon left>mdi-account-cash</v-icon>
+            {{ $t('销售额') }}
+          </v-btn>
+        </v-toolbar-items>
         <v-toolbar-items class="mx-1">
           <v-btn v-if="printingList.length>0">
             <v-icon>mdi-printer</v-icon>
@@ -69,7 +78,8 @@
             <v-icon left>mdi-truck-fast</v-icon>
             {{ $t('takeaway') }}
           </v-btn>
-          <v-btn :color="onlyActive?'primary':'transparent'" @click="onlyActive=!onlyActive">
+          <v-btn v-if="!Config.useTableBluePrint" :color="onlyActive?'primary':'transparent'"
+                 @click="onlyActive=!onlyActive">
             {{ $t('只看活跃') }}
           </v-btn>
           <v-btn @click="fetchOrder">
@@ -77,6 +87,7 @@
           </v-btn>
         </v-toolbar-items>
         <v-text-field
+            v-if="!Config.useTouchScreenUI"
             ref="ins" v-model="buffer"
             single-line
             hide-details
@@ -85,84 +96,119 @@
             prepend-inner-icon="mdi-magnify"
             placeholder="instruction.."
             :autofocus="Config.getFocus"/>
-        <v-menu
-            v-model="menu"
-            :close-on-content-click="false"
-            :nudge-width="300"
-            :max-height="600"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn v-bind="attrs"
-                   v-on="on"
-                   icon>
-              <v-icon>
-                mdi-cog-outline
-              </v-icon>
-            </v-btn>
-          </template>
-          <v-card color="white">
-            <v-list>
-              <v-list-item>
-                <v-list-item-avatar tile>
-                  <img src="@/assets/logo.png">
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title>Aaden App</v-list-item-title>
-                  <v-list-item-subtitle>
-                    Version <span v-show-quick-buy>FMC-</span>{{ version }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
+        <v-toolbar-items>
+          <v-menu
+              v-model="menu"
+              :close-on-content-click="false"
+              :nudge-width="300"
+              :max-height="600"
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-bind="attrs"
+                     v-on="on"
+                     icon>
+                <v-icon>
+                  mdi-cog-outline
+                </v-icon>
+              </v-btn>
+            </template>
+            <v-card color="white">
+              <v-list>
+                <v-list-item>
+                  <v-list-item-avatar tile>
+                    <img src="@/assets/logo.png">
+                  </v-list-item-avatar>
+                  <v-list-item-content>
+                    <v-list-item-title>Aaden App</v-list-item-title>
+                    <v-list-item-subtitle>
+                      Version <span v-show-quick-buy>FMC-</span>{{ version }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
 
-                <v-list-item-action>
-                  <v-icon>mdi-heart</v-icon>
-                </v-list-item-action>
-              </v-list-item>
-            </v-list>
-            <v-divider></v-divider>
-            <v-list dense>
-              <template v-for="key in NeededKeys">
-                <v-list-item dense :key="'config'+key">
-                  <v-list-item-title>{{ key }}</v-list-item-title>
-                  <template v-if="typeof Config[key]==='boolean'">
-                    <v-list-item-action>
-                      <v-switch v-model="Config[key]" color="purple"></v-switch>
-                    </v-list-item-action>
-                  </template>
-                  <template v-else>
-                    <v-list-item-action>
-                      <v-text-field v-model="Config[key]" color="purple"></v-text-field>
-                    </v-list-item-action>
-                  </template>
+                  <v-list-item-action>
+                    <v-icon>mdi-heart</v-icon>
+                  </v-list-item-action>
                 </v-list-item>
-              </template>
-            </v-list>
+              </v-list>
+              <v-divider></v-divider>
+              <v-list dense>
+                <template v-for="key in NeededKeys">
+                  <v-list-item dense :key="'config'+key">
+                    <v-list-item-title>{{ key }}</v-list-item-title>
+                    <template v-if="typeof Config[key]==='boolean'">
+                      <v-list-item-action>
+                        <v-switch v-model="Config[key]" color="purple"></v-switch>
+                      </v-list-item-action>
+                    </template>
+                    <template v-else>
+                      <v-list-item-action>
+                        <v-text-field v-model="Config[key]" color="purple"></v-text-field>
+                      </v-list-item-action>
+                    </template>
+                  </v-list-item>
+                </template>
+              </v-list>
 
-            <v-card-actions>
-              <v-btn text @click="hardReload">Clear</v-btn>
-              <v-spacer></v-spacer>
-              <v-btn text @click="menu = false">Cancel</v-btn>
-              <v-btn color="primary" text @click="useCurrentConfig">Save</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-menu>
+              <v-card-actions>
+                <v-btn text @click="hardReload">Clear</v-btn>
+                <v-spacer></v-spacer>
+                <v-btn text @click="menu = false">Cancel</v-btn>
+                <v-btn color="primary" text @click="useCurrentConfig">Save</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-menu>
+        </v-toolbar-items>
+
       </template>
     </Navgation>
-    <v-main>
-      <div class="center-panel" id="centerPanel">
-        <div v-dragscroll class="tableDisplay">
+    <v-main style=" width: 100vw">
+      <div class="d-flex flex-nowrap" style="width: 100vw">
+        <v-card v-if="Config.useTableBluePrint" class="flex-grow-1">
+          <v-toolbar dense>
+            <v-tabs v-model="currentSectionIndex">
+              <template v-for="area of sectionList">
+                <v-tab :key="area.id">
+                  {{ area.name }}
+                </v-tab>
+              </template>
+            </v-tabs>
+            <v-spacer></v-spacer>
+            <v-toolbar-items class="mr-2">
+              <v-btn @click="isEditing=!isEditing" :dark="isEditing">
+                <v-icon>mdi-pencil-box</v-icon>
+              </v-btn>
+              <v-btn @click="saveCurrentSection()" color="primary" v-if="isEditing">
+                <v-icon left>mdi-check</v-icon>
+                保存
+              </v-btn>
+            </v-toolbar-items>
+            Size:{{ currentSection.sizeY * currentSection.sizeX }}
+          </v-toolbar>
+          <template>
+            <table-blue-print
+                @table-clicked="openOrEnterTable"
+                @need-refresh="refreshTables"
+                :out-side-table-list="tableInCurrentSection"
+                :show-coordinate="showCoordinate"
+                :editing.sync="isEditing"
+                :current-table.sync="currentTable"
+                :current-section="currentSection"/>
+          </template>
+
+        </v-card>
+        <div v-dragscroll v-else class="tableDisplay flex-grow-1">
           <div v-cloak class="areaC" id="areaC">
             <div :key="area.name" v-cloak v-for="area in realArea" class="area">
               <div class="areaTitle">{{ area.areaName }}</div>
               <div class="areaTableContainer"
                    :style="{
-                              gridTemplateRows:'repeat(auto-fill,'+Config.gridSize+'px)',
-                              gridAutoColumns:Config.gridSizeX+'px'
-                            }">
+                   gridTemplateRows:'repeat(auto-fill,'+Config.gridSize+'px)',
+                   gridAutoColumns:Config.gridSizeX+'px' }">
                 <template v-for="table in area.tables">
                   <div v-bind:key="table.name">
                     <v-card v-if="table.usageStatus==='1'"
                             class="tableCard"
-                            :dark="getColorLightness(Config.activeCardBackground)>128"
+                            :dark="getColorLightness(Config.activeCardBackground)<128"
                             :style="{backgroundColor:Config.activeCardBackground}"
                             @click='openOrEnterTable(table.tableName)'>
                       <div :style="{fontSize:Config.tableCardFontSize+'px'}"
@@ -210,7 +256,6 @@
                           </template>
                         </v-card>
                       </div>
-
                     </v-card>
                     <div v-else @click="openOrEnterTable(table.tableName)"
                          class="tableCard notUsed">
@@ -225,11 +270,91 @@
             </div>
           </div>
         </div>
+        <template v-if="Config.useTouchScreenUI">
+          <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
+            <template v-if="Config.useTableBluePrint">
+              <template v-if="isEditing">
+                <div class="flex-grow-0">
+                  <v-slider hide-details label="Size-X" v-model="currentSection.sizeX" min="8" max="32">
+                    <template v-slot:append>
+                      <v-text-field
+                          hide-details
+                          v-model="currentSection.sizeX"
+                          class="mt-0 pt-0"
+                          type="number"
+                          style="width: 60px"
+                      ></v-text-field>
+                    </template>
+                  </v-slider>
+                  <v-slider hide-details label="Size-Y" v-model="currentSection.sizeY" min="8" max="24">
+                    <template v-slot:append>
+                      <v-text-field
+                          hide-details
+                          v-model="currentSection.sizeY"
+                          class="mt-0 pt-0"
+                          type="number"
+                          style="width: 60px"
+                      ></v-text-field>
+                    </template>
+                  </v-slider>
+                </div>
+                <div v-if="currentTable" class="currentTablePanel">
+                  <v-text-field v-model="currentTable.tableName" label="当前桌名"></v-text-field>
+                  <v-slider v-model="currentTable.radius" label="桌子圆角"></v-slider>
+                  <v-btn @click="()=>{currentTable.cells=[];currentTable=null}">清空</v-btn>
+                </div>
+              </template>
+              <template v-if="!isEditing">
+                <v-card style="overflow: scroll" class="flex-grow-1">
+                  <div :key="t.id"
+                       @click="openOrEnterTable(t.tableName)"
+                       v-for="t in orderList" class="pa-2 d-flex justify-space-between align-center"
+                       style="border-bottom: 1px dotted black">
+                    <span :style="{fontSize:Config.tableCardFontSize+'px'} ">{{ t.tableName }}</span>
+
+                    <div>
+                      <v-icon>mdi-account</v-icon>
+                      <span class="mr-2">{{ t.servantName }}</span>
+                      <v-icon>mdi-alarm</v-icon>
+                      {{ t.createTimestamp }}
+                    </div>
+                  </div>
+                </v-card>
+              </template>
+            </template>
+            <v-spacer></v-spacer>
+            <template v-if="Config.useTableBluePrint">
+              <div v-if="isEditing"
+                   style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px"
+                   class="pa-2">
+                <v-card color="warning" style="width: 100%;height: 60px;" class="d-flex justify-center align-center"
+                        @click="setCurrentTable(t)" :key="t.id"
+                        v-for="t in tableInCurrentSectionWithNoCell"
+                >{{ t.tableName }}
+                </v-card>
+              </div>
+            </template>
+            <div v-if="!isEditing">
+              <v-card class="mt-2">
+                <div class="pa-2">{{ currentServant.name }}:{{ currentKeyboardFunction }}</div>
+                <v-text-field
+                    class="ma-2"
+                    hide-details
+                    clearable
+                    style="font-size: 36px"
+                    ref="ins"
+                    v-model="buffer"
+                    :autofocus="Config.getFocus"
+                />
+                <keyboard @input="numberInput" :keys="keyboardLayout"/>
+              </v-card>
+            </div>
+          </v-card>
+        </template>
       </div>
     </v-main>
-
-      <address-form :menu-show="showOpenTakeawayTableDialog"></address-form>
-
+    <address-form :menu-show="showOpenTakeawayTableDialog"></address-form>
+    <sales-dialog :id="salesPw" @visibility-changed="(e)=>salesDialogShow=e" :sales-dialog-show="salesDialogShow"></sales-dialog>
   </v-app>
 </template>
 
@@ -245,7 +370,9 @@ import {
   openOrEnterTable,
   popAuthorize,
   requestOutTable,
-  Strings
+  Strings,
+  toast,
+  toastError
 } from '@/oldjs/common'
 import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
@@ -255,16 +382,43 @@ import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
 import TimeDisplay from '@/components/TimeDisplay'
-import { fetchOrder, getColorLightness, getRestaurantInfo } from '@/oldjs/api'
+import {
+  fetchOrder,
+  getColorLightness,
+  getRestaurantInfo,
+  getSectionList,
+  getServantList,
+  getTableListWithCells,
+  updateSection
+} from '@/oldjs/api'
 import IKUtils from 'innerken-js-utils'
 import AddressForm from '@/components/AddressForm'
+import Keyboard from '@/components/Keyboard'
+import TableBluePrint from '@/components/TableBluePrint'
+import { defaultSection } from '@/oldjs/defaultConst'
+import debounce from 'lodash-es/debounce'
+import SalesDialog from '@/components/fragments/SalesDialog'
+
+const keyboardLayout =
+    [
+      'A', 'B', 'C', 'mdi-account-box',
+      '7', '8', '9', 'mdi-autorenew',
+      '4', '5', '6', 'K',
+      '1', '2', '3', 'T',
+      'D', '0', 'W', 'OK'
+    ]
+
+const keyboardFunctions = {
+  OpenTable: '输入桌号以开桌',
+  ChangeServant: '请输入新的跑堂密码'
+}
 
 export default {
   name: 'IndexPage',
   directives: {
     dragscroll
   },
-  components: { AddressForm, TimeDisplay, Navgation },
+  components: { SalesDialog, TableBluePrint, Keyboard, AddressForm, TimeDisplay, Navgation },
   props: {
     refresh: {
       type: Number
@@ -272,12 +426,17 @@ export default {
   },
   data: function () {
     return {
+      isEditing: false,
+      showCoordinate: false,
+      keyboardLayout,
+      keyboardFunctions,
+      currentKeyboardFunction: keyboardFunctions.OpenTable,
       NeededKeys,
+      currentServant: { name: '' },
       menu: null,
       menu1: null,
-
       showOpenTakeawayTableDialog: null,
-
+      servantList: [],
       version: version,
       onlyActive: GlobalConfig.FMCVersion,
       reservations: [],
@@ -295,7 +454,13 @@ export default {
       Strings,
       focusTimer: null,
       falsePrinterList: [],
-      printingList: []
+      printingList: [],
+      tableList: [],
+      sectionList: [],
+      currentTable: null,
+      currentSectionIndex: 0,
+      salesDialogShow: false,
+      salesPw: null
     }
   },
   watch: {
@@ -307,6 +472,9 @@ export default {
     }
   },
   computed: {
+    tableInCurrentSection () {
+      return this.tableList.filter(t => t.sectionId === this.currentSection.id)
+    },
     realArea: function () {
       const only = this.onlyActive
       return this.areas.map(a => {
@@ -314,11 +482,68 @@ export default {
         return a
       }).filter(a => a.tables.length > 0)
     },
+
+    tableInCurrentSectionWithNoCell () {
+      return this.tableInCurrentSection.filter(t => t.cells.length === 0)
+    },
+
+    orderList: function () {
+      return [this.tableList.filter(t => t.sectionId !== this.currentSection.id),
+        this.tableInCurrentSectionWithNoCell].flat().filter(t => t.usageStatus === '1')
+    },
+
     hasBadPrint () {
       return this.falsePrinterList ? this.falsePrinterList.length > 0 : false
+    },
+
+    currentSection () {
+      return this.sectionList[this.currentSectionIndex] ?? defaultSection
     }
+
   },
   methods: {
+    setCurrentTable (table) {
+      this.currentTable = table
+    },
+    numberInput (key) {
+      if (!this.buffer) {
+        this.buffer = ''
+      }
+      switch (key) {
+        case 'A':
+        case 'B':
+        case 'D':
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+        case '0':
+        case 'K':
+        case 'T':
+        case 'G':
+        case 'W':
+        case 'M':
+        case 'C':
+          this.buffer += key
+          break
+        case 'mdi-autorenew':
+          this.buffer = ''
+          break
+        case 'mdi-account-box':
+          this.currentKeyboardFunction = keyboardFunctions.ChangeServant
+          break
+        case 'OK':
+          this.insDecode(this.readBuffer())
+          this.buffer = ''
+          break
+      }
+      this.input = this.displayInput
+    },
     takeawayClicked () {
       if (GlobalConfig.useAdvanceOpenTakeawayTable) {
         this.showOpenTakeawayTableDialog = true
@@ -336,8 +561,10 @@ export default {
     fetchOrder,
     openOrEnterTable: openOrEnterTable,
     requestOutTable,
+
     initialUI () {
       this.$refs.ins.focus()
+      this.currentKeyboardFunction = keyboardFunctions.OpenTable
       blockReady()
     },
     playSound (count = 3) {
@@ -350,11 +577,15 @@ export default {
       }
     },
     async refreshTables () {
-      this.areas = await getActiveTables()
-      for (const a of this.areas) {
-        if (a.tables.some(t => t.callService === '1')) {
-          this.playSound()
-          break
+      if (GlobalConfig.useTableBluePrint) {
+        this.tableList = await getTableListWithCells()
+      } else {
+        this.areas = await getActiveTables()
+        for (const a of this.areas) {
+          if (a.tables.some(t => t.callService === '1')) {
+            this.playSound()
+            break
+          }
         }
       }
     },
@@ -395,35 +626,62 @@ export default {
       }
       return ins
     },
-    insDecode (t) {
-      if (t !== '') {
-        const escapeStr = '--//'
-        if (t.startsWith(escapeStr)) {
-          t = t.substr(escapeStr.length)
-          if (t.startsWith('d')) {
-            t = t.substr(1)
-            setDeviceId(t)
+    findServant (pw) {
+      if (this.servantList.length > 0) {
+        return this.servantList.find(s => s.password === pw)
+      }
+    },
+    async insDecode (t) {
+      if (this.currentKeyboardFunction === keyboardFunctions.OpenTable) {
+        if (t !== '') {
+          const escapeStr = '--//'
+          if (t.startsWith(escapeStr)) {
+            t = t.substr(escapeStr.length)
+            if (t.startsWith('d')) {
+              t = t.substr(1)
+              setDeviceId(t)
+            }
+            if (t === 'c') {
+              GlobalConfig.Protocol = 'http://'
+              useCurrentConfig()
+            } else if (t === 'h') {
+              GlobalConfig.Protocol = 'https://'
+              useCurrentConfig()
+            }
+            if (t.startsWith('f/')) {
+              t = t.substr(2)
+              // eslint-disable-next-line no-eval
+              eval(t)
+            }
+          } else if (t === 'w') {
+            popAuthorize('', requestOutTable)
+          } else if (t === 'l') {
+            popAuthorize('', this.toManage)
+          } else {
+            this.openOrEnterTable(t)
           }
-          if (t === 'c') {
-            GlobalConfig.Protocol = 'http://'
-            useCurrentConfig()
-          } else if (t === 'h') {
-            GlobalConfig.Protocol = 'https://'
-            useCurrentConfig()
+        }
+      } else {
+        if (t !== '') {
+          const servant = this.findServant(t)
+          this.readBuffer(true)
+          if (!servant) {
+            toastError('Passwort ist nicht gült')
+            return
           }
-          if (t.startsWith('f/')) {
-            t = t.substr(2)
-            // eslint-disable-next-line no-eval
-            eval(t)
-          }
-        } else if (t === 'w') {
-          popAuthorize('', requestOutTable)
-        } else if (t === 'l') {
-          popAuthorize('', this.toManage)
-        } else {
-          this.openOrEnterTable(t)
+          GlobalConfig.updateSettings('defaultPassword', t)
+          GlobalConfig.defaultPassword = t
+          console.log(GlobalConfig.defaultPassword)
+          this.currentServant = servant
+          this.currentKeyboardFunction = keyboardFunctions.OpenTable
         }
       }
+    },
+    async saveCurrentSection () {
+      await updateSection(this.currentSection)
+      toast()
+      await getSectionList()
+      this.isEditing = false
     },
     toManage () {
       oldJumpTo('admin/index.html', {
@@ -440,8 +698,13 @@ export default {
         return
       }
       if (this.$refs.ins !== document.activeElement) {
-        this.$refs.ins.focus()
+        if (this.$refs.ins?.focus) {
+          this.$refs.ins.focus()
+        }
       }
+    },
+    async refreshSectionList () {
+      this.sectionList = await getSectionList()
     },
     async initPage () {
       window.onkeydown = this.listenKeyDown
@@ -463,6 +726,16 @@ export default {
     this.initPage()
 
     this.restaurantInfo = Object.assign(this.restaurantInfo, (await getRestaurantInfo()).content[0])
+
+    console.log(this.sectionList, 'section')
+    this.servantList = await getServantList()
+    await this.refreshSectionList()
+    if (GlobalConfig.defaultPassword) {
+      this.currentServant = this.findServant(GlobalConfig.defaultPassword)
+    }
+  },
+  created () {
+    this.debounceUpdateSection = debounce(updateSection, 500)
   },
   beforeDestroy () {
     clearAllTimer()
@@ -473,7 +746,7 @@ export default {
 
 <style scoped>
 .tableDisplay {
-  height: calc(100vh - 48px);
+  height: calc(100vh - 96px);
   overflow: scroll;
 }
 
@@ -482,7 +755,7 @@ export default {
 }
 
 .areaTableContainer {
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 112px);
   margin-top: 18px;
   display: grid;
   grid-auto-flow: column;
@@ -590,17 +863,12 @@ export default {
 }
 
 .area {
-  max-height: calc(100vh - 48px);
+  max-height: calc(100vh - 72px);
   margin-right: 14px;
 }
 
 .area:last-child {
   margin-right: 380px;
-}
-
-.center-panel {
-  background: #f6f6f6;
-  width: 100vw;
 }
 
 /*input:focus{*/

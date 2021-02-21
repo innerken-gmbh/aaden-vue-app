@@ -69,13 +69,12 @@ export function jumpToTable (tableId, tableName) {
 }
 
 export function blockReady () {
-  // console.info('released')
+  // console.warn('released')
   blocked = false
 }
 
 export function blocking () {
-  // console.trace()
-  // console.info('blocked!')
+  // console.warn('blocked!')
   blocked = true
 }
 
@@ -90,7 +89,7 @@ export function setGlobalTableId (id) {
 export async function popAuthorize (type, successCallback, force = false, failedCallback, tableId = null) {
   if (!force) {
     if (!GlobalConfig.usePassword && type !== 'boss') {
-      successCallback()
+      successCallback(GlobalConfig.defaultPassword)
       return
     }
     if (!GlobalConfig.UseBossPassword && type === 'boss') {
@@ -191,11 +190,11 @@ async function shouldOpenTable (openingTable, pw) {
   openTableCallback(openingTable, pw, ...result)
 }
 
-function informOpenTable (password, number, personCount, childCount) {
+function informOpenTable (password = '', number, personCount, childCount) {
   hillo.post('Complex.php?op=openTable',
     {
       tableId: number,
-      pw: Config.usePassword ? password : '',
+      pw: password,
       personCount: personCount,
       childCount: childCount
     }).then(res => jumpToTable(res.content.tableId, res.content.tableName))
@@ -257,8 +256,9 @@ export function parseIntAndSetDefault (val, de = 0) {
   return number
 }
 
-export function openTableCallback (openingTable, pw, guestCount, childCount, consumeType, adultDishId) {
+export function openTableCallback (openingTable, pw = null, guestCount, childCount, consumeType, adultDishId) {
   [guestCount, childCount] = [guestCount, childCount].map(parseIntAndSetDefault)
+  pw = pw ?? Config.defaultPassword
   const openTableType = parseInt(consumeType)
   switch (openTableType) {
     case 1:

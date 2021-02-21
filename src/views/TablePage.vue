@@ -4,9 +4,13 @@
       <navgation>
         <template slot="left">
           <v-toolbar-items>
-            <v-btn tile class="primary ml-n3 mr-2" @click="back">
+            <v-btn tile class="primary ml-n3" @click="back">
               <v-icon>mdi-home</v-icon>
               HOME
+            </v-btn>
+            <v-btn tile disabled class="mr-4">
+                   <v-icon left>mdi-account-outline</v-icon>
+                   {{ tableDetailInfo.servant }}
             </v-btn>
           </v-toolbar-items>
 
@@ -40,13 +44,11 @@
         </template>
         <template slot="right-slot">
           <div class="d-flex align-center justify-space-between" style="min-width: 172px">
-                        <span class="bigTableName">
+            <span class="bigTableName">
                             {{ tableDetailInfo.tableBasicInfo.name }}
                         </span>
-
             <div class="d-flex">
-
-                            <span class="icon-line">
+                            <span class="icon-line ml-2">
                                 <v-icon color="white">mdi-account-outline</v-icon>
                                 <span class="ml-1">{{ tableDetailInfo.personCount }}</span>
                             </span>
@@ -158,7 +160,8 @@
                     :extra-height="'196px'"
                     :color="'#707070'"
                     :dish-list-model="cartListModel"
-                    :show-edit="!Config.useTouchScreenUI" :click-callback="removeDish"
+                    :show-edit="!Config.useTouchScreenUI"
+                    :click-callback="removeDish"
                     :title="$t('新增菜品')"
                     :default-expand="Config.defaultExpand">
                 </dish-card-list>
@@ -226,7 +229,7 @@
           </div>
           <v-card v-if="Config.useTouchScreenUI" elevation="0" color="transparent" v-cloak class="flex-grow-1 d-flex"
                   style="height: calc(100vh - 48px);max-width: calc(100vw - 300px)">
-            <v-card width="calc(100% - 372px)" v-dragscroll color="transparent"
+            <v-card width="calc(100% - 27vw)" v-dragscroll color="transparent"
                     class="dragscroll dishCardListContainer ml-1">
               <v-sheet class="px-2">
                 <v-chip-group column mandatory v-model="activeCategory">
@@ -262,16 +265,8 @@
               </div>
             </v-card>
 
-            <v-card width="372px" class="d-flex flex-shrink-0 flex-column pa-2">
+            <v-card width="27vw" class="d-flex flex-shrink-0 flex-column pa-2">
               <div>
-                <v-btn class="my-1" color="primary" large block @click="popAuthorize('',checkOut)">
-                  <v-icon left>mdi-calculator-variant</v-icon>
-                  快速结账
-                </v-btn>
-                <v-btn @click="back" class="my-1" large block>
-                  <v-icon left>mdi-home</v-icon>
-                  回首页
-                </v-btn>
                 <v-btn class="my-1" @click="reprintOrder" large block>
                   <v-icon left>mdi-printer</v-icon>
                   {{ $t('重新打印') }}
@@ -303,7 +298,7 @@
       <template v-if="splitOrderListModel.list.length>0">
         <div class="bottomCart surface d-flex justify-end"
              style="background: rgba(0,0,0,0.4);  top: 0;
-  right: 304px;
+  right: calc(30vw + 4px);
   z-index: 5;"
              :style="Config.useTouchScreenUI?{
                left:'304px'
@@ -353,6 +348,21 @@
           </div>
         </div>
       </template>
+      <v-dialog max-width="300px" v-model="extraDishShow">
+        <v-card>
+          <v-card-title>  {{currentDish.name}}</v-card-title>
+          <v-card-text>
+            <v-text-field label="Preis" autofocus v-model="currentDish.currentPrice"/>
+            <v-text-field label="Name" v-model="currentDish.currentName"/>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer/>
+              <v-btn @click="addExtraDish">OK</v-btn>
+
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <discount-dialog
           :discount-model-show="discountModelShow"
           :id="id"
@@ -361,6 +371,7 @@
           @visibility-changed="(val)=>this.discountModelShow=val"
       />
       <ModificationDrawer
+          ref="modification"
           @visibility-changed="changeModification"
           :modification-show="modificationShow"
           :dish="dish"
@@ -435,9 +446,13 @@ const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
 const orderListFactory = StandardDishesListFactory()
 const cartListFactory = StandardDishesListFactory()
-
+const defaultCurrentDish = {
+  currentName: '',
+  currentPrice: ''
+}
 const keyboardLayout =
     [
+      'E', 'F', 'B', 'R',
       'W', 'M', 'C', 'A',
       '7', '8', '9', 'mdi-autorenew',
       '4', '5', '6', 'K',
@@ -479,6 +494,7 @@ export default {
 
       menuShow: null, // 控制菜单是否显示
       checkoutShow: false,
+      extraDishShow: false,
       modificationShow: false,
       discountModelShow: null,
       isSendingRequest: false,
@@ -522,7 +538,7 @@ export default {
       splitOrderListModel: splitOrderFactory,
       orderListModel: orderListFactory,
       cartListModel: cartListFactory,
-
+      defaultCurrentDish,
       tableDetailInfo: {
         order: {
           id: -1,
@@ -530,7 +546,7 @@ export default {
         },
         tableBasicInfo: { name: '' }
       },
-
+      currentDish: defaultCurrentDish,
       password: ''
     }
   },
@@ -560,6 +576,10 @@ export default {
         case 'W':
         case 'M':
         case 'C':
+        case 'E':
+        case 'F':
+        case 'B':
+        case 'R':
           this.displayInput += key
           break
         case 'mdi-close':
@@ -634,9 +654,15 @@ export default {
           ? dish.name.substr(0, 28) + '...' : dish.name
         if (dish.haveMod > 0) {
           this.showModification(dish, count)
+          blockReady()
           return
         }
-
+        if (dish.code.toLowerCase().includes('ea')) {
+          this.currentDish = Object.assign({}, defaultCurrentDish, dish)
+          this.extraDishShow = true
+          blockReady()
+          return
+        }
         this.addDish(dish, parseInt(count))
       } else {
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
@@ -754,23 +780,23 @@ export default {
       this.orderListModel.add(item, -1)
       this.splitOrderListModel.add(item, 1)
     },
-    addDish: async function (dish, count = 1) {
-      if (dish.code.toLowerCase().includes('ea')) {
-        dish.originPrice = (await Swal.fire({
-          title: 'Bitte Preis Eingabe',
-          input: 'number',
-          inputAttributes: {
-            min: -1000,
-            step: 0.01
-          }
-        })).value
-        if (dish.originPrice === '') {
-          dish.originPrice = 0
-        }
-
-        dish.price = dish.originPrice
-        dish.forceFormat = true
+    addExtraDish () {
+      const dish = IKUtils.deepCopy(this.currentDish)
+      if (dish.currentPrice === '') {
+        dish.currentPrice = 0
       }
+      if (dish.currentName === '') {
+        dish.currentName = dish.name
+      }
+      dish.originPrice = dish.currentPrice
+      dish.price = dish.originPrice
+      dish.forceFormat = true
+      dish.name = dish.currentName
+      this.extraDishShow = false
+      this.currentDish = { currentName: '', originPrice: '' }
+      this.addDish(dish)
+    },
+    addDish: async function (dish, count = 1) {
       if (!GlobalConfig.useCart) {
         const tmp = IKUtils.deepCopy(dish)
         tmp.count = 1
@@ -875,7 +901,8 @@ export default {
       }
     },
     autoGetFocus () {
-      if (this.modificationShow || this.checkoutShow || this.discountModelShow || this.menuShow) {
+      if (this.modificationShow || this.checkoutShow || this.discountModelShow ||
+          this.menuShow || this.extraDishShow) {
         return
       }
       if (Swal.isVisible()) {
@@ -998,6 +1025,15 @@ export default {
         if (this.discountModelShow) {
           this.submitDiscount()
           blockReady()
+          return
+        } else if (this.extraDishShow) {
+          this.addExtraDish()
+          blockReady()
+          return
+        } else if (this.modificationShow) {
+          this.$refs.modification.forceSubmit()
+          blockReady()
+          return
         } else if (!this.checkoutShow && !this.modificationShow) {
           if (this.cartListModel.list.length > 0) {
             setTimeout(async () => {
@@ -1031,6 +1067,10 @@ export default {
     async orderDish (order = this.cartListModel.list, print = true) {
       try {
         this.isSendingRequest = true
+        order.forEach(o => {
+          console.log(o)
+          o.guestNumber = 1
+        })
         await hillo.post('Complex.php?op=addDishesToTable', {
           params: JSON.stringify(order),
           tableId: this.id,
@@ -1304,19 +1344,7 @@ tr:hover {
 
 @media screen and (max-width: 1280px ) {
   .dishCardList {
-    grid-template-columns: repeat(5, 1fr);
-  }
-}
-
-@media screen and (max-width: 1000px ) {
-  .dishCardList {
     grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media screen and (max-width: 600px ) {
-  .dishCardList {
-    grid-template-columns: repeat(3, 1fr);
   }
 }
 

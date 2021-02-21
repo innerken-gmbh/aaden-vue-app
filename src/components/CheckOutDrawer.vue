@@ -1,12 +1,12 @@
 <template>
-    <v-navigation-drawer width="fit-content" left fixed temporary v-model="realShow">
-        <v-card class="fill-height">
-            <check-out-calculator
-                    @payment-cancel="realShow=false"
-                    @payment-submit="checkOut"
-                    :total="order.total*(1-discountRatio)"/>
-        </v-card>
-    </v-navigation-drawer>
+  <v-navigation-drawer width="fit-content" left fixed temporary v-model="realShow">
+    <v-card class="fill-height">
+      <check-out-calculator
+          @payment-cancel="realShow=false"
+          @payment-submit="checkOut"
+          :total="order.total*(1-discountRatio)"/>
+    </v-card>
+  </v-navigation-drawer>
 </template>
 
 <script>
@@ -15,7 +15,6 @@ import hillo from 'hillo'
 import { toast } from '@/oldjs/common'
 import { goHome } from '@/oldjs/StaticModel'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
-import { setDiscountToTable } from '@/oldjs/api'
 import { printNow } from '@/oldjs/Timer'
 
 export default {
@@ -91,15 +90,16 @@ export default {
           .indexOf('p') !== -1 ? this.discountStr : (this.order.total * this.discountRatio).toFixed(2)
       }
 
+      delete checkOutData.discountStr
       const res = await hillo.post('Complex.php?op=' + this.checkOutType, checkOutData)
       if (res) {
-        if (this.checkOutType !== 'checkOut') {
-          if (!checkOutData.discountStr.includes('p') && this.discountStr) {
-            const remainDiscount = parseFloat(this.discountStr) - parseFloat(checkOutData.discountStr)
-            // console.log(remainDiscount)
-            setDiscountToTable(this.tableId, remainDiscount)
-          }
-        }
+        // if (this.checkOutType !== 'checkOut') {
+        //   if (!checkOutData.discountStr.includes('p') && this.discountStr) {
+        //     const remainDiscount = parseFloat(this.discountStr) - parseFloat(checkOutData.discountStr)
+        //     // console.log(remainDiscount)
+        //     setDiscountToTable(this.tableId, remainDiscount)
+        //   }
+        // }
         toast(this.$t('JSTableCheckOutSuccess'))
         this.cancel()
         if (this.checkOutType === 'checkOut') {

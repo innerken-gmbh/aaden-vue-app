@@ -1,7 +1,5 @@
 <template>
-  <v-card style="
-  grid-auto-rows: 60px;
-"
+  <v-card style="grid-auto-rows: 60px;"
           class="keyboard">
     <template v-for="i in keys">
       <v-btn :key="'key'+i" @click="input(i)"
