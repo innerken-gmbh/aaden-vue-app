@@ -1,5 +1,5 @@
 <template>
-  <span style="font-size: 26px;font-weight: bold">
+  <span style="font-size: 28px;font-weight: 900; font-family: 'Roboto',serif">
       {{ time }}
   </span>
 </template>

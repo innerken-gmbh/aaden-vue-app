@@ -32,5 +32,6 @@
   "useTouchScreenUI": true,
   "useDishListMenu": true,
   "useTableBluePrint": false,
-  "topKeyboardKey": "E,F,B,R"
+  "topKeyboardKey": "E,F,B,R",
+  "UseDailyZbon": false
 }

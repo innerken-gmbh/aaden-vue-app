@@ -5,7 +5,7 @@ import i18n from '../i18n'
 import GlobalConfig from './LocalGlobalSettings'
 import PrintStatus from './PrintStatus'
 import { clearAllTimer } from '@/oldjs/Timer'
-import * as moment from 'moment'
+import dayjs from 'dayjs'
 
 const Config = GlobalConfig
 
@@ -496,7 +496,7 @@ export function oldJumpTo (url, params) {
 }
 
 export function showTime () {
-  const date = moment()
+  const date = dayjs()
 
   return date.format('DD.MM.YYYY HH:mm:ss')
 }
