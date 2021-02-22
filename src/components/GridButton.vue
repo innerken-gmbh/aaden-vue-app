@@ -1,16 +1,16 @@
 <template>
-  <div class="gridButton elevation-1" @click="$emit('click')">
-
+  <v-card :color="color" class="gridButton elevation-1"
+       @click="$emit('click')">
     <div>
       <div class="d-flex justify-center" style="width: 100%">
-        <v-icon>{{ icon }}</v-icon>
+        <v-icon color="white">{{ icon }}</v-icon>
       </div>
-      <div class="d-flex justify-center" style="width: 100%">
+      <div  class="d-flex justify-center mt-1" style="width: 100%;color: white">
         {{ text }}
       </div>
     </div>
 
-  </div>
+  </v-card>
 </template>
 
 <script>
@@ -18,6 +18,9 @@ export default {
   name: 'GridButton',
   props: {
     icon: {},
+    color: {
+      default: 'primary'
+    },
     text: {}
   }
 }
@@ -27,7 +30,7 @@ export default {
 .gridButton {
   display: flex;
   width: 100%;
-  height: 72px;
+  height: 84px;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;

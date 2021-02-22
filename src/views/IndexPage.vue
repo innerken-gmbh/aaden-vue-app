@@ -329,27 +329,26 @@
               <time-display/>
             </div>
 
-            <div style="display: grid;grid-template-columns: repeat(3,1fr)" class="pa-2">
+            <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
               <grid-button
                   @click="popAuthorize('boss',toManage)"
                   icon="mdi-home-analytics"
                   text="HOME"
+                  color="warning"
               />
-
               <grid-button
                   @click="popAuthorize('',
                     (pw)=>
                     {salesDialogShow=true;salesPw=pw},true)"
                   icon="mdi-account-cash"
                   :text="  $t('销售额') "
+                  color="success"
               />
-
               <grid-button
                   @click="takeawayClicked"
                   icon=" mdi-truck-fast"
                   :text="  $t('takeaway') "
               />
-
             </div>
             <v-spacer></v-spacer>
             <template v-if="Config.useTableBluePrint">
@@ -383,7 +382,11 @@
       </div>
     </v-main>
     <address-form :menu-show="showOpenTakeawayTableDialog"></address-form>
-    <sales-dialog :id="salesPw" @visibility-changed="(e)=>salesDialogShow=e" :sales-dialog-show="salesDialogShow"></sales-dialog>
+    <sales-dialog
+        @visibility-changed="(e)=>salesDialogShow=e"
+        :id="salesPw"
+        :sales-dialog-show="salesDialogShow"
+    />
   </v-app>
 </template>
 
