@@ -30,7 +30,7 @@ export default {
 .gridButton {
   display: flex;
   width: 100%;
-  height: 84px;
+  height: 100px;
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
