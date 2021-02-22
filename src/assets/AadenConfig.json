@@ -32,5 +32,6 @@
   "activeCardBackground": "#367aeb",
   "useTouchScreenUI": true,
   "useDishListMenu": true,
-  "useTableBluePrint": false
+  "useTableBluePrint": false,
+  "topKeyboardKey": "E,F,B,R"
 }
