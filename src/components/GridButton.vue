@@ -1,5 +1,5 @@
 <template>
-  <div class="gridButton elevation-1">
+  <div class="gridButton elevation-1" @click="$emit('click')">
 
     <div>
       <div class="d-flex justify-center" style="width: 100%">
