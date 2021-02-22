@@ -324,6 +324,11 @@
                 </v-card>
               </template>
             </template>
+            <div class="pa-2 d-flex">
+              <v-spacer/>
+              <time-display/>
+            </div>
+
             <div style="display: grid;grid-template-columns: repeat(3,1fr)" class="pa-2">
               <grid-button
                   @click="popAuthorize('boss',toManage)"
