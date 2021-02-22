@@ -265,7 +265,7 @@ export function openTableCallback (openingTable, pw = null, guestCount, childCou
       informOpenTable(pw, openingTable, guestCount, childCount)// todo 添加开桌类型
       break
     case 2:
-      requestOutTable()
+      requestOutTable(pw)
       break
     case 4:
     case 6:
