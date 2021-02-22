@@ -6,6 +6,7 @@
 
 <script>
 import { showTime } from '@/oldjs/common'
+
 export default {
   name: 'TimeDisplay',
   data: function () {
