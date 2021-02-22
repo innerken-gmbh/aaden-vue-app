@@ -1,13 +1,17 @@
 <template>
-  <v-dialog max-width="600px" v-model="realShow">
+  <div style="position: fixed;top:48px;left: 0">
     <v-card>
       <v-toolbar>
         <v-toolbar-title>{{ displayData.servant.name }}:{{ $t('销售额') }}</v-toolbar-title>
         <v-spacer></v-spacer>
         <v-icon @click="realShow=!realShow">mdi-close</v-icon>
       </v-toolbar>
-      <v-card-title></v-card-title>
+      <v-tabs v-model="tabIndex">
+        <v-tab>单日</v-tab>
+        <v-tab>时间段</v-tab>
+      </v-tabs>
       <v-card-text>
+
         <v-list>
           <template v-for="p in displayData.paymentDetail">
             <v-list-item :key="p.name">
@@ -27,7 +31,7 @@
       </v-card-actions>
 
     </v-card>
-  </v-dialog>
+  </div>
 </template>
 
 <script>
@@ -44,7 +48,7 @@ const defaultDisplayData = {
   },
   servant: {
     id: -1,
-    name: ''
+    name: 'Servant 1'
   },
   paymentDetail: []
 }
@@ -60,6 +64,7 @@ export default {
   },
   data: function () {
     return {
+      tabIndex: null,
       displayData: defaultDisplayData
     }
   },
