@@ -451,14 +451,15 @@ const defaultCurrentDish = {
   currentPrice: ''
 }
 const keyboardLayout =
-    [
-      'E', 'F', 'B', 'R',
-      'W', 'M', 'C', 'A',
-      '7', '8', '9', 'mdi-autorenew',
-      '4', '5', '6', 'K',
-      '1', '2', '3', 'T',
-      'G', '0', 'mdi-close', 'OK'
-    ]
+
+      [
+
+        'W', 'M', 'C', 'A',
+        '7', '8', '9', 'mdi-autorenew',
+        '4', '5', '6', 'K',
+        '1', '2', '3', 'T',
+        'G', '0', 'mdi-close', 'OK'
+      ]
 
 // endregion
 export default {
@@ -489,7 +490,7 @@ export default {
   },
   data: function () {
     return {
-      keyboardLayout,
+      keyboardLayout: GlobalConfig.topKeyboardKey.split(',').concat(keyboardLayout),
       displayInput: '',
 
       menuShow: null, // 控制菜单是否显示
@@ -559,27 +560,7 @@ export default {
         this.displayInput = ''
       }
       switch (key) {
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-        case '0':
-        case 'A':
-        case 'K':
-        case 'T':
-        case 'G':
-        case 'W':
-        case 'M':
-        case 'C':
-        case 'E':
-        case 'F':
-        case 'B':
-        case 'R':
+        default:
           this.displayInput += key
           break
         case 'mdi-close':
