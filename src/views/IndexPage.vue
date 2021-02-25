@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <Navgation>
-      <template slot="left" >
+      <template slot="left">
         <v-toolbar-items v-if="!Config.useTouchScreenUI">
           <v-btn tile class="primary ml-n4 mr-4" @click="popAuthorize('boss',toManage)">
             <v-icon>mdi-home-analytics</v-icon>
@@ -338,9 +338,8 @@
               />
               <grid-button
                   @click="popAuthorize('',
-                    (pw)=>
-                    {salesDialogShow=true;salesPw=pw},true)"
-                  icon="mdi-account-cash"
+                    ()=>{salesDialogShow=true},true)"
+                  icon="mdi-cash"
                   :text="  $t('销售额') "
                   color="success"
               />
@@ -348,6 +347,12 @@
                   @click="takeawayClicked"
                   icon=" mdi-truck-fast"
                   :text="  $t('takeaway') "
+              />
+              <grid-button
+                  color="error"
+                  @click="memberCardCLicked"
+                  icon=" mdi-smart-card"
+                  :text="  $t('VIP') "
               />
             </div>
             <v-spacer></v-spacer>
@@ -384,9 +389,13 @@
     <address-form :menu-show="showOpenTakeawayTableDialog"></address-form>
     <sales-dialog
         @visibility-changed="(e)=>salesDialogShow=e"
-        :id="salesPw"
         :sales-dialog-show="salesDialogShow"
     />
+    <member-card-dialog
+        :member-card-dialog-show="memberCardDialogShow"
+        @visibility-changed="(e)=>memberCardDialogShow=e"
+        :member-card-info="memberCardInfo"
+    ></member-card-dialog>
   </v-app>
 </template>
 
@@ -394,6 +403,7 @@
 import { version } from '../../package.json'
 import {
   blockReady,
+  fastSweetAlertRequest,
   findConsumeTypeById,
   getAllDishes,
   getConsumeTypeList,
@@ -431,6 +441,7 @@ import { defaultSection } from '@/oldjs/defaultConst'
 import debounce from 'lodash-es/debounce'
 import SalesDialog from '@/components/fragments/SalesDialog'
 import GridButton from '@/components/GridButton'
+import MemberCardDialog from '@/components/fragments/MemberCardDialog'
 
 const keyboardLayout =
     [
@@ -451,7 +462,16 @@ export default {
   directives: {
     dragscroll
   },
-  components: { GridButton, SalesDialog, TableBluePrint, Keyboard, AddressForm, TimeDisplay, Navgation },
+  components: {
+    MemberCardDialog,
+    GridButton,
+    SalesDialog,
+    TableBluePrint,
+    Keyboard,
+    AddressForm,
+    TimeDisplay,
+    Navgation
+  },
   props: {
     refresh: {
       type: Number
@@ -493,7 +513,8 @@ export default {
       currentTable: null,
       currentSectionIndex: 0,
       salesDialogShow: false,
-      salesPw: null
+      memberCardDialogShow: false,
+      memberCardInfo: { createdAt: '', leftAmount: 0, longId: '', id: '' }
     }
   },
   watch: {
@@ -535,6 +556,16 @@ export default {
 
   },
   methods: {
+    async memberCardCLicked () {
+      const res = await fastSweetAlertRequest(
+        'Bitte VIP Karte Id Gaben.',
+        'text', 'MemberCard.php?op=check', 'id',
+        { amount: 0 }, 'GET')
+      if (res.content) {
+        this.memberCardInfo = res.content
+        this.memberCardDialogShow = true
+      }
+    },
     setCurrentTable (table) {
       this.currentTable = table
     },

@@ -308,7 +308,8 @@ export default {
           'text', 'MemberCard.php?op=check', 'id',
           { amount: 0 }, 'GET')
         if (res.content) {
-          obj.price = parseFloat(res.content.leftAmount)
+          const leftAmount = parseFloat(res.content.leftAmount)
+          obj.price = leftAmount > this.remainTotal ? this.remainTotal : leftAmount
           obj.memberCardId = res.content.id
         } else {
           return
