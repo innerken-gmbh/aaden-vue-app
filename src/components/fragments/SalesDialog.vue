@@ -212,12 +212,17 @@ export default {
       return dayjs(val, 'YYYY-MM-DD').isBefore(dayjs())
     },
     async loadData () {
-      this.lastZBonPrintDate = dayjs((await ZBonList())[0].createTimeStamp)
-      if (this.tabIndex === 1) {
-        this.billData = await previewZBon(this.lastZBonPrintDate.format('YYYY-MM-DD'),
-          dayjs().format('YYYY-MM-DD'))
-      } else {
-        this.billData = await previewZBon(this.singleZBonDate, this.singleZBonDate)
+      // 抑制老版本，以后一定要删掉
+      try {
+        this.lastZBonPrintDate = dayjs((await ZBonList())[0].createTimeStamp)
+        if (this.tabIndex === 1) {
+          this.billData = await previewZBon(this.lastZBonPrintDate.format('YYYY-MM-DD'),
+            dayjs().format('YYYY-MM-DD'))
+        } else {
+          this.billData = await previewZBon(this.singleZBonDate, this.singleZBonDate)
+        }
+      } catch (e) {
+
       }
     }
   },
