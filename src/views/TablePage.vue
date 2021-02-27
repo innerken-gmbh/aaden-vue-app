@@ -254,6 +254,7 @@
               <div class="dishCardList">
                 <template v-for="dish of filteredDish">
                   <dish-block
+                      v-ripple
                       :key="'dish'+dish.code"
                       :code="dish.code"
                       :count="dish.count"
@@ -1322,9 +1323,9 @@ tr:hover {
 }
 
 .dishCardList {
-  padding-top: 12px;
+  padding: 8px;
   display: grid;
-  grid-template-columns: repeat(5, 20%);
+  grid-template-columns: repeat(5, 1fr);
   margin-bottom: 120px;
   width: 100%;
   grid-gap: 6px;
@@ -1332,7 +1333,7 @@ tr:hover {
 
 @media screen and (max-width: 1280px ) {
   .dishCardList {
-    grid-template-columns: repeat(4, 25%);
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
