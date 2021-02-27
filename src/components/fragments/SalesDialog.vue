@@ -7,8 +7,8 @@
         <v-icon @click="realShow=!realShow">mdi-close</v-icon>
       </v-toolbar>
       <v-tabs v-model="tabIndex">
-        <v-tab>单日模式</v-tab>
-        <v-tab>时间段模式</v-tab>
+        <v-tab>Tag-Sicht</v-tab>
+        <v-tab>Latzt-Sicht</v-tab>
       </v-tabs>
       <v-card-text>
         <v-tabs-items v-model="tabIndex">
@@ -23,7 +23,7 @@
                 />
                 <div class="pa-4" style="min-width: 464px">
                   <v-list subheader two-line-line>
-                    <v-subheader>营业额统计</v-subheader>
+                    <v-subheader>{{ $t('Umsatz') }}</v-subheader>
                     <template v-for="total in taxGroupInfo">
                       <v-list-item :key="total.taxRatePercentage">
                         <v-list-item-content>
@@ -52,12 +52,12 @@
             <v-card>
               <div class="d-flex pa-1 align-center">
                 <div class="pa-2 " style="height: 100%">
-                  <h1>上一张ZBon打印于：</h1>
+                  <h1>Letzte ZBon drucken：</h1>
                   <h1 class="mt-4">{{ lastZBonPrintTimeDisplayString }}</h1>
                 </div>
                 <div class="pa-4" style="min-width: 464px">
                   <v-list subheader two-line-line>
-                    <v-subheader>到现在为止的营业额统计</v-subheader>
+                    <v-subheader>{{ $t('Umsatz') }}</v-subheader>
                     <template v-for="total in taxGroupInfo">
                       <v-list-item :key="total.taxRatePercentage">
                         <v-list-item-content>
