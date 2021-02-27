@@ -1,6 +1,6 @@
 <template>
   <v-lazy @click="$emit('click')" :options="{threshold: .5}"
-          min-height="108px"
+          min-height="112px"
           height="100%"
   >
     <div :style="{
@@ -40,8 +40,9 @@ export default {
 <style scoped>
 .dishBlock {
   cursor: pointer;
-  padding: 5px 12px;
+  padding: 4px;
   background: white;
+  border-radius: 4px;
 }
 
 .dishBlock .code {
@@ -54,7 +55,6 @@ export default {
 }
 
 .dishBlock .name {
-  margin-top: 8px;
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   width: 100%;
   font-size: 18px;

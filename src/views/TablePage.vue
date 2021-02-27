@@ -1324,7 +1324,7 @@ tr:hover {
 .dishCardList {
   padding-top: 12px;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, 20%);
   margin-bottom: 120px;
   width: 100%;
   grid-gap: 6px;
@@ -1332,7 +1332,7 @@ tr:hover {
 
 @media screen and (max-width: 1280px ) {
   .dishCardList {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, 25%);
   }
 }
 
