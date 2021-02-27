@@ -810,7 +810,7 @@ export default {
 
 <style scoped>
 .tableDisplay {
-  height: calc(100vh - 96px);
+  height: calc(100vh - 48px);
   overflow: scroll;
 }
 
@@ -920,7 +920,6 @@ export default {
 }
 
 .areaC {
-  margin-top: 12px;
   margin-left: 12px;
   display: flex;
   width: max-content;
