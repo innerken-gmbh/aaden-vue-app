@@ -9,8 +9,8 @@
               HOME
             </v-btn>
             <v-btn tile disabled class="mr-4">
-                   <v-icon left>mdi-account-outline</v-icon>
-                   {{ tableDetailInfo.servant }}
+              <v-icon left>mdi-account-outline</v-icon>
+              {{ tableDetailInfo.servant }}
             </v-btn>
           </v-toolbar-items>
 
@@ -232,24 +232,29 @@
             <v-card width="calc(100% - 27vw)" v-dragscroll color="transparent"
                     class="dragscroll dishCardListContainer ml-1">
               <v-sheet class="px-2">
-                <v-chip-group column mandatory v-model="activeCategory">
-                  <v-chip label large @click="changeCategory(-1)" elevation="3" v-dragscroll
-                          style=" overflow: hidden">Alle
-                  </v-chip>
+                <v-item-group mandatory v-model="activeCategory" class="d-flex flex-wrap align-start">
+                  <v-item v-slot="{active,toggle}">
+                    <div @click="changeCategory(-1,toggle)" class="menu-item" :class="active?'active elevation-4':'elevation-1'"
+                         >Alle
+                    </div>
+                  </v-item>
+
                   <template v-for="category of filteredC">
-                    <v-chip large label
-                            v-bind:key="'categorytypes'+category.id"
-                            @click="changeCategory(category.id)"
-                            style="text-transform: capitalize;font-size: 18px"
-                            :style="{backgroundColor:category.color, color:getColorLightness(category.color)>128?'#000 !important':'#fff !important'}">
-                      {{ category.name }}
-                    </v-chip>
+                    <v-item  v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
+                      <div @click="changeCategory(category.id,toggle)" class="menu-item"
+                           :class="active?'active elevation-4':'elevation-1'"
+                           :style="{backgroundColor:category.color, color:getColorLightness(category.color)>128?'#000':'#fff'}">
+                        {{ category.name }}
+                      </div>
+                    </v-item>
+
                   </template>
-                </v-chip-group>
+                </v-item-group>
               </v-sheet>
               <div class="dishCardList">
                 <template v-for="dish of filteredDish">
                   <dish-block
+                      v-ripple
                       :key="'dish'+dish.code"
                       :code="dish.code"
                       :count="dish.count"
@@ -350,7 +355,7 @@
       </template>
       <v-dialog max-width="300px" v-model="extraDishShow">
         <v-card>
-          <v-card-title>  {{currentDish.name}}</v-card-title>
+          <v-card-title> {{ currentDish.name }}</v-card-title>
           <v-card-text>
             <v-text-field label="Preis" autofocus v-model="currentDish.currentPrice"/>
             <v-text-field label="Name" v-model="currentDish.currentName"/>
@@ -358,7 +363,7 @@
 
           <v-card-actions>
             <v-spacer/>
-              <v-btn @click="addExtraDish">OK</v-btn>
+            <v-btn @click="addExtraDish">OK</v-btn>
 
           </v-card-actions>
         </v-card>
@@ -452,14 +457,14 @@ const defaultCurrentDish = {
 }
 const keyboardLayout =
 
-      [
+    [
 
-        'W', 'M', 'C', 'A',
-        '7', '8', '9', 'mdi-autorenew',
-        '4', '5', '6', 'K',
-        '1', '2', '3', 'T',
-        'G', '0', 'mdi-close', 'OK'
-      ]
+      'W', 'M', 'C', 'A',
+      '7', '8', '9', 'mdi-autorenew',
+      '4', '5', '6', 'K',
+      '1', '2', '3', 'T',
+      'G', '0', 'mdi-close', 'OK'
+    ]
 
 // endregion
 export default {
@@ -774,7 +779,10 @@ export default {
       dish.forceFormat = true
       dish.name = dish.currentName
       this.extraDishShow = false
-      this.currentDish = { currentName: '', originPrice: '' }
+      this.currentDish = {
+        currentName: '',
+        originPrice: ''
+      }
       this.addDish(dish)
     },
     addDish: async function (dish, count = 1) {
@@ -1315,7 +1323,7 @@ tr:hover {
 }
 
 .dishCardList {
-  padding-top: 12px;
+  padding: 8px;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   margin-bottom: 120px;
@@ -1360,6 +1368,21 @@ tr:hover {
   color: #367aeb;
   font-weight: bold;
   border-right: 3px solid #367aeb;
+}
+
+.menu-item {
+  width: fit-content;
+  padding: 4px 8px;
+  margin: 4px;
+  border-radius: 4px;
+  text-transform: capitalize;
+  font-size: 16px;
+}
+.menu-item.active{
+  background: #367aeb !important;
+  color: white !important;
+  padding: 8px;
+  font-size: 18px;
 }
 
 </style>

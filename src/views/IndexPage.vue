@@ -368,7 +368,7 @@
             </template>
             <div v-if="!isEditing">
               <v-card class="mt-2">
-                <div class="pa-2">{{ currentServant.name }}:{{ currentKeyboardFunction }}</div>
+                <div class="pa-2">{{ currentServant.name }}:{{ $t(currentKeyboardFunction) }}</div>
                 <v-text-field
                     class="ma-2"
                     hide-details
@@ -809,7 +809,7 @@ export default {
 
 <style scoped>
 .tableDisplay {
-  height: calc(100vh - 96px);
+  height: calc(100vh - 48px);
   overflow: scroll;
 }
 
@@ -919,7 +919,6 @@ export default {
 }
 
 .areaC {
-  margin-top: 12px;
   margin-left: 12px;
   display: flex;
   width: max-content;
