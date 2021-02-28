@@ -160,7 +160,6 @@
             </v-card>
           </v-menu>
         </v-toolbar-items>
-
       </template>
     </Navgation>
     <v-main style=" width: 100vw">
