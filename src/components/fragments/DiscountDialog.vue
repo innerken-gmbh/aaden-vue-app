@@ -25,7 +25,7 @@
       <v-card-actions>
         <div class="d-flex flex-wrap">
           <template v-for="d in predefinedDiscount">
-            <v-btn @click="sendDiscount(d)" :key="d">-{{ d.replace('p', '%') }}</v-btn>
+            <v-btn @click="submitDiscount(d)" :key="d">-{{ d.replace('p', '%') }}</v-btn>
           </template>
         </div>
         <v-spacer></v-spacer>
@@ -123,8 +123,10 @@ export default {
         this.getAllPredefinedDiscount()
       }
     },
-    async submitDiscount () {
-      const discountStr = this.localDiscountStr + (this.localDiscountType === 1 ? 'p' : '')
+    async submitDiscount (discountStr = null) {
+      if (discountStr == null) {
+        discountStr = this.localDiscountStr + (this.localDiscountType === 1 ? 'p' : '')
+      }
       const discountPattern = /^([0-9]+(\.[0-9]+)?)?((p)+([kg])?)?$/
       if (!discountPattern.test(discountStr)) {
         IKUtils.toast('Error', 'error')
@@ -136,9 +138,11 @@ export default {
         this.localDiscountStr = ''
         this.localDiscountType = 0
       }
+      const isPercentage = discountStr.includes('p')
+      const value = parseFloat(discountStr.replace('p', ''))
       if (GlobalConfig.bigDiscountRatio > 0 &&
-          this.localDiscountType === 1 &&
-          (parseFloat(this.localDiscountStr) / 100) >=
+          isPercentage &&
+          (value / 100) >=
           GlobalConfig.bigDiscountRatio) {
         this.realShow = false
         popAuthorize('boss', () => {
