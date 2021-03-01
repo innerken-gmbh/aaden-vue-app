@@ -86,15 +86,18 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn x-large @click="printXBon"
-               color="warning">XBon Drücken
+        <v-btn
+            x-large
+            @click="printXBon"
+            color="warning">
+          XBon Drücken
         </v-btn>
         <v-btn
             v-if="shouldShowZBon"
             x-large
             @click="printZBon"
-            color="primary"
-        >ZBon Drücken
+            color="primary">
+          ZBon Drücken
         </v-btn>
       </v-card-actions>
 
@@ -135,7 +138,6 @@ export default {
   },
   data: function () {
     return {
-
       billData: {
         content: {
           taxInfos: [],
