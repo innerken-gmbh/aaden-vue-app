@@ -34,5 +34,6 @@
   "useTableBluePrint": false,
   "topKeyboardKey": "E,F,B,R",
   "UseDailyZbon": false,
-  "bigDiscountRatio": 0.3
+  "bigDiscountRatio": 0.3,
+  "useConfigButton": false
 }

@@ -107,6 +107,7 @@
                         :have-mod="dish.haveMod"
                         :is-free="dish.isFree"
                         :price="dish.price"
+                        @click-tune="showModification(dish,1)"
                         @click="orderOneDish(dish.code)"/>
                   </template>
                 </div>
@@ -154,7 +155,7 @@
                     :extra-height="'196px'"
                     :color="'#707070'"
                     :dish-list-model="cartListModel"
-                    :show-edit="!Config.useTouchScreenUI"
+                    :show-edit="true"
                     :click-callback="removeDish"
                     :title="$t('新增菜品')"
                     :default-expand="Config.defaultExpand">
@@ -253,6 +254,7 @@
                       :have-mod="dish.haveMod"
                       :is-free="dish.isFree"
                       :price="dish.price"
+                      @click-tune="showModification(dish,1)"
                       @click="orderOneDish(dish.code)"/>
                 </template>
               </div>
@@ -624,7 +626,7 @@ export default {
         dish.name = dish.dishName
         dish.name = dish.name.length > 28
           ? dish.name.substr(0, 28) + '...' : dish.name
-        if (dish.haveMod > 0) {
+        if (dish.haveMod > 0 && !GlobalConfig.useConfigButton) {
           this.showModification(dish, count)
           blockReady()
           return
