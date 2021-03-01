@@ -423,7 +423,7 @@ import DishCardList from '../components/DishCardList'
 import ModificationDrawer from '../components/ModificationDrawer'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import CheckOutDrawer from '../components/CheckOutDrawer'
-import { findDish, getAllDishesWithCache, goHome } from '@/oldjs/StaticModel'
+import { findDish, getAllDishesWithCache, goHome, setDefaultValueForApply } from '@/oldjs/StaticModel'
 import { addToTimerList, clearAllTimer, printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
@@ -626,8 +626,13 @@ export default {
         dish.name = dish.dishName
         dish.name = dish.name.length > 28
           ? dish.name.substr(0, 28) + '...' : dish.name
-        if (dish.haveMod > 0 && !GlobalConfig.useConfigButton) {
-          this.showModification(dish, count)
+        if (dish.haveMod > 0) {
+          if (GlobalConfig.useConfigButton) {
+            const apply = setDefaultValueForApply(dish.options, [])
+            this.submitModification(apply, dish, count, apply)
+          } else {
+            this.showModification(dish, count)
+          }
           blockReady()
           return
         }

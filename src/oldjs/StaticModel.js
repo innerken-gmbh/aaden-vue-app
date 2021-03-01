@@ -4,6 +4,7 @@ import i18n from '../i18n'
 import GlobalConfig from './LocalGlobalSettings'
 import { getActiveTables, jumpTo, jumpToTable, requestOutTable } from './common'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
+import IKUtils from 'innerken-js-utils'
 
 let dishesList = []
 const dishesDictionary = {}
@@ -19,12 +20,79 @@ export async function getAllDishesWithCache (force = false) {
     dishesList.length = 0
     if (res.content.length > 0) {
       dishesList = StandardDishesListFactory().formatList(res.content)
+      dishesList = dishesList.map(d => {
+        d.options = getComputedOption(d)
+        return d
+      })
       dishesList.forEach(d => {
         dishesDictionary[d.code.toLowerCase()] = d
       })
     }
   }
   return dishesList
+}
+
+function getComputedOption (dish) {
+  const realModInfo = []
+  if (dish.modInfo?.length > 0) {
+    dish.modInfo.forEach(item => {
+      item.select = []
+      if (item.selectName) {
+        if (!Array.isArray(item.selectName)) {
+          item.selectName = (item.selectName?.split(',')) ?? []
+          item.selectValue = (item.selectValue?.split(',')) ?? []
+          item.priceInfo = (item.priceInfo?.split(',')) ?? []
+        }
+        item.selectName.forEach((name, index) => {
+          const select = {
+            text: `${name}`,
+            value: item.selectValue[index],
+            priceInfo: parseFloat(item.priceInfo[index]) === 0 ? '' : ` €${parseFloat(item.priceInfo[index]).toFixed(2)}`,
+            count: 0,
+            price: parseFloat(item.priceInfo[index] ?? 0)
+          }
+          item.select.push(select)
+        })
+        realModInfo.push(item)
+      }
+    })
+    if (GlobalConfig.useAttributeSort) {
+      realModInfo.sort((a, b) => {
+        if (a.required === '1') {
+          return -1
+        } else if (a.select.length === 1) {
+          return -1
+        } else {
+          return 1
+        }
+      })
+    }
+  }
+  return realModInfo
+}
+
+export function setDefaultValueForApply (modOptions, _mod) {
+  const mod = IKUtils.deepCopy(_mod)
+  const groupDict = IKUtils.deepCopy(modOptions.reduce((obj, m) => {
+    obj[m.id] = m
+    return obj
+  }, {}))
+  for (let i of mod) {
+    const group = groupDict[i.groupId]
+    group.hasValue = true
+    i = Object.assign(i, group)
+    i.groupId = group.id
+    i.selectId = [group.selectValue[i.selectIndex]]
+  }
+  for (const key in groupDict) {
+    const item = groupDict[key]
+    if (item.required === '1' && !item.hasValue) {
+      item.groupId = item.id
+      item.selectId = [item.selectValue[0]]
+      mod.push(item)
+    }
+  }
+  return mod
 }
 
 export async function goHome () {

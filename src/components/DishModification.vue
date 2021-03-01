@@ -88,7 +88,7 @@
 
 <script>
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import IKUtils from 'innerken-js-utils'
+import { setDefaultValueForApply } from '@/oldjs/StaticModel'
 
 export default {
   name: 'DishModification',
@@ -224,28 +224,7 @@ export default {
     submitModification () {
       const saveInfo = JSON.stringify({ selectCount: this.selectCount, mod: this.mod })
 
-      const mod = IKUtils.deepCopy(this.realMod)
-      const groupDict = IKUtils.deepCopy(this.computedOption.reduce((obj, m) => {
-        obj[m.id] = m
-        return obj
-      }, {}))
-
-      for (let i of mod) {
-        const group = groupDict[i.groupId]
-        group.hasValue = true
-        i = Object.assign(i, group)
-        i.groupId = group.id
-        i.selectId = [group.selectValue[i.selectIndex]]
-      }
-
-      for (const key in groupDict) {
-        const item = groupDict[key]
-        if (item.required === '1' && !item.hasValue) {
-          item.groupId = item.id
-          item.selectId = [item.selectValue[0]]
-          mod.push(item)
-        }
-      }
+      const mod = setDefaultValueForApply(this.computedOption, this.realMod)
 
       this.clear()
 
