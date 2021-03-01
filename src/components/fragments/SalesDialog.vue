@@ -87,14 +87,14 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn x-large @click="printXBon"
-               color="warning">打印XBon
+               color="warning">XBon Drücken
         </v-btn>
         <v-btn
             v-if="shouldShowZBon"
             x-large
             @click="printZBon"
             color="primary"
-        >打印ZBon
+        >ZBon Drücken
         </v-btn>
       </v-card-actions>
 
