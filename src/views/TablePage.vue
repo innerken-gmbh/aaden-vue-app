@@ -270,6 +270,10 @@
                   <v-icon left>mdi-printer-pos</v-icon>
                   ZwischenBon
                 </v-btn>
+                <v-btn class="my-1" @click="changeServant" large block>
+                  <v-icon left>mdi-account</v-icon>
+                  {{ $t('Übergabe') }}
+                </v-btn>
               </div>
               <v-spacer></v-spacer>
               <div>
@@ -396,7 +400,7 @@ import {
   findConsumeTypeById,
   getConsumeTypeList,
   isBlocking,
-  jumpToTable,
+  jumpToTable, loadingComplete,
   logError,
   logErrorAndPop,
   popAuthorize,
@@ -961,6 +965,15 @@ export default {
         case 'Enter':
           this.insDecode(this.readBuffer())
           break
+      }
+    },
+    async changeServant () {
+      const res = await fastSweetAlertRequest('Zu andere Kneller übergabe', 'text',
+        'Orders.php?op=changeServantForTable', 'pw',
+        { tableId: this.id }, 'POST')
+      if (res) {
+        loadingComplete()
+        this.initialUI()
       }
     },
     reprintOrder () {
