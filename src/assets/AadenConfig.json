@@ -33,5 +33,6 @@
   "useDishListMenu": true,
   "useTableBluePrint": false,
   "topKeyboardKey": "E,F,B,R",
-  "UseDailyZbon": false
+  "UseDailyZbon": false,
+  "bigDiscountRatio": 0.3
 }

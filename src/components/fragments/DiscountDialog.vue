@@ -41,6 +41,8 @@ import hillo from 'hillo'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
 import Keyboard from '@/components/Keyboard'
+import { popAuthorize } from '@/oldjs/common'
+
 const keyboardLayout =
     [
 
@@ -128,10 +130,25 @@ export default {
         IKUtils.toast('Error', 'error')
         return
       }
-      this.addNewPredefinedDiscount(discountStr)
-      await this.sendDiscount(discountStr)
-      this.localDiscountStr = ''
-      this.localDiscountType = 0
+      const realSubmitDiscount = async () => {
+        this.addNewPredefinedDiscount(discountStr)
+        await this.sendDiscount(discountStr)
+        this.localDiscountStr = ''
+        this.localDiscountType = 0
+      }
+      if (GlobalConfig.bigDiscountRatio > 0 &&
+          this.localDiscountType === 1 &&
+          (parseFloat(this.localDiscountStr) / 100) >=
+          GlobalConfig.bigDiscountRatio) {
+        this.realShow = false
+        popAuthorize('boss', () => {
+          realSubmitDiscount()
+        }, true, () => {
+          this.realShow = true
+        })
+      } else {
+        realSubmitDiscount()
+      }
     },
     async sendDiscount (discountStr) {
       await hillo.post('Complex.php?op=setDiscount', {
