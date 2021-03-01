@@ -1,5 +1,5 @@
 <template>
-    <v-dialog fullscreen v-model="realShow">
+    <v-bottom-sheet inset v-model="realShow" >
         <dish-modification
                 ref="modification"
                 :showing="realShow"
@@ -11,7 +11,7 @@
                 <span class="font-weight-black"> {{ dish.name }} €{{parseFloat(dish.price)+price | priceDisplay}}</span>
             </template>
         </dish-modification>
-    </v-dialog>
+    </v-bottom-sheet>
 </template>
 
 <script>
