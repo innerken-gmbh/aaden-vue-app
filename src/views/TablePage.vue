@@ -81,15 +81,9 @@
               <v-sheet elevation="3" v-dragscroll style="max-height: calc(100vh - 48px);overflow: hidden">
                 <v-list>
                   <v-list-item-group mandatory v-model="activeCategory">
-                    <v-list-item @click="changeCategory(-1)">
-                      <v-list-item-content class="font-weight-black">
-                        Alle
-                      </v-list-item-content>
-                    </v-list-item>
                     <template v-for="category of filteredC">
                       <v-list-item style="text-transform: capitalize;font-size: 16px"
                                    v-bind:key="'categorytypes'+category.id"
-                                   @click="changeCategory(category.id)"
                                    :style="{backgroundColor:category.color,
                                                             color:getColorLightness(category.color)>128?'#000 !important':'#fff !important'}"
                       >
@@ -233,14 +227,8 @@
                     class="dragscroll dishCardListContainer ml-1">
               <v-sheet class="px-2">
                 <v-item-group mandatory v-model="activeCategory" class="d-flex flex-wrap align-start">
-                  <v-item v-slot="{active,toggle}">
-                    <div @click="changeCategory(-1,toggle)" class="menu-item" :class="active?'active elevation-4':'elevation-1'"
-                         >Alle
-                    </div>
-                  </v-item>
-
                   <template v-for="category of filteredC">
-                    <v-item  v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
+                    <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
                       <div @click="changeCategory(category.id,toggle)" class="menu-item"
                            :class="active?'active elevation-4':'elevation-1'"
                            :style="{backgroundColor:category.color, color:getColorLightness(category.color)>128?'#000':'#fff'}">
@@ -527,7 +515,6 @@ export default {
       staticDishes: [],
       categories: [],
       activeCategory: null,
-      activeCategoryId: 0,
       activeDCT: 0,
       filteredDish: [{
         name: '',
@@ -586,7 +573,6 @@ export default {
       if (toggle) {
         toggle()
       }
-      this.activeCategoryId = id
     },
     popAuthorize,
     getColorLightness,
@@ -1135,12 +1121,9 @@ export default {
         list = list.filter((item) => {
           return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
         })
-
-        if (this.activeCategory) {
-          list = list.filter((item) => {
-            return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
-          })
-        }
+        list = list.filter((item) => {
+          return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
+        })
       }
 
       if (GlobalConfig.dishLookUp) {
@@ -1230,6 +1213,9 @@ export default {
       return this.categories.filter((item) => {
         return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
       })
+    },
+    activeCategoryId () {
+      return this.filteredC[this.activeCategory].id
     }
 
   },
@@ -1242,7 +1228,7 @@ export default {
     dishes: function () {
       this.updateFilteredDish()
     },
-    activeCategory: function (val) {
+    activeCategory: function () {
       this.filteredDish = this.filterDish()
     },
     input: function () {
@@ -1378,7 +1364,8 @@ tr:hover {
   text-transform: capitalize;
   font-size: 16px;
 }
-.menu-item.active{
+
+.menu-item.active {
   background: #367aeb !important;
   color: white !important;
   padding: 8px;
