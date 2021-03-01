@@ -27,9 +27,14 @@
                     <template v-for="total in taxGroupInfo">
                       <v-list-item :key="total.taxRatePercentage">
                         <v-list-item-content>
-                          <v-list-item-title>{{ total.taxRatePercentage }}%</v-list-item-title>
-                          <v-list-item-subtitle>Umsatz: {{ total.groupTotal }}</v-list-item-subtitle>
-                          <v-list-item-subtitle>Netto/Steuer: {{ total.nettoumsatz }}/{{ total.umsatzsteuer }}
+                          <v-list-item-title>
+                            {{ total.taxRatePercentage }}%
+                          </v-list-item-title>
+                          <v-list-item-subtitle>
+                            Umsatz: {{ total.groupTotal }}
+                          </v-list-item-subtitle>
+                          <v-list-item-subtitle>
+                            Netto/Steuer: {{ total.nettoumsatz }}/{{ total.umsatzsteuer }}
                           </v-list-item-subtitle>
                         </v-list-item-content>
                       </v-list-item>
@@ -42,7 +47,6 @@
                         </v-list-item-subtitle>
                       </v-list-item-content>
                     </v-list-item>
-
                   </v-list>
                 </div>
               </div>
@@ -61,9 +65,13 @@
                     <template v-for="total in taxGroupInfo">
                       <v-list-item :key="total.taxRatePercentage">
                         <v-list-item-content>
-                          <v-list-item-title>{{ total.taxRatePercentage }}%</v-list-item-title>
-                          <v-list-item-subtitle>Umsatz: {{ total.groupTotal }}</v-list-item-subtitle>
-                          <v-list-item-subtitle>Netto/Steuer: {{ total.nettoumsatz }}/{{ total.umsatzsteuer }}
+                          <v-list-item-title>
+                            {{ total.taxRatePercentage }}%
+                          </v-list-item-title>
+                          <v-list-item-subtitle>
+                            Umsatz: {{ total.groupTotal }}</v-list-item-subtitle>
+                          <v-list-item-subtitle>
+                            Netto/Steuer: {{ total.nettoumsatz }}/{{ total.umsatzsteuer }}
                           </v-list-item-subtitle>
                         </v-list-item-content>
                       </v-list-item>
