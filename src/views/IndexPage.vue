@@ -11,6 +11,10 @@
         <v-toolbar-title>
           {{ $t('appName') }}
         </v-toolbar-title>
+        <div class="d-flex ml-2 align-center caption">
+          Version <span v-show-quick-buy>FMC-</span>{{ version }}
+        </div>
+
       </template>
       <template slot="right-slot">
         <time-display v-if="!Config.useTouchScreenUI" class="mx-1"/>
