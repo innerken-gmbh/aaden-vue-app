@@ -164,28 +164,28 @@
     </Navgation>
     <v-main style=" width: 100vw">
       <div class="d-flex flex-nowrap" style="width: 100vw">
-        <v-card v-if="Config.useTableBluePrint" class="flex-grow-1">
-          <v-toolbar dense>
-            <v-tabs v-model="currentSectionIndex">
-              <template v-for="area of sectionList">
-                <v-tab :key="area.id">
-                  {{ area.name }}
-                </v-tab>
-              </template>
-            </v-tabs>
-            <v-spacer></v-spacer>
-            <v-toolbar-items class="mr-2">
-              <v-btn @click="isEditing=!isEditing" :dark="isEditing">
-                <v-icon>mdi-pencil-box</v-icon>
-              </v-btn>
-              <v-btn @click="saveCurrentSection()" color="primary" v-if="isEditing">
-                <v-icon left>mdi-check</v-icon>
-                保存
-              </v-btn>
-            </v-toolbar-items>
-            Size:{{ currentSection.sizeY * currentSection.sizeX }}
-          </v-toolbar>
-          <template>
+        <v-card v-if="Config.useTableBluePrint" class="flex-grow-1 d-flex">
+          <v-card>
+            <v-toolbar dense>
+              <v-tabs v-model="currentSectionIndex">
+                <template v-for="area of sectionList">
+                  <v-tab :key="area.id">
+                    {{ area.name }}
+                  </v-tab>
+                </template>
+              </v-tabs>
+              <v-spacer></v-spacer>
+              <v-toolbar-items class="mr-2">
+                <v-btn @click="isEditing=!isEditing" :dark="isEditing">
+                  <v-icon>mdi-pencil-box</v-icon>
+                </v-btn>
+                <v-btn @click="saveCurrentSection()" color="primary" v-if="isEditing">
+                  <v-icon left>mdi-check</v-icon>
+                  保存
+                </v-btn>
+              </v-toolbar-items>
+              Size:{{ currentSection.sizeY * currentSection.sizeX }}
+            </v-toolbar>
             <table-blue-print
                 @table-clicked="openOrEnterTable"
                 @need-refresh="refreshTables"
@@ -194,7 +194,25 @@
                 :editing.sync="isEditing"
                 :current-table.sync="currentTable"
                 :current-section="currentSection"/>
-          </template>
+          </v-card>
+          <v-card style="overflow-y: scroll;width: 280px">
+            <div :key="t.id"
+                 @click="openOrEnterTable(t.tableName)"
+                 v-for="t in orderList" class="pa-2 d-flex justify-space-between align-center"
+                 style="border-bottom: 1px dotted black">
+              <span class="title" >{{ t.tableName }}</span>
+              <div class="caption">
+                <div class="d-flex justify-space-between align-center" style="width: 56px">
+                  <v-icon small>mdi-account</v-icon>
+                  <span>{{ t.servantName }}</span>
+                </div>
+                <div class="d-flex justify-space-between align-center" style="width: 56px">
+                  <v-icon small>mdi-alarm</v-icon>
+                  {{ t.createTimestamp }}
+                </div>
+              </div>
+            </div>
+          </v-card>
 
         </v-card>
         <div v-dragscroll v-else class="tableDisplay flex-grow-1">
@@ -304,23 +322,6 @@
                   <v-slider v-model="currentTable.radius" label="桌子圆角"></v-slider>
                   <v-btn @click="()=>{currentTable.cells=[];currentTable=null}">清空</v-btn>
                 </div>
-              </template>
-              <template v-if="!isEditing">
-                <v-card style="overflow: scroll" class="flex-grow-1">
-                  <div :key="t.id"
-                       @click="openOrEnterTable(t.tableName)"
-                       v-for="t in orderList" class="pa-2 d-flex justify-space-between align-center"
-                       style="border-bottom: 1px dotted black">
-                    <span :style="{fontSize:Config.tableCardFontSize+'px'} ">{{ t.tableName }}</span>
-
-                    <div>
-                      <v-icon>mdi-account</v-icon>
-                      <span class="mr-2">{{ t.servantName }}</span>
-                      <v-icon>mdi-alarm</v-icon>
-                      {{ t.createTimestamp }}
-                    </div>
-                  </div>
-                </v-card>
               </template>
             </template>
             <div class="pa-2 d-flex">
@@ -513,7 +514,12 @@ export default {
       currentSectionIndex: 0,
       salesDialogShow: false,
       memberCardDialogShow: false,
-      memberCardInfo: { createdAt: '', leftAmount: 0, longId: '', id: '' }
+      memberCardInfo: {
+        createdAt: '',
+        leftAmount: 0,
+        longId: '',
+        id: ''
+      }
     }
   },
   watch: {

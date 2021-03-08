@@ -1,10 +1,11 @@
 <template>
   <div v-dragscroll
        class="flex-grow-1 pa-2"
-       style="display: grid;height: calc(100vh - 96px);overflow: hidden;"
+       style="display: grid;height: calc(100vh - 96px);overflow: hidden;background: center / contain"
        :style="{
           'grid-template-columns':'repeat('+currentSection.sizeX+',1fr)',
-          'grid-template-row':'repeat('+currentSection.sizeY+',1fr)'
+          'grid-template-row':'repeat('+currentSection.sizeY+',1fr)',
+          backgroundImage:'url('+Config.getBase()+currentSection.image+')'
        }">
     <template v-for="i in slots">
       <table-block
@@ -27,6 +28,7 @@ import IKUtils from 'innerken-js-utils'
 import TableBlock from '@/components/TableBlock'
 import { addNewTable, setTableLocation } from '@/oldjs/api'
 import { toast } from '@/oldjs/common'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 const defaultTable = {
   tableId: -1,
@@ -108,6 +110,7 @@ export default {
       }
     },
     currentSection (val) {
+      console.log(val)
       console.log('section Changed')
       this.submit()
       this.tableList = []
@@ -278,7 +281,8 @@ export default {
     return {
       showId: false,
       activeTableId: null,
-      tableList: []
+      tableList: [],
+      Config: GlobalConfig
     }
   }
 }
