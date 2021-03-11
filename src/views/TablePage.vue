@@ -262,6 +262,7 @@
                 <address-display
                     @accept="acceptOrderWithTime"
                     @reject="rejectOrder"
+                    :consume-type-status-id="tableDetailInfo.order.consumeTypeStatusId"
                     :raw-address-info="realAddressInfo"/>
               </div>
 

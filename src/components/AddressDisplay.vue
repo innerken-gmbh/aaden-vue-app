@@ -36,7 +36,7 @@
       <template v-if="address.oldTime">
         <span>Zeit nach Bestätigung: {{ address.time }}</span>
       </template>
-      <template v-else>
+      <template v-else-if="consumeTypeStatusId<1">
         <div>
           <template
               v-for="(time) in [0,15,30,60,90,120]"
@@ -67,7 +67,8 @@ export default {
   name: 'AddressDisplay',
   components: { FilterEmptyStringDisplayer },
   props: {
-    rawAddressInfo: {}
+    rawAddressInfo: {},
+    consumeTypeStatusId: {}
   },
   computed: {
     address () {
