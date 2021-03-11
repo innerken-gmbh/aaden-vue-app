@@ -109,3 +109,19 @@ export async function goHome () {
     jumpTo('index.html')
   }
 }
+
+export const DefaultAddressInfo = {
+  firstName: '',
+  lastName: '',
+  reason: '',
+  addressLine1: '',
+  addressLine2: '',
+  city: '',
+  plz: '',
+  tel: '',
+  email: '',
+  confirmTime: '',
+  date: '',
+  time: '',
+  deliveryMethod: ''
+}

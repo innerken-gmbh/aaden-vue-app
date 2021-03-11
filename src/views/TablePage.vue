@@ -35,7 +35,6 @@
               hide-no-data
               class="mr-5"
               :search-input.sync="input"
-              :items="autoHints"
               prepend-inner-icon="mdi-magnify"
               ref="ins"
               v-model="buffer"
@@ -180,32 +179,10 @@
               </v-card>
             </div>
             <v-card>
-              <v-toolbar dense>
-                <v-toolbar-items class="flex-grow-1 mx-n3">
-                  <template v-if="this.tableDetailInfo.order.consumeTypeStatusId<2">
-                    <template v-if="this.tableDetailInfo.order.consumeTypeId==='2'">
-                      <template
-                          v-for="(time) in [0,30,60,90]"
-                      >
-                        <v-btn
-                            small
-                            :key="time"
-                            color="success"
-                            @click="acceptOrderWithTime(time)"
-                        >
-                          + {{ time }}
-                        </v-btn>
-                      </template>
-                    </template>
-                    <template v-else>
-                      <v-btn @click="acceptOrder" dark color="error" class="flex-grow-1">{{
-                          $t('接受')
-                        }}
-                      </v-btn>
-                    </template>
-                    <v-btn @click="rejectOrder">{{ $t('拒绝') }}</v-btn>
-                  </template>
-                  <template v-else>
+              <v-toolbar dense v-if="this.tableDetailInfo.order.consumeTypeStatusId>1
+                ||!Config.useTouchScreenUI">
+                <v-toolbar-items  class="flex-grow-1 mx-n3">
+                  <template v-if="this.tableDetailInfo.order.consumeTypeStatusId>1">
                     <v-btn :disabled="this.cartListModel.count()!==0"
                            @click="discountShow">
                       <v-icon>mdi-sale</v-icon>
@@ -218,13 +195,22 @@
                       {{ $t('payBill') }}
                     </v-btn>
                   </template>
+                  <template v-else-if="!Config.useTouchScreenUI">
+                    <v-btn @click="acceptOrder" dark color="error" class="flex-grow-1">{{
+                        $t('接受')
+                      }}
+                    </v-btn>
+                    <v-btn @click="rejectOrder">{{ $t('拒绝') }}</v-btn>
+                  </template>
                 </v-toolbar-items>
               </v-toolbar>
             </v-card>
           </div>
-          <v-card v-if="Config.useTouchScreenUI" elevation="0" color="transparent" v-cloak class="flex-grow-1 d-flex"
+          <v-card v-if="Config.useTouchScreenUI" elevation="0" color="transparent" v-cloak
+                  class="flex-grow-1 d-flex"
                   style="height: calc(100vh - 48px);max-width: calc(100vw - 300px)">
-            <v-card width="calc(100% - 27vw)" v-dragscroll color="transparent"
+            <v-card v-dragscroll color="transparent"
+                    style="width: calc(100% - 300px)"
                     class="dragscroll dishCardListContainer ml-1">
               <v-sheet class="px-2">
                 <v-item-group mandatory v-model="activeCategory" class="d-flex flex-wrap align-start">
@@ -259,8 +245,7 @@
                 </template>
               </div>
             </v-card>
-
-            <v-card width="27vw" class="d-flex flex-shrink-0 flex-column pa-2">
+            <v-card width="300px" class="d-flex flex-shrink-0 flex-column pa-2">
               <div>
                 <v-btn class="my-1" @click="reprintOrder" large block>
                   <v-icon left>mdi-printer</v-icon>
@@ -274,7 +259,12 @@
                   <v-icon left>mdi-account</v-icon>
                   {{ $t('Übergabe') }}
                 </v-btn>
+                <address-display
+                    @accept="acceptOrderWithTime"
+                    @reject="rejectOrder"
+                    :raw-address-info="realAddressInfo"/>
               </div>
+
               <v-spacer></v-spacer>
               <div>
                 <v-text-field
@@ -286,7 +276,8 @@
                     @input="input=displayInput"
                     v-model="displayInput"
                 />
-                <keyboard @input="numberInput" :keys="keyboardLayout"></keyboard>
+                <keyboard @input="numberInput"
+                          :keys="keyboardLayout"></keyboard>
               </div>
 
             </v-card>
@@ -400,7 +391,8 @@ import {
   findConsumeTypeById,
   getConsumeTypeList,
   isBlocking,
-  jumpToTable, loadingComplete,
+  jumpToTable,
+  loadingComplete,
   logError,
   logErrorAndPop,
   popAuthorize,
@@ -440,6 +432,7 @@ import moment from 'moment'
 import IKUtils from 'innerken-js-utils'
 import Keyboard from '@/components/Keyboard'
 import DiscountDialog from '@/components/fragments/DiscountDialog'
+import AddressDisplay from '@/components/AddressDisplay'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -467,6 +460,7 @@ export default {
     dragscroll
   },
   components: {
+    AddressDisplay,
     DiscountDialog,
     Keyboard,
     DishBlock,
@@ -926,10 +920,12 @@ export default {
       }
     },
     async acceptOrder (reason = 'ok') {
+      IKUtils.showLoading(true)
       await hillo.post('Orders.php?op=acceptTakeawayOrder', {
         tableId: this.id,
         reason: reason
       })
+      IKUtils.toast('ok')
       this.initialUI()
     },
     async acceptOrderWithTime (time) {
@@ -1178,56 +1174,18 @@ export default {
         return arr
       }, [])
     },
-    autoHints: function () {
-      let availableIns = []
-      if (this.input) {
-        availableIns = availableIns.concat([
-          {
-            value: '/',
-            text: '/ Advanced instruction'
-          },
-          {
-            value: '/rp',
-            text: '/rp ReprintOrder'
-          },
-          {
-            value: '/ps',
-            text: '/ps PrintZwichenBon'
-          }
-        ])
-        availableIns = availableIns.concat(this.dishesHint.normal.filter(f => f.value.startsWith(this.input)))
-        if (this.input.startsWith('-')) {
-          availableIns = availableIns.concat(this.dishesHint.remove)
+    realAddressInfo () {
+      if (this.tableDetailInfo.order.rawAddressInfo.length > 0) {
+        try {
+          return JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
+        } catch (e) {
+          return null
         }
-        if (this.input.includes('*')) {
-          const [code, count] = this.input.split('*')
-          const findDish = this.staticDishes.filter(f => {
-            return f.code.startsWith(code)
-          })
-          if (findDish) {
-            availableIns = availableIns.concat(findDish.map(d => ({
-              value: this.input,
-              text: this.input + ' ' + d.code + ' ' +
-                  d.dishName + ' x ' + (count || '[1-99]')
-            })))
-          }
-        }
+      } else {
+        return null
       }
+    },
 
-      return availableIns
-    },
-    dishesHint: function () {
-      const dishesHint = {}
-      dishesHint.normal = this.staticDishes.map(i => ({
-        value: i.code,
-        text: i.code + ' ' + i.dishName
-      }))
-      dishesHint.remove = this.staticDishes.map(i => ({
-        value: '-' + i.code,
-        text: '-' + i.code + ' remove: ' + i.dishName
-      }))
-      return dishesHint
-    },
     filteredC: function () {
       const dct = this.dct[this.activeDCT]
       return this.categories.filter((item) => {
