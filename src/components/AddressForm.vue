@@ -84,16 +84,8 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { requestOutTable, toast } from '@/oldjs/common'
 import hillo from 'hillo'
 import { dragscroll } from 'vue-dragscroll/src/main'
+import { DefaultAddressInfo } from '@/oldjs/StaticModel'
 
-const DefaultAddressInfo = {
-  reason: '',
-  addressLine1: '',
-  addressLine2: '',
-  city: '',
-  plz: '',
-  tel: '',
-  email: ''
-}
 export default {
   name: 'AddressForm',
   directives: {
