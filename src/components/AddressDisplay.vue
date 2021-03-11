@@ -6,7 +6,13 @@
       {{ address.deliveryMethod }}
     </v-card-title>
     <v-card-subtitle>
-      Erwartete Zeit: {{ address.date }} {{ address.time }}
+      Erwartete Zeit: {{ address.date }}
+      <template v-if="address.oldTime">
+        <span>{{ address.oldTime }}</span>
+      </template>
+      <template v-else>
+        {{ address.time }}
+      </template>
     </v-card-subtitle>
     <v-card-text>
       <filter-empty-string-displayer :data="address.addressLine1">
@@ -27,8 +33,8 @@
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
-      <template v-if="address.confirmTime">
-        <span>Zeit nach Bestätigung: {{ address.confirmTime }}</span>
+      <template v-if="address.oldTime">
+        <span>Zeit nach Bestätigung: {{ address.time }}</span>
       </template>
       <template v-else>
         <div>

@@ -120,7 +120,7 @@ export const DefaultAddressInfo = {
   plz: '',
   tel: '',
   email: '',
-  confirmTime: '',
+  oldTime: '',
   date: '',
   time: '',
   deliveryMethod: ''
