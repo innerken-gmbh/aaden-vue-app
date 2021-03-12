@@ -1,5 +1,5 @@
 <template>
-  <v-card style="grid-auto-rows: 60px;"
+  <v-card style="grid-auto-rows: 54px;"
           class="keyboard">
     <template v-for="i in keys">
       <v-btn :key="'key'+i" @click="input(i)"
@@ -35,7 +35,6 @@ export default {
 .keyboard {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-
   grid-gap: 4px;
 }
 

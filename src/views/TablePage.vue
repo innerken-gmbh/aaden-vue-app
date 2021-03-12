@@ -368,12 +368,10 @@ const defaultCurrentDish = {
 const keyboardLayout =
 
     [
-
-      'W', 'M', 'C', 'A',
       '7', '8', '9', 'mdi-autorenew',
-      '4', '5', '6', 'K',
-      '1', '2', '3', 'T',
-      'G', '0', 'mdi-close', 'OK'
+      '4', '5', '6', 'A',
+      '1', '2', '3', 'M',
+      '.', '0', 'mdi-close', 'OK'
     ]
 
 // endregion
