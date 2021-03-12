@@ -14,7 +14,6 @@
   "jumpToHomeWhenOrder": false,
   "usePrintModAsName": false,
   "useCart": true,
-  "useColor": true,
   "hideCode": true,
   "gridSize": "140",
   "dishLookUp": true,
@@ -29,11 +28,10 @@
   "autoCompletePLZ": "",
   "useAdvanceOpenTakeawayTable": false,
   "activeCardBackground": "#ffffff",
-  "useTouchScreenUI": true,
-  "useDishListMenu": true,
   "useTableBluePrint": false,
   "topKeyboardKey": "E,F,B,R",
-  "UseDailyZbon": false,
-  "bigDiscountRatio": 0.3,
-  "useConfigButton": false
+  "UseDailyZbon": true,
+  "bigDiscountRatio": 0.7,
+  "useConfigButton": true,
+  "orderView": false
 }

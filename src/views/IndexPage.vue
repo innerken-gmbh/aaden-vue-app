@@ -2,12 +2,6 @@
   <v-app>
     <Navgation>
       <template slot="left">
-        <v-toolbar-items v-if="!Config.useTouchScreenUI">
-          <v-btn tile class="primary ml-n4 mr-4" @click="popAuthorize('boss',toManage)">
-            <v-icon>mdi-home-analytics</v-icon>
-            HOME
-          </v-btn>
-        </v-toolbar-items>
         <v-toolbar-title>
           {{ $t('appName') }}
         </v-toolbar-title>
@@ -17,7 +11,6 @@
 
       </template>
       <template slot="right-slot">
-        <time-display v-if="!Config.useTouchScreenUI" class="mx-1"/>
         <v-toolbar-items class="mx-1">
           <v-btn v-if="printingList.length>0">
             <v-icon>mdi-printer</v-icon>
@@ -72,19 +65,9 @@
               </v-list>
             </v-card>
           </v-menu>
-          <template v-if="!Config.useTouchScreenUI">
-            <v-btn @click="popAuthorize('',
-          (pw)=>{salesDialogShow=true,salesPw=pw},true)">
-              <v-icon left>mdi-account-cash</v-icon>
-              {{ $t('销售额') }}
-            </v-btn>
-            <v-btn @click="takeawayClicked">
-              <v-icon left>mdi-truck-fast</v-icon>
-              {{ $t('takeaway') }}
-            </v-btn>
-          </template>
 
-          <v-btn v-if="!Config.useTableBluePrint" :color="onlyActive?'primary':'transparent'"
+          <v-btn v-if="!Config.useTableBluePrint"
+                 :color="onlyActive?'primary':'transparent'"
                  @click="onlyActive=!onlyActive">
             {{ $t('只看活跃') }}
           </v-btn>
@@ -92,16 +75,6 @@
             <v-icon>mdi-refresh</v-icon>
           </v-btn>
         </v-toolbar-items>
-        <v-text-field
-            v-if="!Config.useTouchScreenUI"
-            ref="ins" v-model="buffer"
-            single-line
-            hide-details
-            clearable
-            class="flex-grow-0"
-            prepend-inner-icon="mdi-magnify"
-            placeholder="instruction.."
-            :autofocus="Config.getFocus"/>
         <v-toolbar-items>
           <v-menu
               v-model="menu"
@@ -293,7 +266,7 @@
             </div>
           </div>
         </div>
-        <template v-if="Config.useTouchScreenUI">
+        <template>
           <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
             <template v-if="Config.useTableBluePrint">
               <template v-if="isEditing">
@@ -495,7 +468,6 @@ export default {
       showOpenTakeawayTableDialog: null,
       servantList: [],
       version: version,
-      onlyActive: GlobalConfig.FMCVersion,
       reservations: [],
       areas: [],
       seen: true,

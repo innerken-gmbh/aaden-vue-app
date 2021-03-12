@@ -28,18 +28,6 @@
             </template>
           </v-tabs>
 
-          <v-autocomplete
-              v-if="!Config.useTouchScreenUI"
-              hide-details
-              auto-select-first
-              hide-no-data
-              class="mr-5"
-              :search-input.sync="input"
-              prepend-inner-icon="mdi-magnify"
-              ref="ins"
-              v-model="buffer"
-          />
-
         </template>
         <template slot="right-slot">
           <div class="d-flex align-center justify-space-between" style="min-width: 172px">
@@ -74,48 +62,8 @@
       </navgation>
       <v-main>
         <div style="display: flex; background: #f6f6f6;">
-          <v-card v-if="!Config.useTouchScreenUI" elevation="0" color="transparent" v-cloak class="flex-grow-1"
-                  style=" max-height: calc(100vh - 48px);">
-            <div style="display: grid;grid-template-columns: 144px auto;grid-gap: 8px;">
-              <v-sheet elevation="3" v-dragscroll style="max-height: calc(100vh - 48px);overflow: hidden">
-                <v-list>
-                  <v-list-item-group mandatory v-model="activeCategory">
-                    <template v-for="category of filteredC">
-                      <v-list-item style="text-transform: capitalize;font-size: 16px"
-                                   v-bind:key="'categorytypes'+category.id"
-                                   :style="{backgroundColor:category.color,
-                                                            color:getColorLightness(category.color)>128?'#000 !important':'#fff !important'}"
-                      >
-                        <v-list-item-content>{{ category.name }}</v-list-item-content>
-                      </v-list-item>
-                    </template>
-                  </v-list-item-group>
-                </v-list>
-              </v-sheet>
-              <div v-dragscroll class="dragscroll dishCardListContainer">
-                <div class="dishCardList">
-                  <template v-for="dish of filteredDish">
-                    <dish-block
-                        :key="'dish'+dish.code"
-                        :code="dish.code"
-                        :count="dish.count"
-                        :display-color="dish.displayColor"
-                        :dish-name="dish.dishName"
-                        :foreground="dish.foreground"
-                        :font-size="Config.dishBlockFontSize"
-                        :have-mod="dish.haveMod"
-                        :is-free="dish.isFree"
-                        :price="dish.price"
-                        @click-tune="showModification(dish,1)"
-                        @click="orderOneDish(dish.code)"/>
-                  </template>
-                </div>
-              </div>
-            </div>
-          </v-card>
           <div style="height: calc(100vh - 48px);width: 300px"
-               :class="Config.useTouchScreenUI?'mr-1':'ml-1'"
-               class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height">
+               class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height mr-1">
             <!--          菜品列表容器-->
             <div>
               <!--          菜品列表-->
@@ -127,22 +75,10 @@
                       :discount-ratio="discountRatio"
                       :default-expand="cartListModel.list.length===0"
                       :click-callback="addToSplit"
-                      :extra-height="Config.useTouchScreenUI?'96px':'144px'"
+                      extra-height="'96px'"
                       :title="$t('haveOrderedDish')"
                   />
                 </keep-alive>
-                <v-toolbar dense v-if="cartListModel.list.length===0&&!Config.useTouchScreenUI">
-                  <v-toolbar-items class="flex-grow-1 mx-n3">
-                    <v-btn @click="reprintOrder" class="flex-grow-1">
-                      <v-icon left>mdi-printer</v-icon>
-                      {{ $t('重新打印') }}
-                    </v-btn>
-                    <v-btn @click="zwitchenBon">
-                      <v-icon left>mdi-printer-pos</v-icon>
-                      ZwischenBon
-                    </v-btn>
-                  </v-toolbar-items>
-                </v-toolbar>
               </v-card>
               <!--          购物车-->
               <v-card v-dragscroll
@@ -179,34 +115,24 @@
               </v-card>
             </div>
             <v-card>
-              <v-toolbar dense v-if="this.tableDetailInfo.order.consumeTypeStatusId>1
-                ||!Config.useTouchScreenUI">
-                <v-toolbar-items  class="flex-grow-1 mx-n3">
-                  <template v-if="this.tableDetailInfo.order.consumeTypeStatusId>1">
-                    <v-btn :disabled="this.cartListModel.count()!==0"
-                           @click="discountShow">
-                      <v-icon>mdi-sale</v-icon>
-                      {{ $t('discount') }}
-                    </v-btn>
-                    <v-btn :disabled="this.cartListModel.count()!==0"
-                           color="primary" class="flex-grow-1 ml-1"
-                           @click="jumpToPayment()">
-                      <v-icon left>mdi-calculator-variant</v-icon>
-                      {{ $t('payBill') }}
-                    </v-btn>
-                  </template>
-                  <template v-else-if="!Config.useTouchScreenUI">
-                    <v-btn @click="acceptOrder" dark color="error" class="flex-grow-1">{{
-                        $t('接受')
-                      }}
-                    </v-btn>
-                    <v-btn @click="rejectOrder">{{ $t('拒绝') }}</v-btn>
-                  </template>
+              <v-toolbar dense v-if="this.tableDetailInfo.order.consumeTypeStatusId>1">
+                <v-toolbar-items class="flex-grow-1 mx-n3">
+                  <v-btn :disabled="this.cartListModel.count()!==0"
+                         @click="discountShow">
+                    <v-icon>mdi-sale</v-icon>
+                    {{ $t('discount') }}
+                  </v-btn>
+                  <v-btn :disabled="this.cartListModel.count()!==0"
+                         color="primary" class="flex-grow-1 ml-1"
+                         @click="jumpToPayment()">
+                    <v-icon left>mdi-calculator-variant</v-icon>
+                    {{ $t('payBill') }}
+                  </v-btn>
                 </v-toolbar-items>
               </v-toolbar>
             </v-card>
           </div>
-          <v-card v-if="Config.useTouchScreenUI" elevation="0" color="transparent" v-cloak
+          <v-card elevation="0" color="transparent" v-cloak
                   class="flex-grow-1 d-flex"
                   style="height: calc(100vh - 48px);max-width: calc(100vw - 300px)">
             <v-card v-dragscroll color="transparent"
@@ -290,10 +216,8 @@
         <div class="bottomCart surface d-flex justify-end"
              style="background: rgba(0,0,0,0.4);  top: 0;
   right: calc(30vw + 4px);
-  z-index: 5;"
-             :style="Config.useTouchScreenUI?{
-               left:'304px'
-             }:{}"
+  z-index: 5;
+left: 304px"
              v-cloak
              @click="removeAllFromSplitOrder"
              id="splitOrderContainer">
@@ -693,11 +617,7 @@ export default {
         this.categories = res.content.filter(c => {
           return c.dishes.length > 0
         }).map((c, i) => {
-          if (GlobalConfig.useColor) {
-            c.color = c.color === '' ? '#FFFFFF' : c.color
-          } else {
-            c.color = '#FFFFFF'
-          }
+          c.color = c.color === '' ? '#FFFFFF' : c.color
           return c
         })
         this.dishes = this.categories.reduce((arr, i) => {
@@ -1133,7 +1053,7 @@ export default {
     }, 300),
     filterDish () {
       let list = this.dishes
-      if (!GlobalConfig.useTouchScreenUI || (GlobalConfig.useTouchScreenUI && !this.displayInput)) {
+      if (!this.displayInput) {
         const dct = this.dct[this.activeDCT]
         list = list.filter((item) => {
           return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
@@ -1176,7 +1096,7 @@ export default {
       }, [])
     },
     realAddressInfo () {
-      if (this.tableDetailInfo.order.rawAddressInfo.length > 0) {
+      if (this.tableDetailInfo.order.rawAddressInfo?.length > 0) {
         try {
           return JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
         } catch (e) {
