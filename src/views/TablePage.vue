@@ -48,17 +48,6 @@
             </div>
           </div>
         </template>
-        <template slot="after-menu">
-          <v-toolbar-items class="ml-1 mr-n3">
-            <v-btn @click="menuShow=!menuShow" color="primary">
-              <v-icon left>mdi-menu</v-icon>
-              {{ $t('更多功能') }}
-            </v-btn>
-          </v-toolbar-items>
-          <table-page-menu
-              :table-id="id"
-              :menu-show.sync="menuShow"/>
-        </template>
       </navgation>
       <v-main>
         <div style="display: flex; background: #f6f6f6;">
@@ -173,6 +162,13 @@
             </v-card>
             <v-card width="300px" class="d-flex flex-shrink-0 flex-column pa-2">
               <div>
+                <v-btn @click="menuShow=!menuShow" large block color="primary">
+                  <v-icon left>mdi-menu</v-icon>
+                  {{ $t('更多功能') }}
+                </v-btn>
+                <table-page-menu
+                    :table-id="id"
+                    :menu-show.sync="menuShow"/>
                 <v-btn class="my-1" @click="reprintOrder" large block>
                   <v-icon left>mdi-printer</v-icon>
                   {{ $t('重新打印') }}
@@ -186,9 +182,10 @@
                   {{ $t('Übergabe') }}
                 </v-btn>
                 <address-display
+                    v-if="consumeTypeId===2&&realAddressInfo"
                     @accept="acceptOrderWithTime"
                     @reject="rejectOrder"
-                    :consume-type-status-id="tableDetailInfo.order.consumeTypeStatusId"
+                    :consume-type-status-id="consumeTypeStatusId"
                     :raw-address-info="realAddressInfo"/>
               </div>
 
@@ -1107,6 +1104,15 @@ export default {
       }
     },
 
+    consumeTypeId () {
+      return parseInt(this.tableDetailInfo.order.consumeTypeId ?? 1)
+    },
+    consumeTypeStatusId () {
+      console.log(this.tableDetailInfo)
+
+      return parseInt(this.tableDetailInfo.order.consumeTypeStatusId ?? 2)
+    },
+
     filteredC: function () {
       const dct = this.dct[this.activeDCT]
       return this.categories.filter((item) => {
@@ -1119,7 +1125,6 @@ export default {
 
   },
   watch: {
-
     activeDCT: function () {
       this.activeCategory = 0
       this.updateFilteredDish()
