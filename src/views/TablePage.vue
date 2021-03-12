@@ -1176,7 +1176,7 @@ export default {
       }, [])
     },
     realAddressInfo () {
-      if (this.tableDetailInfo.order.rawAddressInfo.length > 0) {
+      if (this.tableDetailInfo.order.rawAddressInfo?.length > 0) {
         try {
           return JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
         } catch (e) {
