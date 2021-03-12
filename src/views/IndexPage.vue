@@ -67,8 +67,8 @@
           </v-menu>
 
           <v-btn v-if="!Config.useTableBluePrint"
-                 :color="onlyActive?'primary':'transparent'"
-                 @click="onlyActive=!onlyActive">
+                 :color="useOrderView?'primary':'transparent'"
+                 @click="useOrderView=!useOrderView">
             {{ $t('只看活跃') }}
           </v-btn>
           <v-btn @click="fetchOrder">
@@ -139,7 +139,7 @@
         </v-toolbar-items>
       </template>
     </Navgation>
-    <v-main style=" width: 100vw">
+    <v-main style=" width: 100vw;">
       <div class="d-flex flex-nowrap" style="width: 100vw">
         <v-card v-if="Config.useTableBluePrint" class="flex-grow-1 d-flex">
           <v-card>
@@ -177,7 +177,7 @@
                  @click="openOrEnterTable(t.tableName)"
                  v-for="t in orderList" class="pa-2 d-flex justify-space-between align-center"
                  style="border-bottom: 1px dotted black">
-              <span class="title" >{{ t.tableName }}</span>
+              <span class="title">{{ t.tableName }}</span>
               <div class="caption">
                 <div class="d-flex justify-space-between align-center" style="width: 56px">
                   <v-icon small>mdi-account</v-icon>
@@ -191,6 +191,25 @@
             </div>
           </v-card>
 
+        </v-card>
+        <v-card v-else-if="useOrderView" class="flex-grow-1" style="display: grid;
+        grid-template-columns: repeat(4,1fr);grid-auto-rows: min-content">
+          <template v-for="table in activeTables">
+            <v-card
+                :dark="getColorLightness(Config.activeCardBackground)<128"
+                :style="{backgroundColor:Config.activeCardBackground}"
+                @click='openOrEnterTable(table.tableName)'
+                class="ma-2" style="height: fit-content" :key="table.id">
+              <v-card-title :style="{color:table.callService==='1'?restaurantInfo.callColor:''}">
+                {{ table.tableName }}
+                <v-spacer/>
+                €{{ table.totalPrice }}
+              </v-card-title>
+              <v-card-subtitle>
+                {{ table.servantName }}/{{ table.createTimestamp }}/{{ findConsumeTypeById(table.consumeType) }}
+              </v-card-subtitle>
+            </v-card>
+          </template>
         </v-card>
         <div v-dragscroll v-else class="tableDisplay flex-grow-1">
           <div v-cloak class="areaC" id="areaC">
@@ -426,7 +445,7 @@ const keyboardLayout =
       '7', '8', '9', 'mdi-autorenew',
       '4', '5', '6', 'K',
       '1', '2', '3', 'T',
-      'D', '0', 'W', 'OK'
+      'W', '0', '.', 'OK'
     ]
 
 const keyboardFunctions = {
@@ -495,11 +514,13 @@ export default {
         leftAmount: 0,
         longId: '',
         id: ''
-      }
+      },
+      useOrderView: GlobalConfig.orderView
     }
   },
   watch: {
-    onlyActive: function () {
+    useOrderView: function (val) {
+      GlobalConfig.updateSettings('orderView', val)
       this.refreshTables()
     },
     refresh: function () {
@@ -507,15 +528,17 @@ export default {
     }
   },
   computed: {
+    activeTables () {
+      return this.realArea.reduce((arr, a) => {
+        arr.push(...a.tables)
+        return arr
+      }, []).filter(t => t.usageStatus === '1')
+    },
     tableInCurrentSection () {
       return this.tableList.filter(t => t.sectionId === this.currentSection.id)
     },
     realArea: function () {
-      const only = this.onlyActive
-      return this.areas.map(a => {
-        a.tables = a.tables.filter(t => !only || t.usageStatus === '1')
-        return a
-      }).filter(a => a.tables.length > 0)
+      return this.areas.filter(a => a.tables.length > 0)
     },
 
     tableInCurrentSectionWithNoCell () {
@@ -555,25 +578,7 @@ export default {
         this.buffer = ''
       }
       switch (key) {
-        case 'A':
-        case 'B':
-        case 'D':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-        case '0':
-        case 'K':
-        case 'T':
-        case 'G':
-        case 'W':
-        case 'M':
-        case 'C':
+        default:
           this.buffer += key
           break
         case 'mdi-autorenew':
@@ -698,7 +703,7 @@ export default {
               // eslint-disable-next-line no-eval
               eval(t)
             }
-          } else if (t === 'w') {
+          } else if (t.toLowerCase() === 'w') {
             popAuthorize('', requestOutTable)
           } else if (t === 'l') {
             popAuthorize('', this.toManage)
