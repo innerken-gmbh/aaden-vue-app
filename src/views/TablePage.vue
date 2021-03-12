@@ -657,6 +657,7 @@ export default {
     deleteDishes: function () {
       deleteDishes(this.id, this.splitOrderListModel.list, this.initialUI)
     },
+
     dishesSetDiscount: function () {
       dishesSetDiscount(this.tableDetailInfo.order.id, this.splitOrderListModel.list, this.initialUI)
     },
