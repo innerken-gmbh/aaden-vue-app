@@ -355,6 +355,7 @@ import IKUtils from 'innerken-js-utils'
 import Keyboard from '@/components/Keyboard'
 import DiscountDialog from '@/components/fragments/DiscountDialog'
 import AddressDisplay from '@/components/AddressDisplay'
+import { acceptOrder } from '@/api/api'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -839,12 +840,7 @@ export default {
       }
     },
     async acceptOrder (reason = 'ok') {
-      IKUtils.showLoading(true)
-      await hillo.post('Orders.php?op=acceptTakeawayOrder', {
-        tableId: this.id,
-        reason: reason
-      })
-      IKUtils.toast('ok')
+      await acceptOrder(reason, this.id)
       this.initialUI()
     },
     async acceptOrderWithTime (time) {

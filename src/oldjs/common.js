@@ -86,7 +86,8 @@ export function setGlobalTableId (id) {
   TableId = id
 }
 
-export async function popAuthorize (type, successCallback, force = false, failedCallback, tableId = null) {
+export async function popAuthorize (type, successCallback, force = false,
+  failedCallback, tableId = null) {
   if (!force) {
     if (!GlobalConfig.usePassword && type !== 'boss') {
       successCallback(GlobalConfig.defaultPassword)
@@ -146,26 +147,39 @@ function reloadTables (arrOfT) {
   return areaData
 }
 
-export function openOrEnterTable (number) {
-  hillo.get('Tables.php', { name: number }).then(res => {
-    if (res.content[0].usageStatus === '0') {
-      popAuthorize('', (pw) => shouldOpenTable(res.content[0].id, pw), false, false, res.content[0].id)
-    } else if (res.content[0].usageStatus === '1') {
+export async function openOrEnterTable (number) {
+  try {
+    const table = (await hillo.silentGet('Tables.php', { name: number })).content[0]
+    if (table.usageStatus === '0') {
+      popAuthorize('', (pw) => shouldOpenTable(table.id, pw),
+        false, false, table.id)
+    } else if (table.usageStatus === '1') {
       const enterTable = () => {
         toast(i18n.t('JSIndexCreateTableEnterTable') + number)
-        jumpToTable(res.content[0].id, res.content[0].name)
+        jumpToTable(table.id, table.name)
       }
       if (GlobalConfig.useEnterTablePermissionCheck) {
         popAuthorize('', () => {
           enterTable()
-        }, false, false, res.content[0].id)
+        }, false, false, table.id)
       } else {
         enterTable()
       }
     }
-  }).catch(err => {
-    logErrorAndPop(Strings[Config.lang].JSIndexCreateTableTableNotFound + err)
-  })
+  } catch (e) {
+    if (number.includes('.')) {
+      popAuthorize('', async (pw) => {
+        const res = (await forceOpenTable(number, pw)).content
+        jumpToTable('' + res.tableId, res.tableName)
+      }, false)
+    } else {
+      logErrorAndPop(Strings[Config.lang].JSIndexCreateTableTableNotFound + e)
+    }
+  }
+}
+
+export async function forceOpenTable (tableName, pw) {
+  return await hillo.post('Complex.php?op=forceOpenTable', { tableName, pw })
 }
 
 export async function getFalsePrinterList () {
