@@ -8,7 +8,6 @@
         <div class="d-flex ml-2 align-center caption">
           Version <span v-show-quick-buy>FMC-</span>{{ version }}
         </div>
-
       </template>
       <template slot="right-slot">
         <v-toolbar-items class="mx-1">
@@ -382,7 +381,7 @@
         </template>
       </div>
     </v-main>
-    <address-form :menu-show="showOpenTakeawayTableDialog"></address-form>
+    <address-form :menu-show="showOpenTakeawayTableDialog"/>
     <sales-dialog
         @visibility-changed="(e)=>salesDialogShow=e"
         :sales-dialog-show="salesDialogShow"
