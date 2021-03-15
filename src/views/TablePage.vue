@@ -29,22 +29,19 @@
           </v-tabs>
 
         </template>
-        <template slot="right-slot">
-          <div class="d-flex align-center justify-space-between" style="min-width: 172px">
-            <span class="bigTableName">
-                            {{ tableDetailInfo.tableBasicInfo.name }}
-                        </span>
+        <template slot="after-menu">
+          <div class="d-flex align-center justify-space-between">
             <div class="d-flex">
-                            <span class="icon-line ml-2">
-                                <v-icon color="white">mdi-account-outline</v-icon>
-                                <span class="ml-1">{{ tableDetailInfo.personCount }}</span>
-                            </span>
               <span class="icon-line ml-2">
-                                <v-icon color="white">mdi-calendar-text</v-icon>
-                                <span class="ml-1">
-                                    {{ tableDetailInfo.order.id }}
-                                </span>
-                            </span>
+                <v-icon color="white">mdi-account-outline</v-icon>
+                <span class="ml-1">{{ tableDetailInfo.personCount }}</span>
+              </span>
+              <span class="icon-line ml-2">
+                <v-icon color="white">mdi-calendar-text</v-icon>
+                <span class="ml-1">
+                  {{ tableDetailInfo.order.id }}
+                </span>
+              </span>
             </div>
           </div>
         </template>
@@ -53,9 +50,7 @@
         <div style="display: flex; background: #f6f6f6;">
           <div style="height: calc(100vh - 48px);width: 300px"
                class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height mr-1">
-            <!--          菜品列表容器-->
             <div>
-              <!--          菜品列表-->
               <v-card v-dragscroll
                       class="white">
                 <keep-alive>
@@ -126,7 +121,7 @@
                   style="height: calc(100vh - 48px);max-width: calc(100vw - 300px)">
             <v-card v-dragscroll color="transparent"
                     style="width: calc(100% - 300px)"
-                    class="dragscroll dishCardListContainer ml-1">
+                    class="dragscroll dishCardListContainer ml-1 flex-grow-1">
               <v-sheet class="px-2">
                 <v-item-group mandatory v-model="activeCategory" class="d-flex flex-wrap align-start">
                   <template v-for="category of filteredC">
@@ -137,7 +132,6 @@
                         {{ category.name }}
                       </div>
                     </v-item>
-
                   </template>
                 </v-item-group>
               </v-sheet>
@@ -160,60 +154,64 @@
                 </template>
               </div>
             </v-card>
-            <v-card width="300px" class="d-flex flex-shrink-0 flex-column pa-2">
-              <div>
-                <v-btn @click="menuShow=!menuShow" large block color="primary">
-                  <v-icon left>mdi-menu</v-icon>
-                  {{ $t('更多功能') }}
-                </v-btn>
-                <table-page-menu
-                    :table-id="id"
-                    :menu-show.sync="menuShow"/>
-                <v-btn class="my-1" @click="reprintOrder" large block>
-                  <v-icon left>mdi-printer</v-icon>
-                  {{ $t('重新打印') }}
-                </v-btn>
-                <v-btn class="my-1" @click="zwitchenBon" color="warning" large block>
-                  <v-icon left>mdi-printer-pos</v-icon>
-                  ZwischenBon
-                </v-btn>
-                <v-btn class="my-1" @click="changeServant" large block>
-                  <v-icon left>mdi-account</v-icon>
-                  {{ $t('Übergabe') }}
-                </v-btn>
-                <address-display
-                    v-if="consumeTypeId===2&&realAddressInfo"
-                    @accept="acceptOrderWithTime"
-                    @reject="rejectOrder"
-                    :consume-type-status-id="consumeTypeStatusId"
-                    :raw-address-info="realAddressInfo"/>
-              </div>
-
-              <v-spacer></v-spacer>
-              <div>
-                <v-text-field
-                    class="ma-2"
-                    hide-details
-                    clearable
-                    style="font-size: 36px"
-                    ref="ins"
-                    @input="input=displayInput"
-                    v-model="displayInput"
-                />
-                <keyboard @input="numberInput"
-                          :keys="keyboardLayout"></keyboard>
-              </div>
-
-            </v-card>
-
           </v-card>
         </div>
       </v-main>
+      <v-navigation-drawer app stateless permanent right width="300px">
+        <v-toolbar dense dark>
+          <div class="d-flex align-center justify-space-between" style="min-width: 172px">
+            <span class="bigTableName">
+              {{ tableDetailInfo.tableBasicInfo.name }}
+            </span>
+          </div>
+          <v-toolbar-items>
+            <v-btn @click="menuShow=!menuShow" large block color="primary">
+              <v-icon left>mdi-menu</v-icon>
+              {{ $t('更多功能') }}
+            </v-btn>
+          </v-toolbar-items>
+        </v-toolbar>
+        <v-card width="300px" height="calc(100vh - 48px)" class="d-flex flex-shrink-0 flex-column pa-2">
+          <div>
+            <table-page-menu
+                :table-id="id"
+                :menu-show.sync="menuShow"/>
+            <v-btn class="my-1" @click="reprintOrder" large block>
+              <v-icon left>mdi-printer</v-icon>
+              {{ $t('重新打印') }}
+            </v-btn>
+            <v-btn class="my-1" @click="zwitchenBon" color="warning" large block>
+              <v-icon left>mdi-printer-pos</v-icon>
+              ZwischenBon
+            </v-btn>
+            <address-display
+                v-if="consumeTypeId===2&&realAddressInfo"
+                @accept="acceptOrderWithTime"
+                @reject="rejectOrder"
+                :consume-type-status-id="consumeTypeStatusId"
+                :raw-address-info="realAddressInfo"/>
+          </div>
+          <v-spacer></v-spacer>
+          <div>
+            <v-text-field
+                class="ma-2"
+                hide-details
+                clearable
+                style="font-size: 36px"
+                ref="ins"
+                @input="input=displayInput"
+                v-model="displayInput"
+            />
+            <keyboard @input="numberInput"
+                      :keys="keyboardLayout"></keyboard>
+          </div>
+
+        </v-card>
+      </v-navigation-drawer>
       <template v-if="splitOrderListModel.list.length>0">
         <div class="bottomCart surface d-flex justify-end"
              style="background: rgba(0,0,0,0.4);  top: 0;
-  right: calc(30vw + 4px);
-  z-index: 5;
+z-index: 50;
 left: 304px"
              v-cloak
              @click="removeAllFromSplitOrder"
@@ -314,7 +312,6 @@ import {
   getConsumeTypeList,
   isBlocking,
   jumpToTable,
-  loadingComplete,
   logError,
   logErrorAndPop,
   popAuthorize,
@@ -513,6 +510,7 @@ export default {
         if (this.splitOrderListModel.count() === 0 && this.cartListModel.count() === 0) {
           let discountRatio = 0
           const result = await getOrderInfo(this.id, GlobalConfig.usePrintModAsName)
+          result.filter(d => d.code === 'lk').map(d => { d.originPrice = d.price; return d })
           const discountInfo = result.filter(r => r.code === '-1')
           const noDiscount = result.filter(r => r.code !== '-1')
           this.orderListModel.loadTTDishList(noDiscount)
@@ -876,15 +874,7 @@ export default {
           break
       }
     },
-    async changeServant () {
-      const res = await fastSweetAlertRequest('Zu andere Kneller übergabe', 'text',
-        'Orders.php?op=changeServantForTable', 'pw',
-        { tableId: this.id }, 'POST')
-      if (res) {
-        loadingComplete()
-        this.initialUI()
-      }
-    },
+
     reprintOrder () {
       hillo.post('Printer.php?op=questReprintOrder', {
         orderId: this.tableDetailInfo.order.id
@@ -1103,8 +1093,6 @@ export default {
       return parseInt(this.tableDetailInfo.order.consumeTypeId ?? 1)
     },
     consumeTypeStatusId () {
-      console.log(this.tableDetailInfo)
-
       return parseInt(this.tableDetailInfo.order.consumeTypeStatusId ?? 2)
     },
 

@@ -18,12 +18,6 @@
             <v-btn @click="submitRawAddressInfo" dark>{{ $t('提交') }}</v-btn>
           </v-toolbar-items>
           <v-spacer/>
-          <v-toolbar-items>
-            <v-btn @click="requestOutTable">
-              <v-icon left>mdi-calendar-plus</v-icon>
-              {{ $t('开新单') }}
-            </v-btn>
-          </v-toolbar-items>
           <div class="d-flex ml-1">
                                              <span v-hide-quick-buy class="icon-line">
                                                 <v-icon color="white">mdi-account-outline</v-icon>
@@ -151,8 +145,7 @@
                     </v-list-item-icon>
                     <v-list-item-content>
                       <v-list-item-title>
-                                                        <span>{{ tableDetailInfo.consumeTypeName }}</span
-                                                        >/<span>{{
+                        <span>{{ tableDetailInfo.consumeTypeName }}</span>/<span>{{
                           tableDetailInfo.order.counsumeTypeStatusName
                         }}</span>
                       </v-list-item-title>
@@ -163,7 +156,6 @@
                     <v-list-item-icon>
                       <v-icon>mdi-home-analytics</v-icon>
                     </v-list-item-icon>
-
                     <v-list-item-content>
                       <v-list-item-title>{{ $t('Chef') }}</v-list-item-title>
                     </v-list-item-content>
@@ -173,7 +165,6 @@
                     <v-list-item-icon>
                       <v-icon>mdi-swap-horizontal</v-icon>
                     </v-list-item-icon>
-
                     <v-list-item-content>
                       <v-list-item-title>{{ $t('tableChange') }}</v-list-item-title>
                     </v-list-item-content>
@@ -183,9 +174,16 @@
                     <v-list-item-icon>
                       <v-icon>mdi-merge</v-icon>
                     </v-list-item-icon>
-
                     <v-list-item-content>
                       <v-list-item-title>{{ $t('tableMerge') }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item @click="changeServant">
+                    <v-list-item-icon>
+                      <v-icon>mdi-account</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title> {{ $t('Übergabe') }}</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
 
@@ -240,10 +238,19 @@
 <script>
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import hillo from 'hillo'
-import { jumpToTable, openOrEnterTable, popAuthorize, requestOutTable, toast, toManage } from '@/oldjs/common'
+import {
+  fastSweetAlertRequest,
+  jumpToTable,
+  openOrEnterTable,
+  popAuthorize,
+  requestOutTable,
+  toast,
+  toManage
+} from '@/oldjs/common'
 import { dragscroll } from 'vue-dragscroll'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import { popChangeTablePanel, popMergeTablePanel } from '@/oldjs/api'
+import { goHome } from '@/oldjs/StaticModel'
 
 const DefaultAddressInfo = {
   reason: '',
@@ -310,6 +317,14 @@ export default {
       this.clearAddressInfo()
       await this.getTableDetail()
       this.loading = false
+    },
+    async changeServant () {
+      const res = await fastSweetAlertRequest('Zu andere Kneller übergabe', 'text',
+        'Orders.php?op=changeServantForTable', 'pw',
+        { tableId: this.tableId }, 'POST')
+      if (res) {
+        goHome()
+      }
     },
     requestOutTable,
     popAuthorize,

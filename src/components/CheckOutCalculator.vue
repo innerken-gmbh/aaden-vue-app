@@ -256,7 +256,6 @@ export default {
           p.name = p.langs[0].name
           return p
         })
-      console.log(this.paymentMethods)
 
       this.realName = Object.assign({}, defaultRealName)
       this.paymentMethods.forEach(p => {
