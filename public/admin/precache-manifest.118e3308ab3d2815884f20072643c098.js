@@ -36,7 +36,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "Images/关于我们/虚线@2x.png"
   },
   {
-    "revision": "0c9525b2cd25107a19a1",
+    "revision": "60d0756cd9df02f4a596",
     "url": "css/app.dd0a965c.css"
   },
   {
@@ -128,7 +128,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "css/chunk-4c790e5c.ac3162ad.css"
   },
   {
-    "revision": "a2b62f7e919a517cc799",
+    "revision": "863467a8f233239d1186",
     "url": "css/chunk-4d4c503e.55a4f6a1.css"
   },
   {
@@ -304,12 +304,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "img/vuetify.c0e24719.svg"
   },
   {
-    "revision": "079daaf801942733da703150216f7746",
+    "revision": "3309fd1c1b00fd1487a2c2b328169da1",
     "url": "index.html"
   },
   {
-    "revision": "0c9525b2cd25107a19a1",
-    "url": "js/app.9be86370.js"
+    "revision": "60d0756cd9df02f4a596",
+    "url": "js/app.f14b829b.js"
   },
   {
     "revision": "043d63edda6a2081ecca",
@@ -322,6 +322,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "274b50aa5f5560d56064",
     "url": "js/chunk-020ef4ee.2844cd18.js"
+  },
+  {
+    "revision": "08c2b7104d296c76d140",
+    "url": "js/chunk-021431e6.df1e913f.js"
   },
   {
     "revision": "861e28d8c1acfbe8114e",
@@ -472,8 +476,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "js/chunk-4c790e5c.478d3815.js"
   },
   {
-    "revision": "a2b62f7e919a517cc799",
-    "url": "js/chunk-4d4c503e.25ad1bb3.js"
+    "revision": "863467a8f233239d1186",
+    "url": "js/chunk-4d4c503e.77c181fd.js"
   },
   {
     "revision": "97217fa1206047cfeee5",
