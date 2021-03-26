@@ -8,9 +8,13 @@ GlobalConfig.sumupInfo = sumupInfo
 export let NeededKeys = []
 
 export async function loadConfig () {
-  GlobalConfig = Object.assign(GlobalConfig, await loadBaseConfig(defaultConfig))
-  NeededKeys = GlobalConfig.neededKeys
-  window.Config = GlobalConfig
+  try {
+    GlobalConfig = Object.assign(GlobalConfig, await loadBaseConfig(defaultConfig))
+    NeededKeys = GlobalConfig.neededKeys
+    window.Config = GlobalConfig
+  } catch (e) {
+
+  }
 }
 
 window.useCurrentConfig = useCurrentConfig
