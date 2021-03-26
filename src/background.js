@@ -25,8 +25,6 @@ function createWindow () {
     height: 1080,
     show: false,
     webPreferences: {
-      // Use pluginOptions.nodeIntegration, leave this alone
-      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
       nodeIntegration: true
     }
   })
@@ -42,7 +40,7 @@ function createWindow () {
     win.loadURL('app://./index.html')
   }
   win.once('ready-to-show', () => {
-   win.show()
+    win.show()
     if (Debug) {
       win.webContents.openDevTools()
     }
@@ -51,7 +49,6 @@ function createWindow () {
   win.on('closed', () => {
     win = null
   })
-
 }
 
 // Quit when all windows are closed.
