@@ -189,9 +189,10 @@
               </div>
             </div>
           </v-card>
-
         </v-card>
-        <v-card v-else-if="useOrderView" class="flex-grow-1" style="display: grid;
+        <v-card v-else-if="useOrderView" class="flex-grow-1" max-height="calc(100vh - 48px)" style="
+        overflow-y: scroll;
+        display: grid;
         grid-template-columns: repeat(4,1fr);grid-auto-rows: min-content">
           <template v-for="table in activeTables">
             <v-card

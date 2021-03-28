@@ -59,7 +59,7 @@
                       :discount-ratio="discountRatio"
                       :default-expand="cartListModel.list.length===0"
                       :click-callback="addToSplit"
-                      extra-height="'96px'"
+                      extra-height="96px"
                       :title="$t('haveOrderedDish')"
                   />
                 </keep-alive>
@@ -77,8 +77,7 @@
                     :show-edit="true"
                     :click-callback="removeDish"
                     :title="$t('新增菜品')"
-                    :default-expand="Config.defaultExpand">
-                </dish-card-list>
+                    :default-expand="Config.defaultExpand"/>
                 <v-toolbar dense>
                   <v-toolbar-items class="flex-grow-1 mx-n3">
                     <v-btn @click="cartListModel.clear()" class="mr-1" color="error">
@@ -185,7 +184,7 @@
               ZwischenBon
             </v-btn>
             <address-display
-                v-if="consumeTypeId===2&&realAddressInfo"
+                v-if="consumeTypeId===2"
                 @accept="acceptOrderWithTime"
                 @reject="rejectOrder"
                 :consume-type-status-id="consumeTypeStatusId"

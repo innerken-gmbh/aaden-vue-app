@@ -81,18 +81,6 @@
                           cache-items
                           :items="telHint"
                       />
-                      <vuetify-google-autocomplete
-                          browser-autocomplete="off"
-                          type="search"
-                          id="map"
-                          country="DE"
-                          :placeholder="$t('地址搜索')"
-                          clearable
-                          :component-restrictions="
-                          Config.autoCompletePLZ.split(',').length>0?Config.autoCompletePLZ.split(','):
-                           false"
-                          v-on:placechanged="getAddressData"
-                      />
                       <v-text-field :label="$t('日期')" v-model="rawAddressInfo.date"></v-text-field>
                       <v-text-field :label="$t('时间')" v-model="rawAddressInfo.time"></v-text-field>
                       <v-text-field :label="$t('备注')" v-model="rawAddressInfo.note"></v-text-field>
