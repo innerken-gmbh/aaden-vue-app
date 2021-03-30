@@ -123,5 +123,10 @@ export const DefaultAddressInfo = {
   oldTime: '',
   date: '',
   time: '',
-  deliveryMethod: ''
+  deliveryMethod: '',
+  edit: false
 }
+
+export const DeliveryMethods = [
+  'Abholung', 'Lieferung'
+]

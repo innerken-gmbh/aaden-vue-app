@@ -413,7 +413,7 @@
   "地址搜索": "Adressensuche",
   "日期": "Datum",
   "时间": "Zeit",
-  "备注": "Hinweis",
+  "备注": "Note",
   "配送方式": "Versandart",
   "折扣": "Rabatt",
   "现金": "Bar",
@@ -425,5 +425,6 @@
   "销售额": "Umsatz",
   "输入桌号以开桌": "Tisch Nr Eingabe",
   "VIP": "VIP",
-  "取消": "Zurück"
+  "取消": "Zurück",
+  "变更": "Änderen"
 }

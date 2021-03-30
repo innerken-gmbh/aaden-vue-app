@@ -23,9 +23,8 @@
         {{ address.tel }}
       </filter-empty-string-displayer>
     </v-card-text>
-    <slot></slot>
+    <slot name="action"></slot>
   </v-card>
-
 </template>
 
 <script>

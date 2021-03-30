@@ -184,6 +184,7 @@
               ZwischenBon
             </v-btn>
             <address-display
+                @address-change="submitRawAddressInfo"
                 v-if="consumeTypeId===2"
                 @accept="acceptOrderWithTime"
                 @reject="rejectOrder"
@@ -464,6 +465,14 @@ export default {
     clearAllTimer()
   },
   methods: {
+    async submitRawAddressInfo (addressInfo) {
+      await hillo.post('Orders.php?op=updateRawAddressInfo', {
+        orderId: this.tableDetailInfo.order.id,
+        rawAddressInfo: JSON.stringify(addressInfo)
+      })
+      await this.getTableDetail()
+      toast()
+    },
     numberInput (key) {
       if (this.displayInput == null) {
         this.displayInput = ''
@@ -803,6 +812,9 @@ export default {
       if (Swal.isVisible()) {
         return
       }
+      if (document.getElementsByClassName('v-overlay').length > 0) {
+        return
+      }
       this.$nextTick(() => {
         if (this.$refs.ins !== document.activeElement) {
           this.$refs.ins.focus()
@@ -930,7 +942,7 @@ export default {
         } else if (!this.checkoutShow && !this.modificationShow) {
           if (this.cartListModel.list.length > 0) {
             setTimeout(async () => {
-              const res = await showConfirmAsyn('将购物车中的菜品加入订单?')
+              const res = await showConfirmAsyn('Warenkorb ---> Bestellen?')
               if (res.value) {
                 this.orderDish(this.cartListModel.list)
               }
@@ -939,7 +951,7 @@ export default {
             return
           } else {
             setTimeout(async () => {
-              const res = await showConfirmAsyn('是否使用现金,0小费,普通账单结账?')
+              const res = await showConfirmAsyn('Zahlung ohne tip mit bar?')
               if (res.value) {
                 if (GlobalConfig.checkOutUsePassword) {
                   popAuthorize('', (pw) => {
