@@ -1,7 +1,6 @@
 <template>
     <v-card>
         <v-toolbar
-                @click="expand=!expand"
                 dense
                 tile
                 class="font-weight-bold"
@@ -17,7 +16,6 @@
                 <span class="ml-1">{{ count }}</span>
             </div>
         </v-toolbar>
-
         <div v-dragscroll v-show="expand" class="orderDishList"
              :style="{maxHeight: `calc(100vh - 48px - ${extraHeight})`}"
              style="overflow-y: scroll"
@@ -42,7 +40,6 @@
             </template>
 
         </div>
-
     </v-card>
 </template>
 

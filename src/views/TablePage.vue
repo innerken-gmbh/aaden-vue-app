@@ -77,7 +77,7 @@
                     :show-edit="true"
                     :click-callback="removeDish"
                     :title="$t('新增菜品')"
-                    :default-expand="Config.defaultExpand"/>
+                    :default-expand="true"/>
                 <v-toolbar dense>
                   <v-toolbar-items class="flex-grow-1 mx-n3">
                     <v-btn @click="cartListModel.clear()" class="mr-1" color="error">
@@ -1114,7 +1114,7 @@ export default {
       })
     },
     activeCategoryId () {
-      return this.filteredC[this.activeCategory].id
+      return this.filteredC[this.activeCategory]?.id ?? this.filteredC[0].id
     }
 
   },
