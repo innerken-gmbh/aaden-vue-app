@@ -4,7 +4,7 @@
       <navgation>
         <template slot="left">
           <v-toolbar-items>
-            <v-btn tile class="primary ml-n3" @click="back">
+            <v-btn tile class="ml-n3" @click="back">
               <v-icon>mdi-home</v-icon>
               HOME
             </v-btn>
@@ -13,10 +13,8 @@
               {{ tableDetailInfo.servant }}
             </v-btn>
           </v-toolbar-items>
-
           <v-tabs show-arrows
                   class="flex-shrink-1"
-                  style="width: calc(100% - 500px)"
                   v-model="activeDCT"
           >
             <template v-for="ct of dct">
@@ -27,7 +25,6 @@
               </v-tab>
             </template>
           </v-tabs>
-
         </template>
         <template slot="after-menu">
           <div class="d-flex align-center justify-space-between">
@@ -158,13 +155,14 @@
       </v-main>
       <v-navigation-drawer app stateless permanent right width="300px">
         <v-toolbar dense dark>
-          <div class="d-flex align-center justify-space-between" style="min-width: 172px">
+          <div class="d-flex align-center justify-space-between">
             <span class="bigTableName">
               {{ tableDetailInfo.tableBasicInfo.name }}
             </span>
           </div>
+          <v-spacer></v-spacer>
           <v-toolbar-items>
-            <v-btn @click="menuShow=!menuShow" large block color="primary">
+            <v-btn @click="menuShow=!menuShow" large block>
               <v-icon left>mdi-menu</v-icon>
               {{ $t('更多功能') }}
             </v-btn>
