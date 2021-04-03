@@ -428,7 +428,6 @@ export default {
       /* 存储菜品和过滤的信息 */
       dct: [],
       dishes: [],
-      staticDishes: [],
       categories: [],
       activeCategory: null,
       activeDCT: 0,
@@ -616,7 +615,6 @@ export default {
           }
         }
         this.dishes = await getAllDishesWithCache()
-        this.staticDishes = IKUtils.deepCopy(this.dishes)
         this.categories = res.content.filter(c => {
           return c.dishes.length > 0
         }).map((c, i) => {
