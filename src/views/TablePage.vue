@@ -1255,18 +1255,19 @@ tr:hover {
 
 .menu-item {
   width: fit-content;
-  padding: 4px 8px;
+  padding: 8px 12px;
   margin: 4px;
   border-radius: 4px;
   text-transform: capitalize;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .menu-item.active {
   background: #367aeb !important;
   color: white !important;
-  padding: 8px;
-  font-size: 18px;
+  padding: 8px 16px;
+  font-size: 24px;
+  font-weight: bold;
 }
 
 </style>
