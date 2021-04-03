@@ -59,8 +59,7 @@
                           tile
                           class="d-flex flex-column ma-1"
                           width="124px"
-                          :min-height="item.multiSelect==='1'?'120px':'auto'"
-                          :color="active?'primary':''"
+                          :color="active?'warning':''"
                           @click="activeCallback(active,toggle,item,index)">
                     <div class="ma-2 flex-grow-1" style="font-size: 18px">
                       {{ s.text }}{{ s.priceInfo }}
@@ -69,9 +68,9 @@
                       <v-card-actions>
                         <v-spacer></v-spacer>
                         <v-btn @click.stop="addCount(item.id,index)" right>
-                                                    <span style="font-size: 18px" class="font-weight-bold">
-                                                        &times;{{ selectCount[item.id][index] }}
-                                                    </span>
+                           <span style="font-size: 18px" class="font-weight-bold">
+                             &times;{{ selectCount[item.id][index] }}
+                           </span>
                         </v-btn>
                       </v-card-actions>
                     </template>
