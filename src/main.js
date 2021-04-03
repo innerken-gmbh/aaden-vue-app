@@ -15,6 +15,7 @@ Vue.use(VuetifyGoogleAutocomplete, {
 })
 
 Vue.config.productionTip = false
+
 Vue.filter('priceDisplay',
   function (price) {
     return parseFloat(price).toFixed(2).replace('.', ',')
