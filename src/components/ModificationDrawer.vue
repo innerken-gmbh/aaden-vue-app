@@ -1,5 +1,5 @@
 <template>
-    <v-bottom-sheet inset v-model="realShow" >
+    <v-bottom-sheet fullscreen v-model="realShow" >
         <dish-modification
                 ref="modification"
                 :showing="realShow"
