@@ -516,7 +516,10 @@ export default {
         if (this.splitOrderListModel.count() === 0 && this.cartListModel.count() === 0) {
           let discountRatio = 0
           const result = await getOrderInfo(this.id, GlobalConfig.usePrintModAsName)
-          result.filter(d => d.code === 'lk').map(d => { d.originPrice = d.price; return d })
+          result.filter(d => d.code === 'lk').map(d => {
+            d.originPrice = d.price
+            return d
+          })
           const discountInfo = result.filter(r => r.code === '-1')
           const noDiscount = result.filter(r => r.code !== '-1')
           this.orderListModel.loadTTDishList(noDiscount)
@@ -1054,23 +1057,22 @@ export default {
         })
       }
 
-      if (GlobalConfig.dishLookUp) {
-        if (this.input) {
-          if (this.input !== '' && !this.input.includes('/')) {
-            const [buffer] = this.input.split('*')
-            return list.filter((item) => {
-              return item.code.toLowerCase().startsWith(buffer.toLowerCase()) ||
-                  item.dishName.toUpperCase().startsWith(buffer.toUpperCase())
-            }).sort((a, b) => {
-              if (a.code.length > b.code.length) {
-                return 1
-              } else if (a.code.length === b.code.length) {
-                return 0
-              } else {
-                return -1
-              }
-            })
-          }
+      if (this.input) {
+        if (this.input !== '' && !this.input.includes('/')) {
+          const [buffer] = this.input.split('*')
+          return list.filter((item) => {
+            return item.code.toLowerCase().startsWith(buffer.toLowerCase())
+          }).sort((a, b) => {
+            if (a.code.length > b.code.length) {
+              return 1
+            } else if (a.code.length === b.code.length) {
+              return 0
+            } else {
+              return -1
+            }
+          }).concat(list.filter((item) => {
+            return item.dishName.toLowerCase().startsWith(buffer.toLowerCase()) && !item.code.toLowerCase().startsWith(buffer.toLowerCase())
+          }))
         }
       }
 

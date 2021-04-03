@@ -15,7 +15,6 @@
   "useCart": true,
   "hideCode": false,
   "gridSize": "140",
-  "dishLookUp": true,
   "gridSizeX": "100",
   "tableCardFontSize": "28",
   "predefinedDiscount": "10p",
