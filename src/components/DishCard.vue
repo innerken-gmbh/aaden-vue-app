@@ -1,12 +1,9 @@
 <template>
     <div class="dishCard mx-1">
         <div class="px-1 py-1 pr-0 d-flex justify-space-between align-baseline">
-            <div v-code-hide class='codeRow mr-2'>
-                {{ dish.code }}
-            </div>
             <div class="flex-grow-1 d-flex justify-space-between">
                 <div class='dishName'>
-                    {{ dish.name }}
+                  <span v-code-hide class='codeRow'>{{ dish.code }}.</span><span>{{ dish.name }}</span>
                 </div>
                 <span v-if="dish.isFree==='1'">
                         {{ $t('Free') }}

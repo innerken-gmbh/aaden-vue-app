@@ -5,7 +5,7 @@
   >
     <div :style="{backgroundColor:''+displayColor,color:''+foreground,}"
          class="dishBlock d-flex flex-column fill-height justify-space-between">
-      <div :style="{fontSize:fontSize+'px'}" class="name"><span v-code-hide>{{ code }}. </span>{{ dishName }}</div>
+      <div :style="{fontSize:fontSize+'px'}" class="name"><span v-code-hide>{{ code }}.</span>{{ dishName }}</div>
       <div class="d-flex justify-space-between"
            style="align-items: center;flex-wrap: wrap">
         <div class="code">

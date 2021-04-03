@@ -1059,9 +1059,8 @@ export default {
           if (this.input !== '' && !this.input.includes('/')) {
             const [buffer] = this.input.split('*')
             return list.filter((item) => {
-              return item.code.startsWith(buffer.toLowerCase()) ||
-                  item.code.startsWith(buffer.toUpperCase()) ||
-                  item.dishName.startsWith(buffer)
+              return item.code.toLowerCase().startsWith(buffer.toLowerCase()) ||
+                  item.dishName.toUpperCase().startsWith(buffer.toUpperCase())
             }).sort((a, b) => {
               if (a.code.length > b.code.length) {
                 return 1
