@@ -138,7 +138,6 @@
               </v-card-actions>
             </v-card>
           </v-menu>
-
         </v-toolbar-items>
       </template>
     </Navgation>
@@ -202,7 +201,8 @@
         display: flex;
  ">
           <template v-for="servant in tableGroupByServant">
-            <v-card height="calc(100vh - 48px)" color="transparent" style="width: 190px; flex-shrink: 0;overflow-y: scroll" :key="servant.id">
+            <v-card height="calc(100vh - 48px)" color="transparent"
+                    style="width: 190px; flex-shrink: 0;overflow-y: scroll" :key="servant.id">
               <v-toolbar dense tile>
                 <v-toolbar-title>{{ servant.name }}</v-toolbar-title>
               </v-toolbar>
@@ -592,7 +592,19 @@ export default {
 
   },
   methods: {
-    tryOpenTableUsePassword (password) {
+    async tryOpenTableUsePassword (password) {
+      if (GlobalConfig.usePassword) {
+        const res = await Swal.fire({
+          title: 'Bitte password eingabe',
+          text: '',
+          input: 'password'
+        })
+        if (!res.isConfirmed || res.value !== password) {
+          IKUtils.toast('Passwort Falsch', 'error')
+          return
+        }
+      }
+
       this.showOpenTableDialog = true
       this.servantPassword = password
     },
