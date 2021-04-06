@@ -24,12 +24,12 @@
   "useEnterTablePermissionCheck": false,
   "useDeleteDishReason": true,
   "autoCompletePLZ": "",
-  "useAdvanceOpenTakeawayTable": false,
   "activeCardBackground": "#ffffff",
   "useTableBluePrint": false,
   "topKeyboardKey": "E,F,B,R",
   "UseDailyZbon": true,
   "bigDiscountRatio": 0.7,
   "useConfigButton": true,
-  "orderView": false
+  "orderView": false,
+  "showRightMenu": true
 }

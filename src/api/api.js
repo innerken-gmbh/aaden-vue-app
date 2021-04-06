@@ -15,7 +15,7 @@ export async function printZBon () {
   return (await hillo.post('ZBon.php?op=printZbon')).content
 }
 
-export async function printZBonUseDate (startDate, endDate, printByDay = 1, resetTable = false) {
+export async function printZBonUseDate (startDate, endDate, printByDay = 1, resetTable = 0) {
   return (await hillo.post('ZBon.php?op=printZbonBySpan',
     { startDate, endDate, printByDay, resetTable }))
 }

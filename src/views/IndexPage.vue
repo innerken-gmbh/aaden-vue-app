@@ -8,9 +8,14 @@
         <div class="d-flex ml-2 align-center caption">
           Version <span v-show-quick-buy>FMC-</span>{{ version }}
         </div>
+
       </template>
       <template slot="right-slot">
         <v-toolbar-items class="mx-1">
+          <div class="d-flex mr-2 align-center caption">
+            <time-display/>
+          </div>
+
           <v-btn v-if="printingList.length>0">
             <v-icon>mdi-printer</v-icon>
             <template>
@@ -70,8 +75,9 @@
                  @click="useOrderView=!useOrderView">
             {{ $t('只看活跃') }}
           </v-btn>
-          <v-btn @click="fetchOrder">
-            <v-icon>mdi-refresh</v-icon>
+          <v-btn :color="showRightMenu?'warning':'transparent'"
+                 @click="showRightMenu=!showRightMenu">
+            <v-icon>mdi-keyboard</v-icon>
           </v-btn>
         </v-toolbar-items>
         <v-toolbar-items>
@@ -93,9 +99,6 @@
             <v-card color="white">
               <v-list>
                 <v-list-item>
-                  <v-list-item-avatar tile>
-                    <img src="@/assets/logo.png">
-                  </v-list-item-avatar>
                   <v-list-item-content>
                     <v-list-item-title>Aaden App</v-list-item-title>
                     <v-list-item-subtitle>
@@ -135,6 +138,7 @@
               </v-card-actions>
             </v-card>
           </v-menu>
+
         </v-toolbar-items>
       </template>
     </Navgation>
@@ -166,7 +170,7 @@
                 @table-clicked="openOrEnterTable"
                 @need-refresh="refreshTables"
                 :out-side-table-list="tableInCurrentSection"
-                :show-coordinate="showCoordinate"
+                :show-coordinate="false"
                 :editing.sync="isEditing"
                 :current-table.sync="currentTable"
                 :current-section="currentSection"/>
@@ -190,25 +194,42 @@
             </div>
           </v-card>
         </v-card>
-        <v-card v-else-if="useOrderView" class="flex-grow-1" max-height="calc(100vh - 48px)" style="
-        overflow-y: scroll;
-        display: grid;
-        grid-template-columns: repeat(4,1fr);grid-auto-rows: min-content">
-          <template v-for="table in activeTables">
-            <v-card
-                :dark="getColorLightness(Config.activeCardBackground)<128"
-                :style="{backgroundColor:Config.activeCardBackground}"
-                @click='openOrEnterTable(table.tableName)'
-                class="ma-2" style="height: fit-content" :key="table.id">
-              <v-card-title :style="{color:table.callService==='1'?restaurantInfo.callColor:''}">
-                {{ table.tableName }}
-                <v-spacer/>
-                €{{ table.totalPrice }}
-              </v-card-title>
-              <v-card-subtitle>
-                {{ table.servantName }}/{{ table.createTimestamp }}/{{ findConsumeTypeById(table.consumeType) }}
-              </v-card-subtitle>
+        <v-card v-else-if="useOrderView"
+                class="flex-grow-1"
+                max-height="calc(100vh - 48px)"
+                style="
+        overflow: scroll;
+        display: flex;
+ ">
+          <template v-for="servant in tableGroupByServant">
+            <v-card height="calc(100vh - 48px)" color="transparent" style="width: 190px; flex-shrink: 0;overflow-y: scroll" :key="servant.id">
+              <v-toolbar dense tile>
+                <v-toolbar-title>{{ servant.name }}</v-toolbar-title>
+              </v-toolbar>
+              <v-btn block @click="tryOpenTableUsePassword(servant.password)">Neue Tisch</v-btn>
+              <template v-for="table in servant.tables">
+                <v-card
+                    :dark="getColorLightness(Config.activeCardBackground)<128"
+                    :style="{backgroundColor:Config.activeCardBackground}"
+                    @click='openOrEnterTable(table.tableName)'
+                    class="ma-1 pa-2" style="height: fit-content;" :key="table.id">
+                  <div class="d-flex align-center" :style="{color:table.callService==='1'?restaurantInfo.callColor:''}">
+                    <span style="font-size: 24px;font-weight: bold">{{ table.tableName }}</span>
+                    <v-spacer/>
+                    <div>
+                      <div class="caption">
+                        {{ table.createTimestamp }}/{{ findConsumeTypeById(table.consumeType) }}
+                      </div>
+                      <div class="caption">
+                        €{{ table.totalPrice }}
+                      </div>
+                    </div>
+                  </div>
+
+                </v-card>
+              </template>
             </v-card>
+
           </template>
         </v-card>
         <div v-dragscroll v-else class="tableDisplay flex-grow-1">
@@ -285,7 +306,8 @@
             </div>
           </div>
         </div>
-        <template>
+        <!--        下面是侧边栏的逻辑-->
+        <template v-if="showRightMenu">
           <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
             <template v-if="Config.useTableBluePrint">
               <template v-if="isEditing">
@@ -320,10 +342,6 @@
                 </div>
               </template>
             </template>
-            <div class="pa-2 d-flex">
-              <v-spacer/>
-              <time-display/>
-            </div>
 
             <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
               <grid-button
@@ -350,6 +368,14 @@
                   icon=" mdi-smart-card"
                   :text="  $t('VIP') "
               />
+              <grid-button
+                  color="#000"
+                  @click="fetchOrder"
+                  icon="mdi-refresh"
+                  text="Lieferung"
+              >
+
+              </grid-button>
             </div>
             <v-spacer></v-spacer>
             <template v-if="Config.useTableBluePrint">
@@ -382,7 +408,7 @@
         </template>
       </div>
     </v-main>
-    <address-form :menu-show="showOpenTakeawayTableDialog"/>
+    <open-table-form :servant-password="servantPassword" :menu-show.sync="showOpenTableDialog"></open-table-form>
     <sales-dialog
         @visibility-changed="(e)=>salesDialogShow=e"
         :sales-dialog-show="salesDialogShow"
@@ -408,7 +434,6 @@ import {
   openOrEnterTable,
   popAuthorize,
   requestOutTable,
-  Strings,
   toast,
   toastError
 } from '@/oldjs/common'
@@ -430,7 +455,6 @@ import {
   updateSection
 } from '@/oldjs/api'
 import IKUtils from 'innerken-js-utils'
-import AddressForm from '@/components/AddressForm'
 import Keyboard from '@/components/Keyboard'
 import TableBluePrint from '@/components/TableBluePrint'
 import { defaultSection } from '@/oldjs/defaultConst'
@@ -438,6 +462,7 @@ import debounce from 'lodash-es/debounce'
 import SalesDialog from '@/components/fragments/SalesDialog'
 import GridButton from '@/components/GridButton'
 import MemberCardDialog from '@/components/fragments/MemberCardDialog'
+import OpenTableForm from '@/components/OpenTableForm'
 
 const keyboardLayout =
     [
@@ -449,8 +474,8 @@ const keyboardLayout =
     ]
 
 const keyboardFunctions = {
-  OpenTable: '输入桌号以开桌',
-  ChangeServant: '请输入新的跑堂密码'
+  OpenTable: 'Bitte TischNr. Eingabe',
+  ChangeServant: 'Neue password eingabe'
 }
 
 export default {
@@ -459,12 +484,12 @@ export default {
     dragscroll
   },
   components: {
+    OpenTableForm,
     MemberCardDialog,
     GridButton,
     SalesDialog,
     TableBluePrint,
     Keyboard,
-    AddressForm,
     TimeDisplay,
     Navgation
   },
@@ -475,8 +500,10 @@ export default {
   },
   data: function () {
     return {
+      servantPassword: '',
+      showOpenTableDialog: null,
       isEditing: false,
-      showCoordinate: false,
+      showRightMenu: GlobalConfig.showRightMenu,
       keyboardLayout,
       keyboardFunctions,
       currentKeyboardFunction: keyboardFunctions.OpenTable,
@@ -484,12 +511,9 @@ export default {
       currentServant: { name: '' },
       menu: null,
       menu1: null,
-      showOpenTakeawayTableDialog: null,
       servantList: [],
       version: version,
-      reservations: [],
       areas: [],
-      seen: true,
       buffer: '',
       restaurantInfo: {
         tableColor: '#fff',
@@ -499,8 +523,6 @@ export default {
       time: '',
       dishes: [],
       Config: GlobalConfig,
-      Strings,
-      focusTimer: null,
       falsePrinterList: [],
       printingList: [],
       tableList: [],
@@ -523,6 +545,9 @@ export default {
       GlobalConfig.updateSettings('orderView', val)
       this.refreshTables()
     },
+    showRightMenu: function (val) {
+      GlobalConfig.updateSettings('showRightMenu', val)
+    },
     refresh: function () {
       this.initPage()
     }
@@ -534,6 +559,13 @@ export default {
         return arr
       }, []).filter(t => t.usageStatus === '1')
     },
+    tableGroupByServant () {
+      this.servantList.forEach(s => {
+        s.tables = this.activeTables.filter(t => t.servantId === s.id)
+      })
+      return this.servantList
+    },
+
     tableInCurrentSection () {
       return this.tableList.filter(t => t.sectionId === this.currentSection.id)
     },
@@ -560,6 +592,10 @@ export default {
 
   },
   methods: {
+    tryOpenTableUsePassword (password) {
+      this.showOpenTableDialog = true
+      this.servantPassword = password
+    },
     async memberCardCLicked () {
       const res = await fastSweetAlertRequest(
         'Bitte VIP Karte Id Gaben.',
@@ -595,11 +631,7 @@ export default {
       this.input = this.displayInput
     },
     takeawayClicked () {
-      if (GlobalConfig.useAdvanceOpenTakeawayTable) {
-        this.showOpenTakeawayTableDialog = true
-      } else {
-        popAuthorize('', requestOutTable)
-      }
+      popAuthorize('', requestOutTable)
     },
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
@@ -776,8 +808,6 @@ export default {
     this.initPage()
 
     this.restaurantInfo = Object.assign(this.restaurantInfo, (await getRestaurantInfo()).content[0])
-
-    console.log(this.sectionList, 'section')
     this.servantList = await getServantList()
     await this.refreshSectionList()
     if (GlobalConfig.defaultPassword) {
