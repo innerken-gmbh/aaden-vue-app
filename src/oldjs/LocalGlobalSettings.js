@@ -1,4 +1,5 @@
 import { loadBaseConfig } from 'aaden-base-model/lib/Models/GlobalSettings'
+import i18n from '@/i18n'
 
 const defaultConfig = require('@/assets/AadenConfig.json')
 let GlobalConfig = Object.assign({}, defaultConfig)
@@ -49,7 +50,8 @@ export function setDeviceId (id) {
 
 export function changeLanguage (l) {
   GlobalConfig.updateSettings('lang', l)
-  reload()
+  i18n.locale = l.toLowerCase()
+  // reload()
 }
 
 export default GlobalConfig
