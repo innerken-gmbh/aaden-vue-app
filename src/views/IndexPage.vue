@@ -160,7 +160,7 @@
                 </v-btn>
                 <v-btn @click="saveCurrentSection()" color="primary" v-if="isEditing">
                   <v-icon left>mdi-check</v-icon>
-                  保存
+                  Speichen
                 </v-btn>
               </v-toolbar-items>
               Size:{{ currentSection.sizeY * currentSection.sizeX }}
@@ -351,8 +351,7 @@
                   color="warning"
               />
               <grid-button
-                  @click="popAuthorize('',
-                    ()=>{salesDialogShow=true},true)"
+                  @click="openSalesDialog"
                   icon="mdi-cash"
                   :text="  $t('销售额') "
                   color="success"
@@ -412,6 +411,8 @@
     <sales-dialog
         @visibility-changed="(e)=>salesDialogShow=e"
         :sales-dialog-show="salesDialogShow"
+        :is-boss="salesDialogServantIsBoss"
+        :id="salesDialogServantId"
     />
     <member-card-dialog
         :member-card-dialog-show="memberCardDialogShow"
@@ -502,6 +503,8 @@ export default {
     return {
       servantPassword: '',
       showOpenTableDialog: null,
+      salesDialogServantIsBoss: false,
+      salesDialogServantId: null,
       isEditing: false,
       showRightMenu: GlobalConfig.showRightMenu,
       keyboardLayout,
@@ -592,6 +595,18 @@ export default {
 
   },
   methods: {
+    openSalesDialog () {
+      popAuthorize('',
+        (pw) => {
+          console.log(pw, 'password')
+          const servant = this.findServant(pw)
+          console.log(servant)
+
+          this.salesDialogShow = true
+          this.salesDialogServantIsBoss = parseInt(servant.permission) === 1
+          this.salesDialogServantId = servant.id
+        }, true)
+    },
     async tryOpenTableUsePassword (password) {
       if (GlobalConfig.usePassword) {
         const res = await Swal.fire({

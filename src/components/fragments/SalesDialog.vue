@@ -7,51 +7,95 @@
         <v-icon @click="realShow=!realShow">mdi-close</v-icon>
       </v-toolbar>
       <v-tabs v-model="tabIndex">
-        <v-tab>Tag-Sicht</v-tab>
-        <v-tab>Latzt-Sicht</v-tab>
+        <template v-if="isBoss">
+          <v-tab>Tag-Sicht</v-tab>
+          <v-tab>Latzt-Sicht</v-tab>
+        </template>
+
+        <v-tab>Meine Umsatz</v-tab>
       </v-tabs>
       <v-card-text>
         <v-tabs-items v-model="tabIndex">
-          <v-tab-item>
-            <v-card>
-              <div class="d-flex pa-1">
-                <v-date-picker elevation="2"
-                               v-model="singleZBonDate"
-                               :allowed-dates="allowedDates"
-                               class="mt-4"
-                               :max="todayDate"
-                />
-                <div class="pa-4" style="min-width: 464px">
-                  <v-list subheader two-line-line>
-                    <v-subheader>{{ $t('Umsatz') }}</v-subheader>
-                    <template v-for="total in taxGroupInfo">
-                      <v-list-item :key="total.taxRatePercentage">
+          <template v-if="isBoss">
+            <v-tab-item>
+              <v-card>
+                <div class="d-flex pa-1">
+                  <v-date-picker elevation="2"
+                                 v-model="singleZBonDate"
+                                 :allowed-dates="allowedDates"
+                                 class="mt-4"
+                                 :max="todayDate"
+                  />
+                  <div class="pa-4" style="min-width: 464px">
+                    <v-list subheader two-line-line>
+                      <v-subheader>{{ $t('Umsatz') }}</v-subheader>
+                      <template v-for="total in taxGroupInfo">
+                        <v-list-item :key="total.taxRatePercentage">
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              {{ total.taxRatePercentage }}%
+                            </v-list-item-title>
+                            <v-list-item-subtitle>
+                              Umsatz: {{ total.groupTotal }}
+                            </v-list-item-subtitle>
+                            <v-list-item-subtitle>
+                              Netto/Steuer: {{ total.nettoumsatz }}/{{ total.umsatzsteuer }}
+                            </v-list-item-subtitle>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </template>
+                      <v-list-item>
                         <v-list-item-content>
-                          <v-list-item-title>
-                            {{ total.taxRatePercentage }}%
-                          </v-list-item-title>
-                          <v-list-item-subtitle>
-                            Umsatz: {{ total.groupTotal }}
-                          </v-list-item-subtitle>
-                          <v-list-item-subtitle>
-                            Netto/Steuer: {{ total.nettoumsatz }}/{{ total.umsatzsteuer }}
+                          <v-list-item-title>Alle</v-list-item-title>
+                          <v-list-item-subtitle>Umsatz: {{ billContent.fTotal }}</v-list-item-subtitle>
+                          <v-list-item-subtitle>Netto/Steuer: {{ billContent.fTotalTe }}/{{ billContent.fTotalTax }}
                           </v-list-item-subtitle>
                         </v-list-item-content>
                       </v-list-item>
-                    </template>
-                    <v-list-item>
-                      <v-list-item-content>
-                        <v-list-item-title>Alle</v-list-item-title>
-                        <v-list-item-subtitle>Umsatz: {{ billContent.fTotal }}</v-list-item-subtitle>
-                        <v-list-item-subtitle>Netto/Steuer: {{ billContent.fTotalTe }}/{{ billContent.fTotalTax }}
-                        </v-list-item-subtitle>
-                      </v-list-item-content>
-                    </v-list-item>
-                  </v-list>
+                    </v-list>
+                  </div>
                 </div>
-              </div>
-            </v-card>
-          </v-tab-item>
+              </v-card>
+            </v-tab-item>
+            <v-tab-item>
+              <v-card>
+                <div class="d-flex pa-1 align-center">
+                  <div class="pa-2 " style="height: 100%">
+                    <h1>Letzte ZBon drucken：</h1>
+                    <h1 class="mt-4">{{ lastZBonPrintTimeDisplayString }}</h1>
+                  </div>
+                  <div class="pa-4" style="min-width: 464px">
+                    <v-list subheader two-line-line>
+                      <v-subheader>{{ $t('Umsatz') }}</v-subheader>
+                      <template v-for="total in taxGroupInfo">
+                        <v-list-item :key="total.taxRatePercentage">
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              {{ total.taxRatePercentage }}%
+                            </v-list-item-title>
+                            <v-list-item-subtitle>
+                              Umsatz: {{ total.groupTotal }}</v-list-item-subtitle>
+                            <v-list-item-subtitle>
+                              Netto/Steuer: {{ total.nettoumsatz }}/{{ total.umsatzsteuer }}
+                            </v-list-item-subtitle>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </template>
+                      <v-list-item>
+                        <v-list-item-content>
+                          <v-list-item-title>Alle</v-list-item-title>
+                          <v-list-item-subtitle>Umsatz: {{ billContent.fTotal }}</v-list-item-subtitle>
+                          <v-list-item-subtitle>Netto/Steuer: {{ billContent.fTotalTe }}/{{ billContent.fTotalTax }}
+                          </v-list-item-subtitle>
+                        </v-list-item-content>
+                      </v-list-item>
+
+                    </v-list>
+                  </div>
+                </div>
+              </v-card>
+            </v-tab-item>
+          </template>
           <v-tab-item>
             <v-card>
               <div class="d-flex pa-1 align-center">
@@ -141,6 +185,9 @@ export default {
     salesDialogShow: {
       default: false
     },
+    isBoss: {
+      default: false
+    },
     id: {},
     initialUI: {}
   },
@@ -153,7 +200,6 @@ export default {
           fTotalTax: 0,
           fTotalTe: 0
         }
-
       },
       lastZBonPrintDate: null,
       tabIndex: GlobalConfig.UseDailyZbon ? 0 : 1,
