@@ -11,6 +11,7 @@ export let NeededKeys = []
 export async function loadConfig () {
   try {
     GlobalConfig = Object.assign(GlobalConfig, await loadBaseConfig(defaultConfig))
+    changeLanguage(GlobalConfig.lang)
     NeededKeys = GlobalConfig.neededKeys
     window.Config = GlobalConfig
   } catch (e) {
