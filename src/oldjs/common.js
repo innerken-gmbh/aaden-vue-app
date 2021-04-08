@@ -267,8 +267,6 @@ export function parseIntAndSetDefault (val, de = 0) {
   let number = parseInt(val)
   if (isNaN(number)) {
     number = de
-    // logErrorAndPop(Strings[Config.lang].JSIndexOpenTableCallBackInvalidNumber)
-    // return
   }
   return number
 }
@@ -329,29 +327,6 @@ export function showConfirmAsyn (str, title = i18n.t('areYouSure')) {
     cancelButtonColor: '#d33',
     confirmButtonText: i18n.t('yesIAm'),
     cancelButtonText: i18n.t('cancel')
-  })
-}
-
-export function showConfirm (str, callback, fCallback, title = i18n.t('areYouSure')) {
-  Swal.fire({
-    title: title,
-    html: str,
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: i18n.t('yesIAm'),
-    cancelButtonText: i18n.t('cancel')
-  }).then((result) => {
-    if (result.value) {
-      if (callback) {
-        callback()
-      }
-    } else {
-      if (fCallback) {
-        fCallback()
-      }
-    }
   })
 }
 

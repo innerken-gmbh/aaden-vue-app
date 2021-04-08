@@ -412,7 +412,7 @@
         @visibility-changed="(e)=>salesDialogShow=e"
         :sales-dialog-show="salesDialogShow"
         :is-boss="salesDialogServantIsBoss"
-        :id="salesDialogServantId"
+        :password="salesDialogServantPassword"
     />
     <member-card-dialog
         :member-card-dialog-show="memberCardDialogShow"
@@ -504,7 +504,7 @@ export default {
       servantPassword: '',
       showOpenTableDialog: null,
       salesDialogServantIsBoss: false,
-      salesDialogServantId: null,
+      salesDialogServantPassword: null,
       isEditing: false,
       showRightMenu: GlobalConfig.showRightMenu,
       keyboardLayout,
@@ -601,10 +601,9 @@ export default {
           console.log(pw, 'password')
           const servant = this.findServant(pw)
           console.log(servant)
-
           this.salesDialogShow = true
           this.salesDialogServantIsBoss = parseInt(servant.permission) === 1
-          this.salesDialogServantId = servant.id
+          this.salesDialogServantPassword = pw
         }, true)
     },
     async tryOpenTableUsePassword (password) {

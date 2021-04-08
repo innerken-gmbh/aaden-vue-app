@@ -32,3 +32,11 @@ export async function acceptOrder (reason, id) {
   })
   IKUtils.toast('ok')
 }
+
+export async function previewServantSummary (pw, start, end) {
+  return (await hillo.get('Servant.php?op=previewSummary', { pw, start, end })).content
+}
+
+export async function printServantSummary (pw, start, end) {
+  return (await hillo.get('Servant.php?op=printSummaryBonByPassword', { pw, start, end })).content
+}
