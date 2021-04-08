@@ -87,7 +87,8 @@ export default {
       }
       if (this.discountRatio !== 0) {
         checkOutData.discountStr = (this.discountStr ?? '')
-          .indexOf('p') !== -1 ? this.discountStr : (this.order.total * this.discountRatio).toFixed(2)
+          .indexOf('p') !== -1 ? this.discountStr : (this.order.total * this.discountRatio)
+            .toFixed(2)
       }
 
       delete checkOutData.discountStr
