@@ -31,5 +31,6 @@
   "bigDiscountRatio": 0.7,
   "useConfigButton": true,
   "orderView": false,
-  "showRightMenu": true
+  "showRightMenu": true,
+  "simpleVersion": false
 }

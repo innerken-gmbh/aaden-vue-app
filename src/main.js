@@ -28,6 +28,14 @@ Vue.directive('show-quick-buy', {
     }
   }
 })
+Vue.directive('hide-simple', {
+  bind: function (el) {
+    if (GlobalConfig.simpleVersion) {
+      el.style.display = 'none'
+    }
+  }
+})
+
 Vue.directive('hide-quick-buy', {
   bind: function (el) {
     if (GlobalConfig.FMCVersion) {

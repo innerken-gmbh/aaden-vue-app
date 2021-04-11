@@ -362,19 +362,19 @@
                   :text="  $t('takeaway') "
               />
               <grid-button
+                  v-hide-simple
                   color="error"
                   @click="memberCardCLicked"
                   icon=" mdi-smart-card"
                   :text="  $t('VIP') "
               />
               <grid-button
+                  v-hide-simple
                   color="#000"
                   @click="fetchOrder"
                   icon="mdi-refresh"
                   text="Lieferung"
-              >
-
-              </grid-button>
+              />
             </div>
             <v-spacer></v-spacer>
             <template v-if="Config.useTableBluePrint">
@@ -465,11 +465,12 @@ import GridButton from '@/components/GridButton'
 import MemberCardDialog from '@/components/fragments/MemberCardDialog'
 import OpenTableForm from '@/components/OpenTableForm'
 
+const extraLayout = ['A', 'B', 'C', 'K']
+
 const keyboardLayout =
     [
-      'A', 'B', 'C', 'mdi-account-box',
       '7', '8', '9', 'mdi-autorenew',
-      '4', '5', '6', 'K',
+      '4', '5', '6', 'mdi-account-box',
       '1', '2', '3', 'T',
       'W', '0', '.', 'OK'
     ]
@@ -507,7 +508,7 @@ export default {
       salesDialogServantPassword: null,
       isEditing: false,
       showRightMenu: GlobalConfig.showRightMenu,
-      keyboardLayout,
+      keyboardLayout: (GlobalConfig.simpleVersion ? [] : extraLayout).concat(keyboardLayout),
       keyboardFunctions,
       currentKeyboardFunction: keyboardFunctions.OpenTable,
       NeededKeys,

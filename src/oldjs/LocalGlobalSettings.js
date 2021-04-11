@@ -3,9 +3,7 @@ import i18n from '@/i18n'
 
 const defaultConfig = require('@/assets/AadenConfig.json')
 let GlobalConfig = Object.assign({}, defaultConfig)
-const sumupInfo = require('@/assets/aaden.web.app.json')
 
-GlobalConfig.sumupInfo = sumupInfo
 export let NeededKeys = []
 
 export async function loadConfig () {
