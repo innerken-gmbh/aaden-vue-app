@@ -44,7 +44,13 @@ Vue.directive('code-hide', {
 })
 
 async function initial () {
-  await loadConfig()
+  console.log('I am initialed')
+  try {
+    await loadConfig()
+  } catch (e) {
+    console.log(e)
+  }
+
   i18n.locale = GlobalConfig.lang.toLowerCase()
 
   new Vue({

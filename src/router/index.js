@@ -25,7 +25,8 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  routes
+  routes,
+  base: process.env.BASE_URL
 })
 let count = 0
 count++

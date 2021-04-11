@@ -16,7 +16,13 @@ ipcMain.on('reload', () => {
 })
 
 // Scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true } }])
+protocol.registerSchemesAsPrivileged([{
+  scheme: 'app',
+  privileges: {
+    secure: true,
+    standard: true
+  }
+}])
 
 function createWindow () {
   // Create the browser window.
@@ -42,7 +48,7 @@ function createWindow () {
     win.loadURL('app://./index.html')
   }
   win.once('ready-to-show', () => {
-   win.show()
+    win.show()
     if (Debug) {
       win.webContents.openDevTools()
     }
@@ -51,7 +57,6 @@ function createWindow () {
   win.on('closed', () => {
     win = null
   })
-
 }
 
 // Quit when all windows are closed.
