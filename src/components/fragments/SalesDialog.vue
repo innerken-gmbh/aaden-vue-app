@@ -59,7 +59,7 @@
               </v-tab-item>
             </template>
             <template v-else>
-              <v-tab-item >
+              <v-tab-item>
                 <v-card>
                   <div class="d-flex pa-1 align-center">
                     <div class="pa-2 " style="height: 100%">
@@ -113,36 +113,45 @@
                   <v-list subheader>
 
                     <v-list-item>
-                      <v-list-item-icon><v-icon>mdi-cash-usd</v-icon></v-list-item-icon>
+                      <v-list-item-icon>
+                        <v-icon>mdi-cash-usd</v-icon>
+                      </v-list-item-icon>
                       <v-list-item-content>
                         <v-list-item-title>
-                          {{ displayData.content.bar | priceDisplay}}
+                          {{ displayData.content.bar | priceDisplay }}
                         </v-list-item-title>
                       </v-list-item-content>
                     </v-list-item>
                     <v-list-item>
-                      <v-list-item-icon><v-icon>mdi-credit-card-outline</v-icon></v-list-item-icon>
+                      <v-list-item-icon>
+                        <v-icon>mdi-credit-card-outline</v-icon>
+                      </v-list-item-icon>
                       <v-list-item-title>
-                        {{ displayData.content.EC | priceDisplay}}
+                        {{ displayData.content.EC | priceDisplay }}
                       </v-list-item-title>
                     </v-list-item>
                     <v-list-item>
-                      <v-list-item-icon><v-icon>mdi-bell</v-icon></v-list-item-icon>
+                      <v-list-item-icon>
+                        <v-icon>mdi-bell</v-icon>
+                      </v-list-item-icon>
                       <v-list-item-title>
-                        {{ displayData.content.tip | priceDisplay}}
+                        {{ displayData.content.tip | priceDisplay }}
                       </v-list-item-title>
                     </v-list-item>
                     <v-divider></v-divider>
                     <v-subheader>{{ $t('Umsatz') }} für {{ displayData.servant.name }}</v-subheader>
                     <v-list-item>
-                      <v-list-item-icon><v-icon>mdi-calendar-today</v-icon></v-list-item-icon>
+                      <v-list-item-icon>
+                        <v-icon>mdi-calendar-today</v-icon>
+                      </v-list-item-icon>
                       <v-list-item-title>
-                        {{ displayData.content.total | priceDisplay}}
+                        {{ displayData.content.total | priceDisplay }}
                       </v-list-item-title>
                     </v-list-item>
                     <v-divider></v-divider>
                   </v-list>
-                  <v-btn block x-large @click="printSummaryBon" color="primary" class="mt-4">KellnerBon Ausdrucken</v-btn>
+                  <v-btn block x-large @click="printSummaryBon" color="primary" class="mt-4">KellnerBon Ausdrucken
+                  </v-btn>
                 </div>
               </div>
             </v-card>
@@ -225,7 +234,7 @@ export default {
       },
       Config: GlobalConfig,
       lastZBonPrintDate: null,
-      tabIndex: null,
+      tabIndex: 0,
       displayData: defaultDisplayData,
       todayDate: dayjs().format('YYYY-MM-DD'),
       singleZBonDate: null
@@ -237,8 +246,7 @@ export default {
         if (!this.singleZBonDate) {
           return false
         }
-        return dayjs()
-          .isAfter(dayjs(this.singleZBonDate, 'YYYY-MM-DD').add(1, 'd').hour(4).minute(0))
+        return dayjs().isAfter(dayjs(this.singleZBonDate, 'YYYY-MM-DD').add(1, 'd').hour(4).minute(0)) && this.tabIndex === 0
       } else {
         return this.tabIndex === 0
       }
@@ -295,6 +303,10 @@ export default {
     allowedDates (val) {
       return dayjs(val, 'YYYY-MM-DD').isBefore(dayjs())
     },
+    initial () {
+      this.singleZBonDate = this.todayDate
+      this.tabIndex = 0
+    },
     async loadData () {
       // 抑制老版本，以后一定要删掉
       if (!GlobalConfig.UseDailyZbon) {
@@ -315,7 +327,8 @@ export default {
   },
 
   watch: {
-    async tabIndex () {
+    async tabIndex (val) {
+      console.log(val)
       await this.loadData()
     },
     async singleZBonDate () {
@@ -323,13 +336,12 @@ export default {
     },
     realShow (val) {
       if (val) {
-        this.loadData()
+        this.tabIndex = 0
       }
     }
   },
   mounted () {
-    this.singleZBonDate = this.todayDate
-    this.loadData()
+    this.initial()
   }
 
 }
