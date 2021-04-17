@@ -34,5 +34,6 @@
   "showRightMenu": true,
   "simpleVersion": false,
   "numberFirst": false,
-  "oneStepOrderNumber": -1
+  "oneStepOrderNumber": -1,
+  "skipCartConfirm": false
 }
