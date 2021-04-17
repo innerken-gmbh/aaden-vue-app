@@ -401,7 +401,6 @@ export default {
     return {
       keyboardLayout: GlobalConfig.topKeyboardKey.split(',').concat(keyboardLayout),
       displayInput: '',
-
       menuShow: null, // 控制菜单是否显示
       checkoutShow: false,
       extraDishShow: false,
@@ -409,7 +408,6 @@ export default {
       discountModelShow: null,
       isSendingRequest: false,
       oldMod: null,
-
       breakCount: 0,
 
       checkOutType: 'checkOut',
@@ -914,15 +912,12 @@ export default {
           blockReady()
           return
         } else if (t.indexOf('*') !== -1) {
-          const [code, count] = t.split('*')
-          this.findAndOrderDish(code, count)
+          let [code, count] = this.getCodeAndCountFromInput(t)
+          count = parseInt(count)
+          await this.findAndOrderDish(code, count)
           return
-        } else if (t === '/rp') {
-          this.reprintOrder()
-        } else if (t === '/ps') {
-          this.zwitchenBon()
         } else {
-          this.findAndOrderDish(t)
+          await this.findAndOrderDish(t)
           return
         }
       } else {
@@ -1043,6 +1038,19 @@ export default {
     debounce: debounce((f) => {
       f()
     }, 300),
+    getCodeAndCountFromInput (input = '') {
+      let [code, count] = ['', 1]
+      if (input.includes('*')) {
+        [code, count] = input.split('*')
+        if (GlobalConfig.numberFirst) {
+          [code, count] = [count, code]
+        }
+        count = parseInt(count)
+      } else {
+        code = input
+      }
+      return [code, count]
+    },
     filterDish () {
       let list = this.dishes
       if (!this.displayInput) {
@@ -1057,7 +1065,7 @@ export default {
 
       if (this.input) {
         if (this.input !== '' && !this.input.includes('/')) {
-          const [buffer] = this.input.split('*')
+          const [buffer] = this.getCodeAndCountFromInput(this.input)
           return list.filter((item) => {
             return item.code.toLowerCase().startsWith(buffer.toLowerCase())
           }).sort((a, b) => {
