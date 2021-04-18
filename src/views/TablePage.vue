@@ -67,6 +67,8 @@
                       class="white">
                 <dish-card-list
                     ref="cartList"
+                    @current-dish-change="cartCurrentDish=$event"
+                    :reset-current-expand-index="true"
                     :show-number="true"
                     :extra-height="'196px'"
                     :color="'#707070'"
@@ -82,7 +84,8 @@
                         mdi-trash-can
                       </v-icon>
                     </v-btn>
-                    <v-btn :loading="isSendingRequest" @click="orderDish(cartListModel.list,false)" class="mr-1" dark>
+                    <v-btn :loading="isSendingRequest"
+                           @click="orderDish(cartListModel.list,false)" class="mr-1" dark>
                       <v-icon>mdi-printer-off</v-icon>
                     </v-btn>
                     <v-btn :loading="isSendingRequest" color="primary" class="flex-grow-1"
@@ -97,12 +100,12 @@
             <v-card>
               <v-toolbar dense v-if="this.tableDetailInfo.order.consumeTypeStatusId>1">
                 <v-toolbar-items class="flex-grow-1 mx-n3">
-                  <v-btn :disabled="this.cartListModel.count()!==0"
+                  <v-btn :disabled="cartListModel.count()!==0"
                          @click="discountShow">
                     <v-icon>mdi-sale</v-icon>
                     {{ $t('discount') }}
                   </v-btn>
-                  <v-btn :disabled="this.cartListModel.count()!==0"
+                  <v-btn :disabled="cartListModel.count()!==0"
                          color="primary" class="flex-grow-1 ml-1"
                          @click="jumpToPayment()">
                     <v-icon left>mdi-calculator-variant</v-icon>
@@ -169,7 +172,7 @@
           </v-toolbar-items>
         </v-toolbar>
         <v-card width="300px" height="calc(100vh - 48px)" class="d-flex flex-shrink-0 flex-column pa-2">
-          <div>
+          <div v-if="cartListModel.count()===0">
             <table-page-menu
                 :table-id="id"
                 :menu-show.sync="menuShow"/>
@@ -188,6 +191,53 @@
                 @reject="rejectOrder"
                 :consume-type-status-id="consumeTypeStatusId"
                 :raw-address-info="realAddressInfo"/>
+          </div>
+          <div v-else style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
+            <grid-button
+                @click="cartListModel.clear()"
+                icon="mdi-delete-sweep"
+                text="Leeren"
+                color="error"
+            ></grid-button>
+            <grid-button
+                @click="orderDish(cartListModel.list,false)"
+                :loading="isSendingRequest"
+                icon="mdi-printer-off"
+                text="Bestellen"
+                color="#000"
+            ></grid-button>
+            <grid-button
+                :loading="isSendingRequest"
+                icon="mdi-printer"
+                text="Drucken"
+                @click="orderDish(cartListModel.list)"
+            ></grid-button>
+            <template v-if="cartCurrentDish">
+              <grid-button
+                  @click="cartCurrentDish.change(-1)"
+                  icon="mdi-minus"
+                  color="error"
+              ></grid-button>
+              <grid-button
+                  :disabled="cartCurrentDish.haveMod<1"
+                  @click="cartCurrentDish.edit();cartCurrentDish.change(-1)"
+                  icon="mdi-tune"
+                  color="warning"
+                  text="ohne/mit"
+              ></grid-button>
+              <grid-button
+                  @click="cartCurrentDish.change(1)"
+                  icon="mdi-plus"
+                  color="success"
+              ></grid-button>
+              <grid-button
+                  @click="editNote"
+                  icon="mdi-notebook-edit"
+                  color="#666666"
+                  text="Notiz"
+              ></grid-button>
+            </template>
+
           </div>
           <v-spacer></v-spacer>
           <div>
@@ -351,6 +401,7 @@ import Keyboard from '@/components/Keyboard'
 import DiscountDialog from '@/components/fragments/DiscountDialog'
 import AddressDisplay from '@/components/AddressDisplay'
 import { acceptOrder } from '@/api/api'
+import GridButton from '@/components/GridButton'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -376,6 +427,7 @@ export default {
     dragscroll
   },
   components: {
+    GridButton,
     AddressDisplay,
     DiscountDialog,
     Keyboard,
@@ -453,6 +505,7 @@ export default {
         tableBasicInfo: { name: '' }
       },
       currentDish: defaultCurrentDish,
+      cartCurrentDish: null,
       password: ''
     }
   },
@@ -460,6 +513,15 @@ export default {
     clearAllTimer()
   },
   methods: {
+    async editNote () {
+      const note = await Swal.fire({
+        title: 'Note',
+        input: 'text',
+        inputValue: this.cartCurrentDish.note
+      })
+      this.$set(this.cartCurrentDish, 'note', note.value)
+      // dish.note = note.value
+    },
     async submitRawAddressInfo (addressInfo) {
       await hillo.post('Orders.php?op=updateRawAddressInfo', {
         orderId: this.tableDetailInfo.order.id,
@@ -546,6 +608,12 @@ export default {
       }
       const dish = findDish(code)
       if (dish) {
+        if (parseInt(GlobalConfig.oneStepOrderNumber) !== -1 && count > GlobalConfig.oneStepOrderNumber) {
+          const res = await showConfirmAsyn('wirklich?', count)
+          if (!res?.value) {
+            showTimedAlert('warning', 'abrechen')
+          }
+        }
         dish.name = dish.dishName
         dish.name = dish.name.length > 28
           ? dish.name.substr(0, 28) + '...' : dish.name
@@ -936,10 +1004,9 @@ export default {
         } else if (!this.checkoutShow && !this.modificationShow) {
           if (this.cartListModel.list.length > 0) {
             setTimeout(async () => {
+              let res = { value: 1 }
               if (!GlobalConfig.skipCartConfirm) {
-                const res = await showConfirmAsyn('Warenkorb ---> Bestellen?')
-              } else {
-                const res = { value: 1 }
+                res = await showConfirmAsyn('Warenkorb ---> Bestellen?')
               }
 
               if (res.value) {
