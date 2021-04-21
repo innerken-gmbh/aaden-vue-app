@@ -99,8 +99,8 @@ export async function popAuthorize (type, successCallback, force = false,
     }
   }
   const res = await fastSweetAlertRequest(i18n.t('popAuthTitle'), 'password',
-    'Servant.php'
-    , 'pw', {
+    'Servant.php',
+    'pw', {
       op: type === 'boss' ? 'checkBoss' : 'checkServant',
       tableId: tableId ?? TableId ?? null
     }, 'GET', false)
@@ -114,7 +114,7 @@ export async function popAuthorize (type, successCallback, force = false,
     }
   }
   return res
-} // Request element password,authorized
+}// Request element password,authorized
 
 /** should provide a model list */
 
