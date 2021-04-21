@@ -147,7 +147,7 @@ function reloadTables (arrOfT) {
   return areaData
 }
 
-export async function openOrEnterTable (number, password) {
+export async function openOrEnterTable (number, password, onlyOpenTable = false) {
   try {
     const table = (await hillo.silentGet('Tables.php', { name: number })).content[0]
     if (table.usageStatus === '0') {
@@ -156,7 +156,7 @@ export async function openOrEnterTable (number, password) {
       } else {
         popAuthorize('', (pw) => shouldOpenTable(table.id, pw), false, false, table.id)
       }
-    } else if (table.usageStatus === '1') {
+    } else if (table.usageStatus === '1' && !onlyOpenTable) {
       const enterTable = () => {
         toast(i18n.t('JSIndexCreateTableEnterTable') + number)
         jumpToTable(table.id, table.name)

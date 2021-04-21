@@ -81,7 +81,7 @@ export default {
   methods: {
     tryOpenNormalTable () {
       if (this.selectedTableNumber && this.selectedTableNumber.length > 0) {
-        openOrEnterTable(this.selectedTableNumber, this.servantPassword)
+        openOrEnterTable(this.selectedTableNumber, this.servantPassword, true)
       }
     },
     openTakeawayTable () {
