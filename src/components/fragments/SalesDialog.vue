@@ -55,6 +55,22 @@
                       </v-list>
                     </div>
                   </div>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        x-large
+                        @click="printXBon"
+                        color="warning">
+                      XBon Drücken
+                    </v-btn>
+                    <v-btn
+                        v-if="shouldShowZBon"
+                        x-large
+                        @click="printZBon"
+                        color="primary">
+                      ZBon Drücken
+                    </v-btn>
+                  </v-card-actions>
                 </v-card>
               </v-tab-item>
             </template>
@@ -96,6 +112,22 @@
                       </v-list>
                     </div>
                   </div>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        x-large
+                        @click="printXBon"
+                        color="warning">
+                      XBon Drücken
+                    </v-btn>
+                    <v-btn
+                        v-if="shouldShowZBon"
+                        x-large
+                        @click="printZBon"
+                        color="primary">
+                      ZBon Drücken
+                    </v-btn>
+                  </v-card-actions>
                 </v-card>
               </v-tab-item>
             </template>
@@ -158,24 +190,6 @@
           </v-tab-item>
         </v-tabs-items>
       </v-card-text>
-      <v-card-actions v-if="isBoss">
-        <v-spacer></v-spacer>
-        <v-btn
-            v-if="tabIndex===0"
-            x-large
-            @click="printXBon"
-            color="warning">
-          XBon Drücken
-        </v-btn>
-        <v-btn
-            v-if="shouldShowZBon"
-            x-large
-            @click="printZBon"
-            color="primary">
-          ZBon Drücken
-        </v-btn>
-      </v-card-actions>
-
     </v-card>
   </v-dialog>
 </template>
@@ -246,9 +260,9 @@ export default {
         if (!this.singleZBonDate) {
           return false
         }
-        return dayjs().isAfter(dayjs(this.singleZBonDate, 'YYYY-MM-DD').add(1, 'd').hour(4).minute(0)) && this.tabIndex === 0
+        return dayjs().isAfter(dayjs(this.singleZBonDate, 'YYYY-MM-DD').add(1, 'd').hour(4).minute(0))
       } else {
-        return this.tabIndex === 0
+        return true
       }
     },
 
