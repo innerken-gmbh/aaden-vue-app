@@ -936,12 +936,10 @@ export default {
         } else if (!this.checkoutShow && !this.modificationShow) {
           if (this.cartListModel.list.length > 0) {
             setTimeout(async () => {
+              let res = { value: 1 }
               if (!GlobalConfig.skipCartConfirm) {
-                const res = await showConfirmAsyn('Warenkorb ---> Bestellen?')
-              } else {
-                const res = { value: 1 }
+                res = await showConfirmAsyn('Warenkorb ---> Bestellen?')
               }
-
               if (res.value) {
                 this.orderDish(this.cartListModel.list)
               }

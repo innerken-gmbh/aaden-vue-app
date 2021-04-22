@@ -26,7 +26,12 @@ export function isWeb () {
 }
 
 export function reload () {
-  window.location.reload(true)
+  if (!isWeb()) {
+    const { ipcRenderer } = require('electron')
+    ipcRenderer.send('reload')
+  } else {
+    window.location.reload(true)
+  }
 }
 
 export function useCurrentConfig () {
@@ -45,7 +50,7 @@ export function setDeviceId (id) {
 export function changeLanguage (l) {
   GlobalConfig.updateSettings('lang', l)
   i18n.locale = l.toLowerCase()
-  reload()
+  // reload()
 }
 
 export default GlobalConfig
