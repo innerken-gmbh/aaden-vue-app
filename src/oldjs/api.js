@@ -76,13 +76,15 @@ export function deleteDishes (id, items, initialUI) {
     if (GlobalConfig.useDeleteDishReason) {
       const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopReturnDishInfo'),
         'text',
-        'Complex.php?op=deleteDishes', 'reason', {
+        'Complex.php?op=deleteDishes', 'reason',
+        {
           tableId: id,
           dishes: JSON.stringify(items)
         }, 'POST',
-        true
+        true, null, GlobalConfig.defaultCancelReason
       )
       if (res) {
+        GlobalConfig.updateSettings('defaultCancelReason', res.originalData)
         loadingComplete()
         initialUI()
       }

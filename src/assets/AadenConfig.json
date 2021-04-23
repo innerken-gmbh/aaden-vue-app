@@ -35,5 +35,6 @@
   "simpleVersion": false,
   "numberFirst": false,
   "oneStepOrderNumber": -1,
-  "skipCartConfirm": false
+  "skipCartConfirm": false,
+  "defaultCancelReason": "falsh eingabe"
 }

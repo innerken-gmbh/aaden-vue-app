@@ -379,11 +379,12 @@ export function getData (url, data) {
  * @param {string} method
  * @param {boolean} allowEmpty
  * @param body
+ * @param inputValue
  */
 export async function fastSweetAlertRequest
 (title, input, url, dataName,
   dataObj, method = 'POST', allowEmpty = false,
-  body = null) {
+  body = null, inputValue = '') {
   dataObj[dataName] = ''
   const callBack = function (method, data) {
     const request = method === 'POST' ? hillo.post : hillo.silentGet
@@ -406,6 +407,7 @@ export async function fastSweetAlertRequest
     inputAttributes: {
       autocapitalize: 'off'
     },
+    inputValue: inputValue,
     showCancelButton: true,
     confirmButtonText: i18n.t('confirm'),
     showLoaderOnConfirm: true,
