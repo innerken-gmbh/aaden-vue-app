@@ -8,7 +8,7 @@
               <v-icon>mdi-home</v-icon>
               HOME
             </v-btn>
-            <v-btn tile disabled class="mr-4">
+            <v-btn tile class="mr-4">
               <v-icon left>mdi-account-outline</v-icon>
               {{ tableDetailInfo.servant }}
             </v-btn>
