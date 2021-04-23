@@ -353,13 +353,13 @@
               <grid-button
                   @click="openSalesDialog"
                   icon="mdi-cash"
-                  :text="  $t('销售额') "
+                  :text="$t('销售额')"
                   color="success"
               />
               <grid-button
                   @click="takeawayClicked"
                   icon=" mdi-truck-fast"
-                  :text="  $t('takeaway') "
+                  :text="$t('takeaway')"
               />
               <grid-button
                   v-hide-simple
