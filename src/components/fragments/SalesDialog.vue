@@ -200,6 +200,7 @@ import dayjs from 'dayjs'
 import {
   previewServantSummary,
   previewZBon,
+  previewZBonByTimeSpan,
   printServantSummary,
   printXBon,
   printZBon,
@@ -329,8 +330,8 @@ export default {
         } catch (e) {
           console.log(e)
         }
-        this.billData = await previewZBon(this.lastZBonPrintDate.format('YYYY-MM-DD'),
-          dayjs().format('YYYY-MM-DD'))
+        this.billData = await previewZBonByTimeSpan(this.lastZBonPrintDate.format('YYYY-MM-DD HH:mm:ss'),
+          dayjs().format('YYYY-MM-DD HH:mm:ss'))
       } else {
         if (this.singleZBonDate != null) {
           this.billData = await previewZBon(this.singleZBonDate, this.singleZBonDate)

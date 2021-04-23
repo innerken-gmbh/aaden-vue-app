@@ -6,7 +6,7 @@
     "publish": [
       {
         "provider": "snapStore",
-        "channels": "candidate"
+        "channels": "beta"
       }
     ]
   }

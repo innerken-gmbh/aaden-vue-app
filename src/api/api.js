@@ -5,6 +5,10 @@ export async function previewZBon (startDate, endDate) {
   return (await hillo.get('ZBon.php?op=previewBySpan', { startDate, endDate })).content
 }
 
+export async function previewZBonByTimeSpan (startTime, endTime) {
+  return (await hillo.get('ZBon.php?op=previewByTimeSpan', { startTime, endTime })).content
+}
+
 export async function printXBon (startDate, endDate) {
   return (await hillo.post('Complex.php?op=printSummary', {
     timespan: startDate + ' - ' + endDate
