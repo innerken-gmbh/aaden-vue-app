@@ -43,12 +43,6 @@
         </template>
       </addresses-card>
     </template>
-    <template v-else>
-      <v-btn block @click="openAddressForm" large>
-        <v-icon left>mdi-pencil-box</v-icon>
-        Addresses Hinzufügen
-      </v-btn>
-    </template>
     <address-form @address-submit="submit" :menu-show.sync="showMenu"></address-form>
   </v-card>
 
@@ -64,7 +58,10 @@ export default {
   components: { AddressesCard, AddressForm },
   props: {
     rawAddressInfo: {},
-    consumeTypeStatusId: {}
+    consumeTypeStatusId: {},
+    shouldOpenMenu: {
+      default: false
+    }
   },
   data: function () {
     return {
@@ -77,6 +74,14 @@ export default {
     },
     submit (event) {
       this.$emit('address-change', event)
+    }
+  },
+  watch: {
+    showMenu: function (val) {
+      this.$emit('update:shouldOpenMenu', val)
+    },
+    shouldOpenMenu: async function (val) {
+      this.showMenu = val
     }
   },
   computed: {

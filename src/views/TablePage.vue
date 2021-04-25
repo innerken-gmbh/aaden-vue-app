@@ -172,19 +172,55 @@
           </v-toolbar-items>
         </v-toolbar>
         <v-card width="300px" height="calc(100vh - 48px)" class="d-flex flex-shrink-0 flex-column pa-2">
-          <div v-if="cartListModel.count()===0">
-            <table-page-menu
-                :table-id="id"
-                :menu-show.sync="menuShow"/>
-            <v-btn class="my-1" @click="reprintOrder" large block>
-              <v-icon left>mdi-printer</v-icon>
-              {{ $t('重新打印') }}
-            </v-btn>
-            <v-btn class="my-1" @click="zwitchenBon" color="warning" large block>
-              <v-icon left>mdi-printer-pos</v-icon>
-              ZwischenBon
-            </v-btn>
+          <table-page-menu
+              :table-id="id"
+              :menu-show.sync="menuShow"/>
+          <div v-if="cartListModel.count()===0"
+              >
+            <div  style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px">
+              <grid-button
+                  :loading="isSendingRequest"
+                  icon="mdi-printer"
+                  :text="$t('重新打印')"
+                  @click="reprintOrder"
+              />
+              <grid-button
+                  :loading="isSendingRequest"
+                  icon="mdi-printer-pos"
+                  text="Zwischen"
+                  color="warning"
+                  @click="printZwichenBon"
+              />
+
+              <grid-button
+                  :loading="isSendingRequest"
+                  v-if="consumeTypeId===2"
+                  icon="mdi-map"
+                  text="Addr. "
+                  color="indigo"
+                  @click="addressFormOpen=!addressFormOpen"
+              />
+              <template v-else-if="consumeTypeStatusId<2">
+                <grid-button
+                    :loading="isSendingRequest"
+                    icon="mdi-check"
+                    text="Akzept."
+                    color="success"
+                    @click="acceptOrder"
+                />
+                <grid-button
+                    :loading="isSendingRequest"
+                    icon="mdi-close"
+                    text="Ablehnen"
+                    color="error"
+                    @click="rejectOrder"
+                />
+              </template>
+
+            </div>
+
             <address-display
+                :should-open-menu="addressFormOpen"
                 @address-change="submitRawAddressInfo"
                 v-if="consumeTypeId===2"
                 @accept="acceptOrderWithTime"
@@ -192,6 +228,7 @@
                 :consume-type-status-id="consumeTypeStatusId"
                 :raw-address-info="realAddressInfo"/>
           </div>
+
           <div v-else style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
             <grid-button
                 @click="cartListModel.clear()"
@@ -451,6 +488,7 @@ export default {
   },
   data: function () {
     return {
+      addressFormOpen: null,
       keyboardLayout: GlobalConfig.topKeyboardKey.split(',').concat(keyboardLayout),
       displayInput: '',
       menuShow: null, // 控制菜单是否显示
