@@ -189,7 +189,7 @@
                   icon="mdi-printer-pos"
                   text="Zwischen"
                   color="warning"
-                  @click="printZwichenBon"
+                  @click="zwitchenBon"
               />
 
               <grid-button
