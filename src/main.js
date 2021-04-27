@@ -8,6 +8,7 @@ import 'material-design-icons/iconfont/material-icons.css'
 import GlobalConfig, { loadConfig } from './oldjs/LocalGlobalSettings'
 import './registerServiceWorker'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
+import { trySocket } from '@/api/socket'
 
 Vue.use(VuetifyGoogleAutocomplete, {
   apiKey: 'AIzaSyB5lIPQQUJjjY6M-BoqUaZhF21oBbYkd9E',
@@ -55,7 +56,7 @@ Vue.directive('code-hide', {
 async function initial () {
   await loadConfig()
   i18n.locale = GlobalConfig.lang.toLowerCase()
-
+  trySocket()
   new Vue({
     router,
     store,
