@@ -304,7 +304,7 @@ export default {
       if (parseInt(type) === 4) {
         const res = await fastSweetAlertRequest(
           'Bitte Gutschein Id Gaben.',
-          'text', 'MemberCard.php?op=check', 'id',
+          'password', 'MemberCard.php?op=check', 'id',
           { amount: 0 }, 'GET')
         if (res.content) {
           const leftAmount = parseFloat(res.content.leftAmount)

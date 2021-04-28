@@ -426,7 +426,6 @@
 import { version } from '../../package.json'
 import {
   blockReady,
-  fastSweetAlertRequest,
   findConsumeTypeById,
   getAllDishes,
   getConsumeTypeList,
@@ -624,14 +623,9 @@ export default {
       this.servantPassword = password
     },
     async memberCardCLicked () {
-      const res = await fastSweetAlertRequest(
-        'Bitte VIP Karte Id Gaben.',
-        'text', 'MemberCard.php?op=check', 'id',
-        { amount: 0 }, 'GET')
-      if (res.content) {
-        this.memberCardInfo = res.content
+      popAuthorize('boss', () => {
         this.memberCardDialogShow = true
-      }
+      })
     },
     setCurrentTable (table) {
       this.currentTable = table
@@ -742,6 +736,9 @@ export default {
     },
     async insDecode (t) {
       if (this.currentKeyboardFunction === keyboardFunctions.OpenTable) {
+        if (this.anyMenuOpen()) {
+          return
+        }
         if (t !== '') {
           const escapeStr = '--//'
           if (t.startsWith(escapeStr)) {
@@ -799,11 +796,11 @@ export default {
         Base: GlobalConfig.Base
       })
     },
+    anyMenuOpen () {
+      return Swal.isVisible() || this.menu || this.memberCardDialogShow
+    },
     autoGetFocus () {
-      if (Swal.isVisible()) {
-        return
-      }
-      if (this.menu) {
+      if (this.anyMenuOpen()) {
         return
       }
       if (this.$refs.ins !== document.activeElement) {

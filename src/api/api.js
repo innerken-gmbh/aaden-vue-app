@@ -44,3 +44,15 @@ export async function previewServantSummary (pw, start, end) {
 export async function printServantSummary (pw, start, end) {
   return (await hillo.get('Servant.php?op=printSummaryBonByPassword', { pw, start, end })).content
 }
+
+export async function loadMemberCard () {
+  return (await hillo.get('MemberCard.php?op=showAllMemberCardSaleRecord')).content
+}
+
+export async function checkOneMemberCard (longId) {
+  return (await hillo.get('MemberCard.php?op=check', { id: longId, amount: 0 })).content
+}
+
+export async function renameMemberCard (oldName, newName) {
+  return (await hillo.get('MemberCard.php?op=renameMemberCard', { old: oldName, new: newName }))
+}
