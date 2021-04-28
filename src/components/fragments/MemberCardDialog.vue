@@ -10,16 +10,15 @@
           <v-list-item>
             <v-text-field @keydown.enter="trySelectCurrentCard" clearable
                           hide-details
-                          type="password"
                           v-model="cardSearch" autofocus
-                          label="CardNr.:"></v-text-field>
+                          label="Suchen"></v-text-field>
           </v-list-item>
           <v-list subheader max-height="300px" style="overflow: scroll">
             <v-subheader>Liste</v-subheader>
             <template v-for="(card) in filteredMemberCardList">
               <v-list-item @click="selectedCardId=card.longId" :key="card.id">
                 <v-list-item-content>
-                  <v-list-item-title>{{ "****"+card.longId.substr(4) }}
+                  <v-list-item-title>{{card.note}}/{{ "****"+card.longId.substr(4) }}
                   </v-list-item-title>
                   <v-list-item-subtitle>Zeit: {{ card.createdAt }}</v-list-item-subtitle>
                   <v-list-item-subtitle>Amount.: {{ card.leftAmount|priceDisplay }}/{{ card.totalAmount|priceDisplay }}
@@ -40,11 +39,11 @@
             </v-card-subtitle>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn text @click="renameMemberCard(selectedCard.longId)">更换卡片</v-btn>
+              <v-btn text @click="renameMemberCard(selectedCard.longId)">Karte ändern</v-btn>
             </v-card-actions>
           </v-card>
           <v-list subheader v-if="selectedCard&&selectedCard.record&&selectedCard&&selectedCard.record.length>0">
-            <v-subheader>消费记录</v-subheader>
+            <v-subheader>Records</v-subheader>
             <template v-for="record in selectedCard.record">
               <v-list-item :key="record.id">
                 <v-list-item-content>
@@ -134,7 +133,7 @@ export default {
   computed: {
     filteredMemberCardList () {
       if (this.cardSearch) {
-        return this.memberCardList.filter(c => c.longId.toLowerCase().includes(this.cardSearch.toLowerCase()))
+        return this.memberCardList.filter(c => c.longId.toLowerCase().includes(this.cardSearch.toLowerCase()) || c.note.toLowerCase().includes(this.cardSearch.toLowerCase()))
       } else {
         return this.memberCardList
       }

@@ -176,8 +176,8 @@
               :table-id="id"
               :menu-show.sync="menuShow"/>
           <div v-if="cartListModel.count()===0"
-              >
-            <div  style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px">
+          >
+            <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px">
               <grid-button
                   :loading="isSendingRequest"
                   icon="mdi-printer"
@@ -350,7 +350,6 @@ left: 304px"
             <v-text-field label="Preis" autofocus v-model="currentDish.currentPrice"/>
             <v-text-field label="Name" v-model="currentDish.currentName"/>
           </v-card-text>
-
           <v-card-actions>
             <v-spacer/>
             <v-btn @click="addExtraDish">OK</v-btn>
@@ -666,8 +665,7 @@ export default {
           return
         }
         if (dish.code.toLowerCase().includes('ea')) {
-          this.currentDish = Object.assign({}, defaultCurrentDish, dish)
-          this.extraDishShow = true
+          this.showExtraDish(dish)
           blockReady()
           return
         }
@@ -676,6 +674,10 @@ export default {
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
       }
       blockReady()
+    },
+    showExtraDish (dish) {
+      this.currentDish = Object.assign({}, defaultCurrentDish, dish)
+      this.extraDishShow = true
     },
     showModification (dish, count, mod = null) {
       this.dish = dish
@@ -1013,6 +1015,13 @@ export default {
         return
       }
       if (t !== '' && t !== null) {
+        if (t?.length === 8) {
+          const VIPCardDish = findDish(GlobalConfig.VIPCardCode)
+          this.showExtraDish(VIPCardDish)
+          this.currentDish.currentName = t
+          blockReady()
+          return
+        }
         if (t.startsWith('-') && t.length >= 2) {
           this.removeDishWithCode(t.substring(1))
           blockReady()
