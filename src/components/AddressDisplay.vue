@@ -43,7 +43,10 @@
         </template>
       </addresses-card>
     </template>
-    <address-form @address-submit="submit" :menu-show.sync="showMenu"></address-form>
+    <address-form
+        @address-submit="submit"
+        :menu-show.sync="showMenu">
+    </address-form>
   </v-card>
 
 </template>

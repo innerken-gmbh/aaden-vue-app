@@ -88,16 +88,27 @@ export function setGlobalTableId (id) {
 
 export async function popAuthorize (type, successCallback, force = false,
   failedCallback, tableId = null) {
-  if (!force) {
-    if (!GlobalConfig.usePassword && type !== 'boss') {
-      successCallback(GlobalConfig.defaultPassword)
-      return
-    }
-    if (!GlobalConfig.UseBossPassword && type === 'boss') {
-      successCallback()
-      return
+  const ok = (r) => {
+    if (successCallback) {
+      successCallback(r?.originalData)
     }
   }
+
+  if (!force) {
+    if (!GlobalConfig.usePassword && type !== 'boss') {
+      ok(GlobalConfig.defaultPassword)
+      return {
+        originalData: GlobalConfig.defaultPassword
+      }
+    }
+    if (!GlobalConfig.UseBossPassword && type === 'boss') {
+      ok()
+      return {
+        originalData: GlobalConfig.defaultPassword
+      }
+    }
+  }
+
   const res = await fastSweetAlertRequest(i18n.t('popAuthTitle'), 'password',
     'Servant.php',
     'pw', {
@@ -105,16 +116,15 @@ export async function popAuthorize (type, successCallback, force = false,
       tableId: tableId ?? TableId ?? null
     }, 'GET', false)
   if (res) {
-    if (successCallback) {
-      successCallback(res?.originalData)
-    }
+    ok(res)
   } else {
     if (failedCallback) {
       failedCallback()
     }
   }
+
   return res
-}// Request element password,authorized
+}
 
 /** should provide a model list */
 
@@ -304,17 +314,16 @@ export function informOpenJpTable (password, number, personCount, childCount, ad
     })
 }
 
-export function requestOutTable (pw = null) {
-  hillo.post('Complex.php?op=openTakeawayTable', {
+export async function requestOutTable (pw = null) {
+  const res = await hillo.post('Complex.php?op=openTakeawayTable', {
     pw: pw ?? Config.defaultPassword,
     personCount: 0
-  }).then(res => {
-    if (goodRequest(res)) {
-      jumpToTable(res.content.tableId, res.content.tableName)
-    } else {
-      logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + res.info)
-    }
   })
+  if (goodRequest(res)) {
+    jumpToTable(res.content.tableId, res.content.tableName)
+  } else {
+    logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + res.info)
+  }
 }
 
 export function showConfirmAsyn (str, title = i18n.t('areYouSure')) {

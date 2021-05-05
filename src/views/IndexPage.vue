@@ -256,12 +256,11 @@
                             <span class="tableBold">{{ table.createTimestamp }}</span>
                           </div>
                           <div class="tableIconRow justify-end">
-                                                        <span
-                                                            :style="{
-                                                          color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}"
-                                                            class="tableBold">{{
-                                                            findConsumeTypeById(table.consumeType)
-                                                          }}</span>
+                            <span
+                                :style="{color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}"
+                                class="tableBold">{{
+                                findConsumeTypeById(table.consumeType)
+                              }}</span>
                           </div>
                         </div>
                         <v-card v-if="Config.gridSize>=116" elevation="0"
@@ -349,17 +348,20 @@
                   icon="mdi-home-analytics"
                   text="HOME"
                   color="warning"
+                  :loading="loading"
               />
               <grid-button
                   @click="openSalesDialog"
                   icon="mdi-cash"
                   :text="$t('销售额')"
                   color="success"
+                  :loading="loading"
               />
               <grid-button
                   @click="takeawayClicked"
                   icon=" mdi-truck-fast"
                   :text="$t('takeaway')"
+                  :loading="loading"
               />
               <grid-button
                   v-hide-simple
@@ -367,6 +369,7 @@
                   @click="memberCardCLicked"
                   icon=" mdi-smart-card"
                   :text="  $t('VIP') "
+                  :loading="loading"
               />
               <grid-button
                   v-hide-simple
@@ -374,6 +377,7 @@
                   @click="fetchOrder"
                   icon="mdi-refresh"
                   text="Lieferung"
+                  :loading="loading"
               />
             </div>
             <v-spacer></v-spacer>
@@ -540,7 +544,8 @@ export default {
         longId: '',
         id: ''
       },
-      useOrderView: GlobalConfig.orderView
+      useOrderView: GlobalConfig.orderView,
+      loading: false
     }
   },
   watch: {
@@ -595,6 +600,13 @@ export default {
 
   },
   methods: {
+    setLoading () {
+      this.loading = true
+      setTimeout(this.releaseLoading, 5000)
+    },
+    releaseLoading () {
+      this.loading = false
+    },
     openSalesDialog () {
       popAuthorize('',
         (pw) => {
@@ -651,8 +663,17 @@ export default {
       }
       this.input = this.displayInput
     },
-    takeawayClicked () {
-      popAuthorize('', requestOutTable)
+    async takeawayClicked () {
+      this.setLoading()
+      const res = await popAuthorize('', null)
+      try {
+        if (res) {
+          await requestOutTable(res?.originalData)
+        }
+      } catch (e) {
+      } finally {
+        this.releaseLoading()
+      }
     },
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
