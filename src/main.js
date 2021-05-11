@@ -4,14 +4,13 @@ import router from './router'
 import store from './store'
 import i18n from './i18n'
 import vuetify from './plugins/vuetify'
-import 'material-design-icons/iconfont/material-icons.css'
 import GlobalConfig, { loadConfig } from './oldjs/LocalGlobalSettings'
 import './registerServiceWorker'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
 
 Vue.use(VuetifyGoogleAutocomplete, {
   apiKey: 'AIzaSyB5lIPQQUJjjY6M-BoqUaZhF21oBbYkd9E',
-  language: 'de'// Can also be an object. E.g, for Google Maps Premium API, pass `{ client: <YOUR-CLIENT-ID> }`
+  language: 'de'
 })
 
 Vue.config.productionTip = false
@@ -21,24 +20,10 @@ Vue.filter('priceDisplay',
     return parseFloat(price).toFixed(2).replace('.', ',')
   }
 )
-Vue.directive('show-quick-buy', {
-  bind: function (el) {
-    if (!GlobalConfig.FMCVersion) {
-      el.style.display = 'none'
-    }
-  }
-})
+
 Vue.directive('hide-simple', {
   bind: function (el) {
     if (GlobalConfig.simpleVersion) {
-      el.style.display = 'none'
-    }
-  }
-})
-
-Vue.directive('hide-quick-buy', {
-  bind: function (el) {
-    if (GlobalConfig.FMCVersion) {
       el.style.display = 'none'
     }
   }

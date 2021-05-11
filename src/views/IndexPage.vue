@@ -6,7 +6,7 @@
           {{ $t('appName') }}
         </v-toolbar-title>
         <div class="d-flex ml-2 align-center caption">
-          Version <span v-show-quick-buy>FMC-</span>{{ version }}
+          Version {{ version }}
         </div>
 
       </template>
@@ -102,7 +102,7 @@
                   <v-list-item-content>
                     <v-list-item-title>Aaden App</v-list-item-title>
                     <v-list-item-subtitle>
-                      Version <span v-show-quick-buy>FMC-</span>{{ version }}
+                      Version {{ version }}
                     </v-list-item-subtitle>
                   </v-list-item-content>
 

@@ -13,7 +13,7 @@
           </v-toolbar-title>
           <v-spacer/>
           <div class="d-flex ml-1">
-               <span v-hide-quick-buy class="icon-line">
+               <span class="icon-line">
                   <v-icon color="white">mdi-account-outline</v-icon>
                   <span class="ml-1">{{ tableDetailInfo.personCount }}</span>
               </span>
