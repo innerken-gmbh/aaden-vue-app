@@ -161,6 +161,10 @@ export async function openOrEnterTable (number, password, onlyOpenTable = false)
   try {
     const table = (await hillo.silentGet('Tables.php', { name: number })).content[0]
     if (table.usageStatus === '0') {
+      if (number.toLowerCase().startsWith('w')) {
+        logErrorAndPop('Bitte benutzen sie blaue button zu Lieferung.')
+        return
+      }
       if (password) {
         shouldOpenTable(table.id, password)
       } else {
@@ -404,7 +408,7 @@ export async function fastSweetAlertRequest
       })
       .catch(error => {
         Swal.showValidationMessage(
-          `Request failed: ${error.data.info}`
+          `Request failed: ${error?.data?.info ?? 'Error'}`
         )
       })
   }

@@ -37,5 +37,6 @@
   "oneStepOrderNumber": -1,
   "skipCartConfirm": false,
   "VIPCardCode":"eag",
-  "defaultCancelReason": "falsh eingabe"
+  "defaultCancelReason": "falsh eingabe",
+  "alwaysUseInHouseConsumeType": false
 }

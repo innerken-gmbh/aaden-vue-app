@@ -281,11 +281,11 @@
                           </template>
                           <template v-else>
                             <div class="tableIconRow">
-                              <i class="icon material-icons">person_outline</i>
+                                <v-icon small>mdi-account-outline</v-icon>
                               <div class="text">{{ table.seatCount }}</div>
                             </div>
                             <div class="tableIconRow">
-                              <i class="icon material-icons">child_care</i>
+                                <v-icon small>mdi-human-child</v-icon>
                               <div class="text">{{ table.childCount }}</div>
                             </div>
                           </template>

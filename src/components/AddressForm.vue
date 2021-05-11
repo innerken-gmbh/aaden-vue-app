@@ -283,6 +283,7 @@ export default {
       this.applyAddress(info)
     },
     clearAddressInfo () {
+      this.step = 0
       this.rawAddressInfo = Object.assign({}, DefaultAddressInfo)
       this.rawAddressInfo.date = new Date().toISOString().substr(0, 10)
     },

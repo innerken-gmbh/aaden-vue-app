@@ -15,10 +15,10 @@
         </template>
         <template v-slot:action>
           <v-card-actions>
+            <v-btn icon @click="openAddressForm">
+              <v-icon>mdi-pencil-box</v-icon>
+            </v-btn>
             <template v-if="address.oldTime">
-              <v-btn icon @click="openAddressForm">
-                <v-icon>mdi-pencil-box</v-icon>
-              </v-btn>
               <v-spacer></v-spacer>
               <span>Zeit nach Bestätigung: {{ address.time }}</span>
             </template>

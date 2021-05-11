@@ -52,12 +52,12 @@
                       class="white">
                 <keep-alive>
                   <dish-card-list
-                      :dish-list-model="orderListModel"
-                      :discount-ratio="discountRatio"
-                      :default-expand="cartListModel.list.length===0"
-                      :click-callback="addToSplit"
-                      extra-height="96px"
-                      :title="$t('haveOrderedDish')"
+                    :dish-list-model="orderListModel"
+                    :discount-ratio="discountRatio"
+                    :default-expand="cartListModel.list.length===0"
+                    :click-callback="addToSplit"
+                    extra-height="96px"
+                    :title="$t('haveOrderedDish')"
                   />
                 </keep-alive>
               </v-card>
@@ -66,17 +66,17 @@
                       v-show="cartListModel.list.length>0"
                       class="white">
                 <dish-card-list
-                    ref="cartList"
-                    @current-dish-change="cartCurrentDish=$event"
-                    :reset-current-expand-index="true"
-                    :show-number="true"
-                    :extra-height="'196px'"
-                    :color="'#707070'"
-                    :dish-list-model="cartListModel"
-                    :show-edit="true"
-                    :click-callback="removeDish"
-                    :title="$t('新增菜品')"
-                    :default-expand="true"/>
+                  ref="cartList"
+                  @current-dish-change="cartCurrentDish=$event"
+                  :reset-current-expand-index="true"
+                  :show-number="true"
+                  :extra-height="'196px'"
+                  :color="'#707070'"
+                  :dish-list-model="cartListModel"
+                  :show-edit="true"
+                  :click-callback="removeDish"
+                  :title="$t('新增菜品')"
+                  :default-expand="true"/>
                 <v-toolbar dense>
                   <v-toolbar-items class="flex-grow-1 mx-n3">
                     <v-btn @click="cartListModel.clear()" class="mr-1" color="error">
@@ -137,19 +137,19 @@
               <div class="dishCardList">
                 <template v-for="dish of filteredDish">
                   <dish-block
-                      v-ripple
-                      :key="'dish'+dish.code"
-                      :code="dish.code"
-                      :count="dish.count"
-                      :display-color="dish.displayColor"
-                      :dish-name="dish.dishName"
-                      :foreground="dish.foreground"
-                      :font-size="Config.dishBlockFontSize"
-                      :have-mod="dish.haveMod"
-                      :is-free="dish.isFree"
-                      :price="dish.price"
-                      @click-tune="showModification(dish,1)"
-                      @click="orderOneDish(dish.code)"/>
+                    v-ripple
+                    :key="'dish'+dish.code"
+                    :code="dish.code"
+                    :count="dish.count"
+                    :display-color="dish.displayColor"
+                    :dish-name="dish.dishName"
+                    :foreground="dish.foreground"
+                    :font-size="Config.dishBlockFontSize"
+                    :have-mod="dish.haveMod"
+                    :is-free="dish.isFree"
+                    :price="dish.price"
+                    @click-tune="showModification(dish,1)"
+                    @click="orderOneDish(dish.code)"/>
                 </template>
               </div>
             </v-card>
@@ -173,105 +173,105 @@
         </v-toolbar>
         <v-card width="300px" height="calc(100vh - 48px)" class="d-flex flex-shrink-0 flex-column pa-2">
           <table-page-menu
-              :table-id="id"
-              :menu-show.sync="menuShow"/>
+            :table-id="id"
+            :menu-show.sync="menuShow"/>
           <div v-if="cartListModel.count()===0"
           >
             <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px">
               <grid-button
-                  :loading="isSendingRequest"
-                  icon="mdi-printer"
-                  :text="$t('重新打印')"
-                  @click="reprintOrder"
+                :loading="isSendingRequest"
+                icon="mdi-printer"
+                :text="$t('重新打印')"
+                @click="reprintOrder"
               />
               <grid-button
-                  :loading="isSendingRequest"
-                  icon="mdi-printer-pos"
-                  text="Zwischen"
-                  color="warning"
-                  @click="zwitchenBon"
+                :loading="isSendingRequest"
+                icon="mdi-printer-pos"
+                text="Zwischen"
+                color="warning"
+                @click="zwitchenBon"
               />
 
               <grid-button
-                  :loading="isSendingRequest"
-                  v-if="consumeTypeId===2"
-                  icon="mdi-map"
-                  text="Addr. "
-                  color="indigo"
-                  @click="addressFormOpen=!addressFormOpen"
+                :loading="isSendingRequest"
+                v-if="consumeTypeId===2"
+                icon="mdi-map"
+                text="Addr. "
+                color="indigo"
+                @click="addressFormOpen=true"
               />
               <template v-else-if="consumeTypeStatusId<2">
                 <grid-button
-                    :loading="isSendingRequest"
-                    icon="mdi-check"
-                    text="Akzept."
-                    color="success"
-                    @click="acceptOrder"
+                  :loading="isSendingRequest"
+                  icon="mdi-check"
+                  text="Akzept."
+                  color="success"
+                  @click="acceptOrder"
                 />
                 <grid-button
-                    :loading="isSendingRequest"
-                    icon="mdi-close"
-                    text="Ablehnen"
-                    color="error"
-                    @click="rejectOrder"
+                  :loading="isSendingRequest"
+                  icon="mdi-close"
+                  text="Ablehnen"
+                  color="error"
+                  @click="rejectOrder"
                 />
               </template>
 
             </div>
 
             <address-display
-                :should-open-menu="addressFormOpen"
-                @address-change="submitRawAddressInfo"
-                v-if="consumeTypeId===2"
-                @accept="acceptOrderWithTime"
-                @reject="rejectOrder"
-                :consume-type-status-id="consumeTypeStatusId"
-                :raw-address-info="realAddressInfo"/>
+              :should-open-menu.sync="addressFormOpen"
+              @address-change="submitRawAddressInfo"
+              v-if="consumeTypeId===2"
+              @accept="acceptOrderWithTime"
+              @reject="rejectOrder"
+              :consume-type-status-id="consumeTypeStatusId"
+              :raw-address-info="realAddressInfo"/>
           </div>
 
           <div v-else style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
             <grid-button
-                @click="cartListModel.clear()"
-                icon="mdi-delete-sweep"
-                text="Leeren"
-                color="error"
+              @click="cartListModel.clear()"
+              icon="mdi-delete-sweep"
+              text="Leeren"
+              color="error"
             ></grid-button>
             <grid-button
-                @click="orderDish(cartListModel.list,false)"
-                :loading="isSendingRequest"
-                icon="mdi-printer-off"
-                text="Bestellen"
-                color="#000"
+              @click="orderDish(cartListModel.list,false)"
+              :loading="isSendingRequest"
+              icon="mdi-printer-off"
+              text="Bestellen"
+              color="#000"
             ></grid-button>
             <grid-button
-                :loading="isSendingRequest"
-                icon="mdi-printer"
-                text="Drucken"
-                @click="orderDish(cartListModel.list)"
+              :loading="isSendingRequest"
+              icon="mdi-printer"
+              text="Drucken"
+              @click="orderDish(cartListModel.list)"
             ></grid-button>
             <template v-if="cartCurrentDish">
               <grid-button
-                  @click="cartCurrentDish.change(-1)"
-                  icon="mdi-minus"
-                  color="error"
+                @click="cartCurrentDish.change(-1)"
+                icon="mdi-minus"
+                color="error"
               ></grid-button>
               <grid-button
-                  :disabled="cartCurrentDish.haveMod<1"
-                  @click="cartCurrentDish.edit();cartCurrentDish.change(-1)"
-                  icon="mdi-tune"
-                  color="warning"
-                  text="ohne/mit"
+                :disabled="cartCurrentDish.haveMod<1"
+                @click="cartCurrentDish.edit();cartCurrentDish.change(-1)"
+                icon="mdi-tune"
+                color="warning"
+                text="ohne/mit"
               ></grid-button>
               <grid-button
-                  @click="cartCurrentDish.change(1)"
-                  icon="mdi-plus"
-                  color="success"
+                @click="cartCurrentDish.change(1)"
+                icon="mdi-plus"
+                color="success"
               ></grid-button>
               <grid-button
-                  @click="editNote"
-                  icon="mdi-notebook-edit"
-                  color="#666666"
-                  text="Notiz"
+                @click="editNote"
+                icon="mdi-notebook-edit"
+                color="#666666"
+                text="Notiz"
               ></grid-button>
             </template>
 
@@ -279,13 +279,13 @@
           <v-spacer></v-spacer>
           <div>
             <v-text-field
-                class="ma-2"
-                hide-details
-                clearable
-                style="font-size: 36px"
-                ref="ins"
-                @input="input=displayInput"
-                v-model="displayInput"
+              class="ma-2"
+              hide-details
+              clearable
+              style="font-size: 36px"
+              ref="ins"
+              @input="input=displayInput"
+              v-model="displayInput"
             />
             <keyboard @input="numberInput"
                       :keys="keyboardLayout"></keyboard>
@@ -333,13 +333,13 @@ left: 304px"
               </v-btn>
             </div>
             <dish-card-list
-                class="flex-grow-1"
-                extra-height="48px"
-                :discount-ratio="discountRatio"
-                :default-expand="true"
-                :dish-list-model="splitOrderListModel"
-                :click-callback="removeFromSplitOrder"
-                :title="$t('operation')"/>
+              class="flex-grow-1"
+              extra-height="48px"
+              :discount-ratio="discountRatio"
+              :default-expand="true"
+              :dish-list-model="splitOrderListModel"
+              :click-callback="removeFromSplitOrder"
+              :title="$t('operation')"/>
           </div>
         </div>
       </template>
@@ -358,30 +358,30 @@ left: 304px"
         </v-card>
       </v-dialog>
       <discount-dialog
-          :discount-model-show="discountModelShow"
-          :id="id"
-          :initial-u-i="initialUI"
-          ref="discount"
-          @visibility-changed="(val)=>this.discountModelShow=val"
+        :discount-model-show="discountModelShow"
+        :id="id"
+        :initial-u-i="initialUI"
+        ref="discount"
+        @visibility-changed="(val)=>this.discountModelShow=val"
       />
       <ModificationDrawer
-          ref="modification"
-          @visibility-changed="changeModification"
-          :modification-show="modificationShow"
-          :dish="dish"
-          :old-mod="oldMod"
-          :mod="submitModification"
-          :password="password"
+        ref="modification"
+        @visibility-changed="changeModification"
+        :modification-show="modificationShow"
+        :dish="dish"
+        :old-mod="oldMod"
+        :mod="submitModification"
+        :password="password"
       />
       <check-out-drawer
-          @visibility-changed="changeCheckOut"
-          :order="checkOutModel"
-          :check-out-type="checkOutType"
-          :table-id="id"
-          :password="password"
-          :discount-str="discountStr"
-          :discount-ratio="discountRatio"
-          :visible="checkoutShow"/>
+        @visibility-changed="changeCheckOut"
+        :order="checkOutModel"
+        :check-out-type="checkOutType"
+        :table-id="id"
+        :password="password"
+        :discount-str="discountStr"
+        :discount-ratio="discountRatio"
+        :visible="checkoutShow"/>
     </template>
   </v-app>
 </template>
@@ -449,12 +449,12 @@ const defaultCurrentDish = {
 }
 const keyboardLayout =
 
-    [
-      '7', '8', '9', 'mdi-autorenew',
-      '4', '5', '6', 'A',
-      '1', '2', '3', 'M',
-      '.', '0', 'mdi-close', 'OK'
-    ]
+  [
+    '7', '8', '9', 'mdi-autorenew',
+    '4', '5', '6', 'A',
+    '1', '2', '3', 'M',
+    '.', '0', 'mdi-close', 'OK'
+  ]
 
 // endregion
 export default {
@@ -669,7 +669,7 @@ export default {
           blockReady()
           return
         }
-        this.addDish(dish, parseInt(count))
+        await this.addDish(dish, parseInt(count))
       } else {
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
       }
@@ -682,9 +682,7 @@ export default {
     showModification (dish, count, mod = null) {
       this.dish = dish
       this.count = count
-      if (!GlobalConfig.FMCVersion) {
-        this.$refs.ins.blur()
-      }
+      this.$refs.ins.blur()
       if (mod) {
         this.oldMod = mod
       } else {
@@ -710,8 +708,10 @@ export default {
       }
     },
     async getCategory () {
-      if (this.categories.length === 0 || !GlobalConfig.FMCVersion) {
-        const res = await hillo.get('Category.php?op=withTableType', {
+      if (this.categories.length === 0) {
+        const res = await hillo.get('Category.php?op=' + (GlobalConfig.alwaysUseInHouseConsumeType
+          ? 'withConsumeType' : 'withTableType'), {
+          consumeTypeId: 1,
           tableId: this.id,
           lang: GlobalConfig.lang
         })
@@ -809,7 +809,7 @@ export default {
       if (!GlobalConfig.useCart) {
         const tmp = IKUtils.deepCopy(dish)
         tmp.count = 1
-        this.orderDish([tmp])
+        await this.orderDish([tmp])
         return
       }
       setTimeout(() => {
@@ -911,7 +911,7 @@ export default {
     },
     autoGetFocus () {
       if (this.modificationShow || this.checkoutShow || this.discountModelShow ||
-          this.menuShow || this.extraDishShow) {
+        this.menuShow || this.extraDishShow) {
         return
       }
       if (Swal.isVisible()) {
@@ -1085,7 +1085,6 @@ export default {
       try {
         this.isSendingRequest = true
         order.forEach(o => {
-          console.log(o)
           o.guestNumber = 1
         })
         await hillo.post('Complex.php?op=addDishesToTable', {
@@ -1093,10 +1092,9 @@ export default {
           tableId: this.id,
           printingKitchenBon: print ? 1 : 0
         })
-
-        printNow()
         this.cartListModel.clear()
         this.initialUI()
+        printNow()
         if (GlobalConfig.jumpToHomeWhenOrder) {
           this.goHome()
         }
