@@ -1240,9 +1240,7 @@ export default {
   watch: {
     filteredC: function () {
       if (this.filteredC?.length > 0) {
-        console.log('reset acitveCategryId', this.activeCategoryId)
         this.activeCategoryId = this.filteredC[0].id
-        console.log('reset to ', this.activeCategoryId)
       }
     },
     activeDCT: function () {
