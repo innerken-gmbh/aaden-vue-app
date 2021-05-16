@@ -122,7 +122,7 @@
                     style="width: calc(100% - 300px)"
                     class="dragscroll dishCardListContainer ml-1 flex-grow-1">
               <v-sheet class="px-2">
-                <v-item-group mandatory v-model="activeCategory" class="d-flex flex-wrap align-start">
+                <v-item-group mandatory class="d-flex flex-wrap align-start">
                   <template v-for="category of filteredC">
                     <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
                       <div @click="changeCategory(category.id,toggle)" class="menu-item"
@@ -498,7 +498,7 @@ export default {
       isSendingRequest: false,
       oldMod: null,
       breakCount: 0,
-
+      activeCategoryId: null,
       checkOutType: 'checkOut',
       checkOutModel: {
         total: 0,
@@ -516,7 +516,6 @@ export default {
       dct: [],
       dishes: [],
       categories: [],
-      activeCategory: null,
       activeDCT: 0,
       filteredDish: [{
         name: '',
@@ -590,6 +589,7 @@ export default {
     },
 
     changeCategory (id, toggle) {
+      this.activeCategoryId = id
       if (toggle) {
         toggle()
       }
@@ -1139,12 +1139,14 @@ export default {
 
       this.selectUser = null
       this.getCategory()
-
-      this.activeDCT = 0
-      this.updateFilteredDish()
+      this.updateActiveDCT(0)
       setGlobalTableId(this.id)
       blockReady()
       this.initialUI()
+    },
+    updateActiveDCT (index) {
+      this.activeDCT = null
+      this.activeDCT = index
     },
     updateFilteredDish () {
       this.debounce(() => {
@@ -1233,22 +1235,24 @@ export default {
       return this.categories.filter((item) => {
         return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
       })
-    },
-    activeCategoryId () {
-      return this.filteredC[this.activeCategory]?.id ?? this.filteredC[0].id
     }
-
   },
   watch: {
+    filteredC: function () {
+      if (this.filteredC?.length > 0) {
+        console.log('reset acitveCategryId', this.activeCategoryId)
+        this.activeCategoryId = this.filteredC[0].id
+        console.log('reset to ', this.activeCategoryId)
+      }
+    },
     activeDCT: function () {
-      this.activeCategory = 0
       this.updateFilteredDish()
     },
     dishes: function () {
       this.updateFilteredDish()
     },
-    activeCategory: function () {
-      this.filteredDish = this.filterDish()
+    activeCategoryId: function (val) {
+      this.updateFilteredDish()
     },
     input: function () {
       this.updateFilteredDish()
