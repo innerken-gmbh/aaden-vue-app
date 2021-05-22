@@ -349,9 +349,10 @@ export default {
     async singleZBonDate () {
       await this.loadData()
     },
-    realShow (val) {
+    async realShow (val) {
       if (val) {
         this.tabIndex = 0
+        await this.loadData()
       }
     }
   },

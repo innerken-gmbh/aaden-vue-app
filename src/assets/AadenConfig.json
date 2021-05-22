@@ -36,7 +36,8 @@
   "numberFirst": false,
   "oneStepOrderNumber": -1,
   "skipCartConfirm": false,
-  "VIPCardCode":"eag",
+  "VIPCardCode": "eag",
   "defaultCancelReason": "falsh eingabe",
-  "alwaysUseInHouseConsumeType": false
+  "alwaysUseInHouseConsumeType": false,
+  "printZBonAlert": true
 }
