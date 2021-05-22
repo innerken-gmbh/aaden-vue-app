@@ -323,13 +323,21 @@ export default {
       this.tabIndex = 0
     },
     async loadData () {
-      // 抑制老版本，以后一定要删掉
       if (!GlobalConfig.UseDailyZbon) {
         try {
           this.lastZBonPrintDate = dayjs((await ZBonList())?.[0]?.createTimeStamp ?? '1970-01-01 00:00:00')
         } catch (e) {
           console.log(e)
         }
+
+        const hoursBefore = dayjs().subtract(12, 'hour')
+
+        if (this.lastZBonPrintDate.isBefore(hoursBefore)) {
+          IKUtils.showConfirm('Bitte beachten Sie, dass Sie ZBon seit 12 Stunden nicht mehr gedruckt haben', 'Jetzt drucken?', () => {
+            this.printZBon()
+          })
+        }
+
         this.billData = await previewZBonByTimeSpan(this.lastZBonPrintDate.format('YYYY-MM-DD HH:mm:ss'),
           dayjs().format('YYYY-MM-DD HH:mm:ss'))
       } else {
