@@ -143,7 +143,6 @@
                 />
                 <div class="pa-4" style="width: 360px">
                   <v-list subheader>
-
                     <v-list-item>
                       <v-list-item-icon>
                         <v-icon>mdi-cash-usd</v-icon>
@@ -270,9 +269,11 @@ export default {
     billContent () {
       return this.billData.content
     },
+
     taxGroupInfo () {
       return this.billContent.taxInfos?.filter(t => t.consumeTypeName === 'Total')
     },
+
     realShow: {
       get: function () {
         return this.salesDialogShow
@@ -281,6 +282,7 @@ export default {
         this.$emit('visibility-changed', val)
       }
     },
+
     lastZBonPrintTimeDisplayString () {
       return this.lastZBonPrintDate?.format('DD.MM, YYYY HH:mm:ss')
     }
@@ -288,16 +290,19 @@ export default {
   },
 
   methods: {
+
     async printSummaryBon () {
       IKUtils.showLoading()
       await printServantSummary(this.password, this.singleZBonDate, this.singleZBonDate)
       IKUtils.toast('OK')
     },
+
     async printXBon () {
       IKUtils.showLoading()
       await printXBon(this.singleZBonDate, this.singleZBonDate)
       IKUtils.toast('OK')
     },
+
     async printZBon () {
       IKUtils.showConfirm('Möchten Sie alle Datensätze drucken?', 'Bist du sicher?', async () => {
         IKUtils.showLoading()
@@ -315,13 +320,16 @@ export default {
         await this.loadData()
       })
     },
+
     allowedDates (val) {
       return dayjs(val, 'YYYY-MM-DD').isBefore(dayjs())
     },
+
     initial () {
       this.singleZBonDate = this.todayDate
       this.tabIndex = 0
     },
+
     async loadData () {
       if (!GlobalConfig.UseDailyZbon) {
         try {
@@ -364,6 +372,7 @@ export default {
       }
     }
   },
+
   mounted () {
     this.initial()
   }
