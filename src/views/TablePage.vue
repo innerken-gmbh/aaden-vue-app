@@ -1156,7 +1156,7 @@ export default {
     },
     debounce: debounce((f) => {
       f()
-    }, 300),
+    }, 90),
     getCodeAndCountFromInput (input = '') {
       let [code, count] = ['', 1]
       if (input.includes('*')) {
