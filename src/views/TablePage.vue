@@ -122,7 +122,7 @@
                     style="width: calc(100% - 300px)"
                     class="dragscroll dishCardListContainer ml-1 flex-grow-1">
               <v-sheet class="px-2">
-                <v-item-group mandatory class="d-flex flex-wrap align-start">
+                <v-item-group v-model="categoryIndex" mandatory class="d-flex flex-wrap align-start">
                   <template v-for="category of filteredC">
                     <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
                       <div @click="changeCategory(category.id,toggle)" class="menu-item"
@@ -511,7 +511,7 @@ export default {
 
       dish: {},
       count: 1,
-
+      categoryIndex: null,
       /* 存储菜品和过滤的信息 */
       dct: [],
       dishes: [],
@@ -1142,6 +1142,7 @@ export default {
       this.updateActiveDCT(0)
       setGlobalTableId(this.id)
       blockReady()
+      this.categoryIndex = 0
       this.initialUI()
     },
     updateActiveDCT (index) {
