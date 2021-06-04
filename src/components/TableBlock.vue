@@ -122,7 +122,7 @@ export default {
           if (this.cell[edge]) {
             Object.keys(margin).forEach(vertex => {
               if (vertex.includes(edge)) {
-                margin[vertex] = 0
+                margin[vertex] = -1
               }
             })
           }

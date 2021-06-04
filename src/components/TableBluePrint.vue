@@ -1,7 +1,7 @@
 <template>
   <div v-dragscroll
        class="flex-grow-1 pa-2"
-       style="display: grid;height: calc(100vh - 96px);overflow: hidden;background: center / contain"
+       style="display: grid;height: calc(100vh - 96px);overflow: hidden;background: center / cover"
        :style="{
           'grid-template-columns':'repeat('+currentSection.sizeX+',1fr)',
           'grid-template-row':'repeat('+currentSection.sizeY+',1fr)',

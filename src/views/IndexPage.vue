@@ -23,12 +23,12 @@
             </template>
           </v-btn>
           <v-menu
-              v-if="hasBadPrint"
-              v-model="menu1"
-              offset-y
-              :close-on-content-click="false"
-              :nudge-width="300"
-              :max-height="600"
+            v-if="hasBadPrint"
+            v-model="menu1"
+            offset-y
+            :close-on-content-click="false"
+            :nudge-width="300"
+            :max-height="600"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn v-bind="attrs"
@@ -49,8 +49,8 @@
               </v-toolbar>
               <v-list>
                 <v-list-item
-                    v-for="(key, index) in falsePrinterList"
-                    :key="index"
+                  v-for="(key, index) in falsePrinterList"
+                  :key="index"
                 >
                   <v-list-item-icon>
                     <v-icon>mdi-text-box-remove</v-icon>
@@ -82,10 +82,10 @@
         </v-toolbar-items>
         <v-toolbar-items>
           <v-menu
-              v-model="menu"
-              :close-on-content-click="false"
-              :nudge-width="300"
-              :max-height="600"
+            v-model="menu"
+            :close-on-content-click="false"
+            :nudge-width="300"
+            :max-height="600"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn v-bind="attrs"
@@ -144,7 +144,7 @@
     <v-main style=" width: 100vw;">
       <div class="d-flex flex-nowrap" style="width: 100vw">
         <v-card v-if="Config.useTableBluePrint" class="flex-grow-1 d-flex">
-          <v-card>
+          <v-card style="width: 100%">
             <v-toolbar dense>
               <v-tabs v-model="currentSectionIndex">
                 <template v-for="area of sectionList">
@@ -166,13 +166,13 @@
               Size:{{ currentSection.sizeY * currentSection.sizeX }}
             </v-toolbar>
             <table-blue-print
-                @table-clicked="openOrEnterTable"
-                @need-refresh="refreshTables"
-                :out-side-table-list="tableInCurrentSection"
-                :show-coordinate="false"
-                :editing.sync="isEditing"
-                :current-table.sync="currentTable"
-                :current-section="currentSection"/>
+              @table-clicked="openOrEnterTable"
+              @need-refresh="refreshTables"
+              :out-side-table-list="tableInCurrentSection"
+              :show-coordinate="false"
+              :editing.sync="isEditing"
+              :current-table.sync="currentTable"
+              :current-section="currentSection"/>
           </v-card>
           <v-card style="overflow-y: scroll;width: 280px">
             <div :key="t.id"
@@ -209,10 +209,10 @@
               <v-btn block @click="tryOpenTableUsePassword(servant.password)">Neue Tisch</v-btn>
               <template v-for="table in servant.tables">
                 <v-card
-                    :dark="getColorLightness(Config.activeCardBackground)<128"
-                    :style="{backgroundColor:Config.activeCardBackground}"
-                    @click='openOrEnterTable(table.tableName)'
-                    class="ma-1 pa-2" style="height: fit-content;" :key="table.id">
+                  :dark="getColorLightness(Config.activeCardBackground)<128"
+                  :style="{backgroundColor:Config.activeCardBackground}"
+                  @click='openOrEnterTable(table.tableName)'
+                  class="ma-1 pa-2" style="height: fit-content;" :key="table.id">
                   <div class="d-flex align-center" :style="{color:table.callService==='1'?restaurantInfo.callColor:''}">
                     <span style="font-size: 24px;font-weight: bold">{{ table.tableName }}</span>
                     <v-spacer/>
@@ -257,8 +257,8 @@
                           </div>
                           <div class="tableIconRow justify-end">
                             <span
-                                :style="{color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}"
-                                class="tableBold">{{
+                              :style="{color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}"
+                              class="tableBold">{{
                                 findConsumeTypeById(table.consumeType)
                               }}</span>
                           </div>
@@ -281,11 +281,11 @@
                           </template>
                           <template v-else>
                             <div class="tableIconRow">
-                                <v-icon small>mdi-account-outline</v-icon>
+                              <v-icon small>mdi-account-outline</v-icon>
                               <div class="text">{{ table.seatCount }}</div>
                             </div>
                             <div class="tableIconRow">
-                                <v-icon small>mdi-human-child</v-icon>
+                              <v-icon small>mdi-human-child</v-icon>
                               <div class="text">{{ table.childCount }}</div>
                             </div>
                           </template>
@@ -314,22 +314,22 @@
                   <v-slider hide-details label="Size-X" v-model="currentSection.sizeX" min="8" max="32">
                     <template v-slot:append>
                       <v-text-field
-                          hide-details
-                          v-model="currentSection.sizeX"
-                          class="mt-0 pt-0"
-                          type="number"
-                          style="width: 60px"
+                        hide-details
+                        v-model="currentSection.sizeX"
+                        class="mt-0 pt-0"
+                        type="number"
+                        style="width: 60px"
                       ></v-text-field>
                     </template>
                   </v-slider>
                   <v-slider hide-details label="Size-Y" v-model="currentSection.sizeY" min="8" max="24">
                     <template v-slot:append>
                       <v-text-field
-                          hide-details
-                          v-model="currentSection.sizeY"
-                          class="mt-0 pt-0"
-                          type="number"
-                          style="width: 60px"
+                        hide-details
+                        v-model="currentSection.sizeY"
+                        class="mt-0 pt-0"
+                        type="number"
+                        style="width: 60px"
                       ></v-text-field>
                     </template>
                   </v-slider>
@@ -344,40 +344,40 @@
 
             <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
               <grid-button
-                  @click="popAuthorize('boss',toManage)"
-                  icon="mdi-home-analytics"
-                  text="HOME"
-                  color="warning"
-                  :loading="loading"
+                @click="popAuthorize('boss',toManage)"
+                icon="mdi-home-analytics"
+                text="HOME"
+                color="warning"
+                :loading="loading"
               />
               <grid-button
-                  @click="openSalesDialog"
-                  icon="mdi-cash"
-                  :text="$t('销售额')"
-                  color="success"
-                  :loading="loading"
+                @click="openSalesDialog"
+                icon="mdi-cash"
+                :text="$t('销售额')"
+                color="success"
+                :loading="loading"
               />
               <grid-button
-                  @click="takeawayClicked"
-                  icon=" mdi-truck-fast"
-                  :text="$t('takeaway')"
-                  :loading="loading"
+                @click="takeawayClicked"
+                icon=" mdi-truck-fast"
+                :text="$t('takeaway')"
+                :loading="loading"
               />
               <grid-button
-                  v-hide-simple
-                  color="error"
-                  @click="memberCardCLicked"
-                  icon=" mdi-smart-card"
-                  :text="  $t('VIP') "
-                  :loading="loading"
+                v-hide-simple
+                color="error"
+                @click="memberCardCLicked"
+                icon=" mdi-smart-card"
+                :text="  $t('VIP') "
+                :loading="loading"
               />
               <grid-button
-                  v-hide-simple
-                  color="#000"
-                  @click="fetchOrder"
-                  icon="mdi-refresh"
-                  text="Lieferung"
-                  :loading="loading"
+                v-hide-simple
+                color="#000"
+                @click="fetchOrder"
+                icon="mdi-refresh"
+                text="Lieferung"
+                :loading="loading"
               />
               <grid-button
                 v-hide-simple
@@ -404,13 +404,13 @@
               <v-card class="mt-2">
                 <div class="pa-2">{{ currentServant.name }}:{{ $t(currentKeyboardFunction) }}</div>
                 <v-text-field
-                    class="ma-2"
-                    hide-details
-                    clearable
-                    style="font-size: 36px"
-                    ref="ins"
-                    v-model="buffer"
-                    :autofocus="Config.getFocus"
+                  class="ma-2"
+                  hide-details
+                  clearable
+                  style="font-size: 36px"
+                  ref="ins"
+                  v-model="buffer"
+                  :autofocus="Config.getFocus"
                 />
                 <keyboard @input="numberInput" :keys="keyboardLayout"/>
               </v-card>
@@ -421,15 +421,15 @@
     </v-main>
     <open-table-form :servant-password="servantPassword" :menu-show.sync="showOpenTableDialog"></open-table-form>
     <sales-dialog
-        @visibility-changed="(e)=>salesDialogShow=e"
-        :sales-dialog-show="salesDialogShow"
-        :is-boss="salesDialogServantIsBoss"
-        :password="salesDialogServantPassword"
+      @visibility-changed="(e)=>salesDialogShow=e"
+      :sales-dialog-show="salesDialogShow"
+      :is-boss="salesDialogServantIsBoss"
+      :password="salesDialogServantPassword"
     />
     <member-card-dialog
-        :member-card-dialog-show="memberCardDialogShow"
-        @visibility-changed="(e)=>memberCardDialogShow=e"
-        :member-card-info="memberCardInfo"
+      :member-card-dialog-show="memberCardDialogShow"
+      @visibility-changed="(e)=>memberCardDialogShow=e"
+      :member-card-info="memberCardInfo"
     ></member-card-dialog>
   </v-app>
 </template>
@@ -479,12 +479,12 @@ import OpenTableForm from '@/components/OpenTableForm'
 const extraLayout = ['A', 'B', 'C', 'K']
 
 const keyboardLayout =
-    [
-      '7', '8', '9', 'mdi-autorenew',
-      '4', '5', '6', 'mdi-account-box',
-      '1', '2', '3', 'T',
-      'W', '0', '.', 'OK'
-    ]
+  [
+    '7', '8', '9', 'mdi-autorenew',
+    '4', '5', '6', 'mdi-account-box',
+    '1', '2', '3', 'T',
+    'W', '0', '.', 'OK'
+  ]
 
 const keyboardFunctions = {
   OpenTable: 'Bitte TischNr. Eingabe',
