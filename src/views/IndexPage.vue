@@ -379,6 +379,14 @@
                   text="Lieferung"
                   :loading="loading"
               />
+              <grid-button
+                v-hide-simple
+                color="purple"
+                @click="openDrawer"
+                icon="mdi-cash-lock-open"
+                text="Kasse Ein"
+                :loading="loading"
+              />
             </div>
             <v-spacer></v-spacer>
             <template v-if="Config.useTableBluePrint">
@@ -455,7 +463,7 @@ import {
   getRestaurantInfo,
   getSectionList,
   getServantList,
-  getTableListWithCells,
+  getTableListWithCells, openDrawer,
   updateSection
 } from '@/oldjs/api'
 import IKUtils from 'innerken-js-utils'
@@ -683,6 +691,7 @@ export default {
     hardReload,
     popAuthorize,
     fetchOrder,
+    openDrawer,
     openOrEnterTable: openOrEnterTable,
     requestOutTable,
 

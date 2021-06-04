@@ -32,6 +32,10 @@ export function splitOrder (discountStr = '', id, items,
   })
 }
 
+export function openDrawer () {
+  hillo.get('Printer.php?op=openDrawer')
+}
+
 export function fetchOrder () {
   hillo.get('CloudStuff/FetchOrdersForAllTerminal.php')
 }
