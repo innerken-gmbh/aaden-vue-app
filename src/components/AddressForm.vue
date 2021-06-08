@@ -306,7 +306,7 @@ export default {
       return !this.userInfo.some(d => d.email === this.searchTel)
     },
     telHint: function () {
-      return this.searchTel ? this.userInfo.filter(u => u.rawInfo.tel?.startsWith(this.searchTel)) : this.userInfo
+      return this.searchTel ? (this.userInfo.filter(u => u.rawInfo.tel?.startsWith(this.searchTel))).slice(0, 9) : this.userInfo.slice(0, 9)
     },
     haveAddress: function () {
       return this.rawAddressInfo.addressLine1.length > 0 && !this.rawAddressInfo.edit
