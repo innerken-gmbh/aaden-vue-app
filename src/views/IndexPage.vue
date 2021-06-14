@@ -15,60 +15,13 @@
           <div class="d-flex mr-2 align-center caption">
             <time-display/>
           </div>
-
-          <v-btn v-if="printingList.length>0">
-            <v-icon>mdi-printer</v-icon>
-            <template>
-              {{ printingList.length }}
-            </template>
+          <v-btn v-if="hasBadPrint" @click="reprintAll"
+                 color="error">
+            <v-icon>
+              mdi-printer-off
+            </v-icon>
+            {{ falsePrinterList.length }} Erneut Drücken
           </v-btn>
-          <v-menu
-            v-if="hasBadPrint"
-            v-model="menu1"
-            offset-y
-            :close-on-content-click="false"
-            :nudge-width="300"
-            :max-height="600"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs"
-                     v-on="on"
-                     color="error">
-                <v-icon>
-                  mdi-printer-off
-                </v-icon>
-                {{ falsePrinterList.length }}
-              </v-btn>
-            </template>
-            <v-card>
-              <v-toolbar dense dark color="primary">
-                <v-toolbar-title>{{ $t('UnsuccessPrinterList') }}</v-toolbar-title>
-                <v-spacer/>
-                <v-icon @click="reprintAll">mdi-reload</v-icon>
-                <v-icon @click="menu1=!menu1">mdi-close</v-icon>
-              </v-toolbar>
-              <v-list>
-                <v-list-item
-                  v-for="(key, index) in falsePrinterList"
-                  :key="index"
-                >
-                  <v-list-item-icon>
-                    <v-icon>mdi-text-box-remove</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      {{ key.orderId }}: {{ key.printStatusString }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-btn icon text @click="reprintBon(key)">
-                      <v-icon color="primary">mdi-printer</v-icon>
-                    </v-btn>
-                  </v-list-item-action>
-                </v-list-item>
-              </v-list>
-            </v-card>
-          </v-menu>
 
           <v-btn v-if="!Config.useTableBluePrint"
                  :color="useOrderView?'primary':'transparent'"
@@ -82,10 +35,10 @@
         </v-toolbar-items>
         <v-toolbar-items>
           <v-menu
-            v-model="menu"
-            :close-on-content-click="false"
-            :nudge-width="300"
-            :max-height="600"
+              v-model="menu"
+              :close-on-content-click="false"
+              :nudge-width="300"
+              :max-height="600"
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn v-bind="attrs"
@@ -166,13 +119,13 @@
               Size:{{ currentSection.sizeY * currentSection.sizeX }}
             </v-toolbar>
             <table-blue-print
-              @table-clicked="openOrEnterTable"
-              @need-refresh="refreshTables"
-              :out-side-table-list="tableInCurrentSection"
-              :show-coordinate="false"
-              :editing.sync="isEditing"
-              :current-table.sync="currentTable"
-              :current-section="currentSection"/>
+                @table-clicked="openOrEnterTable"
+                @need-refresh="refreshTables"
+                :out-side-table-list="tableInCurrentSection"
+                :show-coordinate="false"
+                :editing.sync="isEditing"
+                :current-table.sync="currentTable"
+                :current-section="currentSection"/>
           </v-card>
           <v-card style="overflow-y: scroll;width: 280px">
             <div :key="t.id"
@@ -209,11 +162,11 @@
               <v-btn block @click="tryOpenTableUsePassword(servant.password)">Neue Tisch</v-btn>
               <template v-for="table in servant.tables">
                 <v-card
-                  :dark="getColorLightness(Config.activeCardBackground)<128"
-                  :style="{backgroundColor:Config.activeCardBackground}"
-                  @click='openOrEnterTable(table.tableName)'
-                  class="ma-1 pa-2" style="height: fit-content;" :key="table.id">
-                  <div class="d-flex align-center" :style="{color:table.callService==='1'?restaurantInfo.callColor:''}">
+                    :dark="tableColorIsDark(table)"
+                    :style="{backgroundColor:tableBackgroundColor(table)}"
+                    @click='openOrEnterTable(table.tableName)'
+                    class="ma-1 pa-2" style="height: fit-content;" :key="table.id">
+                  <div class="d-flex align-center">
                     <span style="font-size: 24px;font-weight: bold">{{ table.tableName }}</span>
                     <v-spacer/>
                     <div>
@@ -244,31 +197,30 @@
                   <div v-bind:key="table.name">
                     <v-card v-if="table.usageStatus==='1'"
                             class="tableCard"
-                            :dark="getColorLightness(Config.activeCardBackground)<128"
-                            :style="{backgroundColor:Config.activeCardBackground}"
+                            :dark="tableColorIsDark(table)"
+                            :style="{backgroundColor:tableBackgroundColor(table)}"
                             @click='openOrEnterTable(table.tableName)'>
                       <div :style="{fontSize:Config.tableCardFontSize+'px'}"
                            class="tableCardName">{{ table.tableName }}
                       </div>
                       <div v-if="Config.gridSize>=84">
                         <div class="d-flex justify-space-between">
-                          <div class="tableIconRow">
+                          <div>
                             <span class="tableBold">{{ table.createTimestamp }}</span>
                           </div>
-                          <div class="tableIconRow justify-end">
+                          <div class="justify-end">
                             <span
-                              :style="{color:parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor}"
-                              class="tableBold">{{
-                                findConsumeTypeById(table.consumeType)
-                              }}</span>
+                                :style="{color:tableForegroundColor(table)}"
+                                class="tableBold">
+                              {{ findConsumeTypeById(table.consumeType) }}
+                            </span>
                           </div>
                         </div>
-                        <v-card v-if="Config.gridSize>=116" elevation="0"
-                                :dark="getColorLightness(parseInt(table.callService)===1?restaurantInfo.callColor:
-                                             restaurantInfo.tableColor)<128"
-                                :color="parseInt(table.callService)===1?restaurantInfo.callColor:restaurantInfo.tableColor"
+                        <v-card v-if="Config.gridSize>=96" elevation="0"
+                                :dark="tableColorIsDark(table)"
+                                :color="tableForegroundColor(table)"
                                 tile
-                                class="d-flex justify-space-between px-2 py-1 rounded-b rounded-tr">
+                                class="d-flex justify-space-between px-1">
                           <template v-if="['1','2','3','5'].includes(table.consumeType)">
                             <div class="d-flex align-center">
                               <v-icon small>mdi-silverware-fork-knife</v-icon>
@@ -280,11 +232,11 @@
                             </div>
                           </template>
                           <template v-else>
-                            <div class="tableIconRow">
-                              <v-icon small>mdi-account-outline</v-icon>
-                              <div class="text">{{ table.seatCount }}</div>
+                            <div class="d-flex align-center">
+                              <v-icon small >mdi-account-outline</v-icon>
+                              <div  class="text">{{ table.seatCount }}</div>
                             </div>
-                            <div class="tableIconRow">
+                            <div class="d-flex align-center">
                               <v-icon small>mdi-human-child</v-icon>
                               <div class="text">{{ table.childCount }}</div>
                             </div>
@@ -314,22 +266,22 @@
                   <v-slider hide-details label="Size-X" v-model="currentSection.sizeX" min="8" max="32">
                     <template v-slot:append>
                       <v-text-field
-                        hide-details
-                        v-model="currentSection.sizeX"
-                        class="mt-0 pt-0"
-                        type="number"
-                        style="width: 60px"
+                          hide-details
+                          v-model="currentSection.sizeX"
+                          class="mt-0 pt-0"
+                          type="number"
+                          style="width: 60px"
                       ></v-text-field>
                     </template>
                   </v-slider>
                   <v-slider hide-details label="Size-Y" v-model="currentSection.sizeY" min="8" max="24">
                     <template v-slot:append>
                       <v-text-field
-                        hide-details
-                        v-model="currentSection.sizeY"
-                        class="mt-0 pt-0"
-                        type="number"
-                        style="width: 60px"
+                          hide-details
+                          v-model="currentSection.sizeY"
+                          class="mt-0 pt-0"
+                          type="number"
+                          style="width: 60px"
                       ></v-text-field>
                     </template>
                   </v-slider>
@@ -344,48 +296,48 @@
 
             <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
               <grid-button
-                @click="popAuthorize('boss',toManage)"
-                icon="mdi-home-analytics"
-                text="HOME"
-                color="warning"
-                :loading="loading"
+                  @click="popAuthorize('boss',toManage)"
+                  icon="mdi-home-analytics"
+                  text="HOME"
+                  color="warning"
+                  :loading="loading"
               />
               <grid-button
-                @click="openSalesDialog"
-                icon="mdi-cash"
-                :text="$t('销售额')"
-                color="success"
-                :loading="loading"
+                  @click="openSalesDialog"
+                  icon="mdi-cash"
+                  :text="$t('销售额')"
+                  color="success"
+                  :loading="loading"
               />
               <grid-button
-                @click="takeawayClicked"
-                icon=" mdi-truck-fast"
-                :text="$t('takeaway')"
-                :loading="loading"
+                  @click="takeawayClicked"
+                  icon=" mdi-truck-fast"
+                  :text="$t('takeaway')"
+                  :loading="loading"
               />
               <grid-button
-                v-hide-simple
-                color="error"
-                @click="memberCardCLicked"
-                icon=" mdi-smart-card"
-                :text="  $t('VIP') "
-                :loading="loading"
+                  v-hide-simple
+                  color="error"
+                  @click="memberCardCLicked"
+                  icon=" mdi-smart-card"
+                  :text="  $t('VIP') "
+                  :loading="loading"
               />
               <grid-button
-                v-hide-simple
-                color="#000"
-                @click="fetchOrder"
-                icon="mdi-refresh"
-                text="Lieferung"
-                :loading="loading"
+                  v-hide-simple
+                  color="#000"
+                  @click="fetchOrder"
+                  icon="mdi-refresh"
+                  text="Lieferung"
+                  :loading="loading"
               />
               <grid-button
-                v-hide-simple
-                color="purple"
-                @click="openDrawer"
-                icon="mdi-cash-lock-open"
-                text="Kasse Ein"
-                :loading="loading"
+                  v-hide-simple
+                  color="purple"
+                  @click="openDrawer"
+                  icon="mdi-cash-lock-open"
+                  text="Kasse Ein"
+                  :loading="loading"
               />
             </div>
             <v-spacer></v-spacer>
@@ -404,13 +356,13 @@
               <v-card class="mt-2">
                 <div class="pa-2">{{ currentServant.name }}:{{ $t(currentKeyboardFunction) }}</div>
                 <v-text-field
-                  class="ma-2"
-                  hide-details
-                  clearable
-                  style="font-size: 36px"
-                  ref="ins"
-                  v-model="buffer"
-                  :autofocus="Config.getFocus"
+                    class="ma-2"
+                    hide-details
+                    clearable
+                    style="font-size: 36px"
+                    ref="ins"
+                    v-model="buffer"
+                    :autofocus="Config.getFocus"
                 />
                 <keyboard @input="numberInput" :keys="keyboardLayout"/>
               </v-card>
@@ -421,15 +373,15 @@
     </v-main>
     <open-table-form :servant-password="servantPassword" :menu-show.sync="showOpenTableDialog"></open-table-form>
     <sales-dialog
-      @visibility-changed="(e)=>salesDialogShow=e"
-      :sales-dialog-show="salesDialogShow"
-      :is-boss="salesDialogServantIsBoss"
-      :password="salesDialogServantPassword"
+        @visibility-changed="(e)=>salesDialogShow=e"
+        :sales-dialog-show="salesDialogShow"
+        :is-boss="salesDialogServantIsBoss"
+        :password="salesDialogServantPassword"
     />
     <member-card-dialog
-      :member-card-dialog-show="memberCardDialogShow"
-      @visibility-changed="(e)=>memberCardDialogShow=e"
-      :member-card-info="memberCardInfo"
+        :member-card-dialog-show="memberCardDialogShow"
+        @visibility-changed="(e)=>memberCardDialogShow=e"
+        :member-card-info="memberCardInfo"
     ></member-card-dialog>
   </v-app>
 </template>
@@ -463,7 +415,8 @@ import {
   getRestaurantInfo,
   getSectionList,
   getServantList,
-  getTableListWithCells, openDrawer,
+  getTableListWithCells,
+  openDrawer,
   updateSection
 } from '@/oldjs/api'
 import IKUtils from 'innerken-js-utils'
@@ -479,12 +432,12 @@ import OpenTableForm from '@/components/OpenTableForm'
 const extraLayout = ['A', 'B', 'C', 'K']
 
 const keyboardLayout =
-  [
-    '7', '8', '9', 'mdi-autorenew',
-    '4', '5', '6', 'mdi-account-box',
-    '1', '2', '3', 'T',
-    'W', '0', '.', 'OK'
-  ]
+    [
+      '7', '8', '9', 'mdi-autorenew',
+      '4', '5', '6', 'mdi-account-box',
+      '1', '2', '3', 'T',
+      'W', '0', '.', 'OK'
+    ]
 
 const keyboardFunctions = {
   OpenTable: 'Bitte TischNr. Eingabe',
@@ -539,7 +492,6 @@ export default {
       dishes: [],
       Config: GlobalConfig,
       falsePrinterList: [],
-      printingList: [],
       tableList: [],
       sectionList: [],
       currentTable: null,
@@ -608,6 +560,15 @@ export default {
 
   },
   methods: {
+    tableForegroundColor (table) {
+      return table.callService === '1' ? this.restaurantInfo.callColor : this.restaurantInfo.tableColor
+    },
+    tableBackgroundColor (table) {
+      return table.callService === '1' ? this.restaurantInfo.callColor : GlobalConfig.activeCardBackground
+    },
+    tableColorIsDark (table) {
+      return getColorLightness(this.tableBackgroundColor(table)) < 128
+    },
     setLoading () {
       this.loading = true
       setTimeout(this.releaseLoading, 5000)
@@ -727,10 +688,9 @@ export default {
       this.falsePrinterList = res.filter(item => {
         return item.printStatus !== '4'
       })
-      this.printingList = res.filter(item => item.printStatus === '4') ?? []
     },
     reprintAll () {
-      this.falsePrinterList.map(PrinterList.reprint)
+      this.falsePrinterList.map(this.reprintBon)
     },
     async reprintBon (item) {
       await PrinterList.reprint(item)
@@ -898,13 +858,6 @@ export default {
 
 }
 
-.table-card-content-m {
-  vertical-align: middle;
-  font-weight: 100;
-  font-size: 20px;
-  line-height: 30px;
-}
-
 .tableCard {
   width: 100%;
   height: 100%;
@@ -933,15 +886,13 @@ export default {
   text-align: left;
   font-family: Roboto, "Axure Handwriting", sans-serif;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tableCard.notUsed .tableCardName {
   font-weight: 400;
-}
-
-.tableIconRow > .material-icons {
-  font-size: 20px;
-  margin-right: 2px;
 }
 
 .tableIconRow {
@@ -1003,10 +954,5 @@ export default {
 .area:last-child {
   margin-right: 380px;
 }
-
-/*input:focus{*/
-/*    background: red;*/
-/*    color: red !important;*/
-/*}*/
 
 </style>
