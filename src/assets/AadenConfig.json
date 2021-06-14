@@ -4,7 +4,7 @@
   "Protocol": "http://",
   "lang": "ZH",
   "Debug": true,
-  "usePassword": false,
+  "usePassword": true,
   "UseBossPassword": true,
   "defaultPassword": "111",
   "getFocus": false,

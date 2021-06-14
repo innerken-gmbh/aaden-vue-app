@@ -58,12 +58,16 @@ export function findConsumeTypeById (id) {
   return { name: '' }
 }
 
-export function jumpToTable (tableId, tableName) {
-  hillo.get('Complex.php', {
+export async function resetTableStatus (tableId) {
+  return await hillo.get('Complex.php', {
     op: 'resetTableCallStatus',
     tableId: tableId,
     chaos: timeStampNow()
   })
+}
+
+export async function jumpToTable (tableId, tableName) {
+  await resetTableStatus(tableId)
   const params = Object.assign({ id: tableId, tableId, tableName })
   jumpTo('table', params)
 }
