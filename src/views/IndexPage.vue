@@ -153,6 +153,17 @@
         overflow: scroll;
         display: flex;
  ">
+          <v-card height="calc(100vh - 48px)" color="transparent"
+                  style="width: 190px; flex-shrink: 0;overflow-y: scroll">
+            <v-toolbar dense tile>
+              <v-toolbar-title>Neue Tisch mit Kneller</v-toolbar-title>
+            </v-toolbar>
+            <template v-for="servant in servantWithoutTable">
+              <v-card :key="servant.id" class="d-flex justify-space-between">
+                <v-btn  @click="tryOpenTableUsePassword(servant.password)" block>{{servant.name}}</v-btn>
+              </v-card>
+            </template>
+          </v-card>
           <template v-for="servant in tableGroupByServant">
             <v-card height="calc(100vh - 48px)" color="transparent"
                     style="width: 190px; flex-shrink: 0;overflow-y: scroll" :key="servant.id">
@@ -165,7 +176,7 @@
                   :dark="tableColorIsDark(table)"
                   :style="{backgroundColor:tableBackgroundColor(table)}"
                   @click='openOrEnterTable(table.tableName)'
-                  class="ma-1 pa-2" style="height: fit-content;" :key="table.id">
+                  class="ma-1 pa-1 px-2" style="height: fit-content;" :key="table.id">
                   <div class="d-flex align-center">
                     <span style="font-size: 24px;font-weight: bold">{{ table.tableName }}</span>
                     <v-spacer/>
@@ -538,11 +549,17 @@ export default {
         return arr
       }, []).filter(t => t.usageStatus === '1')
     },
-    tableGroupByServant () {
-      this.servantList.forEach(s => {
+    servantWithTable () {
+      return this.servantList.map(s => {
         s.tables = this.activeTables.filter(t => t.servantId === s.id)
+        return s
       })
-      return this.servantList
+    },
+    tableGroupByServant () {
+      return this.servantWithTable.filter(s => s.tables.length > 0)
+    },
+    servantWithoutTable () {
+      return this.servantWithTable.filter(s => s.tables?.length === 0 ?? true)
     },
 
     tableInCurrentSection () {
