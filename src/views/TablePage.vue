@@ -1398,14 +1398,14 @@ tr:hover {
 
 .menu-item {
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   width: calc(20% - 4px);
   padding: 4px;
   margin: 2px;
-  height: 96px;
+  height: 64px;
   text-transform: capitalize;
   font-size: 18px;
 }

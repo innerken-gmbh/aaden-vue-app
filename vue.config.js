@@ -18,7 +18,7 @@ module.exports = {
           publish: [
             {
               provider: 'snapStore',
-              channels: 'beta'
+              channels: 'edge'
             }
           ]
         }

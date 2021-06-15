@@ -17,7 +17,7 @@
       </div>
     </v-toolbar>
     <div v-dragscroll v-show="expand" class="orderDishList"
-         :style="{maxHeight: `calc(100vh - 48px - ${extraHeight})`}"
+         :style="{maxHeight: `calc(100vh - ${extraHeight})`}"
          style="overflow-y: scroll"
     >
       <template v-for="(order,index) in dishListModel.list">
