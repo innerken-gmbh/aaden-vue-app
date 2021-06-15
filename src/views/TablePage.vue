@@ -13,34 +13,9 @@
               {{ tableDetailInfo.servant }}
             </v-btn>
           </v-toolbar-items>
-          <v-tabs show-arrows
-                  class="flex-shrink-1"
-                  v-model="activeDCT"
-          >
-            <template v-for="ct of dct">
-              <v-tab v-bind:key="ct.id+'categorytypes'"
-                     style="font-size: 16px"
-              >
-                <div class="font-weight-bold">{{ ct.name }}</div>
-              </v-tab>
-            </template>
-          </v-tabs>
         </template>
         <template slot="after-menu">
-          <div class="d-flex align-center justify-space-between">
-            <div class="d-flex">
-              <span class="icon-line ml-2">
-                <v-icon color="white">mdi-account-outline</v-icon>
-                <span class="ml-1">{{ tableDetailInfo.personCount }}</span>
-              </span>
-              <span class="icon-line ml-2">
-                <v-icon color="white">mdi-calendar-text</v-icon>
-                <span class="ml-1">
-                  {{ tableDetailInfo.order.id }}
-                </span>
-              </span>
-            </div>
-          </div>
+          <div></div>
         </template>
       </navgation>
       <v-main>
@@ -117,16 +92,26 @@
           </div>
           <v-card elevation="0" color="transparent" v-cloak
                   class="flex-grow-1 d-flex"
-                  style="height: calc(100vh - 48px);max-width: calc(100vw - 300px)">
+                  style="height: calc(100vh - 48px);max-width: calc(100vw - 600px)">
             <v-card v-dragscroll color="transparent"
-                    style="width: calc(100% - 300px)"
+                    style="max-width: calc(100%)"
                     class="dragscroll dishCardListContainer ml-1 flex-grow-1">
-              <v-sheet class="px-2">
-                <v-item-group v-model="categoryIndex" mandatory class="d-flex flex-wrap align-start">
+              <v-item-group v-model="activeDCT" mandatory class="d-flex flex-wrap align-start">
+                <template v-for="ct of dct">
+                  <v-item v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
+                    <div class="categoryTypeItem"
+                         :class="active?'active':''"
+                         @click="toggle">{{ ct.name }}
+                    </div>
+                  </v-item>
+                </template>
+              </v-item-group>
+              <v-sheet class="px-0">
+                <v-item-group v-model="categoryIndex" class="d-flex flex-wrap align-start">
                   <template v-for="category of filteredC">
                     <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
                       <div @click="changeCategory(category.id,toggle)" class="menu-item"
-                           :class="active?'active elevation-4':'elevation-1'"
+                           :class="active?'active elevation-4':''"
                            :style="{backgroundColor:category.color, color:getColorLightness(category.color)>128?'#000':'#fff'}">
                         {{ category.name }}
                       </div>
@@ -158,23 +143,26 @@
       </v-main>
       <v-navigation-drawer app stateless permanent right width="300px">
         <v-toolbar dense dark>
-          <div class="d-flex align-center justify-space-between">
+          <div class="d-flex align-center justify-space-between" style="width: 100%">
             <span class="bigTableName">
               {{ tableDetailInfo.tableBasicInfo.name }}
             </span>
+            <div class="d-flex">
+              <span class="icon-line ml-2">
+                <v-icon color="white">mdi-account-outline</v-icon>
+                <span class="ml-1">{{ tableDetailInfo.personCount }}</span>
+              </span>
+              <span class="icon-line ml-2">
+                <v-icon color="white">mdi-calendar-text</v-icon>
+                <span class="ml-1">
+                  {{ tableDetailInfo.order.id }}
+                </span>
+              </span>
+            </div>
           </div>
           <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-btn @click="menuShow=!menuShow" large block>
-              <v-icon left>mdi-menu</v-icon>
-              {{ $t('更多功能') }}
-            </v-btn>
-          </v-toolbar-items>
         </v-toolbar>
         <v-card width="300px" height="calc(100vh - 48px)" class="d-flex flex-shrink-0 flex-column pa-2">
-          <table-page-menu
-            :table-id="id"
-            :menu-show.sync="menuShow"/>
           <div v-if="cartListModel.count()===0"
           >
             <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px">
@@ -188,10 +176,32 @@
                 :loading="isSendingRequest"
                 icon="mdi-printer-pos"
                 text="Zwischen"
-                color="warning"
+                color="#24b646"
                 @click="zwitchenBon"
               />
-
+              <grid-button
+                :loading="isSendingRequest"
+                icon="mdi-swap-horizontal"
+                color="#ff8c50"
+                :text=" $t('tableChange') "
+                @click="popAuthorize('',
+                () => popChangeTablePanel(tableDetailInfo.tableBasicInfo.name ))"
+              />
+              <grid-button
+                :loading="isSendingRequest"
+                color="#272727"
+                icon="mdi-merge"
+                :text="$t('tableMerge')"
+                @click="popAuthorize('',
+                () => popMergeTablePanel(tableDetailInfo.tableBasicInfo.name ))"
+              />
+              <grid-button
+                :loading="isSendingRequest"
+                icon="mdi-account"
+                :text="$t('Übergabe')"
+                color="#3f49dd"
+                @click="changeServant"
+              />
               <grid-button
                 :loading="isSendingRequest"
                 v-if="consumeTypeId===2"
@@ -414,7 +424,7 @@ import {
   deleteDishes,
   dishesChangeTable,
   dishesSetDiscount,
-  getColorLightness,
+  getColorLightness, popChangeTablePanel, popMergeTablePanel,
   printZwichenBon
 } from '@/oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
@@ -429,7 +439,6 @@ import GlobalConfig from '../oldjs/LocalGlobalSettings'
 
 import Navgation from '../components/Navgation'
 import { debounce } from 'lodash-es'
-import TablePageMenu from '@/components/TablePageMenu'
 import DishBlock from '@/components/DishBlock'
 import moment from 'moment'
 import IKUtils from 'innerken-js-utils'
@@ -468,7 +477,6 @@ export default {
     DiscountDialog,
     Keyboard,
     DishBlock,
-    TablePageMenu,
     Navgation,
     CheckOutDrawer,
     ModificationDrawer,
@@ -490,7 +498,6 @@ export default {
       addressFormOpen: null,
       keyboardLayout: GlobalConfig.topKeyboardKey.split(',').concat(keyboardLayout),
       displayInput: '',
-      menuShow: null, // 控制菜单是否显示
       checkoutShow: false,
       extraDishShow: false,
       modificationShow: false,
@@ -498,7 +505,7 @@ export default {
       isSendingRequest: false,
       oldMod: null,
       breakCount: 0,
-      activeCategoryId: null,
+
       checkOutType: 'checkOut',
       checkOutModel: {
         total: 0,
@@ -589,7 +596,6 @@ export default {
     },
 
     changeCategory (id, toggle) {
-      this.activeCategoryId = id
       if (toggle) {
         toggle()
       }
@@ -597,6 +603,16 @@ export default {
     popAuthorize,
     getColorLightness,
     toManage,
+    popChangeTablePanel,
+    popMergeTablePanel,
+    async changeServant () {
+      const res = await fastSweetAlertRequest('Zu andere Kneller übergabe', 'text',
+        'Orders.php?op=changeServantForTable', 'pw',
+        { tableId: this.tableId }, 'POST')
+      if (res) {
+        goHome()
+      }
+    },
     goHome () {
       goHome()
     },
@@ -910,8 +926,7 @@ export default {
       }
     },
     autoGetFocus () {
-      if (this.modificationShow || this.checkoutShow || this.discountModelShow ||
-        this.menuShow || this.extraDishShow) {
+      if (this.modificationShow || this.checkoutShow || this.discountModelShow || this.extraDishShow) {
         return
       }
       if (Swal.isVisible()) {
@@ -976,9 +991,6 @@ export default {
     },
     listenKeyDown (e) {
       if (Swal.isVisible()) {
-        return
-      }
-      if (this.menuShow) {
         return
       }
       switch (e.key) {
@@ -1130,7 +1142,6 @@ export default {
       }, 20)
     },
     async realInitial () {
-      this.menuShow = false
       this.breakCount = 0
       window.onkeydown = this.listenKeyDown
       if (GlobalConfig.getFocus) {
@@ -1205,6 +1216,14 @@ export default {
     }
   },
   computed: {
+    activeCategoryId: function () {
+      if ((this.categoryIndex || this.categoryIndex === 0) && this.filteredC?.length > this.categoryIndex) {
+        console.log(this.filteredC[this.categoryIndex].name)
+        return this.filteredC[this.categoryIndex].id
+      } else {
+        return null
+      }
+    },
     telHint: function () {
       const info = this.userInfo
       return info.reduce((arr, i) => {
@@ -1239,11 +1258,6 @@ export default {
     }
   },
   watch: {
-    filteredC: function () {
-      if (this.filteredC?.length > 0) {
-        this.activeCategoryId = this.filteredC[0].id
-      }
-    },
     activeDCT: function () {
       this.updateFilteredDish()
     },
@@ -1258,6 +1272,9 @@ export default {
     },
     refresh: function () {
       this.realInitial()
+    },
+    categoryIndex (val) {
+      console.log(val)
     }
   },
   async created () {
@@ -1379,20 +1396,38 @@ tr:hover {
 }
 
 .menu-item {
-  width: fit-content;
-  padding: 8px 12px;
-  margin: 4px;
-  border-radius: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: calc(20% - 4px);
+  padding: 4px;
+  margin: 2px;
+  height: 64px;
   text-transform: capitalize;
   font-size: 18px;
 }
 
 .menu-item.active {
+  border: none;
   background: #367aeb !important;
   color: white !important;
-  padding: 8px 16px;
-  font-size: 24px;
   font-weight: bold;
+}
+
+.categoryTypeItem {
+  width: fit-content;
+  padding: 8px 12px;
+  text-transform: capitalize;
+  font-size: 20px;
+}
+
+.categoryTypeItem.active {
+  font-weight: bold;
+  text-transform: capitalize;
+  color: #367aeb !important;
+  border-bottom: 2px solid #367aeb;
 }
 
 </style>

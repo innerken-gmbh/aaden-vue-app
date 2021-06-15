@@ -1,10 +1,10 @@
 <template>
   <v-bottom-sheet
-      :retain-focus="false"
-      :disable-keys="true"
-      :close-on-content-click="false"
-      offset-y
-      v-model="realShow">
+    :retain-focus="false"
+    :disable-keys="true"
+    :close-on-content-click="false"
+    offset-y
+    v-model="realShow">
     <v-card v-cloak color="#f6f6f6">
       <template v-show="!loading">
         <v-toolbar dense dark color="primary">
@@ -75,40 +75,6 @@
                     </v-list-item-content>
                   </v-list-item>
                   <v-divider></v-divider>
-                  <v-list-item @click="popAuthorize('boss',toManage)">
-                    <v-list-item-icon>
-                      <v-icon>mdi-home-analytics</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-content>
-                      <v-list-item-title>{{ $t('Chef') }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item @click="popAuthorize('',
-                () => popChangeTablePanel(tableDetailInfo.tableBasicInfo.name))">
-                    <v-list-item-icon>
-                      <v-icon>mdi-swap-horizontal</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-content>
-                      <v-list-item-title>{{ $t('tableChange') }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item @click="popAuthorize('',
-                () => popMergeTablePanel(tableDetailInfo.tableBasicInfo.name))">
-                    <v-list-item-icon>
-                      <v-icon>mdi-merge</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-content>
-                      <v-list-item-title>{{ $t('tableMerge') }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item @click="changeServant">
-                    <v-list-item-icon>
-                      <v-icon>mdi-account</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-content>
-                      <v-list-item-title> {{ $t('Übergabe') }}</v-list-item-title>
-                    </v-list-item-content>
-                  </v-list-item>
 
                 </v-list>
               </v-card>
@@ -116,8 +82,8 @@
             </v-col>
             <v-col cols="6">
               <table-selector
-                  @table-selected="tableSelected"
-                  ref="tablePage">
+                @table-selected="tableSelected"
+                ref="tablePage">
               </table-selector>
             </v-col>
           </v-row>
@@ -125,8 +91,8 @@
       </template>
       <template v-show="loading">
         <v-progress-linear
-            indeterminate
-            color="green"
+          indeterminate
+          color="green"
         ></v-progress-linear>
       </template>
 
@@ -139,7 +105,7 @@
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import hillo from 'hillo'
 import {
-  fastSweetAlertRequest,
+
   jumpToTable,
   openOrEnterTable,
   popAuthorize,
@@ -147,8 +113,6 @@ import {
   toManage
 } from '@/oldjs/common'
 import { dragscroll } from 'vue-dragscroll'
-import { popChangeTablePanel, popMergeTablePanel } from '@/oldjs/api'
-import { goHome } from '@/oldjs/StaticModel'
 import TableSelector from '@/components/subcomponent/TableSelector'
 
 export default {
@@ -172,7 +136,10 @@ export default {
       Config: GlobalConfig,
       realShow: null,
       tableDetailInfo: {
-        order: { id: -1, rawAddressInfo: '' },
+        order: {
+          id: -1,
+          rawAddressInfo: ''
+        },
         tableBasicInfo: { name: '' }
       },
       loading: false
@@ -198,14 +165,7 @@ export default {
       }
       this.loading = false
     },
-    async changeServant () {
-      const res = await fastSweetAlertRequest('Zu andere Kneller übergabe', 'text',
-        'Orders.php?op=changeServantForTable', 'pw',
-        { tableId: this.tableId }, 'POST')
-      if (res) {
-        goHome()
-      }
-    },
+
     tableSelected (table) {
       if (table.usageStatus === '1') {
         jumpToTable(table.tableId, table.tableName)
@@ -216,8 +176,7 @@ export default {
     requestOutTable,
     popAuthorize,
     toManage,
-    popChangeTablePanel,
-    popMergeTablePanel,
+
     async getTableDetail () {
       const res = await hillo.silentGet('Tables.php', {
         op: 'currentInfo',
