@@ -159,9 +159,9 @@ export default {
   methods: {
     async initialMenu () {
       this.loading = true
-      await this.getTableDetail()
+      // await this.getTableDetail()
       if (this.$refs.tablePage) {
-        this.$refs.tablePage.initialMenu()
+        // this.$refs.tablePage.initialMenu()
       }
       this.loading = false
     },
@@ -178,11 +178,7 @@ export default {
     toManage,
 
     async getTableDetail () {
-      const res = await hillo.silentGet('Tables.php', {
-        op: 'currentInfo',
-        id: this.tableId
-      }, { noDebug: true })
-      this.tableDetailInfo = Object.assign(this.tableDetailInfo, res.content)
+      console.error('no more')
     }
   }
 }

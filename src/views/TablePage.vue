@@ -105,14 +105,18 @@
                 </v-item-group>
               </v-sheet>
               <div class="dishCardList">
-                <v-card v-if="activeCategoryId" dark color="error" height="112px" style="width: 100%"
+                <div v-if="activeCategoryId"
+                        style="width: 100%;height: 112px;
+                        border: 2px solid #ff8c50;
+                        color: #ff8c50;
+                        border-radius: 4px"
                         @click="categoryIndex=null" class="d-flex align-center"
                 >
                   <div style="width: 100%" class="d-flex flex-column justify-center align-center flex-wrap">
-                    <v-icon large>mdi-menu-open</v-icon>
+                    <v-icon large color="#ff8c50">mdi-menu-open</v-icon>
                     <div>Zurück</div>
                   </div>
-                </v-card>
+                </div>
                 <template v-for="dish of filteredDish">
                   <dish-block
                     v-ripple
@@ -954,6 +958,7 @@ export default {
         this.getOrderedDish()
       } catch (e) {
         this.breakCount++
+        console.log(e, this.breakCount)
         if (this.breakCount > 2) {
           if (this.$route.name !== 'index') {
             showTimedAlert('info',
