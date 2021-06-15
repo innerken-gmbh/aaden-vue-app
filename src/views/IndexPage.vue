@@ -162,20 +162,20 @@
               </v-subheader>
               <v-divider></v-divider>
               <template v-for="servant in tableGroupByServant">
-                <v-list-item  color="primary" @click="tryOpenTableUsePassword(servant.password)" :key="servant.id"
+                <v-list-item color="primary" @click="tryOpenTableUsePassword(servant.password)" :key="servant.id"
                              class="d-flex justify-space-between">
                   <v-list-item-content>
                     <v-list-item-title>{{ servant.name }}</v-list-item-title>
                   </v-list-item-content>
                   <v-list-item-action>
-                    <v-list-item-action-text  >
+                    <v-list-item-action-text>
                       <v-chip small label color="primary" v-text="servant.tables.length"></v-chip>
                     </v-list-item-action-text>
                   </v-list-item-action>
                 </v-list-item>
               </template>
               <template v-for="servant in servantWithoutTable">
-                <v-list-item  @click="tryOpenTableUsePassword(servant.password)" :key="servant.id"
+                <v-list-item @click="tryOpenTableUsePassword(servant.password)" :key="servant.id"
                              class="d-flex justify-space-between">
                   <v-list-item-content>
                     <v-list-item-title>{{ servant.name }}</v-list-item-title>
@@ -232,31 +232,29 @@
                       v-if="table.usageStatus==='1'"
                       class="tableCard"
                       :dark="tableColorIsDark(table)"
-                      :style="{backgroundColor:tableBackgroundColor(table)}"
+                      :color="tableBackgroundColor(table)"
                       @click='openOrEnterTable(table.tableName)'>
                       <div
-                        v-if="table.createTimestamp"
-                        :style="{color:tableColorIsDark(table,false)?'#fff':'#000'}"
-                        style="position: absolute;top:4px;right:4px;z-index: 2;font-size: 8px;line-height: 12px;
+                        :style="{color:tableColorIsDark(table)?'#fff':'#000'}"
+                        style="position: absolute;top:8px;right:4px;z-index: 2;font-size: 8px;line-height: 12px;
                            text-align: center">
-                        <div class="tableBold">{{ table.createTimestamp.split(':')[0] }}</div>
-                        <div>{{ table.createTimestamp.split(':')[1] }}</div>
                         <div>{{ findConsumeTypeById(table.consumeType) }}</div>
                       </div>
                       <v-card
                         tile
                         elevation="0"
-                        :dark="tableColorIsDark(table,false)"
-                        :color="tableForegroundColor(table)"
                         :style="{fontSize:Config.tableCardFontSize+'px'}"
                         class="tableCardName">{{ table.tableName }}
                       </v-card>
-                      <div class="px-1" style="font-size: 12px" v-if="table.callService!=='1'">
-                        <div v-if="Config.gridSize>=72" class="d-flex justify-space-between">
+                      <div style="font-size: 12px" v-if="table.callService!=='1'">
+                        <div v-if="Config.gridSize>=72" class="d-flex justify-space-between px-1">
                           <div class="text">{{ table.servantName }}</div>
-
+                          <div class="text"> {{ table.createTimestamp }}</div>
                         </div>
-                        <div class="d-flex justify-space-between">
+                        <v-card
+                          :dark="tableColorIsDark(table,false)"
+                          :color="tableForegroundColor(table)"
+                          class="d-flex justify-space-between px-1">
                           <template v-if="['1','2','3','5'].includes(table.consumeType)">
                             <div class="d-flex align-center">
                               <v-icon x-small>mdi-silverware-fork-knife</v-icon>
@@ -277,7 +275,7 @@
                               <div class="text">{{ table.childCount }}</div>
                             </div>
                           </template>
-                        </div>
+                        </v-card>
                       </div>
                       <div v-else>
                         <v-btn @click.stop="resetTableStatus(table.tableId)" block color="transparent" tile>
