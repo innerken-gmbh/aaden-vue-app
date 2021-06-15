@@ -1,26 +1,9 @@
 <template>
   <v-app>
     <template v-cloak>
-      <navgation>
-        <template slot="left">
-          <v-toolbar-items>
-            <v-btn tile class="ml-n3" @click="back">
-              <v-icon>mdi-home</v-icon>
-              HOME
-            </v-btn>
-            <v-btn tile class="mr-4">
-              <v-icon left>mdi-account-outline</v-icon>
-              {{ tableDetailInfo.servant }}
-            </v-btn>
-          </v-toolbar-items>
-        </template>
-        <template slot="after-menu">
-          <div></div>
-        </template>
-      </navgation>
       <v-main>
         <div style="display: flex; background: #f6f6f6;">
-          <div style="height: calc(100vh - 48px);width: 300px"
+          <div style="height: 100vh;width: 300px"
                class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height mr-1">
             <div>
               <v-card v-dragscroll
@@ -92,11 +75,12 @@
           </div>
           <v-card elevation="0" color="transparent" v-cloak
                   class="flex-grow-1 d-flex"
-                  style="height: calc(100vh - 48px);max-width: calc(100vw - 600px)">
-            <v-card v-dragscroll color="transparent"
-                    style="max-width: calc(100%)"
+                  style="height: 100vh;max-width: calc(100vw - 600px)">
+            <v-card v-dragscroll color="transparent" elevation="0"
+                    style="max-width: 100%;"
                     class="dragscroll dishCardListContainer ml-1 flex-grow-1">
-              <v-item-group v-model="activeDCT" mandatory class="d-flex flex-wrap align-start">
+              <v-item-group v-model="activeDCT" mandatory class="d-flex flex-wrap align-start elevation-1"
+                            style="position: fixed;z-index: 2;background: white;width: calc(100vw - 600px)">
                 <template v-for="ct of dct">
                   <v-item v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
                     <div class="categoryTypeItem"
@@ -106,7 +90,8 @@
                   </v-item>
                 </template>
               </v-item-group>
-              <v-sheet class="px-0">
+              <div class="mt-13"></div>
+              <v-sheet v-if="!activeCategoryId&&(!input||input.length===0)" class="px-0" color="transparent">
                 <v-item-group v-model="categoryIndex" class="d-flex flex-wrap align-start">
                   <template v-for="category of filteredC">
                     <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
@@ -120,6 +105,14 @@
                 </v-item-group>
               </v-sheet>
               <div class="dishCardList">
+                <v-card v-if="activeCategoryId" dark color="error" height="112px" style="width: 100%"
+                        @click="categoryIndex=null" class="d-flex align-center"
+                >
+                  <div style="width: 100%" class="d-flex flex-column justify-center align-center flex-wrap">
+                    <v-icon large>mdi-menu-open</v-icon>
+                    <div>Zurück</div>
+                  </div>
+                </v-card>
                 <template v-for="dish of filteredDish">
                   <dish-block
                     v-ripple
@@ -150,7 +143,7 @@
             <div class="d-flex">
               <span class="icon-line ml-2">
                 <v-icon color="white">mdi-account-outline</v-icon>
-                <span class="ml-1">{{ tableDetailInfo.personCount }}</span>
+                <span class="ml-1">    {{ tableDetailInfo.servant }}</span>
               </span>
               <span class="icon-line ml-2">
                 <v-icon color="white">mdi-calendar-text</v-icon>
@@ -168,7 +161,15 @@
             <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px">
               <grid-button
                 :loading="isSendingRequest"
+                icon="mdi-arrow-left"
+                :text="$t('Home')"
+                @click="back"
+              />
+
+              <grid-button
+                :loading="isSendingRequest"
                 icon="mdi-printer"
+                color="#fec945"
                 :text="$t('重新打印')"
                 @click="reprintOrder"
               />
@@ -437,7 +438,6 @@ import { addToTimerList, clearAllTimer, printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
 
-import Navgation from '../components/Navgation'
 import { debounce } from 'lodash-es'
 import DishBlock from '@/components/DishBlock'
 import moment from 'moment'
@@ -477,7 +477,6 @@ export default {
     DiscountDialog,
     Keyboard,
     DishBlock,
-    Navgation,
     CheckOutDrawer,
     ModificationDrawer,
     DishCardList
@@ -1153,7 +1152,7 @@ export default {
       this.updateActiveDCT(0)
       setGlobalTableId(this.id)
       blockReady()
-      this.categoryIndex = 0
+      this.categoryIndex = null
       this.initialUI()
     },
     updateActiveDCT (index) {
@@ -1259,6 +1258,8 @@ export default {
   },
   watch: {
     activeDCT: function () {
+      this.categoryIndex = null
+      this.input = null
       this.updateFilteredDish()
     },
     dishes: function () {
@@ -1368,7 +1369,7 @@ tr:hover {
 
 .dishCardListContainer {
   width: 100%;
-  height: calc(100vh - 48px);
+  height: 100vh;
 }
 
 .bottomCart {
@@ -1397,14 +1398,14 @@ tr:hover {
 
 .menu-item {
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
   width: calc(20% - 4px);
   padding: 4px;
   margin: 2px;
-  height: 64px;
+  height: 96px;
   text-transform: capitalize;
   font-size: 18px;
 }
