@@ -38,7 +38,6 @@
             :show-edit="showEdit"
             :dish="discountDish"/>
       </template>
-
     </div>
   </v-card>
 </template>
