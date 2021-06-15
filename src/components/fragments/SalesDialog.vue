@@ -1,19 +1,19 @@
 <template>
-  <v-dialog v-model="realShow" max-width="800px">
+  <v-dialog v-model="realShow" max-width="960px">
     <v-card>
       <v-toolbar>
-        <v-toolbar-title>{{ $t('销售额') }}</v-toolbar-title>
+        <v-tabs v-model="tabIndex">
+          <template v-if="isBoss">
+            <v-tab v-if="Config.UseDailyZbon">Tag-Sicht</v-tab>
+            <v-tab v-else>Letzte-Sicht</v-tab>
+          </template>
+          <v-tab>Meine Umsatz</v-tab>
+        </v-tabs>
         <v-spacer></v-spacer>
         <v-icon @click="realShow=!realShow">mdi-close</v-icon>
       </v-toolbar>
-      <v-tabs v-model="tabIndex">
-        <template v-if="isBoss">
-          <v-tab v-if="Config.UseDailyZbon">Tag-Sicht</v-tab>
-          <v-tab v-else>Letzte-Sicht</v-tab>
-        </template>
-        <v-tab>Meine Umsatz</v-tab>
-      </v-tabs>
-      <v-card-text>
+
+      <v-card-text class="mt-1">
         <v-tabs-items v-model="tabIndex">
           <template v-if="isBoss">
             <template v-if="Config.UseDailyZbon">
@@ -58,16 +58,16 @@
                   <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn
-                        x-large
-                        @click="printXBon"
-                        color="warning">
+                      x-large
+                      @click="printXBon"
+                      color="warning">
                       XBon Drücken
                     </v-btn>
                     <v-btn
-                        v-if="shouldShowZBon"
-                        x-large
-                        @click="printZBon"
-                        color="primary">
+                      v-if="shouldShowZBon"
+                      x-large
+                      @click="printZBon"
+                      color="primary">
                       ZBon Drücken
                     </v-btn>
                   </v-card-actions>
@@ -115,16 +115,16 @@
                   <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn
-                        x-large
-                        @click="printXBon"
-                        color="warning">
+                      x-large
+                      @click="printXBon"
+                      color="warning">
                       XBon Drücken
                     </v-btn>
                     <v-btn
-                        v-if="shouldShowZBon"
-                        x-large
-                        @click="printZBon"
-                        color="primary">
+                      v-if="shouldShowZBon"
+                      x-large
+                      @click="printZBon"
+                      color="primary">
                       ZBon Drücken
                     </v-btn>
                   </v-card-actions>
@@ -141,47 +141,69 @@
                                class="mt-4"
                                :max="todayDate"
                 />
-                <div class="pa-4" style="width: 360px">
-                  <v-list subheader>
-                    <v-list-item>
-                      <v-list-item-icon>
-                        <v-icon>mdi-cash-usd</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-content>
-                        <v-list-item-title>
-                          {{ displayData.content.bar | priceDisplay }}
-                        </v-list-item-title>
-                      </v-list-item-content>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-icon>
-                        <v-icon>mdi-credit-card-outline</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-title>
-                        {{ displayData.content.EC | priceDisplay }}
-                      </v-list-item-title>
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-icon>
-                        <v-icon>mdi-bell</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-title>
-                        {{ displayData.content.tip | priceDisplay }}
-                      </v-list-item-title>
-                    </v-list-item>
-                    <v-divider></v-divider>
+                <div v-if="realShow" class="pa-4 flex-grow-1" >
+                  <v-simple-table style="max-height: 400px;overflow-y: scroll">
+                    <template v-slot:default>
+                      <thead>
+                      <tr>
+                        <th class="text-left">Tisch Nr. / R.Nr.</th>
+                        <th class="text-left">Zeit</th>
+                        <th class="text-left">Methode/Summe</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <template v-for="order in displayData.orders">
+                        <tr v-bind:key="order.orderId">
+                          <td>
+                            <span class="font-weight-bold">{{ order.tableName }}</span> / {{ order.orderId }}
+                          </td>
+                          <td>
+                            {{ order.updatedAt }}
+                          </td>
+                          <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
+                            {{ order.totalPrice }}/{{ order.paymentMethodString }}
+                          </td>
+                        </tr>
+                      </template>
+                      </tbody>
+                    </template>
+                  </v-simple-table>
+                </div>
+                <div class="pa-4" style="width: 240px">
+
+                  <v-list subheader dense>
                     <v-subheader>{{ $t('Umsatz') }} für {{ displayData.servant.name }}</v-subheader>
                     <v-list-item>
-                      <v-list-item-icon>
-                        <v-icon>mdi-calendar-today</v-icon>
-                      </v-list-item-icon>
-                      <v-list-item-title>
-                        {{ displayData.content.total | priceDisplay }}
-                      </v-list-item-title>
+                      <v-list-item-content>
+                        <v-list-item-title>
+                          Umsatz
+                        </v-list-item-title>
+                      </v-list-item-content>
+                      <v-list-item-action>
+                        <v-list-item-action-text>
+                          {{ displayData.todayTotal | priceDisplay }}
+                        </v-list-item-action-text>
+                      </v-list-item-action>
                     </v-list-item>
                     <v-divider></v-divider>
+                    <v-subheader>Zahlungsmethode</v-subheader>
+                    <template v-for="payment in displayData.payMethodTotal">
+                      <v-list-item v-bind:key="payment.payMethodId">
+                        <v-list-item-content>
+                          <v-list-item-title>
+                            {{ payment.paymentMethodString }}
+                          </v-list-item-title>
+                        </v-list-item-content>
+                        <v-list-item-action>
+                          <v-list-item-action-text>
+                            {{ payment.sumTotal }}
+                          </v-list-item-action-text>
+                        </v-list-item-action>
+                      </v-list-item>
+                    </template>
+                    <v-divider></v-divider>
                   </v-list>
-                  <v-btn block x-large @click="printSummaryBon" color="primary" class="mt-4">KellnerBon Ausdrucken
+                  <v-btn block @click="printSummaryBon" color="primary" class="mt-4">KellnerBon
                   </v-btn>
                 </div>
               </div>
@@ -197,7 +219,7 @@
 
 import dayjs from 'dayjs'
 import {
-  previewServantSummary,
+  getBillListForServant,
   previewZBon,
   previewZBonByTimeSpan,
   printServantSummary,
@@ -210,18 +232,13 @@ import IKUtils from 'innerken-js-utils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 const defaultDisplayData = {
-  content: {
-    total: 0,
-    bar: 0,
-    EC: 0,
-    notPayed: 0,
-    tip: 0
-  },
+  orders: [],
+  payMethodTotal: [],
   servant: {
     id: -1,
     name: 'Servant 1'
   },
-  paymentDetail: []
+  todayTotal: 0
 }
 
 export default {
@@ -311,7 +328,7 @@ export default {
         } else {
           if (this.lastZBonPrintDate.isAfter(dayjs().subtract(5, 'm'))) {
             IKUtils.showError('Die letzte Druckanforderung wurde innerhalb von 5 Minuten ausgegeben.' +
-                ' Warten Sie mindestens 5 Minuten, bevor Sie erneut drucken')
+              ' Warten Sie mindestens 5 Minuten, bevor Sie erneut drucken')
             return
           }
           await printZBon()
@@ -353,7 +370,7 @@ export default {
           this.billData = await previewZBon(this.singleZBonDate, this.singleZBonDate)
         }
       }
-      this.displayData = Object.assign({}, defaultDisplayData, await previewServantSummary(this.password, this.singleZBonDate, this.singleZBonDate))
+      this.displayData = Object.assign({}, defaultDisplayData, await getBillListForServant(this.password ?? GlobalConfig.defaultPassword, this.singleZBonDate))
     }
   },
 

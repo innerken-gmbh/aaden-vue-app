@@ -225,15 +225,20 @@ async function shouldOpenTable (openingTable, pw) {
   openTableCallback(openingTable, pw, ...result)
 }
 
-function informOpenTable (password = '', number, personCount, childCount) {
-  hillo.post('Complex.php?op=openTable',
-    {
-      tableId: number,
-      pw: password,
-      personCount: personCount,
-      childCount: childCount
-    }).then(res => jumpToTable(res.content.tableId, res.content.tableName))
-    .catch(err => logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + err?.data?.info))
+async function informOpenTable (password = '', number, personCount, childCount) {
+  try {
+    const res = await hillo.post('Complex.php?op=openTable',
+      {
+        tableId: number,
+        pw: password,
+        personCount: personCount,
+        childCount: childCount
+      })
+    jumpToTable(res.content.tableId, res.content.tableName)
+  } catch (e) {
+    console.log(e)
+    logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + e?.data?.info)
+  }
 }
 
 export async function openTablePrompt () {

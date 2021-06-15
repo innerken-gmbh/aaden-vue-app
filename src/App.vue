@@ -144,6 +144,9 @@ export default {
         font-size: 16px;
         font-weight: 600;
     }
+    .v-data-table td{
+      padding: 0 16px !important;
+    }
 
     .noFullScreen {
         position: fixed;

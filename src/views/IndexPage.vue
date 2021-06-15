@@ -153,16 +153,37 @@
         overflow: scroll;
         display: flex;
  ">
-          <v-card height="calc(100vh - 48px)" color="transparent"
+          <v-card height="calc(100vh - 48px)" tile color="transparent"
                   style="width: 190px; flex-shrink: 0;overflow-y: scroll">
-            <v-toolbar dense tile>
-              <v-toolbar-title>Neue Tisch mit Kneller</v-toolbar-title>
-            </v-toolbar>
-            <template v-for="servant in servantWithoutTable">
-              <v-card :key="servant.id" class="d-flex justify-space-between">
-                <v-btn  @click="tryOpenTableUsePassword(servant.password)" block>{{servant.name}}</v-btn>
-              </v-card>
-            </template>
+
+            <v-list subheader two-line>
+              <v-subheader>
+                Neue Tisch mit Kneller
+              </v-subheader>
+              <v-divider></v-divider>
+              <template v-for="servant in tableGroupByServant">
+                <v-list-item  color="primary" @click="tryOpenTableUsePassword(servant.password)" :key="servant.id"
+                             class="d-flex justify-space-between">
+                  <v-list-item-content>
+                    <v-list-item-title>{{ servant.name }}</v-list-item-title>
+                  </v-list-item-content>
+                  <v-list-item-action>
+                    <v-list-item-action-text  >
+                      <v-chip small label color="primary" v-text="servant.tables.length"></v-chip>
+                    </v-list-item-action-text>
+                  </v-list-item-action>
+                </v-list-item>
+              </template>
+              <template v-for="servant in servantWithoutTable">
+                <v-list-item  @click="tryOpenTableUsePassword(servant.password)" :key="servant.id"
+                             class="d-flex justify-space-between">
+                  <v-list-item-content>
+                    <v-list-item-title>{{ servant.name }}</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </template>
+            </v-list>
+
           </v-card>
           <template v-for="servant in tableGroupByServant">
             <v-card height="calc(100vh - 48px)" color="transparent"
@@ -170,7 +191,6 @@
               <v-toolbar dense tile>
                 <v-toolbar-title>{{ servant.name }}</v-toolbar-title>
               </v-toolbar>
-              <v-btn block @click="tryOpenTableUsePassword(servant.password)">Neue Tisch</v-btn>
               <template v-for="table in servant.tables">
                 <v-card
                   :dark="tableColorIsDark(table)"
