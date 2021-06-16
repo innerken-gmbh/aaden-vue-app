@@ -83,7 +83,7 @@
   "JSTableAdditionMergeTableFailed": "和台失败:",
   "JSTableAdditionChangeTableFailed": "转台失败",
   "title": "Aaden 智慧收银点餐系统",
-  "appName": "Aaden 智慧收银点餐系统",
+  "appName": "Aaden",
   "indexTabBoss": "老板",
   "indexTabDineIn": "堂食",
   "indexTabTakeaway": "外卖",
@@ -422,5 +422,6 @@
   "销售额": "销售额",
   "输入桌号以开桌": "输入桌号以开桌",
   "VIP": "VIP",
-  "变更": "更改"
+  "变更": "更改",
+  "Achtung! Bitte Upgrade": "注意，您的版本过老,请立刻更新"
 }

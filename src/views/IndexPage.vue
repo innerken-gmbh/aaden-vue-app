@@ -2,19 +2,26 @@
   <v-app>
     <Navgation>
       <template slot="left">
+
         <v-toolbar-title>
           {{ $t('appName') }}
         </v-toolbar-title>
         <div class="d-flex ml-2 align-center caption">
           Version {{ version }}
         </div>
-
       </template>
+
       <template slot="right-slot">
         <v-toolbar-items class="mx-1">
           <div class="d-flex mr-2 align-center caption">
             <time-display/>
           </div>
+          <v-btn v-if="!Config.backendIsOk"
+                 @click="updateBackend"
+                 color="error">
+            {{ $t('Achtung! Bitte Upgrade') }}
+          </v-btn>
+
           <v-btn v-if="hasBadPrint" @click="reprintAll"
                  color="error">
             <v-icon>
@@ -249,15 +256,14 @@
                         :style="{fontSize:Config.tableCardFontSize+'px'}"
                         class="tableCardName">{{ table.tableName }}
                       </v-card>
-                      <div style="font-size: 14px" v-if="table.callService!=='1'">
+                      <v-card :dark="tableColorIsDark(table,false)"
+                              :color="tableForegroundColor(table)" style="font-size: 14px"
+                              v-if="table.callService!=='1'">
                         <div v-if="Config.gridSize>=72" class="d-flex justify-space-between px-1">
                           <div class="text">{{ table.servantName }}</div>
                           <div class="text"> {{ table.createTimestamp }}</div>
                         </div>
-                        <v-card
-                          :dark="tableColorIsDark(table,false)"
-                          :color="tableForegroundColor(table)"
-                          class="d-flex justify-space-between px-1">
+                        <div class="d-flex justify-space-between px-1">
                           <template v-if="['1','2','3','5'].includes(table.consumeType)">
                             <div class="d-flex align-center">
                               <v-icon x-small>mdi-silverware-fork-knife</v-icon>
@@ -278,8 +284,8 @@
                               <div class="text">{{ table.childCount }}</div>
                             </div>
                           </template>
-                        </v-card>
-                      </div>
+                        </div>
+                      </v-card>
                       <div v-else>
                         <v-btn @click.stop="resetTableStatus(table.tableId)" block color="transparent" tile>
                           <v-icon>mdi-bell</v-icon>
@@ -340,7 +346,7 @@
               <grid-button
                 @click="popAuthorize('boss',toManage)"
                 icon="mdi-home-analytics"
-                text="HOME"
+                text="CHEF"
                 color="#147afc"
                 :loading="loading"
               />
@@ -471,6 +477,7 @@ import SalesDialog from '@/components/fragments/SalesDialog'
 import GridButton from '@/components/GridButton'
 import MemberCardDialog from '@/components/fragments/MemberCardDialog'
 import OpenTableForm from '@/components/OpenTableForm'
+import { update } from '@/api/nightwatch'
 
 const extraLayout = ['A', 'B', 'C', 'K']
 
@@ -609,6 +616,10 @@ export default {
 
   },
   methods: {
+    async updateBackend () {
+      IKUtils.showLoading(false)
+      console.log(await update())
+    },
     tableForegroundColor (table) {
       return table.callService === '1' ? this.restaurantInfo.callColor : this.restaurantInfo.tableColor
     },
