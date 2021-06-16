@@ -235,8 +235,11 @@
                       :color="tableBackgroundColor(table)"
                       @click='openOrEnterTable(table.tableName)'>
                       <div
-                        :style="{color:tableColorIsDark(table)?'#fff':'#000'}"
-                        style="position: absolute;top:8px;right:4px;z-index: 2;font-size: 8px;line-height: 12px;
+                        :style="{color:tableForegroundColor(table)}"
+                        style="position: absolute;top:8px;
+                        right:4px;z-index: 2;font-size: 14px;
+                        line-height: 12px;
+                        font-weight: bold;
                            text-align: center">
                         <div>{{ findConsumeTypeById(table.consumeType) }}</div>
                       </div>
@@ -246,7 +249,7 @@
                         :style="{fontSize:Config.tableCardFontSize+'px'}"
                         class="tableCardName">{{ table.tableName }}
                       </v-card>
-                      <div style="font-size: 12px" v-if="table.callService!=='1'">
+                      <div style="font-size: 14px" v-if="table.callService!=='1'">
                         <div v-if="Config.gridSize>=72" class="d-flex justify-space-between px-1">
                           <div class="text">{{ table.servantName }}</div>
                           <div class="text"> {{ table.createTimestamp }}</div>
