@@ -39,8 +39,8 @@ Vue.directive('code-hide', {
 })
 
 async function initial () {
-  const fix = require('@/assets/FixedConfig.json')
-  await loadConfig(fix)
+  await loadConfig()
+
   i18n.locale = GlobalConfig.lang.toLowerCase()
   await checkCurrentVersion()
   new Vue({

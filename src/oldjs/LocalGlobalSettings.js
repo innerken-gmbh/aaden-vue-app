@@ -8,7 +8,8 @@ export let NeededKeys = []
 
 export async function loadConfig () {
   try {
-    GlobalConfig = Object.assign(GlobalConfig, await loadBaseConfig(defaultConfig))
+    const fix = require('@/assets/FixedConfig.json')
+    GlobalConfig = Object.assign(GlobalConfig, await loadBaseConfig(defaultConfig), fix)
     changeLanguage(GlobalConfig.lang)
     NeededKeys = GlobalConfig.neededKeys
     window.Config = GlobalConfig

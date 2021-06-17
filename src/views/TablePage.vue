@@ -1222,7 +1222,6 @@ export default {
   computed: {
     activeCategoryId: function () {
       if ((this.categoryIndex || this.categoryIndex === 0) && this.filteredC?.length > this.categoryIndex) {
-        console.log(this.filteredC[this.categoryIndex].name)
         return this.filteredC[this.categoryIndex].id
       } else {
         return null
@@ -1278,9 +1277,6 @@ export default {
     },
     refresh: function () {
       this.realInitial()
-    },
-    categoryIndex (val) {
-      console.log(val)
     }
   },
   async created () {

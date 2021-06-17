@@ -26,6 +26,7 @@ export async function checkCurrentVersion () {
   try {
     const currentVersion = await getCurrentBackendVersion()
     console.log(currentVersion, '当前后台版本')
+    console.log(GlobalConfig.requiredBackendVersion, '需求后台版本')
     GlobalConfig.backendIsOk = checkVersion(currentVersion, GlobalConfig.requiredBackendVersion)
 
     if (!GlobalConfig.backendIsOk) {
