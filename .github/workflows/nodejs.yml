@@ -4,7 +4,8 @@
 name: Node.js CI
 
 on:
-  push
+  - push
+  - workflow_dispatch
 
 jobs:
   build:
