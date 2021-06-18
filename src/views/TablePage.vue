@@ -895,12 +895,12 @@ export default {
       blockReady()
     },
     async initialUI (forceReload = false) {
-      await this.getTableDetail()
       this.input = ''
       this.discountModelShow = false
       this.overrideConsumeTypeIndex = null
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
+      await this.getTableDetail()
       setGlobalTableId(this.id)
       await this.reloadDish(this.realConsumeTypeId, forceReload)
       blockReady()
