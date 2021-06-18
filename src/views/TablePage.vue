@@ -6,6 +6,28 @@
           <div style="height: 100vh;width: 300px"
                class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height mr-1">
             <div>
+              <v-card tile color="grey darken-3" dark class="d-flex justify-space-between"
+                      style="height: 48px;width: 100%;">
+                <div v-dragscroll style="overflow-x: scroll" class="flex-shrink-1">
+                  <v-item-group dark v-model="overrideConsumeTypeIndex"
+                                style="background: white;" class="d-flex">
+                    <template v-for="ct of consumeTypeList">
+                      <v-item v-bind:key="ct.id+'consumeType'" v-slot="{active,toggle}">
+                        <div class="consumeTypeItem"
+                             style="background: #000"
+                             :class="active?'active':''"
+                             @click="toggle">{{ ct.name }}
+                        </div>
+                      </v-item>
+                    </template>
+                  </v-item-group>
+                </div>
+
+                <div class="d-flex align-center px-1">
+                  <v-icon>mdi-format-list-bulleted-type</v-icon>
+                  <span class="ml-1" style="white-space: nowrap">{{ findConsumeTypeById(consumeTypeId) }}</span>
+                </div>
+              </v-card>
               <v-card v-dragscroll
                       class="white">
                 <keep-alive>
@@ -104,13 +126,13 @@
                   </template>
                 </v-item-group>
               </v-sheet>
-              <div class="dishCardList">
+              <div class="dishCardList" v-else>
                 <div v-if="activeCategoryId"
-                        style="width: 100%;height: 112px;
+                     style="width: 100%;height: 112px;
                         border: 2px solid #ff8c50;
                         color: #ff8c50;
                         border-radius: 4px"
-                        @click="categoryIndex=null" class="d-flex align-center"
+                     @click="categoryIndex=null" class="d-flex align-center"
                 >
                   <div style="width: 100%" class="d-flex flex-column justify-center align-center flex-wrap">
                     <v-icon large color="#ff8c50">mdi-menu-open</v-icon>
@@ -405,7 +427,7 @@ left: 304px"
 
 import {
   blocking,
-  blockReady,
+  blockReady, consumeTypeList,
   fastSweetAlertRequest,
   findConsumeTypeById,
   getConsumeTypeList,
@@ -437,7 +459,7 @@ import DishCardList from '../components/DishCardList'
 import ModificationDrawer from '../components/ModificationDrawer'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import CheckOutDrawer from '../components/CheckOutDrawer'
-import { findDish, getAllDishesWithCache, goHome, setDefaultValueForApply } from '@/oldjs/StaticModel'
+import { findDish, goHome, processDishList, setDefaultValueForApply } from '@/oldjs/StaticModel'
 import { addToTimerList, clearAllTimer, printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
@@ -499,6 +521,7 @@ export default {
   data: function () {
     return {
       addressFormOpen: null,
+      consumeTypeList: [],
       keyboardLayout: GlobalConfig.topKeyboardKey.split(',').concat(keyboardLayout),
       displayInput: '',
       checkoutShow: false,
@@ -508,7 +531,6 @@ export default {
       isSendingRequest: false,
       oldMod: null,
       breakCount: 0,
-
       checkOutType: 'checkOut',
       checkOutModel: {
         total: 0,
@@ -518,6 +540,7 @@ export default {
       /**/
       discountRatio: 1,
       discountStr: null,
+      overrideConsumeTypeIndex: null,
 
       dish: {},
       count: 1,
@@ -553,12 +576,16 @@ export default {
       currentDish: defaultCurrentDish,
       cartCurrentDish: null,
       password: ''
+
     }
   },
   beforeDestroy () {
     clearAllTimer()
   },
   methods: {
+    findConsumeTypeById (id) {
+      return findConsumeTypeById(id).name
+    },
     async editNote () {
       const note = await Swal.fire({
         title: 'Note',
@@ -726,12 +753,11 @@ export default {
         }).filter(i => typeof i.childCount === 'undefined' || i.childCount > 0)
       }
     },
-    async getCategory () {
-      if (this.categories.length === 0) {
-        const res = await hillo.get('Category.php?op=' + (GlobalConfig.alwaysUseInHouseConsumeType
-          ? 'withConsumeType' : 'withTableType'), {
-          consumeTypeId: 1,
-          tableId: this.id,
+    async getCategory (consumeTypeId = 1, force = false) {
+      if (this.categories.length === 0 || force) {
+        console.log('reloadDishUseConsumeTypeId', consumeTypeId)
+        const res = await hillo.get('Category.php?op=withConsumeType', {
+          consumeTypeId: consumeTypeId,
           lang: GlobalConfig.lang
         })
         for (const i of res.content) {
@@ -739,23 +765,22 @@ export default {
             i.isActive = false
           }
         }
-        this.dishes = await getAllDishesWithCache()
         this.categories = res.content.filter(c => {
           return c.dishes.length > 0
         }).map((c, i) => {
           c.color = c.color === '' ? '#FFFFFF' : c.color
           return c
         })
-        this.dishes = this.categories.reduce((arr, i) => {
-          this.dishes.forEach(d => {
-            if (parseInt(d.categoryId) === parseInt(i.id)) {
-              d.displayColor = i.color
-              d.foreground = getColorLightness(d.displayColor) > 128 ? '#000' : '#fff'
-              arr.push(d)
-            }
-          })
+
+        this.dishes = processDishList(this.categories.reduce((arr, i) => {
+          arr.push(...i.dishes.map(d => {
+            d.displayColor = d.color === '' ? '#FFFFFF' : d.color
+            d.foreground = getColorLightness(d.displayColor) > 128 ? '#000' : '#fff'
+            return IKUtils.deepCopy(d)
+          }))
           return arr
-        }, [])
+        }, []))
+
         this.cartListModel.setDishList(this.dishes)
       }
     },
@@ -825,6 +850,9 @@ export default {
       this.addDish(dish)
     },
     addDish: async function (dish, count = 1) {
+      if (this.realConsumeTypeId !== this.consumeTypeId) {
+        dish.overrideConsumeTypeId = this.realConsumeTypeId
+      }
       if (!GlobalConfig.useCart) {
         const tmp = IKUtils.deepCopy(dish)
         tmp.count = 1
@@ -865,13 +893,21 @@ export default {
       this.modificationShow = false
       blockReady()
     },
-    initialUI () {
+    async initialUI (forceReload = false) {
+      await this.getTableDetail()
       this.input = ''
       this.discountModelShow = false
-      this.getTableDetail()
+      this.overrideConsumeTypeIndex = null
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
+      setGlobalTableId(this.id)
+      await this.reloadDish(this.consumeTypeId, forceReload)
       blockReady()
+    },
+    async reloadDish (consumeTypeId, force = false) {
+      await this.getCategory(consumeTypeId, force)
+      this.categoryIndex = null
+      this.updateActiveDCT(0)
     },
     back () {
       if (this.discountModelShow) {
@@ -893,7 +929,7 @@ export default {
     },
     async submitDiscount () {
       if (this.$refs.discount) {
-        this.$refs.discount.submitDiscount()
+        await this.$refs.discount.submitDiscount()
       }
     },
 
@@ -1146,19 +1182,13 @@ export default {
       }, 20)
     },
     async realInitial () {
+      console.log('reload this page')
       this.breakCount = 0
       window.onkeydown = this.listenKeyDown
       if (GlobalConfig.getFocus) {
         addToTimerList(setInterval(this.autoGetFocus, 1000))
       }
-
-      this.selectUser = null
-      this.getCategory()
-      this.updateActiveDCT(0)
-      setGlobalTableId(this.id)
-      blockReady()
-      this.categoryIndex = null
-      this.initialUI()
+      await this.initialUI(true)
     },
     updateActiveDCT (index) {
       this.activeDCT = null
@@ -1249,6 +1279,19 @@ export default {
     consumeTypeId () {
       return parseInt(this.tableDetailInfo.order.consumeTypeId ?? 1)
     },
+
+    overrideConsumeTypeId () {
+      if (this.overrideConsumeTypeIndex && this.consumeTypeList?.length > this.overrideConsumeTypeIndex) {
+        return parseInt(this.consumeTypeList[this.overrideConsumeTypeIndex].id)
+      } else {
+        return null
+      }
+    },
+
+    realConsumeTypeId () {
+      return this.overrideConsumeTypeId && this.overrideConsumeTypeId !== this.consumeTypeId ? this.overrideConsumeTypeId : this.consumeTypeId ?? 1
+    },
+
     consumeTypeStatusId () {
       return parseInt(this.tableDetailInfo.order.consumeTypeStatusId ?? 2)
     },
@@ -1277,11 +1320,24 @@ export default {
     },
     refresh: function () {
       this.realInitial()
+    },
+    realConsumeTypeId (val) {
+      this.reloadDish(val, true)
     }
   },
   async created () {
     await getConsumeTypeList()
     await this.getDCT()
+    const selectableId = GlobalConfig.selectableConsumeTypeId?.split(',')
+      .map(d => parseInt(d))
+    if (selectableId?.length > 0) {
+      this.consumeTypeList = consumeTypeList.filter(
+        c => selectableId.includes(parseInt(c.id))
+      )
+    } else {
+      this.consumeTypeList = consumeTypeList
+    }
+
     this.realInitial()
   }
 }
@@ -1429,6 +1485,22 @@ tr:hover {
   font-weight: bold;
   text-transform: capitalize;
   color: #367aeb !important;
+  border-bottom: 2px solid #367aeb;
+}
+
+.consumeTypeItem {
+  width: max-content;
+  padding: 8px 12px;
+  white-space: nowrap;
+  text-transform: capitalize;
+  font-size: 20px;
+}
+
+.consumeTypeItem.active {
+  font-weight: bold;
+  text-transform: capitalize;
+  background: #367aeb !important;
+  color: #ffffff;
   border-bottom: 2px solid #367aeb;
 }
 

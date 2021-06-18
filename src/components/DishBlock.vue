@@ -26,8 +26,13 @@
           </template>
 
         </div>
-        <div class="price d-flex align-center">
-          {{ isFree === '1' ? 'Frei' : price }}
+        <div v-if="isFree==='1'"
+             style="padding:2px 4px;border-radius: 4px;"
+             class="price d-flex align-center green lighten-3 white--text">
+          {{  $t('Frei')  }}
+        </div>
+        <div v-else class="price d-flex align-center">
+          {{price | priceDisplay}}
         </div>
       </div>
     </div>

@@ -13,21 +13,25 @@ export function findDish (code) {
   return dishesDictionary[code.toLowerCase()]
 }
 
+export function processDishList (dishList) {
+  if (dishList.length > 0) {
+    dishList = StandardDishesListFactory().formatList(dishList).map(d => {
+      d.options = getComputedOption(d)
+      return d
+    })
+    dishList.forEach(d => {
+      dishesDictionary[d.code.toLowerCase()] = d
+    })
+  }
+  return dishList
+}
+
 export async function getAllDishesWithCache (force = false) {
   if (force || dishesList.length === 0) {
     const res = await hillo.get('Dishes.php',
       { lang: i18n.locale.toUpperCase(), usePrintModAsName: GlobalConfig.usePrintModAsName | 0 })
     dishesList.length = 0
-    if (res.content.length > 0) {
-      dishesList = StandardDishesListFactory().formatList(res.content)
-      dishesList = dishesList.map(d => {
-        d.options = getComputedOption(d)
-        return d
-      })
-      dishesList.forEach(d => {
-        dishesDictionary[d.code.toLowerCase()] = d
-      })
-    }
+    dishesList = processDishList(res.content)
   }
   return dishesList
 }

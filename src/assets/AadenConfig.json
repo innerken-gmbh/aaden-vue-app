@@ -39,5 +39,6 @@
   "VIPCardCode": "eag",
   "defaultCancelReason": "falsh eingabe",
   "alwaysUseInHouseConsumeType": false,
-  "printZBonAlert": true
+  "printZBonAlert": true,
+  "selectableConsumeTypeId": "1,2,4,6"
 }

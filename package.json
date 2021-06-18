@@ -19,7 +19,7 @@
   },
   "main": "background.js",
   "dependencies": {
-    "aaden-base-model": "^0.1.111",
+    "aaden-base-model": "^0.1.112",
     "core-js": "^3.12.1",
     "dayjs": "^1.10.4",
     "electron-settings": "^4.0.2",

@@ -13,8 +13,8 @@ export let TableId = null
 let blocked = false
 const TOASTTIME = 700
 
-let consumeTypeList = []
 let Dishes = []
+export const consumeTypeList = []
 
 export async function getAllDishes () {
   const res = await hillo.get('Dishes.php', { lang: i18n.locale.toUpperCase() })
@@ -45,13 +45,24 @@ export async function getConsumeTypeList () {
       op: 'showAllConsumeTypeInfo',
       chaos: timeStampNow()
     })
-    consumeTypeList = res.content
+    res.content.forEach(ct => {
+      ct.name = getCurrentLangObj(ct.langs).name
+      consumeTypeList.push(ct)
+    })
   }
+}
+
+function getCurrentLangObj (langs) {
+  return findNameByLang(Object.values(langs), GlobalConfig.lang)
+}
+
+function findNameByLang (langs, lang) {
+  return langs?.find(l => l.lang === lang) ?? { name: '' }
 }
 
 export function findConsumeTypeById (id) {
   for (const i of consumeTypeList) {
-    if (i.id === id) {
+    if (parseInt(i.id) === parseInt(id)) {
       return i
     }
   }
@@ -417,7 +428,7 @@ export async function fastSweetAlertRequest
       })
       .catch(error => {
         Swal.showValidationMessage(
-          `Request failed: ${error?.data?.info ?? 'Error'}`
+              `Request failed: ${error?.data?.info ?? 'Error'}`
         )
       })
   }
@@ -555,7 +566,7 @@ export function showTimedAlert (type, title, time = 1000, callback = null) {
     }
   }).then((result) => {
     if (
-      /* Read more about handling dismissals below */
+    /* Read more about handling dismissals below */
       result.dismiss === Swal.DismissReason.timer
     ) {
       if (callback) {
