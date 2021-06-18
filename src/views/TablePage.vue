@@ -114,13 +114,13 @@
               </v-item-group>
               <div class="mt-13"></div>
               <v-sheet v-if="!activeCategoryId&&(!input||input.length===0)" class="px-0" color="transparent">
-                <v-item-group v-model="categoryIndex" class="d-flex flex-wrap align-start">
+                <v-item-group class="d-flex flex-wrap align-start">
                   <template v-for="category of filteredC">
                     <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
                       <div @click="changeCategory(category.id,toggle)" class="menu-item"
                            :class="active?'active elevation-4':''"
                            :style="{backgroundColor:category.color, color:getColorLightness(category.color)>128?'#000':'#fff'}">
-                        {{ category.name }}
+                        {{ category.id }} {{ category.name }}
                       </div>
                     </v-item>
                   </template>
@@ -132,7 +132,7 @@
                         border: 2px solid #ff8c50;
                         color: #ff8c50;
                         border-radius: 4px"
-                     @click="categoryIndex=null" class="d-flex align-center"
+                     @click="activeCategoryId=null" class="d-flex align-center"
                 >
                   <div style="width: 100%" class="d-flex flex-column justify-center align-center flex-wrap">
                     <v-icon large color="#ff8c50">mdi-menu-open</v-icon>
@@ -544,7 +544,7 @@ export default {
 
       dish: {},
       count: 1,
-      categoryIndex: null,
+      activeCategoryId: null,
       /* 存储菜品和过滤的信息 */
       dct: [],
       dishes: [],
@@ -626,6 +626,7 @@ export default {
     },
 
     changeCategory (id, toggle) {
+      this.activeCategoryId = id
       if (toggle) {
         toggle()
       }
@@ -901,12 +902,12 @@ export default {
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
       setGlobalTableId(this.id)
-      await this.reloadDish(this.consumeTypeId, forceReload)
+      await this.reloadDish(this.realConsumeTypeId, forceReload)
       blockReady()
     },
     async reloadDish (consumeTypeId, force = false) {
       await this.getCategory(consumeTypeId, force)
-      this.categoryIndex = null
+      this.activeCategoryId = null
       this.updateActiveDCT(0)
     },
     back () {
@@ -1250,13 +1251,7 @@ export default {
     }
   },
   computed: {
-    activeCategoryId: function () {
-      if ((this.categoryIndex || this.categoryIndex === 0) && this.filteredC?.length > this.categoryIndex) {
-        return this.filteredC[this.categoryIndex].id
-      } else {
-        return null
-      }
-    },
+
     telHint: function () {
       const info = this.userInfo
       return info.reduce((arr, i) => {
@@ -1281,7 +1276,7 @@ export default {
     },
 
     overrideConsumeTypeId () {
-      if (this.overrideConsumeTypeIndex && this.consumeTypeList?.length > this.overrideConsumeTypeIndex) {
+      if ((this.overrideConsumeTypeIndex || this.overrideConsumeTypeIndex === 0) && this.consumeTypeList?.length > this.overrideConsumeTypeIndex) {
         return parseInt(this.consumeTypeList[this.overrideConsumeTypeIndex].id)
       } else {
         return null
@@ -1297,6 +1292,7 @@ export default {
     },
 
     filteredC: function () {
+      console.log('i update')
       const dct = this.dct[this.activeDCT]
       return this.categories.filter((item) => {
         return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
@@ -1305,7 +1301,6 @@ export default {
   },
   watch: {
     activeDCT: function () {
-      this.categoryIndex = null
       this.input = null
       this.updateFilteredDish()
     },
