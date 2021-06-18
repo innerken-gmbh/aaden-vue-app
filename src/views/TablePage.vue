@@ -120,7 +120,7 @@
                       <div @click="changeCategory(category.id,toggle)" class="menu-item"
                            :class="active?'active elevation-4':''"
                            :style="{backgroundColor:category.color, color:getColorLightness(category.color)>128?'#000':'#fff'}">
-                        {{ category.id }} {{ category.name }}
+                       {{ category.name }}
                       </div>
                     </v-item>
                   </template>
@@ -639,7 +639,7 @@ export default {
     async changeServant () {
       const res = await fastSweetAlertRequest('Zu andere Kneller übergabe', 'text',
         'Orders.php?op=changeServantForTable', 'pw',
-        { tableId: this.tableId }, 'POST')
+        { tableId: this.id }, 'POST')
       if (res) {
         goHome()
       }
@@ -1292,7 +1292,6 @@ export default {
     },
 
     filteredC: function () {
-      console.log('i update')
       const dct = this.dct[this.activeDCT]
       return this.categories.filter((item) => {
         return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
