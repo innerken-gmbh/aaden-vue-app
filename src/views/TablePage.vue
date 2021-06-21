@@ -113,12 +113,14 @@
                 </template>
               </v-item-group>
               <div class="mt-13"></div>
-              <v-sheet v-if="!activeCategoryId&&(!input||input.length===0)" class="px-0" color="transparent">
+              <v-sheet v-if="Config.alwaysShowDishesBellow||!activeCategoryId&&(!input||input.length===0)"
+                       class="px-0" color="transparent">
                 <v-item-group class="d-flex flex-wrap align-start">
                   <template v-for="category of filteredC">
                     <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
-                      <div @click="changeCategory(category.id,toggle)" class="menu-item"
-                           :class="active?'active elevation-4':''"
+                      <div @click="changeCategory(category.id,toggle)"
+                           :class="(active?'active elevation-4':'')+
+                           (Config.alwaysShowDishesBellow?' menu-always':' menu-item')"
                            :style="{backgroundColor:category.color, color:getColorLightness(category.color)>128?'#000':'#fff'}">
                         {{ category.name }}
                       </div>
@@ -126,8 +128,8 @@
                   </template>
                 </v-item-group>
               </v-sheet>
-              <div class="dishCardList" v-else>
-                <div v-if="activeCategoryId"
+              <div class="dishCardList" v-if="activeCategoryId||input||Config.alwaysShowDishesBellow">
+                <div v-if="activeCategoryId&&!Config.alwaysShowDishesBellow"
                      style="width: 100%;height: 112px;
                         border: 2px solid #ff8c50;
                         color: #ff8c50;
@@ -1468,6 +1470,20 @@ tr:hover {
 }
 
 .menu-item.active {
+  border: none;
+  background: #367aeb !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+.menu-always{
+  width: fit-content;
+  margin: 2px;
+  font-size: 18px;
+  padding: 4px 8px;
+}
+
+.menu-always.active{
   border: none;
   background: #367aeb !important;
   color: white !important;

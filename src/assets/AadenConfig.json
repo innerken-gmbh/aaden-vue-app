@@ -40,5 +40,6 @@
   "defaultCancelReason": "falsh eingabe",
   "alwaysUseInHouseConsumeType": false,
   "printZBonAlert": true,
-  "selectableConsumeTypeId": "1,2,4,6"
+  "selectableConsumeTypeId": "1,2,4,6",
+  "alwaysShowDishesBellow": false
 }
