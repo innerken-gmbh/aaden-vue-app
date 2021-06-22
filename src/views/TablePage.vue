@@ -853,6 +853,7 @@ export default {
     addDish: async function (dish, count = 1) {
       if (this.realConsumeTypeId !== this.consumeTypeId) {
         dish.overrideConsumeTypeId = this.realConsumeTypeId
+        dish.forceFormat = true
       }
       if (!GlobalConfig.useCart) {
         const tmp = IKUtils.deepCopy(dish)
@@ -884,6 +885,7 @@ export default {
     submitModification: function (_mod, dish, count, saveInfo) {
       dish.apply = _mod// here we add a apply
       dish.forceFormat = true
+
       this.addDish(dish, count ?? parseInt(this.count))
       dish.edit = () => {
         this.showModification(dish, 1, saveInfo)
