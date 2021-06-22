@@ -555,12 +555,7 @@ export default {
       dishes: [],
       categories: [],
       activeDCT: 0,
-      filteredDish: [{
-        name: '',
-        code: '',
-        price: '',
-        count: ''
-      }],
+      filteredDish: [],
 
       Config: GlobalConfig,
       /* input**/
