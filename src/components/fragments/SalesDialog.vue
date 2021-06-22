@@ -148,7 +148,7 @@
                       <tr>
                         <th class="text-left">Tisch Nr. / R.Nr.</th>
                         <th class="text-left">Zeit</th>
-                        <th class="text-left">Methode/Summe</th>
+                        <th class="text-left">Summe(Ohne tip)</th>
                       </tr>
                       </thead>
                       <tbody>
@@ -172,7 +172,7 @@
                 <div class="pa-4" style="width: 240px">
 
                   <v-list subheader dense>
-                    <v-subheader>{{ $t('Umsatz') }} für {{ displayData.servant.name }}</v-subheader>
+                    <v-subheader>{{ $t('Umsatz') }} für {{ displayData.servant.name }}(ohne tip)</v-subheader>
                     <v-list-item>
                       <v-list-item-content>
                         <v-list-item-title>
