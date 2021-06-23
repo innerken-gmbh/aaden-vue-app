@@ -170,7 +170,7 @@
 
             <v-list subheader two-line>
               <v-subheader>
-                Neue Tisch mit Kneller
+                <v-chip style="width: 100%" dark label color="error">Neue Tisch mit.<v-icon right>mdi-arrow-down-bold-box</v-icon></v-chip>
               </v-subheader>
               <v-divider></v-divider>
               <template v-for="servant in tableGroupByServant">

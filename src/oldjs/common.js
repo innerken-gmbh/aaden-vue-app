@@ -6,6 +6,7 @@ import GlobalConfig from './LocalGlobalSettings'
 import PrintStatus from './PrintStatus'
 import { clearAllTimer } from '@/oldjs/Timer'
 import dayjs from 'dayjs'
+import { showDialog } from '@/api/keyboardDialog'
 
 const Config = GlobalConfig
 
@@ -101,8 +102,14 @@ export function setGlobalTableId (id) {
   TableId = id
 }
 
-export async function popAuthorize (type, successCallback, force = false,
-  failedCallback, tableId = null) {
+export async function popAuthorize (
+  type,
+  successCallback,
+  force = false,
+  failedCallback,
+  tableId = null) {
+  showDialog()
+
   const ok = (r) => {
     if (successCallback) {
       successCallback(r?.originalData)

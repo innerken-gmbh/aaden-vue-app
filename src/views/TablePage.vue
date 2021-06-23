@@ -421,6 +421,7 @@ left: 304px"
           :discount-str="discountStr"
           :discount-ratio="discountRatio"
           :visible="checkoutShow"/>
+      <keyboard-dialog :menu-show="KeyboardDialogShow"></keyboard-dialog>
     </template>
   </v-app>
 </template>
@@ -478,6 +479,8 @@ import DiscountDialog from '@/components/fragments/DiscountDialog'
 import AddressDisplay from '@/components/AddressDisplay'
 import { acceptOrder } from '@/api/api'
 import GridButton from '@/components/GridButton'
+import KeyboardDialog from '@/components/utls/KeyboardDialog'
+import { KeyboardDialogShow } from '@/api/keyboardDialog'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -503,6 +506,7 @@ export default {
     dragscroll
   },
   components: {
+    KeyboardDialog,
     GridButton,
     AddressDisplay,
     DiscountDialog,
@@ -525,6 +529,7 @@ export default {
   },
   data: function () {
     return {
+      KeyboardDialogShow,
       addressFormOpen: null,
       consumeTypeList: [],
       keyboardLayout: GlobalConfig.topKeyboardKey.split(',').concat(keyboardLayout),
@@ -1473,14 +1478,14 @@ tr:hover {
   font-weight: bold;
 }
 
-.menu-always{
+.menu-always {
   width: fit-content;
   margin: 2px;
   font-size: 18px;
   padding: 4px 8px;
 }
 
-.menu-always.active{
+.menu-always.active {
   border: none;
   background: #367aeb !important;
   color: white !important;
