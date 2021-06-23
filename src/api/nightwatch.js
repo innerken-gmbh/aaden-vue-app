@@ -11,12 +11,11 @@ export function checkVersion (version, target) {
 }
 
 export async function update () {
-  IKUtils.showLoading(false)
-  setTimeout(() => IKUtils.hideLoading(1), 30000)
+  setTimeout(() => IKUtils.hideLoading(0), 30000)
   await hillo.get('MyVersion.php?op=update')
-  IKUtils.hideLoading(1)
+  IKUtils.toast('update ok')
   if (!await checkCurrentVersion()) {
-
+    IKUtils.showError('Automatisch Update felher.', 'Bitte update Sie manual')
   }
 }
 
@@ -29,7 +28,8 @@ export async function getCurrentBackendVersion () {
 export async function checkCurrentVersionAndUpdate () {
   const versionOk = await checkCurrentVersion(false)
   if (!versionOk) {
-    await update()
+    IKUtils.showLoading(false)
+    update()
   }
 }
 

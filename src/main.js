@@ -7,7 +7,7 @@ import vuetify from './plugins/vuetify'
 import GlobalConfig, { loadConfig } from './oldjs/LocalGlobalSettings'
 import './registerServiceWorker'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
-import { checkCurrentVersion } from '@/api/nightwatch'
+import { checkCurrentVersionAndUpdate } from '@/api/nightwatch'
 
 Vue.use(VuetifyGoogleAutocomplete, {
   apiKey: 'AIzaSyB5lIPQQUJjjY6M-BoqUaZhF21oBbYkd9E',
@@ -42,7 +42,7 @@ async function initial () {
   await loadConfig()
 
   i18n.locale = GlobalConfig.lang.toLowerCase()
-  await checkCurrentVersion()
+  await checkCurrentVersionAndUpdate()
   new Vue({
     router,
     store,
