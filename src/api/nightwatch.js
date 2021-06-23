@@ -11,9 +11,13 @@ export function checkVersion (version, target) {
 }
 
 export async function update () {
-  (await hillo.get('MyVersion.php?op=update'))
-  IKUtils.hideLoading()
-  return await checkCurrentVersion()
+  IKUtils.showLoading(false)
+  setTimeout(() => IKUtils.hideLoading(1), 30000)
+  await hillo.get('MyVersion.php?op=update')
+  IKUtils.hideLoading(1)
+  if (!await checkCurrentVersion()) {
+
+  }
 }
 
 export async function getCurrentBackendVersion () {
@@ -22,18 +26,27 @@ export async function getCurrentBackendVersion () {
   })).version
 }
 
-export async function checkCurrentVersion () {
+export async function checkCurrentVersionAndUpdate () {
+  const versionOk = await checkCurrentVersion(false)
+  if (!versionOk) {
+    await update()
+  }
+}
+
+export async function checkCurrentVersion (slient = false) {
   try {
     const currentVersion = await getCurrentBackendVersion()
     console.log(currentVersion, '当前后台版本')
     console.log(GlobalConfig.requiredBackendVersion, '需求后台版本')
     GlobalConfig.backendIsOk = checkVersion(currentVersion, GlobalConfig.requiredBackendVersion)
-
     if (!GlobalConfig.backendIsOk) {
-      throw new Error()
+      return false
     }
-    return currentVersion
+    return true
   } catch (e) {
-    IKUtils.showError('Deine Backend Version ist zu alt. Bitte Aaden Support kontakt und Upgrade', 'Achtung')
+    if (!slient) {
+      IKUtils.showError('Deine Backend Version ist zu alt. Bitte Aaden Support kontakt und Upgrade', 'Achtung')
+    }
+    return false
   }
 }

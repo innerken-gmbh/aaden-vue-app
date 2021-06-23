@@ -141,14 +141,14 @@
                                class="mt-4"
                                :max="todayDate"
                 />
-                <div v-if="realShow" class="pa-4 flex-grow-1" >
+                <div v-if="realShow" class="pa-4 flex-grow-1">
                   <v-simple-table style="max-height: 400px;overflow-y: scroll">
                     <template v-slot:default>
                       <thead>
                       <tr>
                         <th class="text-left">Tisch Nr. / R.Nr.</th>
                         <th class="text-left">Zeit</th>
-                        <th class="text-left">Summe(Ohne tip)</th>
+                        <th class="text-left">Summe</th>
                       </tr>
                       </thead>
                       <tbody>
@@ -161,7 +161,7 @@
                             {{ order.updatedAt }}
                           </td>
                           <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
-                            {{ order.totalPrice }}/{{ order.paymentMethodString }}
+                            {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{ order.tipIncome }})</span>/ {{ order.paymentMethodStrings }}
                           </td>
                         </tr>
                       </template>
@@ -191,7 +191,7 @@
                       <v-list-item v-bind:key="payment.payMethodId">
                         <v-list-item-content>
                           <v-list-item-title>
-                            {{ payment.paymentMethodString }}
+                            {{ payment.paymentMethodStrings }}
                           </v-list-item-title>
                         </v-list-item-content>
                         <v-list-item-action>
@@ -201,6 +201,18 @@
                         </v-list-item-action>
                       </v-list-item>
                     </template>
+                    <v-list-item>
+                      <v-list-item-content>
+                        <v-list-item-title>
+                          tip
+                        </v-list-item-title>
+                      </v-list-item-content>
+                      <v-list-item-action>
+                        <v-list-item-action-text>
+                          {{ displayData.tipIncome|priceDisplay }}
+                        </v-list-item-action-text>
+                      </v-list-item-action>
+                    </v-list-item>
                     <v-divider></v-divider>
                   </v-list>
                   <v-btn block @click="printSummaryBon" color="primary" class="mt-4">KellnerBon

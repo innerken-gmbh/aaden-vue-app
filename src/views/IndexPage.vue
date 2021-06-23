@@ -623,8 +623,7 @@ export default {
   },
   methods: {
     async updateBackend () {
-      IKUtils.showLoading(false)
-      console.log(await update())
+      await update()
     },
     tableForegroundColor (table) {
       return table.callService === '1' ? this.restaurantInfo.callColor : this.restaurantInfo.tableColor
