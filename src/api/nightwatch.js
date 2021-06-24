@@ -39,10 +39,7 @@ export async function checkCurrentVersion (slient = false) {
     console.log(currentVersion, '当前后台版本')
     console.log(GlobalConfig.requiredBackendVersion, '需求后台版本')
     GlobalConfig.backendIsOk = checkVersion(currentVersion, GlobalConfig.requiredBackendVersion)
-    if (!GlobalConfig.backendIsOk) {
-      return false
-    }
-    return true
+    return GlobalConfig.backendIsOk
   } catch (e) {
     if (!slient) {
       IKUtils.showError('Deine Backend Version ist zu alt. Bitte Aaden Support kontakt und Upgrade', 'Achtung')
