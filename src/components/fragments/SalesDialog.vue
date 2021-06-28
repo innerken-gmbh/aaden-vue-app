@@ -367,12 +367,13 @@ export default {
           console.log(e)
         }
 
-        const hoursBefore = dayjs().subtract(12, 'hour')
+        const hoursBefore = dayjs().subtract(36, 'hour')
 
         if (this.lastZBonPrintDate.isBefore(hoursBefore) && GlobalConfig.printZBonAlert) {
-          IKUtils.showConfirm('Bitte beachten Sie, dass Sie ZBon seit 12 Stunden nicht mehr gedruckt haben', 'Jetzt drucken?', () => {
-            this.printZBon()
-          })
+          IKUtils.showConfirm('Bitte beachten Sie, dass Sie ZBon seit 36 Stunden nicht mehr gedruckt haben',
+            'Jetzt drucken?', () => {
+              this.printZBon()
+            })
         }
 
         this.billData = await previewZBonByTimeSpan(this.lastZBonPrintDate.format('YYYY-MM-DD HH:mm:ss'),
