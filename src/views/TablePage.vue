@@ -900,6 +900,7 @@ export default {
       this.input = ''
       this.discountModelShow = false
       this.overrideConsumeTypeIndex = null
+      this.activeCategoryId = null
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
       await this.getTableDetail()
