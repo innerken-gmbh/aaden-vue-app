@@ -367,7 +367,7 @@ export default {
           console.log(e)
         }
 
-        const hoursBefore = dayjs().subtract(36, 'hour')
+        const hoursBefore = dayjs().subtract(32, 'hour')
 
         if (this.lastZBonPrintDate.isBefore(hoursBefore) && GlobalConfig.printZBonAlert) {
           IKUtils.showConfirm('Bitte beachten Sie, dass Sie ZBon seit 36 Stunden nicht mehr gedruckt haben',
