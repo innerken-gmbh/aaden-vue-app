@@ -7,7 +7,11 @@ import vuetify from './plugins/vuetify'
 import GlobalConfig, { loadConfig } from './oldjs/LocalGlobalSettings'
 import './registerServiceWorker'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
+import 'vue-draggable-resizable/dist/VueDraggableResizable.css'
 import { checkCurrentVersionAndUpdate } from '@/api/nightwatch'
+import VueDraggableResizable from 'vue-draggable-resizable'
+
+Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
 Vue.use(VuetifyGoogleAutocomplete, {
   apiKey: 'AIzaSyB5lIPQQUJjjY6M-BoqUaZhF21oBbYkd9E',

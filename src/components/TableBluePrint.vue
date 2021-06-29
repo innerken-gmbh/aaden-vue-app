@@ -1,46 +1,74 @@
 <template>
   <div v-dragscroll
        class="flex-grow-1 pa-2"
-       style="display: grid;height: calc(100vh - 96px);overflow: hidden;background: center / cover"
+       ref="blueprintContainer"
+       style="height: calc(100vh - 96px);overflow: hidden;background: center / cover;"
        :style="{
-          'grid-template-columns':'repeat('+currentSection.sizeX+',1fr)',
-          'grid-template-row':'repeat('+currentSection.sizeY+',1fr)',
           backgroundImage:'url('+Config.getBase()+currentSection.image+')'
        }">
-    <template v-for="i in slots">
-      <table-block
-          @click="slotClicked(i)"
-          :key="i.id"
-          :is-editing="editing"
-          :cell="i"
-          :current-state="decideCurrentState(i)"
-          :table-info="findTableUseSlot(i)"
-          :label="i.label"
-      ></table-block>
+    <template v-for="i in tablesInCurrentSection">
+      <vue-draggable-resizable
+        :draggable="editing"
+        :resizable="editing"
+        :key="i.id"
+        :h="i.h" :w="i.w"
+        :x="i.x" :y="i.y"
+        @activated="selectTable(i)"
+        @dragging="(...args)=>onDrag(i,...args)"
+        :active="false"
+        @resizing="(...args)=>onResize(i,...args)"
+        :parent="true">
+        <v-card style="height: calc(100% - 16px)" v-if="i.usageStatus==='1'"
+                :dark="tableColorIsDark(i)"
+                :color="tableBackgroundColorFunc(i)"
+                class="pa-2 elevation-1 ma-2">
+          {{ i.tableName }}
+        </v-card>
+        <v-card v-else
+                style="height: calc(100% - 16px)"
+                class=" pa-2 elevation-1 ma-2">
+          {{ i.tableName }}
+        </v-card>
+      </vue-draggable-resizable>
     </template>
+
   </div>
 </template>
 
 <script>
 import { dragscroll } from 'vue-dragscroll'
 import { defaultSection } from '@/oldjs/defaultConst'
-import IKUtils from 'innerken-js-utils'
-import TableBlock from '@/components/TableBlock'
 import { addNewTable, setTableLocation } from '@/oldjs/api'
 import { toast } from '@/oldjs/common'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import debounce from 'lodash-es/debounce'
 
-const defaultTable = {
-  tableId: -1,
-  cells: [],
-  centerPoint: {},
-  radius: 4,
-  tableName: ''
+const limit = 10000
+
+function encodeTwoNumber (a, b) {
+  return a * limit + b
+}
+
+function decodeNumber (number) {
+  return [Math.floor(number / limit), number % limit]
+}
+
+async function submitTable (table, x, y, w, h) {
+  console.log('input', table.w, table.h, w, h)
+  w = w ?? (table.w !== 'auto' ? table.w : 50)
+  h = h ?? (table.h !== 'auto' ? table.h : 50)
+  console.log('update', table, x, y, w, h)
+  table.cells = [{
+    tableId: table.id,
+    x: encodeTwoNumber(x, w),
+    y: encodeTwoNumber(y, h)
+  }]
+  console.log(table)
+  await setTableLocation(table)
 }
 
 export default {
   name: 'TableBluePrint',
-  components: { TableBlock },
   directives: {
     dragscroll
   },
@@ -51,7 +79,10 @@ export default {
       default: () => defaultSection
     },
     editing: Boolean,
-    outSideTableList: Array
+    outSideTableList: Array,
+    tableBackgroundColorFunc: Function,
+    tableColorIsDark: Function
+
   },
   computed: {
     activeTable () {
@@ -59,34 +90,16 @@ export default {
         return parseInt(t.tableId) === parseInt(this.activeTableId)
       })
     },
-    slots () {
-      const slot = []
-      for (let i = 0; i < this.currentSection.sizeY; i++) {
-        for (let t = 0; t < this.currentSection.sizeX; t++) {
-          slot.push({ id: i * this.currentSection.sizeX + t, x: t, y: i })
-        }
-      }
-      for (const table of this.tableList) {
-        for (const point of table.cells) {
-          slot[this.findSlotIndexUsePoint(point)].tableId = table.tableId
-          slot[this.findSlotIndexUsePoint(point)] = {
-            ...slot[this.findSlotIndexUsePoint(point)],
-            ...this.checkConnection(point, table.cells)
-          }
-        }
-        if (table.cells.length === 0) {
-          table.centerPoint = null
-        }
-        if (!table.centerPoint && table.cells.length > 0) {
-          table.centerPoint = this.findCenterPoint(table.cells)
-        }
-        if (table.centerPoint) {
-          if (slot[this.findSlotIndexUsePoint(table.centerPoint)]) {
-            slot[this.findSlotIndexUsePoint(table.centerPoint)].label = table.tableName
-          }
-        }
-      }
-      return slot
+    tablesInCurrentSection () {
+      return this.tableList.map(t => {
+        [t.x, t.w] = decodeNumber(t.cells[0]?.x);
+        [t.y, t.h] = decodeNumber(t.cells[0]?.y)
+        t.w = t.w > 50 ? t.w : 'auto'
+        t.h = t.h > 50 ? t.h : 'auto'
+        t.x = t.x ? t.x : 0
+        t.y = t.y ? t.y : 0
+        return t
+      })
     }
   },
   watch: {
@@ -109,189 +122,98 @@ export default {
         this.tableList = val
       }
     },
-    currentSection (val) {
-      console.log(val)
-      console.log('section Changed')
-      this.submit()
+    currentSection () {
       this.tableList = []
       this.$emit('need-refresh')
       this.$emit('update:editing', false)
-      console.log('refresh')
     }
   },
   methods: {
-    findCenterPoint (graph) {
-      if (graph.length > 0) {
-        const c = graph.map(p => ({ ...p, connections: this.checkConnection(p, graph) }))
-        let maxC = 0
-        c.forEach(p => {
-          p.count = Object.keys(p.connections).filter(k => p.connections[k]).length
-          if (p.count > maxC) {
-            maxC = p.count
-          }
-        })
-        return c.find(p => p.count === maxC)
-      }
-      return null
-    },
-
-    checkConnection (point, graph) {
-      return {
-        l: this.pointInsideGraph({ x: point.x - 1, y: point.y }, graph),
-        r: this.pointInsideGraph({ x: point.x + 1, y: point.y }, graph),
-        t: this.pointInsideGraph({ x: point.x, y: point.y - 1 }, graph),
-        b: this.pointInsideGraph({ x: point.x, y: point.y + 1 }, graph)
-      }
-    },
-    decideCurrentState (slot) {
-      if (this.editing) {
-        if (this.activeTableId && this.activeTable.cells.length > 0) {
-          if (!slot.tableId) {
-            if (this.hasConnectToActiveTable(slot) && !this.pointInsideActiveTable(slot)) {
-              return 'selectable'
-            } else {
-              return 'idle'
-            }
-          } else {
-            if (slot.tableId === this.activeTableId) {
-              return 'selected'
-            } else {
-              return 'occupied'
-            }
-          }
-        } else {
-          if (slot.tableId) {
-            return 'occupied'
-          } else {
-            return 'selectable'
-          }
-        }
-      } else {
-        if (slot.tableId) {
-          const table = this.findTableUseSlot(slot)
-          if (table.usageStatus === '1') {
-            return 'active'
-          }
-          if (table.callService === '1') {
-            return 'call'
-          }
-          return 'idle'
-        } else {
-          return 'nodata'
-        }
-      }
-    },
-    findTableUseSlot (slot) {
-      return this.tableList.find(t => t.tableId === slot.tableId)
-    },
+    debounce,
     async submit () {
-      if (this.activeTable) {
-        if (this.activeTableId === -1) {
-          this.activeTable.sectionId = this.currentSection.id
+      if (this.activeTableId === -1) {
+        this.activeTable.sectionId = this.currentSection.id
 
-          await setTableLocation({ ...this.activeTable, tableId: await addNewTable(this.activeTable) })
-        } else {
-          await setTableLocation(this.activeTable)
-        }
-        this.$emit('need-refresh')
-        toast()
+        await setTableLocation({
+          ...this.activeTable,
+          tableId: await addNewTable(this.activeTable)
+        })
+      } else {
+        await setTableLocation(this.activeTable)
       }
+      this.$emit('need-refresh')
+      toast()
 
       this.activeTableId = null
     },
-    slotClicked (slot) {
-      if (this.editing) {
-        if (this.activeTableId) {
-          if (this.hasConnectToActiveTable(slot) || this.activeTable.cells.length === 0) {
-            this.toggleSlotTable(slot, this.activeTable)
-          } else {
-            this.submit()
-          }
-        } else {
-          if (slot.tableId) {
-            this.activeTableId = slot.tableId
-          } else {
-            const newTable = IKUtils.deepCopy(defaultTable)
-            this.tableList.push(newTable)
-            this.activeTableId = newTable.tableId
-            this.toggleSlotTable(slot, newTable)
-          }
-        }
+    onResize: function (table, x, y, width, height) {
+      this.shouldUpdateSize(table, x, y, width, height)
+    },
+    onDrag: function (table, x, y) {
+      this.shouldUpdateSize(table, x, y)
+    },
+    selectTable (table) {
+      if (!this.editing) {
+        this.$emit('table-clicked', table.tableName)
       } else {
-        if (slot.tableId) {
-          this.$emit('table-clicked', this.findTableUseSlot(slot)?.tableName)
-        }
+
       }
     },
-    toggleSlotTable (slot, table) {
-      if (slot.tableId) {
-        if (slot.tableId === table.tableId) {
-          table.cells = table.cells.filter(p => this.findSlotIndexUsePoint(p) !== slot.id)
-          slot.tableId = null
-        }
-      } else {
-        slot.tableId = table.tableId
-        table.cells.push(slot)
-      }
-      this.tableUpdated(table)
-    },
-    tableUpdated (table) {
-      if (table.cells.length > 0) {
-        if (!table.centerPoint || !this.pointInsideGraph(table.centerPoint, table.cells)) {
-          table.centerPoint = table.cells[0]
-        }
-      } else {
-        table.centerPoint = null
-      }
-    },
-    findGraphEdge (graph) {
-      const x = []
-      const y = []
-      graph.forEach(p => {
-        x.push(p.x)
-        y.push(p.y)
-      })
-      return {
-        l: Math.min(...x),
-        r: Math.max(...x) + 1,
-        t: Math.min(...y),
-        b: Math.max(...y) + 1
-      }
-    },
-    pointInsideActiveTable (point) {
-      return this.pointInsideGraph(point, this.activeTable.cells)
-    },
-    pointInsideGraph (point, graph) {
-      return graph.some(p => p.x === point.x && p.y === point.y)
-    },
-    hasConnectToActiveTable (point) {
-      return this.haveConnectToPoints(point, this.activeTable.cells)
-    },
-    haveConnectToPoints (point, points) {
-      return points.some(p => this.haveDirectConnectToPoint(point, p))
-    },
-    haveDirectConnectToPoint (p1, p2) {
-      return (Math.abs(p1.x - p2.x) + Math.abs(p1.y - p2.y)) === 1
-    },
-    findSlotIndexUsePoint (point) {
-      return parseInt(point.y * this.currentSection.sizeX) + parseInt(point.x)
-    }
+    shouldUpdateSize: debounce(submitTable, 300)
+
   },
   data: function () {
     return {
       showId: false,
       activeTableId: null,
       tableList: [],
-      Config: GlobalConfig
+      Config: GlobalConfig,
+      width: 0,
+      height: 0,
+      x: 0,
+      y: 0
     }
+  },
+  mounted () {
+    this.height = this.$refs.blueprintContainer.clientHeight
+    this.width = this.$refs.blueprintContainer.clientWidth - 50
+
+    console.log(this.height, this.width)
   }
 }
 </script>
 
 <style scoped>
+.vdr {
+  border: none;
+}
+
+.vdr.active {
+  border: 1px dashed black;
+}
+
 .item {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.tableCard {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: 0 6px 8px #d0d2d9;
+}
+
+.tableCard.notUsed {
+  background: transparent;
+  color: #6b6b6b;
+  border: 3px solid #e2e3e5;
+  box-shadow: none;
 }
 </style>

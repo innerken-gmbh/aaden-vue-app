@@ -1,5 +1,5 @@
 <template>
-  <div @click="$emit('click')" class="d-flex flex-grow-0 align-center justify-center"
+  <div class="d-flex flex-grow-0 align-center justify-center"
        :style="{
     backgroundColor:backgroundColor,
     borderRadius:borderRadius,
@@ -37,7 +37,10 @@ export default {
     cell: Object
   },
   methods: {
-    getColorLightness
+    getColorLightness,
+    dragStart (event) {
+      console.log(event)
+    }
   },
   computed: {
     elevation () {

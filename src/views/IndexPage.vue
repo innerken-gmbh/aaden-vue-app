@@ -138,6 +138,8 @@
             <table-blue-print
               @table-clicked="openOrEnterTable"
               @need-refresh="refreshTables"
+              :table-background-color-func="tableBackgroundColor"
+              :table-color-is-dark="tableColorIsDark"
               :out-side-table-list="tableInCurrentSection"
               :show-coordinate="false"
               :editing.sync="isEditing"
@@ -325,7 +327,7 @@
             <template v-if="useBluePrintView">
               <template v-if="isEditing">
                 <div class="flex-grow-0">
-                  <v-slider hide-details label="Size-X" v-model="currentSection.sizeX" min="8" max="32">
+                  <v-slider hide-details label="Size-X" v-model="currentSection.sizeX" min="8" max="40">
                     <template v-slot:append>
                       <v-text-field
                         hide-details
@@ -336,7 +338,7 @@
                       ></v-text-field>
                     </template>
                   </v-slider>
-                  <v-slider hide-details label="Size-Y" v-model="currentSection.sizeY" min="8" max="24">
+                  <v-slider hide-details label="Size-Y" v-model="currentSection.sizeY" min="8" max="40">
                     <template v-slot:append>
                       <v-text-field
                         hide-details
@@ -404,17 +406,6 @@
               />
             </div>
             <v-spacer></v-spacer>
-            <template v-if="useBluePrintView">
-              <div v-if="isEditing"
-                   style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px"
-                   class="pa-2">
-                <v-card color="warning" style="width: 100%;height: 60px;" class="d-flex justify-center align-center"
-                        @click="setCurrentTable(t)" :key="t.id"
-                        v-for="t in tableInCurrentSectionWithNoCell"
-                >{{ t.tableName }}
-                </v-card>
-              </div>
-            </template>
             <div v-if="!isEditing">
               <v-card class="mt-2">
                 <div class="pa-2">{{ currentServant.name }}:{{ $t(currentKeyboardFunction) }}</div>
@@ -617,13 +608,8 @@ export default {
       return this.areas.filter(a => a.tables.length > 0)
     },
 
-    tableInCurrentSectionWithNoCell () {
-      return this.tableInCurrentSection.filter(t => t.cells.length === 0)
-    },
-
     orderList: function () {
-      return [this.tableList.filter(t => t.sectionId !== this.currentSection.id),
-        this.tableInCurrentSectionWithNoCell].flat().filter(t => t.usageStatus === '1')
+      return [this.tableList.filter(t => t.sectionId !== this.currentSection.id)].flat().filter(t => t.usageStatus === '1')
     },
 
     hasBadPrint () {
