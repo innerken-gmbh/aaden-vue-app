@@ -169,8 +169,11 @@
                   style="width: 190px; flex-shrink: 0;overflow-y: scroll">
 
             <v-list subheader two-line>
+
               <v-subheader>
-                Neue Tisch mit Kneller
+                <v-chip dark label>
+                  Neue Tisch mit.<v-icon class="ml-2">mdi-arrow-down-box</v-icon>
+                </v-chip>
               </v-subheader>
               <v-divider></v-divider>
               <template v-for="servant in tableGroupByServant">
