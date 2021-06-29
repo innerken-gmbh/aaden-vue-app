@@ -136,6 +136,7 @@
             <v-card>
               <div class="d-flex pa-1">
                 <v-date-picker elevation="2"
+                               v-if="!Config.servantDataOnlyToday"
                                v-model="singleZBonDate"
                                :allowed-dates="allowedDates"
                                class="mt-4"

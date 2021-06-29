@@ -41,5 +41,6 @@
   "alwaysUseInHouseConsumeType": false,
   "printZBonAlert": true,
   "selectableConsumeTypeId": "1,2,4,6",
-  "alwaysShowDishesBellow": false
+  "alwaysShowDishesBellow": false,
+  "servantDataOnlyToday": false
 }
