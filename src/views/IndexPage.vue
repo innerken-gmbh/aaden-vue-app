@@ -210,7 +210,9 @@
             <v-card height="calc(100vh - 48px)" color="transparent"
                     style="width: 190px; flex-shrink: 0;overflow-y: scroll" :key="servant.id">
               <v-toolbar dense tile>
-                <v-toolbar-title>{{ servant.name }}</v-toolbar-title>
+                <v-toolbar-title class="d-flex align-center" style="width: 100%"><div>{{ servant.name }}</div><v-spacer></v-spacer>
+                  <div class="d-flex align-center" style="font-size: small"><v-icon small>mdi-food</v-icon>/<v-icon small>mdi-cup-water</v-icon>/<v-icon small>mdi-cash-multiple</v-icon></div>
+                </v-toolbar-title>
               </v-toolbar>
               <template v-for="table in servant.tables">
                 <v-card
