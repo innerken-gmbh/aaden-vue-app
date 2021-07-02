@@ -54,4 +54,9 @@ export function changeLanguage (l) {
   // reload()
 }
 
+export function forceChangeLanguage (l) {
+  changeLanguage(l)
+  reload()
+}
+
 export default GlobalConfig
