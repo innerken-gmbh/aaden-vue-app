@@ -223,10 +223,10 @@
                     <v-spacer/>
                     <div>
                       <div class="caption">
-                        {{ table.createTimestamp }}/{{ findConsumeTypeById(table.consumeType) }}
+                        {{ table.buffetCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
                       </div>
-                      <div class="caption">
-                        €{{ table.totalPrice }}
+                      <div class="caption text-right">
+                        {{ table.createTimestamp }}/{{ findConsumeTypeById(table.consumeType) }}
                       </div>
                     </div>
                   </div>
