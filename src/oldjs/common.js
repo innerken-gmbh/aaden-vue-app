@@ -79,7 +79,11 @@ export async function resetTableStatus (tableId) {
 
 export async function jumpToTable (tableId, tableName) {
   await resetTableStatus(tableId)
-  const params = Object.assign({ id: tableId, tableId, tableName })
+  const params = Object.assign({
+    id: tableId,
+    tableId,
+    tableName
+  })
   jumpTo('table', params)
 }
 
@@ -180,6 +184,12 @@ export async function openOrEnterTable (number, password, onlyOpenTable = false)
         logErrorAndPop('Bitte benutzen sie blaue button zu Lieferung.')
         return
       }
+      if (GlobalConfig.useOpenTableConfirm && !GlobalConfig.usePassword) {
+        const result = await showConfirmAsyn('Neue Tisch Öffnen?', '!')
+        if (!result.isConfirmed) {
+          return
+        }
+      }
       if (password) {
         shouldOpenTable(table.id, password)
       } else {
@@ -211,7 +221,10 @@ export async function openOrEnterTable (number, password, onlyOpenTable = false)
 }
 
 export async function forceOpenTable (tableName, pw) {
-  return await hillo.post('Complex.php?op=forceOpenTable', { tableName, pw })
+  return await hillo.post('Complex.php?op=forceOpenTable', {
+    tableName,
+    pw
+  })
 }
 
 export async function getFalsePrinterList () {
@@ -380,7 +393,10 @@ export function toast (str = 'Ok', callback, type) {
       }
     }
   })
-  Toast.fire({ title: str, icon: type })
+  Toast.fire({
+    title: str,
+    icon: type
+  })
 }
 
 export function loadingComplete () {
@@ -428,7 +444,7 @@ export async function fastSweetAlertRequest
       })
       .catch(error => {
         Swal.showValidationMessage(
-              `Request failed: ${error?.data?.info ?? 'Error'}`
+          `Request failed: ${error?.data?.info ?? 'Error'}`
         )
       })
   }
@@ -503,7 +519,10 @@ export function remove (arr, index) {
 export function jumpTo (url, params) {
   clearAllTimer()
   url = url.split('.')[0]
-  router.replace({ name: url, params })
+  router.replace({
+    name: url,
+    params
+  })
 }
 
 export function oldJumpTo (url, params) {
@@ -566,7 +585,7 @@ export function showTimedAlert (type, title, time = 1000, callback = null) {
     }
   }).then((result) => {
     if (
-    /* Read more about handling dismissals below */
+      /* Read more about handling dismissals below */
       result.dismiss === Swal.DismissReason.timer
     ) {
       if (callback) {

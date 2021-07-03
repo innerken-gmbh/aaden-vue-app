@@ -421,7 +421,14 @@
   "Zwichen": "Zwischen",
   "销售额": "销售额",
   "输入桌号以开桌": "输入桌号以开桌",
-  "VIP": "VIP",
+  "VIP": "优惠券",
   "变更": "更改",
-  "Achtung! Bitte Upgrade": "注意，您的版本过老,请立刻更新"
+  "Achtung! Bitte Upgrade": "注意，您的版本过老,请立刻更新",
+  "Übergabe": "交班",
+  "Home":"返回",
+  "Erneut Drücken": "点这里尝试重新打印",
+  "Bitte TischNr. Eingabe": "请输入桌号",
+  "Neue password eingabe": "请输入新的密码",
+  "Kasse Ein": "打开钱箱",
+  "CHEF": "老板后台"
 }

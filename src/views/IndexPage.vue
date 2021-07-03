@@ -82,7 +82,7 @@
             <v-icon>
               mdi-printer-off
             </v-icon>
-            {{ falsePrinterList.length }} Erneut Drücken
+            {{ falsePrinterList.length }} {{$t('Erneut Drücken')}}
           </v-btn>
 
           <v-btn
@@ -362,7 +362,7 @@
               <grid-button
                 @click="popAuthorize('boss',toManage)"
                 icon="mdi-home-analytics"
-                text="CHEF"
+                :text="$t('CHEF')"
                 color="#147afc"
                 :loading="loading"
               />
@@ -390,18 +390,10 @@
               />
               <grid-button
                 v-hide-simple
-                color="#3f49dd"
-                @click="fetchOrder"
-                icon="mdi-refresh"
-                text="Lieferung"
-                :loading="loading"
-              />
-              <grid-button
-                v-hide-simple
                 color="#fec945"
                 @click="openDrawer"
                 icon="mdi-cash-lock-open"
-                text="Kasse Ein"
+                :text="$t('Kasse Ein')"
                 :loading="loading"
               />
             </div>
@@ -423,7 +415,6 @@
                 <v-text-field
                   class="ma-2"
                   hide-details
-                  clearable
                   style="font-size: 36px"
                   ref="ins"
                   v-model="buffer"
@@ -496,13 +487,11 @@ import MemberCardDialog from '@/components/fragments/MemberCardDialog'
 import OpenTableForm from '@/components/OpenTableForm'
 import { update } from '@/api/nightwatch'
 
-const extraLayout = ['A', 'B', 'C', 'K']
-
 const keyboardLayout =
   [
-    '7', '8', '9', 'mdi-autorenew',
+    '7', '8', '9', 'C',
     '4', '5', '6', 'mdi-account-box',
-    '1', '2', '3', 'T',
+    '1', '2', '3', '',
     'W', '0', '.', 'OK'
   ]
 
@@ -539,7 +528,7 @@ export default {
       salesDialogServantPassword: null,
       isEditing: false,
       showRightMenu: GlobalConfig.showRightMenu,
-      keyboardLayout: (GlobalConfig.simpleVersion ? [] : extraLayout).concat(keyboardLayout),
+      keyboardLayout: keyboardLayout,
       keyboardFunctions,
       currentKeyboardFunction: keyboardFunctions.OpenTable,
       NeededKeys,
@@ -700,7 +689,7 @@ export default {
         default:
           this.buffer += key
           break
-        case 'mdi-autorenew':
+        case 'C':
           this.buffer = ''
           break
         case 'mdi-account-box':
