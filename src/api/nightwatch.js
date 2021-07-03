@@ -1,7 +1,6 @@
 import hillo from 'hillo'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
-import Swal from 'sweetalert2'
 
 export function checkVersion (version, target) {
   const [main, sub, patch] = version.split('.').map(c => parseInt(c))
