@@ -43,5 +43,5 @@
   "selectableConsumeTypeId": "1,2,4,6",
   "alwaysShowDishesBellow": false,
   "servantDataOnlyToday": false,
-  "useOpenTableConfirm": true
+  "useOpenTableConfirm": false
 }

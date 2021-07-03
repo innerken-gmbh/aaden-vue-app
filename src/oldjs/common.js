@@ -6,6 +6,7 @@ import GlobalConfig from './LocalGlobalSettings'
 import PrintStatus from './PrintStatus'
 import { clearAllTimer } from '@/oldjs/Timer'
 import dayjs from 'dayjs'
+import { capitalize } from 'lodash-es/string'
 
 const Config = GlobalConfig
 
@@ -185,7 +186,7 @@ export async function openOrEnterTable (number, password, onlyOpenTable = false)
         return
       }
       if (GlobalConfig.useOpenTableConfirm && !GlobalConfig.usePassword) {
-        const result = await showConfirmAsyn('Neue Tisch Öffnen?', '!')
+        const result = await showConfirmAsyn(capitalize(number) + ' Öffnen?', 'Neue Tisch')
         if (!result.isConfirmed) {
           return
         }
