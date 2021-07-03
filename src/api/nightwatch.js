@@ -13,9 +13,7 @@ export function checkVersion (version, target) {
 
 export async function update () {
   setTimeout(() => {
-    if (Swal.isShowing()) {
-      IKUtils.hideLoading(0)
-    }
+    IKUtils.hideLoading(0)
   }
   , 30000)
   await hillo.get('MyVersion.php?op=update')
