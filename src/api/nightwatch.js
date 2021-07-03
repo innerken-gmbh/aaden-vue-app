@@ -1,6 +1,7 @@
 import hillo from 'hillo'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
+import Swal from 'sweetalert2'
 
 export function checkVersion (version, target) {
   const [main, sub, patch] = version.split('.').map(c => parseInt(c))
@@ -11,7 +12,12 @@ export function checkVersion (version, target) {
 }
 
 export async function update () {
-  setTimeout(() => IKUtils.hideLoading(0), 30000)
+  setTimeout(() => {
+    if (Swal.isShowing()) {
+      IKUtils.hideLoading(0)
+    }
+  }
+  , 30000)
   await hillo.get('MyVersion.php?op=update')
   IKUtils.toast('update ok')
   if (!await checkCurrentVersion()) {
