@@ -1186,9 +1186,11 @@ export default {
       }, 20)
     },
     async realInitial () {
-      console.log('reload this page')
       this.breakCount = 0
       window.onkeydown = this.listenKeyDown
+      if (this.$refs.ins) {
+        this.$refs.ins.focus()
+      }
       if (GlobalConfig.getFocus) {
         addToTimerList(setInterval(this.autoGetFocus, 1000))
       }
