@@ -285,7 +285,7 @@
                               <v-icon x-small>mdi-silverware-fork-knife</v-icon>
                               <span class="ml-1">{{ table.dishCount === null ? 0 : table.dishCount }}</span>
                             </div>
-                            <div class="d-flex align-center">
+                            <div v-if="Config.showTotalPriceOnCard" class="d-flex align-center">
                               <v-icon x-small>mdi-currency-eur</v-icon>
                               <span>{{ table.totalPrice }}</span>
                             </div>

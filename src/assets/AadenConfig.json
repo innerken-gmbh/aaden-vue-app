@@ -43,5 +43,6 @@
   "selectableConsumeTypeId": "1,2,4,6",
   "alwaysShowDishesBellow": false,
   "servantDataOnlyToday": false,
-  "useOpenTableConfirm": false
+  "useOpenTableConfirm": false,
+  "showTotalPriceOnCard": true
 }
