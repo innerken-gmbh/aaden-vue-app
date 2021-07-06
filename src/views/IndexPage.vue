@@ -281,7 +281,7 @@
                         </div>
                         <div class="d-flex justify-space-between px-1">
                           <template v-if="['1','2','3','5'].includes(table.consumeType)">
-                            <div v-if="Config.gridSizeX>=64" class="d-flex align-center">
+                            <div v-if="Config.gridSizeX>=64" class="d-flex align-center" :class="!parseInt(table.dishCount)?' alert':''">
                               <v-icon x-small>mdi-silverware-fork-knife</v-icon>
                               <span class="ml-1">{{ table.dishCount === null ? 0 : table.dishCount }}</span>
                             </div>
@@ -1027,4 +1027,7 @@ export default {
   margin-right: 380px;
 }
 
+.alert{
+  background: red;
+}
 </style>
