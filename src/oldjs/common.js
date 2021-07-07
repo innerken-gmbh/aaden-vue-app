@@ -185,7 +185,6 @@ export async function openOrEnterTable (number, password, onlyOpenTable = false)
       }
     } else if (table.usageStatus === '1' && !onlyOpenTable) {
       const enterTable = () => {
-        toast(i18n.t('JSIndexCreateTableEnterTable') + number)
         jumpToTable(table.id, table.name)
       }
       if (GlobalConfig.useEnterTablePermissionCheck) {

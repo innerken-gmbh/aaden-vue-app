@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <div>
     <Navgation>
       <template slot="left">
         <v-toolbar-items>
@@ -64,9 +64,7 @@
         <div class="d-flex ml-2 align-center caption">
           <time-display/>
         </div>
-
       </template>
-
       <template slot="right-slot">
 
         <v-toolbar-items class="mx-2">
@@ -77,31 +75,252 @@
             {{ $t('Achtung! Bitte Upgrade') }}
           </v-btn>
 
-          <v-btn v-if="hasBadPrint" @click="reprintAll"
-                 color="error">
-            <v-icon>
-              mdi-printer-off
-            </v-icon>
-            {{ falsePrinterList.length }} {{ $t('Erneut Drücken') }}
-          </v-btn>
-
           <v-btn
             :color="useBluePrintView?'primary':'transparent'"
             @click="useBluePrintView=!useBluePrintView">
             <v-icon v-if="useBluePrintView">mdi-map</v-icon>
             <v-icon v-else>mdi-dots-grid</v-icon>
           </v-btn>
-          <v-btn v-if="!useBluePrintView"
-                 :color="useOrderView?'primary':'transparent'"
-                 @click="useOrderView=!useOrderView">
-            {{ $t('只看活跃') }}
-          </v-btn>
+
           <v-btn :color="showRightMenu?'warning':'transparent'"
                  @click="showRightMenu=!showRightMenu">
             <v-icon>mdi-keyboard</v-icon>
           </v-btn>
         </v-toolbar-items>
 
+      </template>
+    </Navgation>
+    <v-main app>
+
+      <v-card v-if="useBluePrintView" class="flex-grow-1 d-flex">
+        <v-card style="width: 100%">
+          <v-toolbar dense>
+            <v-tabs show-arrows v-model="currentSectionIndex">
+              <template v-for="area of sectionList.filter(a=>a.id!=='6')">
+                <v-tab :key="area.id">
+                  {{ area.name }}
+                </v-tab>
+              </template>
+            </v-tabs>
+            <v-spacer></v-spacer>
+            <v-toolbar-items class="mr-2">
+              <v-btn @click="isEditing=!isEditing" :dark="isEditing">
+                <v-icon>mdi-pencil-box</v-icon>
+              </v-btn>
+              <v-btn @click="saveCurrentSection()" color="primary" v-if="isEditing">
+                <v-icon left>mdi-check</v-icon>
+                Speichen
+              </v-btn>
+            </v-toolbar-items>
+          </v-toolbar>
+          <table-blue-print
+            @table-clicked="openOrEnterTable"
+            @need-refresh="refreshTables"
+            :out-side-table-list="tableInCurrentSection"
+            :show-coordinate="false"
+            :editing.sync="isEditing"
+            :current-table.sync="currentTable"
+            :current-section="currentSection"/>
+        </v-card>
+        <v-card style="overflow-y: scroll;width: 280px">
+          <div :key="t.id"
+               @click="openOrEnterTable(t.tableName)"
+               v-for="t in orderList" class="pa-2 d-flex justify-space-between align-center"
+               style="border-bottom: 1px dotted black">
+            <span class="title">{{ t.tableName }}</span>
+            <div class="caption">
+              <div class="d-flex justify-space-between align-center" style="width: 56px">
+                <v-icon small>mdi-account</v-icon>
+                <span>{{ t.servantName }}</span>
+              </div>
+              <div class="d-flex justify-space-between align-center" style="width: 56px">
+                <v-icon small>mdi-alarm</v-icon>
+                {{ t.createTimestamp }}
+              </div>
+            </div>
+          </div>
+        </v-card>
+      </v-card>
+      <v-card v-else-if="useOrderView"
+              class="flex-grow-1"
+              max-height="calc(100vh - 48px)"
+              style="
+        overflow: scroll;
+        display: flex;
+ ">
+        <v-card height="calc(100vh - 48px)" tile color="transparent"
+                style="width: 190px; flex-shrink: 0;overflow-y: scroll">
+
+          <v-list subheader two-line>
+
+            <v-subheader>
+              <v-chip dark label>
+                Neue Tisch mit.
+                <v-icon class="ml-2">mdi-arrow-down-box</v-icon>
+              </v-chip>
+            </v-subheader>
+            <v-divider></v-divider>
+            <template v-for="servant in tableGroupByServant">
+              <v-list-item color="primary" @click="tryOpenTableUsePassword(servant.password)" :key="servant.id"
+                           class="d-flex justify-space-between">
+                <v-list-item-content>
+                  <v-list-item-title>{{ servant.name }}</v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action>
+                  <v-list-item-action-text>
+                    <v-chip small label color="primary" v-text="servant.tables.length"></v-chip>
+                  </v-list-item-action-text>
+                </v-list-item-action>
+              </v-list-item>
+            </template>
+            <template v-for="servant in servantWithoutTable">
+              <v-list-item @click="tryOpenTableUsePassword(servant.password)" :key="servant.id"
+                           class="d-flex justify-space-between">
+                <v-list-item-content>
+                  <v-list-item-title>{{ servant.name }}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </template>
+          </v-list>
+
+        </v-card>
+        <template v-for="servant in tableGroupByServant">
+          <v-card height="calc(100vh - 48px)" color="transparent"
+                  style="width: 190px; flex-shrink: 0;overflow-y: scroll" :key="servant.id">
+            <v-toolbar dense tile>
+              <v-toolbar-title class="d-flex align-center" style="width: 100%">
+                <div>{{ servant.name }}</div>
+                <v-spacer></v-spacer>
+                <div class="d-flex align-center" style="font-size: small">
+                  <v-icon small>mdi-food</v-icon>
+                  /
+                  <v-icon small>mdi-cup-water</v-icon>
+                  /
+                  <v-icon small>mdi-cash-multiple</v-icon>
+                </div>
+              </v-toolbar-title>
+            </v-toolbar>
+            <template v-for="table in servant.tables">
+              <v-card
+                :dark="tableColorIsDark(table)"
+                :style="{backgroundColor:tableBackgroundColor(table)}"
+                @click='openOrEnterTable(table.tableName)'
+                class="ma-1 pa-1 px-2" style="height: fit-content;" :key="table.id">
+                <div class="d-flex align-center">
+                  <span style="font-size: 24px;font-weight: bold">{{ table.tableName }}</span>
+                  <v-spacer/>
+                  <div>
+                    <div class="caption">
+                      {{ table.buffetCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
+                    </div>
+                    <div class="caption text-right">
+                      {{ table.createTimestamp }}/{{ findConsumeTypeById(table.consumeType) }}
+                    </div>
+                  </div>
+                </div>
+
+              </v-card>
+            </template>
+          </v-card>
+
+        </template>
+      </v-card>
+      <div v-dragscroll v-else class="tableDisplay flex-grow-1">
+        <div v-cloak class="areaC" id="areaC">
+          <div :key="area.name" v-cloak v-for="area in realArea" class="area">
+            <div class="areaTitle">{{ area.areaName }}</div>
+            <div class="areaTableContainer"
+                 :style="{
+                   gridTemplateRows:'repeat(auto-fill,'+Config.gridSize+'px)',
+                   gridAutoColumns:Config.gridSizeX+'px' }">
+              <template v-for="table in area.tables">
+                <div v-bind:key="table.name">
+                  <v-card
+                    tile
+                    style="position: relative"
+                    v-if="table.usageStatus==='1'"
+                    class="tableCard"
+                    :dark="tableColorIsDark(table)"
+                    :color="tableBackgroundColor(table)"
+                    @click='openOrEnterTable(table.tableName)'>
+                    <div
+                      :style="{color:tableForegroundColor(table)}"
+                      style="position: absolute;top:10px;
+                        right:4px;z-index: 2;font-size: 14px;
+                        line-height: 12px;
+                        font-weight: bold;
+                           text-align: center">
+                      <div>{{ findConsumeTypeById(table.consumeType) }}</div>
+                    </div>
+                    <v-card
+                      tile
+                      elevation="0"
+                      :style="{fontSize:Config.tableCardFontSize+'px'}"
+                      class="tableCardName">{{ table.tableName }}
+                    </v-card>
+                    <v-card :dark="tableColorIsDark(table,false)"
+                            :color="tableForegroundColor(table)" style="font-size: 14px"
+                            v-if="table.callService!=='1'">
+                      <div v-if="Config.gridSize>=72" class="d-flex justify-space-between px-1">
+                        <div class="text">{{ table.servantName }}</div>
+                        <div class="text"> {{ table.createTimestamp }}</div>
+                      </div>
+                      <div class="d-flex justify-space-between px-1">
+                        <template v-if="['1','2','3','5'].includes(table.consumeType)">
+                          <div v-if="Config.gridSizeX>=64" class="d-flex align-center"
+                               :class="!parseInt(table.dishCount)?' alert':''">
+                            <v-icon x-small>mdi-silverware-fork-knife</v-icon>
+                            <span class="ml-1">{{ table.dishCount === null ? 0 : table.dishCount }}</span>
+                          </div>
+                          <div v-if="Config.showTotalPriceOnCard" class="d-flex align-center">
+                            <v-icon x-small>mdi-currency-eur</v-icon>
+                            <span>{{ table.totalPrice }}</span>
+                          </div>
+                        </template>
+                        <template v-else>
+                          <div class="d-flex align-center">
+                            <v-icon x-small>mdi-account-outline</v-icon>
+                            <div class="text">{{ table.seatCount }}</div>
+                          </div>
+                          <div class="d-flex align-center">
+                            <v-icon x-small>mdi-human-child</v-icon>
+                            <div class="text">{{ table.childCount }}</div>
+                          </div>
+                        </template>
+                      </div>
+                    </v-card>
+                    <div v-else>
+                      <v-btn @click.stop="resetTableStatus(table.tableId)" block color="transparent" tile>
+                        <v-icon>mdi-bell</v-icon>
+                      </v-btn>
+                    </div>
+                  </v-card>
+                  <div v-else @click="openOrEnterTable(table.tableName)"
+                       class="tableCard notUsed">
+                    <div :style="{fontSize:Config.tableCardFontSize+'px'}"
+                         class="tableCardName">
+                      {{ table.tableName }}
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--        下面是侧边栏的逻辑-->
+    </v-main>
+    <v-navigation-drawer v-model="showRightMenu" permanent stateless app right width="300px">
+      <v-toolbar dense dark>
+        <v-toolbar-items class="ml-n2">
+          <v-btn v-if="!useBluePrintView"
+                 :color="useOrderView?'primary':'transparent'"
+                 @click="useOrderView=!useOrderView">
+            {{ $t('只看活跃') }}
+          </v-btn>
+        </v-toolbar-items>
+
+        <v-spacer></v-spacer>
         <div style="width: 72px" class="ml-2">
           <v-img :src="require('@/assets/aadenLogo.png')"></v-img>
         </div>
@@ -109,333 +328,118 @@
         <div class="text-right ml-2 text-caption">
           V {{ version }}
         </div>
-
-      </template>
-    </Navgation>
-    <v-main style=" width: 100vw;">
-      <div class="d-flex flex-nowrap" style="width: 100vw">
-        <v-card v-if="useBluePrintView" class="flex-grow-1 d-flex">
-          <v-card style="width: 100%">
-            <v-toolbar dense>
-              <v-tabs show-arrows v-model="currentSectionIndex">
-                <template v-for="area of sectionList.filter(a=>a.id!=='6')">
-                  <v-tab :key="area.id">
-                    {{ area.name }}
-                  </v-tab>
+      </v-toolbar>
+      <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
+        <template v-if="useBluePrintView">
+          <template v-if="isEditing">
+            <div class="flex-grow-0">
+              <v-slider hide-details label="Size-X" v-model="currentSection.sizeX" min="8" max="32">
+                <template v-slot:append>
+                  <v-text-field
+                    hide-details
+                    v-model="currentSection.sizeX"
+                    class="mt-0 pt-0"
+                    type="number"
+                    style="width: 60px"
+                  ></v-text-field>
                 </template>
-              </v-tabs>
-              <v-spacer></v-spacer>
-              <v-toolbar-items class="mr-2">
-                <v-btn @click="isEditing=!isEditing" :dark="isEditing">
-                  <v-icon>mdi-pencil-box</v-icon>
-                </v-btn>
-                <v-btn @click="saveCurrentSection()" color="primary" v-if="isEditing">
-                  <v-icon left>mdi-check</v-icon>
-                  Speichen
-                </v-btn>
-              </v-toolbar-items>
-            </v-toolbar>
-            <table-blue-print
-              @table-clicked="openOrEnterTable"
-              @need-refresh="refreshTables"
-              :out-side-table-list="tableInCurrentSection"
-              :show-coordinate="false"
-              :editing.sync="isEditing"
-              :current-table.sync="currentTable"
-              :current-section="currentSection"/>
-          </v-card>
-          <v-card style="overflow-y: scroll;width: 280px">
-            <div :key="t.id"
-                 @click="openOrEnterTable(t.tableName)"
-                 v-for="t in orderList" class="pa-2 d-flex justify-space-between align-center"
-                 style="border-bottom: 1px dotted black">
-              <span class="title">{{ t.tableName }}</span>
-              <div class="caption">
-                <div class="d-flex justify-space-between align-center" style="width: 56px">
-                  <v-icon small>mdi-account</v-icon>
-                  <span>{{ t.servantName }}</span>
-                </div>
-                <div class="d-flex justify-space-between align-center" style="width: 56px">
-                  <v-icon small>mdi-alarm</v-icon>
-                  {{ t.createTimestamp }}
-                </div>
-              </div>
+              </v-slider>
+              <v-slider hide-details label="Size-Y" v-model="currentSection.sizeY" min="8" max="24">
+                <template v-slot:append>
+                  <v-text-field
+                    hide-details
+                    v-model="currentSection.sizeY"
+                    class="mt-0 pt-0"
+                    type="number"
+                    style="width: 60px"
+                  ></v-text-field>
+                </template>
+              </v-slider>
             </div>
-          </v-card>
-        </v-card>
-        <v-card v-else-if="useOrderView"
-                class="flex-grow-1"
-                max-height="calc(100vh - 48px)"
-                style="
-        overflow: scroll;
-        display: flex;
- ">
-          <v-card height="calc(100vh - 48px)" tile color="transparent"
-                  style="width: 190px; flex-shrink: 0;overflow-y: scroll">
-
-            <v-list subheader two-line>
-
-              <v-subheader>
-                <v-chip dark label>
-                  Neue Tisch mit.
-                  <v-icon class="ml-2">mdi-arrow-down-box</v-icon>
-                </v-chip>
-              </v-subheader>
-              <v-divider></v-divider>
-              <template v-for="servant in tableGroupByServant">
-                <v-list-item color="primary" @click="tryOpenTableUsePassword(servant.password)" :key="servant.id"
-                             class="d-flex justify-space-between">
-                  <v-list-item-content>
-                    <v-list-item-title>{{ servant.name }}</v-list-item-title>
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-list-item-action-text>
-                      <v-chip small label color="primary" v-text="servant.tables.length"></v-chip>
-                    </v-list-item-action-text>
-                  </v-list-item-action>
-                </v-list-item>
-              </template>
-              <template v-for="servant in servantWithoutTable">
-                <v-list-item @click="tryOpenTableUsePassword(servant.password)" :key="servant.id"
-                             class="d-flex justify-space-between">
-                  <v-list-item-content>
-                    <v-list-item-title>{{ servant.name }}</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </template>
-            </v-list>
-
-          </v-card>
-          <template v-for="servant in tableGroupByServant">
-            <v-card height="calc(100vh - 48px)" color="transparent"
-                    style="width: 190px; flex-shrink: 0;overflow-y: scroll" :key="servant.id">
-              <v-toolbar dense tile>
-                <v-toolbar-title class="d-flex align-center" style="width: 100%">
-                  <div>{{ servant.name }}</div>
-                  <v-spacer></v-spacer>
-                  <div class="d-flex align-center" style="font-size: small">
-                    <v-icon small>mdi-food</v-icon>
-                    /
-                    <v-icon small>mdi-cup-water</v-icon>
-                    /
-                    <v-icon small>mdi-cash-multiple</v-icon>
-                  </div>
-                </v-toolbar-title>
-              </v-toolbar>
-              <template v-for="table in servant.tables">
-                <v-card
-                  :dark="tableColorIsDark(table)"
-                  :style="{backgroundColor:tableBackgroundColor(table)}"
-                  @click='openOrEnterTable(table.tableName)'
-                  class="ma-1 pa-1 px-2" style="height: fit-content;" :key="table.id">
-                  <div class="d-flex align-center">
-                    <span style="font-size: 24px;font-weight: bold">{{ table.tableName }}</span>
-                    <v-spacer/>
-                    <div>
-                      <div class="caption">
-                        {{ table.buffetCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
-                      </div>
-                      <div class="caption text-right">
-                        {{ table.createTimestamp }}/{{ findConsumeTypeById(table.consumeType) }}
-                      </div>
-                    </div>
-                  </div>
-
-                </v-card>
-              </template>
-            </v-card>
-
+            <div v-if="currentTable" class="currentTablePanel">
+              <v-text-field v-model="currentTable.tableName" label="当前桌名"></v-text-field>
+              <v-slider v-model="currentTable.radius" label="桌子圆角"></v-slider>
+              <v-btn @click="()=>{currentTable.cells=[];currentTable=null}">清空</v-btn>
+            </div>
           </template>
-        </v-card>
-        <div v-dragscroll v-else class="tableDisplay flex-grow-1">
-          <div v-cloak class="areaC" id="areaC">
-            <div :key="area.name" v-cloak v-for="area in realArea" class="area">
-              <div class="areaTitle">{{ area.areaName }}</div>
-              <div class="areaTableContainer"
-                   :style="{
-                   gridTemplateRows:'repeat(auto-fill,'+Config.gridSize+'px)',
-                   gridAutoColumns:Config.gridSizeX+'px' }">
-                <template v-for="table in area.tables">
-                  <div v-bind:key="table.name">
-                    <v-card
-                      tile
-                      style="position: relative"
-                      v-if="table.usageStatus==='1'"
-                      class="tableCard"
-                      :dark="tableColorIsDark(table)"
-                      :color="tableBackgroundColor(table)"
-                      @click='openOrEnterTable(table.tableName)'>
-                      <div
-                        :style="{color:tableForegroundColor(table)}"
-                        style="position: absolute;top:10px;
-                        right:4px;z-index: 2;font-size: 14px;
-                        line-height: 12px;
-                        font-weight: bold;
-                           text-align: center">
-                        <div>{{ findConsumeTypeById(table.consumeType) }}</div>
-                      </div>
-                      <v-card
-                        tile
-                        elevation="0"
-                        :style="{fontSize:Config.tableCardFontSize+'px'}"
-                        class="tableCardName">{{ table.tableName }}
-                      </v-card>
-                      <v-card :dark="tableColorIsDark(table,false)"
-                              :color="tableForegroundColor(table)" style="font-size: 14px"
-                              v-if="table.callService!=='1'">
-                        <div v-if="Config.gridSize>=72" class="d-flex justify-space-between px-1">
-                          <div class="text">{{ table.servantName }}</div>
-                          <div class="text"> {{ table.createTimestamp }}</div>
-                        </div>
-                        <div class="d-flex justify-space-between px-1">
-                          <template v-if="['1','2','3','5'].includes(table.consumeType)">
-                            <div v-if="Config.gridSizeX>=64" class="d-flex align-center"
-                                 :class="!parseInt(table.dishCount)?' alert':''">
-                              <v-icon x-small>mdi-silverware-fork-knife</v-icon>
-                              <span class="ml-1">{{ table.dishCount === null ? 0 : table.dishCount }}</span>
-                            </div>
-                            <div v-if="Config.showTotalPriceOnCard" class="d-flex align-center">
-                              <v-icon x-small>mdi-currency-eur</v-icon>
-                              <span>{{ table.totalPrice }}</span>
-                            </div>
-                          </template>
-                          <template v-else>
-                            <div class="d-flex align-center">
-                              <v-icon x-small>mdi-account-outline</v-icon>
-                              <div class="text">{{ table.seatCount }}</div>
-                            </div>
-                            <div class="d-flex align-center">
-                              <v-icon x-small>mdi-human-child</v-icon>
-                              <div class="text">{{ table.childCount }}</div>
-                            </div>
-                          </template>
-                        </div>
-                      </v-card>
-                      <div v-else>
-                        <v-btn @click.stop="resetTableStatus(table.tableId)" block color="transparent" tile>
-                          <v-icon>mdi-bell</v-icon>
-                        </v-btn>
-                      </div>
-                    </v-card>
-                    <div v-else @click="openOrEnterTable(table.tableName)"
-                         class="tableCard notUsed">
-                      <div :style="{fontSize:Config.tableCardFontSize+'px'}"
-                           class="tableCardName">
-                        {{ table.tableName }}
-                      </div>
-                    </div>
-                  </div>
-                </template>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!--        下面是侧边栏的逻辑-->
-        <template v-if="showRightMenu">
-          <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
-            <template v-if="useBluePrintView">
-              <template v-if="isEditing">
-                <div class="flex-grow-0">
-                  <v-slider hide-details label="Size-X" v-model="currentSection.sizeX" min="8" max="32">
-                    <template v-slot:append>
-                      <v-text-field
-                        hide-details
-                        v-model="currentSection.sizeX"
-                        class="mt-0 pt-0"
-                        type="number"
-                        style="width: 60px"
-                      ></v-text-field>
-                    </template>
-                  </v-slider>
-                  <v-slider hide-details label="Size-Y" v-model="currentSection.sizeY" min="8" max="24">
-                    <template v-slot:append>
-                      <v-text-field
-                        hide-details
-                        v-model="currentSection.sizeY"
-                        class="mt-0 pt-0"
-                        type="number"
-                        style="width: 60px"
-                      ></v-text-field>
-                    </template>
-                  </v-slider>
-                </div>
-                <div v-if="currentTable" class="currentTablePanel">
-                  <v-text-field v-model="currentTable.tableName" label="当前桌名"></v-text-field>
-                  <v-slider v-model="currentTable.radius" label="桌子圆角"></v-slider>
-                  <v-btn @click="()=>{currentTable.cells=[];currentTable=null}">清空</v-btn>
-                </div>
-              </template>
-            </template>
-
-            <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
-              <grid-button
-                @click="popAuthorize('boss',toManage)"
-                icon="mdi-home-analytics"
-                :text="$t('CHEF')"
-                color="#147afc"
-                :loading="loading"
-              />
-              <grid-button
-                @click="openSalesDialog"
-                icon="mdi-cash"
-                :text="$t('销售额')"
-                color="#24b646"
-                :loading="loading"
-              />
-              <grid-button
-                @click="takeawayClicked"
-                icon=" mdi-truck-fast"
-                :text="$t('takeaway')"
-                :loading="loading"
-                color="#ff8c50"
-              />
-              <grid-button
-                v-hide-simple
-                color="#272727"
-                @click="memberCardCLicked"
-                icon=" mdi-smart-card"
-                :text="  $t('VIP') "
-                :loading="loading"
-              />
-              <grid-button
-                v-hide-simple
-                color="#fec945"
-                @click="openDrawer"
-                icon="mdi-cash-lock-open"
-                :text="$t('Kasse Ein')"
-                :loading="loading"
-              />
-            </div>
-            <v-spacer></v-spacer>
-            <template v-if="useBluePrintView">
-              <div v-if="isEditing"
-                   style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px"
-                   class="pa-2">
-                <v-card color="warning" style="width: 100%;height: 60px;" class="d-flex justify-center align-center"
-                        @click="setCurrentTable(t)" :key="t.id"
-                        v-for="t in tableInCurrentSectionWithNoCell"
-                >{{ t.tableName }}
-                </v-card>
-              </div>
-            </template>
-            <div v-if="!isEditing">
-              <v-card class="mt-2">
-                <div class="pa-2">{{ currentServant.name }}:{{ $t(currentKeyboardFunction) }}</div>
-                <v-text-field
-                  class="ma-2"
-                  hide-details
-                  style="font-size: 36px"
-                  ref="ins"
-                  v-model="buffer"
-                  :autofocus="Config.getFocus"
-                />
-                <keyboard @input="numberInput" :keys="keyboardLayout"/>
-              </v-card>
-            </div>
-          </v-card>
         </template>
-      </div>
-    </v-main>
+
+        <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
+          <grid-button
+            @click="popAuthorize('boss',toManage)"
+            icon="mdi-home-analytics"
+            :text="$t('CHEF')"
+            color="#147afc"
+            :loading="loading"
+          />
+          <grid-button
+            @click="openSalesDialog"
+            icon="mdi-cash"
+            :text="$t('销售额')"
+            color="#24b646"
+            :loading="loading"
+          />
+          <grid-button
+            @click="takeawayClicked"
+            icon=" mdi-truck-fast"
+            :text="$t('takeaway')"
+            :loading="loading"
+            color="#ff8c50"
+          />
+          <grid-button
+            v-hide-simple
+            color="#272727"
+            @click="memberCardCLicked"
+            icon=" mdi-smart-card"
+            :text="  $t('VIP') "
+            :loading="loading"
+          />
+          <grid-button
+            v-hide-simple
+            color="#fec945"
+            @click="openDrawer"
+            icon="mdi-cash-lock-open"
+            :text="$t('Kasse Ein')"
+            :loading="loading"
+          />
+          <grid-button
+            v-if="hasBadPrint"
+            v-hide-simple
+            color="error"
+            @click="reprintAll"
+            icon=" mdi-printer-off"
+            :text=" $t('Erneut Drücken') +falsePrinterList.length"
+            :loading="loading"
+          />
+        </div>
+        <v-spacer></v-spacer>
+        <template v-if="useBluePrintView">
+          <div v-if="isEditing"
+               style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px"
+               class="pa-2">
+            <v-card color="warning" style="width: 100%;height: 60px;" class="d-flex justify-center align-center"
+                    @click="setCurrentTable(t)" :key="t.id"
+                    v-for="t in tableInCurrentSectionWithNoCell"
+            >{{ t.tableName }}
+            </v-card>
+          </div>
+        </template>
+        <div v-if="!isEditing">
+          <v-card class="mt-2">
+            <div class="pa-2">{{ currentServant.name }}:{{ $t(currentKeyboardFunction) }}</div>
+            <v-text-field
+              class="ma-2"
+              hide-details
+              style="font-size: 36px"
+              ref="ins"
+              v-model="buffer"
+              :autofocus="Config.getFocus"
+            />
+            <keyboard @input="numberInput" :keys="keyboardLayout"/>
+          </v-card>
+        </div>
+      </v-card>
+    </v-navigation-drawer>
     <open-table-form :servant-password="servantPassword" :menu-show.sync="showOpenTableDialog"></open-table-form>
     <sales-dialog
       @visibility-changed="(e)=>salesDialogShow=e"
@@ -448,7 +452,7 @@
       @visibility-changed="(e)=>memberCardDialogShow=e"
       :member-card-info="memberCardInfo"
     ></member-card-dialog>
-  </v-app>
+  </div>
 </template>
 
 <script>
@@ -670,17 +674,12 @@ export default {
     },
     async tryOpenTableUsePassword (password) {
       if (GlobalConfig.usePassword) {
-        const res = await Swal.fire({
-          title: 'Bitte password eingabe',
-          text: '',
-          input: 'password'
-        })
-        if (!res.isConfirmed || res.value !== password) {
+        const res = await popAuthorize('')
+        if (res !== password) {
           IKUtils.toast('Passwort Falsch', 'error')
           return
         }
       }
-
       this.showOpenTableDialog = true
       this.servantPassword = password
     },
@@ -1034,10 +1033,6 @@ export default {
 .area {
   max-height: calc(100vh - 72px);
   margin-right: 14px;
-}
-
-.area:last-child {
-  margin-right: 380px;
 }
 
 .alert {
