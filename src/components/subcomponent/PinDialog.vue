@@ -8,8 +8,9 @@
           </template>
         </div>
         <v-text-field
-          autofocus
           style="width: 0;height: 0"
+
+          autofocus
           @keydown.enter="check"
           @focus="focusEnd" ref="hiddenInput" type="search"
           autocomlete="off" dense hide-details
@@ -116,6 +117,7 @@ export default {
     initial () {
     },
     focusEnd () {
+      console.log('end')
       const input = this.$refs.hiddenInput.$refs.input
       input.selectionStart = input.selectionEnd = input.value.length
     }

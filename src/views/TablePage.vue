@@ -492,7 +492,7 @@ const defaultCurrentDish = {
 const keyboardLayout =
 
   [
-    '7', '8', '9', 'mdi-autorenew',
+    '7', '8', '9', 'C',
     '4', '5', '6', 'A',
     '1', '2', '3', 'M',
     '.', '0', 'mdi-close', 'OK'
@@ -610,18 +610,18 @@ export default {
         this.displayInput = ''
       }
       switch (key) {
-        default:
-          this.displayInput += key
-          break
         case 'mdi-close':
           this.displayInput += '*'
           break
-        case 'mdi-autorenew':
+        case 'C':
           this.displayInput = ''
           break
         case 'OK':
           this.insDecode(this.displayInput)
           this.displayInput = ''
+          break
+        default:
+          this.displayInput += key
           break
       }
       this.input = this.displayInput
