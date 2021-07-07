@@ -82,7 +82,7 @@
             <v-icon>
               mdi-printer-off
             </v-icon>
-            {{ falsePrinterList.length }} {{$t('Erneut Drücken')}}
+            {{ falsePrinterList.length }} {{ $t('Erneut Drücken') }}
           </v-btn>
 
           <v-btn
@@ -210,8 +210,16 @@
             <v-card height="calc(100vh - 48px)" color="transparent"
                     style="width: 190px; flex-shrink: 0;overflow-y: scroll" :key="servant.id">
               <v-toolbar dense tile>
-                <v-toolbar-title class="d-flex align-center" style="width: 100%"><div>{{ servant.name }}</div><v-spacer></v-spacer>
-                  <div class="d-flex align-center" style="font-size: small"><v-icon small>mdi-food</v-icon>/<v-icon small>mdi-cup-water</v-icon>/<v-icon small>mdi-cash-multiple</v-icon></div>
+                <v-toolbar-title class="d-flex align-center" style="width: 100%">
+                  <div>{{ servant.name }}</div>
+                  <v-spacer></v-spacer>
+                  <div class="d-flex align-center" style="font-size: small">
+                    <v-icon small>mdi-food</v-icon>
+                    /
+                    <v-icon small>mdi-cup-water</v-icon>
+                    /
+                    <v-icon small>mdi-cash-multiple</v-icon>
+                  </div>
                 </v-toolbar-title>
               </v-toolbar>
               <template v-for="table in servant.tables">
@@ -281,7 +289,8 @@
                         </div>
                         <div class="d-flex justify-space-between px-1">
                           <template v-if="['1','2','3','5'].includes(table.consumeType)">
-                            <div v-if="Config.gridSizeX>=64" class="d-flex align-center" :class="!parseInt(table.dishCount)?' alert':''">
+                            <div v-if="Config.gridSizeX>=64" class="d-flex align-center"
+                                 :class="!parseInt(table.dishCount)?' alert':''">
                               <v-icon x-small>mdi-silverware-fork-knife</v-icon>
                               <span class="ml-1">{{ table.dishCount === null ? 0 : table.dishCount }}</span>
                             </div>
@@ -486,6 +495,7 @@ import GridButton from '@/components/GridButton'
 import MemberCardDialog from '@/components/fragments/MemberCardDialog'
 import OpenTableForm from '@/components/OpenTableForm'
 import { update } from '@/api/nightwatch'
+import { mapMutations, mapState } from 'vuex'
 
 const keyboardLayout =
   [
@@ -582,6 +592,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['pinDialogShow']),
     activeTables () {
       return this.realArea.reduce((arr, a) => {
         arr.push(...a.tables)
@@ -726,9 +737,10 @@ export default {
     openOrEnterTable: openOrEnterTable,
     requestOutTable,
     resetTableStatus,
-
+    ...mapMutations(['HIDE_DIALOG']),
     initialUI () {
       this.$refs.ins.focus()
+      this.HIDE_DIALOG()
       this.currentKeyboardFunction = keyboardFunctions.OpenTable
       blockReady()
     },
@@ -771,6 +783,7 @@ export default {
         Swal.clickConfirm()
         return
       }
+
       switch (e.key) {
         case 'Escape':
           this.back()
@@ -858,7 +871,7 @@ export default {
       })
     },
     anyMenuOpen () {
-      return Swal.isVisible() || this.menu || this.memberCardDialogShow
+      return Swal.isVisible() || this.menu || this.memberCardDialogShow || this.pinDialogShow
     },
     autoGetFocus () {
       if (this.anyMenuOpen()) {
@@ -1027,7 +1040,7 @@ export default {
   margin-right: 380px;
 }
 
-.alert{
+.alert {
   background: red;
 }
 </style>

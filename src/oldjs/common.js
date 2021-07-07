@@ -4,6 +4,7 @@ import hillo from 'hillo'
 import i18n from '../i18n'
 import GlobalConfig from './LocalGlobalSettings'
 import PrintStatus from './PrintStatus'
+import store from './../store'
 import { clearAllTimer } from '@/oldjs/Timer'
 import dayjs from 'dayjs'
 import { capitalize } from 'lodash-es/string'
@@ -108,42 +109,28 @@ export function setGlobalTableId (id) {
 
 export async function popAuthorize (type, successCallback, force = false,
   failedCallback, tableId = null) {
-  const ok = (r) => {
+  const ok = (password) => {
     if (successCallback) {
-      successCallback(r?.originalData)
+      successCallback(password)
     }
   }
-
-  if (!force) {
-    if (!GlobalConfig.usePassword && type !== 'boss') {
-      ok(GlobalConfig.defaultPassword)
-      return {
-        originalData: GlobalConfig.defaultPassword
-      }
-    }
-    if (!GlobalConfig.UseBossPassword && type === 'boss') {
-      ok()
-      return {
-        originalData: GlobalConfig.defaultPassword
-      }
+  const typeIsBoss = type === 'boss'
+  if (!force && ((typeIsBoss && !GlobalConfig.UseBossPassword) || (!typeIsBoss && !GlobalConfig.usePassword))) {
+    ok(GlobalConfig.defaultPassword)
+    return {
+      originalData: GlobalConfig.defaultPassword
     }
   }
-
-  const res = await fastSweetAlertRequest(i18n.t('popAuthTitle'), 'password',
-    'Servant.php',
-    'pw', {
-      op: type === 'boss' ? 'checkBoss' : 'checkServant',
-      tableId: tableId ?? TableId ?? null
-    }, 'GET', false)
-  if (res) {
-    ok(res)
-  } else {
-    if (failedCallback) {
-      failedCallback()
-    }
-  }
-
-  return res
+  return new Promise(resolve => {
+    store.commit('START_AUTHORIZE', {
+      typeIsBoss,
+      successCallback,
+      force,
+      failedCallback,
+      tableId,
+      resolve
+    })
+  })
 }
 
 /** should provide a model list */

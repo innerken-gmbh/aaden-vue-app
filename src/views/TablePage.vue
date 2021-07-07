@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <div>
     <template v-cloak>
       <v-main>
         <div style="display: flex; background: #f6f6f6;">
@@ -422,7 +422,7 @@ left: 304px"
         :discount-ratio="discountRatio"
         :visible="checkoutShow"/>
     </template>
-  </v-app>
+  </div>
 </template>
 
 <script>
@@ -478,6 +478,7 @@ import DiscountDialog from '@/components/fragments/DiscountDialog'
 import AddressDisplay from '@/components/AddressDisplay'
 import { acceptOrder } from '@/api/api'
 import GridButton from '@/components/GridButton'
+import { mapState } from 'vuex'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -968,16 +969,19 @@ export default {
         await realEnd()
       }
     },
-    autoGetFocus () {
-      if (this.modificationShow || this.checkoutShow || this.discountModelShow || this.extraDishShow) {
-        return
+    anyMenuOpen () {
+      return this.modificationShow || this.checkoutShow || this.discountModelShow || this.extraDishShow || this.pinDialogShow || Swal.isVisible()
+    },
+    autoGetFocus (force = false) {
+      if (!force) {
+        if (this.anyMenuOpen()) {
+          return
+        }
+        if (document.getElementsByClassName('v-overlay').length > 0) {
+          return
+        }
       }
-      if (Swal.isVisible()) {
-        return
-      }
-      if (document.getElementsByClassName('v-overlay').length > 0) {
-        return
-      }
+
       this.$nextTick(() => {
         if (this.$refs.ins !== document.activeElement) {
           this.$refs.ins.focus()
@@ -1255,7 +1259,7 @@ export default {
     }
   },
   computed: {
-
+    ...mapState(['pinDialogShow']),
     telHint: function () {
       const info = this.userInfo
       return info.reduce((arr, i) => {

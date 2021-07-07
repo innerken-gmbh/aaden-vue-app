@@ -1,8 +1,8 @@
 <template>
   <v-card style="grid-auto-rows: 54px;"
           class="keyboard">
-    <template v-for="i in keys">
-      <v-btn :key="'key'+i" @click="input(i)"
+    <template v-for="(i,index) in keys">
+      <v-btn :key="'key'+i+index" @click="input(i)"
              class="key"
              style="height: 100%"
       >
