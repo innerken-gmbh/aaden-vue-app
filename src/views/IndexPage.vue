@@ -81,11 +81,6 @@
             <v-icon v-if="useBluePrintView">mdi-map</v-icon>
             <v-icon v-else>mdi-dots-grid</v-icon>
           </v-btn>
-
-          <v-btn :color="showRightMenu?'warning':'transparent'"
-                 @click="showRightMenu=!showRightMenu">
-            <v-icon>mdi-keyboard</v-icon>
-          </v-btn>
         </v-toolbar-items>
 
       </template>
@@ -310,7 +305,7 @@
       </div>
       <!--        下面是侧边栏的逻辑-->
     </v-main>
-    <v-navigation-drawer v-model="showRightMenu" permanent stateless app right width="300px">
+    <v-navigation-drawer permanent stateless app right width="300px">
       <v-toolbar dense dark>
         <v-toolbar-items class="ml-n2">
           <v-btn v-if="!useBluePrintView"
@@ -771,8 +766,17 @@ export default {
         return item.printStatus !== '4'
       })
     },
-    reprintAll () {
-      this.falsePrinterList.map(this.reprintBon)
+    async reprintAll () {
+      this.loading = true
+      try {
+        await Promise.all(this.falsePrinterList.map(async (i) => {
+          await this.reprintBon(i)
+        }))
+      } catch (e) {
+
+      } finally {
+        this.loading = false
+      }
     },
     async reprintBon (item) {
       await PrinterList.reprint(item)
