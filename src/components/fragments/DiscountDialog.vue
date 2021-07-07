@@ -1,9 +1,9 @@
 <template>
-  <v-dialog max-width="600px" v-model="realShow">
+  <v-dialog max-width="400px" v-model="realShow">
     <v-card>
-      <v-card-title>
-        {{ $t('折扣') }}
-      </v-card-title>
+      <v-toolbar tile color="primary" dark elevation="0">
+        <v-toolbar-title>  {{ $t('折扣') }}</v-toolbar-title>
+      </v-toolbar>
       <v-card-text>
         <v-text-field :label="$t('金额')"
                       messages="zB.: 12.34" v-model="localDiscountStr"></v-text-field>
