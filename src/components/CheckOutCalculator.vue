@@ -321,12 +321,14 @@ export default {
       }
       this.paymentLog.push(obj)
       if (parseInt(type) !== 1 && !this.equals(this.remainTotal, 0)) {
-        this.paymentLog.push({
-          id: 9,
-          price: this.remainTotal,
-          icon: 'mdi-bell',
-          hash: +this.paymentLog.length + 'p' + price + 'icon' + icon
-        })
+        if (this.remainTotal < 0) {
+          this.paymentLog.push({
+            id: 9,
+            price: this.remainTotal,
+            icon: 'mdi-bell',
+            hash: +this.paymentLog.length + 'p' + price + 'icon' + icon
+          })
+        }
       }
     },
     withdrawPayment (index) {
