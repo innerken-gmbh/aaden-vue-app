@@ -267,7 +267,7 @@
                       @click='openOrEnterTable(table.tableName)'>
                       <div
                         :style="{color:tableForegroundColor(table)}"
-                        style="position: absolute;top:8px;
+                        style="position: absolute;top:10px;
                         right:4px;z-index: 2;font-size: 14px;
                         line-height: 12px;
                         font-weight: bold;

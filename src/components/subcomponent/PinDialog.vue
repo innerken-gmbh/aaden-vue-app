@@ -10,10 +10,10 @@
         <v-text-field
           autofocus
           style="width: 0;height: 0"
-                      @keydown.enter="check"
-                      @focus="focusEnd" ref="hiddenInput" type="search"
-                      autocomlete="off" dense hide-details
-                      v-model="hiddenInput"></v-text-field>
+          @keydown.enter="check"
+          @focus="focusEnd" ref="hiddenInput" type="search"
+          autocomlete="off" dense hide-details
+          v-model="hiddenInput"></v-text-field>
         <keyboard :keys="keyboardLayout" @input="numberInput"/>
       </template>
       <template v-else>
@@ -72,9 +72,9 @@ export default {
       try {
         const result = await checkServant(this.isAuthorizeTypeSuper, this.localPinInput, this.tableId)
         this.AUTHORIZE_OK(this.localPinInput)
-        console.log(result, 'ok')
+        console.log(result)
       } catch (e) {
-        console.log(e, 'error')
+        console.log(e)
       } finally {
         this.loading = false
         this.localPinInput = ''
