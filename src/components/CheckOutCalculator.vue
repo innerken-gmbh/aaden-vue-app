@@ -63,9 +63,9 @@
             </template>
             <v-list>
               <v-list-item
-                  @click="input(item)"
-                  v-for="(item, index) in realExtraPaymentMethodName"
-                  :key="index"
+                @click="input(item)"
+                v-for="(item, index) in realExtraPaymentMethodName"
+                :key="index"
               >
                 <v-list-item-icon>
                   <v-icon>{{ realExtraPaymentMethod[index] }}</v-icon>
@@ -111,16 +111,16 @@
           <v-divider :key="'d'+paymentInfo.hash"></v-divider>
         </template>
       </div>
-      <div>
+      <div v-if="readyToCheckOut">
         <v-sheet class="my-6">
           <h4>
             {{ $t('tableCheckOutBillTypeLabel') }}
           </h4>
           <v-sheet class="my-2" style="background: transparent">
             <v-chip-group
-                v-model="billType"
-                mandatory column
-                active-class="primary--text">
+              v-model="billType"
+              mandatory column
+              active-class="primary--text">
               <v-chip x-large label>
                 {{ $t('tableCheckOutBillTypeOptionNormal') }}
               </v-chip>
@@ -134,35 +134,33 @@
           </v-sheet>
         </v-sheet>
         <v-divider class="my-3"></v-divider>
-        <div style="height: 120px;display: grid;grid-template-columns: 1fr 1fr">
-          <div class="pa-2">
-            <v-btn tile fab
-                   outlined
-                   @click="cancel"
-                   color="error" block x-large>
-              {{ $t('cancel') }}
-            </v-btn>
-          </div>
-          <div class="pa-2">
-            <v-btn color="success"
-                   @click="checkOut"
-                   elevation="0"
-                   :disabled="!equals(remainTotal,0)||paymentLog.length===0"
-                   tile fab block x-large> {{ $t('tableCheckOutConfirm') }}
-            </v-btn>
-          </div>
+        <div class="pa-2">
+          <v-btn color="success"
+                 @click="checkOut"
+                 elevation="0"
+                 :disabled="!readyToCheckOut"
+                 tile fab block x-large> {{ $t('tableCheckOutConfirm') }}
+          </v-btn>
         </div>
-        <div style="height: 120px">
-          <h4>{{ $t('或者使用0小费,现金,普通账单进行') }}</h4>
-          <div class="pa-2">
-            <v-btn color="primary"
-                   @click="checkOut"
-                   elevation="0"
-                   :disabled="paymentLog.length!==0"
-                   tile fab block x-large> {{ $t('QuickBill') }}
-            </v-btn>
-          </div>
+      </div>
+      <div v-else style="height: 120px">
+        <h4>{{ $t('或者使用0小费,现金,普通账单进行') }}</h4>
+        <div class="pa-2">
+          <v-btn color="primary"
+                 @click="checkOut"
+                 elevation="0"
+                 :disabled="paymentLog.length!==0"
+                 tile fab block x-large> {{ $t('QuickBill') }}
+          </v-btn>
         </div>
+      </div>
+      <div class="pa-2">
+        <v-btn tile fab
+               outlined
+               @click="cancel"
+               color="error" block x-large>
+          {{ $t('cancel') }}
+        </v-btn>
       </div>
     </div>
   </div>
@@ -243,6 +241,9 @@ export default {
         return cry
       }, 0)
       return this.total - logTotal
+    },
+    readyToCheckOut: function () {
+      return this.equals(this.remainTotal, 0) && this.paymentLog.length !== 0
     }
   },
   created () {
@@ -293,6 +294,9 @@ export default {
     },
     async logPayment (type) {
       const price = this.readBuffer()
+      if (price === 0) {
+        return
+      }
       const icon = Object.entries(this.realName).find(([k, v]) => v === type)[0]
       const hash = this.paymentLog.length + 'p' + price + 'icon' + icon
       const obj = {
@@ -301,6 +305,7 @@ export default {
         icon,
         hash
       }
+
       if (parseInt(type) === 4) {
         const res = await fastSweetAlertRequest(
           'Bitte Gutschein Id Gaben.',
@@ -314,8 +319,15 @@ export default {
           return
         }
       }
-
       this.paymentLog.push(obj)
+      if (parseInt(type) !== 1 && !this.equals(this.remainTotal, 0)) {
+        this.paymentLog.push({
+          id: 9,
+          price: this.remainTotal,
+          icon: 'mdi-bell',
+          hash: +this.paymentLog.length + 'p' + price + 'icon' + icon
+        })
+      }
     },
     withdrawPayment (index) {
       this.paymentLog.splice(index, 1)
@@ -342,13 +354,13 @@ export default {
             break
           case '10':
             window.open('sumupmerchant://pay/1.0?' +
-                'affiliate-key=7ca84f17-84a5-4140-8df6-6ebeed8540fc&' +
-                'app-id=com.example.myapp&' +
-                'total=' + this.readBuffer() + '&currency=EUR' +
-                '&title=Taxi Ride' +
-                '&receipt-mobilephone=+3531234567890' +
-                '&receipt-email=customer@mail.com' +
-                '&callback=https://aaden.io')
+              'affiliate-key=7ca84f17-84a5-4140-8df6-6ebeed8540fc&' +
+              'app-id=com.example.myapp&' +
+              'total=' + this.readBuffer() + '&currency=EUR' +
+              '&title=Taxi Ride' +
+              '&receipt-mobilephone=+3531234567890' +
+              '&receipt-email=customer@mail.com' +
+              '&callback=https://aaden.io')
             this.logPayment(c)
             break
           default:
