@@ -41,7 +41,7 @@ const keyboardLayout =
     '7', '8', '9', 'C',
     '4', '5', '6', '',
     '1', '2', '3', '',
-    '', '0', '', 'OK'
+    'X', '0', '', 'OK'
   ]
 
 export default {
@@ -105,6 +105,9 @@ export default {
         case 'OK':
           this.check()
           break
+        case 'X':
+          this.HIDE_DIALOG()
+          break
         case 'C':
           this.localPinInput = ''
           break
@@ -137,11 +140,16 @@ export default {
     }
   },
   computed: {
-    ...mapState(['isAuthorizeTypeSuper', 'pinDialogCallBack', 'pinDialogFailCallBack', 'tableId', 'pinDialogShow']),
+    ...mapState(['isAuthorizeTypeSuper', 'tableId', 'pinDialogShow']),
     slots () {
       const slots = ['', '', '']
-      if (this.localPinInput?.length > 0) {
-        slots.splice(0, this.localPinInput.length, ...this.localPinInput.split(''))
+      const pointer = this.localPinInput?.length
+      if (pointer > 0) {
+        slots.splice(0, pointer, ...this.localPinInput.split(''))
+        const astra = Array(pointer - 1)
+        astra.fill('*')
+        console.log(astra)
+        slots.splice(0, astra.length, ...astra)
         return slots
       } else {
         return slots
