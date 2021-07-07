@@ -1,27 +1,14 @@
 <template>
   <v-dialog max-width="600px" v-model="realShow">
     <v-card>
-      <v-toolbar>
-        <v-toolbar-title>{{ $t('折扣') }}</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-icon @click="realShow=!realShow">mdi-close</v-icon>
-      </v-toolbar>
-      <v-tabs v-model="localDiscountType" vertical>
-        <v-tab>{{ $t('现金') }}</v-tab>
-        <v-tab>{{ $t('百分比') }}</v-tab>
-        <v-tab-item>
-          <v-card-text>
-            <v-text-field :label="$t('金额')"
-                          messages="zB.: 12.34" v-model="localDiscountStr"></v-text-field>
-          </v-card-text>
-        </v-tab-item>
-        <v-tab-item>
-          <v-card-text>
-            <v-text-field :label="$t('百分比')"
-                          messages="1-99" v-model="localDiscountStr"></v-text-field>
-          </v-card-text>
-        </v-tab-item>
-      </v-tabs>
+      <v-card-title>
+        {{ $t('折扣') }}
+      </v-card-title>
+      <v-card-text>
+        <v-text-field :label="$t('金额')"
+                      messages="zB.: 12.34" v-model="localDiscountStr"></v-text-field>
+      </v-card-text>
+
       <v-card-actions>
         <div class="d-flex flex-wrap">
           <template v-for="d in predefinedDiscount">
@@ -29,7 +16,6 @@
           </template>
         </div>
         <v-spacer></v-spacer>
-        <v-btn @click="submitDiscount">{{ $t('确定') }}</v-btn>
       </v-card-actions>
       <keyboard :keys="keyboardLayout" @input="numberInput"/>
     </v-card>
@@ -44,13 +30,13 @@ import Keyboard from '@/components/Keyboard'
 import { popAuthorize } from '@/oldjs/common'
 
 const keyboardLayout =
-    [
+  [
 
-      '7', '8', '9', 'mdi-autorenew',
-      '4', '5', '6', '%',
-      '1', '2', '3', '$',
-      '.', '0', '', 'OK'
-    ]
+    '7', '8', '9', 'C',
+    '4', '5', '6', '',
+    '1', '2', '3', '$',
+    'mdi-close-box', '0', '.', '%'
+  ]
 
 export default {
   name: 'discountDialog',
@@ -93,16 +79,18 @@ export default {
         case '.':
           this.localDiscountStr += key
           break
+        case 'mdi-close-box':
+          this.realShow = false
+          break
         case '%':
           this.localDiscountType = 1
+          this.submitDiscount()
           break
         case '$':
           this.localDiscountType = 0
-          break
-        case 'OK':
           this.submitDiscount()
           break
-        case 'mdi-autorenew':
+        case 'C':
           this.localDiscountStr = ''
           break
       }
@@ -141,9 +129,9 @@ export default {
       const isPercentage = discountStr.includes('p')
       const value = parseFloat(discountStr.replace('p', ''))
       if (GlobalConfig.bigDiscountRatio > 0 &&
-          isPercentage &&
-          (value / 100) >=
-          GlobalConfig.bigDiscountRatio) {
+        isPercentage &&
+        (value / 100) >=
+        GlobalConfig.bigDiscountRatio) {
         this.realShow = false
         popAuthorize('boss', () => {
           realSubmitDiscount()
