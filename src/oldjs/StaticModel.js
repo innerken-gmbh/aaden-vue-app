@@ -127,7 +127,7 @@ export const DefaultAddressInfo = {
   oldTime: '',
   date: '',
   time: '',
-  deliveryMethod: '',
+  deliveryMethod: 'Abholung',
   edit: false
 }
 
