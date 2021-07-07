@@ -52,6 +52,7 @@
                   :show-number="true"
                   :extra-height="'196px'"
                   :color="'#707070'"
+                  :reverse="true"
                   :dish-list-model="cartListModel"
                   :show-edit="true"
                   :click-callback="removeDish"
@@ -1309,6 +1310,8 @@ export default {
   watch: {
     activeDCT: function () {
       this.input = null
+      this.displayInput = null
+      this.activeCategoryId = null
       this.updateFilteredDish()
     },
     dishes: function () {

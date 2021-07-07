@@ -1,10 +1,11 @@
 <template>
   <v-card>
+    <span style="display: none">{{currentDish?currentDish.name:''}}</span>
     <v-toolbar
-        dense
-        tile
-        class="font-weight-bold"
-        :color="color" dark>
+      dense
+      tile
+      class="font-weight-bold"
+      :color="color" dark>
       <v-toolbar-title>
         {{ title }}
       </v-toolbar-title>
@@ -20,23 +21,23 @@
          :style="{maxHeight: `calc(100vh - 48px - ${extraHeight})`}"
          style="overflow-y: scroll"
     >
-      <template v-for="(order,index) in dishListModel.list">
+      <template v-for="(order,index) in dishList">
         <div @click="checkIfOpen(index)" :key="'order'+title+order.identity">
           <dish-card
-              :expand="index===expandIndex"
-              :color="color"
-              :show-number="showNumber"
-              :click-callback="()=>_clickCallBack(index,order)"
-              :show-edit="showEdit"
-              :dish="order"/>
+            :expand="index===expandIndex"
+            :color="color"
+            :show-number="showNumber"
+            :click-callback="()=>_clickCallBack(index,order)"
+            :show-edit="showEdit"
+            :dish="order"/>
         </div>
       </template>
       <template v-if="discountDish!=null">
         <dish-card
-            :color="color"
-            :show-number="showNumber"
-            :show-edit="showEdit"
-            :dish="discountDish"/>
+          :color="color"
+          :show-number="showNumber"
+          :show-edit="showEdit"
+          :dish="discountDish"/>
       </template>
     </div>
   </v-card>
@@ -74,6 +75,9 @@ export default {
     discountRatio: {
       default: 0
     },
+    reverse: {
+      default: false
+    },
     defaultExpand: {},
     showEdit: {},
     color: {
@@ -90,17 +94,17 @@ export default {
     dishList: function () {
       this.resetExpandIndex()
     },
-    expandIndex: function (val) {
-      if (val == null) {
-        if (this.dishList.length > 0) {
-          if (this.resetCurrentExpandIndex) {
-            this.resetExpandIndex()
+    expandIndex: {
+      handler: function (val) {
+        if (val == null) {
+          if (this.dishList.length > 0) {
+            if (this.resetCurrentExpandIndex) {
+              this.resetExpandIndex()
+            }
           }
         }
-      } else {
-        const currentDish = this.dishList[val] ?? null
-        this.$emit('current-dish-change', currentDish)
-      }
+      },
+      immediate: true
     },
     defaultExpand: function (val) {
       this.expand = val
@@ -108,7 +112,7 @@ export default {
   },
   methods: {
     resetExpandIndex () {
-      this.expandIndex = this.resetCurrentExpandIndex ? this.dishList.length - 1 : null
+      this.expandIndex = this.resetCurrentExpandIndex ? (this.reverse ? 0 : this.dishList.length - 1) : null
     },
     _clickCallBack (index, dish) {
       if (dish.count === 0) {
@@ -132,7 +136,12 @@ export default {
   },
   computed: {
     dishList: function () {
-      return this.dishListModel.list
+      const list = [...this.dishListModel.list]
+      if (this.reverse) {
+        list.reverse()
+      }
+
+      return list
     },
     originTotal: function () {
       return this.dishListModel.list.length > 0 ? this.dishListModel.total() : 0
@@ -154,6 +163,11 @@ export default {
         }
       }
       return null
+    },
+    currentDish: function () {
+      const currentDish = this.dishList[this.expandIndex] ?? null
+      this.$emit('current-dish-change', currentDish)
+      return currentDish
     }
   }
 }
