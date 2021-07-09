@@ -72,9 +72,8 @@ export async function checkCurrentVersion (slient = false) {
     GlobalConfig.backendIsOk = checkVersion(currentVersion, GlobalConfig.requiredBackendVersion)
     return GlobalConfig.backendIsOk
   } catch (e) {
-    if (!slient) {
-      IKUtils.showError('Deine Backend Version ist zu alt. Bitte Aaden Support kontakt und Upgrade', 'Achtung')
-    }
-    return false
+    IKUtils.showError('Deine Backend Version ist zu alt. Bitte Aaden Support kontakt und Upgrade', 'Achtung')
+    GlobalConfig.backendIsOk = true
+    return true
   }
 }
