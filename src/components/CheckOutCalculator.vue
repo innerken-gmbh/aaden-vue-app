@@ -147,7 +147,7 @@
         <h4>{{ $t('或者使用0小费,现金,普通账单进行') }}</h4>
         <div class="pa-2">
           <v-btn color="primary"
-                 @click="checkOut"
+                 @click="checkOut(true)"
                  elevation="0"
                  :disabled="paymentLog.length!==0"
                  tile fab block x-large> {{ $t('QuickBill') }}
@@ -266,7 +266,11 @@ export default {
     equals (a, b) {
       return Math.abs(a - b) < 0.001
     },
-    checkOut () {
+    checkOut (fastCheckOut = false) {
+      if (fastCheckOut) {
+        this.billType = 0
+        this.paymentLog = []
+      }
       this.$emit('payment-submit', this.paymentLog, this.billType)
       this.clearBuffer()
       this.paymentLog = []

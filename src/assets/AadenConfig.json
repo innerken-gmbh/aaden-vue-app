@@ -3,7 +3,7 @@
   "DeviceId": -1,
   "Protocol": "http://",
   "lang": "ZH",
-  "Debug": true,
+  "Debug": false,
   "usePassword": false,
   "UseBossPassword": true,
   "defaultPassword": "111",
