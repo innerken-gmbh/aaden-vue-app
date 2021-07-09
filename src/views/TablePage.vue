@@ -1052,23 +1052,35 @@ export default {
       }
     },
 
-    reprintOrder () {
-      hillo.post('Printer.php?op=questReprintOrder', {
-        orderId: this.tableDetailInfo.order.id
-      }).then(() => {
+    async reprintOrder () {
+      this.isSendingRequest = true
+      try {
+        await hillo.post('Printer.php?op=questReprintOrder', {
+          orderId: this.tableDetailInfo.order.id
+        })
         toast()
         blockReady()
-      })
+      } catch (e) {
+
+      } finally {
+        this.isSendingRequest = false
+      }
     },
-    zwitchenBon () {
-      hillo.post('BackendData.php?op=reprintOrder', {
-        id: this.tableDetailInfo.order.id,
-        withTitle: 0,
-        printCount: 1
-      }).then(() => {
+    async zwitchenBon () {
+      this.isSendingRequest = true
+      try {
+        await hillo.post('BackendData.php?op=reprintOrder', {
+          id: this.tableDetailInfo.order.id,
+          withTitle: 0,
+          printCount: 1
+        })
         toast()
         blockReady()
-      })
+      } catch (e) {
+
+      } finally {
+        this.isSendingRequest = false
+      }
     },
     //* findInsDecode*/
     async insDecode (t) {
