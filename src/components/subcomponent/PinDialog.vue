@@ -1,7 +1,7 @@
 <template>
   <v-dialog max-width="400px" v-model="realShow">
     <v-card>
-      <v-toolbar tile color="primary" dark elevation="0">
+      <v-toolbar tile :color="error?'error':'primary'" dark elevation="0">
         <v-toolbar-title>Bitte {{ isAuthorizeTypeSuper?'Boss ':' ' }}Passwort Eingaben</v-toolbar-title>
       </v-toolbar>
       <span class="caption"></span>
@@ -70,7 +70,8 @@ export default {
       servants: [],
       keyboardLayout,
       oldOnKeyDown: null,
-      loading: false
+      loading: false,
+      error: false
     }
   },
   methods: {
@@ -83,8 +84,9 @@ export default {
         console.log(result)
       } catch (e) {
         console.log(e)
-      } finally {
+        this.error = true
         this.loading = false
+      } finally {
         this.localPinInput = ''
       }
     },
@@ -122,6 +124,9 @@ export default {
       }
     },
     initial () {
+      this.localPinInput = ''
+      this.loading = false
+      this.error = false
     },
     focusEnd () {
       const input = this.$refs.hiddenInput.$refs.input
@@ -131,8 +136,10 @@ export default {
   watch: {
     realShow: {
       immediate: true,
-      handler: function () {
-        this.localPinInput = ''
+      handler: function (val) {
+        if (val) {
+          this.initial()
+        }
       }
     },
     hiddenInput (val) {
@@ -154,7 +161,7 @@ export default {
       const pointer = this.localPinInput?.length
       if (pointer > 0) {
         slots.splice(0, pointer, ...this.localPinInput.split(''))
-        const astra = Array(pointer - 1)
+        const astra = Array(pointer)
         astra.fill('*')
         console.log(astra)
         slots.splice(0, astra.length, ...astra)
