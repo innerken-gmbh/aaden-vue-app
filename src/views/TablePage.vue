@@ -184,7 +184,8 @@
           </div>
           <v-spacer></v-spacer>
         </v-toolbar>
-        <v-card width="300px" height="calc(100vh - 48px)" class="d-flex flex-shrink-0 flex-column pa-2">
+        <v-card width="300px" height="calc(100vh - 48px)"
+                class="d-flex flex-shrink-0 flex-column pa-2">
           <div v-if="cartListModel.count()===0"
           >
             <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px">
