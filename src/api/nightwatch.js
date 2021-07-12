@@ -15,18 +15,18 @@ export async function update () {
   let timerInterval
   Swal.fire({
     title: 'Automatical Update',
-    html: 'Muss noch <b></b> Sekunden warten.',
+    html: 'Muss noch <b class="time"></b> Sekunden warten.',
     timer: 30000,
     timerProgressBar: true,
     allowOutsideClick: false,
-    didOpen: () => {
+    onOpen: () => {
       Swal.showLoading()
       timerInterval = setInterval(() => {
         const content = Swal.getHtmlContainer()
         if (content) {
-          const b = content.querySelector('b')
+          const b = content.querySelector('.time')
           if (b) {
-            b.textContent = Swal.getTimerLeft()
+            b.textContent = (Swal.getTimerLeft() / 1000).toFixed(0).toString()
           }
         }
       }, 1000)
@@ -59,7 +59,11 @@ export async function checkCurrentVersionAndUpdate () {
       showCancelButton: true
     })
     if (result.isConfirmed) {
-      await update()
+      try {
+        await update()
+      } catch (e) {
+
+      }
     }
   }
 }
