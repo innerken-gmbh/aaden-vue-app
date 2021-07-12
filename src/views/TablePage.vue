@@ -1043,6 +1043,9 @@ export default {
       if (Swal.isVisible()) {
         return
       }
+      if (this.isSendingRequest) {
+        return
+      }
       switch (e.key) {
         case 'Escape':
           this.back()
@@ -1136,19 +1139,24 @@ export default {
             }, 10)
             return
           } else {
-            setTimeout(async () => {
-              const res = await showConfirmAsyn('Zahlung ohne tip mit bar?')
-              if (res.value) {
-                if (GlobalConfig.checkOutUsePassword) {
-                  popAuthorize('', (pw) => {
-                    this.checkOut(pw)
-                  }, true, false, this.id)
-                } else {
-                  this.checkOut()
+            if (GlobalConfig.useEnterKeyToPay) {
+              setTimeout(async () => {
+                const res = await showConfirmAsyn('Zahlung ohne tip mit bar?')
+                if (res.value) {
+                  if (GlobalConfig.checkOutUsePassword) {
+                    popAuthorize('', (pw) => {
+                      this.checkOut(pw)
+                    }, true, false, this.id)
+                  } else {
+                    this.checkOut()
+                  }
                 }
-              }
+                blockReady()
+              }, 10)
+            } else {
               blockReady()
-            }, 10)
+            }
+
             return
           }
         }

@@ -44,5 +44,6 @@
   "alwaysShowDishesBellow": false,
   "servantDataOnlyToday": false,
   "useOpenTableConfirm": false,
-  "showTotalPriceOnCard": true
+  "showTotalPriceOnCard": true,
+  "useEnterKeyToPay": false
 }
