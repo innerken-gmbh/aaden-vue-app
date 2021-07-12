@@ -42,7 +42,11 @@ async function initial () {
   await loadConfig()
 
   i18n.locale = GlobalConfig.lang.toLowerCase()
-  await checkCurrentVersionAndUpdate()
+  try {
+    await checkCurrentVersionAndUpdate()
+  } catch (e) {
+
+  }
   new Vue({
     router,
     store,
