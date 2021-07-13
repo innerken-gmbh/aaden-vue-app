@@ -116,9 +116,11 @@ export async function goHome () {
 
 export const DefaultBuffetSetting = {
   roundTime: 10 * 60,
+  roundTimeMin: 10,
   roundDishCount: 5,
   totalRound: 10,
   maxDineTime: 120 * 60,
+  maxDineTimeMin: 120,
   childRoundDishCount: 3
 }
 export const DefaultAddressInfo = {

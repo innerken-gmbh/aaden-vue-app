@@ -259,6 +259,7 @@
               </template>
               <grid-button
                 :loading="isSendingRequest"
+                v-if="consumeTypeId===1"
                 icon="mdi-silverware"
                 :text="$t('Buffet')"
                 color="#ff7961"
@@ -431,6 +432,8 @@ left: 304px"
         :discount-ratio="discountRatio"
         :visible="checkoutShow"/>
       <buffet-start-dialog
+        :initial-u-i="initialUI"
+        :id="tableDetailInfo.order.id"
         @visibility-changed="(val)=>this.buffetDialogShow=val"
         :buffet-dialog-show="buffetDialogShow"></buffet-start-dialog>
     </template>
@@ -915,6 +918,7 @@ export default {
     async initialUI (forceReload = false) {
       this.input = ''
       this.discountModelShow = false
+      this.buffetDialogShow = false
       this.overrideConsumeTypeIndex = null
       this.activeCategoryId = null
       this.cartListModel.clear()
@@ -932,6 +936,8 @@ export default {
     back () {
       if (this.discountModelShow) {
         this.discountModelShow = false
+      } else if (this.buffetDialogShow) {
+        this.buffetDialogShow = false
       } else if (this.modificationShow) {
         this.cancel()
       } else if (this.checkoutShow) {
