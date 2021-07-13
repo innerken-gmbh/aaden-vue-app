@@ -266,11 +266,7 @@ export default {
     equals (a, b) {
       return Math.abs(a - b) < 0.001
     },
-    checkOut (fastCheckOut = false) {
-      if (fastCheckOut) {
-        this.billType = 0
-        this.paymentLog = []
-      }
+    checkOut () {
       this.$emit('payment-submit', this.paymentLog, this.billType)
       this.clearBuffer()
       this.paymentLog = []
