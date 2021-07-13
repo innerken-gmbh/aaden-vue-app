@@ -1,6 +1,7 @@
 import hillo from 'hillo'
 import IKUtils from 'innerken-js-utils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
 
 export async function previewZBon (startDate, endDate) {
   return (await hillo.get('ZBon.php?op=previewBySpan', { startDate, endDate })).content
@@ -60,4 +61,16 @@ export async function renameMemberCard (oldName, newName) {
 
 export async function getBillListForServant (pw, date) {
   return (await hillo.get('BackendData.php?op=mobileV3StatWithLang', { pw, date, lang: GlobalConfig.lang })).content
+}
+
+export async function loadAllBuffetDish () {
+  return (await hillo.get('ConsumeType.php?op=showBuffetPriceDishToConsumeType', { lang: GlobalConfig.lang })).content
+}
+
+export async function changeOrderToBuffet (orderId, buffetDishes, buffetSetting) {
+  return (await hillo.post('Complex.php?op=changeOrderToBuffet', {
+    orderId,
+    buffetPriceDishes: JSON.stringify(buffetDishes),
+    extraJson: JSON.stringify(Object.assign({}, DefaultBuffetSetting, buffetSetting))
+  }))
 }

@@ -257,6 +257,13 @@
                   @click="rejectOrder"
                 />
               </template>
+              <grid-button
+                :loading="isSendingRequest"
+                icon="mdi-silverware"
+                :text="$t('Buffet')"
+                color="#ff7961"
+                @click="buffetDialogShow=true"
+              />
 
             </div>
 
@@ -423,6 +430,9 @@ left: 304px"
         :discount-str="discountStr"
         :discount-ratio="discountRatio"
         :visible="checkoutShow"/>
+      <buffet-start-dialog
+        @visibility-changed="(val)=>this.buffetDialogShow=val"
+        :buffet-dialog-show="buffetDialogShow"></buffet-start-dialog>
     </template>
   </div>
 </template>
@@ -481,6 +491,7 @@ import AddressDisplay from '@/components/AddressDisplay'
 import { acceptOrder } from '@/api/api'
 import GridButton from '@/components/GridButton'
 import { mapState } from 'vuex'
+import BuffetStartDialog from '@/components/fragments/BuffetStartDialog'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -506,6 +517,7 @@ export default {
     dragscroll
   },
   components: {
+    BuffetStartDialog,
     GridButton,
     AddressDisplay,
     DiscountDialog,
@@ -536,6 +548,7 @@ export default {
       extraDishShow: false,
       modificationShow: false,
       discountModelShow: null,
+      buffetDialogShow: false,
       isSendingRequest: false,
       oldMod: null,
       breakCount: 0,
@@ -972,7 +985,9 @@ export default {
       }
     },
     anyMenuOpen () {
-      return this.modificationShow || this.checkoutShow || this.discountModelShow || this.extraDishShow || this.pinDialogShow || Swal.isVisible()
+      return this.modificationShow || this.checkoutShow ||
+        this.discountModelShow || this.extraDishShow ||
+        this.pinDialogShow || Swal.isVisible()
     },
     autoGetFocus (force = false) {
       if (!force) {

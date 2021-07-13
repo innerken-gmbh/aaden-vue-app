@@ -114,6 +114,13 @@ export async function goHome () {
   }
 }
 
+export const DefaultBuffetSetting = {
+  roundTime: 10 * 60,
+  roundDishCount: 5,
+  totalRound: 10,
+  maxDineTime: 120 * 60,
+  childRoundDishCount: 3
+}
 export const DefaultAddressInfo = {
   firstName: '',
   lastName: '',
