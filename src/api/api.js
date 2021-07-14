@@ -1,5 +1,7 @@
 import hillo from 'hillo'
 import IKUtils from 'innerken-js-utils'
+import { version } from '../../package.json'
+import { deviceType, frontendMacAddress } from '../assets/FixedConfig.json'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
 
@@ -72,5 +74,14 @@ export async function changeOrderToBuffet (orderId, buffetDishes, buffetSetting)
     orderId,
     buffetPriceDishes: JSON.stringify(buffetDishes),
     extraJson: JSON.stringify(Object.assign({}, DefaultBuffetSetting, buffetSetting))
+  }))
+}
+
+export async function reportDeviceInfo () {
+  return (await hillo.post('Route.php?op=deviceLog', {
+    MACAddress: frontendMacAddress,
+    deviceType: deviceType,
+    version: version,
+    note: ''
   }))
 }

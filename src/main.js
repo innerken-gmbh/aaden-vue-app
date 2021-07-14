@@ -8,6 +8,7 @@ import GlobalConfig, { loadConfig } from './oldjs/LocalGlobalSettings'
 import './registerServiceWorker'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
 import { checkCurrentVersionAndUpdate } from '@/api/nightwatch'
+import { reportDeviceInfo } from '@/api/api'
 
 Vue.use(VuetifyGoogleAutocomplete, {
   apiKey: 'AIzaSyB5lIPQQUJjjY6M-BoqUaZhF21oBbYkd9E',
@@ -44,6 +45,7 @@ async function initial () {
   i18n.locale = GlobalConfig.lang.toLowerCase()
   try {
     await checkCurrentVersionAndUpdate()
+    reportDeviceInfo().then(r => console.log(r))
   } catch (e) {
 
   }
