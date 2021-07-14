@@ -264,7 +264,6 @@
                 color="#ff7961"
                 @click="buffetDialogShow=true"
               />
-
             </div>
 
             <address-display
