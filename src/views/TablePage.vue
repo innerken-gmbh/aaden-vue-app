@@ -195,7 +195,6 @@
                 :text="$t('Home')"
                 @click="back"
               />
-
               <grid-button
                 :loading="isSendingRequest"
                 icon="mdi-printer"
