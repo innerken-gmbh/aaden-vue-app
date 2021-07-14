@@ -88,7 +88,7 @@
   "addNewPartition": "添加新的分区",
   "addNewStaff": "添加新的人员",
   "addNewTable": "新增桌子",
-  "address": "地址",
+  "customerAddress": "客户地址",
   "all": "总",
   "allBill": "全部账单",
   "allDish": "所有菜品",
@@ -376,6 +376,7 @@
   "unitPrice": "单价",
   "usedTimesToday": "今日使用次数",
   "using": "使用中",
+  "Umsatz": "销售额",
   "weeklySale": "销量(周)",
   "weeklySalesAmount": "销售额(周)",
   "yes": "是",
@@ -431,5 +432,15 @@
   "重新打印": "重新打印",
   "金额": "金额",
   "销售额": "销售额",
-  "验证错误": "验证错误"
+  "验证错误": "验证错误",
+  "Tag-Sicht": "日历",
+  "Meine Umsatz": "跑堂详情",
+  "XBon Drücken": "XBon打印",
+  "KellnerBon": "跑堂日结单",
+  "Tip": "小费",
+  "ohne tip": "不含小费",
+  "Kellner": "跑堂",
+  "Summe": "消费金额",
+  "Tisch Nr.": "桌号 ",
+  "R. Nr.": "流水号"
 }

@@ -237,7 +237,7 @@
                 :loading="isSendingRequest"
                 v-if="consumeTypeId===2"
                 icon="mdi-map"
-                text="Addr. "
+                :text="$t('customerAddress')"
                 color="indigo"
                 @click="addressFormOpen=true"
               />

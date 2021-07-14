@@ -84,7 +84,7 @@
   "addNewPartition": "Neue Partition",
   "addNewStaff": "Neue Personal hinzufügen",
   "addNewTable": "Tisch hinzufügen",
-  "address": "Adresse",
+  "customerAddress": "Kd.Adresse",
   "all": "Gesamt",
   "allBill": "Alle Rechnungen",
   "allDish": "Alle Gerichte",
@@ -430,5 +430,17 @@
   "重新打印": "Erneut D.",
   "金额": "Menge",
   "销售额": "Umsatz",
-  "验证错误": "Verifizierungsfehler"
+  "验证错误": "Verifizierungsfehler",
+  "Kasse Ein": "Kasse Ein",
+  "Erneut Drücken": "Erneut D.",
+  "Tag-Sicht": "Tag-Sicht",
+  "Meine Umsatz": "Meine Umsatz",
+  "XBon Drücken": "XBon Drücken",
+  "KellnerBon": "KellnerBon",
+  "Tip": "Tip",
+  "ohne tip": "Ohne tip",
+  "Kellner": "Kellner",
+  "Summe": "Summe",
+  "Tisch Nr.": "Tisch Nr.",
+  "R. Nr.": "R. Nr."
 }

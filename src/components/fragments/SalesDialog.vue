@@ -4,10 +4,10 @@
       <v-toolbar>
         <v-tabs v-model="tabIndex">
           <template v-if="isBoss">
-            <v-tab v-if="Config.UseDailyZbon">Tag-Sicht</v-tab>
+            <v-tab v-if="Config.UseDailyZbon">{{ $i18n.t('Tag-Sicht') }}</v-tab>
             <v-tab v-else>Letzte-Sicht</v-tab>
           </template>
-          <v-tab>Meine Umsatz</v-tab>
+          <v-tab>{{$i18n.t('Meine Umsatz')}}</v-tab>
         </v-tabs>
         <v-spacer></v-spacer>
         <v-icon @click="realShow=!realShow">mdi-close</v-icon>
@@ -61,14 +61,14 @@
                       x-large
                       @click="printXBon"
                       color="warning">
-                      XBon Drücken
+                      {{ $t('XBon Drücken')}}
                     </v-btn>
                     <v-btn
                       v-if="shouldShowZBon"
                       x-large
                       @click="printZBon"
                       color="primary">
-                      ZBon Drücken
+                      {{$t('ZBon Drücken')}}
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -92,7 +92,7 @@
                                 {{ total.taxRatePercentage }}%
                               </v-list-item-title>
                               <v-list-item-subtitle>
-                                Umsatz: {{ total.groupTotal }}
+                                {{ $t('Umsatz') }}: {{ total.groupTotal }}
                               </v-list-item-subtitle>
                               <v-list-item-subtitle>
                                 Netto/Steuer: {{ total.nettoumsatz }}/{{ total.umsatzsteuer }}
@@ -118,14 +118,14 @@
                       x-large
                       @click="printXBon"
                       color="warning">
-                      XBon Drücken
+                      {{$t('XBon Drücken')}}
                     </v-btn>
                     <v-btn
                       v-if="shouldShowZBon"
                       x-large
                       @click="printZBon"
                       color="primary">
-                      ZBon Drücken
+                      {{$t('ZBon Drücken')}}
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -147,9 +147,9 @@
                     <template v-slot:default>
                       <thead>
                       <tr>
-                        <th class="text-left">Tisch Nr. / R.Nr.</th>
-                        <th class="text-left">Zeit</th>
-                        <th class="text-left">Summe</th>
+                        <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
+                        <th class="text-left">{{ $t('time') }}</th>
+                        <th class="text-left">{{ $t('Summe') }}</th>
                       </tr>
                       </thead>
                       <tbody>
@@ -173,11 +173,11 @@
                 <div class="pa-4" style="width: 240px">
 
                   <v-list subheader dense>
-                    <v-subheader>{{ $t('Umsatz') }} für {{ displayData.servant.name }}(ohne tip)</v-subheader>
+                    <v-subheader>{{ $t('Kellner') }} : {{ displayData.servant.name }}  ({{ $t('ohne tip') }})</v-subheader>
                     <v-list-item>
                       <v-list-item-content>
                         <v-list-item-title>
-                          Umsatz
+                          {{ $t('Umsatz') }}
                         </v-list-item-title>
                       </v-list-item-content>
                       <v-list-item-action>
@@ -187,7 +187,7 @@
                       </v-list-item-action>
                     </v-list-item>
                     <v-divider></v-divider>
-                    <v-subheader>Zahlungsmethode</v-subheader>
+                    <v-subheader>{{$i18n.t('payMethod')}}</v-subheader>
                     <template v-for="payment in displayData.payMethodTotal">
                       <v-list-item v-bind:key="payment.payMethodId">
                         <v-list-item-content>
@@ -205,7 +205,7 @@
                     <v-list-item>
                       <v-list-item-content>
                         <v-list-item-title>
-                          tip
+                          {{ $i18n.t('Tip') }}
                         </v-list-item-title>
                       </v-list-item-content>
                       <v-list-item-action>
@@ -216,7 +216,8 @@
                     </v-list-item>
                     <v-divider></v-divider>
                   </v-list>
-                  <v-btn block @click="printSummaryBon" color="primary" class="mt-4">KellnerBon
+                  <v-btn block @click="printSummaryBon" color="primary" class="mt-4">
+                    {{$i18n.t('KellnerBon')}}
                   </v-btn>
                 </div>
               </div>
