@@ -257,6 +257,14 @@
                   @click="rejectOrder"
                 />
               </template>
+              <grid-button
+                :loading="isSendingRequest"
+                v-if="consumeTypeId===1"
+                icon="mdi-silverware"
+                :text="$t('Buffet')"
+                color="#ff7961"
+                @click="buffetDialogShow=true"
+              />
 
             </div>
 
@@ -423,6 +431,11 @@ left: 304px"
         :discount-str="discountStr"
         :discount-ratio="discountRatio"
         :visible="checkoutShow"/>
+      <buffet-start-dialog
+        :initial-u-i="initialUI"
+        :id="tableDetailInfo.order.id"
+        @visibility-changed="(val)=>this.buffetDialogShow=val"
+        :buffet-dialog-show="buffetDialogShow"></buffet-start-dialog>
     </template>
   </div>
 </template>
@@ -481,6 +494,7 @@ import AddressDisplay from '@/components/AddressDisplay'
 import { acceptOrder } from '@/api/api'
 import GridButton from '@/components/GridButton'
 import { mapState } from 'vuex'
+import BuffetStartDialog from '@/components/fragments/BuffetStartDialog'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -506,6 +520,7 @@ export default {
     dragscroll
   },
   components: {
+    BuffetStartDialog,
     GridButton,
     AddressDisplay,
     DiscountDialog,
@@ -536,6 +551,7 @@ export default {
       extraDishShow: false,
       modificationShow: false,
       discountModelShow: null,
+      buffetDialogShow: false,
       isSendingRequest: false,
       oldMod: null,
       breakCount: 0,
@@ -902,6 +918,7 @@ export default {
     async initialUI (forceReload = false) {
       this.input = ''
       this.discountModelShow = false
+      this.buffetDialogShow = false
       this.overrideConsumeTypeIndex = null
       this.activeCategoryId = null
       this.cartListModel.clear()
@@ -919,6 +936,8 @@ export default {
     back () {
       if (this.discountModelShow) {
         this.discountModelShow = false
+      } else if (this.buffetDialogShow) {
+        this.buffetDialogShow = false
       } else if (this.modificationShow) {
         this.cancel()
       } else if (this.checkoutShow) {
@@ -972,7 +991,9 @@ export default {
       }
     },
     anyMenuOpen () {
-      return this.modificationShow || this.checkoutShow || this.discountModelShow || this.extraDishShow || this.pinDialogShow || Swal.isVisible()
+      return this.modificationShow || this.checkoutShow ||
+        this.discountModelShow || this.extraDishShow ||
+        this.pinDialogShow || Swal.isVisible()
     },
     autoGetFocus (force = false) {
       if (!force) {
