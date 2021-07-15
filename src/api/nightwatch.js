@@ -6,7 +6,7 @@ export async function update () {
   await hillo.get('MyVersion.php?op=update', {}, { timeout: 100000 })
   IKUtils.toast('update ok')
   if (!await checkCurrentVersion()) {
-    IKUtils.showError('Automatisch Update felher.', ' Bitte Aaden Support kontakt und Upgrade')
+    IKUtils.showError('Automatisch Update felher.', 'Bitte Aaden Support kontakt und Upgrade')
   }
 }
 
