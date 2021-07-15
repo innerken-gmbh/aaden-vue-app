@@ -712,7 +712,7 @@ export default {
       const res = await popAuthorize('', null)
       try {
         if (res) {
-          await requestOutTable(res?.originalData)
+          await requestOutTable(res)
         }
       } catch (e) {
       } finally {
