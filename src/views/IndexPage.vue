@@ -709,7 +709,7 @@ export default {
     },
     async takeawayClicked () {
       this.setLoading()
-      const res = await popAuthorize() ?? Config.defaultPassword
+      const res = await popAuthorize() ?? GlobalConfig.defaultPassword
       try {
         if (res) {
           await requestOutTable(res)
