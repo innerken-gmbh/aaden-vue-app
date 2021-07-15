@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="!Config.backendIsOk">
+  <v-card class="ma-2" v-if="!Config.backendIsOk">
     <template v-if="!loading">
       <v-card-title class="d-flex">
         {{ $t('Achtung! Bitte Upgrade') }}

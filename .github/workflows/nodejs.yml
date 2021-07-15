@@ -9,11 +9,9 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
-
+      -
       - name: Commit File
         uses: actions/checkout@v2
 

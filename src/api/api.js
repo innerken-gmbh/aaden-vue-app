@@ -85,3 +85,11 @@ export async function reportDeviceInfo () {
     note: ''
   }))
 }
+
+export async function checkTse () {
+  try {
+    return (await hillo.get('AccessLog.php?op=checkTSE'))
+  } catch (e) {
+    console.log(e)
+  }
+}

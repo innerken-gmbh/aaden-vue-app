@@ -68,7 +68,7 @@
       <template slot="right-slot">
 
         <v-toolbar-items class="mx-2">
-
+          <v-btn :color="tseStatus?'success':'error'">TSE STATUS:{{tseInfo}}</v-btn>
           <v-btn
             :color="useBluePrintView?'primary':'transparent'"
             @click="useBluePrintView=!useBluePrintView">
@@ -319,7 +319,7 @@
         </div>
       </v-toolbar>
       <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
-        <div class="pa-2">
+        <div>
             <update-fragment></update-fragment>
         </div>
         <template v-if="useBluePrintView">
@@ -493,6 +493,7 @@ import MemberCardDialog from '@/components/fragments/MemberCardDialog'
 import OpenTableForm from '@/components/OpenTableForm'
 import { mapMutations, mapState } from 'vuex'
 import UpdateFragment from '@/components/fragments/UpdateFragment'
+import { checkTse } from '@/api/api'
 
 const keyboardLayout =
   [
@@ -530,6 +531,8 @@ export default {
   },
   data: function () {
     return {
+      tseStatus: true,
+      tseInfo: '',
       servantPassword: '',
       showOpenTableDialog: null,
       salesDialogServantIsBoss: false,
@@ -886,15 +889,27 @@ export default {
     async refreshSectionList () {
       this.sectionList = await getSectionList()
     },
+    async checkTse () {
+      const res = await checkTse()
+      if (res.content !== 'OK') {
+        this.tseStatus = false
+        this.tseInfo = res.content
+      } else {
+        this.tseStatus = true
+        this.tseInfo = 'OK'
+      }
+    },
     async initPage () {
       window.onkeydown = this.listenKeyDown
       this.refreshTables()
       this.refreshPrinterList()
       getAllDishes()
+      this.checkTse()
       await getConsumeTypeList()
       const list = [
         setInterval(this.refreshTables, 5000),
-        setInterval(this.refreshPrinterList, 5000)
+        setInterval(this.refreshPrinterList, 5000),
+        setInterval(this.checkTse, 30000)
       ]
       if (GlobalConfig.getFocus) {
         list.push(setInterval(this.autoGetFocus, 1000))
