@@ -69,12 +69,6 @@
 
         <v-toolbar-items class="mx-2">
 
-          <v-btn v-if="!Config.backendIsOk"
-                 @click="updateBackend"
-                 color="error">
-            {{ $t('Achtung! Bitte Upgrade') }}
-          </v-btn>
-
           <v-btn
             :color="useBluePrintView?'primary':'transparent'"
             @click="useBluePrintView=!useBluePrintView">
@@ -325,6 +319,9 @@
         </div>
       </v-toolbar>
       <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
+        <div class="pa-2">
+            <update-fragment></update-fragment>
+        </div>
         <template v-if="useBluePrintView">
           <template v-if="isEditing">
             <div class="flex-grow-0">
@@ -407,6 +404,7 @@
             :loading="loading"
           />
         </div>
+
         <v-spacer></v-spacer>
         <template v-if="useBluePrintView">
           <div v-if="isEditing"
@@ -493,8 +491,8 @@ import SalesDialog from '@/components/fragments/SalesDialog'
 import GridButton from '@/components/GridButton'
 import MemberCardDialog from '@/components/fragments/MemberCardDialog'
 import OpenTableForm from '@/components/OpenTableForm'
-import { update } from '@/api/nightwatch'
 import { mapMutations, mapState } from 'vuex'
+import UpdateFragment from '@/components/fragments/UpdateFragment'
 
 const keyboardLayout =
   [
@@ -515,6 +513,7 @@ export default {
     dragscroll
   },
   components: {
+    UpdateFragment,
     OpenTableForm,
     MemberCardDialog,
     GridButton,
@@ -637,9 +636,7 @@ export default {
 
   },
   methods: {
-    async updateBackend () {
-      await update()
-    },
+
     tableForegroundColor (table) {
       return table.callService === '1' ? this.restaurantInfo.callColor : this.restaurantInfo.tableColor
     },

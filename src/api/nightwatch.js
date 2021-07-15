@@ -1,40 +1,8 @@
 import hillo from 'hillo'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
-import Swal from 'sweetalert2'
-
-export function checkVersion (version, target) {
-  const [main, sub, patch] = version.split('.').map(c => parseInt(c))
-
-  const [mainT, subT, patchT] = target.split('.').map(c => parseInt(c))
-
-  return main === mainT && (sub > subT || (sub === subT && patch >= patchT))
-}
 
 export async function update () {
-  let timerInterval
-  Swal.fire({
-    title: 'Automatical Update',
-    html: 'Muss noch <b class="time"></b> Sekunden warten.',
-    timer: 30000,
-    timerProgressBar: true,
-    allowOutsideClick: false,
-    onOpen: () => {
-      Swal.showLoading()
-      timerInterval = setInterval(() => {
-        const content = Swal.getHtmlContainer()
-        if (content) {
-          const b = content.querySelector('.time')
-          if (b) {
-            b.textContent = (Swal.getTimerLeft() / 1000).toFixed(0).toString()
-          }
-        }
-      }, 1000)
-    },
-    willClose: () => {
-      clearInterval(timerInterval)
-    }
-  })
   await hillo.get('MyVersion.php?op=update', {}, { timeout: 100000 })
   IKUtils.toast('update ok')
   if (!await checkCurrentVersion()) {
@@ -48,24 +16,12 @@ export async function getCurrentBackendVersion () {
   })).version
 }
 
-export async function checkCurrentVersionAndUpdate () {
-  const versionOk = await checkCurrentVersion(true)
-  if (!versionOk) {
-    const result = await Swal.fire({
-      title: 'Update Jetzt?',
-      icon: 'warning',
-      text: 'Deine Backend Version ist zu alt.',
-      showConfirmButton: true,
-      showCancelButton: true
-    })
-    if (result.isConfirmed) {
-      try {
-        await update()
-      } catch (e) {
+export function checkVersion (version, target) {
+  const [main, sub, patch] = version.split('.').map(c => parseInt(c))
 
-      }
-    }
-  }
+  const [mainT, subT, patchT] = target.split('.').map(c => parseInt(c))
+
+  return main === mainT && (sub > subT || (sub === subT && patch >= patchT))
 }
 
 export async function checkCurrentVersion (slient = false) {
