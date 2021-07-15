@@ -68,7 +68,7 @@
       <template slot="right-slot">
 
         <v-toolbar-items class="mx-2">
-          <v-btn :color="tseStatus?'success':'error'">TSE STATUS:{{tseInfo}}</v-btn>
+          <v-btn :color="tseStatus?'success':'error'">TSE STATUS:{{ tseInfo }}</v-btn>
           <v-btn
             :color="useBluePrintView?'primary':'transparent'"
             @click="useBluePrintView=!useBluePrintView">
@@ -320,7 +320,7 @@
       </v-toolbar>
       <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
         <div>
-            <update-fragment></update-fragment>
+          <update-fragment></update-fragment>
         </div>
         <template v-if="useBluePrintView">
           <template v-if="isEditing">
@@ -709,7 +709,7 @@ export default {
     },
     async takeawayClicked () {
       this.setLoading()
-      const res = await popAuthorize()
+      const res = await popAuthorize() ?? Config.defaultPassword
       try {
         if (res) {
           await requestOutTable(res)
