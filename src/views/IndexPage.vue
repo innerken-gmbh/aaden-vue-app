@@ -709,10 +709,10 @@ export default {
     },
     async takeawayClicked () {
       this.setLoading()
-      const res = await popAuthorize('', null)
+      const res = await popAuthorize()
       try {
         if (res) {
-          await requestOutTable(res?.originalData)
+          await requestOutTable(res)
         }
       } catch (e) {
       } finally {
