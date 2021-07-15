@@ -107,8 +107,8 @@ export function setGlobalTableId (id) {
   TableId = id
 }
 
-export async function popAuthorize (type, successCallback, force = false,
-  failedCallback, tableId = null) {
+export async function popAuthorize (type = '', successCallback = null, force = false,
+  failedCallback = null, tableId = null) {
   const ok = (password) => {
     if (successCallback) {
       successCallback(password)
@@ -431,7 +431,7 @@ export async function fastSweetAlertRequest
       })
       .catch(error => {
         Swal.showValidationMessage(
-          `Request failed: ${error?.data?.info ?? 'Error'}`
+              `Request failed: ${error?.data?.info ?? 'Error'}`
         )
       })
   }
@@ -572,7 +572,7 @@ export function showTimedAlert (type, title, time = 1000, callback = null) {
     }
   }).then((result) => {
     if (
-      /* Read more about handling dismissals below */
+    /* Read more about handling dismissals below */
       result.dismiss === Swal.DismissReason.timer
     ) {
       if (callback) {
