@@ -1,5 +1,7 @@
 {
   "Achtung! Bitte Upgrade": "Achtung! Bitte Upgrade",
+  "Bitte": "Bitte",
+  "Buffet": "SushiBuffet",
   "Chef": "Chef",
   "Home": "Home",
   "JSDishesDeleteFailed": "Löschen von Gerichten ist fehlgeschlagen, der Grund dafür ist:",
@@ -442,5 +444,20 @@
   "Kellner": "Kellner",
   "Summe": "Summe",
   "Tisch Nr.": "Tisch Nr.",
-  "R. Nr.": "R. Nr."
+  "R. Nr.": "R. Nr.",
+  "Passwort Eingeben": "Passwort Eingeben",
+  "Neue Tisch mit.": "Neue Tisch mit.",
+  "TSE STATUS": "TSE STATUS",
+  "Zu andere Kellner übergebe": "Zu andere Kellner übergebe",
+  "最大用餐时间": "Maximale Essenszeit (min)",
+  "每轮时间": "Zeit pro Runde (min)",
+  "总轮数": "Gesamtrunde",
+  "大人每轮可点": "Anzahl der Ger. für Erwachsene",
+  "小孩每轮可点": "Anzahl der Ger. für Kinder",
+  "bestellen": "Bestellen",
+  "Suchen": "Suchen VIP Nr.",
+  "Liste": "VIP Nr. Liste",
+  "Frei Tisch Map: ": "Frei Tisch Map",
+  "Tisch Nr.:": "Tisch Nr.:"
+
 }

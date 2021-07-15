@@ -1,6 +1,8 @@
 {
   "Achtung! Bitte Upgrade": "注意，您的版本过老，请立刻更新",
   "Bitte TischNr. Eingabe": "请输入桌号",
+  "Bitte": "请",
+  "Buffet": "寿司自助",
   "CHEF": "老板后台",
   "Chef": "老板后台",
   "Erneut Drücken": "重新打印",
@@ -442,5 +444,24 @@
   "Kellner": "跑堂",
   "Summe": "消费金额",
   "Tisch Nr.": "桌号 ",
-  "R. Nr.": "流水号"
+  "R. Nr.": "流水号",
+  "Passwort Eingeben": "输入密碼",
+  "Neue Tisch mit.": "开新桌|选择跑堂",
+  "TSE STATUS": "TSE 状态",
+  "Zu andere Kellner übergebe": "交班给另一个跑堂.....",
+  "最大用餐时间": "最大用餐时间(min)",
+  "每轮时间": "每轮时间(min)",
+  "总轮数": "总轮数",
+  "大人每轮可点": "大人每轮可点菜数",
+  "小孩每轮可点": "小孩每轮可点菜数",
+  "bestellen": "确定",
+  "Suchen": "查找VIP号码",
+  "Liste": "VIP号码列表",
+  "Frei Tisch Map: ": "空桌展示区",
+  "Tisch Nr.:": "桌子号码：",
+  "In Haus": "堂食",
+  "TOGO": "外卖",
+  "Zurück": "后退"
+
+
 }
