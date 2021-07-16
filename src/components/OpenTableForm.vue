@@ -3,7 +3,7 @@
     <v-card color="#f6f6f6">
       <v-toolbar>
         <v-toolbar-title>
-          Neue Tisch:Schlüssel {{servantPassword}}
+          {{ $t('Frei Tisch Map: ') }}
         </v-toolbar-title>
       </v-toolbar>
       <v-card-text>
@@ -11,7 +11,7 @@
           <v-col cols="6">
             <v-text-field
                 v-model="selectedTableNumber"
-                label="Tisch Nr.:"
+                :label="$t('Tisch Nr.:')"
                 clearable
                 autofocus/>
             <table-selector
@@ -25,16 +25,16 @@
             <div>
               <v-btn @click="tryOpenNormalTable" :disabled="!selectedTableNumber" color="primary" x-large block>
                 <v-icon left>mdi-food-fork-drink</v-icon>
-                In Haus
+                {{ $t('In Haus') }}
               </v-btn>
 
               <v-btn @click="openTakeawayTable" class="mt-4" color="warning" x-large block>
                 <v-icon left>mdi-truck-fast</v-icon>
-                TOGO
+                {{ $t('TOGO') }}
               </v-btn>
               <v-btn @click="realShow=!realShow" class="mt-4" color="error" x-large block>
                 <v-icon left>mdi-close</v-icon>
-                Zurück
+                {{ $t('Zurück') }}
               </v-btn>
             </div>
           </v-col>

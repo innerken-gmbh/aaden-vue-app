@@ -11,10 +11,10 @@
             <v-text-field @keydown.enter="trySelectCurrentCard" clearable
                           hide-details
                           v-model="cardSearch" autofocus
-                          label="Suchen"></v-text-field>
+                          :label="$t('Suchen')"></v-text-field>
           </v-list-item>
           <v-list subheader max-height="300px" style="overflow: scroll">
-            <v-subheader>Liste</v-subheader>
+            <v-subheader>{{ $t('Liste') }}</v-subheader>
             <template v-for="(card) in filteredMemberCardList">
               <v-list-item @click="selectedCardId=card.longId" :key="card.id">
                 <v-list-item-content>

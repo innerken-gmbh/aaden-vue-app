@@ -654,7 +654,7 @@ export default {
     popChangeTablePanel,
     popMergeTablePanel,
     async changeServant () {
-      const res = await fastSweetAlertRequest('Zu andere Kneller übergabe', 'text',
+      const res = await fastSweetAlertRequest(this.$t('Zu andere Kellner übergebe'), 'text',
         'Orders.php?op=changeServantForTable', 'pw',
         { tableId: this.id }, 'POST')
       if (res) {

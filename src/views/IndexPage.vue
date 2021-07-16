@@ -24,7 +24,7 @@
                   <v-list-item-content>
                     <v-list-item-title>Aaden App</v-list-item-title>
                     <v-list-item-subtitle>
-                      Version {{ version }}
+                      {{ $t('Version') }} {{ version }}
                     </v-list-item-subtitle>
                   </v-list-item-content>
 
@@ -68,7 +68,9 @@
       <template slot="right-slot">
 
         <v-toolbar-items class="mx-2">
+
           <v-btn :color="tseStatus?'':'error'">TSE STATUS:{{ tseInfo }}</v-btn>
+
           <v-btn
             :color="useBluePrintView?'primary':'transparent'"
             @click="useBluePrintView=!useBluePrintView">
@@ -144,7 +146,7 @@
 
             <v-subheader>
               <v-chip dark label>
-                Neue Tisch mit.
+                {{ $t('Neue Tisch mit.') }}
                 <v-icon class="ml-2">mdi-arrow-down-box</v-icon>
               </v-chip>
             </v-subheader>
