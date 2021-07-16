@@ -2,5 +2,19 @@
   "requiredBackendVersion": "1.7.63",
   "backendIsOk": false,
   "frontendMacAddress": "aaden-vue-app",
-  "deviceType": "dist-aaden-vue-app"
+  "deviceType": "dist-aaden-vue-app",
+  "tableInfoKeys": [
+    "servantName",
+    "createTimeStamp",
+    "dishCount",
+    "totalPrice",
+    "buffetCount",
+    "buffetRound",
+    "childCount",
+    "drinkCount",
+    "nothing",
+    "nothing",
+    "nothing",
+    "nothing"
+  ]
 }

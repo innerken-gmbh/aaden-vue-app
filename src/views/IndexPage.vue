@@ -205,7 +205,13 @@
                       {{ table.buffetCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
                     </div>
                     <div class="caption text-right">
-                      {{ table.createTimestamp }}/{{ findConsumeTypeById(table.consumeType) }}
+                      {{ table.createTimestamp }}/<span
+                      class="pa-1"
+                      style="border-radius: 4px"
+                      :style="{
+                      background:findConsumeTypeColorById(table.consumeType),
+                      color:colorIsDark(findConsumeTypeColorById(table.consumeType))?'#fff':'#000'}"
+                    >{{ findConsumeTypeById(table.consumeType) }}</span>
                     </div>
                   </div>
                 </div>
@@ -235,9 +241,13 @@
                     :color="tableBackgroundColor(table)"
                     @click='openOrEnterTable(table.tableName)'>
                     <div
-                      :style="{color:tableForegroundColor(table)}"
-                      style="position: absolute;top:10px;
+                      class="pa-1"
+                      :style="{
+                      background:findConsumeTypeColorById(table.consumeType),
+                      color:colorIsDark(findConsumeTypeColorById(table.consumeType))?'#fff':'#000'}"
+                      style="position: absolute;top:8px;
                         right:4px;z-index: 2;font-size: 14px;
+                        border-radius: 4px;
                         line-height: 12px;
                         font-weight: bold;
                            text-align: center">
@@ -649,7 +659,10 @@ export default {
       return table.callService === '1' ? this.restaurantInfo.callColor : GlobalConfig.activeCardBackground
     },
     tableColorIsDark (table, background = true) {
-      return getColorLightness((background ? this.tableBackgroundColor(table) : this.tableForegroundColor(table))) < 128
+      return this.colorIsDark((background ? this.tableBackgroundColor(table) : this.tableForegroundColor(table)))
+    },
+    colorIsDark (color) {
+      return getColorLightness(color) < 128
     },
     setLoading () {
       this.loading = true
@@ -720,6 +733,9 @@ export default {
       } finally {
         this.releaseLoading()
       }
+    },
+    findConsumeTypeColorById (id) {
+      return findConsumeTypeById(id)?.color ?? '#367aeb'
     },
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
