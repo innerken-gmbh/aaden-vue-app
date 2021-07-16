@@ -162,7 +162,7 @@
                             {{ order.updatedAt }}
                           </td>
                           <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
-                            {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{ order.tipIncome }})</span>/ {{ order.paymentMethodStrings }}
+                            {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{ order.tipIncome }})</span>/ {{ order.paymentMethodStrings }}<b v-if="order.discountStr">/ {{'-'+order.discountStr.replace('p','%')}}</b>
                           </td>
                         </tr>
                       </template>
