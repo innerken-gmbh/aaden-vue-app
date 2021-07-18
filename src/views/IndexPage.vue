@@ -915,6 +915,7 @@ export default {
       this.refreshTables()
       this.refreshPrinterList()
       getAllDishes()
+      this.checkTse()
       await getConsumeTypeList()
       const list = [
         setInterval(this.refreshTables, 5000),
