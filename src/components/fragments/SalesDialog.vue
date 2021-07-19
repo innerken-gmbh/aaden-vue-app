@@ -4,10 +4,10 @@
       <v-toolbar>
         <v-tabs v-model="tabIndex">
           <template v-if="isBoss">
-            <v-tab v-if="Config.UseDailyZbon">{{ $i18n.t('Tag-Sicht') }}</v-tab>
+            <v-tab v-if="Config.UseDailyZbon">{{ $t('Tag-Sicht') }}</v-tab>
             <v-tab v-else>Letzte-Sicht</v-tab>
           </template>
-          <v-tab>{{$i18n.t('Meine Umsatz')}}</v-tab>
+          <v-tab>{{$t('Meine Umsatz')}}</v-tab>
         </v-tabs>
         <v-spacer></v-spacer>
         <v-icon @click="realShow=!realShow">mdi-close</v-icon>
@@ -187,7 +187,7 @@
                       </v-list-item-action>
                     </v-list-item>
                     <v-divider></v-divider>
-                    <v-subheader>{{$i18n.t('payMethod')}}</v-subheader>
+                    <v-subheader>{{$t('payMethod')}}</v-subheader>
                     <template v-for="payment in displayData.payMethodTotal">
                       <v-list-item v-bind:key="payment.payMethodId">
                         <v-list-item-content>
@@ -205,7 +205,7 @@
                     <v-list-item>
                       <v-list-item-content>
                         <v-list-item-title>
-                          {{ $i18n.t('Tip') }}
+                          {{ $t('Tip') }}
                         </v-list-item-title>
                       </v-list-item-content>
                       <v-list-item-action>
@@ -217,7 +217,7 @@
                     <v-divider></v-divider>
                   </v-list>
                   <v-btn block @click="printSummaryBon" color="primary" class="mt-4">
-                    {{$i18n.t('KellnerBon')}}
+                    {{$t('KellnerBon')}}
                   </v-btn>
                 </div>
               </div>
@@ -335,14 +335,14 @@ export default {
     },
 
     async printZBon () {
-      IKUtils.showConfirm('Möchten Sie alle Datensätze drucken?', 'Bist du sicher?', async () => {
+      IKUtils.showConfirm(this.$t('Möchten Sie alle Datensätze drucken?'), this.$t('Bist du sicher?'), async () => {
         IKUtils.showLoading()
         if (GlobalConfig.UseDailyZbon) {
           await printZBonUseDate(this.singleZBonDate, this.singleZBonDate)
         } else {
           if (this.lastZBonPrintDate.isAfter(dayjs().subtract(5, 'm'))) {
-            IKUtils.showError('Die letzte Druckanforderung wurde innerhalb von 5 Minuten ausgegeben.' +
-              ' Warten Sie mindestens 5 Minuten, bevor Sie erneut drucken')
+            IKUtils.showError(this.$t('Die letzte Druckanforderung wurde innerhalb von 5 Minuten ausgegeben.') +
+              this.$t(' Warten Sie mindestens 5 Minuten, bevor Sie erneut drucken'))
             return
           }
           await printZBon()
@@ -372,8 +372,8 @@ export default {
         const hoursBefore = dayjs().subtract(32, 'hour')
 
         if (this.lastZBonPrintDate.isBefore(hoursBefore) && GlobalConfig.printZBonAlert) {
-          IKUtils.showConfirm('Bitte beachten Sie, dass Sie ZBon seit 36 Stunden nicht mehr gedruckt haben',
-            'Jetzt drucken?', () => {
+          IKUtils.showConfirm(this.$t('Bitte beachten Sie, dass Sie ZBon seit 36 Stunden nicht mehr gedruckt haben'),
+            this.$t('Jetzt drucken?'), () => {
               this.printZBon()
             })
         }

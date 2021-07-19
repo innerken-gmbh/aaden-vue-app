@@ -117,7 +117,7 @@ export default {
       }
       const discountPattern = /^([0-9]+(\.[0-9]+)?)?((p)+([kg])?)?$/
       if (!discountPattern.test(discountStr)) {
-        IKUtils.toast('Error', 'error')
+        IKUtils.toast(this.$t('Error'), this.$t('error'))
         return
       }
       const realSubmitDiscount = async () => {

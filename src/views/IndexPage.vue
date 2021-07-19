@@ -671,7 +671,7 @@ export default {
       if (GlobalConfig.usePassword) {
         const res = await popAuthorize('')
         if (res !== password) {
-          IKUtils.toast('Passwort Falsch', 'error')
+          IKUtils.toast(this.$t('Passwort Falsch'), 'error')
           return
         }
       }

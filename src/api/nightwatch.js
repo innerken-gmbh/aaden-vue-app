@@ -1,12 +1,13 @@
 import hillo from 'hillo'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
+import i18n from '../i18n'
 
 export async function update () {
   await hillo.get('MyVersion.php?op=update', {}, { timeout: 100000 })
-  IKUtils.toast('update ok')
+  IKUtils.toast('loading ok')
   if (!await checkCurrentVersion()) {
-    IKUtils.showError('Automatisch Update felher.', ' Bitte Aaden Support kontakt und Upgrade')
+    IKUtils.showError(i18n.t('Automatisches Update fehler.'), i18n.t('Bitte Aaden Support kontakt und Upgrade'))
   }
 }
 
@@ -32,7 +33,7 @@ export async function checkCurrentVersion (slient = false) {
     GlobalConfig.backendIsOk = checkVersion(currentVersion, GlobalConfig.requiredBackendVersion)
     return GlobalConfig.backendIsOk
   } catch (e) {
-    IKUtils.showError('Deine Backend Version ist zu alt. Bitte Aaden Support kontakt und Upgrade', 'Achtung')
+    IKUtils.showError(i18n.t('Deine Backend Version ist zu alt. Bitte Aaden Support kontakt und Upgrade'), i18n.$t('Achtung'))
     GlobalConfig.backendIsOk = true
     return true
   }

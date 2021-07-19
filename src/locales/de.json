@@ -1,7 +1,6 @@
 {
-  "Achtung! Bitte Upgrade": "Achtung! Bitte Upgrade",
   "Bitte": "Bitte",
-  "Buffet": "SushiBuffet",
+  "ChangeToBuffet": "Wech.Buff.",
   "Chef": "Chef",
   "Home": "Home",
   "JSDishesDeleteFailed": "Löschen von Gerichten ist fehlgeschlagen, der Grund dafür ist:",
@@ -458,6 +457,15 @@
   "Suchen": "Suchen VIP Nr.",
   "Liste": "VIP Nr. Liste",
   "Frei Tisch Map: ": "Frei Tisch Map",
-  "Tisch Nr.:": "Tisch Nr.:"
+  "Tisch Nr.:": "Tisch Nr.:",
+  "ZBon Drücken": "ZBon打印",
+  "点击这里":"Klick here",
+  "提示": "Tipps",
+  "点击这里执行自动更新":"Klick, Updates durchführen",
+  "正在尝试更新": "Versucht zu aktualisieren",
+  "展开": "expandieren",
+  "收起": "falten",
+  "选择了错误的开桌类型": "Der falsche Typ der Tabellenöffnung wurde ausgewählt"
+
 
 }

@@ -173,7 +173,7 @@ export async function openOrEnterTable (number, password, onlyOpenTable = false)
         return
       }
       if (GlobalConfig.useOpenTableConfirm && !GlobalConfig.usePassword) {
-        const result = await showConfirmAsyn(capitalize(number) + ' Öffnen?', 'Neue Tisch')
+        const result = await showConfirmAsyn(capitalize(number) + i18n.t(' Öffnen?'), i18n.t('Neue Tisch'))
         if (!result.isConfirmed) {
           return
         }
@@ -321,7 +321,7 @@ export function openTableCallback (openingTable, pw = null, guestCount, childCou
       informOpenJpTable(pw, openingTable, guestCount, childCount, adultDishId)
       break
     default:
-      logErrorAndPop('选择了错误的开桌类型')
+      logErrorAndPop(i18n.t('选择了错误的开桌类型'))
   }
 }
 

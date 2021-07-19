@@ -260,7 +260,7 @@
                 :loading="isSendingRequest"
                 v-if="consumeTypeId===1"
                 icon="mdi-silverware"
-                :text="$t('Buffet')"
+                :text="$t('ChangeToBuffet')"
                 color="#ff7961"
                 @click="buffetDialogShow=true"
               />
@@ -710,7 +710,7 @@ export default {
       const dish = findDish(code)
       if (dish) {
         if (parseInt(GlobalConfig.oneStepOrderNumber) !== -1 && count > GlobalConfig.oneStepOrderNumber) {
-          const res = await showConfirmAsyn('wirklich?', count)
+          const res = await showConfirmAsyn(this.$t('wirklich?'), count)
           if (!res?.value) {
             showTimedAlert('warning', 'abrechen')
           }
@@ -1160,7 +1160,7 @@ export default {
           } else {
             if (GlobalConfig.useEnterKeyToPay) {
               setTimeout(async () => {
-                const res = await showConfirmAsyn('Zahlung ohne tip mit bar?')
+                const res = await showConfirmAsyn(this.$t('Zahlung ohne tip mit bar?'))
                 if (res.value) {
                   if (GlobalConfig.checkOutUsePassword) {
                     popAuthorize('', (pw) => {
