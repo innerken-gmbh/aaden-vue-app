@@ -1,6 +1,5 @@
 {
-
-  "requiredBackendVersion": "1.7.66",
+  "requiredBackendVersion": "1.7.67",
   "backendIsOk": false,
   "frontendMacAddress": "aaden-vue-app",
   "deviceType": "dist-aaden-vue-app",
