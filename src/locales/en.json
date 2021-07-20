@@ -2,7 +2,6 @@
   "Achtung": "Attenchen",
   "Achtung! Bitte Upgrade": "Attenchen! Please Upgrade",
   "Automatisches Update fehler.": "Automatic update error.",
-  "Bitte Aaden Support kontakt und Upgrade": "Please contact Aaden Support and upgrade",
   "Bitte": "Please",
   "ChangeToBuffet": "Chg.Buff",
   "Chef": "Chef",
@@ -466,11 +465,12 @@
   "Frei Tisch Map: ": "Free table map",
   "Tisch Nr.:": "Table No.:",
   "Zurück": "Back",
-  "ZBon Drücken": "ZBon Print",
-  "点击这里":"Click here",
-  "提示": "Tips",
-  "点击这里执行自动更新":"Click here to perform automatic updates",
-  "正在尝试更新": "Trying to update",
+  "点击这里执行自动更新": "Click here to perform automatic updates",
+  "Bitte Aaden Support kontakt und Upgrade": "Please contact Aaden Support and upgrade",
   "展开": "expand",
-  "收起": "fold"
+  "收起": "shrink",
+  "提示": "hint",
+  "正在尝试更新": "Trying to update",
+  "ZBon Drücken": "ZBon Print",
+  "点击这里":"Click here"
 }

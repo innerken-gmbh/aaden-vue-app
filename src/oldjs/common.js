@@ -117,9 +117,7 @@ export async function popAuthorize (type = '', successCallback = null, force = f
   const typeIsBoss = type === 'boss'
   if (!force && ((typeIsBoss && !GlobalConfig.UseBossPassword) || (!typeIsBoss && !GlobalConfig.usePassword))) {
     ok(GlobalConfig.defaultPassword)
-    return {
-      originalData: GlobalConfig.defaultPassword
-    }
+    return GlobalConfig.defaultPassword
   }
   return new Promise(resolve => {
     store.commit('START_AUTHORIZE', {

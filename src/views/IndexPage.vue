@@ -24,7 +24,7 @@
                   <v-list-item-content>
                     <v-list-item-title>Aaden App</v-list-item-title>
                     <v-list-item-subtitle>
-                      Version {{ version }}
+                      {{ $t('Version') }} {{ version }}
                     </v-list-item-subtitle>
                   </v-list-item-content>
 
@@ -203,7 +203,13 @@
                       {{ table.buffetCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
                     </div>
                     <div class="caption text-right">
-                      {{ table.createTimestamp }}/{{ findConsumeTypeById(table.consumeType) }}
+                      {{ table.createTimestamp }}/<span
+                      class="pa-1"
+                      style="border-radius: 4px"
+                      :style="{
+                      background:findConsumeTypeColorById(table.consumeType),
+                      color:colorIsDark(findConsumeTypeColorById(table.consumeType))?'#fff':'#000'}"
+                    >{{ findConsumeTypeById(table.consumeType) }}</span>
                     </div>
                   </div>
                 </div>
@@ -233,9 +239,13 @@
                     :color="tableBackgroundColor(table)"
                     @click='openOrEnterTable(table.tableName)'>
                     <div
-                      :style="{color:tableForegroundColor(table)}"
-                      style="position: absolute;top:10px;
+                      class="pa-1"
+                      :style="{
+                      background:findConsumeTypeColorById(table.consumeType),
+                      color:colorIsDark(findConsumeTypeColorById(table.consumeType))?'#fff':'#000'}"
+                      style="position: absolute;top:8px;
                         right:4px;z-index: 2;font-size: 14px;
+                        border-radius: 4px;
                         line-height: 12px;
                         font-weight: bold;
                            text-align: center">
@@ -320,7 +330,7 @@
       </v-toolbar>
       <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
         <div>
-            <update-fragment></update-fragment>
+          <update-fragment></update-fragment>
         </div>
         <template v-if="useBluePrintView">
           <template v-if="isEditing">
@@ -493,7 +503,6 @@ import MemberCardDialog from '@/components/fragments/MemberCardDialog'
 import OpenTableForm from '@/components/OpenTableForm'
 import { mapMutations, mapState } from 'vuex'
 import UpdateFragment from '@/components/fragments/UpdateFragment'
-import { checkTse } from '@/api/api'
 
 const keyboardLayout =
   [
@@ -647,7 +656,10 @@ export default {
       return table.callService === '1' ? this.restaurantInfo.callColor : GlobalConfig.activeCardBackground
     },
     tableColorIsDark (table, background = true) {
-      return getColorLightness((background ? this.tableBackgroundColor(table) : this.tableForegroundColor(table))) < 128
+      return this.colorIsDark((background ? this.tableBackgroundColor(table) : this.tableForegroundColor(table)))
+    },
+    colorIsDark (color) {
+      return getColorLightness(color) < 128
     },
     setLoading () {
       this.loading = true
@@ -709,7 +721,7 @@ export default {
     },
     async takeawayClicked () {
       this.setLoading()
-      const res = await popAuthorize()
+      const res = await popAuthorize() ?? GlobalConfig.defaultPassword
       try {
         if (res) {
           await requestOutTable(res)
@@ -718,6 +730,9 @@ export default {
       } finally {
         this.releaseLoading()
       }
+    },
+    findConsumeTypeColorById (id) {
+      return findConsumeTypeById(id)?.color ?? '#367aeb'
     },
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
@@ -890,14 +905,8 @@ export default {
       this.sectionList = await getSectionList()
     },
     async checkTse () {
-      const res = await checkTse()
-      if (res.content !== 'OK') {
-        this.tseStatus = false
-        this.tseInfo = res.content
-      } else {
-        this.tseStatus = true
-        this.tseInfo = 'OK'
-      }
+      this.tseStatus = true
+      this.tseInfo = 'OK'
     },
     async initPage () {
       window.onkeydown = this.listenKeyDown
@@ -908,8 +917,7 @@ export default {
       await getConsumeTypeList()
       const list = [
         setInterval(this.refreshTables, 5000),
-        setInterval(this.refreshPrinterList, 5000),
-        setInterval(this.checkTse, 30000)
+        setInterval(this.refreshPrinterList, 5000)
       ]
       if (GlobalConfig.getFocus) {
         list.push(setInterval(this.autoGetFocus, 1000))

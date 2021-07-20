@@ -4,6 +4,7 @@
       <v-card-title class="d-flex">
         {{ $t('Achtung! Bitte Upgrade') }}
       </v-card-title>
+
       <v-card-text v-if="!fold" v-html="$t('AchtungText')">
       </v-card-text>
       <v-btn large

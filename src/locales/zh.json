@@ -470,6 +470,7 @@
   "In Haus": "堂食",
   "TOGO": "外卖",
   "Zurück": "后退",
+<<<<<<< HEAD
 
   "点击这里":"点击这里",
   "提示": "提示",
@@ -485,6 +486,8 @@
   "Neue Tisch": "新桌",
   "wirklich?": "确信？",
   "Zahlung ohne tip mit bar?": "沒有小费现金支付？",
-  "Passwort Falsch'": "密码错误"
+  "Passwort Falsch'": "密码错误",
+  "Version": "版本",
+  "update ok": "更新成功"
 
 }

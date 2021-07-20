@@ -1,7 +1,7 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Node.js CI
+name: Release App To Snap Store
 
 on:
   - release
@@ -11,45 +11,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      -
       - name: Commit File
         uses: actions/checkout@v2
-
-      - name: ADMIN
-        uses: actions/checkout@v2
-        with:
-          repository: innerken-gmbh/aaden-vue-admin
-          token: ${{ secrets.PT }}
-          path: admin
-          ref: emBeded
 
       - name: Use Node.js 14.x
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
 
-      - run: |
-          cd admin
-          npm ci
-          npm run embeded-build
-          cd ..
-          cd public
-          rm -rf admin
-          mkdir admin
-          cd ..
-          mv admin/dist/* public/admin
-          date > public/last-merge-time.txt
-          git config --global user.email "admin@innerken.com"
-          git config --global user.name "CI BOT InnerKen"
-          git add .
-          git checkout -b temp-branch
-          git commit -m 'AUTO USE LATEST EMBEDED BUILD'
-          echo "ref"
-          echo ${{ github.ref }}
-          git checkout master
-          echo "here check outed"
-          git merge temp-branch
-          git push
-      - run: ls
       - run: npm ci
       - run: npm run release --if-present
