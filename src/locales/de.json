@@ -1,12 +1,7 @@
 {
-<<<<<<< HEAD
-  "Bitte": "Bitte",
-  "ChangeToBuffet": "Wech.Buff.",
-=======
   "Achtung! Bitte Upgrade": "Achtung! Bitte Upgrade",
   "Bitte": "Bitte",
-  "Buffet": "SushiBuffet",
->>>>>>> 19187275edf1e329e8be45e947e693d8987a90b7
+  "ChangeToBuffet": "Wech.Buff.",
   "Chef": "Chef",
   "Home": "Home",
   "JSDishesDeleteFailed": "Löschen von Gerichten ist fehlgeschlagen, der Grund dafür ist:",
