@@ -505,7 +505,6 @@ import MemberCardDialog from '@/components/fragments/MemberCardDialog'
 import OpenTableForm from '@/components/OpenTableForm'
 import { mapMutations, mapState } from 'vuex'
 import UpdateFragment from '@/components/fragments/UpdateFragment'
-import { checkTse } from '@/api/api'
 
 const keyboardLayout =
   [
@@ -908,14 +907,8 @@ export default {
       this.sectionList = await getSectionList()
     },
     async checkTse () {
-      const res = await checkTse()
-      if (res.content !== 'OK') {
-        this.tseStatus = false
-        this.tseInfo = res.content
-      } else {
-        this.tseStatus = true
-        this.tseInfo = 'OK'
-      }
+      this.tseStatus = true
+      this.tseInfo = 'OK'
     },
     async initPage () {
       window.onkeydown = this.listenKeyDown
@@ -926,8 +919,7 @@ export default {
       await getConsumeTypeList()
       const list = [
         setInterval(this.refreshTables, 5000),
-        setInterval(this.refreshPrinterList, 5000),
-        setInterval(this.checkTse, 30000)
+        setInterval(this.refreshPrinterList, 5000)
       ]
       if (GlobalConfig.getFocus) {
         list.push(setInterval(this.autoGetFocus, 1000))
