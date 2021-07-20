@@ -1,7 +1,7 @@
 {
   "Achtung! Bitte Upgrade": "Achtung! Bitte Upgrade",
   "Bitte": "Bitte",
-  "Buffet": "SushiBuffet",
+  "ChangeToBuffet": "Wech.Buff.",
   "Chef": "Chef",
   "Home": "Home",
   "JSDishesDeleteFailed": "Löschen von Gerichten ist fehlgeschlagen, der Grund dafür ist:",
@@ -464,7 +464,9 @@
   "展开": "erweitern",
   "收起": "schrumpfen",
   "提示": "hint",
-  "正在尝试更新": "Versucht zu aktualisieren"
+  "正在尝试更新": "Versucht zu aktualisieren",
+  "ZBon Drücken": "ZBon打印",
+  "选择了错误的开桌类型": "Der falsche Typ der Tabellenöffnung wurde ausgewählt"
 
 
 }

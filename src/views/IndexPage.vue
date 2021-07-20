@@ -68,9 +68,7 @@
       <template slot="right-slot">
 
         <v-toolbar-items class="mx-2">
-
-          <v-btn :color="tseStatus?'':'error'">TSE STATUS:{{ tseInfo }}</v-btn>
-
+          <v-btn :color="tseStatus?'success':'error'">{{ $t('TSE STATUS') }}:{{tseInfo}}</v-btn>
           <v-btn
             :color="useBluePrintView?'primary':'transparent'"
             @click="useBluePrintView=!useBluePrintView">
@@ -685,7 +683,7 @@ export default {
       if (GlobalConfig.usePassword) {
         const res = await popAuthorize('')
         if (res !== password) {
-          IKUtils.toast('Passwort Falsch', 'error')
+          IKUtils.toast(this.$t('Passwort Falsch'), 'error')
           return
         }
       }

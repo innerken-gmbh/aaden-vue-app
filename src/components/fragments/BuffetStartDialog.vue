@@ -2,7 +2,7 @@
   <v-dialog max-width="600px" v-model="realShow">
     <v-card>
       <v-toolbar dense tile color="primary" dark elevation="0">
-        <v-toolbar-title> {{ $t('Buffet') }}</v-toolbar-title>
+        <v-toolbar-title> {{ $t('ChangeToBuffet') }}</v-toolbar-title>
       </v-toolbar>
       <div class="pa-2" style="display: grid;grid-template-columns: repeat(2,1fr)">
         <v-sheet style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px;">

@@ -1,8 +1,12 @@
 {
+  "Achtung": "Attenchen",
   "Achtung! Bitte Upgrade": "Attenchen! Please Upgrade",
+  "Automatisches Update fehler.": "Automatic update error.",
   "Bitte": "Please",
-  "Buffet": "SushiBuffet",
+  "ChangeToBuffet": "Chg.Buff",
   "Chef": "Chef",
+  "Deine Backend Version ist zu alt. Bitte Aaden Support kontakt und Upgrade": "Your backend version is too old. Please contact Aaden Support and upgrade",
+  "Die letzte Druckanforderung wurde innerhalb von 5 Minuten ausgegeben.": "The last print request was issued within 5 minutes",
   "Home": "Home",
   "JSDishesDeleteFailed": "Delete dishes failed, the reason is:",
   "JSDishesUpdateFailed": "Update of dishes has failed, the reason is:",
@@ -466,5 +470,7 @@
   "展开": "expand",
   "收起": "shrink",
   "提示": "hint",
-  "正在尝试更新": "Trying to update"
+  "正在尝试更新": "Trying to update",
+  "ZBon Drücken": "ZBon Print",
+  "点击这里":"Click here"
 }
