@@ -68,7 +68,7 @@
       <template slot="right-slot">
 
         <v-toolbar-items class="mx-2">
-          <v-btn :color="tseStatus?'success':'error'">{{ $t('TSE STATUS') }}:{{tseInfo}}</v-btn>
+          <v-btn :color="tseStatus?'':'error'">{{ $t('TSE STATUS') }}:{{tseInfo}}</v-btn>
           <v-btn
             :color="useBluePrintView?'primary':'transparent'"
             @click="useBluePrintView=!useBluePrintView">
