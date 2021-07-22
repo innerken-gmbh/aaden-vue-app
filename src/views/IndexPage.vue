@@ -935,9 +935,6 @@ export default {
       this.currentServant = this.findServant(GlobalConfig.defaultPassword)
     }
   },
-  created () {
-    this.debounceUpdateSection = debounce(updateSection, 500)
-  },
   beforeDestroy () {
     clearAllTimer()
   }
