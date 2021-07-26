@@ -5,9 +5,9 @@ import i18n from '../i18n'
 
 export async function update () {
   await hillo.get('MyVersion.php?op=update', {}, { timeout: 100000 })
-  IKUtils.toast('loading ok')
+  // IKUtils.toast('loading ok')
   if (!await checkCurrentVersion()) {
-    IKUtils.showError(i18n.t('Automatisches Update fehler.'), i18n.t('Bitte Aaden Support kontakt und Upgrade'))
+    // IKUtils.showError(i18n.t('Automatisches Update fehler.'), i18n.t('Bitte Aaden Support kontakt und Upgrade'))
   }
 }
 

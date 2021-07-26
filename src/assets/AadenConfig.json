@@ -45,5 +45,6 @@
   "servantDataOnlyToday": false,
   "useOpenTableConfirm": false,
   "showTotalPriceOnCard": true,
-  "useEnterKeyToPay": false
+  "useEnterKeyToPay": false,
+  "updateFold": false
 }
