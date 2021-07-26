@@ -258,7 +258,7 @@
               </template>
               <grid-button
                 :loading="isSendingRequest"
-                v-if="consumeTypeId===1"
+                v-if="consumeTypeId===1||consumeTypeId===5"
                 icon="mdi-silverware"
                 :text="$t('ChangeToBuffet')"
                 color="#ff7961"
