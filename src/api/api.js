@@ -79,7 +79,7 @@ export async function changeOrderToBuffet (orderId, buffetDishes, buffetSetting)
 
 export async function reportDeviceInfo () {
   return (await hillo.post('Route.php?op=deviceLog', {
-    MACAddress: frontendMacAddress,
+    MACAddress: frontendMacAddress + GlobalConfig.DeviceId,
     deviceType: deviceType,
     version: version,
     note: ''
