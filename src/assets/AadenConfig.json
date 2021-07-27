@@ -1,4 +1,5 @@
 {
+  "uuId": "",
   "Base": "127.0.0.1",
   "DeviceId": -1,
   "Protocol": "http://",
@@ -47,4 +48,5 @@
   "showTotalPriceOnCard": true,
   "useEnterKeyToPay": false,
   "updateFold": false
+
 }
