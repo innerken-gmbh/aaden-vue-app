@@ -65,7 +65,7 @@ export async function getBillListForServant (pw, date) {
   return (await hillo.get('BackendData.php?op=mobileV3StatWithLang', { pw, date, lang: GlobalConfig.lang })).content
 }
 
-export async function loadAllBuffetDish () {
+export async function getBuffetPriceDishes () {
   return (await hillo.get('ConsumeType.php?op=showBuffetPriceDishToConsumeType', { lang: GlobalConfig.lang })).content
 }
 
