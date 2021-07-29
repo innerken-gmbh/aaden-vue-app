@@ -1241,6 +1241,7 @@ export default {
       window.onkeydown = this.listenKeyDown
 
       if (GlobalConfig.getFocus) {
+        this.autoGetFocus()
         addToTimerList(setInterval(this.autoGetFocus, 1000))
       }
       await this.initialUI(true)
@@ -1372,7 +1373,6 @@ export default {
       )
     },
     refresh: function () {
-      this.autoGetFocus()
       this.realInitial()
     },
     realConsumeTypeId (val) {
