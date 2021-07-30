@@ -46,7 +46,7 @@ export default {
   data: function () {
     return {
       Config: GlobalConfig,
-      fold: false,
+      fold: GlobalConfig.updateFold,
       loading: false
     }
   },
@@ -55,6 +55,11 @@ export default {
       this.loading = true
       await update()
       this.loading = false
+    }
+  },
+  watch: {
+    fold: function (val) {
+      GlobalConfig.updateSettings('updateFold', val)
     }
   },
   async mounted () {

@@ -1,7 +1,7 @@
 import hillo from 'hillo'
 import IKUtils from 'innerken-js-utils'
 import { version } from '../../package.json'
-import { deviceType, frontendMacAddress } from '../assets/FixedConfig.json'
+import { deviceType } from '../assets/FixedConfig.json'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
 
@@ -65,7 +65,7 @@ export async function getBillListForServant (pw, date) {
   return (await hillo.get('BackendData.php?op=mobileV3StatWithLang', { pw, date, lang: GlobalConfig.lang })).content
 }
 
-export async function loadAllBuffetDish () {
+export async function getBuffetPriceDishes () {
   return (await hillo.get('ConsumeType.php?op=showBuffetPriceDishToConsumeType', { lang: GlobalConfig.lang })).content
 }
 
@@ -79,7 +79,7 @@ export async function changeOrderToBuffet (orderId, buffetDishes, buffetSetting)
 
 export async function reportDeviceInfo () {
   return (await hillo.post('Route.php?op=deviceLog', {
-    MACAddress: frontendMacAddress,
+    MACAddress: GlobalConfig.uuId,
     deviceType: deviceType,
     version: version,
     note: ''

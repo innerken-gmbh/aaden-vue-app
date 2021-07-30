@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { changeOrderToBuffet, loadAllBuffetDish } from '@/api/api'
+import { changeOrderToBuffet, getBuffetPriceDishes } from '@/api/api'
 import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
 import { findConsumeTypeById } from '@/oldjs/common'
 
@@ -99,7 +99,7 @@ export default {
       this.$delete(this.selectedBuffetDishesMap, id)
     },
     async initial () {
-      this.buffetDishes = await loadAllBuffetDish()
+      this.buffetDishes = await getBuffetPriceDishes()
       this.selectedBuffetDishesMap = {}
       this.buffetSetting = Object.assign({}, DefaultBuffetSetting)
     },

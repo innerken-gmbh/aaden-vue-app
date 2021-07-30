@@ -68,7 +68,7 @@
       <template slot="right-slot">
 
         <v-toolbar-items class="mx-2">
-          <v-btn :color="tseStatus?'success':'error'">{{ $t('TSE STATUS') }}:{{tseInfo}}</v-btn>
+          <v-btn :color="tseStatus?'':'error'">{{ $t('TSE STATUS') }}:{{tseInfo}}</v-btn>
           <v-btn
             :color="useBluePrintView?'primary':'transparent'"
             @click="useBluePrintView=!useBluePrintView">
@@ -496,7 +496,6 @@ import IKUtils from 'innerken-js-utils'
 import Keyboard from '@/components/Keyboard'
 import TableBluePrint from '@/components/TableBluePrint'
 import { defaultSection } from '@/oldjs/defaultConst'
-import debounce from 'lodash-es/debounce'
 import SalesDialog from '@/components/fragments/SalesDialog'
 import GridButton from '@/components/GridButton'
 import MemberCardDialog from '@/components/fragments/MemberCardDialog'
@@ -934,9 +933,6 @@ export default {
     if (GlobalConfig.defaultPassword) {
       this.currentServant = this.findServant(GlobalConfig.defaultPassword)
     }
-  },
-  created () {
-    this.debounceUpdateSection = debounce(updateSection, 500)
   },
   beforeDestroy () {
     clearAllTimer()

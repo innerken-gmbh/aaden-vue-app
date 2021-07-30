@@ -1,4 +1,5 @@
 {
+  "uuId": "",
   "Base": "127.0.0.1",
   "DeviceId": -1,
   "Protocol": "http://",
@@ -45,5 +46,7 @@
   "servantDataOnlyToday": false,
   "useOpenTableConfirm": false,
   "showTotalPriceOnCard": true,
-  "useEnterKeyToPay": false
+  "useEnterKeyToPay": false,
+  "updateFold": false
+
 }

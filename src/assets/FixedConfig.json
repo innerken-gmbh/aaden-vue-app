@@ -1,7 +1,7 @@
 {
-  "requiredBackendVersion": "1.7.67",
+  "requiredBackendVersion": "1.7.85",
   "backendIsOk": false,
-  "frontendMacAddress": "aaden-vue-app",
+  "frontendMacAddress": "aaden-vue-app-",
   "deviceType": "dist-aaden-vue-app",
   "tableInfoKeys": [
     "servantName",

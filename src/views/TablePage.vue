@@ -22,7 +22,6 @@
                     </template>
                   </v-item-group>
                 </div>
-
                 <div class="d-flex align-center px-1">
                   <v-icon>mdi-format-list-bulleted-type</v-icon>
                   <span class="ml-1" style="white-space: nowrap">{{ findConsumeTypeById(consumeTypeId) }}</span>
@@ -102,6 +101,7 @@
             <v-card v-dragscroll color="transparent" elevation="0"
                     style="max-width: 100%;"
                     class="dragscroll dishCardListContainer ml-1 flex-grow-1">
+
               <v-item-group v-model="activeDCT" mandatory class="d-flex flex-wrap align-start elevation-1"
                             style="position: fixed;z-index: 2;background: white;width: calc(100vw - 600px)">
                 <template v-for="ct of dct">
@@ -258,14 +258,18 @@
               </template>
               <grid-button
                 :loading="isSendingRequest"
-                v-if="consumeTypeId===1"
+                v-if="consumeTypeId===1||consumeTypeId===5"
                 icon="mdi-silverware"
                 :text="$t('ChangeToBuffet')"
                 color="#ff7961"
                 @click="buffetDialogShow=true"
               />
             </div>
-
+            <buffet-status-card
+              class="mt-2"
+              v-if="consumeTypeId!==1&&consumeTypeId!==2&&consumeTypeId!==5"
+              :table-detail-info="realAddressInfo"
+              :current-round="tableDetailInfo.tableBasicInfo.buffetRound"></buffet-status-card>
             <address-display
               :should-open-menu.sync="addressFormOpen"
               @address-change="submitRawAddressInfo"
@@ -493,6 +497,7 @@ import { acceptOrder } from '@/api/api'
 import GridButton from '@/components/GridButton'
 import { mapState } from 'vuex'
 import BuffetStartDialog from '@/components/fragments/BuffetStartDialog'
+import BuffetStatusCard from '@/components/fragments/BuffetStatusCard'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -518,6 +523,7 @@ export default {
     dragscroll
   },
   components: {
+    BuffetStatusCard,
     BuffetStartDialog,
     GridButton,
     AddressDisplay,
@@ -1235,6 +1241,7 @@ export default {
       window.onkeydown = this.listenKeyDown
 
       if (GlobalConfig.getFocus) {
+        this.autoGetFocus()
         addToTimerList(setInterval(this.autoGetFocus, 1000))
       }
       await this.initialUI(true)
@@ -1366,7 +1373,6 @@ export default {
       )
     },
     refresh: function () {
-      this.autoGetFocus()
       this.realInitial()
     },
     realConsumeTypeId (val) {
