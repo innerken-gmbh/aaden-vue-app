@@ -284,20 +284,20 @@
             <grid-button
               @click="cartListModel.clear()"
               icon="mdi-delete-sweep"
-              text="Leeren"
+              :text="$t('清空')"
               color="error"
             ></grid-button>
             <grid-button
               @click="orderDish(cartListModel.list,false)"
               :loading="isSendingRequest"
               icon="mdi-printer-off"
-              text="Bestellen"
+              :text="$t('bestellen')"
               color="#000"
             ></grid-button>
             <grid-button
               :loading="isSendingRequest"
               icon="mdi-printer"
-              text="Drucken"
+              :text="$t('print')"
               @click="orderDish(cartListModel.list)"
             ></grid-button>
             <template v-if="cartCurrentDish">
@@ -322,7 +322,7 @@
                 @click="editNote"
                 icon="mdi-notebook-edit"
                 color="#666666"
-                text="Notiz"
+                :text="$t('Notiz')"
               ></grid-button>
             </template>
 
