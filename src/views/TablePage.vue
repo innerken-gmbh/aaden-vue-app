@@ -114,7 +114,7 @@
                 </template>
               </v-item-group>
               <div class="mt-13"></div>
-              <v-sheet v-if="Config.alwaysShowDishesBellow||!activeCategoryId&&(!input||input.length===0)"
+              <v-sheet v-if="Config.alwaysShowDishesBellow||!activeCategoryId"
                        class="px-0" color="transparent">
                 <v-item-group class="d-flex flex-wrap align-start">
                   <template v-for="category of filteredC">
@@ -129,7 +129,7 @@
                   </template>
                 </v-item-group>
               </v-sheet>
-              <div class="dishCardList" v-if="activeCategoryId||input||Config.alwaysShowDishesBellow">
+              <div class="dishCardList" v-if="activeCategoryId||Config.alwaysShowDishesBellow">
                 <div v-if="activeCategoryId&&!Config.alwaysShowDishesBellow"
                      style="width: 100%;height: 112px;
                         border: 2px solid #ff8c50;
@@ -184,9 +184,28 @@
           </div>
           <v-spacer></v-spacer>
         </v-toolbar>
-        <v-card width="300px" height="calc(100vh - 48px)"
-                class="d-flex flex-shrink-0 flex-column pa-2">
-          <div v-if="cartListModel.count()===0"
+        <v-card tile width="300px" height="calc(100vh - 48px)"
+                class="d-flex flex-shrink-0 flex-column">
+          <v-card  v-if="displayInput&&displayInput.length>0" style="overflow: scroll;" class="flex-shrink-1 blue lighten-5">
+            <template v-for="(dish,index) in searchDish">
+              <v-card  @click="input=dish.code;displayInput=dish.code" elevation="0"
+                      :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
+                       :class="index===0?'first':''"
+                      :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5;" class="d-flex  px-1 py-1">
+                <div :style="{fontSize:Config.dishBlockFontSize+'px'}" class="name"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}</div>
+                <v-spacer></v-spacer>
+                <div v-if="dish.isFree==='1'"
+                     style="padding:2px 4px;border-radius: 4px;"
+                     class="price d-flex align-center green lighten-3 white--text">
+                  {{  $t('Frei')  }}
+                </div>
+                <div v-else class="price d-flex align-center">
+                  {{dish.price | priceDisplay}}
+                </div>
+              </v-card>
+            </template>
+          </v-card>
+          <div v-else-if="cartListModel.count()===0" class="pa-2"
           >
             <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px">
               <grid-button
@@ -279,7 +298,6 @@
               :consume-type-status-id="consumeTypeStatusId"
               :raw-address-info="realAddressInfo"/>
           </div>
-
           <div v-else style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
             <grid-button
               @click="cartListModel.clear()"
@@ -328,7 +346,7 @@
 
           </div>
           <v-spacer></v-spacer>
-          <div>
+          <div class="pa-2">
             <v-text-field
               class="ma-2"
               hide-details
@@ -579,6 +597,7 @@ export default {
       categories: [],
       activeDCT: 0,
       filteredDish: [],
+      searchDish: [],
 
       Config: GlobalConfig,
       /* input**/
@@ -1251,7 +1270,7 @@ export default {
       this.activeDCT = index
     },
     updateFilteredDish () {
-      if (this.activeCategoryId || this.displayInput) {
+      if (this.activeCategoryId) {
         console.log('should update Filtered Dish')
         this.filteredDish = this.filterDish()
       }
@@ -1272,18 +1291,13 @@ export default {
       }
       return [code, count]
     },
-    filterDish () {
-      let list = this.dishes
-      if (!this.displayInput) {
-        const dct = this.dct[this.activeDCT]
-        list = list.filter((item) => {
-          return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
-        })
-        list = list.filter((item) => {
-          return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
-        })
+    updateSearchDish () {
+      if (this.displayInput) {
+        this.searchDish = this.searchDishes()
       }
-
+    },
+    searchDishes () {
+      const list = this.dishes
       if (this.input) {
         if (this.input !== '' && !this.input.includes('/')) {
           const [buffer] = this.getCodeAndCountFromInput(this.input)
@@ -1298,9 +1312,23 @@ export default {
               return -1
             }
           }).concat(list.filter((item) => {
-            return item.dishName.toLowerCase().startsWith(buffer.toLowerCase()) && !item.code.toLowerCase().startsWith(buffer.toLowerCase())
+            return item.dishName.toLowerCase().startsWith(buffer.toLowerCase()) &&
+              !item.code.toLowerCase().startsWith(buffer.toLowerCase())
           }))
         }
+      }
+      return list
+    },
+    filterDish () {
+      let list = this.dishes
+      if (!this.displayInput) {
+        const dct = this.dct[this.activeDCT]
+        list = list.filter((item) => {
+          return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
+        })
+        list = list.filter((item) => {
+          return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
+        })
       }
 
       return list
@@ -1369,7 +1397,7 @@ export default {
     },
     input: function () {
       this.debounce(
-        this.updateFilteredDish
+        this.updateSearchDish
       )
     },
     refresh: function () {
@@ -1570,6 +1598,14 @@ tr:hover {
   background: #367aeb !important;
   color: #ffffff;
   border-bottom: 2px solid #367aeb;
+}
+
+.first{
+  padding: 8px !important;
+  font-size: large;
+  color: black;
+  background: #BBDEFB !important;
+  border-bottom: 2px solid #367aeb !important;
 }
 
 </style>
