@@ -26,7 +26,35 @@
                                    class="mt-4"
                                    :max="todayDate"
                     />
-                    <div class="pa-4" style="min-width: 464px">
+                    <div v-if="realShow" class="pa-4 flex-grow-0">
+                      <v-simple-table style="max-height: 400px;width: 360px;overflow-y: scroll">
+                        <template v-slot:default>
+                          <thead>
+                          <tr>
+                            <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
+                            <th class="text-left">{{ $t('time') }}</th>
+                            <th class="text-left">{{ $t('Summe') }}</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          <template v-for="order in bills">
+                            <tr v-bind:key="order.orderId">
+                              <td>
+                                <span class="font-weight-bold">{{ order.tableName }}</span>/{{ order.orderId }}
+                              </td>
+                              <td>
+                                {{ order.updateTimestamp.split(' ')[1] }}
+                              </td>
+                              <td>
+                                {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{ order.tipIncome }})</span>/{{ order.paymentMethodName }}<b v-if="order.discountStr">/ {{'-'+order.discountStr.replace('p','%')}}</b>
+                              </td>
+                            </tr>
+                          </template>
+                          </tbody>
+                        </template>
+                      </v-simple-table>
+                    </div>
+                    <div class="pa-4 flex-grow-1" style="min-width: 464px">
                       <v-list subheader two-line>
                         <v-subheader>{{ $t('Umsatz') }}</v-subheader>
                         <template v-for="(total,index) in taxGroupInfo">
@@ -233,6 +261,7 @@
 
 import dayjs from 'dayjs'
 import {
+  getAllBillsWithSortAndFilter,
   getBillListForServant,
   previewZBon,
   previewZBonByTimeSpan,
@@ -280,6 +309,7 @@ export default {
       Config: GlobalConfig,
       lastZBonPrintDate: null,
       tabIndex: 0,
+      bills: [],
       displayData: defaultDisplayData,
       todayDate: dayjs().format('YYYY-MM-DD'),
       singleZBonDate: null
@@ -385,6 +415,7 @@ export default {
           this.billData = await previewZBon(this.singleZBonDate, this.singleZBonDate)
         }
       }
+      this.bills = await getAllBillsWithSortAndFilter(this.singleZBonDate, this.singleZBonDate)
       this.displayData = Object.assign({}, defaultDisplayData, await getBillListForServant(this.password ?? GlobalConfig.defaultPassword, this.singleZBonDate))
     }
   },

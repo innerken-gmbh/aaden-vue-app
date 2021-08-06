@@ -139,9 +139,7 @@
  ">
         <v-card height="calc(100vh - 48px)" tile color="transparent"
                 style="width: 190px; flex-shrink: 0;overflow-y: scroll">
-
           <v-list subheader two-line>
-
             <v-subheader>
               <v-chip dark label>
                 {{ $t('Neue Tisch mit.') }}
@@ -174,10 +172,10 @@
 
         </v-card>
         <template v-for="servant in tableGroupByServant">
-          <v-card height="calc(100vh - 48px)" color="transparent"
-                  style="width: 190px; flex-shrink: 0;overflow-y: scroll" :key="servant.id">
-            <v-toolbar dense tile>
-              <v-toolbar-title class="d-flex align-center" style="width: 100%">
+          <v-card height="calc(100vh - 48px);" color="transparent"
+                  style="flex-shrink: 0;width: fit-content;writing-mode: vertical-lr"  class="d-inline-flex flex-wrap" :key="servant.id">
+            <v-toolbar elevation="0" color="blue lighten--4" dark dense class="flex-grow-0 ml-1 mb-1 mt-1" style="width: 196px;writing-mode: horizontal-tb">
+              <v-toolbar-title class="d-flex align-center" style="width: 100%" >
                 <div>{{ servant.name }}</div>
                 <v-spacer></v-spacer>
                 <div class="d-flex align-center" style="font-size: small">
@@ -194,8 +192,9 @@
                 :dark="tableColorIsDark(table)"
                 :style="{backgroundColor:tableBackgroundColor(table)}"
                 @click='openOrEnterTable(table.tableName)'
-                class="ma-1 pa-1 px-2" style="height: fit-content;" :key="table.id">
-                <div class="d-flex align-center">
+                elevation="4"
+                class="py-1 px-2 mx-1 d-flex align-center justify-lg-space-between" style="height: 56px;width: 196px;
+                writing-mode: horizontal-tb;" :key="table.id">
                   <span style="font-size: 24px;font-weight: bold">{{ table.tableName }}</span>
                   <v-spacer/>
                   <div>
@@ -212,8 +211,6 @@
                     >{{ findConsumeTypeById(table.consumeType) }}</span>
                     </div>
                   </div>
-                </div>
-
               </v-card>
             </template>
           </v-card>
@@ -428,8 +425,8 @@
           </div>
         </template>
         <div v-if="!isEditing">
-          <v-card class="mt-2">
-            <div class="pa-2">{{ currentServant.name }}:{{ $t(currentKeyboardFunction) }}</div>
+          <v-card class="mt-2 pa-2">
+            <div class="pa-2">{{ $t(currentKeyboardFunction) }}</div>
             <v-text-field
               class="ma-2"
               hide-details
@@ -506,7 +503,7 @@ import UpdateFragment from '@/components/fragments/UpdateFragment'
 const keyboardLayout =
   [
     '7', '8', '9', 'C',
-    '4', '5', '6', 'mdi-account-box',
+    '4', '5', '6', '',
     '1', '2', '3', '',
     'W', '0', '.', 'OK'
   ]
