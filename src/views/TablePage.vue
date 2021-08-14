@@ -163,6 +163,7 @@
           </v-card>
         </div>
       </v-main>
+<!--      right panel-->
       <v-navigation-drawer app stateless permanent right width="300px">
         <v-toolbar dense dark>
           <div class="d-flex align-center justify-space-between" style="width: 100%">
@@ -287,7 +288,7 @@
             <buffet-status-card
               class="mt-2"
               v-if="consumeTypeId!==1&&consumeTypeId!==2&&consumeTypeId!==5"
-              :table-detail-info="realAddressInfo"
+              :buffet-setting-info="realAddressInfo"
               :current-round="tableDetailInfo.tableBasicInfo.buffetRound"></buffet-status-card>
             <address-display
               :should-open-menu.sync="addressFormOpen"

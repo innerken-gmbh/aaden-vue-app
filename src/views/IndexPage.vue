@@ -51,7 +51,6 @@
                   </v-list-item>
                 </template>
               </v-list>
-
               <v-card-actions>
                 <v-btn text @click="hardReload">Clear</v-btn>
                 <v-spacer></v-spacer>
