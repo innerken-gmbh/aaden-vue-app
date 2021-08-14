@@ -79,9 +79,8 @@ export default {
     async check () {
       this.loading = true
       try {
-        const result = await checkServant(this.isAuthorizeTypeSuper, this.localPinInput, this.tableId)
+        await checkServant(this.isAuthorizeTypeSuper, this.localPinInput, this.tableId)
         this.AUTHORIZE_OK(this.localPinInput)
-        console.log(result)
       } catch (e) {
         console.log(e)
         this.error = true

@@ -6,13 +6,13 @@
           <template v-if="isBoss">
             <v-tab v-if="Config.UseDailyZbon">{{ $t('Tag-Sicht') }}</v-tab>
             <v-tab v-else>Letzte-Sicht</v-tab>
+            <v-tab>{{$t('详细账务')}}</v-tab>
           </template>
           <v-tab>{{$t('Meine Umsatz')}}</v-tab>
         </v-tabs>
         <v-spacer></v-spacer>
         <v-icon @click="realShow=!realShow">mdi-close</v-icon>
       </v-toolbar>
-
       <v-card-text class="mt-1">
         <v-tabs-items v-model="tabIndex">
           <template v-if="isBoss">
@@ -26,8 +26,8 @@
                                    class="mt-4"
                                    :max="todayDate"
                     />
-                    <div v-if="realShow" class="pa-4 flex-grow-0">
-                      <v-simple-table style="max-height: 400px;width: 360px;overflow-y: scroll">
+                    <div v-if="realShow" class="pa-2">
+                      <v-simple-table height="400px" fixed-header>
                         <template v-slot:default>
                           <thead>
                           <tr>
@@ -37,16 +37,16 @@
                           </tr>
                           </thead>
                           <tbody>
-                          <template v-for="order in bills">
+                          <template v-for="order in bills.orders">
                             <tr v-bind:key="order.orderId">
                               <td>
-                                <span class="font-weight-bold">{{ order.tableName }}</span>/{{ order.orderId }}
+                                <span class="font-weight-bold">{{ order.tableName }}</span> / {{ order.orderId }}
                               </td>
                               <td>
-                                {{ order.updateTimestamp.split(' ')[1] }}
+                                {{ order.updatedAt }}
                               </td>
-                              <td>
-                                {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{ order.tipIncome }})</span>/{{ order.paymentMethodName }}<b v-if="order.discountStr">/ {{'-'+order.discountStr.replace('p','%')}}</b>
+                              <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
+                                {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{ order.tipIncome }})</span>/ {{ order.paymentMethodStrings }}<b v-if="order.discountStr">/ {{'-'+order.discountStr.replace('p','%')}}</b>
                               </td>
                             </tr>
                           </template>
@@ -54,7 +54,7 @@
                         </template>
                       </v-simple-table>
                     </div>
-                    <div class="pa-4 flex-grow-1" style="min-width: 464px">
+                    <div class="pa-2" style="width: 272px">
                       <v-list subheader two-line>
                         <v-subheader>{{ $t('Umsatz') }}</v-subheader>
                         <template v-for="(total,index) in taxGroupInfo">
@@ -80,25 +80,24 @@
                             </v-list-item-subtitle>
                           </v-list-item-content>
                         </v-list-item>
+                        <v-btn
+                          x-large
+                          block
+                          @click="printXBon"
+                          color="warning">
+                          {{ $t('XBon Drücken')}}
+                        </v-btn>
+                        <v-btn
+                          v-if="shouldShowZBon"
+                          x-large
+                          block
+                          @click="printZBon"
+                          color="primary">
+                          {{$t('ZBon Drücken')}}
+                        </v-btn>
                       </v-list>
                     </div>
                   </div>
-                  <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn
-                      x-large
-                      @click="printXBon"
-                      color="warning">
-                      {{ $t('XBon Drücken')}}
-                    </v-btn>
-                    <v-btn
-                      v-if="shouldShowZBon"
-                      x-large
-                      @click="printZBon"
-                      color="primary">
-                      {{$t('ZBon Drücken')}}
-                    </v-btn>
-                  </v-card-actions>
                 </v-card>
               </v-tab-item>
             </template>
@@ -159,6 +158,37 @@
                 </v-card>
               </v-tab-item>
             </template>
+            <v-tab-item>
+              <v-card>
+                <v-card-title>{{$t('单菜品折扣')}}<v-spacer></v-spacer>{{totalDiscountValue}}</v-card-title>
+                <v-simple-table  height="400px" fixed-header>
+                  <template v-slot:default>
+                    <thead>
+                    <tr>
+                      <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
+                      <th class="text-left">{{ $t('time') }}/Keneller</th>
+                      <th class="text-left">{{ $t('Discount') }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <template v-for="(dish,index) in discountedDishes">
+                      <tr v-bind:key="dish.dishesId+index">
+                        <td>
+                          <span class="font-weight-bold">{{ dish.tableName }}</span> / {{ dish.dishesOrdersId }}
+                        </td>
+                        <td>
+                          {{ dish.time }}/{{dish.servantName}}
+                        </td>
+                        <td >
+                          {{ dish.code }}.{{ dish.dishName }} / {{'-'+dish.tempDiscountStr.replace('p','%')}}({{dish.tempDiscountMod}})
+                        </td>
+                      </tr>
+                    </template>
+                    </tbody>
+                  </template>
+                </v-simple-table>
+              </v-card>
+            </v-tab-item>
           </template>
           <v-tab-item>
             <v-card>
@@ -170,8 +200,8 @@
                                class="mt-4"
                                :max="todayDate"
                 />
-                <div v-if="realShow" class="pa-4 flex-grow-1">
-                  <v-simple-table style="max-height: 400px;overflow-y: scroll">
+                <div v-if="realShow" class="pa-2 flex-grow-1">
+                  <v-simple-table height="400px" fixed-header>
                     <template v-slot:default>
                       <thead>
                       <tr>
@@ -198,7 +228,7 @@
                     </template>
                   </v-simple-table>
                 </div>
-                <div class="pa-4" style="width: 240px">
+                <div class="pa-2" style="width: 240px">
 
                   <v-list subheader dense>
                     <v-subheader>{{ $t('Kellner') }} : {{ displayData.servant.name }}  ({{ $t('ohne tip') }})</v-subheader>
@@ -261,14 +291,13 @@
 
 import dayjs from 'dayjs'
 import {
-  getAllBillsWithSortAndFilter,
   getBillListForServant,
   previewZBon,
   previewZBonByTimeSpan,
   printServantSummary,
   printXBon,
   printZBon,
-  printZBonUseDate,
+  printZBonUseDate, showTodayTempDiscountedDishes,
   ZBonList
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
@@ -306,6 +335,7 @@ export default {
           fTotalTe: 0
         }
       },
+      discountedDishes: [],
       Config: GlobalConfig,
       lastZBonPrintDate: null,
       tabIndex: 0,
@@ -344,6 +374,12 @@ export default {
       }
     },
 
+    totalDiscountValue () {
+      return this.discountedDishes.reduce((sum, a) => {
+        sum += parseFloat(a.tempDiscountMod) * a.sumCount
+        return sum
+      }, 0)
+    },
     lastZBonPrintTimeDisplayString () {
       return this.lastZBonPrintDate?.format('DD.MM, YYYY HH:mm:ss')
     }
@@ -415,8 +451,16 @@ export default {
           this.billData = await previewZBon(this.singleZBonDate, this.singleZBonDate)
         }
       }
-      this.bills = await getAllBillsWithSortAndFilter(this.singleZBonDate, this.singleZBonDate)
+      this.bills = await getBillListForServant(null, this.singleZBonDate)
+
       this.displayData = Object.assign({}, defaultDisplayData, await getBillListForServant(this.password ?? GlobalConfig.defaultPassword, this.singleZBonDate))
+
+      try {
+        this.discountedDishes = await showTodayTempDiscountedDishes(this.singleZBonDate, this.singleZBonDate)
+        console.log(this.discountedDishes)
+      } catch (e) {
+
+      }
     }
   },
 

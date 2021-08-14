@@ -40,7 +40,6 @@ export default {
   },
   computed: {
     tableBuffetConfig: function () {
-      console.log(this.buffetSettingInfo)
       return Object.assign({}, DefaultBuffetSetting, this.buffetSettingInfo)
     }
   }

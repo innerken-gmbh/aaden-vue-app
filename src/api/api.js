@@ -57,7 +57,7 @@ export async function renameMemberCard (oldName, newName) {
   return (await hillo.get('MemberCard.php?op=renameMemberCard', { old: oldName, new: newName }))
 }
 
-export async function getBillListForServant (pw, date) {
+export async function getBillListForServant (pw = null, date) {
   return (await hillo.get('BackendData.php?op=mobileV3StatWithLang', { pw, date, lang: GlobalConfig.lang })).content
 }
 
@@ -98,4 +98,12 @@ export async function getAllBillsWithSortAndFilter (startTime, endTime) {
   const timespan = startTime + ' - ' + endTime
   console.log(timespan)
   return (await hillo.get('Orders.php?op=withSortAndFilter', { timespan })).content
+}
+
+export async function showTodayTempDiscountedDishes (startTime, endTime) {
+  return (await hillo.get('Complex.php?op=showTempDiscountedDishes', {
+    fromDateTime: startTime,
+    toDateTime: endTime,
+    lang: GlobalConfig.lang
+  })).content
 }
