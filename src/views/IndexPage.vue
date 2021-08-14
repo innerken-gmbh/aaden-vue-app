@@ -131,12 +131,11 @@
         </v-card>
       </v-card>
       <v-card v-else-if="useOrderView"
-              class="flex-grow-1"
-              max-height="calc(100vh - 48px)"
-              style="
-        overflow: scroll;
-        display: flex;
- ">
+              v-dragscroll
+              color="#f5f6fa"
+              class="flex-grow-1 d-flex"
+              style="overflow: scroll"
+              max-height="calc(100vh - 48px)">
         <v-card height="calc(100vh - 48px)" tile color="transparent"
                 style="width: 190px; flex-shrink: 0;overflow-y: scroll">
           <v-list subheader two-line>
@@ -172,9 +171,9 @@
 
         </v-card>
         <template v-for="servant in tableGroupByServant">
-          <v-card height="calc(100vh - 48px);" color="transparent"
-                  style="flex-shrink: 0;width: fit-content;writing-mode: vertical-lr"  class="d-inline-flex flex-wrap" :key="servant.id">
-            <v-toolbar elevation="0" color="blue lighten--4" dark dense class="flex-grow-0 ml-1 mb-1 mt-1" style="width: 196px;writing-mode: horizontal-tb">
+          <v-card elevation="0" height="calc(100vh - 48px);"  color="transparent"
+                  :key="servant.id">
+            <v-toolbar @click="tryOpenTableUsePassword(servant.password)" elevation="0" color="blue lighten--4" dark dense class="flex-grow-0 ml-1 mb-1 mt-1" style="width: 196px;">
               <v-toolbar-title class="d-flex align-center" style="width: 100%" >
                 <div>{{ servant.name }}</div>
                 <v-spacer></v-spacer>
@@ -187,13 +186,14 @@
                 </div>
               </v-toolbar-title>
             </v-toolbar>
-            <template v-for="table in servant.tables">
-              <v-card
-                :dark="tableColorIsDark(table)"
-                :style="{backgroundColor:tableBackgroundColor(table)}"
-                @click='openOrEnterTable(table.tableName)'
-                elevation="4"
-                class="py-1 px-2 mx-1 d-flex align-center justify-lg-space-between" style="height: 56px;width: 196px;
+            <div v-dragscroll style="height: calc(100vh - 108px);overflow: scroll;display: grid;grid-auto-rows: 56px;grid-template-columns: 100%;grid-gap: 4px">
+              <template v-for="table in servant.tables">
+                <v-card
+                  :dark="tableColorIsDark(table)"
+                  :style="{backgroundColor:tableBackgroundColor(table)}"
+                  @click='openOrEnterTable(table.tableName)'
+                  elevation="0"
+                  class="py-1 px-2 mx-1 d-flex align-center justify-lg-space-between" style="height: 56px;width: 196px;
                 writing-mode: horizontal-tb;" :key="table.id">
                   <span style="font-size: 24px;font-weight: bold">{{ table.tableName }}</span>
                   <v-spacer/>
@@ -211,8 +211,10 @@
                     >{{ findConsumeTypeById(table.consumeType) }}</span>
                     </div>
                   </div>
-              </v-card>
-            </template>
+                </v-card>
+              </template>
+            </div>
+
           </v-card>
 
         </template>
