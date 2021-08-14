@@ -1,5 +1,5 @@
 <template>
-  <v-card :disabled="disabled" :color="color" class="gridButton elevation-1"
+  <v-card :disabled="disabled" :color="color" class="gridButton elevation-0"
        @click="!loading?$emit('click'):''">
     <div class="mt-7">
       <template v-if="loading">
