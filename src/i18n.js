@@ -20,6 +20,6 @@ function loadLocaleMessages () {
 export default new VueI18n({
   locale: GlobalConfig?.lang.toLowerCase() || 'de',
   fallbackLocale: 'de',
-  silentTranslationWarn: true,
+  // silentTranslationWarn: true,
   messages: loadLocaleMessages()
 })
