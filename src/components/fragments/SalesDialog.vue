@@ -6,9 +6,9 @@
           <template v-if="isBoss">
             <v-tab v-if="Config.UseDailyZbon">{{ $t('Tag-Sicht') }}</v-tab>
             <v-tab v-else>Letzte-Sicht</v-tab>
-            <v-tab>{{$t('详细账务')}}</v-tab>
+            <v-tab>{{ $t('详细账务') }}</v-tab>
           </template>
-          <v-tab>{{$t('Meine Umsatz')}}</v-tab>
+          <v-tab>{{ $t('Meine Umsatz') }}</v-tab>
         </v-tabs>
         <v-spacer></v-spacer>
         <v-icon @click="realShow=!realShow">mdi-close</v-icon>
@@ -38,7 +38,7 @@
                           </thead>
                           <tbody>
                           <template v-for="order in bills.orders">
-                            <tr v-bind:key="order.orderId">
+                            <tr v-bind:key="order.orderId" @click="startChangePaymentMethodForOrder(order)">
                               <td>
                                 <span class="font-weight-bold">{{ order.tableName }}</span> / {{ order.orderId }}
                               </td>
@@ -46,7 +46,9 @@
                                 {{ order.updatedAt }}
                               </td>
                               <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
-                                {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{ order.tipIncome }})</span>/ {{ order.paymentMethodStrings }}<b v-if="order.discountStr">/ {{'-'+order.discountStr.replace('p','%')}}</b>
+                                {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{ order.tipIncome }})</span>/
+                                {{ order.paymentMethodStrings }}<b v-if="order.discountStr">/
+                                {{ '-' + order.discountStr.replace('p', '%') }}</b>
                               </td>
                             </tr>
                           </template>
@@ -85,7 +87,7 @@
                           block
                           @click="printXBon"
                           color="warning">
-                          {{ $t('XBon Drücken')}}
+                          {{ $t('XBon Drücken') }}
                         </v-btn>
                         <v-btn
                           v-if="shouldShowZBon"
@@ -93,7 +95,7 @@
                           block
                           @click="printZBon"
                           color="primary">
-                          {{$t('ZBon Drücken')}}
+                          {{ $t('ZBon Drücken') }}
                         </v-btn>
                       </v-list>
                     </div>
@@ -145,14 +147,14 @@
                       x-large
                       @click="printXBon"
                       color="warning">
-                      {{$t('XBon Drücken')}}
+                      {{ $t('XBon Drücken') }}
                     </v-btn>
                     <v-btn
                       v-if="shouldShowZBon"
                       x-large
                       @click="printZBon"
                       color="primary">
-                      {{$t('ZBon Drücken')}}
+                      {{ $t('ZBon Drücken') }}
                     </v-btn>
                   </v-card-actions>
                 </v-card>
@@ -160,8 +162,11 @@
             </template>
             <v-tab-item>
               <v-card>
-                <v-card-title>{{$t('单菜品折扣')}}<v-spacer></v-spacer>{{totalDiscountValue}}</v-card-title>
-                <v-simple-table  height="400px" fixed-header>
+                <v-card-title>{{ $t('单菜品折扣') }}
+                  <v-spacer></v-spacer>
+                  {{ totalDiscountValue }}
+                </v-card-title>
+                <v-simple-table height="400px" fixed-header>
                   <template v-slot:default>
                     <thead>
                     <tr>
@@ -177,10 +182,11 @@
                           <span class="font-weight-bold">{{ dish.tableName }}</span> / {{ dish.dishesOrdersId }}
                         </td>
                         <td>
-                          {{ dish.time }}/{{dish.servantName}}
+                          {{ dish.time }}/{{ dish.servantName }}
                         </td>
-                        <td >
-                          {{ dish.code }}.{{ dish.dishName }} / {{'-'+dish.tempDiscountStr.replace('p','%')}}({{dish.tempDiscountMod}})
+                        <td>
+                          {{ dish.code }}.{{ dish.dishName }} /
+                          {{ '-' + dish.tempDiscountStr.replace('p', '%') }}({{ dish.tempDiscountMod }})
                         </td>
                       </tr>
                     </template>
@@ -220,7 +226,9 @@
                             {{ order.updatedAt }}
                           </td>
                           <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
-                            {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{ order.tipIncome }})</span>/ {{ order.paymentMethodStrings }}<b v-if="order.discountStr">/ {{'-'+order.discountStr.replace('p','%')}}</b>
+                            {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{ order.tipIncome }})</span>/
+                            {{ order.paymentMethodStrings }}<b v-if="order.discountStr">/
+                            {{ '-' + order.discountStr.replace('p', '%') }}</b>
                           </td>
                         </tr>
                       </template>
@@ -231,7 +239,10 @@
                 <div class="pa-2" style="width: 240px">
 
                   <v-list subheader dense>
-                    <v-subheader>{{ $t('Kellner') }} : {{ displayData.servant.name }}  ({{ $t('ohne tip') }})</v-subheader>
+                    <v-subheader>{{ $t('Kellner') }} : {{ displayData.servant.name }} ({{
+                        $t('ohne tip')
+                      }})
+                    </v-subheader>
                     <v-list-item>
                       <v-list-item-content>
                         <v-list-item-title>
@@ -245,7 +256,7 @@
                       </v-list-item-action>
                     </v-list-item>
                     <v-divider></v-divider>
-                    <v-subheader>{{$t('payMethod')}}</v-subheader>
+                    <v-subheader>{{ $t('payMethod') }}</v-subheader>
                     <template v-for="payment in displayData.payMethodTotal">
                       <v-list-item v-bind:key="payment.payMethodId">
                         <v-list-item-content>
@@ -275,7 +286,7 @@
                     <v-divider></v-divider>
                   </v-list>
                   <v-btn block @click="printSummaryBon" color="primary" class="mt-4">
-                    {{$t('KellnerBon')}}
+                    {{ $t('KellnerBon') }}
                   </v-btn>
                 </div>
               </div>
@@ -284,6 +295,19 @@
         </v-tabs-items>
       </v-card-text>
     </v-card>
+    <v-dialog v-model="checkOutDialog">
+      <v-card width="100%">
+        <v-card-title>请输入新的结账方式</v-card-title>
+        <check-out-calculator
+          style="height: 564px"
+          @payment-cancel="checkOutDialog=false"
+          @payment-submit="changePaymentMethod"
+          :total="changeOrderTotal"
+        ></check-out-calculator>
+
+      </v-card>
+
+    </v-dialog>
   </v-dialog>
 </template>
 
@@ -291,6 +315,7 @@
 
 import dayjs from 'dayjs'
 import {
+  changePayMethodForOrder,
   getBillListForServant,
   previewZBon,
   previewZBonByTimeSpan,
@@ -302,6 +327,7 @@ import {
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import CheckOutCalculator from '@/components/CheckOutCalculator'
 
 const defaultDisplayData = {
   orders: [],
@@ -315,6 +341,7 @@ const defaultDisplayData = {
 
 export default {
   name: 'SalesDialog',
+  components: { CheckOutCalculator },
   props: {
     salesDialogShow: {
       default: false
@@ -339,10 +366,14 @@ export default {
       Config: GlobalConfig,
       lastZBonPrintDate: null,
       tabIndex: 0,
+
       bills: [],
       displayData: defaultDisplayData,
       todayDate: dayjs().format('YYYY-MM-DD'),
-      singleZBonDate: null
+      singleZBonDate: null,
+      checkOutDialog: null,
+      changeOrderTotal: 0,
+      changeOrderId: null
     }
   },
   computed: {
@@ -387,7 +418,18 @@ export default {
   },
 
   methods: {
-
+    async changePaymentMethod (paymentLog = []) {
+      // console.log(paymentLog)
+      const res = await changePayMethodForOrder(this.changeOrderId, paymentLog)
+      console.log(res)
+      IKUtils.toast('修改成功')
+      this.checkOutDialog = false
+    },
+    startChangePaymentMethodForOrder (order) {
+      this.changeOrderId = order.orderId
+      this.changeOrderTotal = order.totalPrice
+      this.checkOutDialog = true
+    },
     async printSummaryBon () {
       IKUtils.showLoading()
       await printServantSummary(this.password, this.singleZBonDate, this.singleZBonDate)
@@ -457,7 +499,6 @@ export default {
 
       try {
         this.discountedDishes = await showTodayTempDiscountedDishes(this.singleZBonDate, this.singleZBonDate)
-        console.log(this.discountedDishes)
       } catch (e) {
 
       }

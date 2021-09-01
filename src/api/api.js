@@ -107,3 +107,15 @@ export async function showTodayTempDiscountedDishes (startTime, endTime) {
     lang: GlobalConfig.lang
   })).content
 }
+
+export async function billDetailInfo (id) {
+  return (await hillo.get('BackendData.php?op=billDetail', { id, lang: GlobalConfig.lang })).content
+}
+
+export async function changePayMethodForOrder (orderId, paymentLogs) {
+  console.log(orderId, paymentLogs)
+  return (await hillo.post('Complex.php?op=changePayMethodForOrder', {
+    orderId: orderId,
+    paymentLog: JSON.stringify(paymentLogs)
+  }))
+}
