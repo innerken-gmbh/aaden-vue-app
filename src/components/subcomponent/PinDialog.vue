@@ -33,7 +33,6 @@
           </div>
         </template>
       </div>
-
     </v-card>
   </v-dialog>
 </template>
