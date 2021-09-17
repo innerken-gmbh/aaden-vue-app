@@ -313,7 +313,7 @@ export default {
           { amount: 0 }, 'GET')
         if (res.content) {
           const leftAmount = parseFloat(res.content.leftAmount)
-          obj.price = leftAmount > this.remainTotal ? this.remainTotal : leftAmount
+          obj.price = leftAmount > price ? price : leftAmount
           obj.memberCardId = res.content.id
         } else {
           return
