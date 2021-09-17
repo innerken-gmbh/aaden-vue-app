@@ -163,7 +163,7 @@
           </v-card>
         </div>
       </v-main>
-<!--      right panel-->
+      <!--      right panel-->
       <v-navigation-drawer app stateless permanent right width="300px">
         <v-toolbar dense dark>
           <div class="d-flex align-center justify-space-between" style="width: 100%">
@@ -187,21 +187,25 @@
         </v-toolbar>
         <v-card tile width="300px" height="calc(100vh - 48px)"
                 class="d-flex flex-shrink-0 flex-column">
-          <v-card  v-if="displayInput&&displayInput.length>0" style="overflow: scroll;" class="flex-shrink-1 blue lighten-5">
+          <v-card v-if="displayInput&&displayInput.length>0" style="overflow: scroll;"
+                  class="flex-shrink-1 blue lighten-5">
             <template v-for="(dish,index) in searchDish">
-              <v-card  @click="input=dish.code;displayInput=dish.code" elevation="0"
+              <v-card @click="searchDishClick(dish.code)" elevation="0"
                       :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
-                       :class="index===0?'first':''"
+                      :class="index===0?'first':''"
                       :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5;" class="d-flex  px-1 py-1">
-                <div :style="{fontSize:Config.dishBlockFontSize+'px'}" class="name"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}</div>
+                <div :style="{fontSize:Config.dishBlockFontSize+'px'}" class="name"><span v-code-hide>{{
+                    dish.code
+                  }}.</span>{{ dish.dishName }}
+                </div>
                 <v-spacer></v-spacer>
                 <div v-if="dish.isFree==='1'"
                      style="padding:2px 4px;border-radius: 4px;"
                      class="price d-flex align-center green lighten-3 white--text">
-                  {{  $t('Frei')  }}
+                  {{ $t('Frei') }}
                 </div>
                 <div v-else class="price d-flex align-center">
-                  {{dish.price | priceDisplay}}
+                  {{ dish.price | priceDisplay }}
                 </div>
               </v-card>
             </template>
@@ -828,9 +832,9 @@ export default {
         this.cartListModel.setDishList(this.dishes)
       }
     },
-    orderOneDish: function (code) {
+    orderOneDish: async function (code) {
       this.displayInput = ''
-      this.findAndOrderDish(code)
+      await this.findAndOrderDish(code)
     },
     readBuffer: function (clear = true) {
       const ins = this.buffer === '' ? this.input : this.buffer
@@ -976,6 +980,14 @@ export default {
       }
 
       blockReady()
+    },
+    async searchDishClick (code) {
+      if (this.input !== code || this.displayInput !== code) {
+        this.input = code
+        this.displayInput = code
+      } else {
+        await this.findAndOrderDish(code)
+      }
     },
     async submitDiscount () {
       if (this.$refs.discount) {
@@ -1601,7 +1613,7 @@ tr:hover {
   border-bottom: 2px solid #367aeb;
 }
 
-.first{
+.first {
   padding: 8px !important;
   font-size: large;
   color: black;
