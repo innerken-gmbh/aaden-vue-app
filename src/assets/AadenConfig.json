@@ -47,5 +47,9 @@
   "useOpenTableConfirm": false,
   "showTotalPriceOnCard": true,
   "useEnterKeyToPay": false,
-  "updateFold": false
+  "updateFold": false,
+
+
+  "mergeTableUseBossPassword": false,
+  "changeTableUseBossPassword": false
 }
