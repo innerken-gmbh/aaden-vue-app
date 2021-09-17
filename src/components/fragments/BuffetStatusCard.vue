@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card outlined>
     <v-list dense>
       <v-list-item>
         <v-list-item-content>

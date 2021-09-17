@@ -465,8 +465,10 @@
   "收起": "schrumpfen",
   "提示": "hint",
   "正在尝试更新": "Versucht zu aktualisieren",
-  "ZBon Drücken": "ZBon打印",
-  "选择了错误的开桌类型": "Der falsche Typ der Tabellenöffnung wurde ausgewählt"
+  "ZBon Drücken": "ZBon Drücken",
+  "选择了错误的开桌类型": "Der falsche Typ der Tabellenöffnung wurde ausgewählt",
+  "单菜品折扣": "Discount",
+  "详细账务": "Detaillierte Abrechnung"
 
 
 }

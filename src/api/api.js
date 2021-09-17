@@ -9,10 +9,6 @@ export async function previewZBon (startDate, endDate) {
   return (await hillo.get('ZBon.php?op=previewBySpan', { startDate, endDate })).content
 }
 
-export async function previewZBonByTimeSpan (startTime, endTime) {
-  return (await hillo.get('ZBon.php?op=previewByTimeSpan', { startTime, endTime })).content
-}
-
 export async function printXBon (startDate, endDate) {
   return (await hillo.post('Complex.php?op=printSummary', {
     timespan: startDate + ' - ' + endDate
@@ -61,7 +57,7 @@ export async function renameMemberCard (oldName, newName) {
   return (await hillo.get('MemberCard.php?op=renameMemberCard', { old: oldName, new: newName }))
 }
 
-export async function getBillListForServant (pw, date) {
+export async function getBillListForServant (pw = null, date) {
   return (await hillo.get('BackendData.php?op=mobileV3StatWithLang', { pw, date, lang: GlobalConfig.lang })).content
 }
 
@@ -92,4 +88,34 @@ export async function checkTse () {
   } catch (e) {
     console.log(e)
   }
+}
+
+export async function previewZBonByTimeSpan (startTime, endTime) {
+  return (await hillo.get('ZBon.php?op=previewByTimeSpan', { startTime, endTime })).content
+}
+
+export async function getAllBillsWithSortAndFilter (startTime, endTime) {
+  const timespan = startTime + ' - ' + endTime
+  console.log(timespan)
+  return (await hillo.get('Orders.php?op=withSortAndFilter', { timespan })).content
+}
+
+export async function showTodayTempDiscountedDishes (startTime, endTime) {
+  return (await hillo.get('Complex.php?op=showTempDiscountedDishes', {
+    fromDateTime: startTime,
+    toDateTime: endTime,
+    lang: GlobalConfig.lang
+  })).content
+}
+
+export async function billDetailInfo (id) {
+  return (await hillo.get('BackendData.php?op=billDetail', { id, lang: GlobalConfig.lang })).content
+}
+
+export async function changePayMethodForOrder (orderId, paymentLogs) {
+  console.log(orderId, paymentLogs)
+  return (await hillo.post('Complex.php?op=changePayMethodForOrder', {
+    orderId: orderId,
+    paymentLog: JSON.stringify(paymentLogs)
+  }))
 }

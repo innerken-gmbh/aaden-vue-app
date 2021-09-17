@@ -33,7 +33,6 @@
           </div>
         </template>
       </div>
-
     </v-card>
   </v-dialog>
 </template>
@@ -45,7 +44,6 @@ import { checkServant } from '@/oldjs/api'
 
 const keyboardLayout =
   [
-
     '7', '8', '9', 'C',
     '4', '5', '6', '',
     '1', '2', '3', '',
@@ -79,9 +77,8 @@ export default {
     async check () {
       this.loading = true
       try {
-        const result = await checkServant(this.isAuthorizeTypeSuper, this.localPinInput, this.tableId)
+        await checkServant(this.isAuthorizeTypeSuper, this.localPinInput, this.tableId)
         this.AUTHORIZE_OK(this.localPinInput)
-        console.log(result)
       } catch (e) {
         console.log(e)
         this.error = true
