@@ -22,7 +22,6 @@
                   <div class="d-flex pa-1">
                     <v-date-picker elevation="2"
                                    v-model="singleZBonDate"
-                                   :allowed-dates="allowedDates"
                                    class="mt-4"
                                    :max="todayDate"
                     />
@@ -202,7 +201,6 @@
                 <v-date-picker elevation="2"
                                v-if="!Config.servantDataOnlyToday"
                                v-model="singleZBonDate"
-                               :allowed-dates="allowedDates"
                                class="mt-4"
                                :max="todayDate"
                 />
@@ -458,10 +456,6 @@ export default {
         IKUtils.toast('OK')
         await this.loadData()
       })
-    },
-
-    allowedDates (val) {
-      return dayjs(val, 'YYYY-MM-DD').isBefore(dayjs())
     },
 
     initial () {
