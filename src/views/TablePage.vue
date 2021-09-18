@@ -187,7 +187,7 @@
         </v-toolbar>
         <v-card tile width="300px" height="calc(100vh - 48px)"
                 class="d-flex flex-shrink-0 flex-column">
-          <v-card v-if="displayInput&&displayInput.length>0" style="overflow: scroll;"
+          <v-card v-if="input&&input.length>0" style="overflow: scroll;"
                   class="flex-shrink-1 blue lighten-5">
             <template v-for="(dish,index) in searchDish">
               <v-card @click="searchDishClick(dish.code)" elevation="0"
@@ -982,11 +982,14 @@ export default {
       blockReady()
     },
     async searchDishClick (code) {
-      if (this.input !== code || this.displayInput !== code) {
+      if (this.input !== code) {
         this.input = code
         this.displayInput = code
       } else {
         await this.findAndOrderDish(code)
+        this.displayInput = ''
+
+        console.log(this.input, 'input')
       }
     },
     async submitDiscount () {
@@ -1305,7 +1308,7 @@ export default {
       return [code, count]
     },
     updateSearchDish () {
-      if (this.displayInput) {
+      if (this.input) {
         this.searchDish = this.searchDishes()
       }
     },
