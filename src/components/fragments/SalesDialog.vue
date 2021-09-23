@@ -417,11 +417,15 @@ export default {
 
   methods: {
     async changePaymentMethod (paymentLog = []) {
-      // console.log(paymentLog)
-      const res = await changePayMethodForOrder(this.changeOrderId, paymentLog)
-      console.log(res)
-      IKUtils.toast('修改成功')
-      this.checkOutDialog = false
+      if (paymentLog?.length > 0) {
+        const res = await changePayMethodForOrder(this.changeOrderId, paymentLog)
+        console.log(res)
+        IKUtils.toast('OK')
+        this.checkOutDialog = false
+      } else {
+        IKUtils.showError('Bitte Eine Paymethod zu wahlen.')
+      }
+      await this.loadData()
     },
     startChangePaymentMethodForOrder (order) {
       this.changeOrderId = order.orderId
