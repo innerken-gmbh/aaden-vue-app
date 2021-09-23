@@ -48,8 +48,6 @@
   "showTotalPriceOnCard": true,
   "useEnterKeyToPay": false,
   "updateFold": false,
-
-
   "mergeTableUseBossPassword": false,
   "changeTableUseBossPassword": false
 }
