@@ -750,26 +750,11 @@ export default {
       this.currentKeyboardFunction = keyboardFunctions.OpenTable
       blockReady()
     },
-    playSound (count = 3) {
-      count -= 1
-      if (count >= 0) {
-        setTimeout(() => {
-          IKUtils.play('/Resource/ding.m4a')
-          this.playSound(count)
-        }, 100)
-      }
-    },
     async refreshTables () {
       if (this.useBluePrintView) {
         this.tableList = await getTableListWithCells()
       } else {
         this.areas = await getActiveTables()
-        for (const a of this.areas) {
-          if (a.tables.some(t => t.callService === '1' && t.usageStatus === '1')) {
-            this.playSound()
-            break
-          }
-        }
       }
     },
     async refreshPrinterList () {
