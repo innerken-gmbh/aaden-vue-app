@@ -193,10 +193,9 @@
               <v-card @click="searchDishClick(dish.code)" elevation="0"
                       :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
                       :class="index===0?'first':''"
-                      :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large" class="d-flex  px-1 py-1 align-start">
-                <div class="name mr-2" ><span v-code-hide>{{
-                    dish.code
-                  }}.</span>{{ dish.dishName }}
+                      :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large"
+                      class="d-flex  px-1 py-1 align-start">
+                <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
                 </div>
                 <v-spacer></v-spacer>
                 <div v-if="dish.isFree==='1'"
