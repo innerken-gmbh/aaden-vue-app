@@ -2,7 +2,7 @@
   <v-dialog max-width="400px" v-model="realShow">
     <v-card>
       <v-toolbar tile color="primary" dark elevation="0">
-        <v-toolbar-title>  {{ $t('折扣') }}</v-toolbar-title>
+        <v-toolbar-title> {{ $t('折扣') }}</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-text-field :label="$t('金额')"
@@ -49,7 +49,8 @@ export default {
     initialUI: {
       default: () => () => {
       }
-    }
+    },
+    totalPrice: {}
   },
   data: function () {
     return {
@@ -128,10 +129,10 @@ export default {
       }
       const isPercentage = discountStr.includes('p')
       const value = parseFloat(discountStr.replace('p', ''))
+      const ratio = isPercentage ? value / 100 : value / this.totalPrice
+      console.log(ratio)
       if (GlobalConfig.bigDiscountRatio > 0 &&
-        isPercentage &&
-        (value / 100) >=
-        GlobalConfig.bigDiscountRatio) {
+        ratio >= GlobalConfig.bigDiscountRatio) {
         this.realShow = false
         popAuthorize('boss', () => {
           realSubmitDiscount()

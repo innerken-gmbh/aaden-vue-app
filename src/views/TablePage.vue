@@ -434,6 +434,7 @@ left: 304px"
       <discount-dialog
           :discount-model-show="discountModelShow"
           :id="id"
+          :total-price="tableDetailInfo.order.totalPrice"
           :initial-u-i="initialUI"
           ref="discount"
           @visibility-changed="(val)=>this.discountModelShow=val"
