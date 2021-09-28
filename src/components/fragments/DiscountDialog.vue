@@ -130,7 +130,6 @@ export default {
       const isPercentage = discountStr.includes('p')
       const value = parseFloat(discountStr.replace('p', ''))
       const ratio = isPercentage ? value / 100 : value / this.totalPrice
-      console.log(ratio)
       if (GlobalConfig.bigDiscountRatio > 0 &&
         ratio >= GlobalConfig.bigDiscountRatio) {
         this.realShow = false
