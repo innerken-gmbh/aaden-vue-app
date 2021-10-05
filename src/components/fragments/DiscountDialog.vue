@@ -122,7 +122,7 @@ export default {
         return
       }
       const realSubmitDiscount = async () => {
-        this.addNewPredefinedDiscount(discountStr)
+        await this.addNewPredefinedDiscount(discountStr)
         await this.sendDiscount(discountStr)
         this.localDiscountStr = ''
         this.localDiscountType = 0
