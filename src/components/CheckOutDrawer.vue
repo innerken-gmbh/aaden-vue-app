@@ -2,9 +2,9 @@
   <v-navigation-drawer width="fit-content" left fixed temporary v-model="realShow">
     <v-card class="fill-height">
       <check-out-calculator
-          @payment-cancel="realShow=false"
-          @payment-submit="checkOut"
-          :total="order.total*(1-discountRatio)"/>
+        @payment-cancel="realShow=false"
+        @payment-submit="checkOut"
+        :total="totalPrice"/>
     </v-card>
   </v-navigation-drawer>
 </template>
@@ -22,7 +22,11 @@ export default {
   components: { CheckOutCalculator },
   props: {
     order: {
-      default: () => ({ total: 0, count: 0, list: [] })
+      default: () => ({
+        total: 0,
+        count: 0,
+        list: []
+      })
     },
     visible: {
       default: true
@@ -47,6 +51,9 @@ export default {
     }
   },
   computed: {
+    totalPrice () {
+      return this.order.total * (1 - this.discountRatio)
+    },
     realShow: {
       get: function () {
         return this.visible
@@ -70,6 +77,12 @@ export default {
       if (print > 1) {
         printCount = 2
       }
+      if (paymentLog.length === 0) {
+        paymentLog.push({
+          id: 1,
+          price: this.totalPrice
+        })
+      }
 
       const checkOutData = {
         tableId: this.tableId,
@@ -81,7 +94,7 @@ export default {
         discountStr: '',
         pw: this.password
       }
-
+      console.log(paymentLog)
       if (paymentLog.length === 0) {
         delete checkOutData.paymentLog
       }
@@ -94,13 +107,6 @@ export default {
       delete checkOutData.discountStr
       const res = await hillo.post('Complex.php?op=' + this.checkOutType, checkOutData)
       if (res) {
-        // if (this.checkOutType !== 'checkOut') {
-        //   if (!checkOutData.discountStr.includes('p') && this.discountStr) {
-        //     const remainDiscount = parseFloat(this.discountStr) - parseFloat(checkOutData.discountStr)
-        //     // console.log(remainDiscount)
-        //     setDiscountToTable(this.tableId, remainDiscount)
-        //   }
-        // }
         toast(this.$t('JSTableCheckOutSuccess'))
         this.cancel()
         if (this.checkOutType === 'checkOut') {

@@ -8,7 +8,6 @@
         <v-text-field :label="$t('金额')"
                       messages="zB.: 12.34" v-model="localDiscountStr"></v-text-field>
       </v-card-text>
-
       <v-card-actions>
         <div class="d-flex flex-wrap">
           <template v-for="d in predefinedDiscount">
