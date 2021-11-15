@@ -412,7 +412,7 @@ left: 304px"
                 :default-expand="true"
                 :dish-list-model="splitOrderListModel"
                 :click-callback="removeFromSplitOrder"
-                :title="$t('operation')"/>
+                :title="$t('selectedDishes')"/>
           </div>
         </div>
       </template>
@@ -684,7 +684,7 @@ export default {
     popChangeTablePanel,
     popMergeTablePanel,
     async changeServant () {
-      const res = await fastSweetAlertRequest(this.$t('Zu andere Kellner übergebe'), 'text',
+      const res = await fastSweetAlertRequest(this.$t('Zu andere Kellner übergeben'), 'text',
         'Orders.php?op=changeServantForTable', 'pw',
         { tableId: this.id }, 'POST')
       if (res) {

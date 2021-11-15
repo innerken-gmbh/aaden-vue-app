@@ -83,7 +83,7 @@
     </div>
     <div style="width: calc(100vw - 200px - 480px)" class="paymentLog pa-2">
       <div class="my-3">
-        <h3>{{ $t('结账记录') }}</h3>
+        <h3>{{ $t('支付细节') }}</h3>
       </div>
       <div class="my-3" v-dragscroll style="max-height: calc(100vh - 560px);overflow:hidden">
         <template v-for="(paymentInfo,index) in paymentLog">
