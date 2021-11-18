@@ -2,6 +2,7 @@
   <v-navigation-drawer width="fit-content" left fixed temporary v-model="realShow">
     <v-card class="fill-height">
       <check-out-calculator
+        :id="id"
         @payment-cancel="realShow=false"
         @payment-submit="checkOut"
         :total="totalPrice"/>
@@ -21,6 +22,9 @@ export default {
   name: 'CheckOutDrawer',
   components: { CheckOutCalculator },
   props: {
+    id: {
+      default: null
+    },
     order: {
       default: () => ({
         total: 0,

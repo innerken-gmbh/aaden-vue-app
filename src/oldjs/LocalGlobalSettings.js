@@ -12,6 +12,9 @@ export async function loadConfig () {
     GlobalConfig = Object.assign(GlobalConfig, await loadBaseConfig(defaultConfig), fix)
     changeLanguage(GlobalConfig.lang)
     NeededKeys = GlobalConfig.neededKeys
+    GlobalConfig.getMilepayUrl = function () {
+      return GlobalConfig.Protocol + '192.168.1.100' + ':' + GlobalConfig.milePayPort + '/milePay/'
+    }
     window.Config = GlobalConfig
   } catch (e) {
     console.log(e)
