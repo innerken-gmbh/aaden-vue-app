@@ -65,9 +65,8 @@
         </div>
       </template>
       <template slot="right-slot">
-
         <v-toolbar-items class="mx-2">
-          <v-btn :color="tseStatus?'':'error'">{{ $t('TSE STATUS') }}:{{tseInfo}}</v-btn>
+          <update-fragment></update-fragment>
           <v-btn
             :color="useBluePrintView?'primary':'transparent'"
             @click="useBluePrintView=!useBluePrintView">
@@ -75,7 +74,6 @@
             <v-icon v-else>mdi-dots-grid</v-icon>
           </v-btn>
         </v-toolbar-items>
-
       </template>
     </Navgation>
     <v-main app>
@@ -313,23 +311,18 @@
           <v-btn v-if="!useBluePrintView"
                  :color="useOrderView?'primary':'transparent'"
                  @click="useOrderView=!useOrderView">
-            {{ $t('只看活跃') }}
+            {{ $t('跑堂列表') }}
           </v-btn>
         </v-toolbar-items>
-
         <v-spacer></v-spacer>
         <div style="width: 72px" class="ml-2">
           <v-img :src="require('@/assets/aadenLogo.png')"></v-img>
         </div>
-
         <div class="text-right ml-2 text-caption">
           V {{ version }}
         </div>
       </v-toolbar>
       <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
-        <div>
-          <update-fragment></update-fragment>
-        </div>
         <template v-if="useBluePrintView">
           <template v-if="isEditing">
             <div class="flex-grow-0">
