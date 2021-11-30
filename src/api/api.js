@@ -108,6 +108,21 @@ export async function showTodayTempDiscountedDishes (startTime, endTime) {
   })).content
 }
 
+export async function getCashInOutDetail (startDate, endDate) {
+  return (await hillo.get('Complex.php?op=getCashInOutDetail', {
+    fromDate: startDate,
+    toDate: endDate
+  })).content
+}
+
+export async function todayCashStand () {
+  return (await hillo.get('Complex.php?op=getCurrentCashAmount'))?.content?.currentCashAmount ?? 0
+}
+
+export async function manageCashAmount (amount, note = '') {
+  return (await hillo.post('Complex.php?op=manageCashAmount', { amount, note }))
+}
+
 export async function billDetailInfo (id) {
   return (await hillo.get('BackendData.php?op=billDetail', { id, lang: GlobalConfig.lang })).content
 }

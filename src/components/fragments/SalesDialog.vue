@@ -7,6 +7,7 @@
             <v-tab v-if="Config.UseDailyZbon">{{ $t('Tag-Sicht') }}</v-tab>
             <v-tab v-else>Letzte-Sicht</v-tab>
             <v-tab>{{ $t('详细账务') }}</v-tab>
+            <v-tab>{{ $t('Kassen Buch') }}</v-tab>
           </template>
           <v-tab>{{ $t('Meine Umsatz') }}</v-tab>
         </v-tabs>
@@ -82,18 +83,18 @@
                           </v-list-item-content>
                         </v-list-item>
                         <v-btn
-                          x-large
-                          block
-                          @click="printXBon"
-                          color="warning">
+                            x-large
+                            block
+                            @click="printXBon"
+                            color="warning">
                           {{ $t('XBon Drücken') }}
                         </v-btn>
                         <v-btn
-                          v-if="shouldShowZBon"
-                          x-large
-                          block
-                          @click="printZBon"
-                          color="primary">
+                            v-if="shouldShowZBon"
+                            x-large
+                            block
+                            @click="printZBon"
+                            color="primary">
                           {{ $t('ZBon Drücken') }}
                         </v-btn>
                       </v-list>
@@ -143,16 +144,16 @@
                   <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn
-                      x-large
-                      @click="printXBon"
-                      color="warning">
+                        x-large
+                        @click="printXBon"
+                        color="warning">
                       {{ $t('XBon Drücken') }}
                     </v-btn>
                     <v-btn
-                      v-if="shouldShowZBon"
-                      x-large
-                      @click="printZBon"
-                      color="primary">
+                        v-if="shouldShowZBon"
+                        x-large
+                        @click="printZBon"
+                        color="primary">
                       {{ $t('ZBon Drücken') }}
                     </v-btn>
                   </v-card-actions>
@@ -192,6 +193,68 @@
                     </tbody>
                   </template>
                 </v-simple-table>
+              </v-card>
+            </v-tab-item>
+            <v-tab-item>
+              <v-card>
+                <div class="d-flex pa-1">
+                  <v-date-picker elevation="2"
+                                 v-model="singleZBonDate"
+                                 class="mt-4"
+                                 :max="todayDate"
+                  />
+                  <div v-if="realShow" class="pa-2">
+                    <v-simple-table height="400px" fixed-header>
+                      <template v-slot:default>
+                        <thead>
+                        <tr>
+                          <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
+                          <th class="text-left">{{ $t('time') }}</th>
+                          <th class="text-left">{{ $t('Summe') }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <template v-for="order in bills.orders">
+                          <tr v-bind:key="order.orderId" @click="startChangePaymentMethodForOrder(order)">
+                            <td>
+                              <span class="font-weight-bold">{{ order.tableName }}</span> / {{ order.orderId }}
+                            </td>
+                            <td>
+                              {{ order.updatedAt }}
+                            </td>
+                            <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
+                              {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{ order.tipIncome }})</span>/
+                              {{ order.paymentMethodStrings }}<b v-if="order.discountStr">/
+                              {{ '-' + order.discountStr.replace('p', '%') }}</b>
+                            </td>
+                          </tr>
+                        </template>
+                        </tbody>
+                      </template>
+                    </v-simple-table>
+                  </div>
+                  <div class="pa-2" style="width: 272px">
+                    <v-list subheader two-line>
+                      <v-subheader>{{ $t('Kassen Stand') }}</v-subheader>
+                      <v-list-item>
+                        <v-list-item-content>
+                          <v-list-item-title>
+                            <span style="font-size: larger">
+                                   {{ todayCashStand }}
+                            </span>
+                          </v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
+                      <v-btn
+                          x-large
+                          block
+                          @click="addCashRecord"
+                          color="warning">
+                        {{ $t('新增记录') }}
+                      </v-btn>
+                    </v-list>
+                  </div>
+                </div>
               </v-card>
             </v-tab-item>
           </template>
@@ -297,10 +360,10 @@
       <v-card width="100%">
         <v-card-title>请输入新的结账方式</v-card-title>
         <check-out-calculator
-          style="height: 564px"
-          @payment-cancel="checkOutDialog=false"
-          @payment-submit="changePaymentMethod"
-          :total="changeOrderTotal"
+            style="height: 564px"
+            @payment-cancel="checkOutDialog=false"
+            @payment-submit="changePaymentMethod"
+            :total="changeOrderTotal"
         ></check-out-calculator>
 
       </v-card>
@@ -315,17 +378,22 @@ import dayjs from 'dayjs'
 import {
   changePayMethodForOrder,
   getBillListForServant,
+  getCashInOutDetail,
   previewZBon,
   previewZBonByTimeSpan,
   printServantSummary,
   printXBon,
   printZBon,
-  printZBonUseDate, showTodayTempDiscountedDishes,
+  printZBonUseDate,
+  showTodayTempDiscountedDishes,
+  todayCashStand,
   ZBonList
+  , manageCashAmount
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import CheckOutCalculator from '@/components/CheckOutCalculator'
+import { showInput } from '../../oldjs/common'
 
 const defaultDisplayData = {
   orders: [],
@@ -360,11 +428,13 @@ export default {
           fTotalTe: 0
         }
       },
+      cashChangeRecords: [],
+
       discountedDishes: [],
       Config: GlobalConfig,
       lastZBonPrintDate: null,
       tabIndex: 0,
-
+      todayCashStand: 0,
       bills: [],
       displayData: defaultDisplayData,
       todayDate: dayjs().format('YYYY-MM-DD'),
@@ -409,6 +479,7 @@ export default {
         return sum
       }, 0)
     },
+
     lastZBonPrintTimeDisplayString () {
       return this.lastZBonPrintDate?.format('DD.MM, YYYY HH:mm:ss')
     }
@@ -416,6 +487,15 @@ export default {
   },
 
   methods: {
+    async addCashRecord () {
+      const amount = await showInput('请输入支出金额，如果是收入就输入负数', '', 'number')
+      console.log(amount, '数额')
+      const note = await showInput('请输入相应的备注', '', 'text', '', true)
+      console.log(note, '备注')
+      const res = await manageCashAmount(amount, note)
+      console.log(res)
+      await this.loadData()
+    },
     async changePaymentMethod (paymentLog = []) {
       if (paymentLog?.length > 0) {
         const res = await changePayMethodForOrder(this.changeOrderId, paymentLog)
@@ -427,13 +507,14 @@ export default {
       }
       await this.loadData()
     },
+
     startChangePaymentMethodForOrder (order) {
       this.changeOrderId = order.orderId
       this.changeOrderTotal = order.totalPrice
       this.checkOutDialog = true
     },
     async printSummaryBon () {
-      IKUtils.showLoading()
+      IKUtils.showLoading(true)
       await printServantSummary(this.password, this.singleZBonDate, this.singleZBonDate)
       IKUtils.toast('OK')
     },
@@ -446,13 +527,13 @@ export default {
 
     async printZBon () {
       IKUtils.showConfirm(this.$t('Möchten Sie alle Datensätze drucken?'), this.$t('Bist du sicher?'), async () => {
-        IKUtils.showLoading()
+        IKUtils.showLoading(false)
         if (GlobalConfig.UseDailyZbon) {
           await printZBonUseDate(this.singleZBonDate, this.singleZBonDate)
         } else {
           if (this.lastZBonPrintDate.isAfter(dayjs().subtract(5, 'm'))) {
             IKUtils.showError(this.$t('Die letzte Druckanforderung wurde innerhalb von 5 Minuten ausgegeben.') +
-              this.$t(' Warten Sie mindestens 5 Minuten, bevor Sie erneut drucken'))
+                this.$t(' Warten Sie mindestens 5 Minuten, bevor Sie erneut drucken'))
             return
           }
           await printZBon()
@@ -496,9 +577,12 @@ export default {
       this.displayData = Object.assign({}, defaultDisplayData, await getBillListForServant(this.password ?? GlobalConfig.defaultPassword, this.singleZBonDate))
 
       try {
+        this.todayCashStand = await todayCashStand()
         this.discountedDishes = await showTodayTempDiscountedDishes(this.singleZBonDate, this.singleZBonDate)
+        this.cashChangeRecords = await getCashInOutDetail(this.singleZBonDate, this.singleZBonDate)
+        console.log(this.cashChangeRecords)
       } catch (e) {
-
+        console.log(e)
       }
     }
   },

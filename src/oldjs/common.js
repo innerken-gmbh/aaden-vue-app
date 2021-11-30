@@ -404,6 +404,30 @@ export function getData (url, data) {
   })
 }
 
+export async function showInput (title, body = '', input = 'text', inputValue = '', allowEmpty = false) {
+  const result = await Swal.fire({
+    title: title,
+    html: body,
+    input: input,
+    inputAttributes: {
+      autocapitalize: 'off'
+    },
+    inputValue: inputValue,
+    showCancelButton: true,
+    confirmButtonText: i18n.t('confirm'),
+    showLoaderOnConfirm: true,
+    preConfirm: (data) => {
+      return !(!data && !allowEmpty)
+    },
+    allowOutsideClick: () => !Swal.isLoading()
+  })
+  if (result.value || allowEmpty) {
+    return result.value
+  } else {
+    return false
+  }
+}
+
 /**
  * @param {string} title
  * @param {string} input
@@ -429,7 +453,7 @@ export async function fastSweetAlertRequest
       })
       .catch(error => {
         Swal.showValidationMessage(
-              `Request failed: ${error?.data?.info ?? 'Error'}`
+          `Request failed: ${error?.data?.info ?? 'Error'}`
         )
       })
   }
@@ -570,7 +594,7 @@ export function showTimedAlert (type, title, time = 1000, callback = null) {
     }
   }).then((result) => {
     if (
-    /* Read more about handling dismissals below */
+      /* Read more about handling dismissals below */
       result.dismiss === Swal.DismissReason.timer
     ) {
       if (callback) {
