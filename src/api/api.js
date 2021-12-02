@@ -119,8 +119,8 @@ export async function todayCashStand () {
   return (await hillo.get('Complex.php?op=getCurrentCashAmount'))?.content?.currentCashAmount ?? 0
 }
 
-export async function manageCashAmount (amount, note = '') {
-  return (await hillo.post('Complex.php?op=manageCashAmount', { amount, note }))
+export async function manageCashAccount (amount, note = '') {
+  return (await hillo.post('Complex.php?op=manageCashAccount', { amount, note }))
 }
 
 export async function billDetailInfo (id) {

@@ -208,24 +208,22 @@
                       <template v-slot:default>
                         <thead>
                         <tr>
-                          <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
-                          <th class="text-left">{{ $t('time') }}</th>
+                          <th class="text-left">{{ $t('R. Nr.') }}/{{ $t('time') }}</th>
+                          <th class="text-left">{{ $t('Note') }}</th>
                           <th class="text-left">{{ $t('Summe') }}</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <template v-for="order in bills.orders">
-                          <tr v-bind:key="order.orderId" @click="startChangePaymentMethodForOrder(order)">
+                        <template v-for="record in cashChangeRecords">
+                          <tr v-bind:key="record.orderId">
                             <td>
-                              <span class="font-weight-bold">{{ order.tableName }}</span> / {{ order.orderId }}
+                              {{ record.orderId }}/ {{ record.updateTimestamp.split(' ')[1] }}
                             </td>
                             <td>
-                              {{ order.updatedAt }}
+                              {{ record.cashAccountNote }}
                             </td>
-                            <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
-                              {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{ order.tipIncome }})</span>/
-                              {{ order.paymentMethodStrings }}<b v-if="order.discountStr">/
-                              {{ '-' + order.discountStr.replace('p', '%') }}</b>
+                            <td :style="{color:record.payLogAmount>0?'green':'red'}">
+                              {{ record.payLogAmount }}
                             </td>
                           </tr>
                         </template>
@@ -245,10 +243,20 @@
                           </v-list-item-title>
                         </v-list-item-content>
                       </v-list-item>
+                      <v-subheader>{{ $t('Änderung des Tages') }}</v-subheader>
+                      <v-list-item>
+                        <v-list-item-content>
+                          <v-list-item-title>
+                            <span style="font-size: larger">
+                                   {{ todayChange | priceDisplay }}
+                            </span>
+                          </v-list-item-title>
+                        </v-list-item-content>
+                      </v-list-item>
                       <v-btn
                           x-large
                           block
-                          @click="addCashRecord"
+                          @click="showNumberKeyboard=true"
                           color="warning">
                         {{ $t('新增记录') }}
                       </v-btn>
@@ -356,6 +364,11 @@
         </v-tabs-items>
       </v-card-text>
     </v-card>
+    <dialog-with-keyboard @close="showNumberKeyboard=false" :show="showNumberKeyboard"
+                          @submit="addCashRecord" title='请输入支出金额，如果是收入就输入负数'
+                          :keys="keyboardNumber">
+      <v-text-field placeholder="如果需要，请点击这里用键盘输入备注" v-model="cashNote"></v-text-field>
+    </dialog-with-keyboard>
     <v-dialog v-model="checkOutDialog">
       <v-card width="100%">
         <v-card-title>请输入新的结账方式</v-card-title>
@@ -365,9 +378,7 @@
             @payment-submit="changePaymentMethod"
             :total="changeOrderTotal"
         ></check-out-calculator>
-
       </v-card>
-
     </v-dialog>
   </v-dialog>
 </template>
@@ -379,6 +390,7 @@ import {
   changePayMethodForOrder,
   getBillListForServant,
   getCashInOutDetail,
+  manageCashAccount,
   previewZBon,
   previewZBonByTimeSpan,
   printServantSummary,
@@ -388,12 +400,12 @@ import {
   showTodayTempDiscountedDishes,
   todayCashStand,
   ZBonList
-  , manageCashAmount
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import CheckOutCalculator from '@/components/CheckOutCalculator'
-import { showInput } from '../../oldjs/common'
+import DialogWithKeyboard from './DialogWithKeyboard'
+import { numberKeyLayout } from './component/Keyboard/keyModel'
 
 const defaultDisplayData = {
   orders: [],
@@ -407,7 +419,7 @@ const defaultDisplayData = {
 
 export default {
   name: 'SalesDialog',
-  components: { CheckOutCalculator },
+  components: { DialogWithKeyboard, CheckOutCalculator },
   props: {
     salesDialogShow: {
       default: false
@@ -420,6 +432,8 @@ export default {
   },
   data: function () {
     return {
+      keyboardNumber: numberKeyLayout,
+      showNumberKeyboard: false,
       billData: {
         content: {
           taxInfos: [],
@@ -429,7 +443,7 @@ export default {
         }
       },
       cashChangeRecords: [],
-
+      cashNote: '',
       discountedDishes: [],
       Config: GlobalConfig,
       lastZBonPrintDate: null,
@@ -445,6 +459,12 @@ export default {
     }
   },
   computed: {
+    todayChange () {
+      return this.cashChangeRecords.reduce((total, i) => {
+        total += parseFloat(i.payLogAmount)
+        return total
+      }, 0)
+    },
     shouldShowZBon () {
       if (GlobalConfig.UseDailyZbon) {
         if (!this.singleZBonDate) {
@@ -487,12 +507,11 @@ export default {
   },
 
   methods: {
-    async addCashRecord () {
-      const amount = await showInput('请输入支出金额，如果是收入就输入负数', '', 'number')
+    async addCashRecord (amount) {
       console.log(amount, '数额')
-      const note = await showInput('请输入相应的备注', '', 'text', '', true)
-      console.log(note, '备注')
-      const res = await manageCashAmount(amount, note)
+      console.log(this.cashNote, '备注')
+      const res = await manageCashAccount(-amount, this.cashNote)
+      this.cashNote = ''
       console.log(res)
       await this.loadData()
     },
