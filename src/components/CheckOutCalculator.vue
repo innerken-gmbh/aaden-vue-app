@@ -63,9 +63,9 @@
             </template>
             <v-list>
               <v-list-item
-                @click="input(item)"
-                v-for="(item, index) in realExtraPaymentMethodName"
-                :key="index"
+                  @click="input(item)"
+                  v-for="(item, index) in realExtraPaymentMethodName"
+                  :key="index"
               >
                 <v-list-item-icon>
                   <v-icon>{{ realExtraPaymentMethod[index] }}</v-icon>
@@ -145,9 +145,9 @@
           </h4>
           <v-sheet class="my-2" style="background: transparent">
             <v-chip-group
-              v-model="billType"
-              mandatory column
-              active-class="primary--text">
+                v-model="billType"
+                mandatory column
+                active-class="primary--text">
               <v-chip x-large label>
                 {{ $t('tableCheckOutBillTypeOptionNormal') }}
               </v-chip>
@@ -163,7 +163,7 @@
         <v-divider class="my-3"></v-divider>
         <div class="pa-2">
           <v-btn color="success"
-                 @click="checkOut"
+                 @click="checkOut()"
                  elevation="0"
                  :disabled="!readyToCheckOut"
                  tile fab block x-large> {{ $t('tableCheckOutConfirm') }}
@@ -199,12 +199,7 @@ import { dragscroll } from 'vue-dragscroll'
 import { fastSweetAlertRequest } from '@/oldjs/common'
 import hillo from 'hillo'
 import { uuidv4 } from '@/main'
-import {
-  createMilePayOrder,
-  getPaymentByOrderId,
-  PaymentStatus,
-  replayMilePayOrder
-} from '@/api/milepayIntergration'
+import { createMilePayOrder, getPaymentByOrderId, PaymentStatus, replayMilePayOrder } from '@/api/milepayIntergration'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
 const milepayIds = [-10, -11]
@@ -315,7 +310,10 @@ export default {
     equals (a, b) {
       return Math.abs(a - b) < 0.001
     },
-    checkOut () {
+    checkOut (fastCheckout = false) {
+      if (fastCheckout) {
+        this.billType = 0
+      }
       this.$emit('payment-submit', this.paymentLog, this.billType)
       this.clearBuffer()
       this.paymentLog = []
@@ -444,29 +442,29 @@ export default {
 <style scoped>
 
 .totalNumber {
-    width: fit-content;
-    font-size: 24px;
+  width: fit-content;
+  font-size: 24px;
 }
 
 .payingNumber {
-    width: fit-content;
-    font-size: 42px;
+  width: fit-content;
+  font-size: 42px;
 }
 
 .keyboard {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr;
-    grid-gap: 4px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr;
+  grid-gap: 4px;
 }
 
 .key {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 48px;
-    height: auto;
-    border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 48px;
+  height: auto;
+  border-radius: 5px;
 }
 
 </style>
