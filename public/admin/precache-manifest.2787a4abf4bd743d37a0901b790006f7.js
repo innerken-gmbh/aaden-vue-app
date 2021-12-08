@@ -36,7 +36,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "Images/关于我们/虚线@2x.png"
   },
   {
-    "revision": "e147a30839678efb26d0",
+    "revision": "31b9ce9b0de73475da7b",
     "url": "css/app.dd0a965c.css"
   },
   {
@@ -320,12 +320,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "img/vuetify.c0e24719.svg"
   },
   {
-    "revision": "cb2f5edff7edecab3c2a0dab5d1c4fba",
+    "revision": "58b1c34b014068ba4d422aee91f543f2",
     "url": "index.html"
   },
   {
-    "revision": "e147a30839678efb26d0",
-    "url": "js/app.3353c606.js"
+    "revision": "31b9ce9b0de73475da7b",
+    "url": "js/app.97f2af88.js"
   },
   {
     "revision": "90f52b71fec3f520b870",
