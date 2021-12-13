@@ -11,11 +11,8 @@
     "buffetCount",
     "buffetRound",
     "childCount",
-    "drinkCount",
-    "nothing",
-    "nothing",
-    "nothing",
-    "nothing"
+    "drinkCount"
   ],
-  "milePayPort": 8181
+  "milePayPort": 8181,
+  "minTileSize": 60
 }
