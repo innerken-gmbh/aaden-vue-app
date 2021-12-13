@@ -15,9 +15,16 @@ export async function loadConfig () {
     GlobalConfig.getMilepayUrl = function () {
       return GlobalConfig.Protocol + GlobalConfig.Base + ':' + GlobalConfig.milePayPort + '/milePay/'
     }
+    refreshGetter()
     window.Config = GlobalConfig
   } catch (e) {
     console.log(e)
+  }
+}
+
+export function refreshGetter () {
+  GlobalConfig.getTableInfoKeys = () => {
+    return GlobalConfig.tableInfoDisplayOrder ? GlobalConfig.tableInfoDisplayOrder.split(',') : GlobalConfig.tableInfoKeys
   }
 }
 

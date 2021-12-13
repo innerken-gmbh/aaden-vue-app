@@ -203,10 +203,6 @@ export async function updateSection (section) {
   return (await hillo.post('Section.php?op=updateSize', section))
 }
 
-export async function getRestaurantInfo () {
-  return hillo.get('Restaurant.php?op=view')
-}
-
 export function getColorLightness (c) {
   if (c?.startsWith('#')) {
     if (c.length < 5) {

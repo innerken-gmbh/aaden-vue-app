@@ -59,77 +59,35 @@
               </v-card-actions>
             </v-card>
           </v-menu>
+          <v-tabs class="mx-2" show-arrows v-model="currentSectionIndex">
+            <template v-for="area of sectionList.filter(a=>a.id!=='6')">
+              <v-tab :key="area.id">
+                {{ area.name }}
+              </v-tab>
+            </template>
+          </v-tabs>
         </v-toolbar-items>
         <div class="d-flex ml-2 align-center caption">
           <time-display/>
         </div>
+
       </template>
       <template slot="right-slot">
         <v-toolbar-items class="mx-2">
           <update-fragment></update-fragment>
-          <v-btn
-              :color="useBluePrintView?'primary':'transparent'"
-              @click="useBluePrintView=!useBluePrintView">
-            <v-icon v-if="useBluePrintView">mdi-map</v-icon>
-            <v-icon v-else>mdi-dots-grid</v-icon>
+
+          <v-btn @click="isEditing=!isEditing" :dark="isEditing">
+            <v-icon>mdi-pencil-box</v-icon>
+          </v-btn>
+          <v-btn @click="saveCurrentSection()" color="primary" v-if="isEditing">
+            <v-icon left>mdi-check</v-icon>
+            Speichen
           </v-btn>
         </v-toolbar-items>
       </template>
     </Navgation>
     <v-main style=" width: 100vw;">
-
-      <v-card v-if="useBluePrintView" class="flex-grow-1 d-flex">
-        <v-card style="width: 100%">
-          <v-toolbar dense>
-            <v-tabs show-arrows v-model="currentSectionIndex">
-              <template v-for="area of sectionList.filter(a=>a.id!=='6')">
-                <v-tab :key="area.id">
-                  {{ area.name }}
-                </v-tab>
-              </template>
-            </v-tabs>
-            <v-spacer></v-spacer>
-            <v-toolbar-items class="mr-2">
-              <v-btn @click="isEditing=!isEditing" :dark="isEditing">
-                <v-icon>mdi-pencil-box</v-icon>
-              </v-btn>
-              <v-btn @click="saveCurrentSection()" color="primary" v-if="isEditing">
-                <v-icon left>mdi-check</v-icon>
-                Speichen
-              </v-btn>
-            </v-toolbar-items>
-          </v-toolbar>
-          <table-blue-print
-              @table-clicked="openOrEnterTable"
-              @need-refresh="refreshTables"
-              :table-background-color-func="tableBackgroundColor"
-              :table-color-is-dark="tableColorIsDark"
-              :out-side-table-list="tableInCurrentSection"
-              :show-coordinate="false"
-              :editing.sync="isEditing"
-              :current-table.sync="currentTable"
-              :current-section="currentSection"/>
-        </v-card>
-        <v-card style="overflow-y: scroll;width: 280px;height: calc(100vh - 48px)">
-          <div :key="t.id"
-               @click="openOrEnterTable(t.tableName)"
-               v-for="t in orderList" class="pa-2 d-flex justify-space-between align-center"
-               style="border-bottom: 1px dotted black">
-            <span class="title">{{ t.tableName }}</span>
-            <div class="caption">
-              <div class="d-flex justify-space-between align-center" style="width: 56px">
-                <v-icon small>mdi-account</v-icon>
-                <span>{{ t.servantName }}</span>
-              </div>
-              <div class="d-flex justify-space-between align-center" style="width: 56px">
-                <v-icon small>mdi-alarm</v-icon>
-                {{ t.createTimestamp }}
-              </div>
-            </div>
-          </div>
-        </v-card>
-      </v-card>
-      <v-card v-else-if="useOrderView"
+      <v-card v-if="useOrderView"
               v-dragscroll
               color="#f5f6fa"
               class="flex-grow-1 d-flex"
@@ -167,7 +125,6 @@
               </v-list-item>
             </template>
           </v-list>
-
         </v-card>
         <template v-for="servant in tableGroupByServant">
           <v-card elevation="0" height="calc(100vh - 48px);" color="transparent"
@@ -187,32 +144,12 @@
               </v-toolbar-title>
             </v-toolbar>
             <div v-dragscroll
-                 style="height: calc(100vh - 108px);overflow: scroll;display: grid;grid-auto-rows: 56px;grid-template-columns: 100%;grid-gap: 4px">
+                 style="height: calc(100vh - 108px);overflow: scroll;display: grid;grid-auto-rows: 56px;
+                 grid-template-columns: 100%;grid-gap: 4px">
               <template v-for="table in servant.tables">
-                <v-card
-                    :dark="tableColorIsDark(table)"
-                    :style="{backgroundColor:tableBackgroundColor(table)}"
-                    @click='openOrEnterTable(table.tableName)'
-                    elevation="0"
-                    class="py-1 px-2 mx-1 d-flex align-center justify-lg-space-between" style="height: 56px;width: 196px;
-                writing-mode: horizontal-tb;" :key="table.id">
-                  <span style="font-size: 24px;font-weight: bold">{{ table.tableName }}</span>
-                  <v-spacer/>
-                  <div>
-                    <div class="caption">
-                      {{ table.buffetCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
-                    </div>
-                    <div class="caption text-right">
-                      {{ table.createTimestamp }}/<span
-                        class="pa-1"
-                        style="border-radius: 4px"
-                        :style="{
-                      background:findConsumeTypeColorById(table.consumeType),
-                      color:colorIsDark(findConsumeTypeColorById(table.consumeType))?'#fff':'#000'}"
-                    >{{ findConsumeTypeById(table.consumeType) }}</span>
-                    </div>
-                  </div>
-                </v-card>
+                <table-list-item :key="table.id" :table-info="table"
+                                 @click="openOrEnterTable(table.tableName)">
+                </table-list-item>
               </template>
             </div>
 
@@ -220,101 +157,57 @@
 
         </template>
       </v-card>
-      <div v-dragscroll v-else class="tableDisplay flex-grow-1">
-        <div v-cloak class="areaC" id="areaC">
-          <div :key="area.name" v-cloak v-for="area in realArea" class="area">
-            <div class="areaTitle">{{ area.areaName }}</div>
-            <div class="areaTableContainer"
-                 :style="{
-                   gridTemplateRows:'repeat(auto-fill,'+Config.gridSize+'px)',
-                   gridAutoColumns:Config.gridSizeX+'px' }">
-              <template v-for="table in area.tables">
-                <div v-bind:key="table.name">
-                  <v-card
-                      tile
-                      style="position: relative"
-                      v-if="table.usageStatus==='1'"
-                      class="tableCard"
-                      :dark="tableColorIsDark(table)"
-                      :color="tableBackgroundColor(table)"
-                      @click='openOrEnterTable(table.tableName)'>
-                    <div
-                        class="pa-1"
-                        :style="{
-                      background:findConsumeTypeColorById(table.consumeType),
-                      color:colorIsDark(findConsumeTypeColorById(table.consumeType))?'#fff':'#000'}"
-                        style="position: absolute;top:8px;
-                        right:4px;z-index: 2;font-size: 14px;
-                        border-radius: 4px;
-                        line-height: 12px;
-                        font-weight: bold;
-                           text-align: center">
-                      <div>{{ findConsumeTypeById(table.consumeType) }}</div>
-                    </div>
-                    <v-card
-                        tile
-                        elevation="0"
-                        :style="{fontSize:Config.tableCardFontSize+'px'}"
-                        class="tableCardName">{{ table.tableName }}
-                    </v-card>
-                    <v-card :dark="tableColorIsDark(table,false)"
-                            :color="tableForegroundColor(table)" style="font-size: 14px"
-                            v-if="table.callService!=='1'">
-                      <div v-if="Config.gridSize>=72" class="d-flex justify-space-between px-1">
-                        <div class="text">{{ table.servantName }}</div>
-                        <div class="text"> {{ table.createTimestamp }}</div>
-                      </div>
-                      <div class="d-flex justify-space-between px-1">
-                        <template v-if="['1','2','3','5'].includes(table.consumeType)">
-                          <div v-if="Config.gridSizeX>=64" class="d-flex align-center"
-                               :class="!parseInt(table.dishCount)?' alert':''">
-                            <v-icon x-small>mdi-silverware-fork-knife</v-icon>
-                            <span class="ml-1">{{ table.dishCount === null ? 0 : table.dishCount }}</span>
-                          </div>
-                          <div v-if="Config.showTotalPriceOnCard" class="d-flex align-center">
-                            <v-icon x-small>mdi-currency-eur</v-icon>
-                            <span>{{ table.totalPrice }}</span>
-                          </div>
-                        </template>
-                        <template v-else>
-                          <div class="d-flex align-center">
-                            <v-icon x-small>mdi-account-outline</v-icon>
-                            <div class="text">{{ table.seatCount }}</div>
-                          </div>
-                          <div class="d-flex align-center">
-                            <v-icon x-small>mdi-human-child</v-icon>
-                            <div class="text">{{ table.childCount }}</div>
-                          </div>
-                        </template>
-                      </div>
-                    </v-card>
-                    <div v-else>
-                      <v-btn @click.stop="resetTableStatus(table.tableId)" block color="transparent" tile>
-                        <v-icon>mdi-bell</v-icon>
-                      </v-btn>
-                    </div>
-                  </v-card>
-                  <div v-else @click="openOrEnterTable(table.tableName)"
-                       class="tableCard notUsed">
-                    <div :style="{fontSize:Config.tableCardFontSize+'px'}"
-                         class="tableCardName">
-                      {{ table.tableName }}
-                    </div>
-                  </div>
-                </div>
-              </template>
+      <v-card else class="flex-grow-1 d-flex" style="position: relative">
+        <div class="flex-grow-1 flex-shrink-1">
+          <table-blue-print
+              @table-clicked="openOrEnterTable"
+              @need-refresh="refreshTables"
+              :out-side-table-list="tableInCurrentSection"
+              :editing.sync="isEditing"
+              :current-table.sync="currentTable"
+              :current-section="currentSection"/>
+        </div>
+        <v-card
+            v-if="showOtherOrder"
+            elevation="2"
+            class="flex-shrink-0"
+            style="overflow-y: scroll;height: calc(100vh - 48px); display: grid;
+            grid-template-columns: 100%;grid-auto-rows: 56px;grid-gap: 4px">
+          <div class="d-flex align-center pa-2" style="width: 196px">
+            <div>Tisch Name</div>
+            <v-spacer></v-spacer>
+            <div class="d-flex align-center" style="font-size: small">
+              <v-icon small>mdi-food</v-icon>
+              /
+              <v-icon small>mdi-cup-water</v-icon>
+              /
+              <v-icon small>mdi-cash-multiple</v-icon>
             </div>
           </div>
-        </div>
-      </div>
+          <table-list-item
+              style="width: 196px"
+              v-for="table in orderList"
+              @click="openOrEnterTable(table.tableName)"
+              :key="table.id" :table-info="table"
+          >
+          </table-list-item>
+        </v-card>
+        <v-card @click="showOtherOrder=!showOtherOrder" elevation="1" tile
+                class="d-flex align-center"
+                :style="{right:showOtherOrder?'204px':0}"
+                style="height: 48px;width: 32px;position: absolute;top:8px;background: white">
+          <v-icon v-if="showOtherOrder">mdi-chevron-right</v-icon>
+          <v-icon v-else>mdi-chevron-left</v-icon>
+        </v-card>
+      </v-card>
       <!--        下面是侧边栏的逻辑-->
     </v-main>
     <v-navigation-drawer permanent stateless app right width="300px">
       <v-toolbar dense dark>
         <v-toolbar-items class="ml-n2">
-          <v-btn v-if="!useBluePrintView"
-                 :color="useOrderView?'primary':'transparent'"
-                 @click="useOrderView=!useOrderView">
+          <v-btn
+              :color="useOrderView?'primary':'transparent'"
+              @click="useOrderView=!useOrderView">
             {{ $t('跑堂列表') }}
           </v-btn>
         </v-toolbar-items>
@@ -327,7 +220,7 @@
         </div>
       </v-toolbar>
       <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
-        <template v-if="useBluePrintView">
+        <template v-if="!useOrderView">
           <template v-if="isEditing">
             <div v-if="currentTable" class="currentTablePanel">
               <v-text-field v-model="currentTable.tableName" label="当前桌名"></v-text-field>
@@ -401,6 +294,20 @@
             <keyboard @input="numberInput" :keys="keyboardLayout"/>
           </v-card>
         </div>
+        <v-card v-else>
+          <v-card-title>显示内容排序</v-card-title>
+          <v-card-text>
+            <draggable v-model="tableInfoDisplayOrder">
+              <transition-group>
+                <v-card class="pa-2 d-flex" v-for="element in tableInfoDisplayOrder" :key="element">
+                  {{ $t(element) }}
+                  <v-spacer></v-spacer>
+                  <v-icon>mdi-drag-horizontal-variant</v-icon>
+                </v-card>
+              </transition-group>
+            </draggable>
+          </v-card-text>
+        </v-card>
       </v-card>
     </v-navigation-drawer>
     <open-table-form :servant-password="servantPassword" :menu-show.sync="showOpenTableDialog"></open-table-form>
@@ -437,7 +344,13 @@ import {
 import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
-import GlobalConfig, { hardReload, NeededKeys, setDeviceId, useCurrentConfig } from '../oldjs/LocalGlobalSettings'
+import GlobalConfig, {
+  hardReload,
+  NeededKeys,
+  refreshGetter,
+  setDeviceId,
+  useCurrentConfig
+} from '../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
@@ -445,7 +358,6 @@ import TimeDisplay from '@/components/TimeDisplay'
 import {
   fetchOrder,
   getColorLightness,
-  getRestaurantInfo,
   getSectionList,
   getServantList,
   getTableListWithCells,
@@ -462,6 +374,8 @@ import MemberCardDialog from '@/components/fragments/MemberCardDialog'
 import OpenTableForm from '@/components/OpenTableForm'
 import { mapMutations, mapState } from 'vuex'
 import UpdateFragment from '@/components/fragments/UpdateFragment'
+import TableListItem from '@/components/Table/TableListItem'
+import draggable from 'vuedraggable'
 
 const keyboardLayout =
     [
@@ -482,6 +396,7 @@ export default {
     dragscroll
   },
   components: {
+    TableListItem,
     UpdateFragment,
     OpenTableForm,
     MemberCardDialog,
@@ -490,7 +405,8 @@ export default {
     TableBluePrint,
     Keyboard,
     TimeDisplay,
-    Navgation
+    Navgation,
+    draggable
   },
   props: {
     refresh: {
@@ -518,10 +434,6 @@ export default {
       version: version,
       areas: [],
       buffer: '',
-      restaurantInfo: {
-        tableColor: '#fff',
-        callColor: '#f06800'
-      },
       ins: {},
       time: '',
       dishes: [],
@@ -539,22 +451,28 @@ export default {
         longId: '',
         id: ''
       },
-      useBluePrintView: GlobalConfig.useTableBluePrint,
       useOrderView: GlobalConfig.orderView,
-      loading: false
+      showOtherOrder: GlobalConfig.showOtherOrder,
+      loading: false,
+      tableInfoDisplayOrder: GlobalConfig.getTableInfoKeys()
     }
   },
   watch: {
-    useBluePrintView: function (val) {
-      GlobalConfig.updateSettings('useTableBluePrint', val)
-      this.refreshTables()
-    },
     useOrderView: function (val) {
       GlobalConfig.updateSettings('orderView', val)
       this.refreshTables()
     },
+    tableInfoDisplayOrder: function (val) {
+      GlobalConfig.updateSettings('tableInfoDisplayOrder', val)
+      refreshGetter()
+      this.refreshTables()
+    },
     showRightMenu: function (val) {
       GlobalConfig.updateSettings('showRightMenu', val)
+    },
+    showOtherOrder: function (val) {
+      GlobalConfig.updateSettings('showOtherOrder', val)
+      this.refreshTables()
     },
     refresh: function () {
       this.initPage()
@@ -602,16 +520,6 @@ export default {
 
   },
   methods: {
-
-    tableForegroundColor (table) {
-      return table.callService === '1' ? this.restaurantInfo.callColor : this.restaurantInfo.tableColor
-    },
-    tableBackgroundColor (table) {
-      return table.callService === '1' ? this.restaurantInfo.callColor : GlobalConfig.activeCardBackground
-    },
-    tableColorIsDark (table, background = true) {
-      return this.colorIsDark((background ? this.tableBackgroundColor(table) : this.tableForegroundColor(table)))
-    },
     colorIsDark (color) {
       return getColorLightness(color) < 128
     },
@@ -708,7 +616,7 @@ export default {
       blockReady()
     },
     async refreshTables () {
-      if (this.useBluePrintView) {
+      if (!this.useOrderView) {
         this.tableList = await getTableListWithCells()
       } else {
         this.areas = await getActiveTables()
@@ -867,7 +775,6 @@ export default {
   mounted: async function () {
     this.initPage()
 
-    this.restaurantInfo = Object.assign(this.restaurantInfo, (await getRestaurantInfo()).content[0])
     this.servantList = await getServantList()
     await this.refreshSectionList()
     if (GlobalConfig.defaultPassword) {
@@ -899,53 +806,6 @@ export default {
   grid-gap: 10px;
   margin-bottom: 12px;
 
-}
-
-.tableCard {
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  cursor: pointer;
-  box-shadow: 0 6px 8px #d0d2d9;
-}
-
-.tableCard.notUsed {
-  background: transparent;
-  color: #6b6b6b;
-  border: 3px solid #e2e3e5;
-  box-shadow: none;
-}
-
-.tableBold {
-  font-weight: 600;
-}
-
-.tableCardName {
-  font-size: 28px;
-  padding: 0 4px;
-  text-align: left;
-  font-family: Roboto, "Axure Handwriting", sans-serif;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.tableCard.notUsed .tableCardName {
-  font-weight: 400;
-}
-
-.tableIconRow {
-  width: 42px;
-  height: 25px;
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  font-weight: 400;
 }
 
 .areaTitle {

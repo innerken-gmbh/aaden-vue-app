@@ -8,9 +8,8 @@ import GlobalConfig, { loadConfig } from './oldjs/LocalGlobalSettings'
 import './registerServiceWorker'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
 
-import 'vue-draggable-resizable/dist/VueDraggableResizable.css'
-
-import VueDraggableResizable from 'vue-draggable-resizable'
+import 'vue-draggable-resizable-gorkys/dist/VueDraggableResizable.css'
+import VueDraggableResizable from 'vue-draggable-resizable-gorkys'
 
 import { reportDeviceInfo } from '@/api/api'
 import { addToQueue } from '@/oldjs/poolJobs'
