@@ -22,16 +22,17 @@
                 text-align: center">
         {{ findConsumeTypeById(table.consumeType) }}
       </div>
-      <v-sheet
-          :color="tableBackgroundColorFunc(table)"
-          :dark="tableColorIsDark(table)"
+      <div :style="{fontSize:tableCardFontSize+'px'}"
+           class="tableCardName">
+        {{ table.tableName }}
+      </div>
+      <div
           class="pb-1"
       >
-        <div :style="{fontSize:tableCardFontSize+'px'}"
-             class="tableCardName">
-          {{ table.tableName }}
-        </div>
-        <div class="text" style="line-height: 16px;font-size: 14px">
+        <div class="text" style="
+           line-height: 16px;
+           font-size: 14px;
+        ">
           {{ table.createTimestamp }}
           <template v-if="tableXSize>=2">/{{ table.servantName }}</template>
         </div>
@@ -54,7 +55,7 @@
             </span></template>
           </template>
         </div>
-      </v-sheet>
+      </div>
     </v-card>
     <div v-else @click="$emit('click',table.tableName)"
          class="tableCard notUsed">
