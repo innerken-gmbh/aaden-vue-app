@@ -4,8 +4,10 @@ import hillo from 'hillo'
 import i18n from '../i18n'
 import GlobalConfig from './LocalGlobalSettings'
 import PrintStatus from './PrintStatus'
+import store from './../store'
 import { clearAllTimer } from '@/oldjs/Timer'
 import dayjs from 'dayjs'
+import { capitalize } from 'lodash-es/string'
 
 const Config = GlobalConfig
 
@@ -79,7 +81,11 @@ export async function resetTableStatus (tableId) {
 
 export async function jumpToTable (tableId, tableName) {
   await resetTableStatus(tableId)
-  const params = Object.assign({ id: tableId, tableId, tableName })
+  const params = Object.assign({
+    id: tableId,
+    tableId,
+    tableName
+  })
   jumpTo('table', params)
 }
 
@@ -101,44 +107,28 @@ export function setGlobalTableId (id) {
   TableId = id
 }
 
-export async function popAuthorize (type, successCallback, force = false,
-  failedCallback, tableId = null) {
-  const ok = (r) => {
+export async function popAuthorize (type = '', successCallback = null, force = false,
+  failedCallback = null, tableId = null) {
+  const ok = (password) => {
     if (successCallback) {
-      successCallback(r?.originalData)
+      successCallback(password)
     }
   }
-
-  if (!force) {
-    if (!GlobalConfig.usePassword && type !== 'boss') {
-      ok(GlobalConfig.defaultPassword)
-      return {
-        originalData: GlobalConfig.defaultPassword
-      }
-    }
-    if (!GlobalConfig.UseBossPassword && type === 'boss') {
-      ok()
-      return {
-        originalData: GlobalConfig.defaultPassword
-      }
-    }
+  const typeIsBoss = type === 'boss'
+  if (!force && ((typeIsBoss && !GlobalConfig.UseBossPassword) || (!typeIsBoss && !GlobalConfig.usePassword))) {
+    ok(GlobalConfig.defaultPassword)
+    return GlobalConfig.defaultPassword
   }
-
-  const res = await fastSweetAlertRequest(i18n.t('popAuthTitle'), 'password',
-    'Servant.php',
-    'pw', {
-      op: type === 'boss' ? 'checkBoss' : 'checkServant',
-      tableId: tableId ?? TableId ?? null
-    }, 'GET', false)
-  if (res) {
-    ok(res)
-  } else {
-    if (failedCallback) {
-      failedCallback()
-    }
-  }
-
-  return res
+  return new Promise(resolve => {
+    store.commit('START_AUTHORIZE', {
+      typeIsBoss,
+      successCallback,
+      force,
+      failedCallback,
+      tableId,
+      resolve
+    })
+  })
 }
 
 /** should provide a model list */
@@ -180,6 +170,12 @@ export async function openOrEnterTable (number, password, onlyOpenTable = false)
         logErrorAndPop('Bitte benutzen sie blaue button zu Lieferung.')
         return
       }
+      if (GlobalConfig.useOpenTableConfirm && !GlobalConfig.usePassword) {
+        const result = await showConfirmAsyn(capitalize(number) + i18n.t(' Öffnen?'), i18n.t('Neue Tisch'))
+        if (!result.isConfirmed) {
+          return
+        }
+      }
       if (password) {
         shouldOpenTable(table.id, password)
       } else {
@@ -187,7 +183,6 @@ export async function openOrEnterTable (number, password, onlyOpenTable = false)
       }
     } else if (table.usageStatus === '1' && !onlyOpenTable) {
       const enterTable = () => {
-        toast(i18n.t('JSIndexCreateTableEnterTable') + number)
         jumpToTable(table.id, table.name)
       }
       if (GlobalConfig.useEnterTablePermissionCheck) {
@@ -211,7 +206,10 @@ export async function openOrEnterTable (number, password, onlyOpenTable = false)
 }
 
 export async function forceOpenTable (tableName, pw) {
-  return await hillo.post('Complex.php?op=forceOpenTable', { tableName, pw })
+  return await hillo.post('Complex.php?op=forceOpenTable', {
+    tableName,
+    pw
+  })
 }
 
 export async function getFalsePrinterList () {
@@ -220,7 +218,7 @@ export async function getFalsePrinterList () {
   })).content
   if (falsePrinterList) {
     falsePrinterList.forEach((item, i) => {
-      item.printStatusString = i18n.t(PrintStatus.getList().find(n => n.id === parseInt(item.printStatus)).name)
+      item.printStatusString = PrintStatus.getList().find(n => n.id === parseInt(item.printStatus)).name
     })
   }
 
@@ -321,7 +319,7 @@ export function openTableCallback (openingTable, pw = null, guestCount, childCou
       informOpenJpTable(pw, openingTable, guestCount, childCount, adultDishId)
       break
     default:
-      logErrorAndPop('选择了错误的开桌类型')
+      logErrorAndPop(i18n.t('选择了错误的开桌类型'))
   }
 }
 
@@ -380,7 +378,10 @@ export function toast (str = 'Ok', callback, type) {
       }
     }
   })
-  Toast.fire({ title: str, icon: type })
+  Toast.fire({
+    title: str,
+    icon: type
+  })
 }
 
 export function loadingComplete () {
@@ -401,6 +402,30 @@ export function getData (url, data) {
       console.log(err, res, url)
     })
   })
+}
+
+export async function showInput (title, body = '', input = 'text', inputValue = '', allowEmpty = false) {
+  const result = await Swal.fire({
+    title: title,
+    html: body,
+    input: input,
+    inputAttributes: {
+      autocapitalize: 'off'
+    },
+    inputValue: inputValue,
+    showCancelButton: true,
+    confirmButtonText: i18n.t('confirm'),
+    showLoaderOnConfirm: true,
+    preConfirm: (data) => {
+      return !(!data && !allowEmpty)
+    },
+    allowOutsideClick: () => !Swal.isLoading()
+  })
+  if (result.value || allowEmpty) {
+    return result.value
+  } else {
+    return false
+  }
 }
 
 /**
@@ -428,7 +453,7 @@ export async function fastSweetAlertRequest
       })
       .catch(error => {
         Swal.showValidationMessage(
-              `Request failed: ${error?.data?.info ?? 'Error'}`
+          `Request failed: ${error?.data?.info ?? 'Error'}`
         )
       })
   }
@@ -503,7 +528,10 @@ export function remove (arr, index) {
 export function jumpTo (url, params) {
   clearAllTimer()
   url = url.split('.')[0]
-  router.replace({ name: url, params })
+  router.replace({
+    name: url,
+    params
+  })
 }
 
 export function oldJumpTo (url, params) {
@@ -566,7 +594,7 @@ export function showTimedAlert (type, title, time = 1000, callback = null) {
     }
   }).then((result) => {
     if (
-    /* Read more about handling dismissals below */
+      /* Read more about handling dismissals below */
       result.dismiss === Swal.DismissReason.timer
     ) {
       if (callback) {

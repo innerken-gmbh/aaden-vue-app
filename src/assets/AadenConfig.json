@@ -1,10 +1,11 @@
 {
+  "uuId": "",
   "Base": "127.0.0.1",
   "DeviceId": -1,
   "Protocol": "http://",
   "lang": "ZH",
-  "Debug": true,
-  "usePassword": true,
+  "Debug": false,
+  "usePassword": false,
   "UseBossPassword": true,
   "defaultPassword": "111",
   "getFocus": false,
@@ -42,5 +43,11 @@
   "printZBonAlert": true,
   "selectableConsumeTypeId": "1,2,4,6",
   "alwaysShowDishesBellow": false,
-  "servantDataOnlyToday": false
+  "servantDataOnlyToday": false,
+  "useOpenTableConfirm": false,
+  "showTotalPriceOnCard": true,
+  "useEnterKeyToPay": false,
+  "updateFold": false,
+  "mergeTableUseBossPassword": false,
+  "changeTableUseBossPassword": false
 }

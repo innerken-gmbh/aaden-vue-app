@@ -1,13 +1,12 @@
 import hillo from 'hillo'
 import IKUtils from 'innerken-js-utils'
+import { version } from '../../package.json'
+import { deviceType } from '../assets/FixedConfig.json'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
 
 export async function previewZBon (startDate, endDate) {
   return (await hillo.get('ZBon.php?op=previewBySpan', { startDate, endDate })).content
-}
-
-export async function previewZBonByTimeSpan (startTime, endTime) {
-  return (await hillo.get('ZBon.php?op=previewByTimeSpan', { startTime, endTime })).content
 }
 
 export async function printXBon (startDate, endDate) {
@@ -58,6 +57,80 @@ export async function renameMemberCard (oldName, newName) {
   return (await hillo.get('MemberCard.php?op=renameMemberCard', { old: oldName, new: newName }))
 }
 
-export async function getBillListForServant (pw, date) {
+export async function getBillListForServant (pw = null, date) {
   return (await hillo.get('BackendData.php?op=mobileV3StatWithLang', { pw, date, lang: GlobalConfig.lang })).content
+}
+
+export async function getBuffetPriceDishes () {
+  return (await hillo.get('ConsumeType.php?op=showBuffetPriceDishToConsumeType', { lang: GlobalConfig.lang })).content
+}
+
+export async function changeOrderToBuffet (orderId, buffetDishes, buffetSetting) {
+  return (await hillo.post('Complex.php?op=changeOrderToBuffet', {
+    orderId,
+    buffetPriceDishes: JSON.stringify(buffetDishes),
+    extraJson: JSON.stringify(Object.assign({}, DefaultBuffetSetting, buffetSetting))
+  }))
+}
+
+export async function reportDeviceInfo () {
+  return (await hillo.post('Route.php?op=deviceLog', {
+    MACAddress: GlobalConfig.uuId,
+    deviceType: deviceType,
+    version: version,
+    note: ''
+  }))
+}
+
+export async function checkTse () {
+  try {
+    return (await hillo.get('AccessLog.php?op=checkTSE'))
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export async function previewZBonByTimeSpan (startTime, endTime) {
+  return (await hillo.get('ZBon.php?op=previewByTimeSpan', { startTime, endTime })).content
+}
+
+export async function getAllBillsWithSortAndFilter (startTime, endTime) {
+  const timespan = startTime + ' - ' + endTime
+  console.log(timespan)
+  return (await hillo.get('Orders.php?op=withSortAndFilter', { timespan })).content
+}
+
+export async function showTodayTempDiscountedDishes (startTime, endTime) {
+  return (await hillo.get('Complex.php?op=showTempDiscountedDishes', {
+    fromDateTime: startTime,
+    toDateTime: endTime,
+    lang: GlobalConfig.lang
+  })).content
+}
+
+export async function getCashInOutDetail (startDate, endDate) {
+  return (await hillo.get('Complex.php?op=getCashInOutDetail', {
+    fromDate: startDate,
+    toDate: endDate
+  })).content
+}
+
+export async function todayCashStand () {
+  return (await hillo.get('Complex.php?op=getCurrentCashAmount'))?.content?.currentCashAmount ?? 0
+}
+
+export async function manageCashAccount (amount, note = '') {
+  return (await hillo.post('Complex.php?op=manageCashAccount', { amount, note }))
+}
+
+export async function billDetailInfo (id) {
+  return (await hillo.get('BackendData.php?op=billDetail', { id, lang: GlobalConfig.lang })).content
+}
+
+export async function changePayMethodForOrder (orderId, paymentLogs) {
+  console.log(orderId, paymentLogs)
+  return (await hillo.post('Complex.php?op=changePayMethodForOrder', {
+    orderId: orderId,
+    paymentLog: JSON.stringify(paymentLogs)
+  }))
 }

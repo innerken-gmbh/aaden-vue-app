@@ -1,6 +1,5 @@
 <template>
-  <div v-dragscroll
-       class="flex-grow-1 pa-2"
+  <div class="flex-grow-1 pa-2"
        ref="blueprintContainer"
        style="height: calc(100vh - 96px);overflow: hidden;background: center / cover;"
        :style="{
@@ -8,16 +7,23 @@
        }">
     <template v-for="i in tablesInCurrentSection">
       <vue-draggable-resizable
-        :draggable="editing"
-        :resizable="editing"
-        :key="i.id"
-        :h="i.h" :w="i.w"
-        :x="i.x" :y="i.y"
-        @activated="selectTable(i)"
-        @dragging="(...args)=>onDrag(i,...args)"
-        :active="false"
-        @resizing="(...args)=>onResize(i,...args)"
-        :parent="true">
+          :min-height="70"
+          :min-width="70"
+          :max-height="200"
+          :max-width="200"
+          :draggable="editing"
+          :resizable="editing"
+          :key="i.id"
+          :grid="[40,40]"
+          :h="i.h" :w="i.w"
+          :x="i.x" :y="i.y"
+          @activated="selectTable(i)"
+          @dragging="(...args)=>onDrag(i,...args)"
+          :active="false"
+          @resizing="(...args)=>onResize(i,...args)"
+          :snap="true"
+          :is-conflict-check="true"
+          :parent="true">
         <v-card style="height: calc(100% - 16px)" v-if="i.usageStatus==='1'"
                 :dark="tableColorIsDark(i)"
                 :color="tableBackgroundColorFunc(i)"
@@ -53,6 +59,20 @@ function decodeNumber (number) {
   return [Math.floor(number / limit), number % limit]
 }
 
+async function refreshAllTablesPosition (listOfTable) {
+  const defaultWidth = 60
+  const defaultHeight = 60
+  const colCount = 10
+  const rowCount = 10
+  let count = 0
+  for (const table of listOfTable) {
+    const currentCol = count % colCount
+    const currentRow = parseInt(count / rowCount)
+    await submitTable(table, currentCol * 20, currentRow * 20, defaultHeight, defaultWidth)
+    count++
+  }
+}
+
 async function submitTable (table, x, y, w, h) {
   console.log('input', table.w, table.h, w, h)
   w = w ?? (table.w !== 'auto' ? table.w : 50)
@@ -73,7 +93,6 @@ export default {
     dragscroll
   },
   props: {
-    showCoordinate: Boolean,
     currentTable: Object,
     currentSection: {
       default: () => defaultSection
@@ -129,6 +148,10 @@ export default {
     }
   },
   methods: {
+    async refreshTables () {
+      await refreshAllTablesPosition(this.tableList)
+    },
+
     debounce,
     async submit () {
       if (this.activeTableId === -1) {
@@ -150,6 +173,7 @@ export default {
       this.shouldUpdateSize(table, x, y, width, height)
     },
     onDrag: function (table, x, y) {
+      console.log(table, x, y, 'drag')
       this.shouldUpdateSize(table, x, y)
     },
     selectTable (table) {
@@ -174,7 +198,7 @@ export default {
       y: 0
     }
   },
-  mounted () {
+  async mounted () {
     this.height = this.$refs.blueprintContainer.clientHeight
     this.width = this.$refs.blueprintContainer.clientWidth - 50
 

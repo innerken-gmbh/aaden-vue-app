@@ -221,3 +221,9 @@ export function getColorLightness (c) {
     return 0
   }
 }
+
+export async function checkServant (boss, password, tableId = null) {
+  return (await hillo.silentGet('Servant.php?op=' + (boss ? 'checkBoss' : 'checkServant'), {
+    tableId: tableId ?? null, pw: password
+  }))
+}

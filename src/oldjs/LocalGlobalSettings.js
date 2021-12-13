@@ -12,6 +12,9 @@ export async function loadConfig () {
     GlobalConfig = Object.assign(GlobalConfig, await loadBaseConfig(defaultConfig), fix)
     changeLanguage(GlobalConfig.lang)
     NeededKeys = GlobalConfig.neededKeys
+    GlobalConfig.getMilepayUrl = function () {
+      return GlobalConfig.Protocol + GlobalConfig.Base + ':' + GlobalConfig.milePayPort + '/milePay/'
+    }
     window.Config = GlobalConfig
   } catch (e) {
     console.log(e)
@@ -52,6 +55,11 @@ export function changeLanguage (l) {
   GlobalConfig.updateSettings('lang', l)
   i18n.locale = l.toLowerCase()
   // reload()
+}
+
+export function forceChangeLanguage (l) {
+  changeLanguage(l)
+  reload()
 }
 
 export default GlobalConfig

@@ -1,21 +1,13 @@
 import hillo from 'hillo'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
-
-export function checkVersion (version, target) {
-  const [main, sub, patch] = version.split('.').map(c => parseInt(c))
-
-  const [mainT, subT, patchT] = target.split('.').map(c => parseInt(c))
-
-  return main === mainT && (sub > subT || (sub === subT && patch >= patchT))
-}
+import i18n from '../i18n'
 
 export async function update () {
-  setTimeout(() => IKUtils.hideLoading(0), 30000)
-  await hillo.get('MyVersion.php?op=update')
-  IKUtils.toast('update ok')
+  await hillo.get('MyVersion.php?op=update', {}, { timeout: 100000 })
+  // IKUtils.toast('loading ok')
   if (!await checkCurrentVersion()) {
-    IKUtils.showError('Automatisch Update felher.', 'Bitte update Sie manual')
+    // IKUtils.showError(i18n.t('Automatisches Update fehler.'), i18n.t('Bitte Aaden Support kontakt und Upgrade'))
   }
 }
 
@@ -25,12 +17,12 @@ export async function getCurrentBackendVersion () {
   })).version
 }
 
-export async function checkCurrentVersionAndUpdate () {
-  const versionOk = await checkCurrentVersion(false)
-  if (!versionOk) {
-    IKUtils.showLoading(false)
-    update()
-  }
+export function checkVersion (version, target) {
+  const [main, sub, patch] = version.split('.').map(c => parseInt(c))
+
+  const [mainT, subT, patchT] = target.split('.').map(c => parseInt(c))
+
+  return main === mainT && (sub > subT || (sub === subT && patch >= patchT))
 }
 
 export async function checkCurrentVersion (slient = false) {
@@ -41,9 +33,8 @@ export async function checkCurrentVersion (slient = false) {
     GlobalConfig.backendIsOk = checkVersion(currentVersion, GlobalConfig.requiredBackendVersion)
     return GlobalConfig.backendIsOk
   } catch (e) {
-    if (!slient) {
-      IKUtils.showError('Deine Backend Version ist zu alt. Bitte Aaden Support kontakt und Upgrade', 'Achtung')
-    }
-    return false
+    IKUtils.showError(i18n.t('Deine Backend Version ist zu alt. Bitte Aaden Support kontakt und Upgrade'), i18n.$t('Achtung'))
+    GlobalConfig.backendIsOk = true
+    return true
   }
 }

@@ -25,7 +25,8 @@ function createWindow () {
     height: 1080,
     show: false,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      enableRemoteModule: true
     }
   })
   const Debug = settings.getSync('config.Debug')

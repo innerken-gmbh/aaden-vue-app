@@ -82,10 +82,37 @@
       </v-sheet>
     </div>
     <div style="width: calc(100vw - 200px - 480px)" class="paymentLog pa-2">
-      <div class="my-3">
+      <div class="my-3 d-flex align-center" style="width: 100%">
         <h3>{{ $t('结账记录') }}</h3>
+        <v-spacer></v-spacer>
+        <v-btn @click="refreshMilePay" icon>
+          <v-icon>mdi-refresh</v-icon>
+        </v-btn>
       </div>
+      <v-divider></v-divider>
       <div class="my-3" v-dragscroll style="max-height: calc(100vh - 560px);overflow:hidden">
+        <template v-if="milePayLog.length>0">
+          <h1>Milepay</h1>
+        </template>
+        <template v-for="paymentInfo in milePayLog">
+          <v-sheet :key="paymentInfo.id" :elevation="0"
+                   style="width: 100%" class="d-flex justify-space-between align-center">
+            <h2 class="font-weight-bold"
+                style="font-size: 16px">
+              {{ paymentInfo.amount / 100|priceDisplay }}/ {{ paymentInfo.channel }}/{{ paymentInfo.method }}
+            </h2>
+            <div>
+              <v-btn v-if="paymentInfo.status===PaymentStatus.PENDING" @click="replayMilePay(paymentInfo.id)" icon
+                     color="error">
+                <v-icon>mdi-replay</v-icon>
+              </v-btn>
+              <v-btn v-else icon color="success">
+                <v-icon>mdi-check</v-icon>
+              </v-btn>
+            </div>
+          </v-sheet>
+          <v-divider :key="'d'+paymentInfo.id"></v-divider>
+        </template>
         <template v-for="(paymentInfo,index) in paymentLog">
           <v-sheet :key="'price'+paymentInfo.hash" :elevation="0"
                    style="width: 100%" class="d-flex justify-space-between pa-2 my-1">
@@ -111,7 +138,7 @@
           <v-divider :key="'d'+paymentInfo.hash"></v-divider>
         </template>
       </div>
-      <div>
+      <div v-if="readyToCheckOut">
         <v-sheet class="my-6">
           <h4>
             {{ $t('tableCheckOutBillTypeLabel') }}
@@ -134,35 +161,33 @@
           </v-sheet>
         </v-sheet>
         <v-divider class="my-3"></v-divider>
-        <div style="height: 120px;display: grid;grid-template-columns: 1fr 1fr">
-          <div class="pa-2">
-            <v-btn tile fab
-                   outlined
-                   @click="cancel"
-                   color="error" block x-large>
-              {{ $t('cancel') }}
-            </v-btn>
-          </div>
-          <div class="pa-2">
-            <v-btn color="success"
-                   @click="checkOut"
-                   elevation="0"
-                   :disabled="!equals(remainTotal,0)||paymentLog.length===0"
-                   tile fab block x-large> {{ $t('tableCheckOutConfirm') }}
-            </v-btn>
-          </div>
+        <div class="pa-2">
+          <v-btn color="success"
+                 @click="checkOut()"
+                 elevation="0"
+                 :disabled="!readyToCheckOut"
+                 tile fab block x-large> {{ $t('tableCheckOutConfirm') }}
+          </v-btn>
         </div>
-        <div style="height: 120px">
-          <h4>{{ $t('或者使用0小费,现金,普通账单进行') }}</h4>
-          <div class="pa-2">
-            <v-btn color="primary"
-                   @click="checkOut"
-                   elevation="0"
-                   :disabled="paymentLog.length!==0"
-                   tile fab block x-large> {{ $t('QuickBill') }}
-            </v-btn>
-          </div>
+      </div>
+      <div v-else style="height: 120px">
+        <h4>{{ $t('或者使用0小费,现金,普通账单进行') }}</h4>
+        <div class="pa-2">
+          <v-btn color="primary"
+                 @click="checkOut(true)"
+                 elevation="0"
+                 :disabled="paymentLog.length!==0"
+                 tile fab block x-large> {{ $t('QuickBill') }}
+          </v-btn>
         </div>
+      </div>
+      <div class="pa-2">
+        <v-btn tile fab
+               outlined
+               @click="cancel"
+               color="error" block x-large>
+          {{ $t('cancel') }}
+        </v-btn>
       </div>
     </div>
   </div>
@@ -173,8 +198,11 @@
 import { dragscroll } from 'vue-dragscroll'
 import { fastSweetAlertRequest } from '@/oldjs/common'
 import hillo from 'hillo'
+import { uuidv4 } from '@/main'
+import { createMilePayOrder, getPaymentByOrderId, PaymentStatus, replayMilePayOrder } from '@/api/milepayIntergration'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
+const milepayIds = [-10, -11]
 const defaultRealName = {
   'mdi-minus': 'reverse',
   'mdi-backspace': 'back',
@@ -193,6 +221,9 @@ export default {
   props: {
     total: {
       default: 0
+    },
+    id: { // use orderId as default,when not passed, will be a random string instead.
+      default: uuidv4()
     }
   },
   directives: {
@@ -208,7 +239,9 @@ export default {
         'mdi-card-account-details',
         'mdi-cards'],
       extraPaymentMethodName: ['Gutschein', 'SumUp'],
-      paymentLog: []
+      paymentLog: [],
+      milePayLog: [],
+      PaymentStatus
     }
   },
   computed: {
@@ -243,6 +276,9 @@ export default {
         return cry
       }, 0)
       return this.total - logTotal
+    },
+    readyToCheckOut: function () {
+      return this.equals(this.remainTotal, 0) && this.paymentLog.length !== 0
     }
   },
   created () {
@@ -256,16 +292,28 @@ export default {
           p.name = p.langs[0].name
           return p
         })
-
       this.realName = Object.assign({}, defaultRealName)
       this.paymentMethods.forEach(p => {
         this.$set(this.realName, p.name, p.id)
       })
     },
+    async replayMilePay (id) {
+      try {
+        const res = await replayMilePayOrder(id)
+        console.log(res)
+        this.addPaymentLogToList(res.localContext, res.amount / 100, 'MilePay', res.paymentRequestId)
+        this.refreshMilePay()
+      } catch (e) {
+        console.log(e, 'replay failed')
+      }
+    },
     equals (a, b) {
       return Math.abs(a - b) < 0.001
     },
-    checkOut () {
+    checkOut (fastCheckout = false) {
+      if (fastCheckout) {
+        this.billType = 0
+      }
       this.$emit('payment-submit', this.paymentLog, this.billType)
       this.clearBuffer()
       this.paymentLog = []
@@ -277,6 +325,10 @@ export default {
     },
     clearBuffer () {
       this.inputBuffer = ''
+    },
+    async refreshMilePay () {
+      this.milePayLog = (await getPaymentByOrderId(this.id)).filter(d => [PaymentStatus.PENDING, PaymentStatus.SUCCESSFUL].includes(d.status))
+      console.log(this.milePayLog)
     },
     readBuffer (clear = true) {
       if (this.inputBuffer === '') {
@@ -291,8 +343,30 @@ export default {
       }
       return read
     },
+    addPaymentLogToList (id, price, icon, hash, memberCardId = null) {
+      this.paymentLog.push({
+        id,
+        price,
+        icon,
+        hash,
+        memberCardId
+      })
+      if (parseInt(id) !== 1 && !this.equals(this.remainTotal, 0)) {
+        if (this.remainTotal < 0) {
+          this.paymentLog.push({
+            id: 9,
+            price: this.remainTotal,
+            icon: 'mdi-bell',
+            hash: +this.paymentLog.length + 'p' + price + 'icon' + icon
+          })
+        }
+      }
+    },
     async logPayment (type) {
       const price = this.readBuffer()
+      if (price === 0) {
+        return
+      }
       const icon = Object.entries(this.realName).find(([k, v]) => v === type)[0]
       const hash = this.paymentLog.length + 'p' + price + 'icon' + icon
       const obj = {
@@ -301,6 +375,7 @@ export default {
         icon,
         hash
       }
+
       if (parseInt(type) === 4) {
         const res = await fastSweetAlertRequest(
           'Bitte Gutschein Id Gaben.',
@@ -308,14 +383,26 @@ export default {
           { amount: 0 }, 'GET')
         if (res.content) {
           const leftAmount = parseFloat(res.content.leftAmount)
-          obj.price = leftAmount > this.remainTotal ? this.remainTotal : leftAmount
+          obj.price = leftAmount > price ? price : leftAmount
           obj.memberCardId = res.content.id
         } else {
           return
         }
-      }
+      } else if (milepayIds.includes(parseInt(type))) {
+        const payMethod = this.paymentMethods.find(p => parseInt(type) === parseInt(p.id))
+        console.log(payMethod)
 
-      this.paymentLog.push(obj)
+        try {
+          const apiKey = JSON.parse(payMethod.apiKey)
+          const res = await createMilePayOrder(this.id, price, apiKey, type)
+          this.refreshMilePay()
+          console.log(res)
+        } catch (e) {
+          console.log(e)
+          return
+        }
+      }
+      this.addPaymentLogToList(obj.id, obj.price, obj.icon, obj.hash)
     },
     withdrawPayment (index) {
       this.paymentLog.splice(index, 1)
@@ -341,14 +428,6 @@ export default {
           case 'more':
             break
           case '10':
-            window.open('sumupmerchant://pay/1.0?' +
-                'affiliate-key=7ca84f17-84a5-4140-8df6-6ebeed8540fc&' +
-                'app-id=com.example.myapp&' +
-                'total=' + this.readBuffer() + '&currency=EUR' +
-                '&title=Taxi Ride' +
-                '&receipt-mobilephone=+3531234567890' +
-                '&receipt-email=customer@mail.com' +
-                '&callback=https://aaden.io')
             this.logPayment(c)
             break
           default:

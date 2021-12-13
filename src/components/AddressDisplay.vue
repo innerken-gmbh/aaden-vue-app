@@ -18,6 +18,9 @@
             <v-btn icon @click="openAddressForm">
               <v-icon>mdi-pencil-box</v-icon>
             </v-btn>
+            <v-btn class="ml-n2" icon @click="deleteAddress">
+              <v-icon>mdi-trash-can</v-icon>
+            </v-btn>
             <template v-if="address.oldTime">
               <v-spacer></v-spacer>
               <span>Zeit nach Bestätigung: {{ address.time }}</span>
@@ -25,13 +28,13 @@
             <template v-else-if="consumeTypeStatusId<1">
               <div>
                 <template
-                    v-for="(time) in [0,5,10,15,20,30,60]"
+                  v-for="(time) in [0,5,10,15,20,30,60]"
                 >
                   <v-chip
-                      class="elevation-1"
-                      :key="time"
-                      color="success"
-                      @click="$emit('accept',time)"
+                    class="elevation-1"
+                    :key="time"
+                    color="success"
+                    @click="$emit('accept',time)"
                   >
                     + {{ time }}
                   </v-chip>
@@ -44,8 +47,8 @@
       </addresses-card>
     </template>
     <address-form
-        @address-submit="submit"
-        :menu-show.sync="showMenu">
+      @address-submit="submit"
+      :menu-show.sync="showMenu">
     </address-form>
   </v-card>
 
@@ -58,7 +61,10 @@ import AddressesCard from '@/components/AddressesCard'
 
 export default {
   name: 'AddressDisplay',
-  components: { AddressesCard, AddressForm },
+  components: {
+    AddressesCard,
+    AddressForm
+  },
   props: {
     rawAddressInfo: {},
     consumeTypeStatusId: {},
@@ -77,6 +83,9 @@ export default {
     },
     submit (event) {
       this.$emit('address-change', event)
+    },
+    deleteAddress () {
+      this.$emit('address-change', {})
     }
   },
   watch: {
