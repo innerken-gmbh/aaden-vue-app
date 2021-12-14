@@ -295,7 +295,7 @@
           </v-card>
         </div>
         <v-card v-else>
-          <v-card-title>显示内容排序</v-card-title>
+          <v-card-title>{{ $t('显示内容排序') }}</v-card-title>
           <v-card-text>
             <draggable v-model="tableInfoDisplayOrder">
               <transition-group>
