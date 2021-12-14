@@ -149,18 +149,19 @@ export function printZwichenBon (tableId, items) {
 }
 
 export function dishesChangeTable (tableName, items, initialUI) {
-  popAuthorize('boss', async () => {
-    const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopChangeTableInfo'),
-      'text',
-      'Complex.php?op=dishesChangeTable', 'newTableName', {
-        oldTableName: tableName,
-        dishes: JSON.stringify(items)
-      }, 'POST')
-    if (res) {
-      loadingComplete()
-      initialUI()
-    }
-  })
+  return false
+  // popAuthorize('boss', async () => {
+  //   const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopChangeTableInfo'),
+  //     'text',
+  //     'Complex.php?op=dishesChangeTable', 'newTableName', {
+  //       oldTableName: tableName,
+  //       dishes: JSON.stringify(items)
+  //     }, 'POST')
+  //   if (res) {
+  //     loadingComplete()
+  //     initialUI()
+  //   }
+  // })
 }
 
 export async function setDiscountToTable (tableId, discountStr) {

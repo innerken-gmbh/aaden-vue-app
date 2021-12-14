@@ -237,17 +237,19 @@
                 icon="mdi-swap-horizontal"
                 color="#ff8c50"
                 :text=" $t('tableChange') "
-                @click="popAuthorize(Config.changeTableUseBossPassword?'boss':'',
-                () => popChangeTablePanel(tableDetailInfo.tableBasicInfo.name ))"
+                @click="showChangeTableDialog = true"
               />
+<!--              popAuthorize(Config.changeTableUseBossPassword?'boss':'',-->
+<!--              () => popChangeTablePanel(tableDetailInfo.tableBasicInfo.name )),-->
               <grid-button
                 :loading="isSendingRequest"
                 color="#272727"
                 icon="mdi-merge"
                 :text="$t('tableMerge')"
-                @click="popAuthorize(Config.mergeTableUseBossPassword?'boss':'',
-                () => popMergeTablePanel(tableDetailInfo.tableBasicInfo.name ))"
+                @click=" showChangeTableDialog = true"
               />
+<!--              popAuthorize(Config.mergeTableUseBossPassword?'boss':'',-->
+<!--              () => popMergeTablePanel(tableDetailInfo.tableBasicInfo.name )),-->
               <grid-button
                 :loading="isSendingRequest"
                 icon="mdi-account"
@@ -463,6 +465,10 @@ left: 304px"
         @visibility-changed="(val)=>this.buffetDialogShow=val"
         :buffet-dialog-show="buffetDialogShow"></buffet-start-dialog>
     </template>
+
+    <table-change-dialog :servant-password="servantPassword"
+                         :menu-show.sync="showChangeTableDialog"></table-change-dialog>
+<!--    <open-table-form :servant-password="servantPassword" :menu-show.sync="showChangeTableDialog"></open-table-form>-->
   </div>
 </template>
 
@@ -522,6 +528,8 @@ import GridButton from '@/components/GridButton'
 import { mapState } from 'vuex'
 import BuffetStartDialog from '@/components/fragments/BuffetStartDialog'
 import BuffetStatusCard from '@/components/fragments/BuffetStatusCard'
+// import OpenTableForm from '../components/OpenTableForm'
+import TableChangeDialog from '@/components/fragments/TableChangeDialog'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -547,6 +555,8 @@ export default {
     dragscroll
   },
   components: {
+    // OpenTableForm,
+    TableChangeDialog,
     BuffetStatusCard,
     BuffetStartDialog,
     GridButton,
@@ -623,7 +633,8 @@ export default {
       },
       currentDish: defaultCurrentDish,
       cartCurrentDish: null,
-      password: ''
+      password: '',
+      showChangeTableDialog: false
 
     }
   },
@@ -865,6 +876,7 @@ export default {
       dishesSetDiscount(this.tableDetailInfo.order.id, this.splitOrderListModel.list, this.initialUI)
     },
     dishesChangeTable: function () {
+      this.showChangeTableDialog = true
       dishesChangeTable(this.tableDetailInfo.tableBasicInfo.name, this.splitOrderListModel.list, this.initialUI)
     },
     printZwichenBon: function () {
