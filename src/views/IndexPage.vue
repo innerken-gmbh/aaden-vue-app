@@ -147,10 +147,8 @@
                  style="height: calc(100vh - 108px);overflow: scroll;display: grid;grid-auto-rows: 56px;
                  grid-template-columns: 100%;grid-gap: 4px">
               <template v-for="table in servant.tables">
-                <table-list-item :key="table.id" :table="table"
-                                 @click="openOrEnterTable(table.tableName)"
-                                 :table-color-is-dark="tableColorIsDark"
-                                 :table-background-color-func="tableBackgroundColor">
+                <table-list-item :key="table.id" :table-info="table"
+                                 @click="openOrEnterTable(table.tableName)">
                 </table-list-item>
               </template>
             </div>
@@ -164,10 +162,7 @@
           <table-blue-print
               @table-clicked="openOrEnterTable"
               @need-refresh="refreshTables"
-              :table-background-color-func="tableBackgroundColor"
-              :table-color-is-dark="tableColorIsDark"
               :out-side-table-list="tableInCurrentSection"
-              :show-coordinate="false"
               :editing.sync="isEditing"
               :current-table.sync="currentTable"
               :current-section="currentSection"/>
@@ -193,9 +188,8 @@
               style="width: 196px"
               v-for="table in orderList"
               @click="openOrEnterTable(table.tableName)"
-              :key="table.id" :table="table"
-              :table-color-is-dark="tableColorIsDark"
-              :table-background-color-func="tableBackgroundColor">
+              :key="table.id" :table-info="table"
+          >
           </table-list-item>
         </v-card>
         <v-card @click="showOtherOrder=!showOtherOrder" elevation="1" tile
@@ -300,6 +294,20 @@
             <keyboard @input="numberInput" :keys="keyboardLayout"/>
           </v-card>
         </div>
+        <v-card v-else>
+          <v-card-title>显示内容排序</v-card-title>
+          <v-card-text>
+            <draggable v-model="tableInfoDisplayOrder">
+              <transition-group>
+                <v-card class="pa-2 d-flex" v-for="element in tableInfoDisplayOrder" :key="element">
+                  {{ $t(element) }}
+                  <v-spacer></v-spacer>
+                  <v-icon>mdi-drag-horizontal-variant</v-icon>
+                </v-card>
+              </transition-group>
+            </draggable>
+          </v-card-text>
+        </v-card>
       </v-card>
     </v-navigation-drawer>
     <open-table-form :servant-password="servantPassword" :menu-show.sync="showOpenTableDialog"></open-table-form>
@@ -336,7 +344,13 @@ import {
 import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
-import GlobalConfig, { hardReload, NeededKeys, setDeviceId, useCurrentConfig } from '../oldjs/LocalGlobalSettings'
+import GlobalConfig, {
+  hardReload,
+  NeededKeys,
+  refreshGetter,
+  setDeviceId,
+  useCurrentConfig
+} from '../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
@@ -344,7 +358,6 @@ import TimeDisplay from '@/components/TimeDisplay'
 import {
   fetchOrder,
   getColorLightness,
-  getRestaurantInfo,
   getSectionList,
   getServantList,
   getTableListWithCells,
@@ -362,6 +375,7 @@ import OpenTableForm from '@/components/OpenTableForm'
 import { mapMutations, mapState } from 'vuex'
 import UpdateFragment from '@/components/fragments/UpdateFragment'
 import TableListItem from '@/components/Table/TableListItem'
+import draggable from 'vuedraggable'
 
 const keyboardLayout =
     [
@@ -391,7 +405,8 @@ export default {
     TableBluePrint,
     Keyboard,
     TimeDisplay,
-    Navgation
+    Navgation,
+    draggable
   },
   props: {
     refresh: {
@@ -419,10 +434,6 @@ export default {
       version: version,
       areas: [],
       buffer: '',
-      restaurantInfo: {
-        tableColor: '#fff',
-        callColor: '#f06800'
-      },
       ins: {},
       time: '',
       dishes: [],
@@ -442,12 +453,18 @@ export default {
       },
       useOrderView: GlobalConfig.orderView,
       showOtherOrder: GlobalConfig.showOtherOrder,
-      loading: false
+      loading: false,
+      tableInfoDisplayOrder: GlobalConfig.getTableInfoKeys()
     }
   },
   watch: {
     useOrderView: function (val) {
       GlobalConfig.updateSettings('orderView', val)
+      this.refreshTables()
+    },
+    tableInfoDisplayOrder: function (val) {
+      GlobalConfig.updateSettings('tableInfoDisplayOrder', val)
+      refreshGetter()
       this.refreshTables()
     },
     showRightMenu: function (val) {
@@ -503,16 +520,6 @@ export default {
 
   },
   methods: {
-
-    tableForegroundColor (table) {
-      return table.callService === '1' ? this.restaurantInfo.callColor : this.restaurantInfo.tableColor
-    },
-    tableBackgroundColor (table) {
-      return table.callService === '1' ? this.restaurantInfo.callColor : GlobalConfig.activeCardBackground
-    },
-    tableColorIsDark (table, background = true) {
-      return this.colorIsDark((background ? this.tableBackgroundColor(table) : this.tableForegroundColor(table)))
-    },
     colorIsDark (color) {
       return getColorLightness(color) < 128
     },
@@ -768,7 +775,6 @@ export default {
   mounted: async function () {
     this.initPage()
 
-    this.restaurantInfo = Object.assign(this.restaurantInfo, (await getRestaurantInfo()).content[0])
     this.servantList = await getServantList()
     await this.refreshSectionList()
     if (GlobalConfig.defaultPassword) {

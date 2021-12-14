@@ -1,5 +1,7 @@
 <template>
   <v-card
+      :color="tableBackgroundColor(table)"
+      :dark="tableColorIsDark(table)"
       outlined
       @click='$emit("click",table.tableName)'
       elevation="0"
@@ -30,15 +32,28 @@
 <script>
 import { findConsumeTypeById } from '@/oldjs/common'
 import { getColorLightness } from '@/oldjs/api'
+import { defaultTable, getRestaurantInfo } from '@/api/restaurantInfoService'
 
 export default {
   name: 'TableListItem',
   props: {
-    table: {},
-    tableBackgroundColorFunc: Function,
-    tableColorIsDark: Function
+    tableInfo: {}
+  },
+  computed: {
+    table () {
+      const res = Object.assign({}, defaultTable, this.tableInfo)
+      res.inUse = res.usageStatus === '1'
+      res.inCall = res.callService === '1'
+      return res
+    }
   },
   methods: {
+    tableBackgroundColor (table) {
+      return table.inCall ? getRestaurantInfo().callColor : '#ffffff'
+    },
+    tableColorIsDark (table) {
+      return this.colorIsDark(this.tableBackgroundColor(table))
+    },
     findConsumeTypeColorById (id) {
       return findConsumeTypeById(id)?.color ?? '#367aeb'
     },

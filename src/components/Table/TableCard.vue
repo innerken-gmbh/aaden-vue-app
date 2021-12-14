@@ -5,7 +5,7 @@
         tile
         style="position: relative"
         v-if="table.inUse"
-        :color="tableBackgroundColorFunc(table)"
+        :color="tableBackgroundColor(table)"
         :dark="tableColorIsDark(table)"
         @click='$emit("click",table.tableName)'>
       <div
@@ -33,25 +33,24 @@
            line-height: 16px;
            font-size: 14px;
         ">
-          {{ table.createTimestamp }}
-          <template v-if="tableXSize>=2">/{{ table.servantName }}</template>
+          <table-info-display :info-key="table['info0']" :table="table"></table-info-display>
+          <template v-if="tableXSize>=2">/
+            <table-info-display :info-key="table['info1']" :table="table"></table-info-display>
+          </template>
         </div>
         <div v-if="tableYSize>1" class="text" style="line-height: 16px;font-size: 14px">
           <template v-if="['1','2','3','5'].includes(table.consumeType)">
-          <span :class="parseInt(table.dishCount)===0?' alert':''"><v-icon x-small>mdi-silverware-fork-knife</v-icon>
-          <span class="ml-1">{{ table.dishCount === null ? 0 : table.dishCount }}</span></span>
+            <table-info-display :info-key="table['info2']" :table="table"></table-info-display>
             <template v-if="tableXSize>=2">/
-              <v-icon x-small>mdi-currency-eur</v-icon>
-              <span>{{ table.totalPrice }}</span></template>
+              <table-info-display :info-key="table['info3']" :table="table"></table-info-display>
+            </template>
           </template>
           <template v-else>
             <span>
-              <v-icon x-small>mdi-account-outline</v-icon>
-              <span class="ml-1">{{ table.seatCount }}</span>
+               <table-info-display :info-key="table['info4']" :table="table"></table-info-display>
             </span>
             <template v-if="tableXSize>1">/<span>
-              <v-icon x-small>mdi-human-child</v-icon>
-              <span class="ml-1">{{ table.childCount }}</span>
+             <table-info-display :info-key="table['info5']" :table="table"></table-info-display>
             </span></template>
           </template>
         </div>
@@ -71,21 +70,22 @@
 import { findConsumeTypeById } from '@/oldjs/common'
 import { getColorLightness } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-
-const defaultTable = {
-  tableName: '1',
-  usageStatus: '1',
-  callService: '0'
-}
+import { defaultTable, getRestaurantInfo } from '@/api/restaurantInfoService'
+import TableInfoDisplay from '@/components/Table/TableInfoDisplay'
 
 export default {
   name: 'TableCard',
+  components: { TableInfoDisplay },
   props: {
-    tableInfo: {},
-    tableBackgroundColorFunc: Function,
-    tableColorIsDark: Function
+    tableInfo: {}
   },
   methods: {
+    tableBackgroundColor (table) {
+      return table.inCall ? (getRestaurantInfo()).callColor : (getRestaurantInfo()).tableColor
+    },
+    tableColorIsDark (table) {
+      return this.colorIsDark(this.tableBackgroundColor(table))
+    },
     findConsumeTypeColorById (id) {
       return findConsumeTypeById(id)?.color ?? '#367aeb'
     },
@@ -94,6 +94,9 @@ export default {
     },
     colorIsDark (color) {
       return getColorLightness(color) < 128
+    },
+    getKeys () {
+      return GlobalConfig.getTableInfoKeys()
     }
   },
   computed: {
@@ -112,6 +115,11 @@ export default {
       const res = Object.assign({}, defaultTable, this.tableInfo)
       res.inUse = res.usageStatus === '1'
       res.inCall = res.callService === '1'
+      let keyCount = 0
+      for (const key of this.getKeys()) {
+        res['info' + keyCount] = key
+        keyCount++
+      }
       return res
     }
   }

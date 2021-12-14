@@ -1,9 +1,9 @@
 <template>
   <div class="flex-grow-1 pa-2"
        ref="blueprintContainer"
-       style="height: calc(100vh - 48px);overflow: hidden;background: center / cover;"
+       style="height: calc(100vh - 48px);overflow: hidden;"
        :style="{
-          backgroundImage:'url('+Config.getBase()+currentSection.image+')'
+          background:currentSection.image?'url('+Config.getBase()+currentSection.image+') center/cover':'#f5f5f5'
        }">
     <template v-for="i in tablesInCurrentSection">
       <vue-draggable-resizable
@@ -31,7 +31,7 @@
       </vue-draggable-resizable>
     </template>
     <v-btn @click="refreshTables" fab bottom right absolute style="bottom: 24px" v-if="editing">
-      Refresh
+      <v-icon>mdi-refresh</v-icon>
     </v-btn>
 
   </div>
@@ -40,8 +40,7 @@
 <script>
 import { dragscroll } from 'vue-dragscroll'
 import { defaultSection } from '@/oldjs/defaultConst'
-import { addNewTable, setTableLocation } from '@/oldjs/api'
-import { toast } from '@/oldjs/common'
+import { setTableLocation } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import debounce from 'lodash-es/debounce'
 import TableCard from '@/components/Table/TableCard'
@@ -93,7 +92,6 @@ export default {
     dragscroll
   },
   props: {
-    currentTable: Object,
     currentSection: {
       default: () => defaultSection
     },
@@ -104,11 +102,6 @@ export default {
 
   },
   computed: {
-    activeTable () {
-      return this.tableList.find(t => {
-        return parseInt(t.tableId) === parseInt(this.activeTableId)
-      })
-    },
     tablesInCurrentSection () {
       return this.tableList.map(t => {
         [t.x, t.w] = decodeNumber(t.cells[0]?.x);
@@ -122,20 +115,6 @@ export default {
     }
   },
   watch: {
-    currentTable (val) {
-      console.log(val, 'outSideCurrentTable')
-      if (val?.tableId && val?.tableId !== this.activeTableId) {
-        this.submit()
-        this.activeTableId = val.tableId
-      }
-    },
-    activeTable (val) {
-      console.log(val, 'currentTableChanged')
-      if (val) {
-        val.centerPoint = this.findCenterPoint(val.cells)
-      }
-      this.$emit('update:currentTable', val)
-    },
     outSideTableList (val) {
       if (!this.editing) {
         this.tableList = val
@@ -151,24 +130,7 @@ export default {
     async refreshTables () {
       await refreshAllTablesPosition(this.tableList, this.height, this.width)
     },
-
     debounce,
-    async submit () {
-      if (this.activeTableId === -1) {
-        this.activeTable.sectionId = this.currentSection.id
-
-        await setTableLocation({
-          ...this.activeTable,
-          tableId: await addNewTable(this.activeTable)
-        })
-      } else {
-        await setTableLocation(this.activeTable)
-      }
-      this.$emit('need-refresh')
-      toast()
-
-      this.activeTableId = null
-    },
     onResize: function (table, x, y, width, height) {
       this.shouldUpdateSize(table, x, y, width, height)
     },
@@ -188,8 +150,6 @@ export default {
   },
   data: function () {
     return {
-      showId: false,
-      activeTableId: null,
       tableList: [],
       Config: GlobalConfig,
       width: 0,
