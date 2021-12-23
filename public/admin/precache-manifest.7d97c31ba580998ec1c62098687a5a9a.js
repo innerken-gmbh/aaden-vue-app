@@ -36,7 +36,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "Images/关于我们/虚线@2x.png"
   },
   {
-    "revision": "f54ea9e000f64e9dc064",
+    "revision": "c23fc0a0bd470826f28f",
     "url": "css/app.dd0a965c.css"
   },
   {
@@ -82,10 +82,6 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "b9c7872bee95bde9b0c6",
     "url": "css/chunk-21256fe8.d29b0294.css"
-  },
-  {
-    "revision": "8ea56814e555cb76859f",
-    "url": "css/chunk-224aa402.20dfa46e.css"
   },
   {
     "revision": "d5c52e8bc2e39a917de7",
@@ -138,6 +134,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "305ce367e38bbc9cef04",
     "url": "css/chunk-53b2ff44.71e9a1f3.css"
+  },
+  {
+    "revision": "8912c1f63eb5f777d21e",
+    "url": "css/chunk-623a6c23.dc7ee635.css"
   },
   {
     "revision": "4fdb2a72fe11b0f7c15a",
@@ -320,12 +320,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "img/vuetify.c0e24719.svg"
   },
   {
-    "revision": "d9de49337cbc3315dde56c7a6ef11f68",
+    "revision": "e38c431791214e28d8c20c07df30ad9c",
     "url": "index.html"
   },
   {
-    "revision": "f54ea9e000f64e9dc064",
-    "url": "js/app.bd1bc159.js"
+    "revision": "c23fc0a0bd470826f28f",
+    "url": "js/app.c796e62a.js"
   },
   {
     "revision": "8cab87780be688a6aba0",
@@ -414,10 +414,6 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "b9c7872bee95bde9b0c6",
     "url": "js/chunk-21256fe8.829adf38.js"
-  },
-  {
-    "revision": "8ea56814e555cb76859f",
-    "url": "js/chunk-224aa402.fc63ff43.js"
   },
   {
     "revision": "d5c52e8bc2e39a917de7",
@@ -594,6 +590,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "2f6513e8ff3441686ebb",
     "url": "js/chunk-5de82152.e7e4416c.js"
+  },
+  {
+    "revision": "8912c1f63eb5f777d21e",
+    "url": "js/chunk-623a6c23.df5d6d6f.js"
   },
   {
     "revision": "3a1cf94b100f4381796f",
