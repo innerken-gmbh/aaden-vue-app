@@ -36,7 +36,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "Images/关于我们/虚线@2x.png"
   },
   {
-    "revision": "c3406cdf3024d4310851",
+    "revision": "602fb8731ee70d4bfbba",
     "url": "css/app.dd0a965c.css"
   },
   {
@@ -120,6 +120,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "css/chunk-4907cf4a.0fcad211.css"
   },
   {
+    "revision": "a6004a96802f2750dbc9",
+    "url": "css/chunk-4e5c191e.6d0f53d6.css"
+  },
+  {
     "revision": "6c8110945bc9c1ec4e8a",
     "url": "css/chunk-4f1da4b7.b892dadf.css"
   },
@@ -158,10 +162,6 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "504c4eda8d25e6dfaedd",
     "url": "css/chunk-c7d05b18.b67733e0.css"
-  },
-  {
-    "revision": "3ba1d9f45eb9e624739e",
-    "url": "css/chunk-e9ebb336.c58e01f0.css"
   },
   {
     "revision": "5fb7933beb2af0ab3fd3",
@@ -320,12 +320,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "img/vuetify.c0e24719.svg"
   },
   {
-    "revision": "611aa642fc003fd2e91cbea0d414cbaf",
+    "revision": "79a8544d6238caa000fa55222e78d6f8",
     "url": "index.html"
   },
   {
-    "revision": "c3406cdf3024d4310851",
-    "url": "js/app.ee8228bb.js"
+    "revision": "602fb8731ee70d4bfbba",
+    "url": "js/app.0e35ff35.js"
   },
   {
     "revision": "49cfa02b29cb1d93f23b",
@@ -560,6 +560,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "js/chunk-4907cf4a.b285e1f9.js"
   },
   {
+    "revision": "a6004a96802f2750dbc9",
+    "url": "js/chunk-4e5c191e.a0c6ee26.js"
+  },
+  {
     "revision": "6c8110945bc9c1ec4e8a",
     "url": "js/chunk-4f1da4b7.f6380487.js"
   },
@@ -666,10 +670,6 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "4d30dcf39a897005668d",
     "url": "js/chunk-e8bdf534.39adc49e.js"
-  },
-  {
-    "revision": "3ba1d9f45eb9e624739e",
-    "url": "js/chunk-e9ebb336.c1894779.js"
   },
   {
     "revision": "5fb7933beb2af0ab3fd3",
