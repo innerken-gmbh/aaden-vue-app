@@ -237,19 +237,19 @@
                 icon="mdi-swap-horizontal"
                 color="#ff8c50"
                 :text=" $t('tableChange') "
-                @click="showChangeTableDialog = true"
+                @click="showTableChange = true"
               />
-<!--              popAuthorize(Config.changeTableUseBossPassword?'boss':'',-->
-<!--              () => popChangeTablePanel(tableDetailInfo.tableBasicInfo.name )),-->
+              <!--              popAuthorize(Config.changeTableUseBossPassword?'boss':'',-->
+              <!--              () => popChangeTablePanel(tableDetailInfo.tableBasicInfo.name )),-->
               <grid-button
                 :loading="isSendingRequest"
                 color="#272727"
                 icon="mdi-merge"
                 :text="$t('tableMerge')"
-                @click=" showChangeTableDialog = true"
+                @click=" showTableMerge = true"
               />
-<!--              popAuthorize(Config.mergeTableUseBossPassword?'boss':'',-->
-<!--              () => popMergeTablePanel(tableDetailInfo.tableBasicInfo.name )),-->
+              <!--              popAuthorize(Config.mergeTableUseBossPassword?'boss':'',-->
+              <!--              () => popMergeTablePanel(tableDetailInfo.tableBasicInfo.name )),-->
               <grid-button
                 :loading="isSendingRequest"
                 icon="mdi-account"
@@ -466,9 +466,15 @@ left: 304px"
         :buffet-dialog-show="buffetDialogShow"></buffet-start-dialog>
     </template>
 
-    <table-change-dialog :servant-password="servantPassword"
-                         :menu-show.sync="showChangeTableDialog"></table-change-dialog>
-<!--    <open-table-form :servant-password="servantPassword" :menu-show.sync="showChangeTableDialog"></open-table-form>-->
+      <table-change-selector :servant-password="servantPassword"
+                             title="Table Change:"
+                             :menu-show.sync="showTableChange"
+                             ></table-change-selector>
+    <table-change-selector :servant-password="servantPassword"
+                           title="Table Merge:"
+                           :menu-show.sync="showTableMerge"
+    ></table-change-selector>
+    <!--    <open-table-form :servant-password="servantPassword" :menu-show.sync="showTableChange"></open-table-form>-->
   </div>
 </template>
 
@@ -529,7 +535,7 @@ import { mapState } from 'vuex'
 import BuffetStartDialog from '@/components/fragments/BuffetStartDialog'
 import BuffetStatusCard from '@/components/fragments/BuffetStatusCard'
 // import OpenTableForm from '../components/OpenTableForm'
-import TableChangeDialog from '@/components/fragments/TableChangeDialog'
+import TableChangeSelector from '@/components/fragments/TableChangeSelector'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -556,7 +562,7 @@ export default {
   },
   components: {
     // OpenTableForm,
-    TableChangeDialog,
+    TableChangeSelector,
     BuffetStatusCard,
     BuffetStartDialog,
     GridButton,
@@ -634,8 +640,9 @@ export default {
       currentDish: defaultCurrentDish,
       cartCurrentDish: null,
       password: '',
-      showChangeTableDialog: false
-
+      showTableChange: false,
+      showTableMerge: false,
+      servantPassword: ''
     }
   },
   beforeDestroy () {
@@ -876,7 +883,7 @@ export default {
       dishesSetDiscount(this.tableDetailInfo.order.id, this.splitOrderListModel.list, this.initialUI)
     },
     dishesChangeTable: function () {
-      this.showChangeTableDialog = true
+      this.showTableChange = true
       dishesChangeTable(this.tableDetailInfo.tableBasicInfo.name, this.splitOrderListModel.list, this.initialUI)
     },
     printZwichenBon: function () {
@@ -1365,6 +1372,9 @@ export default {
   },
   computed: {
     ...mapState(['pinDialogShow']),
+    tableChange () {
+      return this.showTableChange || this.showTableMerge
+    },
     telHint: function () {
       const info = this.userInfo
       return info.reduce((arr, i) => {

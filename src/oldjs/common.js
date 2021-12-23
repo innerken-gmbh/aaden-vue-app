@@ -144,6 +144,14 @@ export async function getActiveTables () {
   }
 }
 
+export function getAllTables () {
+  const res = hillo.get('Tables.php?op=justShowAllTable')
+  if (goodRequest(res)) {
+    console.log('justShowAllTable', res)
+  }
+  return res
+}
+
 function reloadTables (arrOfT) {
   const areaData = []
   for (const k in arrOfT) {
