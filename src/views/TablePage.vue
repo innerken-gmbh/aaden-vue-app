@@ -122,7 +122,7 @@
                       <div @click="changeCategory(category.id,toggle)"
                            :class="(active?'active elevation-4':'')+
                            (Config.alwaysShowDishesBellow?' menu-always':' menu-item')"
-                           :style="{backgroundColor:category.color, color:getColorLightness(category.color)>128?'#000':'#fff'}">
+                           :style="{backgroundColor:category.color, color:getColorLightness(category.color)>128?'#000':'#fff', height:Config.categoryCardHeight+'px'}">
                         {{ category.name }}
                       </div>
                     </v-item>

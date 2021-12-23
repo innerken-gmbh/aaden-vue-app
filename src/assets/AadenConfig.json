@@ -50,5 +50,6 @@
   "mergeTableUseBossPassword": false,
   "changeTableUseBossPassword": false,
   "showOtherOrder": true,
-  "tableInfoDisplayOrder": null
+  "tableInfoDisplayOrder": null,
+  "categoryCardHeight": 64
 }

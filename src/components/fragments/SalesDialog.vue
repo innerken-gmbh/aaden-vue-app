@@ -306,9 +306,7 @@
                       <div class="pa-2" style="width: 240px">
 
                         <v-list subheader dense>
-                          <v-subheader>{{ $t('Kellner') }} : {{ displayData.servant.name }} ({{
-                              $t('ohne tip')
-                            }})
+                          <v-subheader>{{ $t('Kellner') }} : {{ displayData.servant.name }} ({{ $t('ohne tip') }})
                           </v-subheader>
                           <v-list-item>
                             <v-list-item-content>
