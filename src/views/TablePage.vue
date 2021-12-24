@@ -31,12 +31,12 @@
                       class="white">
                 <keep-alive>
                   <dish-card-list
-                    :dish-list-model="orderListModel"
-                    :discount-ratio="discountRatio"
-                    :default-expand="cartListModel.list.length===0"
-                    :click-callback="addToSplit"
-                    extra-height="96px"
-                    :title="$t('haveOrderedDish')"
+                      :dish-list-model="orderListModel"
+                      :discount-ratio="discountRatio"
+                      :default-expand="cartListModel.list.length===0"
+                      :click-callback="addToSplit"
+                      extra-height="96px"
+                      :title="$t('haveOrderedDish')"
                   />
                 </keep-alive>
               </v-card>
@@ -45,18 +45,18 @@
                       v-show="cartListModel.list.length>0"
                       class="white">
                 <dish-card-list
-                  ref="cartList"
-                  @current-dish-change="cartCurrentDish=$event"
-                  :reset-current-expand-index="true"
-                  :show-number="true"
-                  :extra-height="'196px'"
-                  :color="'#707070'"
-                  :reverse="true"
-                  :dish-list-model="cartListModel"
-                  :show-edit="true"
-                  :click-callback="removeDish"
-                  :title="$t('新增菜品')"
-                  :default-expand="true"/>
+                    ref="cartList"
+                    @current-dish-change="cartCurrentDish=$event"
+                    :reset-current-expand-index="true"
+                    :show-number="true"
+                    :extra-height="'196px'"
+                    :color="'#707070'"
+                    :reverse="true"
+                    :dish-list-model="cartListModel"
+                    :show-edit="true"
+                    :click-callback="removeDish"
+                    :title="$t('新增菜品')"
+                    :default-expand="true"/>
                 <v-toolbar dense>
                   <v-toolbar-items class="flex-grow-1 mx-n3">
                     <v-btn @click="cartListModel.clear()" class="mr-1" color="error">
@@ -144,19 +144,19 @@
                 </div>
                 <template v-for="dish of filteredDish">
                   <dish-block
-                    v-ripple
-                    :key="'dish'+dish.code"
-                    :code="dish.code"
-                    :count="dish.count"
-                    :display-color="dish.displayColor"
-                    :dish-name="dish.dishName"
-                    :foreground="dish.foreground"
-                    :font-size="Config.dishBlockFontSize"
-                    :have-mod="dish.haveMod"
-                    :is-free="dish.isFree"
-                    :price="dish.price"
-                    @click-tune="showModification(dish,1)"
-                    @click="orderOneDish(dish.code)"/>
+                      v-ripple
+                      :key="'dish'+dish.code"
+                      :code="dish.code"
+                      :count="dish.count"
+                      :display-color="dish.displayColor"
+                      :dish-name="dish.dishName"
+                      :foreground="dish.foreground"
+                      :font-size="Config.dishBlockFontSize"
+                      :have-mod="dish.haveMod"
+                      :is-free="dish.isFree"
+                      :price="dish.price"
+                      @click-tune="showModification(dish,1)"
+                      @click="orderOneDish(dish.code)"/>
                 </template>
               </div>
             </v-card>
@@ -213,140 +213,140 @@
           >
             <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px">
               <grid-button
-                :loading="isSendingRequest"
-                icon="mdi-arrow-left"
-                :text="$t('Home')"
-                @click="back"
+                  :loading="isSendingRequest"
+                  icon="mdi-arrow-left"
+                  :text="$t('Home')"
+                  @click="back"
               />
               <grid-button
-                :loading="isSendingRequest"
-                icon="mdi-printer"
-                color="#fec945"
-                :text="$t('重新打印')"
-                @click="reprintOrder"
+                  :loading="isSendingRequest"
+                  icon="mdi-printer"
+                  color="#fec945"
+                  :text="$t('重新打印')"
+                  @click="reprintOrder"
               />
               <grid-button
-                :loading="isSendingRequest"
-                icon="mdi-printer-pos"
-                text="Zwischen"
-                color="#24b646"
-                @click="zwitchenBon"
+                  :loading="isSendingRequest"
+                  icon="mdi-printer-pos"
+                  text="Zwischen"
+                  color="#24b646"
+                  @click="zwitchenBon"
               />
               <grid-button
-                :loading="isSendingRequest"
-                icon="mdi-swap-horizontal"
-                color="#ff8c50"
-                :text=" $t('tableChange') "
-                @click="showTableChange = true"
+                  :loading="isSendingRequest"
+                  icon="mdi-swap-horizontal"
+                  color="#ff8c50"
+                  :text=" $t('tableChange') "
+                  @click="showTableChange = true"
               />
               <!--              popAuthorize(Config.changeTableUseBossPassword?'boss':'',-->
               <!--              () => popChangeTablePanel(tableDetailInfo.tableBasicInfo.name )),-->
               <grid-button
-                :loading="isSendingRequest"
-                color="#272727"
-                icon="mdi-merge"
-                :text="$t('tableMerge')"
-                @click=" showTableMerge = true"
+                  :loading="isSendingRequest"
+                  color="#272727"
+                  icon="mdi-merge"
+                  :text="$t('tableMerge')"
+                  @click=" showTableMerge = true"
               />
               <!--              popAuthorize(Config.mergeTableUseBossPassword?'boss':'',-->
               <!--              () => popMergeTablePanel(tableDetailInfo.tableBasicInfo.name )),-->
               <grid-button
-                :loading="isSendingRequest"
-                icon="mdi-account"
-                :text="$t('Übergabe')"
-                color="#3f49dd"
-                @click="changeServant"
+                  :loading="isSendingRequest"
+                  icon="mdi-account"
+                  :text="$t('Übergabe')"
+                  color="#3f49dd"
+                  @click="changeServant"
               />
               <grid-button
-                :loading="isSendingRequest"
-                v-if="consumeTypeId===2"
-                icon="mdi-map"
-                :text="$t('customerAddress')"
-                color="indigo"
-                @click="addressFormOpen=true"
+                  :loading="isSendingRequest"
+                  v-if="consumeTypeId===2"
+                  icon="mdi-map"
+                  :text="$t('customerAddress')"
+                  color="indigo"
+                  @click="addressFormOpen=true"
               />
               <template v-else-if="consumeTypeStatusId<2">
                 <grid-button
-                  :loading="isSendingRequest"
-                  icon="mdi-check"
-                  text="Akzept."
-                  color="success"
-                  @click="acceptOrder"
+                    :loading="isSendingRequest"
+                    icon="mdi-check"
+                    text="Akzept."
+                    color="success"
+                    @click="acceptOrder"
                 />
                 <grid-button
-                  :loading="isSendingRequest"
-                  icon="mdi-close"
-                  text="Ablehnen"
-                  color="error"
-                  @click="rejectOrder"
+                    :loading="isSendingRequest"
+                    icon="mdi-close"
+                    text="Ablehnen"
+                    color="error"
+                    @click="rejectOrder"
                 />
               </template>
               <grid-button
-                :loading="isSendingRequest"
-                v-if="consumeTypeId===1||consumeTypeId===5"
-                icon="mdi-silverware"
-                :text="$t('ChangeToBuffet')"
-                color="#ff7961"
-                @click="buffetDialogShow=true"
+                  :loading="isSendingRequest"
+                  v-if="consumeTypeId===1||consumeTypeId===5"
+                  icon="mdi-silverware"
+                  :text="$t('ChangeToBuffet')"
+                  color="#ff7961"
+                  @click="buffetDialogShow=true"
               />
             </div>
             <buffet-status-card
-              class="mt-2"
-              v-if="consumeTypeId!==1&&consumeTypeId!==2&&consumeTypeId!==5"
-              :buffet-setting-info="realAddressInfo"
-              :current-round="tableDetailInfo.tableBasicInfo.buffetRound"></buffet-status-card>
+                class="mt-2"
+                v-if="consumeTypeId!==1&&consumeTypeId!==2&&consumeTypeId!==5"
+                :buffet-setting-info="realAddressInfo"
+                :current-round="tableDetailInfo.tableBasicInfo.buffetRound"></buffet-status-card>
             <address-display
-              :should-open-menu.sync="addressFormOpen"
-              @address-change="submitRawAddressInfo"
-              v-if="consumeTypeId===2"
-              @accept="acceptOrderWithTime"
-              @reject="rejectOrder"
-              :consume-type-status-id="consumeTypeStatusId"
-              :raw-address-info="realAddressInfo"/>
+                :should-open-menu.sync="addressFormOpen"
+                @address-change="submitRawAddressInfo"
+                v-if="consumeTypeId===2"
+                @accept="acceptOrderWithTime"
+                @reject="rejectOrder"
+                :consume-type-status-id="consumeTypeStatusId"
+                :raw-address-info="realAddressInfo"/>
           </div>
           <div v-else style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
             <grid-button
-              @click="cartListModel.clear()"
-              icon="mdi-delete-sweep"
-              text="Leeren"
-              color="error"
+                @click="cartListModel.clear()"
+                icon="mdi-delete-sweep"
+                text="Leeren"
+                color="error"
             ></grid-button>
             <grid-button
-              @click="orderDish(cartListModel.list,false)"
-              :loading="isSendingRequest"
-              icon="mdi-printer-off"
-              text="Bestellen"
-              color="#000"
+                @click="orderDish(cartListModel.list,false)"
+                :loading="isSendingRequest"
+                icon="mdi-printer-off"
+                text="Bestellen"
+                color="#000"
             ></grid-button>
             <grid-button
-              :loading="isSendingRequest"
-              icon="mdi-printer"
-              text="Drucken"
-              @click="orderDish(cartListModel.list)"
+                :loading="isSendingRequest"
+                icon="mdi-printer"
+                text="Drucken"
+                @click="orderDish(cartListModel.list)"
             ></grid-button>
             <template v-if="cartCurrentDish">
               <grid-button
-                @click="cartCurrentDish.change(-1)"
-                icon="mdi-minus"
-                color="error"
+                  @click="cartCurrentDish.change(-1)"
+                  icon="mdi-minus"
+                  color="error"
               ></grid-button>
               <grid-button
-                :disabled="cartCurrentDish.haveMod<1"
-                @click="cartCurrentDish.edit();cartCurrentDish.change(-1)"
-                icon="mdi-tune"
-                color="warning"
-                text="ohne/mit"
+                  :disabled="cartCurrentDish.haveMod<1"
+                  @click="cartCurrentDish.edit();cartCurrentDish.change(-1)"
+                  icon="mdi-tune"
+                  color="warning"
+                  text="ohne/mit"
               ></grid-button>
               <grid-button
-                @click="cartCurrentDish.change(1)"
-                icon="mdi-plus"
-                color="success"
+                  @click="cartCurrentDish.change(1)"
+                  icon="mdi-plus"
+                  color="success"
               ></grid-button>
               <grid-button
-                @click="editNote"
-                icon="mdi-notebook-edit"
-                color="#666666"
-                text="Notiz"
+                  @click="editNote"
+                  icon="mdi-notebook-edit"
+                  color="#666666"
+                  text="Notiz"
               ></grid-button>
             </template>
 
@@ -354,13 +354,13 @@
           <v-spacer></v-spacer>
           <div class="pa-2">
             <v-text-field
-              class="ma-2"
-              hide-details
-              clearable
-              style="font-size: 36px"
-              ref="ins"
-              @input="input=displayInput"
-              v-model="displayInput"
+                class="ma-2"
+                hide-details
+                clearable
+                style="font-size: 36px"
+                ref="ins"
+                @input="input=displayInput"
+                v-model="displayInput"
             />
             <keyboard @input="numberInput"
                       :keys="keyboardLayout"></keyboard>
@@ -408,13 +408,13 @@ left: 304px"
               </v-btn>
             </div>
             <dish-card-list
-              class="flex-grow-1"
-              extra-height="48px"
-              :discount-ratio="discountRatio"
-              :default-expand="true"
-              :dish-list-model="splitOrderListModel"
-              :click-callback="removeFromSplitOrder"
-              :title="$t('operation')"/>
+                class="flex-grow-1"
+                extra-height="48px"
+                :discount-ratio="discountRatio"
+                :default-expand="true"
+                :dish-list-model="splitOrderListModel"
+                :click-callback="removeFromSplitOrder"
+                :title="$t('operation')"/>
           </div>
         </div>
       </template>
@@ -433,46 +433,52 @@ left: 304px"
         </v-card>
       </v-dialog>
       <discount-dialog
-        :discount-model-show="discountModelShow"
-        :id="id"
-        :total-price="tableDetailInfo.order.totalPrice"
-        :initial-u-i="initialUI"
-        ref="discount"
-        @visibility-changed="(val)=>this.discountModelShow=val"
+          :discount-model-show="discountModelShow"
+          :id="id"
+          :total-price="tableDetailInfo.order.totalPrice"
+          :initial-u-i="initialUI"
+          ref="discount"
+          @visibility-changed="(val)=>this.discountModelShow=val"
       />
       <ModificationDrawer
-        ref="modification"
-        @visibility-changed="changeModification"
-        :modification-show="modificationShow"
-        :dish="dish"
-        :old-mod="oldMod"
-        :mod="submitModification"
-        :password="password"
+          ref="modification"
+          @visibility-changed="changeModification"
+          :modification-show="modificationShow"
+          :dish="dish"
+          :old-mod="oldMod"
+          :mod="submitModification"
+          :password="password"
       />
       <check-out-drawer
-        :id="tableDetailInfo.order.id"
-        @visibility-changed="changeCheckOut"
-        :order="checkOutModel"
-        :check-out-type="checkOutType"
-        :table-id="id"
-        :password="password"
-        :discount-str="discountStr"
-        :discount-ratio="discountRatio"
-        :visible="checkoutShow"/>
+          :id="tableDetailInfo.order.id"
+          @visibility-changed="changeCheckOut"
+          :order="checkOutModel"
+          :check-out-type="checkOutType"
+          :table-id="id"
+          :password="password"
+          :discount-str="discountStr"
+          :discount-ratio="discountRatio"
+          :visible="checkoutShow"/>
       <buffet-start-dialog
-        :initial-u-i="initialUI"
-        :id="tableDetailInfo.order.id"
-        @visibility-changed="(val)=>this.buffetDialogShow=val"
-        :buffet-dialog-show="buffetDialogShow"></buffet-start-dialog>
+          :initial-u-i="initialUI"
+          :id="tableDetailInfo.order.id"
+          @visibility-changed="(val)=>this.buffetDialogShow=val"
+          :buffet-dialog-show="buffetDialogShow"></buffet-start-dialog>
     </template>
 
-      <table-change-selector :servant-password="servantPassword"
-                             title="TableChange"
-                             :menu-show.sync="showTableChange"
-                             ></table-change-selector>
-    <table-change-selector :servant-password="servantPassword"
-                           title="TableMerge"
-                           :menu-show.sync="showTableMerge"
+    <table-change-selector
+        :active-status="false"
+        @table-select="changeTable"
+        :servant-password="servantPassword"
+        title="TableChange"
+        :menu-show.sync="showTableChange"
+    ></table-change-selector>
+    <table-change-selector
+        :active-status="true"
+        @table-select="mergeTable"
+        :servant-password="servantPassword"
+        title="TableMerge"
+        :menu-show.sync="showTableMerge"
     ></table-change-selector>
     <!--    <open-table-form :servant-password="servantPassword" :menu-show.sync="showTableChange"></open-table-form>-->
   </div>
@@ -490,7 +496,7 @@ import {
   isBlocking,
   jumpToTable,
   logError,
-  logErrorAndPop,
+  logErrorAndPop, openOrEnterTable,
   popAuthorize,
   requestOutTable,
   setGlobalTableId,
@@ -547,12 +553,12 @@ const defaultCurrentDish = {
 }
 const keyboardLayout =
 
-  [
-    '7', '8', '9', 'C',
-    '4', '5', '6', 'A',
-    '1', '2', '3', 'M',
-    '.', '0', 'mdi-close', 'OK'
-  ]
+    [
+      '7', '8', '9', 'C',
+      '4', '5', '6', 'A',
+      '1', '2', '3', 'M',
+      '.', '0', 'mdi-close', 'OK'
+    ]
 
 // endregion
 export default {
@@ -649,6 +655,12 @@ export default {
     clearAllTimer()
   },
   methods: {
+    mergeTable (tableName) {
+      console.log('tableName', tableName)
+    },
+    changeTable (tableName) {
+      openOrEnterTable(tableName, '', true)
+    },
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
     },
@@ -1051,8 +1063,8 @@ export default {
     },
     anyMenuOpen () {
       return this.modificationShow || this.checkoutShow ||
-        this.discountModelShow || this.extraDishShow ||
-        this.pinDialogShow || Swal.isVisible()
+          this.discountModelShow || this.extraDishShow ||
+          this.pinDialogShow || Swal.isVisible()
     },
     autoGetFocus (force = false) {
       if (!force) {
@@ -1349,7 +1361,7 @@ export default {
             }
           }).concat(list.filter((item) => {
             return item.dishName.toLowerCase().startsWith(buffer.toLowerCase()) &&
-              !item.code.toLowerCase().startsWith(buffer.toLowerCase())
+                !item.code.toLowerCase().startsWith(buffer.toLowerCase())
           }))
         }
       }
