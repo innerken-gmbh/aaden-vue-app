@@ -467,11 +467,11 @@ left: 304px"
     </template>
 
       <table-change-selector :servant-password="servantPassword"
-                             title="Table Change:"
+                             title="TableChange"
                              :menu-show.sync="showTableChange"
                              ></table-change-selector>
     <table-change-selector :servant-password="servantPassword"
-                           title="Table Merge:"
+                           title="TableMerge"
                            :menu-show.sync="showTableMerge"
     ></table-change-selector>
     <!--    <open-table-form :servant-password="servantPassword" :menu-show.sync="showTableChange"></open-table-form>-->
