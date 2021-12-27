@@ -126,7 +126,7 @@ export default {
       }
     },
     activeBuffetSetting (val) {
-      console.log(val)
+      // console.log(val)
       this.buffetSetting = Object.assign({}, DefaultBuffetSetting, val)
       this.buffetSetting.roundTimeMin = this.buffetSetting.roundTime / 60
       this.buffetSetting.maxDineTimeMin = this.buffetSetting.maxDineTime / 60

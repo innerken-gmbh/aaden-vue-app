@@ -205,6 +205,7 @@ export async function updateSection (section) {
 }
 
 export function getColorLightness (c) {
+  console.log('getColorLightness C', c)
   if (c?.startsWith('#')) {
     if (c.length < 5) {
       c += 'fff'

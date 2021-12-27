@@ -1,7 +1,8 @@
 <template>
   <div class="flex-grow-1 pa-2"
        ref="blueprintContainer"
-       style="height: calc(100vh - 48px);overflow: hidden;"
+       style="height: calc(100vh - 48px);
+       overflow: hidden;"
        :style="{
           background:currentSection.image?'url('+Config.getBase()+currentSection.image+') center/cover':'#f5f5f5'
        }">

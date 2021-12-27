@@ -103,7 +103,6 @@
 
 <script>
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import hillo from 'hillo'
 import {
 
   jumpToTable,

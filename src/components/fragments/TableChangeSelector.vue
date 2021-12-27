@@ -50,7 +50,9 @@ export default {
       type: Boolean,
       default: null
     }, // true, false, null
-    menuShow: {}
+    menuShow: {},
+    // tableDetailInfo.order.id
+    currentTableName: {}
   },
   data: function () {
     return {
@@ -64,8 +66,8 @@ export default {
   computed: {
     displayTables () {
       const active = this.activeStatus ? '1' : '0'
-      const activeTable = this.tables.filter(t => t.sectionId !== '6').filter(t => t.usageStatus === active).filter(t => !this.activeSectionId || t.sectionId === this.activeSectionId)
-      console.log(this.tables, this.activeSectionId, this.activeStatus, active, activeTable)
+      const activeTable = this.tables.filter(t => t.sectionId !== '6').filter(t => t.usageStatus === active).filter(t => !this.activeSectionId || t.sectionId === this.activeSectionId).filter(t => t.tableName !== this.currentTableName)
+      // console.log(this.tables, this.activeSectionId, this.activeStatus, active, 'activeTable: ', activeTable, 'currentTableName', this.currentTableName)
       return activeTable
     }
   },
