@@ -19,10 +19,10 @@
         </template>
       </v-toolbar>
       <div style="height: 500px">
-        <div style="display: grid; grid-template-columns: repeat(6,120px); grid-gap: 10px;">
+        <div class="pa-2" style="display: grid; grid-template-columns: repeat(auto-fill,64px); grid-gap: 12px;">
           <v-btn v-for="(table) in displayTables"
                  :key="table.tableId"
-                 style="color: #0d47a1; height: 65px"
+                 style="height: 64px"
                  @click="$emit('table-select',table.tableName)"
           >
             {{ table.tableName }}
@@ -66,9 +66,9 @@ export default {
   computed: {
     displayTables () {
       const active = this.activeStatus ? '1' : '0'
-      const activeTable = this.tables.filter(t => t.sectionId !== '6').filter(t => t.usageStatus === active).filter(t => !this.activeSectionId || t.sectionId === this.activeSectionId).filter(t => t.tableName !== this.currentTableName)
-      // console.log(this.tables, this.activeSectionId, this.activeStatus, active, 'activeTable: ', activeTable, 'currentTableName', this.currentTableName)
-      return activeTable
+      return this.tables.filter(t => t.sectionId !== '6').filter(t => t.usageStatus === active)
+        .filter(t => !this.activeSectionId || t.sectionId === this.activeSectionId)
+        .filter(t => t.tableName !== this.currentTableName)
     }
   },
   watch: {

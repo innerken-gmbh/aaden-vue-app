@@ -55,24 +55,7 @@ export default {
           return { border: '1px dotted #9e9e9e' }
         }
       } else {
-        // const borderP = '1px dotted #9e9e9e'
-        // const border = {
-        //   borderTop: borderP,
-        //   borderLeft: borderP,
-        //   borderRight: borderP,
-        //   borderBottom: borderP
-        // }
-        // const edges = ['t', 'l', 'b', 'r']
-        // edges.forEach(edge => {
-        //   if (this.cell[edge]) {
-        //     Object.keys(border).forEach(e => {
-        //       if (e[6].toLowerCase() === edge) {
-        //         border[e] = 0
-        //       }
-        //     })
-        //   }
-        // })
-        // return border
+
       }
       return {}
     },
