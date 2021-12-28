@@ -1,14 +1,14 @@
 import { loadBaseConfig } from 'aaden-base-model/lib/Models/GlobalSettings'
 import i18n from '@/i18n'
 
+const fix = require('@/assets/FixedConfig.json')
 const defaultConfig = require('@/assets/AadenConfig.json')
-let GlobalConfig = Object.assign({}, defaultConfig)
+let GlobalConfig = Object.assign({}, defaultConfig, fix)
 
 export let NeededKeys = []
 
 export async function loadConfig () {
   try {
-    const fix = require('@/assets/FixedConfig.json')
     GlobalConfig = Object.assign(GlobalConfig, await loadBaseConfig(defaultConfig), fix)
     changeLanguage(GlobalConfig.lang)
     NeededKeys = GlobalConfig.neededKeys

@@ -9,12 +9,12 @@
         :dark="tableColorIsDark(table)"
         @click='$emit("click",table.tableName)'>
       <div
-          class="mt-1"
           v-if="tableYSize>=1.5"
           :style="{
              background:findConsumeTypeColorById(table.consumeType),
              color:colorIsDark(findConsumeTypeColorById(table.consumeType))?'#fff':'#000'}"
           style="
+          padding: 4px 0;
                 font-size: 14px;
                 border-radius: 4px;
                 line-height: 12px;
@@ -22,8 +22,7 @@
                 text-align: center">
         {{ findConsumeTypeById(table.consumeType) }}
       </div>
-      <div :style="{fontSize:tableCardFontSize+'px'}"
-           class="tableCardName">
+      <div class="tableCardName">
         {{ table.tableName }}
       </div>
       <div
@@ -58,8 +57,7 @@
     </v-card>
     <div v-else @click="$emit('click',table.tableName)"
          class="tableCard notUsed">
-      <div :style="{fontSize:tableCardFontSize+'px'}"
-           class="tableCardName">
+      <div class="tableCardName">
         {{ table.tableName }}
       </div>
     </div>
@@ -142,6 +140,7 @@ export default {
 
 .tableCard.notUsed {
   background: #f6f6f6;
+  border: 4px dashed #e0e0e0;
   color: #6b6b6b;
   box-shadow: none;
   display: flex;
@@ -166,7 +165,6 @@ export default {
 }
 
 .tableCard.notUsed .tableCardName {
-
   font-weight: 400;
 }
 

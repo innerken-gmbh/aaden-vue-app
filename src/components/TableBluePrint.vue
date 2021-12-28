@@ -57,18 +57,17 @@ function decodeNumber (number) {
 }
 
 async function refreshAllTablesPosition (listOfTable, containerHeight, containerWidth) {
-  const minSize = GlobalConfig.minTileSize
-  const defaultWidth = minSize
-  const defaultHeight = minSize
-  const rowCount = Math.floor(containerHeight / minSize)
-  const colCount = Math.floor(containerWidth / minSize)
+  const defaultWidth = GlobalConfig.defaultTileWidth
+  const defaultHeight = GlobalConfig.defaultTileHeight
+  const rowCount = Math.floor(containerHeight / defaultHeight)
+  const colCount = Math.floor(containerWidth / defaultWidth)
   console.log(rowCount, colCount)
   let count = 0
   for (const table of listOfTable) {
     const currentRow = Math.floor(count / colCount)
     const currentCol = count % colCount
     console.log(currentCol, currentRow)
-    await submitTable(table, currentCol * minSize, currentRow * minSize, defaultHeight, defaultWidth)
+    await submitTable(table, currentCol * defaultWidth, currentRow * defaultHeight, defaultWidth, defaultHeight)
     count++
   }
 }

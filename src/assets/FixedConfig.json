@@ -15,5 +15,7 @@
     "seatCount"
   ],
   "milePayPort": 8181,
-  "minTileSize": 60
+  "minTileSize": 60,
+  "defaultTileHeight": 100,
+  "defaultTileWidth": 80
 }
