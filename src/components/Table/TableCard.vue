@@ -50,7 +50,8 @@
             </span>
             <template v-if="tableXSize>1">/<span>
              <table-info-display :info-key="table['info5']" :table="table"></table-info-display>
-            </span></template>
+            </span>
+            </template>
           </template>
         </div>
       </div>
