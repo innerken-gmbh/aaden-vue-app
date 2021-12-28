@@ -19,13 +19,13 @@
         </template>
       </v-toolbar>
       <div style="height: 500px">
-        <div style="; display: grid; grid-template-columns: repeat(6,120px); grid-gap: 10px; ">
+        <div style="display: grid; grid-template-columns: repeat(6,120px); grid-gap: 10px;">
           <v-btn v-for="(table) in displayTables"
                  :key="table.tableId"
                  style="color: #0d47a1; height: 65px"
                  @click="$emit('table-select',table.tableName)"
           >
-            {{ $t(table.tableName) }}
+            {{ table.tableName }}
           </v-btn>
         </div>
       </div>

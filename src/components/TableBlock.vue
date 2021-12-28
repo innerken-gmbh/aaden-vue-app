@@ -5,8 +5,7 @@
     borderRadius:borderRadius,
     ...border,
     margin:margin,
-  }"
-  :elevation="elevation">
+  }" :elevation="elevation">
     <span style="height: 12px"
           :style="{
       color:getColorLightness(backgroundColor)<128?'#fff':'#000',
@@ -75,7 +74,7 @@ export default {
         // })
         // return border
       }
-      return { }
+      return {}
     },
     decorText () {
       if (this.isEditing) {
