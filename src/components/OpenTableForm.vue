@@ -34,7 +34,7 @@
               </v-btn>
               <v-btn @click="realShow=!realShow" class="mt-4" color="error" x-large block>
                 <v-icon left>mdi-close</v-icon>
-                {{ $t('Zurück') }}
+                {{ $t('cancel') }}
               </v-btn>
             </div>
           </v-col>

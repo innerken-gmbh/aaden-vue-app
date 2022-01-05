@@ -75,7 +75,7 @@
               <span style="font-size: 18px">&times;5</span>
             </v-btn>
             <v-btn @click="callCallBack(dish.count)" color="primary">
-              <span style="font-size: 18px">Alle</span>
+              <span style="font-size: 18px">{{ $t('All') }}</span>
             </v-btn>
           </v-toolbar-items>
         </template>
@@ -127,7 +127,7 @@ export default {
     },
     async editNote () {
       const note = await Swal.fire({
-        title: 'Note',
+        title: '备注',
         input: 'text',
         inputValue: this.dish.note
       })

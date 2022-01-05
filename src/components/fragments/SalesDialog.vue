@@ -68,22 +68,27 @@
                                     <v-list-item-title>
                                       {{ total.taxRatePercentage }}%
                                     </v-list-item-title>
-                                    <v-list-item-subtitle>
-                                      Umsatz: {{ total.groupTotal }}
+                                    <v-list-item-subtitle style="font-size: large">
+                                      {{ $t('Umsatz') }}: {{ total.groupTotal }}
                                     </v-list-item-subtitle>
                                     <v-list-item-subtitle>
-                                      Netto/Steuer: {{ total.nettoumsatz }}/{{ total.umsatzsteuer }}
+                                      {{ $t('Netto') }}: {{ total.nettoumsatz }}
+                                    </v-list-item-subtitle>
+                                    <v-list-item-subtitle>
+                                      {{ $t('Steuer') }}:{{ total.umsatzsteuer }}
                                     </v-list-item-subtitle>
                                   </v-list-item-content>
                                 </v-list-item>
                               </template>
                               <v-list-item>
                                 <v-list-item-content>
-                                  <v-list-item-title>Alle</v-list-item-title>
-                                  <v-list-item-subtitle>Umsatz: {{ billContent.fTotal }}</v-list-item-subtitle>
-                                  <v-list-item-subtitle>Netto/Steuer: {{ billContent.fTotalTe }}/{{
-                                      billContent.fTotalTax
-                                    }}
+                                  <v-list-item-title>{{ $t('All') }}</v-list-item-title>
+                                  <v-list-item-subtitle>{{ $t('Umsatz') }}: {{ billContent.fTotal }}</v-list-item-subtitle>
+                                  <v-list-item-subtitle>
+                                    {{ $t('Netto') }}: {{ billContent.fTotalTe }}
+                                  </v-list-item-subtitle>
+                                  <v-list-item-subtitle>
+                                    {{ $t('Steuer') }}:{{ billContent.fTotalTax }}
                                   </v-list-item-subtitle>
                                 </v-list-item-content>
                               </v-list-item>
@@ -129,19 +134,25 @@
                                     <v-list-item-subtitle>
                                       {{ $t('Umsatz') }}: {{ total.groupTotal }}
                                     </v-list-item-subtitle>
+
                                     <v-list-item-subtitle>
-                                      Netto/Steuer: {{ total.nettoumsatz }}/{{ total.umsatzsteuer }}
+                                      {{ $t('Netto') }}: {{ total.nettoumsatz }}
+                                    </v-list-item-subtitle>
+                                    <v-list-item-subtitle>
+                                      {{ $t('Steuer') }}:{{ total.umsatzsteuer }}
                                     </v-list-item-subtitle>
                                   </v-list-item-content>
                                 </v-list-item>
                               </template>
                               <v-list-item>
                                 <v-list-item-content>
-                                  <v-list-item-title>Alle</v-list-item-title>
-                                  <v-list-item-subtitle>Umsatz: {{ billContent.fTotal }}</v-list-item-subtitle>
-                                  <v-list-item-subtitle>Netto/Steuer: {{ billContent.fTotalTe }}/{{
-                                      billContent.fTotalTax
-                                    }}
+                                  <v-list-item-title>{{ $t('All') }}</v-list-item-title>
+                                  <v-list-item-subtitle>{{ $t('Umsatz') }}: {{ billContent.fTotal }}</v-list-item-subtitle>
+                                  <v-list-item-subtitle>
+                                    {{ $t('Netto') }}: {{ billContent.fTotalTe }}
+                                  </v-list-item-subtitle>
+                                  <v-list-item-subtitle>
+                                    {{ $t('Steuer') }}:{{ billContent.fTotalTax }}
                                   </v-list-item-subtitle>
                                 </v-list-item-content>
                               </v-list-item>
@@ -180,8 +191,8 @@
                           <thead>
                           <tr>
                             <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
-                            <th class="text-left">{{ $t('time') }}/Keneller</th>
-                            <th class="text-left">{{ $t('Discount') }}</th>
+                            <th class="text-left">{{ $t('time') }}/{{ $t('Kellner') }}</th>
+                            <th class="text-left">{{ $t('discount') }}</th>
                           </tr>
                           </thead>
                           <tbody>
@@ -213,7 +224,7 @@
                               <thead>
                               <tr>
                                 <th class="text-left">{{ $t('R. Nr.') }}/{{ $t('time') }}</th>
-                                <th class="text-left">{{ $t('Note') }}</th>
+                                <th class="text-left">{{ $t('备注') }}</th>
                                 <th class="text-left">{{ $t('Summe') }}</th>
                               </tr>
                               </thead>
@@ -344,7 +355,7 @@
                             </v-list-item-content>
                             <v-list-item-action>
                               <v-list-item-action-text>
-                                {{ displayData.tipIncome|priceDisplay }}
+                                {{ displayData.tipIncome ? displayData.tipIncome : 0  |priceDisplay  }}
                               </v-list-item-action-text>
                             </v-list-item-action>
                           </v-list-item>
@@ -359,17 +370,19 @@
                 </v-tab-item>
               </v-tabs-items>
             </div>
+
             <v-card style="width: 144px">
               <v-tabs vertical v-model="tabIndex">
                 <template v-if="isBoss">
                   <v-tab v-if="Config.UseDailyZbon">{{ $t('Tag-Sicht') }}</v-tab>
                   <v-tab v-else>Letzte-Sicht</v-tab>
                   <v-tab>{{ $t('详细账务') }}</v-tab>
-                  <v-tab>{{ $t('Kassen Buch') }}</v-tab>
+                  <v-tab>{{ $t('Kassenbuch') }}</v-tab>
                 </template>
                 <v-tab>{{ $t('Meine Umsatz') }}</v-tab>
               </v-tabs>
             </v-card>
+
           </v-card-text>
         </div>
       </v-card-text>
@@ -382,7 +395,7 @@
     </dialog-with-keyboard>
     <v-dialog v-model="checkOutDialog">
       <v-card width="100%">
-        <v-card-title>请输入新的结账方式</v-card-title>
+        <v-card-title>{{ $t('请输入新的结账方式') }}</v-card-title>
         <check-out-calculator
             style="height: 564px"
             @payment-cancel="checkOutDialog=false"

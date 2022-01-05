@@ -476,6 +476,7 @@ export async function fastSweetAlertRequest
     inputValue: inputValue,
     showCancelButton: true,
     confirmButtonText: i18n.t('confirm'),
+    cancelButtonText: i18n.t('cancel'),
     showLoaderOnConfirm: true,
     preConfirm: (data) => {
       if (!data && !allowEmpty) {

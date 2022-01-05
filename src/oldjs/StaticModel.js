@@ -136,10 +136,10 @@ export const DefaultAddressInfo = {
   oldTime: '',
   date: '',
   time: '',
-  deliveryMethod: 'Abholung',
+  deliveryMethod: '',
   edit: false
 }
 
 export const DeliveryMethods = [
-  'Abholung', 'Lieferung'
+  i18n.t('Abholung'), i18n.t('Lieferung')
 ]

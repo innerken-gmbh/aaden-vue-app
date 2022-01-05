@@ -17,7 +17,7 @@
           <div class="totalBlock">
             <div>
               <v-chip dark label class="font-weight-bold" color="error" small>
-                {{ $t('剩余总额') }}
+                {{ $t('还需支付') }}
               </v-chip>
             </div>
             <span class="totalNumber">
@@ -83,7 +83,7 @@
     </div>
     <div style="width: calc(100vw - 200px - 480px)" class="paymentLog pa-2">
       <div class="my-3 d-flex align-center" style="width: 100%">
-        <h3>{{ $t('结账记录') }}</h3>
+        <h3>{{ $t('结账明细') }}</h3>
         <v-spacer></v-spacer>
         <v-btn @click="refreshMilePay" icon>
           <v-icon>mdi-refresh</v-icon>
@@ -171,7 +171,7 @@
         </div>
       </div>
       <div v-else style="height: 120px">
-        <h4>{{ $t('或者使用0小费,现金,普通账单进行') }}</h4>
+        <h4>{{ $t('无小费,现金,普通账单请使用快速结账') }}</h4>
         <div class="pa-2">
           <v-btn color="primary"
                  @click="checkOut(true)"

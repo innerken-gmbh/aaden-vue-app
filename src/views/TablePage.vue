@@ -71,7 +71,7 @@
                     <v-btn :loading="isSendingRequest" color="primary" class="flex-grow-1"
                            @click="orderDish(cartListModel.list)" dark>
                       <v-icon left>mdi-printer</v-icon>
-                      {{ $t('confirm') }}
+                      {{ $t('下单') }}
                     </v-btn>
                   </v-toolbar-items>
                 </v-toolbar>
@@ -139,7 +139,7 @@
                 >
                   <div style="width: 100%" class="d-flex flex-column justify-center align-center flex-wrap">
                     <v-icon large color="#ff8c50">mdi-menu-open</v-icon>
-                    <div>Zurück</div>
+                    <div>{{ $t('return') }}</div>
                   </div>
                 </div>
                 <template v-for="dish of filteredDish">
@@ -308,20 +308,20 @@
             <grid-button
               @click="cartListModel.clear()"
               icon="mdi-delete-sweep"
-              text="Leeren"
+              :text="$t('清空')"
               color="error"
             ></grid-button>
             <grid-button
               @click="orderDish(cartListModel.list,false)"
               :loading="isSendingRequest"
               icon="mdi-printer-off"
-              text="Bestellen"
+              :text="$t('下单不打印')"
               color="#000"
             ></grid-button>
             <grid-button
               :loading="isSendingRequest"
               icon="mdi-printer"
-              text="Drucken"
+              :text="$t('下单')"
               @click="orderDish(cartListModel.list)"
             ></grid-button>
             <template v-if="cartCurrentDish">
@@ -335,7 +335,7 @@
                 @click="cartCurrentDish.edit();cartCurrentDish.change(-1)"
                 icon="mdi-tune"
                 color="warning"
-                text="ohne/mit"
+                :text="$t('配料')"
               ></grid-button>
               <grid-button
                 @click="cartCurrentDish.change(1)"
@@ -346,7 +346,7 @@
                 @click="editNote"
                 icon="mdi-notebook-edit"
                 color="#666666"
-                text="Notiz"
+                :text="$t('备注')"
               ></grid-button>
             </template>
 
@@ -419,16 +419,16 @@ left: 304px"
           </div>
         </div>
       </template>
-      <v-dialog max-width="300px" v-model="extraDishShow">
-        <v-card>
-          <v-card-title> {{ currentDish.name }}</v-card-title>
+      <v-dialog max-width="300" v-model="extraDishShow">
+        <v-card width="550">
+          <v-card-title class="font-weight-bold"> {{ currentDish.name }}</v-card-title>
           <v-card-text>
-            <v-text-field label="Preis" autofocus v-model="currentDish.currentPrice"/>
-            <v-text-field label="Name" v-model="currentDish.currentName"/>
+            <v-text-field :label="$t('金额')" autofocus v-model="currentDish.currentPrice"/>
+            <v-text-field :label="$t('name')" v-model="currentDish.currentName"/>
           </v-card-text>
           <v-card-actions>
             <v-spacer/>
-            <v-btn @click="addExtraDish">OK</v-btn>
+            <v-btn class="primary" @click="addExtraDish">{{ $t('确定') }}</v-btn>
 
           </v-card-actions>
         </v-card>
@@ -471,7 +471,7 @@ left: 304px"
       :active-status="false"
       @table-select="changeTable"
       :servant-password="servantPassword"
-      title="TableChange"
+      :title="$t('tableChange')"
       :menu-show.sync="showTableChange"
       :current-table-name="tableDetailInfo.tableBasicInfo.name"
     ></table-change-selector>
@@ -480,7 +480,7 @@ left: 304px"
       :active-status="false"
       @table-select="dishesChangeTable"
       :servant-password="servantPassword"
-      title="TableMerge"
+      :title="$t('tableChange')"
       :menu-show.sync="showDishesTableChange"
       :current-table-name="tableDetailInfo.tableBasicInfo.name"
     ></table-change-selector>
@@ -489,7 +489,7 @@ left: 304px"
       :active-status="true"
       @table-select="mergeTable"
       :servant-password="servantPassword"
-      title="TableMerge"
+      :title="$t('tableMerge')"
       :menu-show.sync="showTableMerge"
       :current-table-name="tableDetailInfo.tableBasicInfo.name"
     ></table-change-selector>
@@ -681,8 +681,6 @@ export default {
           this.goHome()
         }
       })
-
-      console.log('mergeTable')
     },
     changeTable (tableName) {
       popAuthorize(this.Config.changeTableUseBossPassword ? 'boss' : '', async () => {
@@ -694,7 +692,6 @@ export default {
           this.goHome()
         }
       })
-      console.log('changeTable')
     },
     dishesChangeTable: async function (tableName) {
       popAuthorize(this.Config.changeTableUseBossPassword ? 'boss' : '', async () => {
@@ -709,8 +706,6 @@ export default {
           this.initialUI()
         }
         this.showDishesTableChange = false
-
-      // dishesChangeTable(this.tableDetailInfo.tableBasicInfo.name, this.splitOrderListModel.list, this.initialUI)
       })
     },
     findConsumeTypeById (id) {
@@ -718,12 +713,11 @@ export default {
     },
     async editNote () {
       const note = await Swal.fire({
-        title: 'Note',
+        title: '备注',
         input: 'text',
         inputValue: this.cartCurrentDish.note
       })
       this.$set(this.cartCurrentDish, 'note', note.value)
-      // dish.note = note.value
     },
     async submitRawAddressInfo (addressInfo) {
       await hillo.post('Orders.php?op=updateRawAddressInfo', {
@@ -763,7 +757,8 @@ export default {
     },
 
     async changeServant () {
-      const res = await fastSweetAlertRequest(this.$t('Zu andere Kellner übergebe'), 'text',
+      const res = await fastSweetAlertRequest(this.$t('Zu andere Kellner übergebe'),
+        'password',
         'Orders.php?op=changeServantForTable', 'pw',
         { tableId: this.id }, 'POST')
       if (res) {
@@ -1440,7 +1435,10 @@ export default {
     realAddressInfo () {
       if (this.tableDetailInfo.order.rawAddressInfo?.length > 0) {
         try {
-          return JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
+          const res = JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
+
+          console.log('realAddressInfo res', res)
+          return res
         } catch (e) {
           return null
         }

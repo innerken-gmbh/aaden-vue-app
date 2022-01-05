@@ -65,7 +65,7 @@
                            type="search" v-model="rawAddressInfo.email"></v-text-field>
              <v-row dense>
                <v-col cols="3">
-                 <v-btn color="error" block @click="createUser=false">{{ $t('取消') }}</v-btn>
+                 <v-btn color="error" block @click="createUser=false">{{ $t('return') }}</v-btn>
                </v-col>
                <v-col cols="9">
                  <v-btn v-if="userIsNew" color="primary" @click="submitNewUserInfo" block>{{ $t('新增用户') }}</v-btn>
@@ -141,7 +141,7 @@
                      <template v-slot:activator="{ on, attrs }">
                        <v-text-field
                            v-model="rawAddressInfo.date"
-                           label="Date"
+                           :label="$t('日期')"
                            prepend-icon="mdi-calendar"
                            v-bind="attrs"
                            @blur="date=rawAddressInfo.date"
@@ -162,15 +162,17 @@
                    <v-text-field :label="$t('备注')" v-model="rawAddressInfo.note"></v-text-field>
                  </v-col>
                  <v-col cols="6">
-                   <v-select :items="deliveryMethod"
-                             :label="$t('配送方式')" return-object hide-details
+                   <v-select :items="deliveryMethods"
+                             :label="$t('配送方式')"
+                             return-object
+                             hide-details
                              v-model="rawAddressInfo.deliveryMethod"
                    />
                  </v-col>
                </v-row>
              </div>
              <v-spacer></v-spacer>
-             <v-btn v-if="haveAddress" @click="submitRawAddressInfo" block class="flex-grow-0">OK</v-btn>
+             <v-btn v-if="haveAddress" @click="submitRawAddressInfo" block class="flex-grow-0 primary">{{ $t('confirm') }}</v-btn>
            </div>
          </v-card-text>
        </v-window-item>
@@ -184,8 +186,9 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { toast } from '@/oldjs/common'
 import hillo from 'hillo'
 import { dragscroll } from 'vue-dragscroll/src/main'
-import { DefaultAddressInfo, DeliveryMethods } from '@/oldjs/StaticModel'
+import { DefaultAddressInfo } from '@/oldjs/StaticModel'
 import AddressesCard from '@/components/AddressesCard'
+import i18n from '../i18n'
 
 export default {
   name: 'AddressForm',
@@ -208,10 +211,12 @@ export default {
       searchTel: null,
       realShow: null,
       createUser: false,
-      deliveryMethod: DeliveryMethods,
+      deliveryMethods: [
+        i18n.t('Abholung'), i18n.t('Lieferung')
+      ],
       date: new Date().toISOString().substr(0, 10),
       menu1: null,
-      steps: ['Suche', 'Addresses', 'Zeit']
+      steps: [i18n.t('customerAddress'), i18n.t('address'), i18n.t('deliveryInfo')]
     }
   },
   watch: {
@@ -233,7 +238,7 @@ export default {
     applyAddress (addressInfo) {
       addressInfo.edit = false
       this.rawAddressInfo = Object.assign({}, DefaultAddressInfo, addressInfo)
-      this.rawAddressInfo.date = new Date().toISOString().substr(0, 10)
+      this.rawAddressInfo.date = new Date().toISOString().substr(0, 10) + ' '
       this.step = 1
     },
     startCreateUser () {
@@ -285,7 +290,7 @@ export default {
     clearAddressInfo () {
       this.step = 0
       this.rawAddressInfo = Object.assign({}, DefaultAddressInfo)
-      this.rawAddressInfo.date = new Date().toISOString().substr(0, 10)
+      this.rawAddressInfo.date = new Date().toISOString().substr(0, 10) + ' '
     },
     getAddressData (e) {
       this.rawAddressInfo.addressLine1 = e.route + ' ' + e.street_number
@@ -301,6 +306,7 @@ export default {
   computed: {
     currentTitle: function () {
       return this.steps[this.step]
+      // return i18n.t('customerAddress')
     },
     userIsNew: function () {
       return !this.userInfo.some(d => d.email === this.searchTel)

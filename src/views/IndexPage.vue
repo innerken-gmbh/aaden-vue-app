@@ -81,7 +81,7 @@
           </v-btn>
           <v-btn @click="saveCurrentSection()" color="primary" v-if="isEditing">
             <v-icon left>mdi-check</v-icon>
-            Speichen
+            {{ $t('Save') }}
           </v-btn>
         </v-toolbar-items>
       </template>
@@ -174,7 +174,7 @@
             style="overflow-y: scroll;height: calc(100vh - 48px); display: grid;
             grid-template-columns: 100%;grid-auto-rows: 56px;grid-gap: 4px">
           <div class="d-flex align-center pa-2" style="width: 196px">
-            <div>Tisch Name</div>
+            <div>{{ $t('Tisch Nr.') }}</div>
             <v-spacer></v-spacer>
             <div class="d-flex align-center" style="font-size: small">
               <v-icon small>mdi-food</v-icon>
@@ -208,7 +208,7 @@
           <v-btn
               :color="useOrderView?'primary':'transparent'"
               @click="useOrderView=!useOrderView">
-            {{ $t('跑堂列表') }}
+            {{ $t('跑堂模式') }}
           </v-btn>
         </v-toolbar-items>
         <v-spacer></v-spacer>
@@ -223,9 +223,9 @@
         <template v-if="!useOrderView">
           <template v-if="isEditing">
             <div v-if="currentTable" class="currentTablePanel">
-              <v-text-field v-model="currentTable.tableName" label="当前桌名"></v-text-field>
-              <v-slider v-model="currentTable.radius" label="桌子圆角"></v-slider>
-              <v-btn @click="()=>{currentTable.cells=[];currentTable=null}">清空</v-btn>
+              <v-text-field v-model="currentTable.tableName" :label="$t('当前桌名')"></v-text-field>
+              <v-slider v-model="currentTable.radius" :label="$t('桌子圆角')"></v-slider>
+              <v-btn @click="()=>{currentTable.cells=[];currentTable=null}">{{ $t('清空') }}</v-btn>
             </div>
           </template>
         </template>
@@ -265,7 +265,7 @@
               color="#fec945"
               @click="openDrawer"
               icon="mdi-cash-lock-open"
-              :text="$t('Kasse Ein')"
+              :text="$t('Kasse')"
               :loading="loading"
           />
           <grid-button
@@ -386,7 +386,7 @@ const keyboardLayout =
     ]
 
 const keyboardFunctions = {
-  OpenTable: 'Bitte TischNr. Eingabe',
+  OpenTable: '请输入桌号',
   ChangeServant: 'Neue password eingabe'
 }
 
