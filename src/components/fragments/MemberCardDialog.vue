@@ -20,8 +20,8 @@
                 <v-list-item-content>
                   <v-list-item-title>{{card.note}}/{{ "****"+card.longId.substr(4) }}
                   </v-list-item-title>
-                  <v-list-item-subtitle>Zeit: {{ card.createdAt }}</v-list-item-subtitle>
-                  <v-list-item-subtitle>Amount.: {{ card.leftAmount|priceDisplay }}/{{ card.totalAmount|priceDisplay }}
+                  <v-list-item-subtitle>{{$t('时间')}}: {{ card.createdAt }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{ $t('金额') }}: {{ card.leftAmount|priceDisplay }}/{{ card.totalAmount|priceDisplay }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
@@ -51,8 +51,8 @@
                       record.amount|priceDisplay
                     }}
                   </v-list-item-title>
-                  <v-list-item-subtitle>Zeit: {{ record.createdAt }}</v-list-item-subtitle>
-                  <v-list-item-subtitle>RechnungNr.: {{ record.orderId }}
+                  <v-list-item-subtitle>{{$t('时间')}}: {{ record.createdAt }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{ $t('RechnungNr') }}.: {{ record.orderId }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
@@ -64,7 +64,7 @@
         <v-spacer></v-spacer>
         <v-btn @click="realShow=!realShow">
           <v-icon left>mdi-close</v-icon>
-          Schließen
+          {{ $t('cancel') }}
         </v-btn>
       </v-card-actions>
     </v-card>

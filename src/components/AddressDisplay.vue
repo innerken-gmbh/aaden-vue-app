@@ -4,7 +4,7 @@
       <addresses-card :raw-address-info="address">
         <template v-slot:time>
           <v-card-subtitle>
-            <span v-if="address.date">Erwartete Zeit: {{ address.date }}</span>
+            <span v-if="address.date">{{ $t('Erwartete Zeit') }}:{{ address.date }}</span>
             <template v-if="address.oldTime">
               <span>{{ address.oldTime }}</span>
             </template>
@@ -23,7 +23,7 @@
             </v-btn>
             <template v-if="address.oldTime">
               <v-spacer></v-spacer>
-              <span>Zeit nach Bestätigung: {{ address.time }}</span>
+              <span>{{ $t('Zeit nach Bestätigung') }}: {{ address.time }}</span>
             </template>
             <template v-else-if="consumeTypeStatusId<1">
               <div>

@@ -1,5 +1,5 @@
 <template>
-  <v-dialog max-width="600px" v-model="realShow">
+  <v-dialog max-width="700px" v-model="realShow">
     <v-card>
       <v-toolbar dense tile color="primary" dark elevation="0">
         <v-toolbar-title> {{ $t('ChangeToBuffet') }}</v-toolbar-title>
@@ -20,11 +20,11 @@
             </v-card>
           </template>
         </v-sheet>
-        <v-sheet class="pa-2">
+        <v-sheet class="pa-2" >
           {{ findConsumeTypeById(activeConsumeTypeId).name }}
-          <div class="editForm ">
+          <div class="editForm" >
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('最大用餐时间') }}</div>
+              <div class="formLabel caption">{{ $t('总用餐时间') }}</div>
               <v-slider hide-details max="960" min="0" step="5" thumb-label="always"
                         v-model="buffetSetting.maxDineTimeMin"></v-slider>
             </div>
@@ -39,14 +39,14 @@
                             v-model="buffetSetting.totalRound"></v-text-field>
             </div>
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('大人每轮可点') }}</div>
+              <div class="formLabel caption">{{ $t('成人每轮可点菜数') }}</div>
 
               <v-text-field dense hide-details type="number"
                             v-model="buffetSetting.roundDishCount"></v-text-field>
 
             </div>
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('小孩每轮可点') }}</div>
+              <div class="formLabel caption">{{ $t('儿童每轮可点菜数') }}</div>
 
               <v-text-field dense hide-details type="number"
                             v-model="buffetSetting.childRoundDishCount"></v-text-field>
@@ -172,6 +172,6 @@ export default {
 
 .formLabel {
   padding-top: 4px;
-  width: 100px;
+  width: 150px;
 }
 </style>
