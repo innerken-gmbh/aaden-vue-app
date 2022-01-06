@@ -230,7 +230,7 @@
               <grid-button
                   :loading="isSendingRequest"
                   icon="mdi-printer-pos"
-                  text="Zwischen"
+                  :text="$t('临时账单')"
                   color="#24b646"
                   @click="zwitchenBon"
               />
@@ -403,7 +403,7 @@ left: 304px"
               <v-btn x-large class="  mt-1"
                      v-on:click="printZwichenBon()">
                 <v-icon left>mdi-bandcamp</v-icon>
-                {{ $t('Zwichen') }}
+                {{ $t('临时账单') }}
               </v-btn>
             </div>
             <dish-card-list

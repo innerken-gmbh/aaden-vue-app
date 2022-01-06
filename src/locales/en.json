@@ -72,7 +72,7 @@
   "Umsatz": "Sales",
   "UnsuccessPrinterList": "Sales print list",
   "VIP": "VIP",
-  "Zwichen": "between",
+  "临时账单": "between",
   "aboutUs": "About uns",
   "aboutUsBusinessContent": "The design of the Aaden system is based on the opinions of many employees with many years of experience in the catering industry.\n We have a deep understanding of the real needs of catering professionals - from the boss to each employee.\n This led to the introduction of the integrated solution for digital catering in Aaden Smart Cloud. Order scanners, takeout, book websites, and manage tables on-site.\n Flexible deployment and efficient design are changing the management model of the foodservice industry from top to bottom.\n The Aaden system is also the last system you need, because of the flexible deployment option [1].\n From a small café to a huge buffet restaurant with thousands of seats, the Aaden system is always by your side like a fireplace.",
   "aboutUsBusinessTitle": "Our Business",
@@ -499,5 +499,13 @@
   "address": "Address",
   "当前桌名": "Table Nr.",
   "桌子圆角": "Table Roundedcorners",
-  "成人/儿童可点菜品数": "Adult/Child can order per round"
+  "成人/儿童可点菜品数": "Adult/Child can order per round",
+  "createTimestamp": "Create Timestamp",
+  "servantName": "Servant Name",
+  "dishCount": "Count of Dishes",
+  "buffetCount": "Count of Buffet",
+  "buffetRound": "Round of Buffet",
+  "childCount": "Count of Childen",
+  "drinkCount": "Count of Drinks",
+  "seatCount": "Count of Seats"
 }

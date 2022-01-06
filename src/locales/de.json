@@ -68,7 +68,7 @@
   "Umsatz": "Umsatz",
   "UnsuccessPrinterList": "Ausdruck fehlgeschlagen",
   "VIP": "VIP",
-  "Zwichen": "Zwischen",
+  "临时账单": "Zwischen",
   "aboutUs": "Über uns",
   "aboutUsBusinessContent": "Die Konzeption des Aaden-Systems basiert auf den Meinungen vieler Mitarbeiter mit langjähriger Erfahrung in der Gastronomie.\n                            Wir haben ein tiefes Verständnis für die tatsächlichen Bedürfnisse der Gastronomiefachleute - vom Chef bis zu jedem Mitarbeiter.\n                            Dies führte zur Einführung der integrierten Lösung für digitales Catering in der Aaden Smart Cloud. Bestellung von Scannern, Mitnehmen, Buchung von Webseiten und Verwaltung von Tischen vor Ort.\n                            Flexibler Einsatz und effizientes Design verändern das Managementmodell der Gastronomie von oben nach unten.\n                            Das Aaden-System ist auch das letzte System, das Sie benötigen, da die flexible Bereitstellungsoption [1] die Möglichkeit der Softwareentwicklung bietet.\n                            Von einem kleinen Café bis zu einem riesigen Buffetrestaurant mit Tausenden von Sitzplätzen ist das Aaden-System immer an Ihrer Seite wie ein Kamin.",
   "aboutUsBusinessTitle": "Unser Geschäftsfeld",
@@ -495,6 +495,14 @@
   "return": "Zurück",
   "当前桌名": "Tisch Nr.",
   "桌子圆角": "Abgerundete Ecken",
-  "成人/儿童可点菜品数": "Anzahl der Ger. für Erwachsene/Kinder"
+  "成人/儿童可点菜品数": "Anzahl der Ger. für Erwachsene/Kinder",
+  "createTimestamp": "Zeitstempel erstellen",
+  "servantName": "Servant Name",
+  "dishCount": "Anzahl der Gerichte",
+  "buffetCount": "Runde des Buffets",
+  "buffetRound": "Runde des Buffets",
+  "childCount": "Anzahl der Kinder",
+  "drinkCount": "Anzahl der Getränke",
+  "seatCount": "Anzahl der Sitzplätze"
 
 }
