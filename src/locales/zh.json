@@ -268,5 +268,7 @@
   "buffetRound": "自助轮数",
   "childCount": "儿童人数",
   "drinkCount": "饮料人数",
-  "seatCount": "座位数量"
+  "seatCount": "座位数量",
+  "Akzept.": "接受",
+  "Ablehnen": "拒绝"
 }

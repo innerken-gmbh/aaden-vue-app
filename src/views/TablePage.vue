@@ -267,14 +267,14 @@
                 <grid-button
                     :loading="isSendingRequest"
                     icon="mdi-check"
-                    text="Akzept."
+                    :text="$t('Akzept.')"
                     color="success"
                     @click="acceptOrder"
                 />
                 <grid-button
                     :loading="isSendingRequest"
                     icon="mdi-close"
-                    text="Ablehnen"
+                    :text="$t('Ablehnen')"
                     color="error"
                     @click="rejectOrder"
                 />

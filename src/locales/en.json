@@ -507,5 +507,7 @@
   "buffetRound": "Round of Buffet",
   "childCount": "Count of Childen",
   "drinkCount": "Count of Drinks",
-  "seatCount": "Count of Seats"
+  "seatCount": "Count of Seats",
+  "Akzept.": "Accept",
+  "Ablehnen": "Reject"
 }
