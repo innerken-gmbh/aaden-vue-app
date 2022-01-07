@@ -14,7 +14,7 @@
         <v-list-item-action-text>
           {{ tableBuffetConfig.roundTime / 60 }}
           /
-          {{ tableBuffetConfig.maxDineTime / 60 }} {{ $t('min') }}
+          {{ tableBuffetConfig.maxDineTime / 60 }}
         </v-list-item-action-text>
       </v-list-item>
       <v-list-item>

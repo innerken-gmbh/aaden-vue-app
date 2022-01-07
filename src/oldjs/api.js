@@ -129,7 +129,7 @@ export async function setTableLocation (table) {
 
 export function dishesSetDiscount (orderId, items, initialUI) {
   popAuthorize('', async () => {
-    const res = await fastSweetAlertRequest(i18n.t('给菜品打折'),
+    const res = await fastSweetAlertRequest(i18n.t('请输入折扣'),
       'text',
       'Dishes.php?op=setDiscountToDishes', 'discountStr', {
         orderId: orderId,

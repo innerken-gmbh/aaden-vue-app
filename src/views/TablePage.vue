@@ -542,6 +542,7 @@ import BuffetStartDialog from '@/components/fragments/BuffetStartDialog'
 import BuffetStatusCard from '@/components/fragments/BuffetStatusCard'
 
 import TableChangeSelector from '@/components/fragments/TableChangeSelector'
+import i18n from '../i18n'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -1151,7 +1152,7 @@ export default {
       await this.acceptOrder(timeReal.format('DD.MM.YYYY HH:mm'))
     },
     async rejectOrder () {
-      const res = await fastSweetAlertRequest('Bitte ein Ground Eingabe', 'text',
+      const res = await fastSweetAlertRequest(i18n.t('Ablehnen, ein Ground Eingeben'), 'text',
         'Orders.php?op=rejectTakeAwayOrder', 'reason',
         { tableId: this.id })
       if (res) {
