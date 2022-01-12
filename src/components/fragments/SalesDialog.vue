@@ -7,9 +7,10 @@
             <v-toolbar-title>{{ $t('Tag-Sicht') }}</v-toolbar-title>
           </v-toolbar>
           <div class="pa-2">
-            <v-date-picker elevation="2"
-                           v-model="singleZBonDate"
-                           :max="todayDate"
+            <v-date-picker
+                elevation="2"
+                v-model="singleZBonDate"
+                :max="todayDate"
             />
           </div>
 
@@ -83,7 +84,10 @@
                               <v-list-item>
                                 <v-list-item-content>
                                   <v-list-item-title>{{ $t('All') }}</v-list-item-title>
-                                  <v-list-item-subtitle>{{ $t('Umsatz') }}: {{ billContent.fTotal }}</v-list-item-subtitle>
+                                  <v-list-item-subtitle>{{ $t('Umsatz') }}: {{
+                                      billContent.fTotal
+                                    }}
+                                  </v-list-item-subtitle>
                                   <v-list-item-subtitle>
                                     {{ $t('Netto') }}: {{ billContent.fTotalTe }}
                                   </v-list-item-subtitle>
@@ -147,7 +151,10 @@
                               <v-list-item>
                                 <v-list-item-content>
                                   <v-list-item-title>{{ $t('All') }}</v-list-item-title>
-                                  <v-list-item-subtitle>{{ $t('Umsatz') }}: {{ billContent.fTotal }}</v-list-item-subtitle>
+                                  <v-list-item-subtitle>{{ $t('Umsatz') }}: {{
+                                      billContent.fTotal
+                                    }}
+                                  </v-list-item-subtitle>
                                   <v-list-item-subtitle>
                                     {{ $t('Netto') }}: {{ billContent.fTotalTe }}
                                   </v-list-item-subtitle>
@@ -304,9 +311,15 @@
                                   {{ order.updatedAt }}
                                 </td>
                                 <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
-                                  {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{ order.tipIncome }})</span>/
-                                  {{ order.paymentMethodStrings }}<b v-if="order.discountStr">/
-                                  {{ '-' + order.discountStr.replace('p', '%') }}</b>
+                                  <template v-if="!order.paymentLabel">
+                                    {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{
+                                      order.tipIncome
+                                    }})</span>/
+                                    {{ order.paymentMethodStrings }}
+                                  </template>
+                                  <template v-else>{{ order.paymentLabel }}</template>
+                                  <b v-if="order.discountStr">/
+                                    {{ '-' + order.discountStr.replace('p', '%') }}</b>
                                 </td>
                               </tr>
                             </template>
@@ -355,7 +368,7 @@
                             </v-list-item-content>
                             <v-list-item-action>
                               <v-list-item-action-text>
-                                {{ displayData.tipIncome ? displayData.tipIncome : 0  |priceDisplay  }}
+                                {{ displayData.tipIncome ? displayData.tipIncome : 0 | priceDisplay }}
                               </v-list-item-action-text>
                             </v-list-item-action>
                           </v-list-item>
