@@ -1,7 +1,7 @@
 <template>
-  <v-dialog v-model="realShow" scrollable>
+  <v-dialog v-model="realShow">
     <v-card>
-      <v-toolbar flat fixed class="caption">
+      <v-toolbar flat fixed class="caption" width="50vw">
         <v-toolbar-title style="color: #0d47a1">
           {{ title }}
         </v-toolbar-title>
@@ -18,7 +18,7 @@
           </v-tabs>
         </template>
       </v-toolbar>
-      <div style="height: 500px">
+      <div style="height: 500px; overflow: scroll">
         <div class="pa-2" style="display: grid; grid-template-columns: repeat(auto-fill,64px); grid-gap: 12px;">
           <v-btn v-for="(table) in displayTables"
                  :key="table.tableId"
@@ -50,6 +50,10 @@ export default {
       type: Boolean,
       default: null
     }, // true, false, null
+    dishTableChange: {
+      type: Boolean,
+      default: null
+    },
     menuShow: {},
     // tableDetailInfo.order.id
     currentTableName: {}
@@ -66,9 +70,17 @@ export default {
   computed: {
     displayTables () {
       const active = this.activeStatus ? '1' : '0'
-      return this.tables.filter(t => t.sectionId !== '6').filter(t => t.usageStatus === active)
-        .filter(t => !this.activeSectionId || t.sectionId === this.activeSectionId)
-        .filter(t => t.tableName !== this.currentTableName)
+      let res = null
+      if (this.dishTableChange) {
+        res = this.tables.filter(t => t.sectionId !== '6')
+          .filter(t => !this.activeSectionId || t.sectionId === this.activeSectionId)
+          .filter(t => t.tableName !== this.currentTableName)
+      } else {
+        res = this.tables.filter(t => t.sectionId !== '6').filter(t => t.usageStatus === active)
+          .filter(t => !this.activeSectionId || t.sectionId === this.activeSectionId)
+          .filter(t => t.tableName !== this.currentTableName)
+      }
+      return res
     }
   },
   watch: {
