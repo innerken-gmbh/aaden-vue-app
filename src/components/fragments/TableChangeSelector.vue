@@ -3,7 +3,7 @@
     <v-card>
       <v-toolbar flat fixed class="caption" width="50vw">
         <v-toolbar-title style="color: #0d47a1">
-          {{ title }}
+          <h3>{{ title }}</h3>
         </v-toolbar-title>
         <v-spacer></v-spacer>
         <v-btn icon @click="realShow=false">
@@ -11,7 +11,7 @@
         </v-btn>
         <template v-slot:extension>
           <v-tabs grow v-model="tab">
-            <v-tab @click="activeSection(section.id)" v-for="section in sections" :key="section.id">
+            <v-tab @click="activeSection(section.id)" v-for="section in sections" :key="section.id" >
               <span class="areaTitle font-weight-bold"
                     style="font-size: 20px; color: black">{{ section.name }}</span>
             </v-tab>
@@ -103,7 +103,7 @@ export default {
     },
     initialMenu: async function () {
       this.tables = await getTableListWithCells()
-      this.sections = (await getSectionList()).filter(item => item.name.toLowerCase() !== 'togo')
+      this.sections = (await getSectionList()).filter(item => item.id !== '6')
     }
   }
 
