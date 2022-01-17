@@ -103,7 +103,7 @@ export default {
     },
     initialMenu: async function () {
       this.tables = await getTableListWithCells()
-      this.sections = (await getSectionList()).filter(item => item.id !== '6')
+      this.sections = (await getSectionList()).filter(item => item.id !== '6' && parseInt(item.tableCount) > 0)
     }
   }
 
