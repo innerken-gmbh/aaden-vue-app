@@ -75,8 +75,8 @@ export function checkOut (pw = '', tableId, print = 1,
   })
 }
 
-export function deleteDishes (id, items, initialUI) {
-  popAuthorize('boss', async () => {
+export async function deleteDishes (id, items, initialUI) {
+  optionalAuthorize(async function () {
     if (GlobalConfig.useDeleteDishReason) {
       const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopReturnDishInfo'),
         'text',
@@ -101,7 +101,7 @@ export function deleteDishes (id, items, initialUI) {
       loadingComplete()
       initialUI()
     }
-  })
+  }, 'boss', !GlobalConfig.returnDishWithoutPassword)
 }
 
 export async function getTableListWithCells () {
@@ -127,8 +127,16 @@ export async function setTableLocation (table) {
   return (await hillo.post('Tables.php?op=setTableLocation', table))
 }
 
+export function optionalAuthorize (callback, authType = '', shouldAuthorize = true) {
+  if (shouldAuthorize) {
+    popAuthorize(authType, () => callback())
+  } else {
+    callback()
+  }
+}
+
 export function dishesSetDiscount (orderId, items, initialUI) {
-  popAuthorize('', async () => {
+  optionalAuthorize(async () => {
     const res = await fastSweetAlertRequest(i18n.t('请输入折扣'),
       'text',
       'Dishes.php?op=setDiscountToDishes', 'discountStr', {
@@ -139,57 +147,13 @@ export function dishesSetDiscount (orderId, items, initialUI) {
       loadingComplete()
       initialUI()
     }
-  })
+  }, '', !GlobalConfig.discountWithoutPassword)
 }
 
 export function printZwichenBon (tableId, items) {
   return hillo.get('Orders.php?op=printZwichenBonUseDishesList', {
     tableId, dishes: JSON.stringify(items)
   })
-}
-
-export function dishesChangeTable (tableName, items, initialUI) {
-  return false
-  // popAuthorize('boss', async () => {
-  //   const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopChangeTableInfo'),
-  //     'text',
-  //     'Complex.php?op=dishesChangeTable', 'newTableName', {
-  //       oldTableName: tableName,
-  //       dishes: JSON.stringify(items)
-  //     }, 'POST')
-  //   if (res) {
-  //     loadingComplete()
-  //     initialUI()
-  //   }
-  // })
-}
-
-export async function setDiscountToTable (tableId, discountStr) {
-  return hillo.post('Complex.php?op=setDiscount', {
-    tableId, discountStr
-  })
-}
-
-export async function popChangeTablePanel (tableName) {
-  const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopChangeTableInfo'),
-    'text',
-    'Tables.php?op=change', 'newTableName', {
-      oldTableName: tableName
-    }, 'POST')
-  if (res) {
-    goHome()
-  }
-}
-
-export async function popMergeTablePanel (tableName) {
-  const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopMergeTableInfo'),
-    'text',
-    'Tables.php?op=mergeTables', 'newTableName', {
-      oldTableName: tableName
-    }, 'POST')
-  if (res) {
-    goHome()
-  }
 }
 
 export async function getServantList () {

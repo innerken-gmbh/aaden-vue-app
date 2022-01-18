@@ -107,6 +107,7 @@ export function setGlobalTableId (id) {
   TableId = id
 }
 
+// return password
 export async function popAuthorize (type = '', successCallback = null, force = false,
   failedCallback = null, tableId = null) {
   const ok = (password) => {

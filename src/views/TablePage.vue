@@ -191,6 +191,9 @@
                 class="d-flex flex-shrink-0 flex-column">
           <v-card v-if="input&&input.length>0" style="overflow: scroll;"
                   class="flex-shrink-1 blue lighten-5">
+            <v-btn @click="input='';displayInput=''" color="error" block>
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
             <template v-for="(dish,index) in searchDish">
               <v-card @click="searchDishClick(dish.code)" elevation="0"
                       :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
@@ -304,23 +307,23 @@
           </div>
           <div v-else style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
             <grid-button
-              @click="cartListModel.clear()"
-              icon="mdi-delete-sweep"
-              :text="$t('清空')"
-              color="error"
+                @click="cartListModel.clear()"
+                icon="mdi-delete-sweep"
+                :text="$t('清空')"
+                color="error"
             ></grid-button>
             <grid-button
-              @click="orderDish(cartListModel.list,false)"
-              :loading="isSendingRequest"
-              icon="mdi-printer-off"
-              :text="$t('下单不打印')"
-              color="#000"
+                @click="orderDish(cartListModel.list,false)"
+                :loading="isSendingRequest"
+                icon="mdi-printer-off"
+                :text="$t('下单不打印')"
+                color="#000"
             ></grid-button>
             <grid-button
-              :loading="isSendingRequest"
-              icon="mdi-printer"
-              :text="$t('下单')"
-              @click="orderDish(cartListModel.list)"
+                :loading="isSendingRequest"
+                icon="mdi-printer"
+                :text="$t('下单')"
+                @click="orderDish(cartListModel.list)"
             ></grid-button>
             <template v-if="cartCurrentDish">
               <grid-button
@@ -329,11 +332,11 @@
                   color="error"
               ></grid-button>
               <grid-button
-                :disabled="cartCurrentDish.haveMod<1"
-                @click="cartCurrentDish.edit();cartCurrentDish.change(-1)"
-                icon="mdi-tune"
-                color="warning"
-                :text="$t('配料')"
+                  :disabled="cartCurrentDish.haveMod<1"
+                  @click="cartCurrentDish.edit();cartCurrentDish.change(-1)"
+                  icon="mdi-tune"
+                  color="warning"
+                  :text="$t('配料')"
               ></grid-button>
               <grid-button
                   @click="cartCurrentDish.change(1)"
@@ -341,10 +344,10 @@
                   color="success"
               ></grid-button>
               <grid-button
-                @click="editNote"
-                icon="mdi-notebook-edit"
-                color="#666666"
-                :text="$t('备注')"
+                  @click="editNote"
+                  icon="mdi-notebook-edit"
+                  color="#666666"
+                  :text="$t('备注')"
               ></grid-button>
             </template>
 
@@ -466,31 +469,30 @@ left: 304px"
     </template>
 
     <table-change-selector
-      :active-status="false"
-      @table-select="changeTable"
-      :servant-password="servantPassword"
-      :title="$t('tableChange')"
-      :menu-show.sync="showTableChange"
-      :current-table-name="tableDetailInfo.tableBasicInfo.name"
+        :active-status="false"
+        @table-select="changeTable"
+        :servant-password="servantPassword"
+        :title="$t('tableChange')"
+        :menu-show.sync="showTableChange"
+        :current-table-name="tableDetailInfo.tableBasicInfo.name"
     ></table-change-selector>
 
     <table-change-selector
-      :active-status="false"
-      :dish-table-change="true"
-      @table-select="dishesChangeTable"
-      :servant-password="servantPassword"
-      :title="$t('tableChange')"
-      :menu-show.sync="showDishesTableChange"
-      :current-table-name="tableDetailInfo.tableBasicInfo.name"
+        :active-status="false"
+        @table-select="dishesChangeTable"
+        :servant-password="servantPassword"
+        :title="$t('tableChange')"
+        :menu-show.sync="showDishesTableChange"
+        :current-table-name="tableDetailInfo.tableBasicInfo.name"
     ></table-change-selector>
 
     <table-change-selector
-      :active-status="true"
-      @table-select="mergeTable"
-      :servant-password="servantPassword"
-      :title="$t('tableMerge')"
-      :menu-show.sync="showTableMerge"
-      :current-table-name="tableDetailInfo.tableBasicInfo.name"
+        :active-status="true"
+        @table-select="mergeTable"
+        :servant-password="servantPassword"
+        :title="$t('tableMerge')"
+        :menu-show.sync="showTableMerge"
+        :current-table-name="tableDetailInfo.tableBasicInfo.name"
     ></table-change-selector>
   </div>
 </template>
@@ -518,7 +520,14 @@ import {
 import { getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import Swal from 'sweetalert2'
 import hillo from 'hillo'
-import { checkOut, deleteDishes, dishesSetDiscount, getColorLightness, printZwichenBon } from '@/oldjs/api'
+import {
+  checkOut,
+  deleteDishes,
+  dishesSetDiscount,
+  getColorLightness,
+  optionalAuthorize,
+  printZwichenBon
+} from '@/oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
 import DishCardList from '../components/DishCardList'
 import ModificationDrawer from '../components/ModificationDrawer'
@@ -790,9 +799,9 @@ export default {
       }
     },
     discountShow () {
-      popAuthorize('', () => {
+      optionalAuthorize(() => {
         this.discountModelShow = true
-      })
+      }, '', !GlobalConfig.discountWithoutPassword)
     },
     async findAndOrderDish (code, count = 1) {
       if (count < 1) {
@@ -1043,15 +1052,9 @@ export default {
       blockReady()
     },
     async searchDishClick (code) {
-      if (this.input !== code) {
-        this.input = code
-        this.displayInput = code
-      } else {
-        await this.findAndOrderDish(code)
-        this.displayInput = ''
-
-        console.log(this.input, 'input')
-      }
+      this.input = code
+      await this.findAndOrderDish(code)
+      this.displayInput = ''
     },
     async submitDiscount () {
       if (this.$refs.discount) {

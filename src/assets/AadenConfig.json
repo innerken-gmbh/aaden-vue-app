@@ -51,5 +51,7 @@
   "changeTableUseBossPassword": false,
   "showOtherOrder": true,
   "tableInfoDisplayOrder": "",
-  "categoryCardHeight": 64
+  "categoryCardHeight": 64,
+  "returnDishWithoutPassword": false,
+  "discountWithoutPassword": false
 }
