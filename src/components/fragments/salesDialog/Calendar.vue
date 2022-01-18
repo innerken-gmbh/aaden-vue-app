@@ -65,14 +65,14 @@
               <v-icon color="white" class="mt-n1" size="24px">mdi-chevron-right</v-icon>
             </h3>
             <v-spacer></v-spacer>
-            <h3>123.50({{ returnList.length }})</h3>
+            <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }})</h3>
           </div>
           <div @click="discountDialog=true" class="d-flex align-center pa-2 success white--text">
             <h3>折扣
               <v-icon color="white" class="mt-n1" size="24px">mdi-chevron-right</v-icon>
             </h3>
             <v-spacer></v-spacer>
-            <h3>123.50({{ discountList.length }})</h3>
+            <h3>{{ totalDiscount | priceDisplay }}({{ discountList.length }})</h3>
           </div>
         </v-card>
       </v-card>
@@ -161,8 +161,12 @@ import {
   printZBonUseDate
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
+import CheckOutCalculator from '@/components/CheckOutCalculator'
 
 export default {
+  components: {
+    CheckOutCalculator
+  },
   name: 'Calendar',
   data: function () {
     return {
@@ -205,6 +209,18 @@ export default {
     }
   },
   computed: {
+    totalDiscount () {
+      return this.discountList.reduce((arr, i) => {
+        arr += parseFloat(i.orderInfo.value)
+        return arr
+      }, 0)
+    },
+    totalReturn () {
+      return this.returnList.reduce((arr, i) => {
+        arr += parseFloat(i.fPrice.replace(',', '.'))
+        return arr
+      }, 0)
+    },
     billContent () {
       return this.billData.content
     },
