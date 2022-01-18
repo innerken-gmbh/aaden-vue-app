@@ -35,7 +35,7 @@
   "showRightMenu": true,
   "simpleVersion": false,
   "numberFirst": false,
-  "oneStepOrderNumber": -1,
+  "oneStepOrderNumber": 10,
   "skipCartConfirm": false,
   "VIPCardCode": "eag",
   "defaultCancelReason": "falsh eingabe",
