@@ -35,7 +35,7 @@
   "showRightMenu": true,
   "simpleVersion": false,
   "numberFirst": false,
-  "oneStepOrderNumber": -1,
+  "oneStepOrderNumber": 10,
   "skipCartConfirm": false,
   "VIPCardCode": "eag",
   "defaultCancelReason": "falsh eingabe",
@@ -51,5 +51,7 @@
   "changeTableUseBossPassword": false,
   "showOtherOrder": true,
   "tableInfoDisplayOrder": "",
-  "categoryCardHeight": 64
+  "categoryCardHeight": 64,
+  "returnDishWithoutPassword": false,
+  "discountWithoutPassword": false
 }

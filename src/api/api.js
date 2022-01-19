@@ -94,14 +94,16 @@ export async function previewZBonByTimeSpan (startTime, endTime) {
   return (await hillo.get('ZBon.php?op=previewByTimeSpan', { startTime, endTime })).content
 }
 
-export async function getAllBillsWithSortAndFilter (startTime, endTime) {
-  const timespan = startTime + ' - ' + endTime
-  console.log(timespan)
-  return (await hillo.get('Orders.php?op=withSortAndFilter', { timespan })).content
-}
-
 export async function showTodayTempDiscountedDishes (startTime, endTime) {
   return (await hillo.get('Complex.php?op=showTempDiscountedDishes', {
+    fromDateTime: startTime,
+    toDateTime: endTime,
+    lang: GlobalConfig.lang
+  })).content
+}
+
+export async function showReturnedDishes (startTime, endTime) {
+  return (await hillo.get('Complex.php?op=showReturnedDishes', {
     fromDateTime: startTime,
     toDateTime: endTime,
     lang: GlobalConfig.lang
