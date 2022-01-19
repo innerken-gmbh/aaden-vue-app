@@ -63,9 +63,9 @@
             </template>
             <v-list>
               <v-list-item
-                  @click="input(item)"
-                  v-for="(item, index) in realExtraPaymentMethodName"
-                  :key="index"
+                @click="input(item)"
+                v-for="(item, index) in realExtraPaymentMethodName"
+                :key="index"
               >
                 <v-list-item-icon>
                   <v-icon>{{ realExtraPaymentMethod[index] }}</v-icon>
@@ -145,9 +145,9 @@
           </h4>
           <v-sheet class="my-2" style="background: transparent">
             <v-chip-group
-                v-model="billType"
-                mandatory column
-                active-class="primary--text">
+              v-model="billType"
+              mandatory column
+              active-class="primary--text">
               <v-chip x-large label>
                 {{ $t('tableCheckOutBillTypeOptionNormal') }}
               </v-chip>
@@ -379,8 +379,9 @@ export default {
       if (parseInt(type) === 4) {
         const res = await fastSweetAlertRequest(
           'Bitte Gutschein Id Gaben.',
-          'password', 'MemberCard.php?op=check', 'id',
+          'text', 'MemberCard.php?op=check', 'id',
           { amount: 0 }, 'GET')
+
         if (res.content) {
           const leftAmount = parseFloat(res.content.leftAmount)
           obj.price = leftAmount > price ? price : leftAmount
@@ -390,7 +391,6 @@ export default {
         }
       } else if (milepayIds.includes(parseInt(type))) {
         const payMethod = this.paymentMethods.find(p => parseInt(type) === parseInt(p.id))
-        console.log(payMethod)
 
         try {
           const apiKey = JSON.parse(payMethod.apiKey)
@@ -402,7 +402,7 @@ export default {
           return
         }
       }
-      this.addPaymentLogToList(obj.id, obj.price, obj.icon, obj.hash)
+      this.addPaymentLogToList(obj.id, obj.price, obj.icon, obj.hash, obj.memberCardId)
     },
     withdrawPayment (index) {
       this.paymentLog.splice(index, 1)
