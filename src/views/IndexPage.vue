@@ -158,7 +158,7 @@
         </template>
       </v-card>
       <v-card else class="flex-grow-1 d-flex" style="position: relative">
-        <div class="flex-grow-1 flex-shrink-1">
+        <div style="height: calc(100vh - 48px);width: 100%;overflow: scroll">
           <table-blue-print
               @table-clicked="openOrEnterTable"
               @need-refresh="refreshTables"
@@ -171,7 +171,7 @@
             v-if="showOtherOrder"
             elevation="2"
             class="flex-shrink-0"
-            style="overflow-y: scroll;height: calc(100vh - 48px); display: grid;
+            style="position: absolute;right: 0;overflow-y: scroll;height: calc(100vh - 48px); display: grid;
             grid-template-columns: 100%;grid-auto-rows: 56px;grid-gap: 4px">
           <div class="d-flex align-center pa-2" style="width: 196px">
             <div>{{ $t('Tisch Nr.') }}</div>

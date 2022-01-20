@@ -53,5 +53,6 @@
   "tableInfoDisplayOrder": "",
   "categoryCardHeight": 64,
   "returnDishWithoutPassword": false,
-  "discountWithoutPassword": false
+  "discountWithoutPassword": false,
+  "tableBluePrintScale": 1
 }

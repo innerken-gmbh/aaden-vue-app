@@ -1,41 +1,50 @@
 <template>
-  <div class="flex-grow-1 pa-2"
-       ref="blueprintContainer"
-       style="height: calc(100vh - 48px);
-       overflow: hidden;"
-       :style="{
-          background:currentSection.image?'url('+Config.getBase()+currentSection.image+') center/cover':'#f5f5f5'
+  <div>
+    <div class="flex-grow-1 pa-2"
+         ref="blueprintContainer"
+         style="height:1080px;width: 1920px;
+       overflow: hidden;transform-origin: left top"
+         :style="{
+          background:currentSection.image?'no-repeat url('+Config.getBase()+currentSection.image+')':'#f5f5f5',
+          transform:'scale('+scale+')'
        }">
-    <template v-for="i in tablesInCurrentSection">
-      <vue-draggable-resizable
-          :min-height="60"
-          :min-width="60"
-          :max-height="120"
-          :max-width="120"
-          :draggable="editing"
-          :resizable="editing"
-          :key="i.id"
-          :grid="[20,20]"
-          :h="i.h" :w="i.w"
-          :x="i.x" :y="i.y"
-          @activated="selectTable(i)"
-          @dragstop="(...args)=>onDrag(i,...args)"
-          :active="false"
-          @resizestop="(...args)=>onResize(i,...args)"
-          :snap="true"
-          :is-conflict-check="true"
-          :parent="true">
-        <table-card :table-background-color-func="tableBackgroundColorFunc"
-                    :table-color-is-dark="tableColorIsDark"
-                    :table-info="i"
-        ></table-card>
-      </vue-draggable-resizable>
-    </template>
-    <v-btn @click="refreshTables" fab bottom right absolute style="bottom: 24px" v-if="editing">
-      <v-icon>mdi-refresh</v-icon>
-    </v-btn>
+      <template v-for="i in tablesInCurrentSection">
+        <vue-draggable-resizable
+            :min-height="60"
+            :min-width="60"
+            :max-height="120"
+            :max-width="120"
+            :draggable="editing"
+            :resizable="editing"
+            :key="i.id"
+            :grid="[20,20]"
+            :h="i.h" :w="i.w"
+            :x="i.x" :y="i.y"
+            @activated="selectTable(i)"
+            @dragstop="(...args)=>onDrag(i,...args)"
+            :active="false"
+            @resizestop="(...args)=>onResize(i,...args)"
+            :snap="true"
+            :is-conflict-check="true"
+            :parent="true">
+          <table-card :table-background-color-func="tableBackgroundColorFunc"
+                      :table-color-is-dark="tableColorIsDark"
+                      :table-info="i"
+          ></table-card>
+        </vue-draggable-resizable>
+      </template>
+    </div>
+    <v-card class="pa-2" v-if="editing" style="position: absolute;right: 24px;bottom: 24px">
+      <h1>缩放</h1>
+      <div class="d-flex align-center">0.3x<v-slider hide-details :min="0.3" :step="0.01" :max="1" v-model="scale"></v-slider>1x</div>
+      <v-btn @click="refreshTables">
+        <v-icon left>mdi-refresh</v-icon>
+        重置所有桌子
+      </v-btn>
+    </v-card>
 
   </div>
+
 </template>
 
 <script>
@@ -124,6 +133,9 @@ export default {
       this.tableList = []
       this.$emit('need-refresh')
       this.$emit('update:editing', false)
+    },
+    scale (val) {
+      GlobalConfig.updateSettings('tableBluePrintScale', val)
     }
   },
   methods: {
@@ -155,7 +167,8 @@ export default {
       width: 0,
       height: 0,
       x: 0,
-      y: 0
+      y: 0,
+      scale: GlobalConfig.tableBluePrintScale
     }
   },
   async mounted () {
