@@ -96,7 +96,7 @@ export async function deleteDishes (id, items, initialUI) {
       await hillo.post('Complex.php?op=deleteDishes', {
         tableId: id,
         dishes: JSON.stringify(items),
-        reason: 'falsch eingaben'
+        reason: i18n.t('falschEingaben')
       })
       loadingComplete()
       initialUI()

@@ -2,7 +2,7 @@
   <v-dialog max-width="400px" v-model="realShow">
     <v-card>
       <v-toolbar tile color="primary" dark elevation="0">
-        <v-toolbar-title> {{ $t('请输入折扣') }}</v-toolbar-title>
+        <v-toolbar-title> {{ $t('请输入折扣2') }}</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-text-field :label="$t('金额或百分比')"

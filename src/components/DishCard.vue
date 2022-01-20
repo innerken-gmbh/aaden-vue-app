@@ -127,7 +127,7 @@ export default {
     },
     async editNote () {
       const note = await Swal.fire({
-        title: '备注',
+        title: this.$t('note'),
         input: 'text',
         inputValue: this.dish.note
       })

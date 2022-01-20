@@ -287,7 +287,7 @@ export async function openTablePrompt () {
   if (res.value) {
     if ([4, 6].includes(parseInt(res.value[2]))) {
       const adultDishId = await Swal.fire({
-        title: '请选择日本餐类型',
+        title: i18n.t('key'),
         input: 'select',
         inputOptions: {
           ...Dishes

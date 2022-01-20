@@ -39,7 +39,7 @@
       <div class="d-flex align-center">0.3x<v-slider hide-details :min="0.3" :step="0.01" :max="1" v-model="scale"></v-slider>1x</div>
       <v-btn @click="refreshTables">
         <v-icon left>mdi-refresh</v-icon>
-        {{$t('重置所有桌子')}}
+        {{ $t('重置所有桌子') }}
       </v-btn>
     </v-card>
 
