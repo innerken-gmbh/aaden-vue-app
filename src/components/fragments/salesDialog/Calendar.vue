@@ -2,7 +2,7 @@
   <v-card>
     <div class="d-flex">
       <div v-if="realShow" class="pa-2 flex-grow-1">
-        <h2>订单列表</h2>
+        <h2>{{$t('订单列表')}}</h2>
         <v-simple-table height="calc(100vh - 144px)" fixed-header>
           <template v-slot:default>
             <thead>
@@ -60,20 +60,32 @@
           </template>
         </v-card>
         <v-card elevation="0">
-          <div @click="returnDishDialog=true" class="d-flex align-center pa-2 warning white--text">
-            <h3>退菜
-              <v-icon color="white" class="mt-n1" size="24px">mdi-chevron-right</v-icon>
-            </h3>
+          <div @click="returnDishDialog=true" class="d-flex align-center pa-2">
+            <h3 style="color: #367aeb;text-decoration: underline">{{$t('退菜')}}</h3>
             <v-spacer></v-spacer>
-            <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }})</h3>
+            <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }}) <v-icon class="mt-n1" size="24px">mdi-chevron-right</v-icon></h3>
           </div>
-          <div @click="discountDialog=true" class="d-flex align-center pa-2 success white--text">
-            <h3>折扣
-              <v-icon color="white" class="mt-n1" size="24px">mdi-chevron-right</v-icon>
-            </h3>
+          <div @click="discountDialog=true" class="d-flex align-center pa-2">
+            <h3 style="color: #367aeb;text-decoration: underline">{{$t('折扣')}}</h3>
             <v-spacer></v-spacer>
-            <h3>{{ totalDiscount | priceDisplay }}({{ discountList.length }})</h3>
+            <h3>{{ totalDiscount | priceDisplay }}({{ discountList.length }})   <v-icon class="mt-n1" size="24px">mdi-chevron-right</v-icon></h3>
           </div>
+          <v-btn
+              x-large
+              block
+              @click="printXBon"
+              color="warning">
+            {{ $t('XBon Drücken') }}
+          </v-btn>
+          <v-btn
+              class="mt-1"
+              block
+              v-if="shouldShowZBon"
+              x-large
+              @click="printZBon"
+              color="primary">
+            {{ $t('ZBon Drücken') }}
+          </v-btn>
         </v-card>
       </v-card>
     </div>
