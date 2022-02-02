@@ -533,9 +533,7 @@ export default {
     openSalesDialog () {
       popAuthorize('',
         (pw) => {
-          console.log(pw, 'password')
           const servant = this.findServant(pw)
-          console.log(servant)
           this.salesDialogShow = true
           this.salesDialogServantIsBoss = parseInt(servant.permission) === 1
           this.salesDialogServantPassword = pw
