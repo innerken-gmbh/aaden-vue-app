@@ -2,7 +2,7 @@
   <v-card>
     <div class="d-flex">
       <div v-if="realShow" class="pa-2 flex-grow-1">
-        <h2>{{$t('订单列表')}}</h2>
+        <h2>{{ $t('订单列表') }}</h2>
         <v-simple-table height="calc(100vh - 144px)" fixed-header>
           <template v-slot:default>
             <thead>
@@ -60,17 +60,22 @@
           </template>
         </v-card>
         <v-card elevation="0">
-          <div @click="returnDishDialog=true" class="d-flex align-center pa-2">
-            <h3 style="color: #367aeb;text-decoration: underline">{{$t('退菜')}}</h3>
+          <v-card color="error lighten-2" dark @click="returnDishDialog=true" class="d-flex align-center pa-2">
+            <h3>{{ $t('退菜') }}</h3>
             <v-spacer></v-spacer>
-            <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }}) <v-icon class="mt-n1" size="24px">mdi-chevron-right</v-icon></h3>
-          </div>
-          <div @click="discountDialog=true" class="d-flex align-center pa-2">
-            <h3 style="color: #367aeb;text-decoration: underline">{{$t('折扣')}}</h3>
+            <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }})
+              <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
+            </h3>
+          </v-card>
+          <v-card color="warning lighten-2" dark @click="discountDialog=true" class="d-flex align-center pa-2">
+            <h3>{{ $t('折扣') }}</h3>
             <v-spacer></v-spacer>
-            <h3>{{ totalDiscount | priceDisplay }}({{ discountList.length }})   <v-icon class="mt-n1" size="24px">mdi-chevron-right</v-icon></h3>
-          </div>
+            <h3>{{ totalDiscount | priceDisplay }}({{ discountList.length }})
+              <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
+            </h3>
+          </v-card>
           <v-btn
+              class="mt-1"
               x-large
               block
               @click="printXBon"
@@ -107,6 +112,7 @@
           <tr>
             <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
             <th class="text-left">{{ $t('time') }}</th>
+            <th class="text-left">{{ $t('跑堂') }}</th>
             <th class="text-left">{{ $t('退菜内容') }}</th>
             <th class="text-left">{{ $t('退菜理由') }}</th>
           </tr>
@@ -119,6 +125,9 @@
               </td>
               <td>
                 {{ order.time }}
+              </td>
+              <td>
+                {{ order.servantName }}
               </td>
               <td>
                 <b>{{ order.Dname }}</b> &times; {{ order.count }} = {{ order.fPrice }}
@@ -139,6 +148,7 @@
           <tr>
             <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
             <th class="text-left">{{ $t('time') }}</th>
+            <th class="text-left">{{ $t('跑堂') }}</th>
             <th class="text-left">{{ $t('折扣内容') }}</th>
           </tr>
           </thead>
@@ -149,6 +159,7 @@
                 <span class="font-weight-bold">{{ order.orderInfo.name }}</span>/{{ order.orderInfo.id }}
               </td>
               <td>{{ order.orderInfo.time }}</td>
+              <td>{{ order.orderInfo.servantName }}</td>
               <td>
                 <b>{{ order.orderInfo.discountStr }}</b> /- {{ order.orderInfo.value }}
               </td>
