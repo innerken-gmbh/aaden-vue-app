@@ -225,7 +225,7 @@
                           </v-list-item>
                           <v-divider></v-divider>
                           <v-subheader>{{ $t('payMethod') }}</v-subheader>
-                          <template v-for="payment in displayData.payMethodTotal">
+                          <template v-for="payment in displayData.payMethodTotal.filter(p=>p.payMethodId!=='9')">
                             <v-list-item v-bind:key="payment.payMethodId">
                               <v-list-item-content>
                                 <v-list-item-title>
