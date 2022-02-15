@@ -606,6 +606,7 @@ export default {
     openOrEnterTable: openOrEnterTable,
     requestOutTable,
     resetTableStatus,
+
     ...mapMutations(['HIDE_DIALOG']),
     initialUI () {
       this.$refs.ins.focus()
