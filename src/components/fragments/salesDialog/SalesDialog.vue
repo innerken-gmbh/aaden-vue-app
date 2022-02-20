@@ -8,6 +8,7 @@
           </v-toolbar>
           <div class="pa-2">
             <v-date-picker
+                v-if="!Config.servantDataOnlyToday||isBoss"
                 elevation="2"
                 v-model="singleZBonDate"
                 :max="todayDate"
