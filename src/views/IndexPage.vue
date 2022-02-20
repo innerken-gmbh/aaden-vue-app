@@ -1,7 +1,7 @@
 <template>
   <div>
     <Navgation>
-      <template slot="left">
+      <template v-slot:left>
         <v-toolbar-items>
           <v-menu
               v-model="menu"
@@ -60,7 +60,7 @@
             </v-card>
           </v-menu>
           <v-tabs class="mx-2" show-arrows v-model="currentSectionIndex">
-            <template v-for="area of sectionList.filter(a=>a.id!=='6')">
+            <template v-for="area of sectionList">
               <v-tab :key="area.id">
                 {{ area.name }}
               </v-tab>
@@ -606,6 +606,7 @@ export default {
     openOrEnterTable: openOrEnterTable,
     requestOutTable,
     resetTableStatus,
+
     ...mapMutations(['HIDE_DIALOG']),
     initialUI () {
       this.$refs.ins.focus()
@@ -747,7 +748,7 @@ export default {
       }
     },
     async refreshSectionList () {
-      this.sectionList = await getSectionList()
+      this.sectionList = (await getSectionList()).filter(it => it.id !== '6' && it.tableCount > 0)
     },
     async checkTse () {
       this.tseStatus = true
