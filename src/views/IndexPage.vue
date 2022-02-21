@@ -1,9 +1,9 @@
 <template>
   <div>
     <Navgation>
-      <template v-slot:left>
+      <template #left>
         <v-toolbar-items>
-          <v-menu
+          <v-dialog
               v-model="menu"
               :close-on-content-click="false"
               :nudge-width="300"
@@ -58,7 +58,7 @@
                 <v-btn color="primary" text @click="useCurrentConfig">Save</v-btn>
               </v-card-actions>
             </v-card>
-          </v-menu>
+          </v-dialog>
           <v-tabs class="mx-2" show-arrows v-model="currentSectionIndex">
             <template v-for="area of sectionList">
               <v-tab :key="area.id">
@@ -67,12 +67,8 @@
             </template>
           </v-tabs>
         </v-toolbar-items>
-        <div class="d-flex ml-2 align-center caption">
-          <time-display/>
-        </div>
-
       </template>
-      <template slot="right-slot">
+      <template #slot:right-slot>
         <v-toolbar-items class="mx-2">
           <update-fragment></update-fragment>
 
@@ -160,6 +156,7 @@
       <v-card else class="flex-grow-1 d-flex" style="position: relative">
         <div style="height: calc(100vh - 48px);width: 100%;overflow: scroll">
           <table-blue-print
+              @edit-table-clicked="showEditTableDialog"
               @table-clicked="openOrEnterTable"
               @need-refresh="refreshTables"
               :out-side-table-list="tableInCurrentSection"
@@ -206,6 +203,7 @@
       <v-toolbar dense dark>
         <v-toolbar-items class="ml-n2">
           <v-btn
+              elevation="0"
               :color="useOrderView?'primary':'transparent'"
               @click="useOrderView=!useOrderView">
             {{ $t('跑堂模式') }}
@@ -229,7 +227,9 @@
             </div>
           </template>
         </template>
-
+        <div class="d-flex pa-2  pt-4 align-center caption">
+          <time-display/>
+        </div>
         <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
           <grid-button
               @click="popAuthorize('boss',toManage)"
@@ -261,14 +261,6 @@
               :loading="loading"
           />
           <grid-button
-              v-hide-simple
-              color="#fec945"
-              @click="openDrawer"
-              icon="mdi-cash-lock-open"
-              :text="$t('Kasse')"
-              :loading="loading"
-          />
-          <grid-button
               v-if="hasBadPrint"
               v-hide-simple
               color="error"
@@ -282,7 +274,7 @@
         <v-spacer></v-spacer>
         <div v-if="!isEditing">
           <v-card class="mt-2 pa-2">
-            <div class="pa-2">{{ $t(currentKeyboardFunction) }}</div>
+            <div class="pa-2">{{ $t("请输入桌号") }}</div>
             <v-text-field
                 class="ma-2"
                 hide-details
@@ -338,8 +330,7 @@ import {
   popAuthorize,
   requestOutTable,
   resetTableStatus,
-  toast,
-  toastError
+  toast
 } from '@/oldjs/common'
 import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
@@ -380,15 +371,10 @@ import draggable from 'vuedraggable'
 const keyboardLayout =
     [
       '7', '8', '9', 'C',
-      '4', '5', '6', '',
+      '4', '5', '6', 'mdi-cash-lock-open',
       '1', '2', '3', '',
       'W', '0', '.', 'OK'
     ]
-
-const keyboardFunctions = {
-  OpenTable: '请输入桌号',
-  ChangeServant: 'Neue password eingabe'
-}
 
 export default {
   name: 'IndexPage',
@@ -424,8 +410,7 @@ export default {
       isEditing: false,
       showRightMenu: GlobalConfig.showRightMenu,
       keyboardLayout: keyboardLayout,
-      keyboardFunctions,
-      currentKeyboardFunction: keyboardFunctions.OpenTable,
+
       NeededKeys,
       currentServant: { name: '' },
       menu: null,
@@ -520,6 +505,9 @@ export default {
 
   },
   methods: {
+    showEditTableDialog (tableInfo) {
+      console.log(tableInfo)
+    },
     colorIsDark (color) {
       return getColorLightness(color) < 128
     },
@@ -569,8 +557,8 @@ export default {
         case 'C':
           this.buffer = ''
           break
-        case 'mdi-account-box':
-          this.currentKeyboardFunction = keyboardFunctions.ChangeServant
+        case 'mdi-cash-lock-open':
+          this.openDrawer()
           break
         case 'OK':
           this.insDecode(this.readBuffer())
@@ -611,7 +599,6 @@ export default {
     initialUI () {
       this.$refs.ins.focus()
       this.HIDE_DIALOG()
-      this.currentKeyboardFunction = keyboardFunctions.OpenTable
       blockReady()
     },
     async refreshTables () {
@@ -673,58 +660,42 @@ export default {
       }
     },
     async insDecode (t) {
-      if (this.currentKeyboardFunction === keyboardFunctions.OpenTable) {
-        if (this.anyMenuOpen()) {
-          return
-        }
-        if (t !== '') {
-          const escapeStr = '--//'
-          if (t.startsWith(escapeStr)) {
-            t = t.substr(escapeStr.length)
-            if (t.startsWith('d')) {
-              t = t.substr(1)
-              setDeviceId(t)
-            }
-            if (t === 'c') {
-              GlobalConfig.Protocol = 'http://'
-              useCurrentConfig()
-            } else if (t === 'h') {
-              GlobalConfig.Protocol = 'https://'
-              useCurrentConfig()
-            }
-            if (t.startsWith('f/')) {
-              t = t.substr(2)
-              // eslint-disable-next-line no-eval
-              eval(t)
-            }
-          } else if (t.toLowerCase() === 'w') {
-            popAuthorize('', requestOutTable)
-          } else if (t === 'l') {
-            popAuthorize('', this.toManage)
-          } else {
-            this.openOrEnterTable(t)
+      if (this.anyMenuOpen()) {
+        return
+      }
+      if (t !== '') {
+        const escapeStr = '--//'
+        if (t.startsWith(escapeStr)) {
+          t = t.substr(escapeStr.length)
+          if (t.startsWith('d')) {
+            t = t.substr(1)
+            setDeviceId(t)
           }
-        }
-      } else {
-        if (t !== '') {
-          const servant = this.findServant(t)
-          this.readBuffer(true)
-          if (!servant) {
-            toastError('Passwort ist nicht gült')
-            return
+          if (t === 'c') {
+            GlobalConfig.Protocol = 'http://'
+            useCurrentConfig()
+          } else if (t === 'h') {
+            GlobalConfig.Protocol = 'https://'
+            useCurrentConfig()
           }
-          GlobalConfig.updateSettings('defaultPassword', t)
-          GlobalConfig.defaultPassword = t
-          console.log(GlobalConfig.defaultPassword)
-          this.currentServant = servant
-          this.currentKeyboardFunction = keyboardFunctions.OpenTable
+          if (t.startsWith('f/')) {
+            t = t.substr(2)
+            // eslint-disable-next-line no-eval
+            eval(t)
+          }
+        } else if (t.toLowerCase() === 'w') {
+          popAuthorize('', requestOutTable)
+        } else if (t === 'l') {
+          popAuthorize('', this.toManage)
+        } else {
+          this.openOrEnterTable(t)
         }
       }
     },
     async saveCurrentSection () {
       await updateSection(this.currentSection)
       toast()
-      await getSectionList()
+      await this.refreshSectionList()
       this.isEditing = false
     },
     toManage () {
@@ -735,7 +706,7 @@ export default {
       })
     },
     anyMenuOpen () {
-      return Swal.isVisible() || this.menu || this.memberCardDialogShow || this.pinDialogShow
+      return Swal.isVisible() || this.menu || this.memberCardDialogShow || this.pinDialogShow || this.salesDialogShow
     },
     autoGetFocus () {
       if (this.anyMenuOpen()) {
@@ -748,7 +719,8 @@ export default {
       }
     },
     async refreshSectionList () {
-      this.sectionList = (await getSectionList()).filter(it => it.id !== '6' && it.tableCount > 0)
+      this.sectionList = (await getSectionList())
+        .filter(it => it.id !== '6' && it.tableCount > 0)
     },
     async checkTse () {
       this.tseStatus = true

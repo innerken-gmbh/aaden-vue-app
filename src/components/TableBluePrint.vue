@@ -25,7 +25,6 @@
             :active="false"
             @resizestop="(...args)=>onResize(i,...args)"
             :snap="true"
-            :is-conflict-check="true"
             :parent="true">
           <table-card :table-background-color-func="tableBackgroundColorFunc"
                       :table-color-is-dark="tableColorIsDark"
@@ -34,9 +33,12 @@
         </vue-draggable-resizable>
       </template>
     </div>
-    <v-card class="pa-2" v-if="editing" style="position: absolute;right: 24px;bottom: 24px">
-      <h1>{{$t('缩放')}}</h1>
-      <div class="d-flex align-center">0.3x<v-slider hide-details :min="0.3" :step="0.01" :max="1" v-model="scale"></v-slider>1x</div>
+    <v-card class="pa-2" v-if="editing" style="position: absolute;right:224px;bottom: 24px">
+      <h1>{{ $t('缩放') }}</h1>
+      <div class="d-flex align-center">0.3x
+        <v-slider hide-details :min="0.3" :step="0.01" :max="1" v-model="scale"></v-slider>
+        1x
+      </div>
       <v-btn @click="refreshTables">
         <v-icon left>mdi-refresh</v-icon>
         {{ $t('重置所有桌子') }}
@@ -154,7 +156,7 @@ export default {
       if (!this.editing) {
         this.$emit('table-clicked', table.tableName)
       } else {
-
+        this.$emit('edit-table-clicked', table)
       }
     },
     shouldUpdateSize: debounce(submitTable, 300)

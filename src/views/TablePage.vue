@@ -4,7 +4,7 @@
       <v-main>
         <div style="display: flex; background: #f6f6f6;">
           <div style="height: 100vh;width: 300px"
-               class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height mr-1">
+               class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height">
             <div>
               <v-card tile color="grey darken-3" dark class="d-flex justify-space-between"
                       style="height: 48px;width: 100%;">
@@ -102,7 +102,7 @@
                   style="height: 100vh;max-width: calc(100vw - 600px)">
             <v-card v-dragscroll color="transparent" elevation="0"
                     style="max-width: 100%;"
-                    class="dragscroll dishCardListContainer ml-1 flex-grow-1">
+                    class="dragscroll dishCardListContainer flex-grow-1">
 
               <v-item-group v-model="activeDCT" mandatory class="d-flex flex-wrap align-start elevation-1"
                             style="position: fixed;z-index: 2;background: white;width: calc(100vw - 600px)">
@@ -117,14 +117,15 @@
               </v-item-group>
               <div class="mt-13"></div>
               <v-sheet v-if="Config.alwaysShowDishesBellow||!activeCategoryId"
-                       class="px-0" color="transparent">
+                       class="px-2" color="transparent">
                 <v-item-group class="d-flex flex-wrap align-start">
                   <template v-for="category of filteredC">
                     <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
                       <div @click="changeCategory(category.id,toggle)"
                            :class="(active?'active elevation-4':'')+
                            (Config.alwaysShowDishesBellow?' menu-always':' menu-item')"
-                           :style="{backgroundColor:category.color, color: getColorLightness(category.color)>128?'#000':'#fff', height:Config.categoryCardHeight+'px'}">
+                           :style="{backgroundColor:category.color,
+                            color: getColorLightness(category.color)>128?'#000':'#fff'}">
                         {{ category.name }}
                       </div>
                     </v-item>
@@ -1625,11 +1626,11 @@ tr:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   width: calc(20% - 4px);
-  padding: 4px;
+  padding: 8px;
   margin: 2px;
-  height: 64px;
+  height: 112px;
   text-transform: capitalize;
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .menu-item.active {
