@@ -1,11 +1,12 @@
 <template>
-  <v-card>
-    <span style="display: none">{{currentDish?currentDish.name:''}}</span>
+  <v-card elevation="0">
+    <span style="display: none">{{ currentDish ? currentDish.name : '' }}</span>
     <v-toolbar
-      dense
-      tile
-      class="font-weight-bold"
-      :color="color" dark>
+        dense
+        tile
+        flat
+        class="font-weight-bold"
+        :color="color" dark>
       <v-toolbar-title>
         {{ title }}
       </v-toolbar-title>
@@ -17,27 +18,27 @@
         <span class="ml-1">{{ count }}</span>
       </div>
     </v-toolbar>
-    <div v-dragscroll v-show="expand" class="orderDishList"
+    <div v-dragscroll v-show="expand"
          :style="{maxHeight: `calc(100vh - 48px - ${extraHeight})`}"
          style="overflow-y: scroll"
     >
       <template v-for="(order,index) in dishList">
         <div @click="checkIfOpen(index)" :key="'order'+title+order.identity">
           <dish-card
-            :expand="index===expandIndex"
-            :color="color"
-            :show-number="showNumber"
-            :click-callback="()=>_clickCallBack(index,order)"
-            :show-edit="showEdit"
-            :dish="order"/>
+              :expand="index===expandIndex"
+              :color="color"
+              :show-number="showNumber"
+              :click-callback="()=>_clickCallBack(index,order)"
+              :show-edit="showEdit"
+              :dish="order"/>
         </div>
       </template>
       <template v-if="discountDish!=null">
         <dish-card
-          :color="color"
-          :show-number="showNumber"
-          :show-edit="showEdit"
-          :dish="discountDish"/>
+            :color="color"
+            :show-number="showNumber"
+            :show-edit="showEdit"
+            :dish="discountDish"/>
       </template>
     </div>
   </v-card>

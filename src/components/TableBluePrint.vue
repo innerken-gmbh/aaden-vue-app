@@ -17,7 +17,6 @@
             :draggable="editing"
             :resizable="editing"
             :key="i.id"
-            :grid="[20,20]"
             :h="i.h" :w="i.w"
             :x="i.x" :y="i.y"
             @activated="selectTable(i)"

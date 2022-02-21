@@ -2,63 +2,19 @@
   <div>
     <Navgation>
       <template #left>
-        <v-toolbar-items>
-          <v-dialog
-              v-model="menu"
-              :close-on-content-click="false"
-              :nudge-width="300"
-              :max-height="600"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs"
-                     v-on="on"
-                     icon>
-                <v-icon>
-                  mdi-cog-outline
-                </v-icon>
-              </v-btn>
-            </template>
-            <v-card color="white">
-              <v-list>
-                <v-list-item>
-                  <v-list-item-content>
-                    <v-list-item-title>Aaden App</v-list-item-title>
-                    <v-list-item-subtitle>
-                      {{ $t('Version') }} {{ version }}
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-
-                  <v-list-item-action>
-                    <v-icon>mdi-heart</v-icon>
-                  </v-list-item-action>
-                </v-list-item>
-              </v-list>
-              <v-divider></v-divider>
-              <v-list dense>
-                <template v-for="key in NeededKeys">
-                  <v-list-item dense :key="'config'+key">
-                    <v-list-item-title>{{ key }}</v-list-item-title>
-                    <template v-if="typeof Config[key]==='boolean'">
-                      <v-list-item-action>
-                        <v-switch v-model="Config[key]" color="purple"></v-switch>
-                      </v-list-item-action>
-                    </template>
-                    <template v-else>
-                      <v-list-item-action>
-                        <v-text-field v-model="Config[key]" color="purple"></v-text-field>
-                      </v-list-item-action>
-                    </template>
-                  </v-list-item>
-                </template>
-              </v-list>
-              <v-card-actions>
-                <v-btn text @click="hardReload">Clear</v-btn>
-                <v-spacer></v-spacer>
-                <v-btn text @click="menu = false">Cancel</v-btn>
-                <v-btn color="primary" text @click="useCurrentConfig">Save</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+        <v-toolbar-items v-if="!useOrderView" class="ml-n2">
+          <template v-if="!useOrderView">
+            <v-btn @click="isEditing=!isEditing" :dark="isEditing">
+              <v-icon>mdi-pencil-box</v-icon>
+            </v-btn>
+            <v-btn @click="saveCurrentSection()" color="primary" v-if="isEditing">
+              <v-icon left>mdi-check</v-icon>
+              {{ $t('Save') }}
+            </v-btn>
+          </template>
+          <div style="height: 100%" class="d-flex align-center">
+            <h4>Etage:</h4>
+          </div>
           <v-tabs class="mx-2" show-arrows v-model="currentSectionIndex">
             <template v-for="area of sectionList">
               <v-tab :key="area.id">
@@ -67,17 +23,34 @@
             </template>
           </v-tabs>
         </v-toolbar-items>
+        <v-toolbar-items v-else dark class="ml-n2">
+          <v-btn>
+            {{ $t('Neue Tisch mit.') }}
+            <v-icon class="ml-2">mdi-arrow-down-box</v-icon>
+          </v-btn>
+        </v-toolbar-items>
       </template>
-      <template #slot:right-slot>
+      <template #right>
         <v-toolbar-items class="mx-2">
           <update-fragment></update-fragment>
-
-          <v-btn @click="isEditing=!isEditing" :dark="isEditing">
-            <v-icon>mdi-pencil-box</v-icon>
+          <v-btn
+              elevation="0"
+              :color="useOrderView?'primary':'transparent'"
+              @click="useOrderView=!useOrderView">
+            {{ $t('跑堂模式') }}
           </v-btn>
-          <v-btn @click="saveCurrentSection()" color="primary" v-if="isEditing">
-            <v-icon left>mdi-check</v-icon>
-            {{ $t('Save') }}
+          <v-btn
+              @click="showOtherOrder=!showOtherOrder"
+              style="width: 240px"
+              class="mr-n4"
+              elevation="0">
+            <v-icon left>mdi-truck-fast</v-icon>
+            {{ $t('Togo') }}
+            <v-spacer/>
+            <v-chip v-if="!showOtherOrder" color="warning" label>{{ orderList.length }}</v-chip>
+            <v-chip v-else color="warning" label>
+              <v-icon>mdi-chevron-up</v-icon>
+            </v-chip>
           </v-btn>
         </v-toolbar-items>
       </template>
@@ -91,14 +64,7 @@
               max-height="calc(100vh - 48px)">
         <v-card height="calc(100vh - 48px)" tile color="transparent"
                 style="width: 190px; flex-shrink: 0;overflow-y: scroll">
-          <v-list subheader two-line>
-            <v-subheader>
-              <v-chip dark label>
-                {{ $t('Neue Tisch mit.') }}
-                <v-icon class="ml-2">mdi-arrow-down-box</v-icon>
-              </v-chip>
-            </v-subheader>
-            <v-divider></v-divider>
+          <v-list two-line>
             <template v-for="servant in tableGroupByServant">
               <v-list-item color="primary" @click="tryOpenTableUsePassword(servant.password)" :key="servant.id"
                            class="d-flex justify-space-between">
@@ -153,69 +119,137 @@
 
         </template>
       </v-card>
-      <v-card else class="flex-grow-1 d-flex" style="position: relative">
-        <div style="height: calc(100vh - 48px);width: 100%;overflow: scroll">
-          <table-blue-print
-              @edit-table-clicked="showEditTableDialog"
-              @table-clicked="openOrEnterTable"
-              @need-refresh="refreshTables"
-              :out-side-table-list="tableInCurrentSection"
-              :editing.sync="isEditing"
-              :current-table.sync="currentTable"
-              :current-section="currentSection"/>
-        </div>
+      <v-card v-else class="flex-grow-1 d-flex" style="position: relative">
         <v-card
             v-if="showOtherOrder"
             elevation="2"
             class="flex-shrink-0"
-            style="position: absolute;right: 0;overflow-y: scroll;height: calc(100vh - 48px); display: grid;
-            grid-template-columns: 100%;grid-auto-rows: 56px;grid-gap: 4px">
-          <div class="d-flex align-center pa-2" style="width: 196px">
-            <div>{{ $t('Tisch Nr.') }}</div>
-            <v-spacer></v-spacer>
-            <div class="d-flex align-center" style="font-size: small">
-              <v-icon small>mdi-food</v-icon>
-              /
-              <v-icon small>mdi-cup-water</v-icon>
-              /
-              <v-icon small>mdi-cash-multiple</v-icon>
-            </div>
-          </div>
+            style="position: absolute;right: 8px;
+            width: 240px;
+            overflow-y: scroll;
+            max-height: calc(100vh - 48px);
+             display: grid;
+            grid-template-columns: 100%;grid-auto-rows: 56px;grid-gap: 4px;z-index: 2">
           <table-list-item
-              style="width: 196px"
+              style="width: 240px"
               v-for="table in orderList"
               @click="openOrEnterTable(table.tableName)"
               :key="table.id" :table-info="table"
           >
           </table-list-item>
         </v-card>
-        <v-card @click="showOtherOrder=!showOtherOrder" elevation="1" tile
-                class="d-flex align-center"
-                :style="{right:showOtherOrder?'204px':0}"
-                style="height: 48px;width: 32px;position: absolute;top:8px;background: white">
-          <v-icon v-if="showOtherOrder">mdi-chevron-right</v-icon>
-          <v-icon v-else>mdi-chevron-left</v-icon>
-        </v-card>
+        <div style="height: calc(100vh - 48px);width: 100%;overflow: scroll">
+          <template v-if="currentSection.id!=='6'">
+            <table-blue-print
+                @edit-table-clicked="showEditTableDialog"
+                @table-clicked="openOrEnterTable"
+                @need-refresh="refreshTables"
+                :out-side-table-list="tableInCurrentSection"
+                :editing.sync="isEditing"
+                :current-table.sync="currentTable"
+                :current-section="currentSection"/>
+          </template>
+          <template v-else>
+
+          </template>
+
+        </div>
       </v-card>
       <!--        下面是侧边栏的逻辑-->
     </v-main>
     <v-navigation-drawer permanent stateless app right width="300px">
       <v-toolbar dense dark>
-        <v-toolbar-items class="ml-n2">
-          <v-btn
-              elevation="0"
-              :color="useOrderView?'primary':'transparent'"
-              @click="useOrderView=!useOrderView">
-            {{ $t('跑堂模式') }}
+        <v-toolbar-items class="ml-n4">
+          <v-btn :loading="loading" @click="reprintAll" v-hide-simple v-if="hasBadPrint" color="error">
+            <v-icon left>mdi-printer-off</v-icon>
+            {{ $t('Erneut Drücken') + " " + falsePrinterList.length }}
           </v-btn>
+
         </v-toolbar-items>
         <v-spacer></v-spacer>
-        <div style="width: 72px" class="ml-2">
-          <v-img :src="require('@/assets/aadenLogo.png')"></v-img>
-        </div>
-        <div class="text-right ml-2 text-caption">
-          V {{ version }}
-        </div>
+        <v-dialog
+            v-model="menu"
+            :close-on-content-click="false"
+            :nudge-width="300"
+            :max-height="600"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn v-bind="attrs"
+                   v-on="on"
+                   icon>
+              <v-icon>
+                mdi-cog-outline
+              </v-icon>
+            </v-btn>
+          </template>
+          <v-card color="white">
+            <v-list>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>Aaden App</v-list-item-title>
+                  <v-list-item-subtitle>
+                    {{ $t('Version') }} {{ version }}
+                  </v-list-item-subtitle>
+                </v-list-item-content>
+
+                <v-list-item-action>
+                  <v-icon>mdi-heart</v-icon>
+                </v-list-item-action>
+              </v-list-item>
+            </v-list>
+            <v-divider></v-divider>
+            <v-list dense>
+              <template v-for="key in NeededKeys">
+                <v-list-item dense :key="'config'+key">
+                  <v-list-item-title>{{ key }}</v-list-item-title>
+                  <template v-if="typeof Config[key]==='boolean'">
+                    <v-list-item-action>
+                      <v-switch v-model="Config[key]" color="purple"></v-switch>
+                    </v-list-item-action>
+                  </template>
+                  <template v-else>
+                    <v-list-item-action>
+                      <v-text-field v-model="Config[key]" color="purple"></v-text-field>
+                    </v-list-item-action>
+                  </template>
+                </v-list-item>
+              </template>
+            </v-list>
+            <v-card-actions>
+              <v-btn text @click="hardReload">Clear</v-btn>
+              <v-spacer></v-spacer>
+              <v-btn text @click="menu = false">Cancel</v-btn>
+              <v-btn color="primary" text @click="useCurrentConfig">Save</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+        <v-menu
+            left
+            bottom
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn tile
+                   icon
+                   v-bind="attrs"
+                   v-on="on"
+            >
+              <v-icon>mdi-web</v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item @click="changeLanguage('ZH')"
+            >
+              <v-list-item-title>{{ $t('langZH') }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="changeLanguage('EN')">
+              <v-list-item-title>{{ $t('langEN') }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="changeLanguage('DE')">
+              <v-list-item-title>{{ $t('langDE') }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+
       </v-toolbar>
       <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
         <template v-if="!useOrderView">
@@ -260,15 +294,7 @@
               :text="  $t('VIP') "
               :loading="loading"
           />
-          <grid-button
-              v-if="hasBadPrint"
-              v-hide-simple
-              color="error"
-              @click="reprintAll"
-              icon=" mdi-printer-off"
-              :text=" $t('Erneut Drücken') +falsePrinterList.length"
-              :loading="loading"
-          />
+
         </div>
 
         <v-spacer></v-spacer>
@@ -309,6 +335,15 @@
         :is-boss="salesDialogServantIsBoss"
         :password="salesDialogServantPassword"
     />
+    <v-card elevation="0" style="position: fixed;left: 16px;bottom: 16px"
+            class="d-flex grey align-center pa-2 darken-2">
+      <div style="width: 72px" class="ml-2">
+        <v-img :src="require('@/assets/aadenLogo.png')"></v-img>
+      </div>
+      <div class="text-right ml-2 text-caption white--text">
+        {{ version }}
+      </div>
+    </v-card>
     <member-card-dialog
         :member-card-dialog-show="memberCardDialogShow"
         @visibility-changed="(e)=>memberCardDialogShow=e"
@@ -336,6 +371,7 @@ import Swal from 'sweetalert2'
 import Navgation from '../components/Navgation'
 import { dragscroll } from 'vue-dragscroll'
 import GlobalConfig, {
+  forceChangeLanguage,
   hardReload,
   NeededKeys,
   refreshGetter,
@@ -343,7 +379,6 @@ import GlobalConfig, {
   useCurrentConfig
 } from '../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
-import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
 import TimeDisplay from '@/components/TimeDisplay'
 import {
@@ -417,7 +452,7 @@ export default {
       menu1: null,
       servantList: [],
       version: version,
-      areas: [],
+
       buffer: '',
       ins: {},
       time: '',
@@ -466,10 +501,7 @@ export default {
   computed: {
     ...mapState(['pinDialogShow']),
     activeTables () {
-      return this.realArea.reduce((arr, a) => {
-        arr.push(...a.tables)
-        return arr
-      }, []).filter(t => t.usageStatus === '1')
+      return this.tableList.filter(t => t.usageStatus === '1')
     },
     servantWithTable () {
       return this.servantList.map(s => {
@@ -487,12 +519,10 @@ export default {
     tableInCurrentSection () {
       return this.tableList.filter(t => t.sectionId === this.currentSection.id)
     },
-    realArea: function () {
-      return this.areas.filter(a => a.tables.length > 0)
-    },
 
     orderList: function () {
-      return [this.tableList.filter(t => t.sectionId !== this.currentSection.id)].flat().filter(t => t.usageStatus === '1')
+      return [this.tableList.filter(t => t.sectionId !== this.currentSection.id)]
+        .flat().filter(t => t.usageStatus === '1')
     },
 
     hasBadPrint () {
@@ -505,6 +535,7 @@ export default {
 
   },
   methods: {
+    changeLanguage: forceChangeLanguage,
     showEditTableDialog (tableInfo) {
       console.log(tableInfo)
     },
@@ -602,11 +633,8 @@ export default {
       blockReady()
     },
     async refreshTables () {
-      if (!this.useOrderView) {
-        this.tableList = await getTableListWithCells()
-      } else {
-        this.areas = await getActiveTables()
-      }
+      this.tableList = await getTableListWithCells()
+      console.log(this.tableList)
     },
     async refreshPrinterList () {
       const res = (await getFalsePrinterList()) ?? []
@@ -720,7 +748,7 @@ export default {
     },
     async refreshSectionList () {
       this.sectionList = (await getSectionList())
-        .filter(it => it.id !== '6' && it.tableCount > 0)
+        .filter(it => it.tableCount > 0)
     },
     async checkTse () {
       this.tseStatus = true

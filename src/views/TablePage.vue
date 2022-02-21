@@ -3,33 +3,10 @@
     <template v-cloak>
       <v-main>
         <div style="display: flex; background: #f6f6f6;">
-          <div style="height: 100vh;width: 300px"
-               class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height">
+          <v-card elevation="0" style="height: 100vh;width: 300px"
+                  class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height">
             <div>
-              <v-card tile color="grey darken-3" dark class="d-flex justify-space-between"
-                      style="height: 48px;width: 100%;">
-                <div v-dragscroll style="overflow-x: scroll" class="flex-shrink-1">
-                  <v-item-group dark v-model="overrideConsumeTypeIndex"
-                                style="background: white;" class="d-flex">
-                    <template v-for="ct of consumeTypeList">
-                      <v-item v-bind:key="ct.id+'consumeType'" v-slot="{active,toggle}">
-                        <div class="consumeTypeItem"
-                             style="background: #000"
-                             :class="active?'active':''"
-                             @click="toggle">{{ ct.name }}
-                        </div>
-                      </v-item>
-                    </template>
-                  </v-item-group>
-                </div>
-                <div class="d-flex align-center px-1">
-                  <v-icon>mdi-format-list-bulleted-type</v-icon>
-                  <span class="ml-1" style="white-space: nowrap">
-                    {{ findConsumeTypeById(consumeTypeId) }}
-                  </span>
-                </div>
-              </v-card>
-              <v-card v-dragscroll
+              <v-card elevation="0" v-dragscroll
                       class="white">
                 <keep-alive>
                   <dish-card-list
@@ -43,7 +20,7 @@
                 </keep-alive>
               </v-card>
               <!--          购物车-->
-              <v-card v-dragscroll
+              <v-card v-dragscroll elevation="0"
                       v-show="cartListModel.list.length>0"
                       class="white">
                 <dish-card-list
@@ -60,7 +37,7 @@
                     :title="$t('新增菜品')"
                     :default-expand="true"/>
                 <v-toolbar dense>
-                  <v-toolbar-items class="flex-grow-1 mx-n3">
+                  <v-toolbar-items class="flex-grow-1 mx-n4">
                     <v-btn @click="cartListModel.clear()" class="mr-1" color="error">
                       <v-icon>
                         mdi-trash-can
@@ -81,7 +58,7 @@
             </div>
             <v-card>
               <v-toolbar dense v-if="this.tableDetailInfo.order.consumeTypeStatusId>1">
-                <v-toolbar-items class="flex-grow-1 mx-n3">
+                <v-toolbar-items class="flex-grow-1 mx-n4">
                   <v-btn :disabled="cartListModel.count()!==0"
                          @click="discountShow">
                     <v-icon>mdi-sale</v-icon>
@@ -96,28 +73,46 @@
                 </v-toolbar-items>
               </v-toolbar>
             </v-card>
-          </div>
+          </v-card>
           <v-card elevation="0" color="transparent" v-cloak
-                  class="flex-grow-1 d-flex"
+                  class="flex-grow-1 pa-2"
                   style="height: 100vh;max-width: calc(100vw - 600px)">
-            <v-card v-dragscroll color="transparent" elevation="0"
-                    style="max-width: 100%;"
-                    class="dragscroll dishCardListContainer flex-grow-1">
-
-              <v-item-group v-model="activeDCT" mandatory class="d-flex flex-wrap align-start elevation-1"
-                            style="position: fixed;z-index: 2;background: white;width: calc(100vw - 600px)">
-                <template v-for="ct of dct">
-                  <v-item v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
-                    <div class="categoryTypeItem"
+            <div class="d-flex">
+              <h1>点餐</h1>
+              <v-spacer></v-spacer>
+              <v-item-group dark v-model="overrideConsumeTypeIndex"
+                            class="d-flex">
+                <template v-for="ct of consumeTypeList">
+                  <v-item v-bind:key="ct.id+'consumeType'" v-slot="{active,toggle}">
+                    <div class="consumeTypeItem"
                          :class="active?'active':''"
                          @click="toggle">{{ ct.name }}
                     </div>
                   </v-item>
                 </template>
               </v-item-group>
-              <div class="mt-13"></div>
-              <v-sheet v-if="Config.alwaysShowDishesBellow||!activeCategoryId"
-                       class="px-2" color="transparent">
+            </div>
+            <v-divider class="my-2"></v-divider>
+            <v-item-group v-model="activeDCT"
+                          mandatory
+                          style="display: grid;
+                          grid-auto-columns: max-content;
+                          background: white;
+                          grid-auto-flow: column;position: fixed;bottom: 0;
+                          left: 300px;width: calc(100vw - 600px);z-index: 2">
+
+              <v-item v-for="ct of dct" v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
+                <v-card elevation="0" tile class="categoryTypeItem" @click="toggle"
+                        :class="active?'active':''"
+                >{{ ct.name }}
+                </v-card>
+              </v-item>
+
+            </v-item-group>
+            <v-card v-dragscroll color="transparent" elevation="0"
+                    style="max-width: 100%;"
+                    class="dragscroll dishCardListContainer flex-grow-1">
+              <v-sheet v-if="Config.alwaysShowDishesBellow||!activeCategoryId" color="transparent">
                 <v-item-group class="d-flex flex-wrap align-start">
                   <template v-for="category of filteredC">
                     <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
@@ -1467,7 +1462,8 @@ export default {
     }
   },
   watch: {
-    activeDCT: function () {
+    activeDCT: function (val) {
+      console.log(val)
       this.input = null
       this.displayInput = null
       this.activeCategoryId = null
@@ -1625,10 +1621,11 @@ tr:hover {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: calc(20% - 4px);
+  text-align: center;
+  width: calc(25% - 4px);
+  height: 72px;
   padding: 8px;
   margin: 2px;
-  height: 112px;
   text-transform: capitalize;
   font-size: 20px;
 }
@@ -1655,17 +1652,20 @@ tr:hover {
 }
 
 .categoryTypeItem {
-  width: fit-content;
-  padding: 8px 12px;
+  padding: 12px 24px;
+  background: white;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   text-transform: capitalize;
-  font-size: 20px;
+  font-size: 24px;
 }
 
 .categoryTypeItem.active {
   font-weight: bold;
   text-transform: capitalize;
-  color: #367aeb !important;
-  border-bottom: 2px solid #367aeb;
+  color: white;
+  background: #367aeb;
+  border: none;
 }
 
 .consumeTypeItem {

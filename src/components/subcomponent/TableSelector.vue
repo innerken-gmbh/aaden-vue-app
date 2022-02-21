@@ -16,7 +16,7 @@
             <div v-if="table.usageStatus==='1'" class="tableCard"
                  v-bind:class="{onCall:parseInt(table.callService)===1}"
                  v-on:click='tableSelected(table)'>
-              <div class="tableCardName tableBold">{{table.tableName}}
+              <div class="tableCardName tableBold">{{ table.tableName }}
               </div>
             </div>
             <div v-else @click="tableSelected(table)"
