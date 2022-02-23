@@ -91,10 +91,12 @@
             </div>
             <v-divider class="mb-2"></v-divider>
             <v-card
+                elevation="0"
+                tile
                 class="py-2 d-flex"
-                style="position: fixed;border-radius:12px;bottom: 16px;
-                          left: 324px;width: calc(100vw - 668px);
-                          z-index: 2;">
+                style="position: fixed;bottom: 0;
+                          left: 301px;width: calc(100vw - 620px);
+                          z-index: 2;border-top: 1px solid rgba(0,0,0,0.1);border-left: rgba(0,0,0,0.1)">
               <v-icon class="mx-4" color="warning" x-large>mdi-food-fork-drink</v-icon>
               <v-item-group v-dragscroll v-model="activeDCT"
                             mandatory
