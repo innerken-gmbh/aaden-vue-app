@@ -6,19 +6,20 @@
           <span v-code-hide class='codeRow'>{{ dish.code }}.</span><span>{{ dish.name }}</span>
         </div>
         <template>
-              <v-chip small label v-if="dish.overrideConsumeTypeId" color="primary">
-                {{ findConsumeTypeById(dish.overrideConsumeTypeId) }}</v-chip>
-              <span v-if="dish.isFree==='1'">{{ $t('Free') }}</span>
-              <template v-else>
+          <v-chip small label v-if="dish.overrideConsumeTypeId" color="primary">
+            {{ findConsumeTypeById(dish.overrideConsumeTypeId) }}
+          </v-chip>
+          <span v-if="dish.isFree==='1'">{{ $t('Free') }}</span>
+          <template v-else>
                 <span v-if="(dish.tempDiscountMod)&&(Math.abs(parseFloat(dish.tempDiscountMod))>0)">
                   <s style="font-size: xx-small">{{
                       dish.originPrice | priceDisplay
                     }}</s>{{ dish.realPrice | priceDisplay }}</span>
-                  <span v-else>
+            <span v-else>
                            {{ dish.realPrice | priceDisplay }}
                   </span>
-              </template>
           </template>
+        </template>
 
       </div>
       <span class="dishCount">&times;{{ dish.count }}</span>
@@ -40,8 +41,8 @@
         {{ dish.note }}
       </div>
     </div>
-    <div v-show="expand" class="editRow elevation-3">
-      <v-toolbar @click.stop dense flat>
+    <div v-show="expand">
+      <div @click.stop class="d-flex py-1">
         <template v-if="showEdit">
           <template>
             <v-icon class="mr-2" large
@@ -79,7 +80,7 @@
             </v-btn>
           </v-toolbar-items>
         </template>
-      </v-toolbar>
+      </div>
     </div>
   </div>
 </template>
@@ -187,9 +188,6 @@ export default {
   white-space: nowrap;
   padding: 2px 4px;
   padding-right: 0;
-}
-
-.editRow {
 }
 
 </style>

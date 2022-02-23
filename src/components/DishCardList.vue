@@ -1,25 +1,13 @@
 <template>
-  <v-card elevation="0">
-    <span style="display: none">{{ currentDish ? currentDish.name : '' }}</span>
-    <v-toolbar
-        dense
-        tile
-        flat
-        class="font-weight-bold"
-        :color="color" dark>
-      <v-toolbar-title>
-        {{ title }}
-      </v-toolbar-title>
-      <v-spacer/>
-      <div class="d-flex align-center">
-        <v-icon color="white">mdi-cash-usd</v-icon>
-        <span class="ml-1">{{ total | priceDisplay }}</span>
-        <v-icon color="white" class="ml-3">mdi-food</v-icon>
-        <span class="ml-1">{{ count }}</span>
-      </div>
-    </v-toolbar>
+  <v-card shaped elevation="0" class="d-flex flex-column flex-grow-1 " style="max-height:100%">
+    <div class="d-flex align-center pt-2 px-2">
+      <h2 class="pa-2"> {{ title }}</h2>
+      <v-spacer></v-spacer>
+      <slot name="action"></slot>
+    </div>
+    <v-divider></v-divider>
     <div v-dragscroll v-show="expand"
-         :style="{maxHeight: `calc(100vh - 48px - ${extraHeight})`}"
+         class="px-2"
          style="overflow-y: scroll"
     >
       <template v-for="(order,index) in dishList">
@@ -41,6 +29,22 @@
             :dish="discountDish"/>
       </template>
     </div>
+    <v-spacer></v-spacer>
+    <v-card elevation="4">
+      <div class="d-flex pa-2 px-4 align-baseline">
+
+        <v-icon>mdi-food</v-icon>
+        <span class="ml-1">{{ count }}</span>
+        <v-spacer></v-spacer>
+        <v-icon class="mr-2" size="28">mdi-cash-usd</v-icon>
+        <span class="ml-1 text-h4 grey--text text--darken-2">{{ total | priceDisplay }}</span>
+      </div>
+      <div class="pa-2">
+        <slot></slot>
+      </div>
+
+    </v-card>
+
   </v-card>
 </template>
 
@@ -82,7 +86,7 @@ export default {
     defaultExpand: {},
     showEdit: {},
     color: {
-      default: 'grey darken-3'
+      default: 'white'
     }
   },
   data: function () {

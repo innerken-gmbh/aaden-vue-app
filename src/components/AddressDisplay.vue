@@ -4,7 +4,7 @@
       <addresses-card :raw-address-info="address">
         <template v-slot:time>
           <v-card-subtitle>
-            <span v-if="address.date">{{ $t('Erwartete Zeit') }}:{{ address.date }}</span>
+            <span v-if="address.date">{{ $t('Erwartete Zeit') }}:</span>
             <template v-if="address.oldTime">
               <span>{{ address.oldTime }}</span>
             </template>
@@ -12,6 +12,16 @@
               {{ address.time }}
             </template>
           </v-card-subtitle>
+        </template>
+        <template #title>
+          <v-chip>
+            <template v-if="address.oldTime">
+              <span>{{ address.oldTime }}</span>
+            </template>
+            <template v-else>
+              {{ address.time }}
+            </template>
+          </v-chip>
         </template>
         <template v-slot:action>
           <v-card-actions>
@@ -23,18 +33,18 @@
             </v-btn>
             <template v-if="address.oldTime">
               <v-spacer></v-spacer>
-              <span>{{ $t('Zeit nach Bestätigung') }}: {{ address.time }}</span>
+              <span>{{ address.date }}</span>
             </template>
             <template v-else-if="consumeTypeStatusId<1">
               <div>
                 <template
-                  v-for="(time) in [0,5,10,15,20,30,60]"
+                    v-for="(time) in [0,5,10,15,20,30,60]"
                 >
                   <v-chip
-                    class="elevation-1"
-                    :key="time"
-                    color="success"
-                    @click="$emit('accept',time)"
+                      class="elevation-1"
+                      :key="time"
+                      color="success"
+                      @click="$emit('accept',time)"
                   >
                     + {{ time }}
                   </v-chip>
@@ -47,8 +57,8 @@
       </addresses-card>
     </template>
     <address-form
-      @address-submit="submit"
-      :menu-show.sync="showMenu">
+        @address-submit="submit"
+        :menu-show.sync="showMenu">
     </address-form>
   </v-card>
 

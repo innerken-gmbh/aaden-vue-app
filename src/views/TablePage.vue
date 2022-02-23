@@ -2,144 +2,156 @@
   <div>
     <template v-cloak>
       <v-main>
-        <div style="display: flex; background: #f6f6f6;">
-          <v-card elevation="0" style="height: 100vh;width: 300px"
+        <div style="display: grid; grid-template-columns: 300px auto; background: #f6f6f6;">
+          <v-card rounded elevation="8" style="height: 100vh"
                   class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height">
-            <div>
-              <v-card elevation="0" v-dragscroll
-                      class="white">
-                <keep-alive>
-                  <dish-card-list
-                      :dish-list-model="orderListModel"
-                      :discount-ratio="discountRatio"
-                      :default-expand="cartListModel.list.length===0"
-                      :click-callback="addToSplit"
-                      extra-height="96px"
-                      :title="$t('haveOrderedDish')"
-                  />
-                </keep-alive>
-              </v-card>
-              <!--          购物车-->
-              <v-card v-dragscroll elevation="0"
-                      v-show="cartListModel.list.length>0"
-                      class="white">
-                <dish-card-list
-                    ref="cartList"
-                    @current-dish-change="cartCurrentDish=$event"
-                    :reset-current-expand-index="true"
-                    :show-number="true"
-                    :extra-height="'196px'"
-                    :color="'#707070'"
-                    :reverse="true"
-                    :dish-list-model="cartListModel"
-                    :show-edit="true"
-                    :click-callback="removeDish"
-                    :title="$t('新增菜品')"
-                    :default-expand="true"/>
-                <v-toolbar dense>
-                  <v-toolbar-items class="flex-grow-1 mx-n4">
-                    <v-btn @click="cartListModel.clear()" class="mr-1" color="error">
-                      <v-icon>
-                        mdi-trash-can
-                      </v-icon>
-                    </v-btn>
-                    <v-btn :loading="isSendingRequest"
-                           @click="orderDish(cartListModel.list,false)" class="mr-1" dark>
-                      <v-icon>mdi-printer-off</v-icon>
-                    </v-btn>
-                    <v-btn :loading="isSendingRequest" color="primary" class="flex-grow-1"
-                           @click="orderDish(cartListModel.list)" dark>
-                      <v-icon left>mdi-printer</v-icon>
-                      {{ $t('下单') }}
-                    </v-btn>
-                  </v-toolbar-items>
-                </v-toolbar>
-              </v-card>
-            </div>
-            <v-card>
-              <v-toolbar dense v-if="this.tableDetailInfo.order.consumeTypeStatusId>1">
-                <v-toolbar-items class="flex-grow-1 mx-n4">
-                  <v-btn :disabled="cartListModel.count()!==0"
-                         @click="discountShow">
-                    <v-icon>mdi-sale</v-icon>
-                    {{ $t('discount') }}
+            <keep-alive>
+              <dish-card-list
+                  v-if="cartListModel.list.length===0"
+                  :dish-list-model="orderListModel"
+                  :discount-ratio="discountRatio"
+                  :default-expand="cartListModel.list.length===0"
+                  :click-callback="addToSplit"
+                  :title="$t('haveOrderedDish')"
+              >
+                <v-btn block :disabled="this.tableDetailInfo.order.consumeTypeStatusId<=1"
+                       x-large
+                       color="success"
+                       @click="jumpToPayment()">
+                  <v-icon size="28" left>mdi-calculator-variant</v-icon>
+                  <span class="text-h6">{{ $t('payBill') }}</span>
+                </v-btn>
+              </dish-card-list>
+            </keep-alive>
+            <dish-card-list
+                v-if="cartListModel.list.length>0"
+                ref="cartList"
+                @current-dish-change="cartCurrentDish=$event"
+                :reset-current-expand-index="true"
+                :show-number="true"
+                :reverse="true"
+                color="primary"
+                :dish-list-model="cartListModel"
+                :show-edit="true"
+                :click-callback="removeDish"
+                :title="$t('新增菜品')"
+                :default-expand="true">
+              <template #action>
+                <v-btn @click="cartListModel.clear()" elevation="0" color="error">
+                  <v-icon left>
+                    mdi-trash-can
+                  </v-icon>
+                  清空购物车
+                </v-btn>
+              </template>
+              <template>
+                <div class="d-flex">
+                  <v-btn large :loading="isSendingRequest"
+                         @click="orderDish(cartListModel.list,false)" class="mr-1" dark>
+                    <v-icon>mdi-printer-off</v-icon>
                   </v-btn>
-                  <v-btn :disabled="cartListModel.count()!==0"
-                         color="primary" class="flex-grow-1 ml-1"
-                         @click="jumpToPayment()">
-                    <v-icon left>mdi-calculator-variant</v-icon>
-                    {{ $t('payBill') }}
+                  <v-btn large :loading="isSendingRequest" color="primary" class="flex-grow-1"
+                         @click="orderDish(cartListModel.list)" dark>
+                    <v-icon size="28" left>mdi-printer</v-icon>
+                    <span class="text-h6">  {{ $t('下单') }}</span>
                   </v-btn>
-                </v-toolbar-items>
-              </v-toolbar>
-            </v-card>
+                </div>
+              </template>
+            </dish-card-list>
           </v-card>
           <v-card elevation="0" color="transparent" v-cloak
-                  class="flex-grow-1 pa-2"
-                  style="height: 100vh;max-width: calc(100vw - 600px)">
-            <div class="d-flex">
-              <h1>点餐</h1>
+                  class="flex-grow-1 pa-2 px-4"
+                  style="height: 100vh;">
+            <div class="d-flex pl-2 align-baseline" style="height: 52px">
+              <h1>{{ tableDetailInfo.tableBasicInfo.name }}</h1>
+              <v-icon size="20" class="ml-8">mdi-office-building-marker</v-icon>
+              <h3 class="ml-2 font-weight-regular">{{ findConsumeTypeById(consumeTypeId) }}</h3>
+              <v-icon size="20" class="ml-8">mdi-account-box</v-icon>
+              <h3 class="ml-2 font-weight-regular">{{ tableDetailInfo.servant }}</h3>
               <v-spacer></v-spacer>
-              <v-item-group dark v-model="overrideConsumeTypeIndex"
-                            class="d-flex">
-                <template v-for="ct of consumeTypeList">
-                  <v-item v-bind:key="ct.id+'consumeType'" v-slot="{active,toggle}">
-                    <div class="consumeTypeItem"
-                         :class="active?'active':''"
-                         @click="toggle">{{ ct.name }}
-                    </div>
-                  </v-item>
-                </template>
-              </v-item-group>
-            </div>
-            <v-divider class="my-2"></v-divider>
-            <v-item-group v-model="activeDCT"
-                          mandatory
-                          style="display: grid;
-                          grid-auto-columns: max-content;
-                          background: white;
-                          grid-auto-flow: column;position: fixed;bottom: 0;
-                          left: 300px;width: calc(100vw - 600px);z-index: 2">
+              <div class="d-flex align-center mr-n2">
+                <v-btn icon elevation="0" color="warning" class="mr-4">
+                  <v-icon>mdi-swap-horizontal</v-icon>
+                </v-btn>
 
-              <v-item v-for="ct of dct" v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
-                <v-card elevation="0" tile class="categoryTypeItem" @click="toggle"
-                        :class="active?'active':''"
-                >{{ ct.name }}
-                </v-card>
-              </v-item>
-
-            </v-item-group>
-            <v-card v-dragscroll color="transparent" elevation="0"
-                    style="max-width: 100%;"
-                    class="dragscroll dishCardListContainer flex-grow-1">
-              <v-sheet v-if="Config.alwaysShowDishesBellow||!activeCategoryId" color="transparent">
-                <v-item-group class="d-flex flex-wrap align-start">
-                  <template v-for="category of filteredC">
-                    <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
-                      <div @click="changeCategory(category.id,toggle)"
-                           :class="(active?'active elevation-4':'')+
-                           (Config.alwaysShowDishesBellow?' menu-always':' menu-item')"
-                           :style="{backgroundColor:category.color,
-                            color: getColorLightness(category.color)>128?'#000':'#fff'}">
-                        {{ category.name }}
+                <v-item-group dark v-model="overrideConsumeTypeIndex"
+                              style="max-width: 360px;overflow-y: scroll"
+                              class="d-flex">
+                  <template v-for="ct of consumeTypeList">
+                    <v-item v-bind:key="ct.id+'consumeType'" v-slot="{active,toggle}">
+                      <div class="consumeTypeItem mr-1"
+                           :class="active?'active':''"
+                           @click="toggle">{{ ct.name }}
                       </div>
                     </v-item>
                   </template>
                 </v-item-group>
-              </v-sheet>
-              <div class="dishCardList" v-if="activeCategoryId||Config.alwaysShowDishesBellow">
-                <div v-if="activeCategoryId&&!Config.alwaysShowDishesBellow"
-                     style="width: 100%;height: 112px;
-                        border: 2px solid #ff8c50;
+              </div>
+
+            </div>
+            <v-divider class="mb-2"></v-divider>
+            <v-card
+                class="py-2 d-flex"
+                style="position: fixed;border-radius:12px;bottom: 16px;
+                          left: 324px;width: calc(100vw - 668px);
+                          z-index: 2;">
+              <v-icon class="mx-4" color="warning" x-large>mdi-food-fork-drink</v-icon>
+              <v-item-group v-dragscroll v-model="activeDCT"
+                            mandatory
+                            class="mx-2"
+                            style="display: grid;
+                          grid-auto-columns: max-content;
+                          grid-gap: 8px;
+                          grid-auto-flow: column;overflow-x: scroll">
+
+                <v-item v-for="ct of dct" v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
+                  <v-card elevation="0"
+                          style="border-radius: 12px"
+                          class="categoryTypeItem" @click="toggle"
+                          :class="active?'active':''">{{ ct.name }}
+                  </v-card>
+                </v-item>
+
+              </v-item-group>
+            </v-card>
+            <v-card v-dragscroll color="transparent" elevation="0"
+                    class="dragscroll dishCardListContainer flex-grow-1">
+              <div v-if="!activeCategoryId">
+                <v-item-group style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 12px;">
+                  <template v-for="category of filteredC">
+                    <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
+                      <v-card elevation="0" rounded style="
+                      width: 100%;
+                      height: 112px;
+                      font-size: 20px;
+                        display: -webkit-box;
+                        word-break: break-all;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;"
+                              class="d-flex align-center justify-center text-center pa-2"
+                              @click="changeCategory(category.id,toggle)"
+                              :style="{backgroundColor:category.color,
+                            color: getColorLightness(category.color)>128?'#000':'#fff'}">
+                        {{ category.name }}
+                      </v-card>
+                    </v-item>
+                  </template>
+                </v-item-group>
+              </div>
+              <div class="dishCardList" v-if="activeCategoryId">
+                <v-card elevation="0" v-if="activeCategoryId"
+                        style="width: 100%;height: 112px;
                         color: #ff8c50;
                         border-radius: 4px"
-                     @click="activeCategoryId=null" class="d-flex align-center"
+                        @click="activeCategoryId=null" class="d-flex align-center"
                 >
                   <div style="width: 100%" class="d-flex flex-column justify-center align-center flex-wrap">
                     <v-icon large color="#ff8c50">mdi-menu-open</v-icon>
                     <div>{{ $t('return') }}</div>
                   </div>
-                </div>
+                </v-card>
                 <template v-for="dish of filteredDish">
                   <dish-block
                       v-ripple
@@ -157,37 +169,32 @@
                       @click="orderOneDish(dish.code)"/>
                 </template>
               </div>
+              <div style="width: 100%;height: 160px"></div>
             </v-card>
           </v-card>
         </div>
       </v-main>
       <!--      right panel-->
-      <v-navigation-drawer app stateless permanent right width="300px">
-        <v-toolbar dense dark>
-          <div class="d-flex align-center justify-space-between" style="width: 100%">
-            <span class="bigTableName">
-              {{ tableDetailInfo.tableBasicInfo.name }}
-            </span>
-            <div class="d-flex">
-              <span class="icon-line ml-2">
-                <v-icon color="white">mdi-account-outline</v-icon>
-                <span class="ml-1">    {{ tableDetailInfo.servant }}</span>
-              </span>
-              <span class="icon-line ml-2">
-                <v-icon color="white">mdi-calendar-text</v-icon>
-                <span class="ml-1">
-                  {{ tableDetailInfo.order.id }}
-                </span>
-              </span>
-            </div>
+      <v-navigation-drawer app stateless permanent right width="320px">
+        <v-card style="height: calc(100vh)" class="d-flex flex-column">
+          <address-display
+              :should-open-menu.sync="addressFormOpen"
+              @address-change="submitRawAddressInfo"
+              v-if="consumeTypeId===2"
+              @accept="acceptOrderWithTime"
+              @reject="rejectOrder"
+              :consume-type-status-id="consumeTypeStatusId"
+              :raw-address-info="realAddressInfo"/>
+          <div class="d-flex align-center pa-2" style="height: 60px">
+            <h2 class="pa-2">操作</h2>
+            <v-spacer/>
+            <v-icon class="mr-2">mdi-calendar-text</v-icon>
+            {{ tableDetailInfo.order.id }}
           </div>
-          <v-spacer></v-spacer>
-        </v-toolbar>
-        <v-card tile width="300px" height="calc(100vh - 48px)"
-                class="d-flex flex-shrink-0 flex-column">
+          <v-divider></v-divider>
           <v-card v-if="input&&input.length>0" style="overflow: scroll;"
                   class="flex-shrink-1 blue lighten-5">
-            <v-btn @click="input='';displayInput=''" color="error" block>
+            <v-btn x-large @click="input='';displayInput=''" color="error" block>
               <v-icon>mdi-close</v-icon>
             </v-btn>
             <template v-for="(dish,index) in searchDish">
@@ -210,145 +217,99 @@
               </v-card>
             </template>
           </v-card>
-          <div v-else-if="cartListModel.count()===0" class="pa-2"
-          >
-            <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px">
-              <grid-button
-                  :loading="isSendingRequest"
-                  icon="mdi-arrow-left"
-                  :text="$t('Home')"
-                  @click="back"
-              />
-              <grid-button
-                  :loading="isSendingRequest"
-                  icon="mdi-printer"
-                  color="#fec945"
-                  :text="$t('重新打印')"
-                  @click="reprintOrder"
-              />
-              <grid-button
-                  :loading="isSendingRequest"
-                  icon="mdi-printer-pos"
-                  :text="$t('临时账单')"
-                  color="#24b646"
-                  @click="zwitchenBon"
-              />
-              <grid-button
-                  :loading="isSendingRequest"
-                  icon="mdi-swap-horizontal"
-                  color="#ff8c50"
-                  :text=" $t('tableChange') "
-                  @click="showTableChange = true"
-              />
-              <grid-button
-                  :loading="isSendingRequest"
-                  color="#272727"
-                  icon="mdi-merge"
-                  :text="$t('tableMerge')"
-                  @click=" showTableMerge = true"
-              />
-              <grid-button
-                  :loading="isSendingRequest"
-                  icon="mdi-account"
-                  :text="$t('Übergabe')"
-                  color="#3f49dd"
-                  @click="changeServant"
-              />
-              <grid-button
-                  :loading="isSendingRequest"
-                  v-if="consumeTypeId===2"
-                  icon="mdi-map"
-                  :text="$t('customerAddress')"
-                  color="indigo"
-                  @click="addressFormOpen=true"
-              />
-              <template v-else-if="consumeTypeStatusId<2">
+          <template v-else>
+            <div class="pa-2">
+              <div style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px">
                 <grid-button
                     :loading="isSendingRequest"
-                    icon="mdi-check"
-                    :text="$t('Akzept.')"
-                    color="success"
-                    @click="acceptOrder"
+                    icon="mdi-arrow-left"
+                    :text="$t('Home')"
+                    @click="back"
+                />
+                <grid-button
+                    :disabled="cartListModel.count()!==0"
+                    :loading="isSendingRequest"
+                    icon="mdi-sale"
+                    :text="$t('discount')"
+                    @click="discountShow"
                 />
                 <grid-button
                     :loading="isSendingRequest"
-                    icon="mdi-close"
-                    :text="$t('Ablehnen')"
-                    color="error"
-                    @click="rejectOrder"
+                    icon="mdi-printer"
+                    color="warning"
+                    :text="$t('重新打印')"
+                    @click="reprintOrder"
                 />
-              </template>
-              <grid-button
-                  :loading="isSendingRequest"
-                  v-if="consumeTypeId===1||consumeTypeId===5"
-                  icon="mdi-silverware"
-                  :text="$t('ChangeToBuffet')"
-                  color="#ff7961"
-                  @click="buffetDialogShow=true"
-              />
+                <grid-button
+                    :loading="isSendingRequest"
+                    icon="mdi-printer-pos"
+                    :text="$t('临时账单')"
+                    color="#24b646"
+                    @click="zwitchenBon"
+                />
+                <grid-button
+                    :loading="isSendingRequest"
+                    icon="mdi-swap-horizontal"
+                    color="#ff8c50"
+                    :text=" $t('tableChange') "
+                    @click="showTableChange = true"
+                />
+                <grid-button
+                    :loading="isSendingRequest"
+                    color="#272727"
+                    icon="mdi-merge"
+                    :text="$t('tableMerge')"
+                    @click=" showTableMerge = true"
+                />
+                <grid-button
+                    :loading="isSendingRequest"
+                    icon="mdi-account"
+                    :text="$t('Übergabe')"
+                    color="#3f49dd"
+                    @click="changeServant"
+                />
+                <grid-button
+                    :loading="isSendingRequest"
+                    v-if="consumeTypeId===2"
+                    icon="mdi-map"
+                    :text="$t('customerAddress')"
+                    color="indigo"
+                    @click="addressFormOpen=true"
+                />
+                <template v-else-if="consumeTypeStatusId<2">
+                  <grid-button
+                      :loading="isSendingRequest"
+                      icon="mdi-check"
+                      :text="$t('Akzept.')"
+                      color="success"
+                      @click="acceptOrder"
+                  />
+                  <grid-button
+                      :loading="isSendingRequest"
+                      icon="mdi-close"
+                      :text="$t('Ablehnen')"
+                      color="error"
+                      @click="rejectOrder"
+                  />
+                </template>
+                <grid-button
+                    :loading="isSendingRequest"
+                    v-if="consumeTypeId===1||consumeTypeId===5"
+                    icon="mdi-silverware"
+                    :text="$t('ChangeToBuffet')"
+                    color="#ff7961"
+                    @click="buffetDialogShow=true"
+                />
+              </div>
             </div>
             <buffet-status-card
-                class="mt-2"
+                class="mt-1 mx-2"
                 v-if="consumeTypeId!==1&&consumeTypeId!==2&&consumeTypeId!==5"
                 :buffet-setting-info="realAddressInfo"
                 :current-round="tableDetailInfo.tableBasicInfo.buffetRound"></buffet-status-card>
-            <address-display
-                :should-open-menu.sync="addressFormOpen"
-                @address-change="submitRawAddressInfo"
-                v-if="consumeTypeId===2"
-                @accept="acceptOrderWithTime"
-                @reject="rejectOrder"
-                :consume-type-status-id="consumeTypeStatusId"
-                :raw-address-info="realAddressInfo"/>
-          </div>
-          <div v-else style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
-            <grid-button
-                @click="cartListModel.clear()"
-                icon="mdi-delete-sweep"
-                :text="$t('清空')"
-                color="error"
-            ></grid-button>
-            <grid-button
-                @click="orderDish(cartListModel.list,false)"
-                :loading="isSendingRequest"
-                icon="mdi-printer-off"
-                :text="$t('下单不打印')"
-                color="#000"
-            ></grid-button>
-            <grid-button
-                :loading="isSendingRequest"
-                icon="mdi-printer"
-                :text="$t('下单')"
-                @click="orderDish(cartListModel.list)"
-            ></grid-button>
-            <template v-if="cartCurrentDish">
-              <grid-button
-                  @click="cartCurrentDish.change(-1)"
-                  icon="mdi-minus"
-                  color="error"
-              ></grid-button>
-              <grid-button
-                  :disabled="cartCurrentDish.haveMod<1"
-                  @click="cartCurrentDish.edit();cartCurrentDish.change(-1)"
-                  icon="mdi-tune"
-                  color="warning"
-                  :text="$t('配料')"
-              ></grid-button>
-              <grid-button
-                  @click="cartCurrentDish.change(1)"
-                  icon="mdi-plus"
-                  color="success"
-              ></grid-button>
-              <grid-button
-                  @click="editNote"
-                  icon="mdi-notebook-edit"
-                  color="#666666"
-                  :text="$t('备注')"
-              ></grid-button>
-            </template>
-
-          </div>
+          </template>
           <v-spacer></v-spacer>
+
           <div class="pa-2">
             <v-text-field
                 class="ma-2"
@@ -365,6 +326,7 @@
 
         </v-card>
       </v-navigation-drawer>
+
       <template v-if="splitOrderListModel.list.length>0">
         <div class="bottomCart surface d-flex justify-end"
              style="background: rgba(0,0,0,0.4);  top: 0;
@@ -416,6 +378,7 @@ left: 304px"
           </div>
         </div>
       </template>
+
       <v-dialog max-width="300" v-model="extraDishShow">
         <v-card width="550">
           <v-card-title class="font-weight-bold"> {{ currentDish.name }}</v-card-title>
@@ -529,7 +492,7 @@ import DishCardList from '../components/DishCardList'
 import ModificationDrawer from '../components/ModificationDrawer'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import CheckOutDrawer from '../components/CheckOutDrawer'
-import { findDish, goHome, processDishList, setDefaultValueForApply } from '@/oldjs/StaticModel'
+import { findDish, goHome, processDishList } from '@/oldjs/StaticModel'
 import { addToTimerList, clearAllTimer, printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
@@ -600,6 +563,7 @@ export default {
   },
   data: function () {
     return {
+      tab: null,
       addressFormOpen: null,
       consumeTypeList: [],
       keyboardLayout: GlobalConfig.topKeyboardKey.split(',').concat(keyboardLayout),
@@ -814,14 +778,9 @@ export default {
         }
         dish.name = dish.dishName
         dish.name = dish.name.length > 28
-          ? dish.name.substr(0, 28) + '...' : dish.name
+          ? dish.name.substring(0, 28) + '...' : dish.name
         if (dish.haveMod > 0) {
-          if (GlobalConfig.useConfigButton) {
-            const apply = setDefaultValueForApply(dish.options, [])
-            this.submitModification(apply, dish, count, apply)
-          } else {
-            this.showModification(dish, count)
-          }
+          this.showModification(dish, count)
           blockReady()
           return
         }
@@ -1044,7 +1003,6 @@ export default {
       } else {
         this.goHome()
       }
-
       blockReady()
     },
     async searchDishClick (code) {
@@ -1412,6 +1370,9 @@ export default {
   },
   computed: {
     ...mapState(['pinDialogShow']),
+    totalPrice: function () {
+      return this.tableDetailInfo.order?.totalPrice ?? 0
+    },
     telHint: function () {
       const info = this.userInfo
       return info.reduce((arr, i) => {
@@ -1570,16 +1531,10 @@ tr:hover {
 .dishCardList {
   padding: 8px;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   margin-bottom: 120px;
   width: 100%;
-  grid-gap: 6px;
-}
-
-@media screen and (max-width: 1280px ) {
-  .dishCardList {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  grid-gap: 12px;
 }
 
 .dragscroll {
@@ -1588,7 +1543,7 @@ tr:hover {
 
 .dishCardListContainer {
   width: 100%;
-  height: 100vh;
+  height: 100%;
 }
 
 .bottomCart {
@@ -1655,7 +1610,6 @@ tr:hover {
   padding: 12px 24px;
   background: white;
   text-align: center;
-  border: 1px solid rgba(0, 0, 0, 0.1);
   text-transform: capitalize;
   font-size: 24px;
 }
@@ -1669,8 +1623,10 @@ tr:hover {
 }
 
 .consumeTypeItem {
+  border-radius: 8px;
   width: max-content;
   padding: 8px 12px;
+  background: white;
   white-space: nowrap;
   text-transform: capitalize;
   font-size: 20px;

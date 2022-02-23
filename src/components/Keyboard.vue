@@ -1,5 +1,5 @@
 <template>
-  <v-card style="grid-auto-rows: 54px;" elevation="0"
+  <v-card style="grid-auto-rows: 64px;" elevation="0"
           class="keyboard">
     <template v-for="(i,index) in keys">
       <v-btn :key="'key'+i+index" @click="input(i)"
@@ -8,7 +8,7 @@
              style="height: 100%"
       >
         <v-icon v-if="!isNaN(i)" x-large>mdi-numeric-{{ i }}</v-icon>
-        <v-icon x-large v-else-if="i.startsWith('mdi')">{{i}}</v-icon>
+        <v-icon x-large v-else-if="i.startsWith('mdi')">{{ i }}</v-icon>
         <template v-else><span style="font-size: 36px">{{ i }}</span></template>
       </v-btn>
     </template>

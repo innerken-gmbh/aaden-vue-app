@@ -264,7 +264,7 @@
         <div class="d-flex pa-2  pt-4 align-center caption">
           <time-display/>
         </div>
-        <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 4px" class="pa-2">
+        <div style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px" class="pa-2">
           <grid-button
               @click="popAuthorize('boss',toManage)"
               icon="mdi-home-analytics"
@@ -335,6 +335,13 @@
         :is-boss="salesDialogServantIsBoss"
         :password="salesDialogServantPassword"
     />
+    <v-card elevation="0" style="position: fixed;bottom: 16px"
+            class="d-flex align-center pa-2">
+      <div class="viewItem">堂食</div>
+      <div class="viewItem">外卖</div>
+      <div class="viewItem">跑堂</div>
+      <div class="viewItem">预定</div>
+    </v-card>
     <v-card elevation="0" style="position: fixed;left: 16px;bottom: 16px"
             class="d-flex grey align-center pa-2 darken-2">
       <div style="width: 72px" class="ml-2">
