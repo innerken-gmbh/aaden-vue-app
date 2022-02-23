@@ -157,7 +157,7 @@
       </v-card>
       <!--        下面是侧边栏的逻辑-->
     </v-main>
-    <v-navigation-drawer permanent stateless app right width="300px">
+    <v-navigation-drawer permanent stateless app right width="320px">
       <v-toolbar dense dark>
         <v-toolbar-items class="ml-n4">
           <v-btn :loading="loading" @click="reprintAll" v-hide-simple v-if="hasBadPrint" color="error">
@@ -251,7 +251,7 @@
         </v-menu>
 
       </v-toolbar>
-      <v-card class="flex-shrink-0 d-flex flex-column" style="width: 300px;height: calc(100vh - 48px)">
+      <v-card class="flex-shrink-0 d-flex flex-column" style="height: calc(100vh - 48px)">
         <template v-if="!useOrderView">
           <template v-if="isEditing">
             <div v-if="currentTable" class="currentTablePanel">
