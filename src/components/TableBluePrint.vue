@@ -32,7 +32,7 @@
         </vue-draggable-resizable>
       </template>
     </div>
-    <v-card class="pa-2" v-if="editing" style="position: absolute;right:224px;bottom: 24px">
+    <v-card class="pa-2" v-if="editing" style="position: absolute;right:24px;top: 24px">
       <h1>{{ $t('缩放') }}</h1>
       <div class="d-flex align-center">0.3x
         <v-slider hide-details :min="0.3" :step="0.01" :max="1" v-model="scale"></v-slider>

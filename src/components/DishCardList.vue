@@ -30,7 +30,8 @@
       </template>
     </div>
     <v-spacer></v-spacer>
-    <v-card elevation="4">
+    <v-card elevation="0">
+      <v-divider></v-divider>
       <div class="d-flex pa-2 px-4 align-baseline">
 
         <v-icon>mdi-food</v-icon>

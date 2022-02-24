@@ -1,18 +1,27 @@
 const TableInfoMetaDataSetting = {
-  createTimestamp: {},
-  servantName: {},
+  createTimestamp: { icon: 'mdi-clock-outline' },
+  servantName: { icon: 'mdi-account' },
   dishCount: { icon: 'mdi-silverware-fork-knife', classFunc: (v) => parseInt(v) === 0 ? 'red' : '' },
   totalPrice: { icon: 'mdi-currency-eur' },
-  buffetCount: {},
-  buffetRound: {},
+  buffetCount: { icon: 'mdi-account-multiple' },
+  buffetRound: { icon: 'mdi-animation-outline' },
   childCount: { icon: 'mdi-human-child' },
-  drinkCount: {},
+  drinkCount: { icon: 'mdi-beer' },
   seatCount: { icon: 'mdi-account-outline' }
 }
 
 const defaultMetaData = {
-  icon: null,
-  classFunc: null
+  icon: null, classFunc: null
+}
+
+export const TableFixedSectionId = {
+  Togo: 6,
+  togoFilter (t) {
+    return parseInt(t.sectionId) === TableFixedSectionId.Togo
+  },
+  notTogoFilter (t) {
+    return parseInt(t.sectionId) !== TableFixedSectionId.Togo
+  }
 }
 
 export const TableInfoMetaData = Object.entries(TableInfoMetaDataSetting).map(entry => {

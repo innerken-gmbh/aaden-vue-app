@@ -3,7 +3,7 @@
     <template v-cloak>
       <v-main>
         <div style="display: grid; grid-template-columns: 300px auto; background: #f6f6f6;">
-          <v-card rounded elevation="8" style="height: 100vh"
+          <v-card rounded elevation="1" style="height: 100vh"
                   class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height">
             <keep-alive>
               <dish-card-list
@@ -822,7 +822,8 @@ export default {
         }).sort((a, b) => {
           const rank = GlobalConfig.defaultSort.split(',')
           const idToRank = (id) => {
-            return 10 - rank.indexOf(id.toString())
+            const index = rank.indexOf(id.toString())
+            return 10 - (index === -1 ? 10 : index)
           }
           const [ra, rb] = [a.id, b.id].map(idToRank)
           return ra > rb ? -1 : 1

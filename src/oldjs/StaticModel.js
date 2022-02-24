@@ -135,7 +135,7 @@ export const DefaultAddressInfo = {
   email: '',
   oldTime: '',
   date: '',
-  time: '',
+  time: 'ASAP',
   deliveryMethod: '',
   edit: false
 }

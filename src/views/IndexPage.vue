@@ -34,23 +34,11 @@
         <v-toolbar-items class="mx-2">
           <update-fragment></update-fragment>
           <v-btn
+
               elevation="0"
               :color="useOrderView?'primary':'transparent'"
               @click="useOrderView=!useOrderView">
             {{ $t('跑堂模式') }}
-          </v-btn>
-          <v-btn
-              @click="showOtherOrder=!showOtherOrder"
-              style="width: 240px"
-              class="mr-n4"
-              elevation="0">
-            <v-icon left>mdi-truck-fast</v-icon>
-            {{ $t('Togo') }}
-            <v-spacer/>
-            <v-chip v-if="!showOtherOrder" color="warning" label>{{ orderList.length }}</v-chip>
-            <v-chip v-else color="warning" label>
-              <v-icon>mdi-chevron-up</v-icon>
-            </v-chip>
           </v-btn>
         </v-toolbar-items>
       </template>
@@ -120,24 +108,38 @@
         </template>
       </v-card>
       <v-card v-else class="flex-grow-1 d-flex" style="position: relative">
-        <v-card
-            v-if="showOtherOrder"
-            elevation="2"
-            class="flex-shrink-0"
-            style="position: absolute;right: 8px;
-            width: 240px;
-            overflow-y: scroll;
-            max-height: calc(100vh - 48px);
-             display: grid;
-            grid-template-columns: 100%;grid-auto-rows: 56px;grid-gap: 4px;z-index: 2">
-          <table-list-item
-              style="width: 240px"
-              v-for="table in orderList"
-              @click="openOrEnterTable(table.tableName)"
-              :key="table.id" :table-info="table"
+        <div v-if="currentSection.id!=='6'&&takeawayList.length>0" style="position: fixed;bottom: 0;
+            width:calc(100vw - 320px);
+           z-index: 10">
+          <v-btn
+              v-if="!useOrderView"
+              @click="showOtherOrder=!showOtherOrder"
+              large
+              color="warning"
           >
-          </table-list-item>
-        </v-card>
+            <v-icon left>mdi-truck-fast</v-icon>
+            {{ $t('Togo') }}
+          </v-btn>
+          <v-card
+              v-if="showOtherOrder"
+              elevation="2"
+              class="flex-shrink-0 pa-2"
+              style="
+            left: 0;
+             display: grid;
+             grid-template-rows: auto;
+              overflow-x: scroll;
+            grid-auto-columns: min-content;grid-gap: 8px;z-index: 2;grid-auto-flow: column">
+            <table-gird-item
+                style="width: 240px"
+                v-for="table in takeawayList"
+                @click="openOrEnterTable(table.tableName)"
+                :key="table.id" :table-info="table"
+            >
+            </table-gird-item>
+          </v-card>
+        </div>
+
         <div style="height: calc(100vh - 48px);width: 100%;overflow: scroll">
           <template v-if="currentSection.id!=='6'">
             <table-blue-print
@@ -317,7 +319,8 @@
           <v-card-text>
             <draggable v-model="tableInfoDisplayOrder">
               <transition-group>
-                <v-card class="pa-2 d-flex" v-for="element in tableInfoDisplayOrder" :key="element">
+                <v-card class="pa-2 d-flex"
+                        v-for="element in tableInfoDisplayOrder" :key="element">
                   {{ $t(element) }}
                   <v-spacer></v-spacer>
                   <v-icon>mdi-drag-horizontal-variant</v-icon>
@@ -335,14 +338,7 @@
         :is-boss="salesDialogServantIsBoss"
         :password="salesDialogServantPassword"
     />
-    <v-card elevation="0" style="position: fixed;bottom: 16px"
-            class="d-flex align-center pa-2">
-      <div class="viewItem">堂食</div>
-      <div class="viewItem">外卖</div>
-      <div class="viewItem">跑堂</div>
-      <div class="viewItem">预定</div>
-    </v-card>
-    <v-card elevation="0" style="position: fixed;left: 16px;bottom: 16px"
+    <v-card v-if="false" elevation="0" style="position: fixed;left: 16px;bottom: 16px"
             class="d-flex grey align-center pa-2 darken-2">
       <div style="width: 72px" class="ml-2">
         <v-img :src="require('@/assets/aadenLogo.png')"></v-img>
@@ -382,7 +378,6 @@ import GlobalConfig, {
   hardReload,
   NeededKeys,
   refreshGetter,
-  setDeviceId,
   useCurrentConfig
 } from '../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
@@ -409,6 +404,8 @@ import { mapMutations, mapState } from 'vuex'
 import UpdateFragment from '@/components/fragments/UpdateFragment'
 import TableListItem from '@/components/Table/TableListItem'
 import draggable from 'vuedraggable'
+import TableGirdItem from '@/components/Table/TableGridItem'
+import { TableFixedSectionId } from '@/api/tableService'
 
 const keyboardLayout =
     [
@@ -424,6 +421,7 @@ export default {
     dragscroll
   },
   components: {
+    TableGirdItem,
     TableListItem,
     UpdateFragment,
     OpenTableForm,
@@ -443,8 +441,7 @@ export default {
   },
   data: function () {
     return {
-      tseStatus: true,
-      tseInfo: '',
+
       servantPassword: '',
       showOpenTableDialog: null,
       salesDialogServantIsBoss: false,
@@ -527,9 +524,8 @@ export default {
       return this.tableList.filter(t => t.sectionId === this.currentSection.id)
     },
 
-    orderList: function () {
-      return [this.tableList.filter(t => t.sectionId !== this.currentSection.id)]
-        .flat().filter(t => t.usageStatus === '1')
+    takeawayList: function () {
+      return this.tableList.filter(TableFixedSectionId.togoFilter)
     },
 
     hasBadPrint () {
@@ -699,26 +695,7 @@ export default {
         return
       }
       if (t !== '') {
-        const escapeStr = '--//'
-        if (t.startsWith(escapeStr)) {
-          t = t.substr(escapeStr.length)
-          if (t.startsWith('d')) {
-            t = t.substr(1)
-            setDeviceId(t)
-          }
-          if (t === 'c') {
-            GlobalConfig.Protocol = 'http://'
-            useCurrentConfig()
-          } else if (t === 'h') {
-            GlobalConfig.Protocol = 'https://'
-            useCurrentConfig()
-          }
-          if (t.startsWith('f/')) {
-            t = t.substr(2)
-            // eslint-disable-next-line no-eval
-            eval(t)
-          }
-        } else if (t.toLowerCase() === 'w') {
+        if (t.toLowerCase() === 'w') {
           popAuthorize('', requestOutTable)
         } else if (t === 'l') {
           popAuthorize('', this.toManage)
@@ -757,20 +734,17 @@ export default {
       this.sectionList = (await getSectionList())
         .filter(it => it.tableCount > 0)
     },
-    async checkTse () {
-      this.tseStatus = true
-      this.tseInfo = 'OK'
-    },
+
     async initPage () {
       window.onkeydown = this.listenKeyDown
-      this.refreshTables()
       this.refreshPrinterList()
-      getAllDishes()
-      this.checkTse()
+      await getAllDishes()
       await getConsumeTypeList()
+      await this.refreshTables()
+
       const list = [
         setInterval(this.refreshTables, 5000),
-        setInterval(this.refreshPrinterList, 5000)
+        setInterval(this.refreshPrinterList, 20000)
       ]
       if (GlobalConfig.getFocus) {
         list.push(setInterval(this.autoGetFocus, 1000))
