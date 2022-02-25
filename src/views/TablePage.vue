@@ -501,7 +501,6 @@ import GlobalConfig from '../oldjs/LocalGlobalSettings'
 
 import { debounce } from 'lodash-es'
 import DishBlock from '@/components/DishBlock'
-import moment from 'moment'
 import IKUtils from 'innerken-js-utils'
 import Keyboard from '@/components/Keyboard'
 import DiscountDialog from '@/components/fragments/DiscountDialog'
@@ -514,6 +513,7 @@ import BuffetStatusCard from '@/components/fragments/BuffetStatusCard'
 
 import TableChangeSelector from '@/components/fragments/TableChangeSelector'
 import i18n from '../i18n'
+import dayjs from 'dayjs'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -1103,10 +1103,10 @@ export default {
     },
     async acceptOrderWithTime (time) {
       const addressInfo = JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
-      let timeReal = moment()
+      let timeReal = dayjs()
       if (addressInfo) {
         if (addressInfo.date && addressInfo.time) {
-          timeReal = moment(addressInfo.date + ' ' + addressInfo.time, 'YYYY-MM-DD HH:mm')
+          timeReal = dayjs(addressInfo.date + ' ' + addressInfo.time, 'YYYY-MM-DD HH:mm')
         }
       }
       timeReal.add(time, 'm')
