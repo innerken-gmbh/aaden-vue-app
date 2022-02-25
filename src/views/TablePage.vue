@@ -91,26 +91,28 @@
             </div>
             <v-divider class="mb-2"></v-divider>
             <v-card
-                elevation="0"
-                tile
-                class="py-2 d-flex"
-                style="position: fixed;bottom: 0;
-                          left: 301px;width: calc(100vw - 620px);
-                          z-index: 2;border-top: 1px solid rgba(0,0,0,0.1);border-left: rgba(0,0,0,0.1)">
-              <v-icon class="mx-4" color="warning" x-large>mdi-food-fork-drink</v-icon>
+                elevation="4"
+                color="white"
+                class="d-flex"
+                style="position: fixed;bottom: 16px;
+                right: 0;
+                margin: auto;
+                width: min-content;
+                border-radius: 8px;
+                          left: 0;max-width: calc(100vw - 684px);
+                          z-index: 2;">
               <v-item-group v-dragscroll v-model="activeDCT"
                             mandatory
-                            class="mx-2"
                             style="display: grid;
                           grid-auto-columns: max-content;
                           grid-gap: 8px;
                           grid-auto-flow: column;overflow-x: scroll">
 
                 <v-item v-for="ct of dct" v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
-                  <v-card elevation="0"
-                          style="border-radius: 12px"
+                  <v-card :elevation="active?4:0"
+                          style="border-radius: 8px"
                           class="categoryTypeItem" @click="toggle"
-                          :class="active?'active':''">{{ ct.name }}
+                          :dark="active">{{ ct.name }}
                   </v-card>
                 </v-item>
 
@@ -1610,8 +1612,7 @@ tr:hover {
 }
 
 .categoryTypeItem {
-  padding: 12px 24px;
-  background: white;
+  padding: 8px 12px;
   text-align: center;
   text-transform: capitalize;
   font-size: 24px;
