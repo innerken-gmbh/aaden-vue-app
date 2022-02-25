@@ -3,9 +3,9 @@
     <div class="flex-grow-1 pa-2"
          ref="blueprintContainer"
          style="height:1080px;width: 1920px;
-       overflow: hidden;transform-origin: left top"
+       overflow: hidden;transform-origin: left top;background: #e8e8e8;
+"
          :style="{
-          background:currentSection.image?'no-repeat url('+Config.getBase()+currentSection.image+')':'#f5f5f5',
           transform:'scale('+scale+')'
        }">
       <template v-for="i in tablesInCurrentSection">

@@ -1,8 +1,10 @@
 <template>
   <v-app>
-    <keep-alive>
-      <router-view/>
-    </keep-alive>
+    <transition>
+      <keep-alive>
+        <router-view/>
+      </keep-alive>
+    </transition>
     <pin-dialog></pin-dialog>
   </v-app>
 

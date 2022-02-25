@@ -145,7 +145,7 @@ export default {
   width: 100%;
   height: 100%;
   border-radius: 8px;
-
+  background: white;
   cursor: pointer;
   box-shadow: 0 6px 8px #d0d2d9;
 }
