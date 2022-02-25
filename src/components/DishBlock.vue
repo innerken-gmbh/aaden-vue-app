@@ -12,7 +12,7 @@
              v-show="count>0">{{ count }}</span>
       <span v-code-hide style="font-size: 16px">{{ code }}</span>
       <span :style="{fontSize:fontSize+'px'}" class="name">
-        {{ dishName }}<template v-if="haveMod>0"><span style="color: red"> *</span></template>
+        {{ dishName }}
       </span>
       <div style="align-items: center;flex-wrap: wrap">
         <div v-if="isFree==='1'"
@@ -21,7 +21,9 @@
         </div>
         <div v-else class="price d-flex align-center text--secondary">
           {{ price | priceDisplay }}
+          <template v-if="haveMod>0"><span style="color: red"> *</span></template>
         </div>
+
       </div>
     </v-card>
   </v-lazy>

@@ -129,7 +129,11 @@
       <v-tabs-items touchless v-model="currentView">
         <!--        堂食-->
         <v-tab-item style="position: relative">
-          <div style="height: calc(100vh - 48px);width: 100%;overflow: scroll">
+          <div style="
+          height: calc(100vh - 48px);
+          width: 100%;
+          overflow: scroll
+">
             <template>
               <table-blue-print
                   @edit-table-clicked="showEditTableDialog"
@@ -144,9 +148,12 @@
           <div style="
            position: fixed;
            bottom: 0;
-           max-width:100vw;
+           max-width:calc(100vw - 320px);
            z-index: 10">
-            <v-item-group style="width: max-content" v-model="bottomTabIndex">
+            <v-item-group
+                style="width: max-content"
+                v-model="bottomTabIndex"
+            >
               <v-card class="d-flex">
                 <v-item #default="{active,toggle}">
                   <v-card :color="active?'':'transparent'" class="pa-2" :dark="active" elevation="0"
@@ -164,14 +171,11 @@
                 <v-item @click="shouldHideBottomBar(1)" #default="{active,toggle}">
                   <v-card :color="active?'':'transparent'" class="pa-2" :dark="active" elevation="0"
                           @click="shouldHideBottomBar(1,toggle)">
-
                     <div class="pa-1">
                       <v-icon left>mdi-view-grid</v-icon>
                       分区
                     </div>
-
                   </v-card>
-
                 </v-item>
                 <v-item @click="shouldHideBottomBar(2)" #default="{active,toggle}">
                   <v-card :color="active?'':'transparent'" class="pa-2" :dark="active" elevation="0"
@@ -197,10 +201,11 @@
              display: grid;
              grid-template-rows: auto;
               overflow-x: scroll;
-            grid-auto-columns: min-content;
-            grid-gap: 8px;z-index: 2;grid-auto-flow: column">
+            grid-auto-columns: max-content;
+            grid-gap: 8px;z-index: 2;grid-auto-flow: column
+                ">
                   <table-gird-item
-                      style="width: 136px"
+                      style="width: 144px"
                       v-for="table in takeawayList"
                       @click="openOrEnterTable(table.tableName)"
                       :key="table.id" :table-info="table"
@@ -210,6 +215,7 @@
               </v-tab-item>
               <v-tab-item>
                 <v-card
+                    tile
                     v-dragscroll
                     elevation="2"
                     class="flex-shrink-0 pa-2"
@@ -298,7 +304,8 @@
       <!--        下面是侧边栏的逻辑-->
     </v-main>
 
-    <v-card class="pa-2" style="position: fixed;right: 0;bottom:0;width: 320px">
+    <v-card class="pa-2 py-6"
+            style="position: fixed;right: 0;bottom:0;width: 320px;z-index: 15">
 
       <v-text-field
           :placeholder=" $t('请输入桌号')"
