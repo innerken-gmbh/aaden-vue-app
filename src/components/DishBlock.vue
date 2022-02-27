@@ -1,32 +1,29 @@
 <template>
-  <v-lazy @click="$emit('click')" :options="{threshold: .5}"
-          min-height="112px"
-          height="112px"
-  >
-    <v-card elevation="0"
-            style="position:relative;"
-            :style="{backgroundColor:''+displayColor,color:''+foreground,}"
-            class="dishBlock d-flex flex-column fill-height justify-center align-center pa-2">
+
+  <v-card height="112px" elevation="0" @click="$emit('click')"
+          style="position:relative;"
+          :style="{backgroundColor:''+displayColor,color:''+foreground,}"
+          class="dishBlock d-flex flex-column fill-height justify-center align-center pa-2">
        <span style="font-size: 16px;border-radius: 4px;position: absolute;right: 0; top:0"
              class=" px-2 mr-1 white--text red"
              v-show="count>0">{{ count }}</span>
-      <span v-code-hide style="font-size: 16px">{{ code }}</span>
-      <span :style="{fontSize:fontSize+'px'}" class="name">
+    <span v-code-hide style="font-size: 16px">{{ code }}</span>
+    <span :style="{fontSize:fontSize+'px'}" class="name">
         {{ dishName }}
       </span>
-      <div style="align-items: center;flex-wrap: wrap">
-        <div v-if="isFree==='1'"
-             class="price d-flex align-center green lighten-3 white--text px-1 rounded">
-          {{ $t('Frei') }}
-        </div>
-        <div v-else class="price d-flex align-center text--secondary">
-          {{ price | priceDisplay }}
-          <template v-if="haveMod>0"><span style="color: red"> *</span></template>
-        </div>
-
+    <div style="align-items: center;flex-wrap: wrap">
+      <div v-if="isFree==='1'"
+           class="price d-flex align-center green lighten-3 white--text px-1 rounded">
+        {{ $t('Frei') }}
       </div>
-    </v-card>
-  </v-lazy>
+      <div v-else class="price d-flex align-center text--secondary">
+        {{ price | priceDisplay }}
+        <template v-if="haveMod>0"><span style="color: red"> *</span></template>
+      </div>
+
+    </div>
+  </v-card>
+
 </template>
 
 <script>
@@ -49,6 +46,7 @@ export default {
 
 <style scoped>
 .dishBlock {
+  border-radius: 12px;
   cursor: pointer;
 }
 

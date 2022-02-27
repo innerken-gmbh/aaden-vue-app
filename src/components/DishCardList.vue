@@ -3,7 +3,15 @@
     <div class="d-flex align-center pt-2 px-2">
       <h2 class="pa-2"> {{ title }}</h2>
       <v-spacer></v-spacer>
-      <slot name="action"></slot>
+      <slot name="action">
+        <v-btn v-if="discountDish" @click="$emit('discount-clear')"
+               elevation="0" color="warning">
+          <v-icon left>
+            mdi-sale
+          </v-icon>
+          {{ discountDish.realPrice | priceDisplay }}
+        </v-btn>
+      </slot>
     </div>
     <v-divider></v-divider>
     <div v-dragscroll v-show="expand"

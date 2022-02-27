@@ -5,8 +5,11 @@
         <div style="display: grid; grid-template-columns: 300px auto; background: #f6f6f6;">
           <v-card rounded elevation="1" style="height: 100vh"
                   class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height">
+            <v-btn :loading="isSendingRequest" x-large color="primary" tile elevation="0" height="60px"  @click="back">
+              <v-icon large>mdi-arrow-left</v-icon>{{$t('Home')}}</v-btn>
             <keep-alive>
               <dish-card-list
+                  @discount-clear="discountClear"
                   v-if="cartListModel.list.length===0"
                   :dish-list-model="orderListModel"
                   :discount-ratio="discountRatio"
@@ -124,7 +127,7 @@
                 <v-item-group style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 12px;">
                   <template v-for="category of filteredC">
                     <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
-                      <v-card elevation="0" rounded style="
+                      <v-card elevation="0" style="
                       width: 100%;
                       height: 112px;
                       font-size: 20px;
@@ -132,6 +135,7 @@
                         word-break: break-all;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  border-radius: 12px;
   overflow: hidden;
   text-overflow: ellipsis;"
                               class="d-flex align-center justify-center text-center pa-2"
@@ -148,7 +152,7 @@
                 <v-card elevation="0" v-if="activeCategoryId"
                         style="width: 100%;height: 112px;
                         color: #ff8c50;
-                        border-radius: 4px"
+                        border-radius: 12px"
                         @click="activeCategoryId=null" class="d-flex align-center"
                 >
                   <div style="width: 100%" class="d-flex flex-column justify-center align-center flex-wrap">
@@ -196,7 +200,7 @@
             {{ tableDetailInfo.order.id }}
           </div>
           <v-divider></v-divider>
-          <v-card v-if="input&&input.length>0" style="overflow: scroll;"
+          <v-card v-if="searchDish.length>0" style="overflow: scroll;"
                   class="flex-shrink-1 blue lighten-5">
             <v-btn x-large @click="input='';displayInput=''" color="error" block>
               <v-icon>mdi-close</v-icon>
@@ -224,12 +228,6 @@
           <template v-else>
             <div class="pa-2">
               <div style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px">
-                <grid-button
-                    :loading="isSendingRequest"
-                    icon="mdi-arrow-left"
-                    :text="$t('Home')"
-                    @click="back"
-                />
                 <grid-button
                     :disabled="cartListModel.count()!==0"
                     :loading="isSendingRequest"
@@ -496,8 +494,8 @@ import DishCardList from '../components/DishCardList'
 import ModificationDrawer from '../components/ModificationDrawer'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import CheckOutDrawer from '../components/CheckOutDrawer'
-import { findDish, goHome, processDishList } from '@/oldjs/StaticModel'
-import { addToTimerList, clearAllTimer, printNow } from '@/oldjs/Timer'
+import { findDish, getCategoryListWithCache, goHome, processDishList } from '@/oldjs/StaticModel'
+import { printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../oldjs/LocalGlobalSettings'
 
@@ -567,19 +565,23 @@ export default {
   },
   data: function () {
     return {
+
       tab: null,
       addressFormOpen: null,
       consumeTypeList: [],
+
       keyboardLayout: GlobalConfig.topKeyboardKey.split(',').concat(keyboardLayout),
       displayInput: '',
+
       checkoutShow: false,
       extraDishShow: false,
       modificationShow: false,
       discountModelShow: null,
       buffetDialogShow: false,
+
       isSendingRequest: false,
+
       oldMod: null,
-      breakCount: 0,
       checkOutType: 'checkOut',
       checkOutModel: {
         total: 0,
@@ -627,9 +629,7 @@ export default {
       servantPassword: ''
     }
   },
-  beforeDestroy () {
-    clearAllTimer()
-  },
+
   methods: {
     getColorLightness,
     mergeTable (tableName) {
@@ -669,6 +669,7 @@ export default {
         this.showDishesTableChange = false
       })
     },
+
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
     },
@@ -755,11 +756,7 @@ export default {
           this.discountRatio = discountRatio
         }
       } catch (e) {
-        this.breakCount++
-        if (this.breakCount > 1) {
-          showTimedAlert(e)
-          this.goHome()
-        }
+
       }
     },
     discountShow () {
@@ -833,34 +830,19 @@ export default {
       }
     },
     async getCategory (consumeTypeId = 1, force = false) {
+      console.log(this.categories.length, force)
       if (this.categories.length === 0 || force) {
         console.log('reloadDishUseConsumeTypeId', consumeTypeId)
-        const res = await hillo.get('Category.php?op=withConsumeType', {
-          consumeTypeId: consumeTypeId,
-          lang: GlobalConfig.lang
-        })
-        for (const i of res.content) {
-          if (!i.isActive) {
-            i.isActive = false
-          }
-        }
-        this.categories = res.content.filter(c => {
-          return c.dishes.length > 0
-        }).map((c, i) => {
-          c.color = c.color === '' ? '#FFFFFF' : c.color
-          return c
-        })
 
+        this.categories = await getCategoryListWithCache(consumeTypeId)
         this.dishes = processDishList(this.categories.reduce((arr, i) => {
           arr.push(...i.dishes.map(d => {
             d.displayColor = d.color === '' ? '#FFFFFF' : d.color
-
             d.foreground = getColorLightness(d.displayColor) > 128 ? '#000' : '#fff'
             return IKUtils.deepCopy(d)
           }))
           return arr
         }, []))
-
         this.cartListModel.setDishList(this.dishes)
       }
     },
@@ -975,6 +957,7 @@ export default {
     },
     async initialUI (forceReload = false) {
       this.input = ''
+      this.displayInput = ''
       this.discountModelShow = false
       this.buffetDialogShow = false
       this.overrideConsumeTypeIndex = null
@@ -992,7 +975,9 @@ export default {
       this.updateActiveDCT(0)
     },
     back () {
-      if (this.discountModelShow) {
+      if (this.displayInput !== '') {
+        this.displayInput = ''
+      } else if (this.discountModelShow) {
         this.discountModelShow = false
       } else if (this.buffetDialogShow) {
         this.buffetDialogShow = false
@@ -1015,9 +1000,12 @@ export default {
       await this.findAndOrderDish(code)
       this.displayInput = ''
     },
-    async submitDiscount () {
+    discountClear () {
+      this.submitDiscount('')
+    },
+    async submitDiscount (discountStr = null) {
       if (this.$refs.discount) {
-        await this.$refs.discount.submitDiscount()
+        await this.$refs.discount.submitDiscount(discountStr)
       }
     },
 
@@ -1055,24 +1043,10 @@ export default {
     anyMenuOpen () {
       return this.modificationShow || this.checkoutShow ||
           this.discountModelShow || this.extraDishShow ||
-          this.pinDialogShow || Swal.isVisible()
+          this.pinDialogShow || Swal.isVisible() ||
+          this.showDishesTableChange || this.showTableChange || this.showTableMerge
     },
-    autoGetFocus (force = false) {
-      if (!force) {
-        if (this.anyMenuOpen()) {
-          return
-        }
-        if (document.getElementsByClassName('v-overlay').length > 0) {
-          return
-        }
-      }
 
-      this.$nextTick(() => {
-        if (this.$refs.ins !== document.activeElement) {
-          this.$refs.ins.focus()
-        }
-      })
-    },
     async getTableDetail () {
       try {
         const res = await hillo.silentGet('Tables.php', {
@@ -1086,17 +1060,7 @@ export default {
         }
         await this.getOrderedDish()
       } catch (e) {
-        this.breakCount++
-        console.log(e, this.breakCount)
-        if (this.breakCount > 2) {
-          if (this.$route.name !== 'index') {
-            showTimedAlert('info',
-              this.$t('JSTableGetTableDetailFailed') + e.data?.info,
-              1000, this.goHome)
-          }
-        } else {
-          setTimeout(this.getTableDetail, 5000)
-        }
+
       }
     },
     async acceptOrder (reason = 'ok') {
@@ -1129,13 +1093,25 @@ export default {
       if (this.isSendingRequest) {
         return
       }
+      if (this.displayInput === null) {
+        this.displayInput = ''
+      }
       switch (e.key) {
+        case 'Backspace':
+          this.displayInput = ''
+          this.input = this.displayInput
+          break
         case 'Escape':
           this.back()
           break
         case 'Enter':
           this.insDecode(this.readBuffer())
           break
+        default:
+          if (e.target.nodeName !== 'INPUT') {
+            this.displayInput += e.key
+            this.input = this.displayInput
+          }
       }
     },
 
@@ -1295,13 +1271,7 @@ export default {
       }, 20)
     },
     async realInitial () {
-      this.breakCount = 0
       window.onkeydown = this.listenKeyDown
-
-      if (GlobalConfig.getFocus) {
-        this.autoGetFocus()
-        addToTimerList(setInterval(this.autoGetFocus, 1000))
-      }
       await this.initialUI(true)
     },
     updateActiveDCT (index) {
@@ -1316,7 +1286,7 @@ export default {
     },
     debounce: debounce((f) => {
       f()
-    }, 90),
+    }, 90, { trailing: true, leading: false }),
     getCodeAndCountFromInput (input = '') {
       let [code, count] = ['', 1]
       if (input.includes('*')) {
@@ -1333,6 +1303,8 @@ export default {
     updateSearchDish () {
       if (this.input) {
         this.searchDish = this.searchDishes()
+      } else {
+        this.searchDish = []
       }
     },
     searchDishes () {
@@ -1340,23 +1312,31 @@ export default {
       if (this.input) {
         if (this.input !== '' && !this.input.includes('/')) {
           const [buffer] = this.getCodeAndCountFromInput(this.input)
-          return list.filter((item) => {
-            return item.code.toLowerCase().startsWith(buffer.toLowerCase())
-          }).sort((a, b) => {
-            if (a.code.length > b.code.length) {
+          const result = []
+          for (const d of list) {
+            if (d.code.toLowerCase().startsWith(buffer.toLowerCase())) {
+              d.rank = 999 + d.code.length
+              result.push(d)
+            } else if (d.dishName.toLowerCase().startsWith(buffer.toLowerCase())) {
+              d.rank = d.dishName.length
+              result.push(d)
+            }
+            if (result.length > 5) {
+              break
+            }
+          }
+          return result.sort((a, b) => {
+            if (a.rank > b.rank) {
               return 1
-            } else if (a.code.length === b.code.length) {
+            } else if (a.rank === b.rank) {
               return 0
             } else {
               return -1
             }
-          }).concat(list.filter((item) => {
-            return item.dishName.toLowerCase().startsWith(buffer.toLowerCase()) &&
-                !item.code.toLowerCase().startsWith(buffer.toLowerCase())
-          }))
+          })
         }
       }
-      return list
+      return []
     },
     filterDish () {
       let list = this.dishes
@@ -1450,6 +1430,7 @@ export default {
       this.realInitial()
     },
     realConsumeTypeId (val) {
+      console.log('I change')
       this.reloadDish(val, true)
     }
   },

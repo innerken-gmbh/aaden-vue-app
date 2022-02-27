@@ -8,6 +8,28 @@ import IKUtils from 'innerken-js-utils'
 
 let dishesList = []
 const dishesDictionary = {}
+const categoryCache = {}
+
+export async function getCategoryListWithCache (consumeTypeId) {
+  if (!categoryCache[consumeTypeId]) {
+    const res = await hillo.get('Category.php?op=withConsumeType', {
+      consumeTypeId: consumeTypeId,
+      lang: GlobalConfig.lang
+    })
+    for (const i of res.content) {
+      if (!i.isActive) {
+        i.isActive = false
+      }
+    }
+    categoryCache[consumeTypeId] = res.content.filter(c => {
+      return c.dishes.length > 0
+    }).map((c) => {
+      c.color = c.color === '' ? '#FFFFFF' : c.color
+      return c
+    })
+  }
+  return categoryCache[consumeTypeId]
+}
 
 export function findDish (code) {
   return dishesDictionary[code.toLowerCase()]

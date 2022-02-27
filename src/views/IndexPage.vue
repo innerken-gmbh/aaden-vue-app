@@ -68,7 +68,6 @@
 </template>
 <script>
 import { jumpTo, popAuthorize } from '@/oldjs/common'
-import { goHome } from '@/oldjs/StaticModel'
 import { getServantList } from '@/oldjs/api'
 
 const version = require('../../package.json').version
@@ -107,7 +106,7 @@ export default {
     jumpToVip () {
     },
     goHome () {
-      goHome()
+      location.href = '/'
     }
   },
   async mounted () {
