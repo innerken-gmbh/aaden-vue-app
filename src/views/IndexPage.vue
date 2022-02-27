@@ -40,12 +40,12 @@
             </v-list-item-icon>
             <v-list-item-title> {{ $t('CHEF') }}</v-list-item-title>
           </v-list-item>
-          <v-list-item link>
-            <v-list-item-icon @click="jumpToVip">
-              <v-icon>mdi-smart-card</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>{{ $t('VIP') }}</v-list-item-title>
-          </v-list-item>
+<!--          <v-list-item link>-->
+<!--            <v-list-item-icon @click="jumpToVip">-->
+<!--              <v-icon>mdi-smart-card</v-icon>-->
+<!--            </v-list-item-icon>-->
+<!--            <v-list-item-title>{{ $t('VIP') }}</v-list-item-title>-->
+<!--          </v-list-item>-->
         </v-list>
         <v-spacer>
 

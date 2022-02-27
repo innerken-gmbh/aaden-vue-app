@@ -27,18 +27,18 @@
                     style="padding:2px 8px;font-size: small;border-radius: 24px">{{ activeList.length }}</span>
             </div>
           </v-item>
-          <v-item #default="{active,toggle}">
-            <div
-                @click="toggle"
-                class="navigationPillItem"
-                :class="active?' active':' text--disabled'"
-            >
-              <v-icon left>mdi-truck-fast</v-icon>
-              外卖
-              <span class="error white--text ml-2"
-                    style="font-size: small;border-radius: 24px;padding: 2px 8px">{{ takeawayList.length }}</span>
-            </div>
-          </v-item>
+<!--          <v-item #default="{active,toggle}">-->
+<!--            <div-->
+<!--                @click="toggle"-->
+<!--                class="navigationPillItem"-->
+<!--                :class="active?' active':' text&#45;&#45;disabled'"-->
+<!--            >-->
+<!--              <v-icon left>mdi-truck-fast</v-icon>-->
+<!--              外卖-->
+<!--              <span class="error white&#45;&#45;text ml-2"-->
+<!--                    style="font-size: small;border-radius: 24px;padding: 2px 8px">{{ takeawayList.length }}</span>-->
+<!--            </div>-->
+<!--          </v-item>-->
           <v-item #default="{active,toggle}">
             <div
                 @click="toggle"
@@ -49,17 +49,17 @@
               <span style="padding: 2px 4px">跑堂订单</span>
             </div>
           </v-item>
-          <v-item #default="{active,toggle}">
-            <div
-                @click="toggle"
-                class="navigationPillItem"
-                :class="active?' active':' text--disabled'"
-            >
+<!--          <v-item #default="{active,toggle}">-->
+<!--            <div-->
+<!--                @click="toggle"-->
+<!--                class="navigationPillItem"-->
+<!--                :class="active?' active':' text&#45;&#45;disabled'"-->
+<!--            >-->
 
-              <v-icon left>mdi-calendar</v-icon>
-              预定
-            </div>
-          </v-item>
+<!--              <v-icon left>mdi-calendar</v-icon>-->
+<!--              预定-->
+<!--            </div>-->
+<!--          </v-item>-->
         </div>
       </v-item-group>
 
@@ -300,7 +300,7 @@
         </div>
       </v-tab-item>
       <!--        外卖-->
-      <v-tab-item></v-tab-item>
+<!--      <v-tab-item></v-tab-item>-->
       <!--        跑堂-->
       <v-tab-item>
         <v-card v-dragscroll
@@ -358,13 +358,7 @@
         </v-card>
       </v-tab-item>
       <!--        预定-->
-      <v-tab-item></v-tab-item>
-      <!--        销售额-->
-      <v-tab-item></v-tab-item>
-      <!--        老板后台-->
-      <v-tab-item>
-
-      </v-tab-item>
+<!--      <v-tab-item></v-tab-item>-->
 
     </v-tabs-items>
     <v-card v-if="buffer"
