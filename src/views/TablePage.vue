@@ -6,7 +6,7 @@
           <v-card rounded elevation="1" style="height: 100vh"
                   class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height">
             <v-btn :loading="isSendingRequest" x-large color="primary" tile elevation="0" height="60px"  @click="back">
-              <v-icon large>mdi-arrow-left</v-icon>{{$t('Home')}}</v-btn>
+              <v-icon>mdi-arrow-left</v-icon>{{$t('Home')}}</v-btn>
             <keep-alive>
               <dish-card-list
                   @discount-clear="discountClear"
