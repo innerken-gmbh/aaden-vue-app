@@ -2,7 +2,7 @@ import hillo from 'hillo'
 
 import i18n from '../i18n'
 import GlobalConfig from './LocalGlobalSettings'
-import { getActiveTables, jumpTo, jumpToTable, requestOutTable } from './common'
+import { jumpTo } from './common'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import IKUtils from 'innerken-js-utils'
 
@@ -29,7 +29,10 @@ export function processDishList (dishList) {
 export async function getAllDishesWithCache (force = false) {
   if (force || dishesList.length === 0) {
     const res = await hillo.get('Dishes.php',
-      { lang: i18n.locale.toUpperCase(), usePrintModAsName: GlobalConfig.usePrintModAsName | 0 })
+      {
+        lang: i18n.locale.toUpperCase(),
+        usePrintModAsName: GlobalConfig.usePrintModAsName | 0
+      })
     dishesList.length = 0
     dishesList = processDishList(res.content)
   }
@@ -100,18 +103,7 @@ export function setDefaultValueForApply (modOptions, _mod) {
 }
 
 export async function goHome () {
-  if (GlobalConfig.FMCVersion) {
-    const t = (await getActiveTables()).reduce((arr, i) => {
-      return arr.concat(i.tables)
-    }, []).find(f => parseInt(f.usageStatus) !== 0)
-    if (!t) {
-      requestOutTable()
-    } else {
-      jumpToTable(t.tableId, t.tableName)
-    }
-  } else {
-    jumpTo('index.html')
-  }
+  jumpTo('order')
 }
 
 export const DefaultBuffetSetting = {

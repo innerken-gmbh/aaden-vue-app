@@ -15,6 +15,7 @@ export default {
     }
   },
   created () {
+    this.time = showTime()
     setInterval(() => {
       this.time = showTime()
     }, 1000)

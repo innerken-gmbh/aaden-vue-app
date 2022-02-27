@@ -275,9 +275,9 @@
   "配料": "Ingredients",
   "配送方式": "Delivery method",
   "重新打印": "Reprint",
+  "重置所有桌子": "",
   "金额": "Amount",
   "金额或百分比": "Amount or percentage",
   "销售额": "Sales",
-  "验证错误": "Validation error",
-  "重置所有桌子": ""
+  "验证错误": "Validation error"
 }

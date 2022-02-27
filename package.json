@@ -19,6 +19,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@pqina/flip": "^1.7.7",
     "aaden-base-model": "^0.1.115",
     "core-js": "^3.19.2",
     "dayjs": "^1.10.7",

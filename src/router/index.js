@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import IndexPage from '../views/IndexPage'
 import TablePage from '../views/TablePage'
 import { clearAllTimer } from '@/oldjs/Timer'
+import BossPage from '@/views/BossPage'
+import FirstPage from '@/views/FirstPage'
 
 Vue.use(VueRouter)
 
@@ -11,15 +13,25 @@ const routes = [
     path: '/',
     name: 'index',
     props: true,
-    component: IndexPage
+    component: IndexPage,
+    children: [
+
+      {
+        path: 'boss',
+        name: 'boss',
+        component: BossPage
+      },
+      {
+        path: '',
+        name: 'order',
+        component: FirstPage
+      }
+    ]
   },
   {
     path: '/table/:id',
     name: 'table',
     props: true,
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: TablePage
   }
 ]

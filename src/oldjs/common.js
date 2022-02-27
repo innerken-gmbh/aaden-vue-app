@@ -537,7 +537,6 @@ export function remove (arr, index) {
 
 export function jumpTo (url, params) {
   clearAllTimer()
-  url = url.split('.')[0]
   router.replace({
     name: url,
     params
