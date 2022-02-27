@@ -3,17 +3,18 @@
     <div class="flex-grow-1 pa-2"
          ref="blueprintContainer"
          style="height:1080px;width: 1920px;
-       overflow: hidden;transform-origin: left top;background: #e8e8e8;
-"
+       overflow: hidden;
+       transform-origin: left top;
+       background: #e8e8e8;"
          :style="{
           transform:'scale('+scale+')'
        }">
       <template v-for="i in tablesInCurrentSection">
         <vue-draggable-resizable
-            :min-height="60"
+            :min-height="80"
             :min-width="60"
-            :max-height="120"
-            :max-width="120"
+            :max-height="180"
+            :max-width="180"
             :draggable="editing"
             :resizable="editing"
             :key="i.id"
@@ -21,7 +22,6 @@
             :x="i.x" :y="i.y"
             @activated="selectTable(i)"
             @dragstop="(...args)=>onDrag(i,...args)"
-            :active="false"
             @resizestop="(...args)=>onResize(i,...args)"
             :snap="true"
             :parent="true">
@@ -32,17 +32,21 @@
         </vue-draggable-resizable>
       </template>
     </div>
-    <v-card class="pa-2" v-if="editing" style="position: absolute;right:24px;top: 24px">
-      <h1>{{ $t('缩放') }}</h1>
+    <div style="position: absolute;left:24px;bottom: 12px">
+      <v-btn-toggle rounded>
+        <v-btn @click="scale-=0.05"><v-icon>mdi-minus</v-icon></v-btn>
+        <v-btn @click="scale+=0.05"><v-icon>mdi-plus</v-icon></v-btn>
+        <v-btn v-if="editing" @click="refreshTables">
+          <v-icon left>mdi-refresh</v-icon>
+          {{ $t('重置所有桌子') }}
+        </v-btn>
+      </v-btn-toggle>
       <div class="d-flex align-center">0.3x
         <v-slider hide-details :min="0.3" :step="0.01" :max="1" v-model="scale"></v-slider>
         1x
       </div>
-      <v-btn @click="refreshTables">
-        <v-icon left>mdi-refresh</v-icon>
-        {{ $t('重置所有桌子') }}
-      </v-btn>
-    </v-card>
+
+    </div>
 
   </div>
 
@@ -188,7 +192,4 @@ export default {
   border: none;
 }
 
-.vdr.active {
-  border: 1px solid black;
-}
 </style>

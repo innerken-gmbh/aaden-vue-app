@@ -1,6 +1,6 @@
 <template>
   <v-card
-      color="grey lighten-3"
+      color="grey lighten-4"
       elevation="0"
       @click='$emit("click",table.tableName)'
       class="pa-2"
@@ -51,7 +51,7 @@ export default {
     }
   },
   methods: {
-    tableBackgroundColor (table) {
+    async tableBackgroundColor (table) {
       return table.inCall ? getRestaurantInfo().callColor : '#367aeb'
     },
     tableColorIsDark (table) {

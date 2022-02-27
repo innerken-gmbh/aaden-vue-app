@@ -1,23 +1,38 @@
 <template>
-  <div v-bind:key="table.name" style="height: 100%;width: 100%" class="pa-1">
+  <div :class="table.inUse?'':' notUsed'"
+       style="height: 100%;
+       width: 100%;
+       position: relative"
+       class="pa-1">
     <v-card
+        height="100%"
         elevation="0"
-        class="tableCard d-flex flex-column align-center"
-        style="position: relative"
-        v-if="table.inUse"
-        :color="tableBackgroundColor(table)"
-        :dark="tableColorIsDark(table)"
+        class="tableCard d-flex flex-column align-center justify-center"
+        :color="table.inUse?'#fdd3b7':'#f6f6f6'"
         @click='$emit("click",table.tableName)'>
-
+      <div class="personDot" style="position: absolute">
+        <template v-for="i in parseInt(table.seatCount)">
+          <div :key="i+table.tableName+'person'" class="dot"></div>
+        </template>
+        <template v-for="i in parseInt(table.childCount)">
+          <div :key="i+table.tableName+'child'" class="dot child"></div>
+        </template>
+      </div>
       <div class="tableCardName">
         {{ table.tableName }}
       </div>
-      <div
-          v-if="tableYSize>=1.5"
-          :style="{
+
+      <template v-if="table.inCall">
+        <div style="position:absolute;right: -4px;top: -4px"><v-icon color="error">mdi-bell-circle</v-icon></div>
+      </template>
+      <template v-if="table.inUse">
+        <div class="d-flex flex-column align-center">
+          <div class="mb-1"
+              v-if="tableYSize>=2"
+              :style="{
              background:findConsumeTypeColorById(table.consumeType),
              color:colorIsDark(findConsumeTypeColorById(table.consumeType))?'#fff':'#000'}"
-          style="
+              style="
           width: fit-content;
           padding: 4px 4px;
                 font-size: 14px;
@@ -25,45 +40,23 @@
                 line-height: 12px;
                 font-weight: bold;
                 text-align: center">
-        {{ findConsumeTypeById(table.consumeType) }}
-      </div>
-      <div
-          class="pb-1"
-      >
-        <div class="text text-truncate" style="
-           line-height: 16px;
-           font-size: 14px;
-        ">
-          <table-info-display :info-key="table['info0']" :table="table"></table-info-display>
-          <template v-if="tableXSize>=2">
+            {{ findConsumeTypeById(table.consumeType) }}
+          </div>
+          <div >
+            <table-info-display :info-key="table['info0']" :table="table"></table-info-display>
+          </div>
+          <div class="mt-1">
             <table-info-display :info-key="table['info1']" :table="table"></table-info-display>
-          </template>
+          </div>
         </div>
-        <div v-if="tableYSize>1" class="text" style="line-height: 16px;font-size: 14px">
-          <template v-if="['1','3','5'].includes(table.consumeType)">
-            <table-info-display :info-key="table['info2']" :table="table"></table-info-display>
-            <template v-if="tableXSize>=2">
-              <table-info-display :info-key="table['info3']" :table="table"></table-info-display>
-            </template>
-          </template>
-          <template v-else>
-            <span>
-               <table-info-display :info-key="table['info4']" :table="table"></table-info-display>
-            </span>
-            <template v-if="tableXSize>1"><span>
-             <table-info-display :info-key="table['info5']" :table="table"></table-info-display>
-            </span>
-            </template>
-          </template>
-        </div>
-      </div>
+      </template>
+
     </v-card>
-    <div v-else @click="$emit('click',table.tableName)"
-         class="tableCard notUsed">
-      <div class="tableCardName">
-        {{ table.tableName }}
-      </div>
-    </div>
+    <div class="chair top"></div>
+    <div class="chair left"></div>
+    <div class="chair bottom"></div>
+    <div class="chair right"></div>
+
   </div>
 </template>
 
@@ -71,7 +64,7 @@
 import { findConsumeTypeById } from '@/oldjs/common'
 import { getColorLightness } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import { defaultTable, getRestaurantInfo } from '@/api/restaurantInfoService'
+import { defaultTable } from '@/api/restaurantInfoService'
 import TableInfoDisplay from '@/components/Table/TableInfoDisplay'
 
 export default {
@@ -81,12 +74,6 @@ export default {
     tableInfo: {}
   },
   methods: {
-    tableBackgroundColor (table) {
-      return table.inCall ? (getRestaurantInfo()).callColor : (getRestaurantInfo()).tableColor
-    },
-    tableColorIsDark (table) {
-      return this.colorIsDark(this.tableBackgroundColor(table))
-    },
     findConsumeTypeColorById (id) {
       return findConsumeTypeById(id)?.color ?? '#367aeb'
     },
@@ -126,6 +113,8 @@ export default {
       const res = Object.assign({}, defaultTable, this.tableInfo)
       res.inUse = res.usageStatus === '1'
       res.inCall = res.callService === '1'
+      res.childCount = res.childCount ?? 0
+      res.seatCount = res.seatCount ?? 0
       let keyCount = 0
       for (const key of this.getKeys()) {
         res['info' + keyCount] = key
@@ -140,21 +129,21 @@ export default {
 <style scoped>
 
 .tableCard {
-  border: 4px dashed #e0e0e0;
+
+  border: 3px solid #f6c7bb !important;
   text-align: center;
+  box-shadow: 0 0px 12px #FFCC80 !important;
   width: 100%;
   height: 100%;
-  border-radius: 8px;
-  background: white;
+  border-radius: 12px;
   cursor: pointer;
-  box-shadow: 0 6px 8px #d0d2d9;
 }
 
-.tableCard.notUsed {
+.notUsed .tableCard{
   background: #f6f6f6;
-  border: 4px dashed #e0e0e0;
+  border: 4px solid #e0e0e0 !important;
   color: #6b6b6b;
-  box-shadow: none;
+  box-shadow: none !important;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -166,9 +155,10 @@ export default {
 }
 
 .tableCardName {
-  font-size: 24px;
+  font-size: 26px;
   text-align: center;
   width: 100%;
+  z-index: 1;
   font-family: Roboto, "Axure Handwriting", sans-serif;
   font-weight: 600;
   overflow: hidden;
@@ -176,8 +166,73 @@ export default {
   white-space: nowrap;
 }
 
-.tableCard.notUsed .tableCardName {
-  font-weight: 400;
+.notUsed .tableCard .tableCardName {
+  font-weight: 600;
+  color: grey;
+}
+
+.chair{
+  --margin:-10px;
+  --chairHeight:8px;
+  --chairWidth:50%;
+  z-index: -1;
+  position: absolute;
+  margin: auto;
+  background: #fdd3b7;
+}
+
+.notUsed .chair{
+  background: #f6f6f6;
+}
+
+.chair.top{
+  top: var(--margin);
+  left: 0;right: 0;
+  height: var(--chairHeight);width:var(--chairWidth);
+  border-radius: 16px  16px 0 0;
+}
+.chair.left{
+  left: var(--margin);
+  width: var(--chairHeight);;
+  height: var(--chairWidth);
+  top: 0;bottom: 0;
+  border-radius: 16px  0 0 16px;
+}
+.chair.right{
+  right:var(--margin);
+  width: var(--chairHeight);
+  height:var(--chairWidth);
+  top: 0;bottom: 0;
+  border-radius: 0 16px 16px 0;
+}
+.chair.bottom{
+  bottom:var(--margin);
+  left: 0;right: 0;
+  height: var(--chairHeight);width: var(--chairWidth);
+  border-radius: 0 0 16px 16px;
+}
+
+.personDot{
+  top: 2px;
+  left: 4px;
+  right: 4px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit,8px);
+  grid-gap: 4px;
+  z-index: 0;
+  position: absolute;
+
+}
+
+.dot{
+  background: #689F38;
+  height: 8px;
+  width: 8px;
+  border-radius:4px;
+}
+
+.dot.child{
+  background:#FFA726;
 }
 
 .tableIconRow {

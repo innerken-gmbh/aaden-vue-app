@@ -132,45 +132,6 @@ export async function popAuthorize (type = '', successCallback = null, force = f
   })
 }
 
-/** should provide a model list */
-
-export async function getActiveTables () {
-  const res = await hillo.get('Tables.php', {
-    op: 'showAllTableWithSection'
-  })
-  if (goodRequest(res)) {
-    return reloadTables(res.content)
-  } else {
-    logErrorAndPop(res.info)
-  }
-}
-
-export function getAllTables () {
-  const res = hillo.get('Tables.php?op=justShowAllTable')
-  if (goodRequest(res)) {
-    console.log('justShowAllTable', res)
-  }
-  return res
-}
-
-function reloadTables (arrOfT) {
-  const areaData = []
-  for (const k in arrOfT) {
-    const area = {}
-    area.areaName = k
-    area.tables = arrOfT[k]
-    for (const i of area.tables) {
-      if (i.consumeType) {
-        i.consumeTypeName = findConsumeTypeById(i.consumeType).name
-      } else {
-        i.consumeTypeName = 'AVL'
-      }
-    }
-    areaData.push(area)
-  }
-  return areaData
-}
-
 export async function openOrEnterTable (number, password, onlyOpenTable = false) {
   try {
     const table = (await hillo.silentGet('Tables.php', { name: number })).content[0]
@@ -576,7 +537,8 @@ export function logError (t) {
 }
 
 export function logErrorAndPop (t) {
-  toastError(t)
+  const info = t?.data?.info
+  toastError(info ?? t)
   console.error(t)
   if (blockReady) {
     blockReady()

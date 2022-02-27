@@ -279,5 +279,7 @@
   "金额": "Amount",
   "金额或百分比": "Amount or percentage",
   "销售额": "Sales",
-  "验证错误": "Validation error"
+  "验证错误": "Validation error",
+  "inShop": "店内",
+  "Togo": "外卖"
 }

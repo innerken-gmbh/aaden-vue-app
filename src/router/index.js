@@ -5,6 +5,7 @@ import TablePage from '../views/TablePage'
 import { clearAllTimer } from '@/oldjs/Timer'
 import BossPage from '@/views/BossPage'
 import FirstPage from '@/views/FirstPage'
+import SalesPage from '@/views/SalesPage'
 
 Vue.use(VueRouter)
 
@@ -24,7 +25,14 @@ const routes = [
       {
         path: '',
         name: 'order',
-        component: FirstPage
+        component: FirstPage,
+        props: true
+      },
+      {
+        path: 'sales/:password',
+        name: 'sales',
+        component: SalesPage,
+        props: true
       }
     ]
   },

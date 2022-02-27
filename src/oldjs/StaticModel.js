@@ -128,7 +128,7 @@ export const DefaultAddressInfo = {
   oldTime: '',
   date: '',
   time: 'ASAP',
-  deliveryMethod: '',
+  deliveryMethod: 'inShop',
   edit: false
 }
 

@@ -1,7 +1,7 @@
 <template>
-  <v-card>
+  <v-card elevation="0">
     <div class="d-flex">
-      <div v-if="realShow" class="pa-2 flex-grow-1">
+      <div class="pa-2 flex-grow-1">
         <h2>{{ $t('订单列表') }}</h2>
         <v-simple-table height="calc(100vh - 144px)" fixed-header>
           <template v-slot:default>
@@ -34,7 +34,7 @@
           </template>
         </v-simple-table>
       </div>
-      <v-card class="pa-2" style="width: 272px">
+      <v-card elevation="0" class="pa-2" style="width: 272px">
         <v-card elevation="0" class="mt-1">
           <div class="pa-2">
             <div class="d-flex justify-space-between align-center">
@@ -213,7 +213,6 @@ export default {
   },
   props: {
     tabIndex: {},
-    realShow: {},
     singleZBonDate: {}
   },
   watch: {
@@ -312,8 +311,8 @@ export default {
     async loadData () {
       if (this.singleZBonDate != null) {
         this.billData = await previewZBon(this.singleZBonDate, this.singleZBonDate)
+        this.bills = await getBillListForServant(null, this.singleZBonDate)
       }
-      this.bills = await getBillListForServant(null, this.singleZBonDate)
     }
   },
   mounted () {

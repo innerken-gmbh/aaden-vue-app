@@ -1,5 +1,5 @@
 <template>
-  <v-chip x-small label class="px-1" :class="metaData.classFunc ? metaData.classFunc(table[infoKey]) :''">
+  <v-chip small label class="px-1" outlined :class="metaData.classFunc ? metaData.classFunc(table[infoKey]) :''">
     <template v-if="metaData.icon">
       <v-icon class="mr-1" x-small>{{ metaData.icon }}</v-icon>
     </template>

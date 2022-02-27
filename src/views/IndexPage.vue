@@ -1,13 +1,19 @@
 <template>
   <div>
-    <v-navigation-drawer disable-resize-watcher dark color="orange darken-2"
-                         expand-on-hover permanent stateless mini-variant style="z-index: 100" app>
-      <v-card color="transparent" elevation="0" class="d-flex flex-column">
+    <v-navigation-drawer
+        dark color="orange darken-2"
+
+        expand-on-hover
+        permanent stateless
+        style="z-index: 100" app>
+      <v-card color="transparent" elevation="0" class="d-flex flex-column" style="height: 100vh">
         <v-list nav dense>
           <v-list-item>
-            <v-list-item-icon>
-              <v-icon>mdi-menu</v-icon>
-            </v-list-item-icon>
+            <v-list-item-avatar>
+              <v-avatar class="ml-n3" @click="drawer=!drawer">
+                <v-icon>mdi-menu</v-icon>
+              </v-avatar>
+            </v-list-item-avatar>
           </v-list-item>
         </v-list>
 
@@ -16,26 +22,26 @@
         <v-list
             nav
         >
-          <v-list-item link>
+          <v-list-item link @click="goHome">
             <v-list-item-icon>
               <v-icon>mdi-silverware</v-icon>
             </v-list-item-icon>
             <v-list-item-title> {{ $t('点餐') }}</v-list-item-title>
           </v-list-item>
-          <v-list-item link>
+          <v-list-item link @click="jumpToSales">
             <v-list-item-icon>
               <v-icon>mdi-cash</v-icon>
             </v-list-item-icon>
             <v-list-item-title> {{ $t('销售额') }}</v-list-item-title>
           </v-list-item>
-          <v-list-item link>
+          <v-list-item link @click="jumpToBoss">
             <v-list-item-icon>
               <v-icon>mdi-home-analytics</v-icon>
             </v-list-item-icon>
             <v-list-item-title> {{ $t('CHEF') }}</v-list-item-title>
           </v-list-item>
           <v-list-item link>
-            <v-list-item-icon>
+            <v-list-item-icon @click="jumpToVip">
               <v-icon>mdi-smart-card</v-icon>
             </v-list-item-icon>
             <v-list-item-title>{{ $t('VIP') }}</v-list-item-title>
@@ -44,6 +50,13 @@
         <v-spacer>
 
         </v-spacer>
+        <div class="d-flex  flex-shrink-0 align-center pa-2">
+          <div style="width: 70px">
+            <v-img width="100%"
+                   :src="require('@/assets/aadenLogo.png')"/>
+          </div>
+          <span class="text-no-wrap ml-2">v {{ version }}</span>
+        </div>
       </v-card>
 
     </v-navigation-drawer>
@@ -53,6 +66,55 @@
     </v-main>
   </div>
 </template>
+<script>
+import { jumpTo, popAuthorize } from '@/oldjs/common'
+import { goHome } from '@/oldjs/StaticModel'
+import { getServantList } from '@/oldjs/api'
+
+const version = require('../../package.json').version
+
+export default {
+  name: 'IndexPage',
+  data: function () {
+    return {
+      version,
+      drawer: false,
+      servantList: []
+    }
+  },
+  methods: {
+    findServant (pw) {
+      if (this.servantList.length > 0) {
+        return this.servantList.find(s => s.password === pw)
+      }
+    },
+    popAuthorize,
+    jumpToBoss () {
+      popAuthorize('boss', () => {
+        jumpTo('boss')
+      })
+    },
+    jumpToSales () {
+      popAuthorize('',
+        (pw) => {
+          const servant = this.findServant(pw)
+          jumpTo('sales', {
+            isBoss: parseInt(servant.permission) === 1,
+            password: pw
+          })
+        }, true)
+    },
+    jumpToVip () {
+    },
+    goHome () {
+      goHome()
+    }
+  },
+  async mounted () {
+    this.servantList = await getServantList()
+  }
+}
+</script>
 
 <style scoped>
 .tableDisplay {

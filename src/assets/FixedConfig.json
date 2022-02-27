@@ -4,18 +4,16 @@
   "frontendMacAddress": "aaden-vue-app-",
   "deviceType": "dist-aaden-vue-app",
   "tableInfoKeys": [
+    "dishCount",
     "createTimestamp",
     "servantName",
-    "dishCount",
     "totalPrice",
-    "buffetCount",
-    "buffetRound",
-    "childCount",
     "drinkCount",
-    "seatCount"
+    "buffetRound"
+
   ],
   "milePayPort": 8181,
-  "minTileSize": 60,
+  "minTileSize": 80,
   "defaultTileHeight": 100,
   "defaultTileWidth": 80
 }
