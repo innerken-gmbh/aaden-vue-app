@@ -2,7 +2,7 @@
   <div>
     <v-navigation-drawer
         dark color="orange darken-2"
-
+        mini-variant
         expand-on-hover
         permanent stateless
         style="z-index: 100" app>
