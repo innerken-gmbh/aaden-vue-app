@@ -163,6 +163,7 @@
       <!--        堂食-->
       <v-tab-item style="position: relative">
         <div style="
+        background: #e8e8e8;
           height: calc(100vh - 64px);
           width: 100%;
           overflow: scroll
@@ -246,6 +247,7 @@
             grid-auto-columns: auto;
             overflow-y: scroll;
             grid-gap: 8px;
+            width: 100%;
                 ">
                 <v-card @click="takeawayClicked" height="72px" elevation="0" color="grey lighten-4"
                         class="pa-2 d-flex align-center">
@@ -318,6 +320,7 @@
             </div>
             <div style="display: grid;grid-gap: 12px;overflow-y: scroll;" class="mt-4">
               <table-gird-item
+                  :big-card="true"
                   v-for="t in notAccepted"
                   :key="t.tableName"
                   @click="openOrEnterTable(t.tableName)"
@@ -337,6 +340,7 @@
             </div>
             <div style="display: grid;grid-gap: 12px;overflow-y: scroll;" class="mt-4">
               <table-gird-item
+                  :big-card="true"
                   v-for="t in accepted"
                   :key="t.tableName"
                   @click="openOrEnterTable(t.tableName)"
@@ -708,7 +712,7 @@ export default {
           this.buffer = ''
           break
       }
-      this.input = this.displayInput
+      this.input = this.buffer
     },
 
     async takeawayClicked () {

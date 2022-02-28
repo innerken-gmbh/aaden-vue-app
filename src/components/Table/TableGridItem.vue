@@ -4,15 +4,18 @@
       elevation="0"
       @click='$emit("click",table.tableName)'
       class="pa-3 "
-      style="border-radius: 12px;position: relative"
+      :width="bigCard?'auto':'240px'"
+      style="border-radius: 12px;position: relative;"
       :key="table.id">
 
     <div class="text-body-1 text-truncate">
-      <h2>#{{ table.tableName }}<span class="text-capitalize ml-2" v-if="table.addressInfo">{{
-          table.addressInfo.firstName
-        }} {{ table.addressInfo.lastName }}</span></h2>
+      <h2>#{{ table.tableName }}
+        <span class="text-capitalize ml-1 text-h6"
+              v-if="table.addressInfo">{{
+            table.addressInfo.firstName
+          }} {{ table.addressInfo.lastName }}</span></h2>
     </div>
-    <div class="text--disabled mt-2">
+    <div class="text--disabled mt-1">
       <v-chip outlined small>
         <v-icon x-small color="grey darken-1" class="mr-1">mdi-silverware-fork-knife</v-icon>
         {{ table.dishCount }}
@@ -33,17 +36,22 @@
       </v-chip>
     </div>
 
-    <v-card class="error--text"
+    <v-card v-if="bigCard&&table.addressInfo.toNow"
+            :class="(table.addressInfo.toNow>30
+            ?'success':table.addressInfo.toNow>15
+            ?'warning':'error')+'--text'"
             elevation="0"
             style="position: absolute;
             border-radius: 12px;
             text-align: center;
             margin: auto;top: 0;bottom: 0;height: fit-content;
     right: 16px">
-      <div class="font-weight-black text-h6">45</div>
-      <div class="font-weight-regular text-body-2 mt-n2"
-      >Min
+
+      <div class="font-weight-black text-h6">{{ Math.abs(table.addressInfo.toNow) }}</div>
+      <div class="font-weight-regular text-body-2 mt-n2">
+        Min
       </div>
+
     </v-card>
 
   </v-card>

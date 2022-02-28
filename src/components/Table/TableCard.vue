@@ -23,16 +23,18 @@
       </div>
 
       <template v-if="table.inCall">
-        <div style="position:absolute;right: -4px;top: -4px"><v-icon color="error">mdi-bell-circle</v-icon></div>
+        <div style="position:absolute;right: -4px;top: -4px">
+          <v-icon color="error">mdi-bell-circle</v-icon>
+        </div>
       </template>
       <template v-if="table.inUse">
         <div class="d-flex flex-column align-center">
           <div class="mb-1"
-              v-if="tableYSize>=2"
-              :style="{
+               v-if="tableYSize>=2"
+               :style="{
              background:findConsumeTypeColorById(table.consumeType),
              color:colorIsDark(findConsumeTypeColorById(table.consumeType))?'#fff':'#000'}"
-              style="
+               style="
           width: fit-content;
           padding: 4px 4px;
                 font-size: 14px;
@@ -42,7 +44,7 @@
                 text-align: center">
             {{ findConsumeTypeById(table.consumeType) }}
           </div>
-          <div >
+          <div>
             <table-info-display :info-key="table['info0']" :table="table"></table-info-display>
           </div>
           <div class="mt-1">
@@ -139,7 +141,7 @@ export default {
   cursor: pointer;
 }
 
-.notUsed .tableCard{
+.notUsed .tableCard {
   background: #f6f6f6;
   border: 4px solid #e0e0e0 !important;
   color: #6b6b6b;
@@ -171,68 +173,77 @@ export default {
   color: grey;
 }
 
-.chair{
-  --margin:-10px;
-  --chairHeight:8px;
-  --chairWidth:50%;
+.chair {
+  --margin: -10px;
+  --chairHeight: 8px;
+  --chairWidth: 50%;
   z-index: -1;
   position: absolute;
   margin: auto;
   background: #fdd3b7;
 }
 
-.notUsed .chair{
+.notUsed .chair {
   background: #f6f6f6;
 }
 
-.chair.top{
+.chair.top {
   top: var(--margin);
-  left: 0;right: 0;
-  height: var(--chairHeight);width:var(--chairWidth);
-  border-radius: 16px  16px 0 0;
+  left: 0;
+  right: 0;
+  height: var(--chairHeight);
+  width: var(--chairWidth);
+  border-radius: 16px 16px 0 0;
 }
-.chair.left{
+
+.chair.left {
   left: var(--margin);
   width: var(--chairHeight);;
   height: var(--chairWidth);
-  top: 0;bottom: 0;
-  border-radius: 16px  0 0 16px;
+  top: 0;
+  bottom: 0;
+  border-radius: 16px 0 0 16px;
 }
-.chair.right{
-  right:var(--margin);
+
+.chair.right {
+  right: var(--margin);
   width: var(--chairHeight);
-  height:var(--chairWidth);
-  top: 0;bottom: 0;
+  height: var(--chairWidth);
+  top: 0;
+  bottom: 0;
   border-radius: 0 16px 16px 0;
 }
-.chair.bottom{
-  bottom:var(--margin);
-  left: 0;right: 0;
-  height: var(--chairHeight);width: var(--chairWidth);
+
+.chair.bottom {
+  bottom: var(--margin);
+  left: 0;
+  right: 0;
+  height: var(--chairHeight);
+  width: var(--chairWidth);
   border-radius: 0 0 16px 16px;
 }
 
-.personDot{
+.personDot {
   top: 2px;
   left: 4px;
   right: 4px;
   display: grid;
-  grid-template-columns: repeat(auto-fit,8px);
+  grid-template-columns: repeat(auto-fit, 6px);
   grid-gap: 4px;
   z-index: 0;
   position: absolute;
 
 }
 
-.dot{
+.dot {
   background: #689F38;
-  height: 8px;
-  width: 8px;
-  border-radius:4px;
+  height: 6px;
+  width: 6px;
+  border-radius: 3px;
 }
 
-.dot.child{
-  background:#FFA726;
+.dot.child {
+  background: #FFA726;
 }
 
 .tableIconRow {

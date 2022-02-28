@@ -2,11 +2,13 @@
   <div>
     <template v-cloak>
       <v-main>
-        <div style="display: grid; grid-template-columns: 300px auto; background: #f6f6f6;">
+        <div style="display: grid; grid-template-columns: 300px calc(100vw - 620px) 320px; background: #f6f6f6;">
           <v-card rounded elevation="1" style="height: 100vh"
                   class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height">
-            <v-btn :loading="isSendingRequest" x-large color="primary" tile elevation="0" height="60px"  @click="back">
-              <v-icon>mdi-arrow-left</v-icon>{{$t('Home')}}</v-btn>
+            <v-btn :loading="isSendingRequest" x-large color="primary" tile elevation="0" height="60px" @click="back">
+              <v-icon>mdi-arrow-left</v-icon>
+              {{ $t('Home') }}
+            </v-btn>
             <keep-alive>
               <dish-card-list
                   @discount-clear="discountClear"
@@ -67,18 +69,21 @@
                   style="height: 100vh;">
             <div class="d-flex pl-2 align-baseline" style="height: 52px">
               <h1>{{ tableDetailInfo.tableBasicInfo.name }}</h1>
-              <v-icon size="20" class="ml-8">mdi-office-building-marker</v-icon>
-              <h3 class="ml-2 font-weight-regular">{{ findConsumeTypeById(consumeTypeId) }}</h3>
+              <template v-if="$vuetify.breakpoint.lgAndUp">
+                <v-icon size="20" class="ml-8">mdi-office-building-marker</v-icon>
+                <h3 class="ml-2 font-weight-regular text-truncate">{{ findConsumeTypeById(consumeTypeId) }}</h3>
+
+              </template>
               <v-icon size="20" class="ml-8">mdi-account-box</v-icon>
-              <h3 class="ml-2 font-weight-regular">{{ tableDetailInfo.servant }}</h3>
+              <h3 class="ml-2 font-weight-regular text-truncate">{{ tableDetailInfo.servant }}</h3>
               <v-spacer></v-spacer>
-              <div class="d-flex align-center mr-n2">
+              <div class="d-flex align-center flex-grow-0 mr-n2" style="max-width: 40%">
                 <v-btn icon elevation="0" color="warning" class="mr-4">
                   <v-icon>mdi-swap-horizontal</v-icon>
                 </v-btn>
 
                 <v-item-group dark v-model="overrideConsumeTypeIndex"
-                              style="max-width: 360px;overflow-y: scroll"
+                              style="overflow-x: scroll"
                               class="d-flex">
                   <template v-for="ct of consumeTypeList">
                     <v-item v-bind:key="ct.id+'consumeType'" v-slot="{active,toggle}">
@@ -124,7 +129,8 @@
             <v-card v-dragscroll color="transparent" elevation="0"
                     class="dragscroll dishCardListContainer flex-grow-1">
               <div v-if="!activeCategoryId">
-                <v-item-group style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 12px;">
+                <v-item-group
+                    style="display: grid;grid-template-columns: repeat(auto-fit,minmax(140px,1fr));grid-gap: 12px;">
                   <template v-for="category of filteredC">
                     <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
                       <v-card elevation="0" style="
@@ -180,53 +186,24 @@
               <div style="width: 100%;height: 160px"></div>
             </v-card>
           </v-card>
-        </div>
-      </v-main>
-      <!--      right panel-->
-      <v-navigation-drawer app stateless permanent right width="320px">
-        <v-card style="height: calc(100vh)" class="d-flex flex-column">
-          <address-display
-              :should-open-menu.sync="addressFormOpen"
-              @address-change="submitRawAddressInfo"
-              v-if="consumeTypeId===2"
-              @accept="acceptOrderWithTime"
-              @reject="rejectOrder"
-              :consume-type-status-id="consumeTypeStatusId"
-              :raw-address-info="realAddressInfo"/>
-          <div class="d-flex align-center pa-2" style="height: 60px">
-            <h2 class="pa-2">操作</h2>
-            <v-spacer/>
-            <v-icon class="mr-2">mdi-calendar-text</v-icon>
-            {{ tableDetailInfo.order.id }}
-          </div>
-          <v-divider></v-divider>
-          <v-card v-if="searchDish.length>0" style="overflow: scroll;"
-                  class="flex-shrink-1 blue lighten-5">
-            <v-btn x-large @click="input='';displayInput=''" color="error" block>
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-            <template v-for="(dish,index) in searchDish">
-              <v-card @click="searchDishClick(dish.code)" elevation="0"
-                      :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
-                      :class="index===0?'first':''"
-                      :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large"
-                      class="d-flex  px-1 py-1 align-start">
-                <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
-                </div>
-                <v-spacer></v-spacer>
-                <div v-if="dish.isFree==='1'"
-                     style="padding:2px 4px;border-radius: 4px;"
-                     class="price d-flex align-center green lighten-3 white--text">
-                  {{ $t('Frei') }}
-                </div>
-                <div v-else class="price d-flex align-center">
-                  {{ dish.price | priceDisplay }}
-                </div>
-              </v-card>
-            </template>
-          </v-card>
-          <template v-else>
-            <div class="pa-2">
+
+          <v-card style="height: calc(100vh)" class="d-flex flex-column" width="320px">
+            <address-display
+                :should-open-menu.sync="addressFormOpen"
+                @address-change="submitRawAddressInfo"
+                v-if="consumeTypeId===2"
+                @accept="acceptOrderWithTime"
+                @reject="rejectOrder"
+                :consume-type-status-id="consumeTypeStatusId"
+                :raw-address-info="realAddressInfo"/>
+            <div class="d-flex align-center pa-2" style="height: 60px">
+              <h2 class="pa-2">操作</h2>
+              <v-spacer/>
+              <v-icon class="mr-2">mdi-calendar-text</v-icon>
+              {{ tableDetailInfo.order.id }}
+            </div>
+            <v-divider></v-divider>
+            <div class="pa-2" v-if="searchDish.length===0">
               <div style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px">
                 <grid-button
                     :disabled="cartListModel.count()!==0"
@@ -304,30 +281,63 @@
                 />
               </div>
             </div>
-            <buffet-status-card
-                class="mt-1 mx-2"
-                v-if="consumeTypeId!==1&&consumeTypeId!==2&&consumeTypeId!==5"
-                :buffet-setting-info="realAddressInfo"
-                :current-round="tableDetailInfo.tableBasicInfo.buffetRound"></buffet-status-card>
-          </template>
-          <v-spacer></v-spacer>
+            <keep-alive>
+              <v-card v-if="searchDish.length>0" style="overflow: hidden"
+                      class="flex-shrink-1 blue lighten-5">
+                <v-btn x-large @click="input='';displayInput=''" color="error" block>
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <template v-for="(dish,index) in searchDish">
+                  <v-card @click="searchDishClick(dish.code)" elevation="0"
+                          :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
+                          :class="index===0?'first':''"
+                          :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large"
+                          class="d-flex  px-1 py-1 align-start">
+                    <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
+                    </div>
+                    <v-spacer></v-spacer>
+                    <div v-if="dish.isFree==='1'"
+                         style="padding:2px 4px;border-radius: 4px;"
+                         class="price d-flex align-center green lighten-3 white--text">
+                      {{ $t('Frei') }}
+                    </div>
+                    <div v-else class="price d-flex align-center">
+                      {{ dish.price | priceDisplay }}
+                    </div>
+                  </v-card>
+                </template>
+              </v-card>
+              <template v-else>
+                <buffet-status-card
+                    class="mt-1 mx-2"
+                    v-if="consumeTypeId!==1&&consumeTypeId!==2&&consumeTypeId!==5"
+                    :buffet-setting-info="realAddressInfo"
+                    :current-round="tableDetailInfo.tableBasicInfo.buffetRound"></buffet-status-card>
+              </template>
+            </keep-alive>
 
-          <div class="pa-2">
-            <v-text-field
-                class="ma-2"
-                hide-details
-                clearable
-                style="font-size: 36px"
-                ref="ins"
-                @input="input=displayInput"
-                v-model="displayInput"
-            />
-            <keyboard @input="numberInput"
-                      :keys="keyboardLayout"></keyboard>
-          </div>
+            <v-spacer></v-spacer>
 
-        </v-card>
-      </v-navigation-drawer>
+            <div class="pa-2">
+              <v-text-field
+                  class="ma-2"
+                  hide-details
+                  clearable
+                  style="font-size: 36px"
+                  ref="ins"
+                  @input="input=displayInput"
+                  v-model="displayInput"
+              />
+              <keyboard @input="numberInput"
+                        :keys="keyboardLayout"></keyboard>
+            </div>
+
+          </v-card>
+
+        </div>
+
+      </v-main>
+      <!--      right panel-->
 
       <template v-if="splitOrderListModel.list.length>0">
         <div class="bottomCart surface d-flex justify-end"
@@ -588,11 +598,11 @@ export default {
         count: 0,
         list: []
       },
+
       /**/
       discountRatio: 1,
       discountStr: null,
       overrideConsumeTypeIndex: null,
-
       dish: {},
       count: 1,
       activeCategoryId: null,
@@ -769,7 +779,9 @@ export default {
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
         return
       }
+
       const dish = findDish(code)
+
       if (dish) {
         if (parseInt(GlobalConfig.oneStepOrderNumber) !== -1 && count > GlobalConfig.oneStepOrderNumber) {
           const res = await showConfirmAsyn(this.$t('wirklich?'), count)
@@ -790,10 +802,12 @@ export default {
           blockReady()
           return
         }
-        await this.addDish(dish, parseInt(count))
+
+        this.addDish(dish, parseInt(count))
       } else {
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
       }
+
       blockReady()
     },
     showExtraDish (dish) {
@@ -964,9 +978,10 @@ export default {
       this.activeCategoryId = null
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
-      await this.getTableDetail()
+      this.getTableDetail()
       setGlobalTableId(this.id)
       await this.reloadDish(this.realConsumeTypeId, forceReload)
+
       blockReady()
     },
     async reloadDish (consumeTypeId, force = false) {
@@ -1286,7 +1301,7 @@ export default {
     },
     debounce: debounce((f) => {
       f()
-    }, 90, { trailing: true, leading: false }),
+    }, 200, { trailing: true }),
     getCodeAndCountFromInput (input = '') {
       let [code, count] = ['', 1]
       if (input.includes('*')) {

@@ -1,5 +1,6 @@
 import hillo from 'hillo'
 import { DefaultAddressInfo } from '@/oldjs/StaticModel'
+import dayjs from 'dayjs'
 
 const defaultRestaurantInfo = {
   tableColor: '#ffffff', callColor: '#f57f17'
@@ -32,6 +33,13 @@ export function beautifulTable (table) {
     }
   }
   res.addressInfo = Object.assign({}, DefaultAddressInfo, addressInfo)
+  res.addressInfo.toNow = null
+  if (res.addressInfo.time !== 'ASAP') {
+    const [hour, minute] = res.addressInfo.time.split(':')
+    const time = dayjs().set('h', hour).set('m', minute)
+    res.addressInfo.toNow = time.diff(dayjs(), 'm')
+  }
+
   return res
 }
 

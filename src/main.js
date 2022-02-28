@@ -15,6 +15,7 @@ import { reportDeviceInfo } from '@/api/api'
 import { addToQueue } from '@/oldjs/poolJobs'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import IKUtils from 'innerken-js-utils'
+import dayjs from 'dayjs'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
@@ -30,7 +31,8 @@ Vue.filter('priceDisplay',
     return parseFloat(price).toFixed(2).replace('.', ',') + ' €'
   }
 )
-
+var relativeTime = require('dayjs/plugin/relativeTime')
+dayjs.extend(relativeTime)
 Vue.directive('hide-simple', {
   bind: function (el) {
     if (GlobalConfig.simpleVersion) {

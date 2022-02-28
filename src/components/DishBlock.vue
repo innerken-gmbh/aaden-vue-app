@@ -7,7 +7,7 @@
        <span style="font-size: 16px;border-radius: 4px;position: absolute;right: 0; top:0"
              class=" px-2 mr-1 white--text red"
              v-show="count>0">{{ count }}</span>
-    <span v-code-hide style="font-size: 16px">{{ code }}</span>
+    <div v-code-hide style="font-size: 16px" class="text-truncate">{{ code }}</div>
     <span :style="{fontSize:fontSize+'px'}" class="name">
         {{ dishName }}
       </span>
