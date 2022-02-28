@@ -1,6 +1,6 @@
 import hillo from 'hillo'
 
-export async function getAllReservable () {
+export async function loadAllReservable () {
   return (await hillo.get('Tables.php?op=getAllReservable'))
 }
 
@@ -12,11 +12,15 @@ export async function removeFromReservable (tableId) {
   return (await hillo.post('Tables.php?op=removeFromReservable', { tableId }))
 }
 
-export async function getAllReservation (fromDateTime, toDateTime) {
+export async function getReservation (date) {
+  return (await loadAllReservation(date + ' 00:00:00', date + ' 23:59:59'))
+}
+
+export async function loadAllReservation (fromDateTime, toDateTime) {
   return (await hillo.get('Tables.php?op=getReservationByTimeSpan', {
     fromDateTime,
     toDateTime
-  }))
+  })).content
 }
 
 const defaultReservationInfo = {

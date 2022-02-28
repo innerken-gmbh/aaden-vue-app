@@ -16,6 +16,7 @@ import { addToQueue } from '@/oldjs/poolJobs'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import IKUtils from 'innerken-js-utils'
 import dayjs from 'dayjs'
+import { onlyTimeFormat } from '@/api/dateUtils'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
@@ -31,6 +32,13 @@ Vue.filter('priceDisplay',
     return parseFloat(price).toFixed(2).replace('.', ',') + ' €'
   }
 )
+
+Vue.filter('onlyTime',
+  function (str) {
+    return onlyTimeFormat(str)
+  }
+)
+
 var relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)
 Vue.directive('hide-simple', {

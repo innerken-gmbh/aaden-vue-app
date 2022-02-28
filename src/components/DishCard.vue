@@ -6,16 +6,17 @@
           <span v-code-hide class='codeRow'>{{ dish.code }}.</span><span>{{ dish.name }}</span>
         </div>
         <template>
-          <v-chip small label v-if="dish.overrideConsumeTypeId" color="primary">
+          <v-chip small label v-if="dish.overrideConsumeTypeId" class="mr-1" color="primary">
             {{ findConsumeTypeById(dish.overrideConsumeTypeId) }}
           </v-chip>
           <span v-if="dish.isFree==='1'">{{ $t('Free') }}</span>
           <template v-else>
-                <span v-if="(dish.tempDiscountMod)&&(Math.abs(parseFloat(dish.tempDiscountMod))>0)">
+                <span class="text-truncate text-no-wrap"
+                      v-if="(dish.tempDiscountMod)&&(Math.abs(parseFloat(dish.tempDiscountMod))>0)">
                   <s style="font-size: xx-small">{{
                       dish.originPrice | priceDisplay
                     }}</s>{{ dish.realPrice | priceDisplay }}</span>
-            <span v-else>
+            <span class="text-truncate text-no-wrap" v-else>
                            {{ dish.realPrice | priceDisplay }}
                   </span>
           </template>

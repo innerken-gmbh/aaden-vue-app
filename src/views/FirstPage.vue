@@ -51,17 +51,16 @@
               <span style="padding: 2px 4px">跑堂订单</span>
             </div>
           </v-item>
-          <!--          <v-item #default="{active,toggle}">-->
-          <!--            <div-->
-          <!--                @click="toggle"-->
-          <!--                class="navigationPillItem"-->
-          <!--                :class="active?' active':' text&#45;&#45;disabled'"-->
-          <!--            >-->
-
-          <!--              <v-icon left>mdi-calendar</v-icon>-->
-          <!--              预定-->
-          <!--            </div>-->
-          <!--          </v-item>-->
+          <v-item #default="{active,toggle}">
+            <div
+                @click="toggle"
+                class="navigationPillItem"
+                :class="active?' active':' text--disabled'"
+            >
+              <v-icon left>mdi-calendar</v-icon>
+              预定
+            </div>
+          </v-item>
         </div>
       </v-item-group>
 
@@ -235,7 +234,6 @@
                     新增
                   </v-btn>
                 </template>
-
               </v-card>
               <div
                   v-if="showOtherOrder"
@@ -480,7 +478,9 @@
         </v-card>
       </v-tab-item>
       <!--        预定-->
-      <!--      <v-tab-item></v-tab-item>-->
+      <v-tab-item>
+        <reservation/>
+      </v-tab-item>
 
     </v-tabs-items>
     <v-card v-if="buffer"
@@ -555,6 +555,7 @@ import Navgation from '@/components/Navgation'
 import ToggleUpDownButton from '@/components/widget/ToggleUpDownButton'
 import { getRestaurantInfo } from '@/api/restaurantInfoService'
 import TrailingNumber from '@/components/widget/TrailingNumber'
+import Reservation from '@/components/fragments/Reservation'
 
 const keyboardLayout =
     [
@@ -570,6 +571,7 @@ export default {
     dragscroll
   },
   components: {
+    Reservation,
     TrailingNumber,
     ToggleUpDownButton,
     Navgation,
