@@ -2,7 +2,7 @@
   <div>
     <navgation>
       <div style="min-width: 200px" class="d-flex">
-        <div v-if="restaurantInfo" class="text-h6 font-weight-bold">{{restaurantInfo.name}}</div>
+        <div v-if="restaurantInfo" class="text-h6 font-weight-bold">{{ restaurantInfo.name }}</div>
         <v-chip label color="white" class="ml-2 d-flex align-center">
           <v-icon left color="success">mdi-checkbox-marked-circle</v-icon>
           <span>
@@ -23,22 +23,24 @@
             >
               <v-icon left>mdi-silverware</v-icon>
               堂食
-              <span class="error white--text ml-2"
-                    style="padding:2px 8px;font-size: small;border-radius: 24px">{{ activeList.length }}</span>
+              <trailing-number>
+                {{ activeList.length }}
+              </trailing-number>
             </div>
           </v-item>
-<!--          <v-item #default="{active,toggle}">-->
-<!--            <div-->
-<!--                @click="toggle"-->
-<!--                class="navigationPillItem"-->
-<!--                :class="active?' active':' text&#45;&#45;disabled'"-->
-<!--            >-->
-<!--              <v-icon left>mdi-truck-fast</v-icon>-->
-<!--              外卖-->
-<!--              <span class="error white&#45;&#45;text ml-2"-->
-<!--                    style="font-size: small;border-radius: 24px;padding: 2px 8px">{{ takeawayList.length }}</span>-->
-<!--            </div>-->
-<!--          </v-item>-->
+          <v-item #default="{active,toggle}">
+            <div
+                @click="toggle"
+                class="navigationPillItem"
+                :class="active?' active':' text--disabled'"
+            >
+              <v-icon left>mdi-truck-fast</v-icon>
+              外卖
+              <trailing-number>
+                {{ takeawayList.length }}
+              </trailing-number>
+            </div>
+          </v-item>
           <v-item #default="{active,toggle}">
             <div
                 @click="toggle"
@@ -49,17 +51,17 @@
               <span style="padding: 2px 4px">跑堂订单</span>
             </div>
           </v-item>
-<!--          <v-item #default="{active,toggle}">-->
-<!--            <div-->
-<!--                @click="toggle"-->
-<!--                class="navigationPillItem"-->
-<!--                :class="active?' active':' text&#45;&#45;disabled'"-->
-<!--            >-->
+          <!--          <v-item #default="{active,toggle}">-->
+          <!--            <div-->
+          <!--                @click="toggle"-->
+          <!--                class="navigationPillItem"-->
+          <!--                :class="active?' active':' text&#45;&#45;disabled'"-->
+          <!--            >-->
 
-<!--              <v-icon left>mdi-calendar</v-icon>-->
-<!--              预定-->
-<!--            </div>-->
-<!--          </v-item>-->
+          <!--              <v-icon left>mdi-calendar</v-icon>-->
+          <!--              预定-->
+          <!--            </div>-->
+          <!--          </v-item>-->
         </div>
       </v-item-group>
 
@@ -157,6 +159,7 @@
 
     </navgation>
     <v-tabs-items touchless v-model="currentView">
+
       <!--        堂食-->
       <v-tab-item style="position: relative">
         <div style="
@@ -299,9 +302,124 @@
 
         </div>
       </v-tab-item>
-      <!--        外卖-->
-<!--      <v-tab-item></v-tab-item>-->
-      <!--        跑堂-->
+      <!--      外卖-->
+      <v-tab-item>
+        <div style="display: grid;grid-template-columns: repeat(4,1fr);
+        height: 100%;grid-gap: 16px" class="pa-4 grey lighten-4">
+          <v-card color="grey lighten-3"
+                  elevation="0"
+                  class="pa-4 d-flex flex-column"
+                  style="border-radius: 12px"
+                  height="calc(100vh - 96px)">
+            <div class="text-subtitle-2">未接单
+              <trailing-number>
+                {{ notAccepted.length }}
+              </trailing-number>
+            </div>
+            <div style="display: grid;grid-gap: 12px;overflow-y: scroll;" class="mt-4">
+              <table-gird-item
+                  v-for="t in notAccepted"
+                  :key="t.tableName"
+                  @click="openOrEnterTable(t.tableName)"
+                  :table-info="t"/>
+            </div>
+
+          </v-card>
+          <v-card color="grey lighten-3"
+                  elevation="0"
+                  class="pa-4 d-flex flex-column"
+                  style="border-radius: 12px"
+                  height="calc(100vh - 96px)">
+            <div class="text-subtitle-2">已接单
+              <trailing-number>
+                {{ accepted.length }}
+              </trailing-number>
+            </div>
+            <div style="display: grid;grid-gap: 12px;overflow-y: scroll;" class="mt-4">
+              <table-gird-item
+                  v-for="t in accepted"
+                  :key="t.tableName"
+                  @click="openOrEnterTable(t.tableName)"
+                  :table-info="t"/>
+            </div>
+
+          </v-card>
+          <v-card color="grey lighten-3"
+                  elevation="0"
+                  class="pa-4"
+                  style="border-radius: 12px"
+                  height="calc(100vh - 96px)">
+            <div class="text-subtitle-2">可取走
+              <trailing-number>0</trailing-number>
+            </div>
+
+          </v-card>
+          <div style="height: calc(100vh - 96px)" class="d-flex flex-column">
+            <v-card color="success" dark
+                    @click="takeawayClicked"
+                    elevation="0"
+                    style="border-radius: 12px"
+                    class="pa-4">
+              <div class="text-subtitle-2 d-flex align-center">
+                <v-icon class="mr-2">mdi-truck-fast</v-icon>
+                新增外卖订单
+                <v-spacer></v-spacer>
+                <v-icon>mdi-plus</v-icon>
+              </div>
+
+            </v-card>
+
+            <v-card color="white"
+                    elevation="0"
+                    style="border-radius: 12px"
+                    class="pa-4 mt-4">
+              <div class="text-subtitle-2 d-flex">外卖网站设置
+                <v-spacer></v-spacer>
+                <v-chip label color="white" small class="ml-2 d-flex align-center">
+                  <v-icon left color="success">mdi-checkbox-marked-circle</v-icon>
+                  <span>
+                  已经同步
+          </span>
+
+                </v-chip>
+              </div>
+              <div class="text-body-1">
+                <div class="py-2 mt-4 d-flex align-center">
+                  接受外部订单
+                  <v-spacer></v-spacer>
+                  <v-switch hide-details value="1" class="mt-0" color="warning"></v-switch>
+                </div>
+                <div class="py-2 d-flex align-center">
+                  自动接单
+                  <v-spacer></v-spacer>
+                  <v-switch hide-details class="mt-0" color="warning"></v-switch>
+                </div>
+                <div class="py-2 d-flex align-center">
+                  接受配送订单
+                  <v-spacer></v-spacer>
+                  <v-switch hide-details class="mt-0" color="warning"></v-switch>
+                </div>
+              </div>
+
+            </v-card>
+
+            <v-card color="grey lighten-3"
+                    elevation="0"
+                    style="border-radius: 12px"
+                    class="pa-4 flex-grow-1 mt-4">
+              <div class="text-subtitle-2">非今日订单
+                <trailing-number>
+                  0
+                </trailing-number>
+              </div>
+
+            </v-card>
+          </div>
+
+        </div>
+
+      </v-tab-item>
+      <!--      跑堂-->
       <v-tab-item>
         <v-card v-dragscroll
                 color="#f5f6fa"
@@ -358,7 +476,7 @@
         </v-card>
       </v-tab-item>
       <!--        预定-->
-<!--      <v-tab-item></v-tab-item>-->
+      <!--      <v-tab-item></v-tab-item>-->
 
     </v-tabs-items>
     <v-card v-if="buffer"
@@ -432,6 +550,7 @@ import { TableFixedSectionId } from '@/api/tableService'
 import Navgation from '@/components/Navgation'
 import ToggleUpDownButton from '@/components/widget/ToggleUpDownButton'
 import { getRestaurantInfo } from '@/api/restaurantInfoService'
+import TrailingNumber from '@/components/widget/TrailingNumber'
 
 const keyboardLayout =
     [
@@ -447,6 +566,7 @@ export default {
     dragscroll
   },
   components: {
+    TrailingNumber,
     ToggleUpDownButton,
     Navgation,
     TableGirdItem,
@@ -529,6 +649,12 @@ export default {
 
     takeawayList: function () {
       return this.tableList.filter(TableFixedSectionId.togoFilter)
+    },
+    accepted: function () {
+      return this.takeawayList.filter(it => it.consumeTypeStatusId >= 2)
+    },
+    notAccepted: function () {
+      return this.takeawayList.filter(it => it.consumeTypeStatusId < 2)
     },
 
     hasBadPrint () {

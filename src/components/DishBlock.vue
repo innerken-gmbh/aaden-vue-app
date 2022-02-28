@@ -20,7 +20,6 @@
         {{ price | priceDisplay }}
         <template v-if="haveMod>0"><span style="color: red"> *</span></template>
       </div>
-
     </div>
   </v-card>
 

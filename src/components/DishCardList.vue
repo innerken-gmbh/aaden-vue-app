@@ -1,5 +1,5 @@
 <template>
-  <v-card shaped elevation="0" class="d-flex flex-column flex-grow-1 " style="max-height:100%">
+  <v-card shaped elevation="0" class="d-flex flex-column flex-grow-1 " style="max-height:calc(100% - 60px)">
     <div class="d-flex align-center pt-2 px-2">
       <h2 class="pa-2"> {{ title }}</h2>
       <v-spacer></v-spacer>
