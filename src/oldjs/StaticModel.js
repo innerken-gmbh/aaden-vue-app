@@ -1,5 +1,4 @@
 import hillo from 'hillo'
-
 import i18n from '../i18n'
 import GlobalConfig from './LocalGlobalSettings'
 import { getActiveTables, jumpTo, jumpToTable, requestOutTable } from './common'
