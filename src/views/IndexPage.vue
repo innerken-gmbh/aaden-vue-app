@@ -40,12 +40,12 @@
             </v-list-item-icon>
             <v-list-item-title> {{ $t('CHEF') }}</v-list-item-title>
           </v-list-item>
-<!--          <v-list-item link>-->
-<!--            <v-list-item-icon @click="jumpToVip">-->
-<!--              <v-icon>mdi-smart-card</v-icon>-->
-<!--            </v-list-item-icon>-->
-<!--            <v-list-item-title>{{ $t('VIP') }}</v-list-item-title>-->
-<!--          </v-list-item>-->
+          <!--          <v-list-item link>-->
+          <!--            <v-list-item-icon @click="jumpToVip">-->
+          <!--              <v-icon>mdi-smart-card</v-icon>-->
+          <!--            </v-list-item-icon>-->
+          <!--            <v-list-item-title>{{ $t('VIP') }}</v-list-item-title>-->
+          <!--          </v-list-item>-->
         </v-list>
         <v-spacer>
 
@@ -69,6 +69,7 @@
 <script>
 import { jumpTo, popAuthorize } from '@/oldjs/common'
 import { getServantList } from '@/oldjs/api'
+import { goHome } from '@/oldjs/StaticModel'
 
 const version = require('../../package.json').version
 
@@ -106,7 +107,7 @@ export default {
     jumpToVip () {
     },
     goHome () {
-      location.href = '/'
+      goHome()
     }
   },
   async mounted () {
