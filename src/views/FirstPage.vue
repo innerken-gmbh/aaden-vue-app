@@ -610,7 +610,7 @@ export default {
       sectionList: [],
       currentSectionIndex: 0,
 
-      currentView: 0,
+      currentView: parseInt(GlobalConfig.currentView),
 
       showOtherOrder: GlobalConfig.showOtherOrder,
       tableInfoDisplayOrder: GlobalConfig.getTableInfoKeys()
@@ -618,7 +618,10 @@ export default {
     }
   },
   watch: {
-
+    currentView (val) {
+      console.log(this.currentView)
+      GlobalConfig.updateSettings('currentView', val)
+    },
     tableInfoDisplayOrder: function (val) {
       GlobalConfig.updateSettings('tableInfoDisplayOrder', val)
       refreshGetter()

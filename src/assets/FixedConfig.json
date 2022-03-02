@@ -10,7 +10,6 @@
     "totalPrice",
     "drinkCount",
     "buffetRound"
-
   ],
   "milePayPort": 8181,
   "minTileSize": 80,

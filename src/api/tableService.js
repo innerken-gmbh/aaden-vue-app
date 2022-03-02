@@ -1,3 +1,6 @@
+import { getTableListWithCells } from '@/oldjs/api'
+import { loadAllReservable } from '@/api/ReservationService'
+
 const TableInfoMetaDataSetting = {
   createTimestamp: { icon: 'mdi-clock-outline' },
   servantName: { icon: 'mdi-account' },
@@ -31,3 +34,14 @@ export const TableInfoMetaData = Object.entries(TableInfoMetaDataSetting).map(en
   obj[entry[0]] = entry[1]
   return obj
 }, {})
+
+export async function loadReservationTableInfo () {
+  const reservableTableSet = new Set((await loadAllReservable()).map(it => it.id))
+  const tables = (await getTableListWithCells()).filter(TableFixedSectionId.notTogoFilter).map(it => {
+    it.reservable = reservableTableSet.has(it.tableId)
+    console.log(parseInt(it.reservable))
+    return it
+  }).sort((a, b) => (b.reservable) - (a.reservable))
+  console.log(tables)
+  return tables
+}
