@@ -555,7 +555,7 @@ import Navgation from '@/components/Navgation'
 import ToggleUpDownButton from '@/components/widget/ToggleUpDownButton'
 import { getRestaurantInfo } from '@/api/restaurantInfoService'
 import TrailingNumber from '@/components/widget/TrailingNumber'
-import Reservation from '@/components/fragments/Reservation'
+import Reservation from '@/components/fragments/ReservationFragment'
 
 const keyboardLayout =
     [
