@@ -1,7 +1,7 @@
 <template>
   <div class="pa-4" style="height: calc(100vh - 64px);width: 100%;
         background: #e8e8e8;display: grid;
-        grid-template-columns:1fr 1fr 1fr 1fr;
+        grid-template-columns:1fr 1fr 2fr;
         grid-gap: 16px;
 ">
     <div class="d-flex flex-column">
@@ -96,7 +96,6 @@
               color="grey lighten-2" class="pa-4 d-flex flex-column">
         <div class="text-subtitle-2 d-flex align-center">该桌当日安排
           <v-spacer></v-spacer>
-          <v-btn elevation="0">全部移到另一桌</v-btn>
         </div>
         <div>
           <div
@@ -114,17 +113,17 @@
                 height="100%"
                 style="grid-column: 2"
                 :style="{gridRow:re.startIndex+' / span '+re.span}"
-                class="pa-3 pr-6 d-flex flex-column">
-              <div class="text-truncate text-no-wrap d-flex align-center text-h4 mt-1">
+                class="pa-3 pr-16 d-flex flex-column">
+              <div class="text-truncate text-no-wrap d-flex align-center text-body-1 mt-1">
                 {{ re.title }} {{ re.firstName }} {{ re.lastName }}
               </div>
-              <div class="mt-2 flex-grow-1 d-flex justify-space-between">
+              <div class="mt-2 d-flex justify-space-between pa-2">
                 <div class="d-flex align-center ">
-                  <v-icon large class="mr-3">mdi-human-male-female</v-icon>
+                  <v-icon class="mr-3">mdi-human-male-female</v-icon>
                   <div class="text-h5"> {{ re.personCount }}</div>
                 </div>
                 <div class="d-flex align-center">
-                  <v-icon large class="mr-3">mdi-human-child</v-icon>
+                  <v-icon class="mr-3">mdi-human-child</v-icon>
                   <div class="text-h5">{{ re.childCount }}</div>
                 </div>
 
@@ -283,12 +282,7 @@
       </v-card>
       <v-card style="border-radius: 12px"
               class="pa-4" elevation="0" color="grey lighten-4" v-if="reservationStep===1">
-        <div class="d-flex">
-          <div class="text-subtitle-1">
-            选择的时间没有空闲的桌子
-          </div>
-        </div>
-        <div class="mt-8">
+        <div>
           <div v-if="otherTime.length>0">
             <v-chip color="primary" label>
               以下的时间段依旧可用
@@ -300,10 +294,10 @@
             </div>
 
           </div>
-          <div style="height: 200px" v-else class="d-flex align-center flex-column">
+          <div style="height: 200px" v-else class="d-flex align-center flex-column mt-8">
             <v-icon x-large>mdi-kettle-steam</v-icon>
-            <div>非常抱歉，本日已经没有空闲的桌子了！</div>
-            <v-btn>
+            <div class="mt-4">非常抱歉，这一天已经没有空闲的桌子了！</div>
+            <v-btn text @click="reservationAddDialog=false" class="mt-8">
               <v-icon left>mdi-close</v-icon>
               关闭
             </v-btn>
@@ -428,7 +422,7 @@ export default {
       activeTableIndex: null,
 
       reservationStep: 0,
-      reservationAddDialog: true,
+      reservationAddDialog: false,
       firstName: '',
       lastName: '',
       phone: '',
@@ -455,18 +449,21 @@ export default {
   },
   computed: {
     activeTable () {
+      console.log(this.activeTableIndex, this.tableWithReservation)
       return this.tableWithReservation?.[this.activeTableIndex]
     },
     tableWithReservation () {
       return this.tableList.map(t => {
-        t.reservations = this.reservations.filter(it => it.tableId === t.tableId).map(r => {
-          const startTime = dayjs(r.fromDateTime)
-          const timeDiff = dayjs(r.toDateTime).diff(startTime, 'm')
-          const gap = dayjs.duration(this.setting.gap).as('m')
-          r.startIndex = this.timeGap.indexOf(startTime.format('HH:mm')) + 1
-          r.span = (timeDiff / gap)
-          return r
-        })
+        t.reservations = this.reservations
+          .filter(it => it.tableId === t.tableId)
+          .map(r => {
+            const startTime = dayjs(r.fromDateTime)
+            const timeDiff = dayjs(r.toDateTime).diff(startTime, 'm')
+            const gap = dayjs.duration(this.setting.gap).as('m')
+            r.startIndex = this.timeGap.indexOf(startTime.format('HH:mm')) + 1
+            r.span = (timeDiff / gap)
+            return r
+          })
         t.sortRank = t.reservations.length + t.reservable * 1
         return t
       }).sort((a, b) => b.sortRank - a.sortRank)

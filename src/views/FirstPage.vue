@@ -304,20 +304,23 @@
       </v-tab-item>
       <!--      外卖-->
       <v-tab-item>
-        <div style="display: grid;grid-template-columns: repeat(4,1fr);
-        height: 100%;grid-gap: 16px" class="pa-4 grey lighten-4">
+        <div style="display: grid;grid-template-columns: repeat(4,calc(25% - 12px));
+        height: 100%;grid-gap: 16px;" class="pa-4 grey lighten-4">
           <v-card color="grey lighten-3"
                   elevation="0"
                   class="pa-4 d-flex flex-column"
                   style="border-radius: 12px"
+                  width="100%"
                   height="calc(100vh - 96px)">
             <div class="text-subtitle-2">未接单
               <trailing-number>
                 {{ notAccepted.length }}
               </trailing-number>
             </div>
-            <div style="display: grid;grid-gap: 12px;overflow-y: scroll;" class="mt-4">
-              <table-gird-item
+            <div style="display: grid;grid-gap: 12px;overflow-y: scroll;max-height:calc(100vh - 150px) ;"
+                 class="mt-4">
+              <takeaway-order-item
+                  @accept="acceptOrder"
                   :big-card="true"
                   v-for="t in notAccepted"
                   :key="t.tableName"
@@ -556,6 +559,8 @@ import ToggleUpDownButton from '@/components/widget/ToggleUpDownButton'
 import { getRestaurantInfo } from '@/api/restaurantInfoService'
 import TrailingNumber from '@/components/widget/TrailingNumber'
 import Reservation from '@/components/fragments/ReservationFragment'
+import TakeawayOrderItem from '@/components/Table/TakeawayOrderItem'
+import { acceptOrder } from '@/api/api'
 
 const keyboardLayout =
     [
@@ -571,6 +576,7 @@ export default {
     dragscroll
   },
   components: {
+    TakeawayOrderItem,
     Reservation,
     TrailingNumber,
     ToggleUpDownButton,
@@ -678,6 +684,11 @@ export default {
 
   },
   methods: {
+    async acceptOrder (reason = 'ok', id) {
+      await acceptOrder(reason, id)
+      this.refreshTables()
+    },
+
     togoClick () {
       if (this.takeawayList.length > 0) {
         this.showOtherOrder = !this.showOtherOrder

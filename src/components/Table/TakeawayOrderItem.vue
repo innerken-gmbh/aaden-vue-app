@@ -8,12 +8,19 @@
       style="border-radius: 12px;position: relative;"
       :key="table.id">
 
-    <div class="text-body-1 text-truncate text-no-wrap" style="max-width: 220px">
-      #{{ table.tableName }}
-      <span class="text-capitalize ml-1"
-            v-if="table.addressInfo">{{
-          table.addressInfo.firstName
-        }} {{ table.addressInfo.lastName }}</span>
+    <div class="d-flex align-center">
+
+      <span style="max-width: 220px">
+          #{{ table.tableName }}
+
+      {{ table.addressInfo.firstName }}
+      </span>
+      <v-spacer></v-spacer>
+      <v-chip color="error" elevation="0" v-if="table.inCall" small label class="mr-2">
+        <v-icon x-small>mdi-bell</v-icon>
+        New
+      </v-chip>
+
     </div>
     <div class="text--disabled mt-2">
       <v-chip outlined small>
@@ -28,41 +35,37 @@
       </v-chip>
     </div>
     <div class="mt-2">
-      <v-chip color="error" elevation="0" v-if="table.inCall" small label class="mr-2">
-        <v-icon x-small>mdi-bell</v-icon>
-      </v-chip>
-      <v-chip small outlined label>
+      <v-chip outlined label>
         {{ $t(table.addressInfo.deliveryMethod) }} @ <b>{{ table.addressInfo.time }}</b>
       </v-chip>
-    </div>
-    <v-card v-if="bigCard&&table.addressInfo.toNow"
-            :class="(table.addressInfo.toNow>30
-            ?'success':table.addressInfo.toNow>15
-            ?'warning':'error')+'--text'"
-            elevation="0"
-            style="
-              position: absolute;
-              right: 24px;
-              top: 0;
-              bottom: 0;
-              margin: auto;
-              height: fit-content;
-            text-align: center;">
-
-      <div class="font-weight-black text-h6">{{ Math.abs(table.addressInfo.toNow) }}</div>
-      <div class="font-weight-regular text-body-2 mt-n2">
-        Min
+      <div>
+        <template
+            v-for="(time) in [0,10,15,20,30,60]"
+        >
+          <v-chip
+              label
+              class="ma-1"
+              :key="time"
+              outlined
+              color="success"
+              @click.stop="acceptOrderWithTime(time)"
+          >
+            + {{ time }}
+          </v-chip>
+        </template>
+        <v-chip label outlined color="error" @click="$emit('reject')">{{ $t('拒绝') }}</v-chip>
       </div>
-    </v-card>
+    </div>
   </v-card>
 </template>
 
 <script>
 import { getColorLightness } from '@/oldjs/api'
 import { beautifulTable, getRestaurantInfo } from '@/api/restaurantInfoService'
+import dayjs from 'dayjs'
 
 export default {
-  name: 'TableGirdItem',
+  name: 'TakeawayOrderItem',
   props: {
     tableInfo: {},
     bigCard: { default: false }
@@ -81,6 +84,17 @@ export default {
     },
     colorIsDark (color) {
       return getColorLightness(color) < 128
+    },
+    async acceptOrderWithTime (time) {
+      const addressInfo = this.table.addressInfo
+      let timeReal = dayjs()
+      if (addressInfo) {
+        if (addressInfo.date && addressInfo.time) {
+          timeReal = dayjs(addressInfo.date + ' ' + addressInfo.time, 'YYYY-MM-DD HH:mm')
+        }
+      }
+      timeReal = timeReal.add(time, 'm')
+      this.$emit('accept', timeReal.format('DD.MM.YYYY HH:mm'), this.tableInfo.tableId)
     }
   }
 }

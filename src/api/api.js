@@ -4,6 +4,7 @@ import { version } from '../../package.json'
 import { deviceType } from '../assets/FixedConfig.json'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
+import { resetTableStatus } from '@/oldjs/common'
 
 export async function previewZBon (startDate, endDate) {
   return (await hillo.get('ZBon.php?op=previewBySpan', { startDate, endDate })).content
@@ -29,6 +30,7 @@ export async function ZBonList () {
 }
 
 export async function acceptOrder (reason, id) {
+  resetTableStatus(id)
   IKUtils.showLoading(true)
   await hillo.post('Orders.php?op=acceptTakeawayOrder', {
     tableId: id,

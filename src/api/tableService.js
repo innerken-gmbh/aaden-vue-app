@@ -37,11 +37,8 @@ export const TableInfoMetaData = Object.entries(TableInfoMetaDataSetting).map(en
 
 export async function loadReservationTableInfo () {
   const reservableTableSet = new Set((await loadAllReservable()).map(it => it.id))
-  const tables = (await getTableListWithCells()).filter(TableFixedSectionId.notTogoFilter).map(it => {
+  return (await getTableListWithCells()).filter(TableFixedSectionId.notTogoFilter).map(it => {
     it.reservable = reservableTableSet.has(it.tableId)
-    console.log(parseInt(it.reservable))
     return it
-  }).sort((a, b) => (b.reservable) - (a.reservable))
-  console.log(tables)
-  return tables
+  })
 }
