@@ -787,7 +787,7 @@ export default {
           this.insDecode(this.readBuffer())
           break
         default:
-          if (e.target.nodeName !== 'INPUT') {
+          if (e.target.nodeName === 'BODY') {
             this.buffer += e.key
             console.log(this.buffer)
           }

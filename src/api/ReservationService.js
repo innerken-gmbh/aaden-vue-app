@@ -1,6 +1,7 @@
 import hillo from 'hillo'
 import dayjs from 'dayjs'
 import { sliceTime, standardDateTemplate } from '@/api/dateUtils'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 export async function loadAllReservable () {
   return (await hillo.get('Tables.php?op=getAllReservable')).content
@@ -53,10 +54,13 @@ export async function loadReserveSettings () {
   return (await hillo.get('Tables.php?op=getReserveSettings')).content
 }
 
-export async function addReservation (reservationInfo = defaultReservationInfo) {
-  return (await hillo.post('Tables.php?op=addReservation', {
-    reservationInfo: JSON.stringify(reservationInfo)
-  }))
+export async function addReservation (reservationInfo) {
+  return (await hillo.jsonPost(
+    GlobalConfig.reservationCloudServerBase +
+    'reservation/add',
+    Object.assign({}, defaultReservationInfo,
+      reservationInfo)
+  ))
 }
 
 export async function moveReservation (reservationId, newTableId) {
@@ -71,8 +75,7 @@ export async function cancelReservation (reservationId) {
   }))
 }
 
-export async function getTimeSlotForDate (date) {
-  const setting = await loadReserveSettings()
+export async function getTimeSlotForDate (date, setting) {
   const targetDayOfWeek = dayjs(date, standardDateTemplate).isoWeekday()
   const duration = setting.gap
   console.log((setting.weeklySettings
@@ -81,4 +84,15 @@ export async function getTimeSlotForDate (date) {
     .find(it => parseInt(it.dayOfWeek) === targetDayOfWeek)?.openingTimespan ?? [])
     .map(it => sliceTime(date + ' ' + it.from, date + ' ' + it.to, duration))
     .flat()
+}
+
+export async function checkTableTimeAvailable (date, time, personCount) {
+  const res = (await hillo.jsonPost(GlobalConfig.reservationCloudServerBase + 'reservableTable/getTableTime', {
+    reserveTime: time, reserveDate: date, peopleCount: personCount
+  })).data
+  if (res.check === true) {
+    return false
+  } else {
+    return res.data
+  }
 }

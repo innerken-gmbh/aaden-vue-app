@@ -1,7 +1,7 @@
 <template>
   <div class="pa-4" style="height: calc(100vh - 64px);width: 100%;
         background: #e8e8e8;display: grid;
-        grid-template-columns:repeat(4,1fr);
+        grid-template-columns:1fr 1fr 1fr 1fr;
         grid-gap: 16px;
 ">
     <div class="d-flex flex-column">
@@ -33,6 +33,10 @@
             <v-switch hide-details :value="true" class="mt-0"/>
           </div>
         </div>
+        <v-btn @click="addNewReservation" block large color="success" class="mt-4">
+          <v-icon>mdi-plus</v-icon>
+          新建预定
+        </v-btn>
 
       </v-card>
 
@@ -69,7 +73,8 @@
 
             <h3>
               <v-icon left>mdi-map-marker-check-outline</v-icon>
-              {{ t.tableName }}
+              {{ t.tableName }}/
+              {{ t.seatCount }}
             </h3>
             <v-spacer></v-spacer>
             <template v-if="t.reservations.length>0">
@@ -85,51 +90,48 @@
         </v-item>
       </v-item-group>
     </v-card>
+
     <template v-if="activeTable">
       <v-card style="border-radius: 12px;position: relative" elevation="0"
               color="grey lighten-2" class="pa-4 d-flex flex-column">
-        <div class="text-subtitle-2 d-flex align-center">该桌今日安排
+        <div class="text-subtitle-2 d-flex align-center">该桌当日安排
           <v-spacer></v-spacer>
           <v-btn elevation="0">全部移到另一桌</v-btn>
         </div>
-        <div style="display: grid;grid-gap: 2px;max-height: calc(100vh - 150px)" class="mt-4">
-          <v-card draggable="false" elevation="0" v-for="gap in gapWithReservation" :key="gap.gapName"
-                  color="grey lighten-3"
-                  style="position: relative;"
-                  height="10px"
-                  class="pa-0 d-flex align-center">
-            <span :class="gap.gapName.endsWith('00')?'font-weight-black':'text--disabled'"
-                  class="text-caption ">{{ gap.gapName }}</span>
-            <template v-if="gap.reservations.length>0">
-
-              <v-card draggable v-for="re in gap.reservations" :key="re.remoteId" elevation="1"
-                      style="position: absolute;right: 0;top: 0; z-index: 1;width: 100%"
-                      class="pa-3 pr-6 d-flex align-center">
-                <div>
-                  <div class="text-caption d-flex align-center">
-                    <v-icon small class="mr-1">mdi-clock</v-icon>
-                    {{ re.fromDateTime | onlyTime }} -
-                    {{ re.toDateTime | onlyTime }}
-                  </div>
-                  <div class="text-truncate text-no-wrap d-flex align-center mt-1">
-                    <h3>
-                      {{ re.title }} {{ re.firstName }} {{ re.lastName }}
-                    </h3>
-                  </div>
-                  <div class="mt-1 d-flex align-center">
-                    <v-chip outlined label class="d-flex align-center ml-1">
-                      <v-icon small>mdi-human-male-female</v-icon>
-                      {{ re.personCount }}
-                      <v-icon small class="ml-2">mdi-human-child</v-icon>
-                      {{ re.childCount }}
-                    </v-chip>
-                  </div>
+        <div>
+          <div
+              style="display: grid;grid-gap: 2px;max-height: calc(100vh - 150px);overflow-y: scroll;grid-template-columns: min-content 1fr;grid-column-gap: 12px"
+              :style="{gridTemplateRows:'repeat('+timeGap.length+', 16px)'}" class="mt-4">
+            <div @click="addNewReservation(gap)" v-for="(gap) in timeGap" :key="gap"
+                 style="grid-column: 1"
+                 class="d-flex align-center pa-1">
+            <span :class="gap.endsWith('00')?'font-weight-black text-decoration-underline':'text--disabled'"
+                  class="text-caption">{{ gap }}</span>
+            </div>
+            <v-card
+                @click="toggleActiveReservation(re)"
+                v-for="re in activeTable.reservations" :key="re.remoteId" elevation="0"
+                height="100%"
+                style="grid-column: 2"
+                :style="{gridRow:re.startIndex+' / span '+re.span}"
+                class="pa-3 pr-6 d-flex flex-column">
+              <div class="text-truncate text-no-wrap d-flex align-center text-h4 mt-1">
+                {{ re.title }} {{ re.firstName }} {{ re.lastName }}
+              </div>
+              <div class="mt-2 flex-grow-1 d-flex justify-space-between">
+                <div class="d-flex align-center ">
+                  <v-icon large class="mr-3">mdi-human-male-female</v-icon>
+                  <div class="text-h5"> {{ re.personCount }}</div>
                 </div>
-                <v-spacer></v-spacer>
-              </v-card>
+                <div class="d-flex align-center">
+                  <v-icon large class="mr-3">mdi-human-child</v-icon>
+                  <div class="text-h5">{{ re.childCount }}</div>
+                </div>
 
-            </template>
-          </v-card>
+              </div>
+            </v-card>
+          </div>
+
         </div>
 
       </v-card>
@@ -224,37 +226,231 @@
         </div>
       </v-card>
     </template>
+    <v-dialog max-width="600px" v-model="reservationAddDialog">
+      <v-card style="border-radius: 12px"
+              class="pa-4" elevation="0" color="grey lighten-4" v-if="reservationStep===0">
+        <div class="d-flex">
+          <div class="text-subtitle-1">
+            新建预定
+          </div>
+          <v-spacer></v-spacer>
+          输入时间和人数，确定是否有空闲桌子
+        </div>
+        <div class="mt-8">
+          <div class="d-flex align-center">
+            <div class="text-body-1">时间</div>
+            <v-spacer></v-spacer>
+            <div style="width: 280px">
+              <v-select hide-details :items="timeGap" v-model="startTime" return-object solo></v-select>
+            </div>
+          </div>
+          <v-divider class="my-2"></v-divider>
+          <div class="d-flex align-center">
+            <div class="text-body-1">成人人数</div>
+            <v-icon class="ml-2">mdi-human-male-female</v-icon>
+            <v-spacer></v-spacer>
 
+            <v-btn large icon @click="adultCount>0?adultCount--:adultCount=0">
+              <v-icon>mdi-minus-circle</v-icon>
+            </v-btn>
+            {{ adultCount }}
+            <v-btn large icon @click="adultCount++">
+              <v-icon>mdi-plus-circle</v-icon>
+            </v-btn>
+          </div>
+          <v-divider class="my-2"></v-divider>
+          <div class="d-flex align-center">
+            <div class="text-subtitle-2">儿童人数</div>
+            <v-icon class=" ml-2">mdi-human-child</v-icon>
+            <v-spacer></v-spacer>
+
+            <v-btn large icon @click="childCount>0?childCount--:childCount=0">
+              <v-icon>mdi-minus-circle</v-icon>
+            </v-btn>
+            {{ childCount }}
+            <v-btn large icon @click="childCount++">
+              <v-icon>mdi-plus-circle</v-icon>
+            </v-btn>
+          </div>
+
+          <v-divider class="my-2"></v-divider>
+          <v-btn @click="checkCurrentTime" color="primary" block large>
+            <v-icon left>mdi-magnify</v-icon>
+            查询
+          </v-btn>
+        </div>
+
+      </v-card>
+      <v-card style="border-radius: 12px"
+              class="pa-4" elevation="0" color="grey lighten-4" v-if="reservationStep===1">
+        <div class="d-flex">
+          <div class="text-subtitle-1">
+            选择的时间没有空闲的桌子
+          </div>
+        </div>
+        <div class="mt-8">
+          <div v-if="otherTime.length>0">
+            <v-chip color="primary" label>
+              以下的时间段依旧可用
+            </v-chip>
+            <div class="d-flex flex-wrap mt-2">
+              <v-chip large @click="useOtherTime(time)" v-for="time in otherTime" :key="time" class="ma-1">
+                {{ reservationDate + ' ' + time|onlyTime }}
+              </v-chip>
+            </div>
+
+          </div>
+          <div style="height: 200px" v-else class="d-flex align-center flex-column">
+            <v-icon x-large>mdi-kettle-steam</v-icon>
+            <div>非常抱歉，本日已经没有空闲的桌子了！</div>
+            <v-btn>
+              <v-icon left>mdi-close</v-icon>
+              关闭
+            </v-btn>
+          </div>
+        </div>
+
+      </v-card>
+      <v-card v-else-if="reservationStep===2"
+              style="border-radius: 12px"
+              class="pa-4" elevation="0" color="grey lighten-4">
+        <div class="d-flex">
+          <div class="text-subtitle-1">
+            新建预定
+          </div>
+          <v-spacer></v-spacer>
+          <v-chip small color="success">
+            <v-icon left>mdi-circle-medium</v-icon>
+            正常
+          </v-chip>
+        </div>
+
+        <div class="mt-8">
+          <div class="d-flex">
+            <div class="text-subtitle-2">时间</div>
+            <v-spacer></v-spacer>
+            <v-icon small class="mr-2">mdi-clock</v-icon>
+            {{ startTime }}
+          </div>
+          <v-divider class="my-2"></v-divider>
+          <div style="display: grid;grid-template-columns: 50% 50%">
+            <div class="d-flex align-center pr-8">
+              <div class="text-subtitle-2">名</div>
+              <v-spacer></v-spacer>
+              <v-text-field solo hide-details dense v-model="firstName"></v-text-field>
+            </div>
+            <div class="d-flex align-center pl-8">
+              <div class="text-subtitle-2">姓</div>
+              <v-spacer></v-spacer>
+              <v-text-field solo hide-details dense v-model="lastName"></v-text-field>
+            </div>
+          </div>
+
+          <v-divider class="my-2"></v-divider>
+          <div class="d-flex align-center">
+            <div class="text-subtitle-2">成人人数</div>
+            <v-spacer></v-spacer>
+            <v-icon class="mr-2">mdi-human-male-female</v-icon>
+            {{ adultCount }}
+          </div>
+          <v-divider class="my-2"></v-divider>
+          <div class="d-flex align-center">
+            <div class="text-subtitle-2">儿童人数</div>
+            <v-spacer></v-spacer>
+            <v-icon class="ml-2 mr-2">mdi-human-child</v-icon>
+            {{ childCount }}
+          </div>
+
+          <v-divider class="my-2"></v-divider>
+          <div class="d-flex align-center">
+            <div class="text-subtitle-2">电话</div>
+            <v-spacer></v-spacer>
+            <v-text-field solo hide-details dense v-model="phone"></v-text-field>
+          </div>
+
+          <v-divider class="my-2"></v-divider>
+          <div class="d-flex align-center">
+            <div class="text-subtitle-2">邮箱</div>
+            <v-spacer></v-spacer>
+            <v-text-field solo hide-details dense v-model="email"></v-text-field>
+          </div>
+
+          <v-divider class="my-2"></v-divider>
+
+          <div class="d-flex">
+            <div class="text-subtitle-2">备注</div>
+            <v-spacer></v-spacer>
+            <v-textarea solo v-model="note" height="100"/>
+          </div>
+          <v-divider class="my-2"></v-divider>
+
+          <template>
+            <div class="d-flex">
+              <div class="text-subtitle-2">需要婴儿车</div>
+              <v-spacer></v-spacer>
+              <v-simple-checkbox v-model="useStroller"/>
+            </div>
+            <v-divider class="my-2"></v-divider>
+          </template>
+          <v-btn @click="submitReservation" block color="success">保存</v-btn>
+
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import {
+  addReservation,
   cancelReservation,
+  checkTableTimeAvailable,
   getReservation,
   getTimeSlotForDate,
+  loadReserveSettings,
   moveReservation,
   setReservable
 } from '@/api/ReservationService'
 import IKUtils from 'innerken-js-utils'
 import { loadReservationTableInfo } from '@/api/tableService'
-import { onlyTimeFormat } from '@/api/dateUtils'
+import dayjs from 'dayjs'
+import { onlyTimeFormat, todayDate } from '@/api/dateUtils'
 
 export default {
   name: 'Reservation',
   data: function () {
     return {
-      reservationDate: '2022-01-27',
+      reservationDate: todayDate,
       timeGap: [],
       reservations: [],
       tableList: [],
-      activeIndex: null,
-      activeTableIndex: null
+      activeReservation: null,
+      activeTableIndex: null,
+
+      reservationStep: 0,
+      reservationAddDialog: true,
+      firstName: '',
+      lastName: '',
+      phone: '',
+      email: '',
+      note: '',
+      adultCount: 1,
+      childCount: 0,
+      useStroller: false,
+      startTime: '',
+      otherTime: [],
+
+      setting: {
+        gap: 'PT15M'
+      }
     }
   },
   watch: {
     reservationDate (val) {
-      this.loadReservations()
+      this.loadData()
+    },
+    reservationAddDialog () {
+      this.clearForm()
     }
   },
   computed: {
@@ -263,36 +459,83 @@ export default {
     },
     tableWithReservation () {
       return this.tableList.map(t => {
-        t.reservations = this.reservations.filter(it => it.tableId === t.tableId)
+        t.reservations = this.reservations.filter(it => it.tableId === t.tableId).map(r => {
+          const startTime = dayjs(r.fromDateTime)
+          const timeDiff = dayjs(r.toDateTime).diff(startTime, 'm')
+          const gap = dayjs.duration(this.setting.gap).as('m')
+          r.startIndex = this.timeGap.indexOf(startTime.format('HH:mm')) + 1
+          r.span = (timeDiff / gap)
+          return r
+        })
         t.sortRank = t.reservations.length + t.reservable * 1
         return t
       }).sort((a, b) => b.sortRank - a.sortRank)
-    },
-    gapWithReservation () {
-      return this.timeGap.map(g => {
-        const res = {
-          gapName: g
-        }
-        res.reservations = this.activeTable.reservations
-          .filter(r => onlyTimeFormat(r.fromDateTime) === g)
-        console.log(this.activeTable.reservations.map(r => onlyTimeFormat(r.fromDateTime)))
-        return res
-      })
-    },
-    activeReservation () {
-      return this.activeTable.reservations[this.activeIndex]
     }
   },
   methods: {
-    startDrag (evt, item) {
-      evt.dataTransfer.dropEffect = 'move'
-      evt.dataTransfer.effectAllowed = 'move'
-      evt.dataTransfer.setData('itemID', item.id)
+    async checkCurrentTime () {
+      if (!this.startTime) {
+        IKUtils.showError('请选择订餐时间！')
+        return
+      }
+      const res = await checkTableTimeAvailable(
+        this.reservationDate,
+        this.startTime,
+        parseInt(this.adultCount) + parseInt(this.childCount))
+      if (!res) {
+        this.reservationStep = 2
+      } else {
+        this.otherTime = res
+        this.reservationStep = 1
+      }
     },
-    onDrop (evt, list) {
-      // const itemID = evt.dataTransfer.getData('itemID')
-      // const item = this.items.find(item => item.id == itemID)
-      // item.list = list
+    addNewReservation () {
+      this.reservationAddDialog = true
+    },
+    useOtherTime (time) {
+      this.startTime = onlyTimeFormat(this.reservationDate + ' ' + time)
+      this.reservationStep = 2
+    },
+    async submitReservation () {
+      if (!this.firstName && !this.lastName) {
+        IKUtils.showError('请填写姓名！')
+        return
+      }
+      const res = await addReservation({
+        fromDateTime: this.reservationDate + ' ' + this.startTime + ':00',
+        personCount: this.adultCount,
+        childCount: this.childCount,
+        firstName: this.firstName,
+        lastName: this.lastName,
+        tel: this.phone,
+        email: this.email,
+        note: this.note,
+        useStroller: this.useStroller ? 1 : 0
+      })
+      console.log(res)
+      this.reservationAddDialog = false
+      this.clearForm()
+      await this.loadData()
+    },
+    clearForm () {
+      this.reservationStep = 0
+      this.startTime = ''
+      this.adultCount = 2
+      this.childCount = 0
+      this.firstName = ''
+      this.lastName = ''
+      this.tel = ''
+      this.email = ''
+      this.note = ''
+      this.useStroller = false
+    },
+    toggleActiveReservation (reservation) {
+      this.reservationAddDialog = false
+      if (this.activeReservation?.remoteId === reservation?.remoteId) {
+        this.activeReservation = null
+      } else {
+        this.activeReservation = reservation
+      }
     },
     async cancelReservation (id) {
       const res = await IKUtils.showConfirmAsyn(
@@ -315,9 +558,8 @@ export default {
     async loadData () {
       await this.loadReservations()
       await this.getTables()
-
-      this.timeGap = await getTimeSlotForDate(this.reservationDate)
-      console.log(this.timeGap, 'timegap')
+      this.setting = await loadReserveSettings()
+      this.timeGap = await getTimeSlotForDate(this.reservationDate, this.setting)
     },
     async getTables () {
       this.activeTableIndex = null
@@ -326,7 +568,6 @@ export default {
     async loadReservations () {
       this.activeIndex = null
       this.reservations = await getReservation(this.reservationDate)
-      console.log(this.reservations, 'reservation')
     }
   },
   async mounted () {
