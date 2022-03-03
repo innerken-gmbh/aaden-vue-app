@@ -225,8 +225,7 @@
                 </h4>
                 <v-spacer/>
                 <template v-if="takeawayList.length>0">
-                     <span class="error white--text ml-2"
-                           style="padding:2px 8px;font-size: small;border-radius: 24px">{{ takeawayList.length }}</span>
+                  <trailing-number>{{ takeawayList.length }}</trailing-number>
                   <toggle-up-down-button :expand="showOtherOrder"/>
                 </template>
                 <template v-else>
@@ -381,30 +380,40 @@
                     class="pa-4 mt-4">
               <div class="text-subtitle-2 d-flex">外卖网站设置
                 <v-spacer></v-spacer>
-                <v-chip label color="white" small class="ml-2 d-flex align-center">
-                  <v-icon left color="success">mdi-checkbox-marked-circle</v-icon>
-                  <span>
+                <template v-if="loading">
+                  <v-progress-circular indeterminate></v-progress-circular>
+                </template>
+                <template v-else>
+                  <v-chip label color="white" small class="ml-2 d-flex align-center">
+                    <v-icon left color="success">mdi-checkbox-marked-circle</v-icon>
+                    <span>
                   已经同步
-          </span>
-
-                </v-chip>
+                             </span>
+                  </v-chip>
+                </template>
               </div>
               <div class="text-body-1">
                 <div class="py-2 mt-4 d-flex align-center">
-                  接受外部订单
+                  <div>
+                    接受外部订单
+                    <div class="caption">
+                      关闭此选项的话，外卖网站会暂时关闭
+                    </div>
+                  </div>
+
                   <v-spacer></v-spacer>
-                  <v-switch hide-details value="1" class="mt-0" color="warning"></v-switch>
+                  <v-switch hide-details v-model="takeawayEnabled" class="mt-0"></v-switch>
                 </div>
-                <div class="py-2 d-flex align-center">
-                  自动接单
-                  <v-spacer></v-spacer>
-                  <v-switch hide-details class="mt-0" color="warning"></v-switch>
-                </div>
-                <div class="py-2 d-flex align-center">
-                  接受配送订单
-                  <v-spacer></v-spacer>
-                  <v-switch hide-details class="mt-0" color="warning"></v-switch>
-                </div>
+                <!--                <div class="py-2 d-flex align-center">-->
+                <!--                  自动接单-->
+                <!--                  <v-spacer></v-spacer>-->
+                <!--                  <v-switch hide-details class="mt-0" color="warning"></v-switch>-->
+                <!--                </div>-->
+                <!--                <div class="py-2 d-flex align-center">-->
+                <!--                  接受配送订单-->
+                <!--                  <v-spacer></v-spacer>-->
+                <!--                  <v-switch hide-details class="mt-0" color="warning"></v-switch>-->
+                <!--                </div>-->
               </div>
 
             </v-card>
@@ -561,7 +570,7 @@ import { getRestaurantInfo } from '@/api/restaurantInfoService'
 import TrailingNumber from '@/components/widget/TrailingNumber'
 import Reservation from '@/components/fragments/ReservationFragment'
 import TakeawayOrderItem from '@/components/Table/TakeawayOrderItem'
-import { acceptOrder } from '@/api/api'
+import { acceptOrder, loadRestaurantInfo, syncTakeawaySettingToCloud } from '@/api/api'
 
 const keyboardLayout =
     [
@@ -602,6 +611,8 @@ export default {
       keyboardLayout: keyboardLayout,
       NeededKeys,
       restaurantInfo: null,
+      takeawayEnabled: null,
+
       menu: null,
       menu1: null,
 
@@ -620,7 +631,9 @@ export default {
       currentView: parseInt(GlobalConfig.currentView),
 
       showOtherOrder: GlobalConfig.showOtherOrder,
-      tableInfoDisplayOrder: GlobalConfig.getTableInfoKeys()
+      tableInfoDisplayOrder: GlobalConfig.getTableInfoKeys(),
+
+      loading: false
 
     }
   },
@@ -641,6 +654,14 @@ export default {
     },
     refresh: function () {
       this.initPage()
+    },
+    takeawayEnabled: async function (val) {
+      const info = Object.assign({}, this.restaurantInfo)
+      info.currentlyOpening = val ? 1 : 0
+      this.loading = true
+      await syncTakeawaySettingToCloud(info)
+      await this.loadRestaurantInfo()
+      this.loading = false
     }
   },
   computed: {
@@ -850,7 +871,10 @@ export default {
       this.sectionList = (await getSectionList())
         .filter(it => it.tableCount > 0)
     },
-
+    async loadRestaurantInfo () {
+      this.restaurantInfo = await loadRestaurantInfo()
+      this.takeawayEnabled = this.restaurantInfo.currentlyOpening === '1'
+    },
     async initPage () {
       window.onkeydown = this.listenKeyDown
       this.refreshPrinterList()
@@ -873,9 +897,8 @@ export default {
     this.servantList = await getServantList()
     await this.refreshSectionList()
     getRestaurantInfo()
-    setTimeout(() => {
-      this.restaurantInfo = getRestaurantInfo()
-    }, 1000)
+
+    this.loadRestaurantInfo()
   },
   beforeDestroy () {
     clearAllTimer()

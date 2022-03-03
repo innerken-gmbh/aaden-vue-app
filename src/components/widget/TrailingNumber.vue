@@ -8,7 +8,7 @@ export default {
   name: 'TrailingNumber',
   props: {
     content: {},
-    color: { default: 'error' }
+    color: { default: 'primary' }
   }
 }
 </script>

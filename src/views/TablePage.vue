@@ -2,10 +2,13 @@
   <div>
     <template v-cloak>
       <v-main>
-        <div style="display: grid; grid-template-columns: 300px calc(100vw - 620px) 320px; background: #f6f6f6;">
+        <div style="display: grid;
+        grid-template-columns: 300px calc(100vw - 620px) 320px;
+        background: #f6f6f6;">
           <v-card rounded elevation="1" style="height: 100vh"
                   class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height">
-            <v-btn :loading="isSendingRequest" x-large color="primary" tile elevation="0" height="60px" @click="back">
+            <v-btn :loading="isSendingRequest" x-large color="primary"
+                   tile elevation="0" height="60px" @click="back">
               <v-icon>mdi-arrow-left</v-icon>
               {{ $t('Home') }}
             </v-btn>
@@ -19,6 +22,12 @@
                   :click-callback="addToSplit"
                   :title="$t('haveOrderedDish')"
               >
+                <template #action>
+                  <v-btn color="warning" elevation="0" :loading="isSendingRequest" @click="discountShow">
+                    <v-icon>mdi-sale</v-icon>
+                    {{ $t('discount') }}
+                  </v-btn>
+                </template>
                 <v-btn block :disabled="this.tableDetailInfo.order.consumeTypeStatusId<=1"
                        x-large
                        color="success"
@@ -99,27 +108,22 @@
             </div>
             <v-divider class="mb-2"></v-divider>
             <v-card
-                elevation="4"
-                color="white"
-                class="d-flex"
-                style="position: fixed;bottom: 16px;
-                right: 0;
-                margin: auto;
-                width: min-content;
-                border-radius: 8px;
-                          left: 0;max-width: calc(100vw - 684px);
-                          z-index: 2;">
+                elevation="0"
+                color="transparent"
+            >
               <v-item-group v-dragscroll v-model="activeDCT"
                             mandatory
                             style="display: grid;
-                          grid-auto-columns: max-content;
                           grid-gap: 8px;
-                          grid-auto-flow: column;overflow-x: scroll">
+                          grid-auto-columns: 120px;
+                          grid-auto-flow: column;
+                          overflow-x: scroll">
 
                 <v-item v-for="ct of dct" v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
                   <v-card :elevation="active?4:0"
-                          style="border-radius: 8px"
-                          class="categoryTypeItem"
+                          height="72"
+                          style="border-radius: 12px;font-size: 18px"
+                          class="d-flex justify-center align-center"
                           :color="active?'primary':''"
                           @click="toggle"
                           :dark="active">{{ ct.name }}
@@ -128,17 +132,20 @@
 
               </v-item-group>
             </v-card>
+            <v-divider class="my-2"></v-divider>
             <v-card v-dragscroll color="transparent" elevation="0"
                     class="dragscroll dishCardListContainer flex-grow-1">
               <div v-if="!activeCategoryId">
                 <v-item-group
-                    style="display: grid;grid-template-columns: repeat(auto-fit,minmax(140px,1fr));grid-gap: 12px;">
+                    style="display: grid;grid-template-columns: repeat(auto-fill,minmax(140px,1fr));grid-gap: 12px;">
                   <template v-for="category of filteredC">
                     <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
                       <v-card elevation="0" style="
+                      position: relative;
                       width: 100%;
                       height: 112px;
-                      font-size: 20px;
+                      font-size: 18px;
+                      font-weight: 500;
                         display: -webkit-box;
                         word-break: break-all;
   -webkit-line-clamp: 3;
@@ -147,10 +154,11 @@
   overflow: hidden;
   text-overflow: ellipsis;"
                               class="d-flex align-center justify-center text-center pa-2"
-                              @click="changeCategory(category.id,toggle)"
-                              :style="{backgroundColor:category.color,
-                            color: getColorLightness(category.color)>128?'#000':'#fff'}">
+                              @click="changeCategory(category.id,toggle)">
                         {{ category.name }}
+                        <div style="position: absolute;width: 40%;top: 12px;
+left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
+                             :style="{background:category.color}"></div>
                       </v-card>
                     </v-item>
                   </template>
@@ -208,13 +216,6 @@
             <div class="pa-2" v-if="searchDish.length===0">
               <div style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px">
                 <grid-button
-                    :disabled="cartListModel.count()!==0"
-                    :loading="isSendingRequest"
-                    icon="mdi-sale"
-                    :text="$t('discount')"
-                    @click="discountShow"
-                />
-                <grid-button
                     :loading="isSendingRequest"
                     icon="mdi-printer"
                     color="warning"
@@ -232,6 +233,7 @@
                     :loading="isSendingRequest"
                     icon="mdi-swap-horizontal"
                     color="#ff8c50"
+                    v-if="consumeTypeId!==2"
                     :text=" $t('tableChange') "
                     @click="changeTable"
                 />
@@ -240,6 +242,7 @@
                     color="#272727"
                     icon="mdi-merge"
                     :text="$t('tableMerge')"
+                    v-if="consumeTypeId!==2"
                     @click="mergeTable"
                 />
                 <grid-button
@@ -491,7 +494,7 @@ import IKUtils from 'innerken-js-utils'
 import Keyboard from '@/components/Keyboard'
 import DiscountDialog from '@/components/fragments/DiscountDialog'
 import AddressDisplay from '@/components/AddressDisplay'
-import { acceptOrder } from '@/api/api'
+import { acceptOrder, safeRequest } from '@/api/api'
 import GridButton from '@/components/GridButton'
 import { mapGetters } from 'vuex'
 import BuffetStartDialog from '@/components/fragments/BuffetStartDialog'
@@ -612,33 +615,38 @@ export default {
 
   methods: {
     getColorLightness,
-    mergeTable () {
-      popAuthorize(this.Config.changeTableUseBossPassword ? 'boss' : '', async () => {
+    async mergeTable () {
+      const password = await popAuthorize(GlobalConfig.mergeTableUseBossPassword ? 'boss' : '')
+      if (password) {
         const tableName = await showTableSelector(TableFilter.activeFilter)
-        const res = await hillo.post('Tables.php?op=mergeTables', {
+        await safeRequest(async () => {
+          const res = await hillo.post('Tables.php?op=mergeTables', {
+            oldTableName: this.tableDetailInfo.tableBasicInfo.name,
+            newTableName: tableName
+          })
+
+          if (res) {
+            this.goHome()
+          }
+        })
+      }
+    },
+    async changeTable () {
+      const password = await popAuthorize(GlobalConfig.changeTableUseBossPassword ? 'boss' : '')
+      if (password) {
+        const tableName = await showTableSelector(TableFilter.notActiveFilter)
+        const res = await hillo.post('Tables.php?op=change', {
           oldTableName: this.tableDetailInfo.tableBasicInfo.name,
           newTableName: tableName
         })
         if (res) {
           this.goHome()
         }
-      })
-    },
-    changeTable () {
-      popAuthorize(this.Config.changeTableUseBossPassword ? 'boss' : '',
-        async () => {
-          const tableName = await showTableSelector(TableFilter.notActiveFilter)
-          const res = await hillo.post('Tables.php?op=change', {
-            oldTableName: this.tableDetailInfo.tableBasicInfo.name,
-            newTableName: tableName
-          })
-          if (res) {
-            this.goHome()
-          }
-        })
+      }
     },
     dishesChangeTable: async function () {
-      popAuthorize(this.Config.changeTableUseBossPassword ? 'boss' : '', async () => {
+      const password = await popAuthorize(GlobalConfig.changeTableUseBossPassword ? 'boss' : '')
+      if (password) {
         const tableName = await showTableSelector()
         const res = await hillo.post('Complex.php?op=dishesChangeTable',
           {
@@ -650,7 +658,7 @@ export default {
           loadingComplete()
           this.initialUI()
         }
-      })
+      }
     },
 
     findConsumeTypeById (id) {
@@ -1502,7 +1510,6 @@ tr:hover {
 }
 
 .dishCardList {
-  padding: 8px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   margin-bottom: 120px;
@@ -1577,21 +1584,6 @@ tr:hover {
   background: #367aeb !important;
   color: white !important;
   font-weight: bold;
-}
-
-.categoryTypeItem {
-  padding: 8px 12px;
-  text-align: center;
-  text-transform: capitalize;
-  font-size: 24px;
-}
-
-.categoryTypeItem.active {
-  font-weight: bold;
-  text-transform: capitalize;
-  color: white;
-  background: #367aeb;
-  border: none;
 }
 
 .consumeTypeItem {

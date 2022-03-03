@@ -1,6 +1,6 @@
-import hillo from 'hillo'
 import { DefaultAddressInfo } from '@/oldjs/StaticModel'
 import dayjs from 'dayjs'
+import { loadRestaurantInfo } from '@/api/api'
 
 const defaultRestaurantInfo = {
   tableColor: '#ffffff', callColor: '#f57f17'
@@ -11,8 +11,8 @@ let loading = false
 export function getRestaurantInfo () {
   if (!restaurantInfo && !loading) {
     loading = true
-    hillo.get('Restaurant.php?op=view').then(res => {
-      restaurantInfo = Object.assign({}, defaultRestaurantInfo, (res).content[0])
+    loadRestaurantInfo().then(res => {
+      restaurantInfo = Object.assign({}, defaultRestaurantInfo, (res))
     }).finally(() => {
       loading = false
     })

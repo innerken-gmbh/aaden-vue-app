@@ -138,3 +138,27 @@ export async function changePayMethodForOrder (orderId, paymentLogs) {
     paymentLog: JSON.stringify(paymentLogs)
   }))
 }
+
+export const updateRestaurantInfo = function (item) {
+  return hillo.post('Restaurant.php?op=update', {
+    ...item
+  })
+}
+
+export async function syncTakeawaySettingToCloud (newRestaurantInfo) {
+  if (newRestaurantInfo) {
+    await updateRestaurantInfo(newRestaurantInfo)
+  }
+}
+
+export async function loadRestaurantInfo () {
+  return (await hillo.get('Restaurant.php?op=view')).content[0]
+}
+
+export async function safeRequest (func) {
+  try {
+    await func()
+  } catch (e) {
+    IKUtils.showError(e.data.info)
+  }
+}

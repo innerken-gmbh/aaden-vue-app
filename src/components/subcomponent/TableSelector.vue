@@ -42,6 +42,14 @@
             </v-item>
           </v-item-group>
         </v-card>
+        <v-card
+            class="pa-2 px-4" elevation="0"
+            color="rgba(0,0,0,0.2)"
+            style="position: absolute;top: 24px;z-index: 15;right: 0;left: 0;margin: auto;width: fit-content">
+          <h2>
+            选择一个桌子</h2>
+        </v-card>
+
       </div>
     </v-card>
   </v-dialog>

@@ -33,7 +33,7 @@
             <v-switch hide-details :value="true" class="mt-0"/>
           </div>
         </div>
-        <v-btn @click="addNewReservation" block large color="success" class="mt-4">
+        <v-btn elevation="0" @click="addNewReservation" block large color="success" class="mt-4">
           <v-icon>mdi-plus</v-icon>
           新建预定
         </v-btn>
