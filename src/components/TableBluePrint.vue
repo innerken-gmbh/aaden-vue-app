@@ -34,8 +34,12 @@
     </div>
     <div style="position: absolute;left:24px;bottom: 12px">
       <v-btn-toggle rounded>
-        <v-btn @click="scale-=0.05"><v-icon>mdi-minus</v-icon></v-btn>
-        <v-btn @click="scale+=0.05"><v-icon>mdi-plus</v-icon></v-btn>
+        <v-btn @click="scale-=0.05">
+          <v-icon>mdi-minus</v-icon>
+        </v-btn>
+        <v-btn @click="scale+=0.05">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
         <v-btn v-if="editing" @click="refreshTables">
           <v-icon left>mdi-refresh</v-icon>
           {{ $t('重置所有桌子') }}

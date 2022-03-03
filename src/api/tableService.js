@@ -16,7 +16,14 @@ const TableInfoMetaDataSetting = {
 const defaultMetaData = {
   icon: null, classFunc: null
 }
-
+export const TableFilter = {
+  activeFilter (t) {
+    return t.usageStatus === '1'
+  },
+  notActiveFilter (t) {
+    return t.usageStatus !== '1'
+  }
+}
 export const TableFixedSectionId = {
   Togo: 6,
   togoFilter (t) {

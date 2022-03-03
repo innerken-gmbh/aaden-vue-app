@@ -550,7 +550,7 @@ import { getSectionList, getServantList, getTableListWithCells, openDrawer, upda
 import Keyboard from '@/components/Keyboard'
 import TableBluePrint from '@/components/TableBluePrint'
 import { defaultSection } from '@/oldjs/defaultConst'
-import { mapMutations, mapState } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import TableListItem from '@/components/Table/TableListItem'
 import draggable from 'vuedraggable'
 import TableGirdItem from '@/components/Table/TableGridItem'
@@ -644,7 +644,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['pinDialogShow']),
+    ...mapGetters(['systemDialogShow']),
     activeTables () {
       return this.tableList.filter(t => t.usageStatus === '1')
     },
@@ -680,7 +680,7 @@ export default {
       return this.sectionList.filter(it => it.id !== '6')
     },
     currentSection () {
-      return this.sectionList[this.currentSectionIndex] ?? defaultSection
+      return this.notTakeawaySection[this.currentSectionIndex] ?? defaultSection
     }
 
   },
@@ -755,14 +755,14 @@ export default {
     requestOutTable,
     resetTableStatus,
 
-    ...mapMutations(['HIDE_DIALOG']),
+    ...mapMutations(['HIDE_AUTHORIZE_DIALOG']),
     initialUI () {
       if (this.$refs.ins) {
         this.$refs.ins.focus()
       }
       this.buffer = ''
 
-      this.HIDE_DIALOG()
+      this.HIDE_AUTHORIZE_DIALOG()
       blockReady()
     },
     async refreshTables () {
@@ -834,7 +834,7 @@ export default {
       this.isEditing = false
     },
     anyMenuOpen () {
-      return Swal.isVisible() || this.menu || this.pinDialogShow
+      return Swal.isVisible() || this.menu || this.systemDialogShow
     },
     autoGetFocus () {
       if (this.anyMenuOpen()) {

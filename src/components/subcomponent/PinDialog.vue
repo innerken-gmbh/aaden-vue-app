@@ -73,7 +73,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['HIDE_DIALOG', 'AUTHORIZE_OK']),
+    ...mapMutations(['HIDE_AUTHORIZE_DIALOG', 'AUTHORIZE_OK']),
     async check () {
       this.loading = true
       try {
@@ -113,7 +113,7 @@ export default {
           this.check()
           break
         case 'X':
-          this.HIDE_DIALOG()
+          this.HIDE_AUTHORIZE_DIALOG()
           break
         case 'C':
           this.localPinInput = ''
@@ -173,7 +173,7 @@ export default {
       },
       set: function (val) {
         if (!val) {
-          this.HIDE_DIALOG()
+          this.HIDE_AUTHORIZE_DIALOG()
         }
       }
     }

@@ -6,6 +6,7 @@
       </keep-alive>
     </transition>
     <pin-dialog></pin-dialog>
+    <table-selector></table-selector>
   </v-app>
 
 </template>
@@ -13,10 +14,11 @@
 <script>
 import { tryToReport } from './oldjs/common'
 import PinDialog from '@/components/subcomponent/PinDialog'
+import TableSelector from '@/components/subcomponent/TableSelector'
 
 export default {
   name: 'App',
-  components: { PinDialog },
+  components: { TableSelector, PinDialog },
   props: {},
   data: () => ({}),
   mounted () {

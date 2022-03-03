@@ -10,22 +10,35 @@ let resolve = () => {
 let failedCallback = () => {
 }
 
+let tablePickResolve = () => {
+}
+
 const basePayloadParam = {
-  typeIsBoss: false,
-  force: false,
-  tableId: null,
-  successCallback: null,
-  resolve: null,
-  failedCallback: null
+  typeIsBoss: false, force: false, tableId: null, successCallback: null, resolve: null, failedCallback: null
 }
 
 export default new Vuex.Store({
   state: {
-    pinDialogShow: false,
-    isAuthorizeTypeSuper: false,
-    tableId: null
+    pinDialogShow: false, isAuthorizeTypeSuper: false, tableId: null, tableSelectDialogShow: false, tableFilter: false
   },
   mutations: {
+    START_TABLE_PICK (state, payload) {
+      state.tableFilter = payload.tableFilter
+      state.tableSelectDialogShow = true
+      tablePickResolve = payload.resolve
+    },
+
+    TABLE_PICKED (state, payload) {
+      if (tablePickResolve) {
+        tablePickResolve(payload)
+      }
+      state.tableSelectDialogShow = false
+    },
+
+    HIDE_TABLE_PICK_DIALOG (state) {
+      state.tableSelectDialogShow = false
+    },
+
     START_AUTHORIZE (state, payload) {
       const args = Object.assign({}, basePayloadParam, payload)
       state.tableId = args.tableId
@@ -45,12 +58,18 @@ export default new Vuex.Store({
 
       state.pinDialogShow = false
     },
-    HIDE_DIALOG (state) {
+    HIDE_AUTHORIZE_DIALOG (state) {
       if (failedCallback) {
         failedCallback()
       }
 
       state.pinDialogShow = false
+    }
+
+  },
+  getters: {
+    systemDialogShow (state) {
+      return state.tableSelectDialogShow || state.pinDialogShow
     }
   },
   actions: {},

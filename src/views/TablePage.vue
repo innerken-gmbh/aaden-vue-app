@@ -233,14 +233,14 @@
                     icon="mdi-swap-horizontal"
                     color="#ff8c50"
                     :text=" $t('tableChange') "
-                    @click="showTableChange = true"
+                    @click="changeTable"
                 />
                 <grid-button
                     :loading="isSendingRequest"
                     color="#272727"
                     icon="mdi-merge"
                     :text="$t('tableMerge')"
-                    @click=" showTableMerge = true"
+                    @click="mergeTable"
                 />
                 <grid-button
                     :loading="isSendingRequest"
@@ -370,7 +370,7 @@ left: 304px"
                 {{ $t('给菜品打折') }}
               </v-btn>
               <v-btn x-large class="  mt-1"
-                     v-on:click="showDishesTableChange = true">
+                     v-on:click="dishesChangeTable">
                 <!--                     v-on:click="dishesChangeTable()">-->
                 <v-icon left>mdi-inbox-arrow-up</v-icon>
                 {{ $t('tableChange') }}
@@ -440,33 +440,6 @@ left: 304px"
           @visibility-changed="(val)=>this.buffetDialogShow=val"
           :buffet-dialog-show="buffetDialogShow"></buffet-start-dialog>
     </template>
-
-    <table-change-selector
-        :active-status="false"
-        @table-select="changeTable"
-        :servant-password="servantPassword"
-        :title="$t('tableChange')"
-        :menu-show.sync="showTableChange"
-        :current-table-name="tableDetailInfo.tableBasicInfo.name"
-    ></table-change-selector>
-
-    <table-change-selector
-        :active-status="false"
-        @table-select="dishesChangeTable"
-        :servant-password="servantPassword"
-        :title="$t('tableChange')"
-        :menu-show.sync="showDishesTableChange"
-        :current-table-name="tableDetailInfo.tableBasicInfo.name"
-    ></table-change-selector>
-
-    <table-change-selector
-        :active-status="true"
-        @table-select="mergeTable"
-        :servant-password="servantPassword"
-        :title="$t('tableMerge')"
-        :menu-show.sync="showTableMerge"
-        :current-table-name="tableDetailInfo.tableBasicInfo.name"
-    ></table-change-selector>
   </div>
 </template>
 
@@ -487,6 +460,7 @@ import {
   popAuthorize,
   setGlobalTableId,
   showConfirmAsyn,
+  showTableSelector,
   showTimedAlert,
   toast
 } from '@/oldjs/common'
@@ -519,13 +493,12 @@ import DiscountDialog from '@/components/fragments/DiscountDialog'
 import AddressDisplay from '@/components/AddressDisplay'
 import { acceptOrder } from '@/api/api'
 import GridButton from '@/components/GridButton'
-import { mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 import BuffetStartDialog from '@/components/fragments/BuffetStartDialog'
 import BuffetStatusCard from '@/components/fragments/BuffetStatusCard'
-
-import TableChangeSelector from '@/components/fragments/TableChangeSelector'
 import i18n from '../i18n'
 import dayjs from 'dayjs'
+import { TableFilter } from '@/api/tableService'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -551,8 +524,6 @@ export default {
     dragscroll
   },
   components: {
-    // OpenTableForm,
-    TableChangeSelector,
     BuffetStatusCard,
     BuffetStartDialog,
     GridButton,
@@ -634,18 +605,16 @@ export default {
       },
       currentDish: defaultCurrentDish,
       cartCurrentDish: null,
-      password: '',
-      showTableChange: false,
-      showTableMerge: false,
-      showDishesTableChange: false,
-      servantPassword: ''
+      password: ''
+
     }
   },
 
   methods: {
     getColorLightness,
-    mergeTable (tableName) {
+    mergeTable () {
       popAuthorize(this.Config.changeTableUseBossPassword ? 'boss' : '', async () => {
+        const tableName = await showTableSelector(TableFilter.activeFilter)
         const res = await hillo.post('Tables.php?op=mergeTables', {
           oldTableName: this.tableDetailInfo.tableBasicInfo.name,
           newTableName: tableName
@@ -655,19 +624,22 @@ export default {
         }
       })
     },
-    changeTable (tableName) {
-      popAuthorize(this.Config.changeTableUseBossPassword ? 'boss' : '', async () => {
-        const res = await hillo.post('Tables.php?op=change', {
-          oldTableName: this.tableDetailInfo.tableBasicInfo.name,
-          newTableName: tableName
+    changeTable () {
+      popAuthorize(this.Config.changeTableUseBossPassword ? 'boss' : '',
+        async () => {
+          const tableName = await showTableSelector(TableFilter.notActiveFilter)
+          const res = await hillo.post('Tables.php?op=change', {
+            oldTableName: this.tableDetailInfo.tableBasicInfo.name,
+            newTableName: tableName
+          })
+          if (res) {
+            this.goHome()
+          }
         })
-        if (res) {
-          this.goHome()
-        }
-      })
     },
-    dishesChangeTable: async function (tableName) {
+    dishesChangeTable: async function () {
       popAuthorize(this.Config.changeTableUseBossPassword ? 'boss' : '', async () => {
+        const tableName = await showTableSelector()
         const res = await hillo.post('Complex.php?op=dishesChangeTable',
           {
             oldTableName: this.tableDetailInfo.tableBasicInfo.name,
@@ -678,7 +650,6 @@ export default {
           loadingComplete()
           this.initialUI()
         }
-        this.showDishesTableChange = false
       })
     },
 
@@ -1060,8 +1031,7 @@ export default {
     anyMenuOpen () {
       return this.modificationShow || this.checkoutShow ||
           this.discountModelShow || this.extraDishShow ||
-          this.pinDialogShow || Swal.isVisible() ||
-          this.showDishesTableChange || this.showTableChange || this.showTableMerge
+          this.systemDialogShow || Swal.isVisible()
     },
 
     async getTableDetail () {
@@ -1371,7 +1341,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['pinDialogShow']),
+    ...mapGetters(['systemDialogShow']),
     totalPrice: function () {
       return this.tableDetailInfo.order?.totalPrice ?? 0
     },
