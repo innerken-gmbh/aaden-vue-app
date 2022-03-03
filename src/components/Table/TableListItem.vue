@@ -55,7 +55,7 @@ export default {
       return this.colorIsDark(this.tableBackgroundColor(table))
     },
     findConsumeTypeColorById (id) {
-      return findConsumeTypeById(id)?.color ?? '#367aeb'
+      return findConsumeTypeById(id)?.color ?? this.$vuetify.theme.currentTheme.primary
     },
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name

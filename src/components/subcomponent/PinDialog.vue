@@ -2,8 +2,7 @@
   <v-dialog max-width="400px" v-model="realShow">
     <v-card>
       <v-toolbar tile :color="error?'error':'primary'" dark elevation="0">
-<!--        <v-toolbar-title>{{$t('Bitte')}}{{ isAuthorizeTypeSuper? $t('Boss') :'' }}{{ $t('Passwort Eingeben') }} </v-toolbar-title>-->
-        <v-toolbar-title>{{$t('Bitte Passwort Eingeben')}} </v-toolbar-title>
+        <v-toolbar-title>{{ $t('Bitte Passwort Eingeben') }}</v-toolbar-title>
       </v-toolbar>
       <span class="caption"></span>
       <div class="pa-1">
@@ -14,22 +13,22 @@
             </template>
           </div>
           <v-text-field
-            style="width: 0;height: 0"
+              style="width: 0;height: 0"
 
-            autofocus
-            @keydown.enter="check"
-            @focus="focusEnd" ref="hiddenInput" type="search"
-            autocomlete="off" dense hide-details
-            v-model="hiddenInput"></v-text-field>
+              autofocus
+              @keydown.enter="check"
+              @focus="focusEnd" ref="hiddenInput" type="search"
+              autocomlete="off" dense hide-details
+              v-model="hiddenInput"></v-text-field>
           <keyboard :keys="keyboardLayout" @input="numberInput"/>
         </template>
         <template v-else>
           <div style="width: 100%;" class="d-flex justify-center align-center pa-4">
             <v-progress-circular
-              :size="70"
-              :width="7"
-              color="purple"
-              indeterminate
+                :size="70"
+                :width="7"
+                color="purple"
+                indeterminate
             ></v-progress-circular>
           </div>
         </template>
@@ -44,12 +43,12 @@ import { mapMutations, mapState } from 'vuex'
 import { checkServant } from '@/oldjs/api'
 
 const keyboardLayout =
-  [
-    '7', '8', '9', 'C',
-    '4', '5', '6', '',
-    '1', '2', '3', '',
-    'X', '0', '', 'OK'
-  ]
+    [
+      '7', '8', '9', 'C',
+      '4', '5', '6', '',
+      '1', '2', '3', '',
+      'X', '0', '', 'OK'
+    ]
 
 export default {
   name: 'PinDialog',

@@ -119,7 +119,9 @@
                 <v-item v-for="ct of dct" v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
                   <v-card :elevation="active?4:0"
                           style="border-radius: 8px"
-                          class="categoryTypeItem" @click="toggle"
+                          class="categoryTypeItem"
+                          :color="active?'primary':''"
+                          @click="toggle"
                           :dark="active">{{ ct.name }}
                   </v-card>
                 </v-item>

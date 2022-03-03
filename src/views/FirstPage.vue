@@ -197,6 +197,7 @@
                     v-slot="{active,toggle}">
               <v-card :elevation="active?4:0"
                       style="border-radius: 8px"
+                      :color="active?'primary':''"
                       class="px-6 py-2 text-body-1" @click="toggle"
                       :dark="active">{{ section.name }}
               </v-card>
@@ -741,7 +742,7 @@ export default {
       }
     },
     findConsumeTypeColorById (id) {
-      return findConsumeTypeById(id)?.color ?? '#367aeb'
+      return findConsumeTypeById(id)?.color ?? this.$vuetify.theme.currentTheme.primary
     },
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name

@@ -77,7 +77,7 @@ export default {
   },
   methods: {
     async tableBackgroundColor (table) {
-      return table.inCall ? getRestaurantInfo().callColor : '#367aeb'
+      return table.inCall ? getRestaurantInfo().callColor : this.$vuetify.theme.currentTheme.primary
     },
     tableColorIsDark (table) {
       return this.colorIsDark(this.tableBackgroundColor(table))
