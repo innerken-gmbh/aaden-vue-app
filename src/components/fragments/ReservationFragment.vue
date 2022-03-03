@@ -51,180 +51,140 @@
     <v-card style="border-radius: 12px" elevation="0"
             height="100%"
             color="grey lighten-2" class="pa-4 d-flex flex-column">
-      <div class="text-subtitle-2 d-flex align-center">桌子列表
+      <div class="text-subtitle-2 d-flex align-center">预定列表
         <v-spacer></v-spacer>
         <v-btn elevation="0">
           <v-icon left>mdi-refresh</v-icon>
           重新加载
         </v-btn>
       </div>
-      <v-item-group v-model="activeTableIndex"
-                    style="display: grid;grid-gap: 12px;overflow-y: scroll;
+      <div
+          style="display: grid;grid-gap: 12px;overflow-y: scroll;
                     max-height: calc(100vh - 150px)"
-                    class="mt-4">
-        <v-item
-            v-for="t in tableWithReservation" :key="t.tableId"
-            #default="{active,toggle}">
-          <v-card elevation="0" style="border-radius: 12px;"
-                  @click="toggle"
-                  :color="active?'primary lighten-2':''"
-                  :dark="active"
-                  class="pa-3 pr-6 d-flex align-center">
-
-            <h3>
-              <v-icon left>mdi-map-marker-check-outline</v-icon>
-              {{ t.tableName }}/
-              {{ t.seatCount }}
-            </h3>
+          class="mt-4">
+        <v-card
+            @click="toggleActiveReservation(re)"
+            v-for="re in reservations" :key="re.remoteId" elevation="0"
+            height="100%"
+            class="pa-3 d-flex flex-column">
+          <div class="text-truncate text-no-wrap d-flex align-center text-body-1 mt-1">
+            {{ re.title }} {{ re.firstName }} {{ re.lastName }}
             <v-spacer></v-spacer>
-            <template v-if="t.reservations.length>0">
-              <v-chip outlined small class="mr-2">预定数量{{ t.reservations.length }}</v-chip>
-            </template>
+            <v-chip outlined small>
+              <v-icon left small>mdi-clock-outline</v-icon>
+              {{ re.fromDateTime | onlyTime }} - {{ re.toDateTime | onlyTime }}
+            </v-chip>
 
-            <v-simple-checkbox
-                v-ripple
-                hide-details class="mt-0"
-                @click="setTableReservable(t.tableId,!t.reservable)"
-                :value="t.reservable"/>
-          </v-card>
-        </v-item>
-      </v-item-group>
+          </div>
+          <div class="mt-2 d-flex justify-space-between py-2 pr-2">
+            <div class="d-flex align-center ">
+              <v-icon class="mr-3">mdi-map-marker</v-icon>
+              <div class="text-h5"> {{ re.tableNameNull }}</div>
+            </div>
+            <div class="d-flex align-center ">
+              <v-icon class="mr-3">mdi-human-male-female</v-icon>
+              <div class="text-h5"> {{ re.personCount }}</div>
+            </div>
+            <div class="d-flex align-center">
+              <v-icon class="mr-3">mdi-human-child</v-icon>
+              <div class="text-h5">{{ re.childCount }}</div>
+            </div>
+
+          </div>
+        </v-card>
+      </div>
     </v-card>
 
-    <template v-if="activeTable">
-      <v-card style="border-radius: 12px;position: relative" elevation="0"
-              color="grey lighten-2" class="pa-4 d-flex flex-column">
-        <div class="text-subtitle-2 d-flex align-center">该桌当日安排
-          <v-spacer></v-spacer>
+    <v-card v-if="activeReservation"
+            style="border-radius: 12px"
+            class="pa-4" elevation="0" color="grey lighten-4">
+      <div class="d-flex">
+        <div class="text-subtitle-1">
+          {{ activeReservation.title }} {{ activeReservation.firstName }} {{
+            activeReservation.lastName
+          }}
         </div>
-        <div>
-          <div
-              style="display: grid;grid-gap: 2px;max-height: calc(100vh - 150px);overflow-y: scroll;grid-template-columns: min-content 1fr;grid-column-gap: 12px"
-              :style="{gridTemplateRows:'repeat('+timeGap.length+', 16px)'}" class="mt-4">
-            <div @click="addNewReservation(gap)" v-for="(gap) in timeGap" :key="gap"
-                 style="grid-column: 1"
-                 class="d-flex align-center pa-1">
-            <span :class="gap.endsWith('00')?'font-weight-black text-decoration-underline':'text--disabled'"
-                  class="text-caption">{{ gap }}</span>
-            </div>
-            <v-card
-                @click="toggleActiveReservation(re)"
-                v-for="re in activeTable.reservations" :key="re.remoteId" elevation="0"
-                height="100%"
-                style="grid-column: 2"
-                :style="{gridRow:re.startIndex+' / span '+re.span}"
-                class="pa-3 pr-16 d-flex flex-column">
-              <div class="text-truncate text-no-wrap d-flex align-center text-body-1 mt-1">
-                {{ re.title }} {{ re.firstName }} {{ re.lastName }}
-              </div>
-              <div class="mt-2 d-flex justify-space-between pa-2">
-                <div class="d-flex align-center ">
-                  <v-icon class="mr-3">mdi-human-male-female</v-icon>
-                  <div class="text-h5"> {{ re.personCount }}</div>
-                </div>
-                <div class="d-flex align-center">
-                  <v-icon class="mr-3">mdi-human-child</v-icon>
-                  <div class="text-h5">{{ re.childCount }}</div>
-                </div>
+        <v-spacer></v-spacer>
+        <v-chip small color="success" v-if="activeReservation.cancelled==='0'">
+          <v-icon left>mdi-circle-medium</v-icon>
+          正常
+        </v-chip>
+        <v-chip small color="error" v-else>
+          <v-icon left>mdi-remove</v-icon>
+          已经取消
+        </v-chip>
+      </div>
 
-              </div>
-            </v-card>
-          </div>
-
-        </div>
-
-      </v-card>
-
-      <v-card v-if="activeReservation"
-              style="border-radius: 12px"
-              class="pa-4" elevation="0" color="grey lighten-4">
+      <div class="mt-12">
         <div class="d-flex">
-          <div class="text-subtitle-1">
-            {{ activeReservation.title }} {{ activeReservation.firstName }} {{
-              activeReservation.lastName
-            }}
-          </div>
+          <div class="text-body-1">时间</div>
           <v-spacer></v-spacer>
-          <v-chip small color="success" v-if="activeReservation.cancelled==='0'">
-            <v-icon left>mdi-circle-medium</v-icon>
-            正常
-          </v-chip>
-          <v-chip small color="error" v-else>
-            <v-icon left>mdi-remove</v-icon>
-            已经取消
-          </v-chip>
+          <v-icon small class="mr-2">mdi-clock</v-icon>
+          {{ activeReservation.fromDateTime|onlyTime }} -
+          {{ activeReservation.toDateTime|onlyTime }}
+        </div>
+        <v-divider class="my-3"></v-divider>
+        <div class="d-flex">
+          <div class="text-body-1">人数</div>
+          <v-spacer></v-spacer>
+          <v-icon class="mr-2">mdi-human-male-female</v-icon>
+          {{ activeReservation.personCount }}
+          <v-icon class="ml-2 mr-2">mdi-human-child</v-icon>
+          {{ activeReservation.childCount }}
         </div>
 
-        <div class="mt-8">
-          <div class="d-flex">
-            <div class="text-subtitle-2">时间</div>
-            <v-spacer></v-spacer>
-            <v-icon small class="mr-2">mdi-clock</v-icon>
-            {{ activeReservation.fromDateTime|onlyTime }} -
-            {{ activeReservation.toDateTime|onlyTime }}
-          </div>
-          <v-divider class="my-2"></v-divider>
-          <div class="d-flex">
-            <div class="text-subtitle-2">人数</div>
-            <v-spacer></v-spacer>
-            <v-icon small class="mr-2">mdi-human-male-female</v-icon>
-            {{ activeReservation.personCount }}
-            <v-icon small class="ml-2 mr-2">mdi-human-child</v-icon>
-            {{ activeReservation.childCount }}
-          </div>
+        <v-divider class="my-3"></v-divider>
+        <div class="d-flex">
+          <div class="text-body-1">电话</div>
+          <v-spacer></v-spacer>
+          {{ activeReservation.tel }}
+        </div>
 
-          <v-divider class="my-2"></v-divider>
-          <div class="d-flex">
-            <div class="text-subtitle-2">电话</div>
-            <v-spacer></v-spacer>
-            {{ activeReservation.tel }}
-          </div>
+        <v-divider class="my-3"></v-divider>
+        <div class="d-flex">
+          <div class="text-body-1">邮箱</div>
+          <v-spacer></v-spacer>
+          {{ activeReservation.email }}
+        </div>
 
-          <v-divider class="my-2"></v-divider>
+        <v-divider class="my-3"></v-divider>
+        <template v-if="activeReservation.note">
           <div class="d-flex">
-            <div class="text-subtitle-2">邮箱</div>
+            <div class="text-body-1">备注</div>
             <v-spacer></v-spacer>
-            {{ activeReservation.email }}
+            {{ activeReservation.note }}
           </div>
-
-          <v-divider class="my-2"></v-divider>
-          <template v-if="activeReservation.note">
-            <div class="d-flex">
-              <div class="text-subtitle-2">备注</div>
-              <v-spacer></v-spacer>
-              {{ activeReservation.note }}
-            </div>
-            <v-divider class="my-2"></v-divider>
-          </template>
+          <v-divider class="my-3"></v-divider>
+        </template>
+        <div class="d-flex">
+          <div class="text-body-1">桌号</div>
+          <v-spacer></v-spacer>
+          <v-chip label color="primary lighten-2">
+            <v-icon left>mdi-map-marker-check-outline</v-icon>
+            {{ activeReservation.tableNameNull }}
+          </v-chip>
+        </div>
+        <template v-if="activeReservation.useStroller==='1'">
           <div class="d-flex">
-            <div class="text-subtitle-2">桌号</div>
+            <div class="text-subtitle-2">需要婴儿车</div>
             <v-spacer></v-spacer>
-            <v-chip label color="primary lighten-2">
-              <v-icon left>mdi-map-marker-check-outline</v-icon>
-              {{ activeReservation.tableNameNull }}
+            <v-chip color="success">
+              <v-icon>mdi-check</v-icon>
             </v-chip>
           </div>
-          <template v-if="activeReservation.useStroller==='1'">
-            <div class="d-flex">
-              <div class="text-subtitle-2">需要婴儿车</div>
-              <v-spacer></v-spacer>
-              <v-chip color="success">
-                <v-icon>mdi-check</v-icon>
-              </v-chip>
-            </div>
-            <v-divider class="my-2"></v-divider>
-          </template>
-          <div style="display: grid;grid-gap: 8px;" class="mt-8">
-            <v-btn block color="warning" elevation="0">更换桌子</v-btn>
-            <v-btn @click="cancelReservation(activeReservation.id)" outlined block color="error" elevation="0">
-              取消预定
-            </v-btn>
-
-          </div>
+          <v-divider class="my-3"></v-divider>
+        </template>
+        <div style="display: grid;grid-gap: 8px;" class="mt-8">
+          <v-btn block color="warning" elevation="0">更换桌子</v-btn>
+          <v-btn @click="cancelReservation(activeReservation.id)" outlined block color="error" elevation="0">
+            取消预定
+          </v-btn>
 
         </div>
-      </v-card>
-    </template>
+
+      </div>
+    </v-card>
+
     <v-dialog max-width="600px" v-model="reservationAddDialog">
       <v-card style="border-radius: 12px"
               class="pa-4" elevation="0" color="grey lighten-4" v-if="reservationStep===0">
@@ -402,12 +362,9 @@ import {
   getReservation,
   getTimeSlotForDate,
   loadReserveSettings,
-  moveReservation,
-  setReservable
+  moveReservation
 } from '@/api/ReservationService'
 import IKUtils from 'innerken-js-utils'
-import { loadReservationTableInfo } from '@/api/tableService'
-import dayjs from 'dayjs'
 import { onlyTimeFormat, todayDate } from '@/api/dateUtils'
 
 export default {
@@ -415,11 +372,9 @@ export default {
   data: function () {
     return {
       reservationDate: todayDate,
-      timeGap: [],
       reservations: [],
-      tableList: [],
+      timeGap: [],
       activeReservation: null,
-      activeTableIndex: null,
 
       reservationStep: 0,
       reservationAddDialog: false,
@@ -445,28 +400,6 @@ export default {
     },
     reservationAddDialog () {
       this.clearForm()
-    }
-  },
-  computed: {
-    activeTable () {
-      console.log(this.activeTableIndex, this.tableWithReservation)
-      return this.tableWithReservation?.[this.activeTableIndex]
-    },
-    tableWithReservation () {
-      return this.tableList.map(t => {
-        t.reservations = this.reservations
-          .filter(it => it.tableId === t.tableId)
-          .map(r => {
-            const startTime = dayjs(r.fromDateTime)
-            const timeDiff = dayjs(r.toDateTime).diff(startTime, 'm')
-            const gap = dayjs.duration(this.setting.gap).as('m')
-            r.startIndex = this.timeGap.indexOf(startTime.format('HH:mm')) + 1
-            r.span = (timeDiff / gap)
-            return r
-          })
-        t.sortRank = t.reservations.length + t.reservable * 1
-        return t
-      }).sort((a, b) => b.sortRank - a.sortRank)
     }
   },
   methods: {
@@ -544,26 +477,18 @@ export default {
       }
     },
 
-    async setTableReservable (id, reservable) {
-      await setReservable(id, reservable)
-      await this.getTables()
-    },
     async moveReservation (id, tableId) {
       await moveReservation(id, tableId)
       await this.loadReservations()
     },
     async loadData () {
       await this.loadReservations()
-      await this.getTables()
+      this.activeReservation = null
       this.setting = await loadReserveSettings()
       this.timeGap = await getTimeSlotForDate(this.reservationDate, this.setting)
     },
-    async getTables () {
-      this.activeTableIndex = null
-      this.tableList = await loadReservationTableInfo()
-    },
+
     async loadReservations () {
-      this.activeIndex = null
       this.reservations = await getReservation(this.reservationDate)
     }
   },

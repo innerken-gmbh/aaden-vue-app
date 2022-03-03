@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-navigation-drawer
-        dark color="orange darken-2"
+        dark color="primary"
         mini-variant
         expand-on-hover
         permanent stateless

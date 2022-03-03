@@ -8,7 +8,7 @@
         height="100%"
         elevation="0"
         class="tableCard d-flex flex-column align-center justify-center"
-        :color="table.inUse?'#fdd3b7':'#f6f6f6'"
+        :color="tableColor"
         @click='$emit("click",table.tableName)'>
       <div class="personDot" style="position: absolute">
         <template v-for="i in parseInt(table.seatCount)">
@@ -52,12 +52,11 @@
           </div>
         </div>
       </template>
-
     </v-card>
-    <div class="chair top"></div>
-    <div class="chair left"></div>
-    <div class="chair bottom"></div>
-    <div class="chair right"></div>
+    <div :class="tableColor" class="chair top"></div>
+    <div :class="tableColor" class="chair left"></div>
+    <div :class="tableColor" class="chair bottom"></div>
+    <div :class="tableColor" class="chair right"></div>
 
   </div>
 </template>
@@ -101,6 +100,9 @@ export default {
     tableCardFontSize () {
       return '20px'
     },
+    tableColor () {
+      return this.table.inUse ? 'primary lighten-4' : '#f6f6f6'
+    },
     tableChipList () {
       let allowCount = 1
       if (this.tableXSize > 1 || this.tableYSize > 1) {
@@ -128,131 +130,113 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="sass">
+@import '~vuetify/src/styles/styles.sass'
 
-.tableCard {
+.tableCard
+  text-align: center
+  box-shadow: 0 0px 12px var(--v-primary-lighten3) !important
+  width: 100%
+  height: 100%
+  border-radius: 12px
+  cursor: pointer
 
-  border: 3px solid #f6c7bb !important;
-  text-align: center;
-  box-shadow: 0 0px 12px #FFCC80 !important;
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
-  cursor: pointer;
-}
+.notUsed .tableCard
+  background: #f6f6f6
+  color: #6b6b6b
+  box-shadow: none !important
+  display: flex
+  justify-content: center
+  align-items: center
+  flex-wrap: nowrap
 
-.notUsed .tableCard {
-  background: #f6f6f6;
-  border: 4px solid #e0e0e0 !important;
-  color: #6b6b6b;
-  box-shadow: none !important;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: nowrap;
-}
+.tableBold
+  font-weight: 600
 
-.tableBold {
-  font-weight: 600;
-}
+.tableCardName
+  font-size: 26px
+  text-align: center
+  width: 100%
+  z-index: 1
+  font-family: Roboto, "Axure Handwriting", sans-serif
+  font-weight: 600
+  overflow: hidden
+  text-overflow: ellipsis
+  white-space: nowrap
 
-.tableCardName {
-  font-size: 26px;
-  text-align: center;
-  width: 100%;
-  z-index: 1;
-  font-family: Roboto, "Axure Handwriting", sans-serif;
-  font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
+.notUsed .tableCard .tableCardName
+  font-weight: 600
+  color: grey
 
-.notUsed .tableCard .tableCardName {
-  font-weight: 600;
-  color: grey;
-}
+.chair
+  --margin: -10px
+  --chairHeight: 8px
+  --chairWidth: 50%
+  z-index: -1
+  position: absolute
+  margin: auto
+  background: #fdd3b7
 
-.chair {
-  --margin: -10px;
-  --chairHeight: 8px;
-  --chairWidth: 50%;
-  z-index: -1;
-  position: absolute;
-  margin: auto;
-  background: #fdd3b7;
-}
+.notUsed .chair
+  background: #f6f6f6
 
-.notUsed .chair {
-  background: #f6f6f6;
-}
+.chair.top
+  top: var(--margin)
+  left: 0
+  right: 0
+  height: var(--chairHeight)
+  width: var(--chairWidth)
+  border-radius: 16px 16px 0 0
 
-.chair.top {
-  top: var(--margin);
-  left: 0;
-  right: 0;
-  height: var(--chairHeight);
-  width: var(--chairWidth);
-  border-radius: 16px 16px 0 0;
-}
+.chair.left
+  left: var(--margin)
+  width: var(--chairHeight)
+  height: var(--chairWidth)
+  top: 0
+  bottom: 0
+  border-radius: 16px 0 0 16px
 
-.chair.left {
-  left: var(--margin);
-  width: var(--chairHeight);;
-  height: var(--chairWidth);
-  top: 0;
-  bottom: 0;
-  border-radius: 16px 0 0 16px;
-}
+.chair.right
+  right: var(--margin)
+  width: var(--chairHeight)
+  height: var(--chairWidth)
+  top: 0
+  bottom: 0
+  border-radius: 0 16px 16px 0
 
-.chair.right {
-  right: var(--margin);
-  width: var(--chairHeight);
-  height: var(--chairWidth);
-  top: 0;
-  bottom: 0;
-  border-radius: 0 16px 16px 0;
-}
+.chair.bottom
+  bottom: var(--margin)
+  left: 0
+  right: 0
+  height: var(--chairHeight)
+  width: var(--chairWidth)
+  border-radius: 0 0 16px 16px
 
-.chair.bottom {
-  bottom: var(--margin);
-  left: 0;
-  right: 0;
-  height: var(--chairHeight);
-  width: var(--chairWidth);
-  border-radius: 0 0 16px 16px;
-}
+.personDot
+  top: 8px
+  left: 8px
+  right: 4px
+  display: grid
+  grid-template-columns: repeat(auto-fit, 6px)
+  grid-gap: 4px
+  z-index: 0
+  position: absolute
 
-.personDot {
-  top: 2px;
-  left: 4px;
-  right: 4px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, 6px);
-  grid-gap: 4px;
-  z-index: 0;
-  position: absolute;
+.dot
+  background: #689F38
+  height: 6px
+  width: 6px
+  border-radius: 3px
 
-}
+.dot.child
+  background: #FFA726
 
-.dot {
-  background: #689F38;
-  height: 6px;
-  width: 6px;
-  border-radius: 3px;
-}
-
-.dot.child {
-  background: #FFA726;
-}
-
-.tableIconRow {
-  width: 42px;
-  height: 25px;
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  font-weight: 400;
-}
+.tableIconRow
+  width: 42px
+  height: 25px
+  display: flex
+  align-items: center
+  font-size: 16px
+  font-weight: 400
 
 </style>
