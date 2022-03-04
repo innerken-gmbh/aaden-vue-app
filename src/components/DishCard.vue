@@ -1,6 +1,6 @@
 <template>
   <div class="dishCard mx-1" style="position: relative">
-    <div class="px-1 py-1 pr-0 d-flex justify-space-between align-baseline">
+    <div class="px-1 py-2 pr-0 d-flex justify-space-between align-baseline">
       <div class="flex-grow-1 d-flex justify-space-between">
         <div class='dishName flex-grow-1'>
           <span v-code-hide class='codeRow'>{{ dish.code }}.</span><span>{{ dish.name }}</span>
@@ -145,7 +145,6 @@ export default {
 .dishCard {
   margin-top: 4px;
   background: white;
-  border-bottom: 2px dashed #e2e3e5;
 }
 
 .dishCount {

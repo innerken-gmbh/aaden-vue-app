@@ -1,23 +1,11 @@
 <template>
-  <v-card :disabled="disabled" :color="color" class="gridButton elevation-0"
-          @click="!loading?$emit('click'):''">
-    <v-responsive :aspect-ratio="1">
-      <div class="mt-4">
-        <template v-if="loading">
-          <v-progress-circular indeterminate color="white"></v-progress-circular>
-        </template>
-        <template v-else>
-          <div class="d-flex justify-center" style="width: 100%">
-            <v-icon color="white">{{ icon }}</v-icon>
-          </div>
-          <div class="mt-2  text-center text-no-wrap text-truncate text-body-2" style="color: white;">
-            {{ text }}
-          </div>
-        </template>
-
-      </div>
-    </v-responsive>
-  </v-card>
+  <v-btn x-large rounded elevation="0" dark :loading="loading" @click="!loading?$emit('click'):''" :disabled="disabled"
+         :color="color">
+    <div class="d-flex justify-center" style="width: 100%">
+      <v-icon>{{ icon }}</v-icon>
+    </div>
+    {{ text }}
+  </v-btn>
 </template>
 
 <script>

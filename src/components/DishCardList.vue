@@ -48,7 +48,7 @@
         <v-icon class="mr-2" size="28">mdi-cash-usd</v-icon>
         <span class="ml-1 text-h4 grey--text text--darken-2">{{ total | priceDisplay }}</span>
       </div>
-      <div class="pa-2">
+      <div>
         <slot></slot>
       </div>
 

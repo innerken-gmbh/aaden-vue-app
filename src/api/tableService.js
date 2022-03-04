@@ -4,7 +4,7 @@ import { loadAllReservable } from '@/api/ReservationService'
 const TableInfoMetaDataSetting = {
   createTimestamp: { icon: 'mdi-clock-outline' },
   servantName: { icon: 'mdi-account' },
-  dishCount: { icon: 'mdi-silverware-fork-knife', classFunc: (v) => parseInt(v) === 0 ? 'red' : '' },
+  dishCount: { icon: 'mdi-silverware-fork-knife', classFunc: (v) => parseInt(v) === 0 ? 'error--text' : '' },
   totalPrice: { icon: 'mdi-currency-eur' },
   buffetCount: { icon: 'mdi-account-multiple' },
   buffetRound: { icon: 'mdi-animation-outline' },

@@ -4,7 +4,7 @@
     <template v-if="metaData.icon">
       <v-icon small>{{ metaData.icon }}</v-icon>
     </template>
-    <div :style="{fontSize:infoLong?'10px':'12px'}" style="line-height: 18px" class="text-no-wrap">{{ info }}</div>
+    <div style="line-height: 18px;font-size: 10px" class="text-no-wrap">{{ info }}</div>
   </div>
 </template>
 
@@ -17,9 +17,6 @@ export default {
   computed: {
     info () {
       return this.table[this.infoKey]
-    },
-    infoLong () {
-      return this.info.length > 2
     },
     metaData () {
       return TableInfoMetaData[this.infoKey]

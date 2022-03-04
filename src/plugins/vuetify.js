@@ -1,6 +1,6 @@
 import '@mdi/font/css/materialdesignicons.css'
 import Vue from 'vue'
-import Vuetify, { colors } from 'vuetify/lib'
+import Vuetify from 'vuetify/lib'
 
 Vue.use(Vuetify)
 export default new Vuetify({
@@ -10,7 +10,7 @@ export default new Vuetify({
   theme: {
     themes: {
       light: {
-        primary: colors.indigo.darken1
+        primary: '#367aeb'
       }
 
     },

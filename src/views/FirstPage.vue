@@ -260,7 +260,7 @@
                   class="flex-shrink-0 mt-2 pb-2"
                   style="
              display: grid;
-             max-height: calc(100vh - 200px);
+             max-height: calc(100vh - 120px);
             grid-auto-columns: auto;
             overflow-y: scroll;
             grid-gap: 8px;

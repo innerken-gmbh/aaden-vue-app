@@ -54,13 +54,6 @@
       </div>
 
       <template v-if="table.inUse">
-        <div class="d-flex flex-column align-center">
-          <div class="d-flex mt-1">
-            <div v-for="info in table.infos" :key="info">
-              <table-info-display :info-key="info" :table="table"/>
-            </div>
-          </div>
-        </div>
         <div :style="{
              background:findConsumeTypeColorById(table.consumeType)}"
              style="
@@ -70,10 +63,19 @@
            max-width: 60px;
            bottom: 8px;
            margin: auto;
+           z-index:0;
           width: 40%;
          height: 4px;
                 border-radius: 4px;">
         </div>
+        <div class="d-flex flex-column align-center" style="z-index: 2">
+          <div class="d-flex mt-1">
+            <div v-for="info in table.infos" :key="info">
+              <table-info-display :info-key="info" :table="table"/>
+            </div>
+          </div>
+        </div>
+
       </template>
 
     </v-card>

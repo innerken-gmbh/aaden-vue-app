@@ -14,6 +14,6 @@
   "reservationCloudServerBase": "http://192.168.1.100:8080/",
   "milePayPort": 8181,
   "minTileSize": 80,
-  "defaultTileHeight": 100,
-  "defaultTileWidth": 80
+  "defaultTileHeight": 120,
+  "defaultTileWidth": 100
 }
