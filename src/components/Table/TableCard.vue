@@ -18,40 +18,64 @@
           <div :key="i+table.tableName+'child'" class="dot child"></div>
         </template>
       </div>
+
       <div class="tableCardName">
         {{ table.tableName }}
       </div>
+      <template v-if="!table.inUse&&table.reservations.length>0">
+        <v-btn color="primary lighten-2" x-small
+               text
+               style="font-size: 10px"
+               @click.stop="showReservationDialog"
+               class="py-1 pa-0"
+               elevation="0">
+          <v-icon small class="mr-1">mdi-calendar</v-icon>
+          <template v-if="table.reservations.length>1">
+            {{ table.reservations.length }} |
+          </template>
+          <template>{{ table.reservations[0].fromDateTime|onlyTime }}</template>
+        </v-btn>
 
-      <template v-if="table.inCall">
-        <div style="position:absolute;right: -4px;top: -4px">
-          <v-icon color="error">mdi-bell-circle</v-icon>
-        </div>
       </template>
+      <div style="position:absolute;right: -4px;top: -4px">
+        <template v-if="table.inCall">
+          <v-chip color="error" small class="px-1">
+            <v-icon small>mdi-bell</v-icon>
+          </v-chip>
+
+        </template>
+        <template v-else-if="table.reservations.length>0&&table.inUse">
+          <v-chip @click.stop="showReservationDialog" class="px-2 py-1" small height="min-content" color="warning"
+                  elevation="0">
+            <v-icon small class="mr-1">mdi-calendar</v-icon>
+            {{ table.reservations.length }}
+          </v-chip>
+        </template>
+      </div>
+
       <template v-if="table.inUse">
         <div class="d-flex flex-column align-center">
-          <div class="mb-1"
-               v-if="tableYSize>=2"
-               :style="{
-             background:findConsumeTypeColorById(table.consumeType),
-             color:colorIsDark(findConsumeTypeColorById(table.consumeType))?'#fff':'#000'}"
-               style="
-          width: fit-content;
-          padding: 4px 4px;
-                font-size: 14px;
-                border-radius: 4px;
-                line-height: 12px;
-                font-weight: bold;
-                text-align: center">
-            {{ findConsumeTypeById(table.consumeType) }}
-          </div>
-          <div>
-            <table-info-display :info-key="table['info0']" :table="table"></table-info-display>
-          </div>
-          <div class="mt-1">
-            <table-info-display :info-key="table['info1']" :table="table"></table-info-display>
+          <div class="d-flex mt-1">
+            <div v-for="info in table.infos" :key="info">
+              <table-info-display :info-key="info" :table="table"/>
+            </div>
           </div>
         </div>
+        <div :style="{
+             background:findConsumeTypeColorById(table.consumeType)}"
+             style="
+           position: absolute;
+           right: 0;
+           left: 0;
+           max-width: 60px;
+           bottom: 8px;
+           margin: auto;
+          width: 40%;
+         height: 4px;
+                border-radius: 4px;">
+        </div>
       </template>
+
     </v-card>
     <div :class="tableColor" class="chair top"></div>
     <div :class="tableColor" class="chair left"></div>
@@ -75,6 +99,9 @@ export default {
     tableInfo: {}
   },
   methods: {
+    showReservationDialog () {
+      this.$emit('reservation-clicked', this.tableInfo)
+    },
     findConsumeTypeColorById (id) {
       return findConsumeTypeById(id)?.color ?? this.$vuetify.theme.currentTheme.primary
     },
@@ -119,11 +146,8 @@ export default {
       res.inCall = res.callService === '1'
       res.childCount = res.childCount ?? 0
       res.seatCount = res.seatCount ?? 0
-      let keyCount = 0
-      for (const key of this.getKeys()) {
-        res['info' + keyCount] = key
-        keyCount++
-      }
+      const maxKeyCount = 2
+      res.infos = this.getKeys().filter((k, index) => index < maxKeyCount)
       return res
     }
   }

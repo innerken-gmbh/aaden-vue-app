@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 
 export const standardDateTemplate = 'YYYY-MM-DD'
 export const todayDate = dayjs().format(standardDateTemplate)
-const timestampTemplate = 'YYYY-MM-DD HH:mm:ss'
+export const timestampTemplate = 'YYYY-MM-DD HH:mm:ss'
 const onlyTimeTemplate = 'HH:mm'
 
 export function onlyTimeFormat (str) {

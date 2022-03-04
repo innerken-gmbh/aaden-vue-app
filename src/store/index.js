@@ -19,11 +19,17 @@ const basePayloadParam = {
 
 export default new Vuex.Store({
   state: {
-    pinDialogShow: false, isAuthorizeTypeSuper: false, tableId: null, tableSelectDialogShow: false, tableFilter: false
+    pinDialogShow: false,
+    isAuthorizeTypeSuper: false,
+    tableId: null,
+    tableSelectDialogShow: false,
+    tableFilter: false,
+    requiredTableKey: 'tableName'
   },
   mutations: {
     START_TABLE_PICK (state, payload) {
       state.tableFilter = payload.tableFilter
+      state.requiredTableKey = payload.requiredTableKey
       state.tableSelectDialogShow = true
       tablePickResolve = payload.resolve
     },

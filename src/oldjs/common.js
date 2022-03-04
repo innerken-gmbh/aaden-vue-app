@@ -121,9 +121,11 @@ export async function popAuthorize (type = '', successCallback = null, force = f
   })
 }
 
-export async function showTableSelector (filter = null) {
+export async function showTableSelector (filter = null, requiredTableKey = 'tableName') {
   return new Promise(resolve => {
-    store.commit('START_TABLE_PICK', { tableFilter: filter, resolve })
+    store.commit('START_TABLE_PICK', {
+      tableFilter: filter, resolve, requiredTableKey
+    })
   })
 }
 

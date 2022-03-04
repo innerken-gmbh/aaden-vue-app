@@ -4,10 +4,11 @@
       <div style="min-width: 200px" class="d-flex">
         <div v-if="restaurantInfo" class="text-h6 font-weight-bold">{{ restaurantInfo.name }}</div>
         <v-chip label color="white" class="ml-2 d-flex align-center">
-          <v-icon left color="success">mdi-checkbox-marked-circle</v-icon>
+
           <span>
-                一切正常
+                正在营业
           </span>
+          <v-icon right color="success">mdi-checkbox-marked-circle</v-icon>
 
         </v-chip>
       </div>
@@ -65,10 +66,9 @@
       </v-item-group>
 
       <template #right>
-        <div style="min-width: 200px">
-          <v-btn elevation="0" @click="reprintAll" v-hide-simple v-if="hasBadPrint" color="error">
-            <v-icon left>mdi-printer-off</v-icon>
-            {{ $t('Erneut Drücken') + ' ' + falsePrinterList.length }}
+        <div style="min-width: 200px" class="d-flex justify-end">
+          <v-btn icon elevation="0" @click="reprintAll" v-hide-simple v-if="hasBadPrint" color="error">
+            <v-icon>mdi-printer-off</v-icon>
           </v-btn>
           <v-dialog
               v-model="menu"
@@ -85,6 +85,7 @@
                 </v-icon>
               </v-btn>
             </template>
+
             <v-card color="white">
               <v-list>
                 <v-list-item>
@@ -118,6 +119,25 @@
                   </v-list-item>
                 </template>
               </v-list>
+
+              <v-card>
+                <v-select label="堂食桌子显示标签"></v-select>
+                <v-select label="自助桌子显示标签"></v-select>
+                <v-card-title>{{ $t('显示内容排序') }}</v-card-title>
+                <v-card-text>
+                  <draggable v-model="tableInfoDisplayOrder">
+                    <transition-group>
+                      <v-card class="pa-2 d-flex"
+                              v-for="element in tableInfoDisplayOrder" :key="element">
+                        {{ $t(element) }}
+                        <v-spacer></v-spacer>
+                        <v-icon>mdi-drag-horizontal-variant</v-icon>
+                      </v-card>
+                    </transition-group>
+                  </draggable>
+                </v-card-text>
+              </v-card>
+
               <v-card-actions>
                 <v-btn text @click="hardReload">Clear</v-btn>
                 <v-spacer></v-spacer>
@@ -172,7 +192,6 @@
               @table-clicked="openOrEnterTable"
               @need-refresh="refreshTables"
               :out-side-table-list="tableInCurrentSection"
-              :editing.sync="isEditing"
               :current-section="currentSection"/>
         </div>
         <v-card
@@ -260,43 +279,6 @@
                 </table-gird-item>
               </div>
             </div>
-
-          </template>
-          <template>
-            <v-card elevation="0" style="z-index: -1"
-                    @click="isEditClick"
-                    class="head d-flex align-center pa-2 mt-2">
-              <h4>
-                <v-icon left>mdi-pencil-box-multiple</v-icon>
-                桌子设置
-              </h4>
-              <v-spacer/>
-              <toggle-up-down-button :expand="showOtherOrder"/>
-            </v-card>
-            <v-card elevation="0" tile color="#f6f6f6" class="pa-2" v-if="isEditing">
-              <v-select label="堂食桌子显示标签"></v-select>
-              <v-select label="自助桌子显示标签"></v-select>
-              <v-card>
-                <v-card-title>{{ $t('显示内容排序') }}</v-card-title>
-                <v-card-text>
-                  <draggable v-model="tableInfoDisplayOrder">
-                    <transition-group>
-                      <v-card class="pa-2 d-flex"
-                              v-for="element in tableInfoDisplayOrder" :key="element">
-                        {{ $t(element) }}
-                        <v-spacer></v-spacer>
-                        <v-icon>mdi-drag-horizontal-variant</v-icon>
-                      </v-card>
-                    </transition-group>
-                  </draggable>
-                </v-card-text>
-              </v-card>
-              <v-btn class="mt-2" elevation="0" @click="saveCurrentSection()" color="primary">
-                <v-icon left>mdi-check</v-icon>
-                {{ $t('Save') }}
-              </v-btn>
-
-            </v-card>
 
           </template>
 
@@ -540,8 +522,7 @@ import {
   openOrEnterTable,
   popAuthorize,
   requestOutTable,
-  resetTableStatus,
-  toast
+  resetTableStatus
 } from '@/oldjs/common'
 import Swal from 'sweetalert2'
 import { dragscroll } from 'vue-dragscroll'
@@ -555,7 +536,7 @@ import GlobalConfig, {
 import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
 import TimeDisplay from '@/components/TimeDisplay'
-import { getSectionList, getServantList, getTableListWithCells, openDrawer, updateSection } from '@/oldjs/api'
+import { getSectionList, getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
 import Keyboard from '@/components/Keyboard'
 import TableBluePrint from '@/components/TableBluePrint'
 import { defaultSection } from '@/oldjs/defaultConst'
@@ -606,7 +587,6 @@ export default {
   data: function () {
     return {
       showKeyboard: false,
-      isEditing: false,
 
       keyboardLayout: keyboardLayout,
       NeededKeys,
@@ -632,7 +612,6 @@ export default {
 
       showOtherOrder: GlobalConfig.showOtherOrder,
       tableInfoDisplayOrder: GlobalConfig.getTableInfoKeys(),
-
       loading: false
 
     }
@@ -717,12 +696,6 @@ export default {
       } else {
         this.takeawayClicked()
       }
-      this.isEditing = false
-    },
-
-    isEditClick () {
-      this.isEditing = !this.isEditing
-      this.showOtherOrder = false
     },
 
     changeLanguage: forceChangeLanguage,
@@ -847,12 +820,6 @@ export default {
           this.openOrEnterTable(t)
         }
       }
-    },
-    async saveCurrentSection () {
-      await updateSection(this.currentSection)
-      toast()
-      await this.refreshSectionList()
-      this.isEditing = false
     },
     anyMenuOpen () {
       return Swal.isVisible() || this.menu || this.systemDialogShow

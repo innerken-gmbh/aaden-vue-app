@@ -67,8 +67,11 @@
             v-for="re in reservations" :key="re.remoteId" elevation="0"
             height="100%"
             class="pa-3 d-flex flex-column">
-          <div class="text-truncate text-no-wrap d-flex align-center text-body-1 mt-1">
-            {{ re.title }} {{ re.firstName }} {{ re.lastName }}
+          <div class=" d-flex align-center text-body-1 mt-1">
+            <span class="text-truncate text-no-wrap" style="max-width: 140px">
+                {{ re.title }} {{ re.firstName }} {{ re.lastName }}
+            </span>
+
             <v-spacer></v-spacer>
             <v-chip outlined small>
               <v-icon left small>mdi-clock-outline</v-icon>
@@ -175,7 +178,7 @@
           <v-divider class="my-3"></v-divider>
         </template>
         <div style="display: grid;grid-gap: 8px;" class="mt-8">
-          <v-btn block color="warning" elevation="0">更换桌子</v-btn>
+          <v-btn @click="moveReservation(activeReservation.id)" block color="warning" elevation="0">更换桌子</v-btn>
           <v-btn @click="cancelReservation(activeReservation.id)" outlined block color="error" elevation="0">
             取消预定
           </v-btn>
@@ -468,18 +471,13 @@ export default {
       }
     },
     async cancelReservation (id) {
-      const res = await IKUtils.showConfirmAsyn(
-        '取消预定将会发送一封邮件来通知预定的客人。',
-        '您是否确定取消此预定？')
-      if (res.isConfirmed) {
-        await cancelReservation(id)
-        await this.loadReservations()
-      }
+      await cancelReservation(id)
+      await this.loadReservations()
     },
 
-    async moveReservation (id, tableId) {
-      await moveReservation(id, tableId)
-      await this.loadReservations()
+    async moveReservation (id) {
+      await moveReservation(id)
+      await this.loadData()
     },
     async loadData () {
       await this.loadReservations()

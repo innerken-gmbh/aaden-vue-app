@@ -6,7 +6,6 @@ import { jumpTo } from './common'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import IKUtils from 'innerken-js-utils'
 
-let dishesList = []
 const dishesDictionary = {}
 const categoryCache = {}
 
@@ -46,19 +45,6 @@ export function processDishList (dishList) {
     })
   }
   return dishList
-}
-
-export async function getAllDishesWithCache (force = false) {
-  if (force || dishesList.length === 0) {
-    const res = await hillo.get('Dishes.php',
-      {
-        lang: i18n.locale.toUpperCase(),
-        usePrintModAsName: GlobalConfig.usePrintModAsName | 0
-      })
-    dishesList.length = 0
-    dishesList = processDishList(res.content)
-  }
-  return dishesList
 }
 
 function getComputedOption (dish) {

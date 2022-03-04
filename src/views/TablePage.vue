@@ -825,7 +825,6 @@ export default {
       }
     },
     async getCategory (consumeTypeId = 1, force = false) {
-      console.log(this.categories.length, force)
       if (this.categories.length === 0 || force) {
         console.log('reloadDishUseConsumeTypeId', consumeTypeId)
 
