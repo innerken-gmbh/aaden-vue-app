@@ -39,10 +39,11 @@
                     {{ $t('discount') }}
                   </v-btn>
                 </template>
-                <v-card height="60px">
+                <v-card class="d-flex align-center">
                   <v-btn block :disabled="this.tableDetailInfo.order.consumeTypeStatusId<=1"
-                         x-large
                          color="success"
+                         elevation="0"
+                         x-large
                          @click="jumpToPayment()">
                     <v-icon size="28" left>mdi-calculator-variant</v-icon>
                     <span class="text-h6">{{ $t('payBill') }}</span>
@@ -73,15 +74,16 @@
                 </v-btn>
               </template>
               <template>
-                <v-card height="60px" class="d-flex align-center" color="primary">
-                  <v-btn large :loading="isSendingRequest"
+                <v-card class="d-flex align-center" color="primary">
+                  <v-btn large icon :loading="isSendingRequest"
                          elevation="0"
-                         color="warning"
+                         dark
                          @click="orderDish(cartListModel.list,false)" class="mr-1 ml-2">
                     <v-icon>mdi-printer-off</v-icon>
                   </v-btn>
                   <v-btn class="flex-grow-1"
                          elevation="0"
+                         x-large
                          style="border-radius: 12px"
                          large :loading="isSendingRequest"
                          color="primary"
@@ -106,7 +108,7 @@
               <h3 class="ml-2 font-weight-regular text-truncate">{{ tableDetailInfo.servant }}</h3>
               <v-spacer></v-spacer>
               <div class="d-flex align-center flex-grow-0 mr-n2" style="max-width: 40%">
-                <v-btn icon elevation="0" color="warning" class="mr-4">
+                <v-btn icon elevation="0" class="mr-4">
                   <v-icon>mdi-swap-horizontal</v-icon>
                 </v-btn>
 

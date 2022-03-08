@@ -1,5 +1,6 @@
 <template>
-  <v-card shaped elevation="0" class="d-flex flex-column flex-grow-1 " style="max-height:calc(100% - 60px)">
+  <v-card shaped elevation="0" class="d-flex flex-column flex-grow-1 "
+          style="max-height:calc(100% - 60px)">
     <div class="d-flex align-center pt-2 px-2">
       <h2 class="pa-2"> {{ title }}</h2>
       <v-spacer></v-spacer>
@@ -42,11 +43,11 @@
       <v-divider></v-divider>
       <div class="d-flex pa-2 px-4 align-baseline">
 
-        <v-icon>mdi-food</v-icon>
-        <span class="ml-1">{{ count }}</span>
+        <v-icon size="28" class="mr-2">mdi-food</v-icon>
+        <span class="ml-1 text-h4  grey--text text--darken-2">{{ count }}</span>
         <v-spacer></v-spacer>
         <v-icon class="mr-2" size="28">mdi-cash-usd</v-icon>
-        <span class="ml-1 text-h4 grey--text text--darken-2">{{ total | priceDisplay }}</span>
+        <span class="ml-1 text-h4 grey--text text--darken-2 font-weight-bold">{{ total | priceDisplay }}</span>
       </div>
       <div>
         <slot></slot>

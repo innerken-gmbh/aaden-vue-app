@@ -37,10 +37,10 @@
           </div>
         </div>
       </div>
-      <div v-show="dish.note" class="dishNote">
-        <v-icon color="primary" small class="mr-1">mdi-pencil</v-icon>
+      <v-chip label v-if="dish.note">
+        <v-icon left small class="mr-1">mdi-pencil</v-icon>
         {{ dish.note }}
-      </div>
+      </v-chip>
     </div>
     <div v-show="expand">
       <div @click.stop class="d-flex py-1">
@@ -175,7 +175,6 @@ export default {
   font-size: 14px;
   text-overflow: ellipsis;
   overflow: hidden;
-  border-bottom: 1px solid #6b6b6b;
   margin-bottom: 4px;
   white-space: nowrap;
   padding: 2px 4px;
