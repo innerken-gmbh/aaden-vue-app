@@ -1,29 +1,34 @@
 <template>
   <div class="dishCard mx-1" style="position: relative">
-    <div class="px-1 py-2 pr-0 d-flex justify-space-between align-baseline">
-      <div class="flex-grow-1 d-flex justify-space-between">
-        <div class='dishName flex-grow-1'>
+    <div class="px-1 py-2 pr-0">
+      <div class="flex-grow-1 d-flex">
+        <span class="dishCount flex-shrink-0">{{ dish.count }}&times;</span>
+        <div class='dishName flex-grow-1 mr-4'>
           <span v-code-hide class='codeRow'>{{ dish.code }}.</span><span>{{ dish.name }}</span>
         </div>
-        <template>
-          <v-chip small label v-if="dish.overrideConsumeTypeId" class="mr-1" color="primary">
-            {{ findConsumeTypeById(dish.overrideConsumeTypeId) }}
-          </v-chip>
-          <span v-if="dish.isFree==='1'">{{ $t('Free') }}</span>
-          <template v-else>
+        <v-spacer/>
+        <div class="flex-shrink-0">
+          <template>
+            <v-chip small label v-if="dish.overrideConsumeTypeId" class="mr-1" color="primary">
+              {{ findConsumeTypeById(dish.overrideConsumeTypeId) }}
+            </v-chip>
+            <span v-if="dish.isFree==='1'">{{ $t('Free') }}</span>
+            <template v-else>
                 <span class="text-truncate text-no-wrap"
-                      v-if="(dish.tempDiscountMod)&&(Math.abs(parseFloat(dish.tempDiscountMod))>0)">
+                      v-if="(dish.tempDiscountMod)&&
+                      (Math.abs(parseFloat(dish.tempDiscountMod))>0)">
                   <s style="font-size: xx-small">{{
                       dish.originPrice | priceDisplay
                     }}</s>{{ dish.realPrice | priceDisplay }}</span>
-            <span class="text-truncate text-no-wrap" v-else>
+              <span class="text-truncate text-no-wrap" v-else>
                            {{ dish.realPrice | priceDisplay }}
                   </span>
+            </template>
           </template>
-        </template>
+        </div>
 
       </div>
-      <span class="dishCount">&times;{{ dish.count }}</span>
+
     </div>
     <div>
       <div v-show="dish.displayApply.length>0" class="dishMod">
@@ -69,17 +74,19 @@
           </template>
         </template>
         <template v-else>
-          <v-toolbar-items class="flex-grow-1">
-            <v-btn @click="callCallBack(1)" class="flex-grow-1">
+          <div class="flex-grow-1 d-flex">
+            <v-btn elevation="0" @click="callCallBack(1)" class="flex-grow-1 mr-1">
               <span style="font-size: 18px">&times;1</span>
             </v-btn>
-            <v-btn @click="callCallBack(5)">
+            <v-btn class="mr-1" elevation="0" @click="callCallBack(5)">
               <span style="font-size: 18px">&times;5</span>
             </v-btn>
-            <v-btn @click="callCallBack(dish.count)" color="primary">
+            <v-btn elevation="" @click="callCallBack(dish.count)" color="primary">
               <span style="font-size: 18px">{{ $t('All') }}</span>
             </v-btn>
-          </v-toolbar-items>
+
+          </div>
+
         </template>
       </div>
     </div>
@@ -151,7 +158,7 @@ export default {
   color: #367aeb;
   width: 36px;
   font-weight: 900;
-  text-align: center;
+  text-align: left;
 }
 
 .basicInfo {
@@ -160,7 +167,6 @@ export default {
 }
 
 .dishName {
-  max-width: 160px;
   word-wrap: break-word;
   text-overflow: ellipsis;
 }

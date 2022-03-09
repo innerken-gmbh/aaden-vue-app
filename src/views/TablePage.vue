@@ -40,7 +40,7 @@
                   </v-btn>
                 </template>
                 <v-card class="d-flex align-center">
-                  <v-btn block :disabled="this.tableDetailInfo.order.consumeTypeStatusId<=1"
+                  <v-btn height="60px" block :disabled="this.tableDetailInfo.order.consumeTypeStatusId<=1"
                          color="success"
                          elevation="0"
                          x-large
@@ -84,6 +84,7 @@
                   <v-btn class="flex-grow-1"
                          elevation="0"
                          x-large
+                         height="60px"
                          style="border-radius: 12px"
                          large :loading="isSendingRequest"
                          color="primary"
@@ -96,7 +97,7 @@
             </dish-card-list>
           </v-card>
           <v-card elevation="0" color="transparent" v-cloak
-                  class="flex-grow-1 pa-2 px-4"
+                  class="flex-grow-1 pa-2 px-4 flex-column"
                   style="height: 100vh;">
             <div class="d-flex pl-2 align-baseline" style="height: 52px">
               <template v-if="$vuetify.breakpoint.lgAndUp">
@@ -106,6 +107,15 @@
               </template>
               <v-icon size="20" class="ml-8">mdi-account-box</v-icon>
               <h3 class="ml-2 font-weight-regular text-truncate">{{ tableDetailInfo.servant }}</h3>
+              <address-display
+                  class="ml-8"
+                  :should-open-menu.sync="addressFormOpen"
+                  @address-change="submitRawAddressInfo"
+                  v-if="consumeTypeId===2"
+                  @accept="acceptOrderWithTime"
+                  @reject="rejectOrder"
+                  :consume-type-status-id="consumeTypeStatusId"
+                  :raw-address-info="realAddressInfo"/>
               <v-spacer></v-spacer>
               <div class="d-flex align-center flex-grow-0 mr-n2" style="max-width: 40%">
                 <v-btn icon elevation="0" class="mr-4">
@@ -128,33 +138,47 @@
 
             </div>
             <v-divider class="mb-2"></v-divider>
-            <v-card
-                class="mb-4"
-                elevation="0"
-                color="transparent"
+            <v-card v-if="!keyboardMode"
+                    class="mb-4 d-flex"
+                    elevation="0"
+                    color="transparent"
             >
-              <v-item-group v-dragscroll v-model="activeDCT"
-                            mandatory
-                            style="display: grid;
+              <template>
+                <v-item-group v-dragscroll v-model="activeDCT"
+                              mandatory
+                              style="display: grid;
                           grid-gap: 8px;
                           grid-auto-columns: 120px;
                           grid-auto-flow: column;
                           overflow-x: scroll">
 
-                <v-item v-for="ct of dct" v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
-                  <v-card :elevation="active?4:0"
-                          height="48"
-                          style="border-radius: 12px;font-size: 18px"
-                          class="d-flex justify-center align-center"
-                          :color="active?'primary':''"
-                          @click="toggle"
-                          :dark="active">{{ ct.name }}
-                  </v-card>
-                </v-item>
+                  <v-item v-for="ct of dct" v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
+                    <v-card :elevation="active?4:0"
+                            height="48"
+                            style="border-radius: 12px;font-size: 18px"
+                            class="d-flex justify-center align-center"
+                            :color="active?'primary':''"
+                            @click="toggle"
+                            :dark="active">{{ ct.name }}
+                    </v-card>
+                  </v-item>
+                </v-item-group>
+                <v-spacer></v-spacer>
+              </template>
 
-              </v-item-group>
+              <v-card height="48"
+                      @click="keyboardMode=true"
+                      elevation="0"
+                      style="border-radius: 12px;font-size: 18px"
+                      class="d-flex justify-center align-center px-4">
+
+                <v-icon left>mdi-keyboard</v-icon>
+                键盘和菜号
+
+              </v-card>
+
             </v-card>
-            <v-card v-dragscroll color="transparent" elevation="0"
+            <v-card v-if="!keyboardMode" v-dragscroll color="transparent" elevation="0"
                     class="dragscroll dishCardListContainer flex-grow-1">
               <div v-if="!activeCategoryId">
                 <v-item-group
@@ -216,16 +240,88 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
               </div>
               <div style="width: 100%;height: 160px"></div>
             </v-card>
+            <div style="display: grid;grid-template-columns: 1fr 360px;height: calc(100vh - 130px);grid-gap: 16px"
+                 class="flex-grow-1"
+                 v-else>
+              <v-card elevation="0" class="l-result-display">
+
+                <div v-if="searchDish.length>0" style="overflow: hidden"
+                     class="flex-shrink-1 blue lighten-5">
+                  <v-card elevation="0" class="pa-1 py-3">
+                    搜索结果
+                  </v-card>
+                  <template v-for="(dish,index) in searchDish">
+                    <v-card @click="searchDishClick(dish.code)" elevation="0"
+                            :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
+                            :class="index===0?'first':''"
+                            :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large"
+                            class="d-flex  px-1 py-1 align-start">
+                      <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
+                      </div>
+                      <v-spacer></v-spacer>
+                      <div v-if="dish.isFree==='1'"
+                           style="padding:2px 4px;border-radius: 4px;"
+                           class="price d-flex align-center green lighten-3 white--text">
+                        {{ $t('Frei') }}
+                      </div>
+                      <div v-else class="price d-flex align-center text-no-wrap text-truncate">
+                        {{ dish.price | priceDisplay }}
+                      </div>
+                    </v-card>
+                  </template>
+                </div>
+                <div class="d-flex align-center justify-center" style="height: 100%;width: 100%" v-else>
+                  <div class="d-flex flex-column align-center">
+                    <div>
+                      <v-icon color="grey lighten-1" x-large>mdi-keyboard</v-icon>
+                    </div>
+                    <div class="text--disabled">请使用键盘或直接在右侧输入</div>
+                  </div>
+                </div>
+
+              </v-card>
+              <v-card elevation="0" class="d-flex flex-column">
+                <v-card height="48"
+                        @click="keyboardMode=false"
+                        elevation="0"
+                        color="grey lighten-2"
+                        style="font-size: 18px"
+                        class="d-flex align-center px-4">
+
+                  <v-icon left>mdi-menu</v-icon>
+                  查看分类菜单
+                </v-card>
+                <div class="pa-2 text-h6">
+                  <template v-if="displayInput">
+                    {{ Config.numberFirst ? '数量 * 菜号' : '菜号 * 数量' }}<br>
+                    正在输入...
+                  </template>
+                  <template v-else>
+                    {{ feedback }}
+                  </template>
+                </div>
+                <v-spacer></v-spacer>
+                <div class="pa-2 flex-shrink-0">
+                  <v-text-field
+                      hide-details
+                      solo-inverted
+                      class="my-2"
+                      :placeholder="Config.numberFirst?'数量 * 菜号':'菜号 * 数量'"
+                      height="96px"
+                      style="font-size: 36px"
+                      ref="ins"
+                      @input="input=displayInput"
+                      v-model="displayInput"
+                  />
+                  <keyboard @input="numberInput"
+                            :keys="keyboardLayout"></keyboard>
+                </div>
+              </v-card>
+
+            </div>
           </v-card>
           <template v-if="false">
-            <address-display
-                :should-open-menu.sync="addressFormOpen"
-                @address-change="submitRawAddressInfo"
-                v-if="consumeTypeId===2"
-                @accept="acceptOrderWithTime"
-                @reject="rejectOrder"
-                :consume-type-status-id="consumeTypeStatusId"
-                :raw-address-info="realAddressInfo"/>
+
             <keep-alive>
               <template>
                 <buffet-status-card
@@ -238,31 +334,21 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
 
             <v-spacer></v-spacer>
 
-            <div class="pa-2">
-              <v-text-field
-                  class="ma-2"
-                  hide-details
-                  clearable
-                  style="font-size: 36px"
-                  ref="ins"
-                  @input="input=displayInput"
-                  v-model="displayInput"
-              />
-              <keyboard @input="numberInput"
-                        :keys="keyboardLayout"></keyboard>
-            </div>
           </template>
-          <v-card tile
-                  elevation="2"
-                  style="position: fixed;
+          <v-card
+              elevation="4"
+              height="60px"
+              style="position: fixed;
                   z-index:3;
                   bottom: 0;
                   right: 0;
                   overflow-x: scroll;
-                  width: calc(100vw - 360px);
+                  width: calc(100vw - 350px);
                "
-                  class="d-flex flex-column pa-2">
-            <div style="display: grid;grid-auto-columns: min-content;grid-gap: 6px;grid-auto-flow: column">
+              class="d-flex align-center">
+            <div class="ml-2" style="display: grid;
+            grid-auto-columns: min-content;
+            grid-gap: 6px;grid-auto-flow: column">
               <grid-button
                   :loading="isSendingRequest"
                   icon="mdi-printer"
@@ -300,14 +386,30 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                   color="#ffb13b"
                   @click="changeServant"
               />
-              <grid-button
-                  :loading="isSendingRequest"
-                  v-if="consumeTypeId===2"
-                  icon="mdi-map"
-                  :text="$t('customerAddress')"
-                  color="indigo"
-                  @click="addressFormOpen=true"
-              />
+              <template v-if="consumeTypeId===2">
+                <grid-button
+                    :loading="isSendingRequest"
+                    icon="mdi-map"
+                    :text="$t('customerAddress')"
+                    color="indigo"
+                    @click="addressFormOpen=true"
+                />
+                <template v-if="consumeTypeStatusId<2">
+                  <template
+                      v-for="(time) in [0,15,20,30,60]"
+                  >
+                    <grid-button
+                        :key="time"
+                        color="success"
+
+                        @click="acceptOrderWithTime(time)"
+                        icon="mdi-plus"
+                        :text="time"/>
+
+                  </template>
+                  <grid-button color="error" @click="rejectOrder" icon="mdi-minus" :text="$t('拒绝')"/>
+                </template>
+              </template>
               <template v-else-if="consumeTypeStatusId<2">
                 <grid-button
                     :loading="isSendingRequest"
@@ -332,6 +434,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                   color="#ff7961"
                   @click="buffetDialogShow=true"
               />
+
             </div>
 
           </v-card>
@@ -340,7 +443,6 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
 
       </v-main>
       <!--      right panel-->
-
       <template v-if="splitOrderListModel.list.length>0">
         <div class="bottomCart surface d-flex justify-end"
              style="background: rgba(0,0,0,0.4);  top: 0;
@@ -392,47 +494,52 @@ left: 350px"
           </div>
         </div>
       </template>
-      <keep-alive>
-        <v-card v-if="input"
-                style="position:fixed;top: 0;right: 0;
+
+      <template v-if="!keyboardMode">
+        <keep-alive>
+          <v-fade-transition>
+            <v-card v-if="input"
+                    style="position:fixed;top: 0;right: 0;
             margin: auto;
             box-shadow: 0 3px 16px var(--v-primary-lighten4);
             left: 0;bottom: 0;
             min-width: 300px;
             max-width:calc(100vw - 200px);
             z-index: 15;width: fit-content;height: fit-content"
-                class="pa-4">
-          <div>
-            <h1>{{ input }}</h1>
-          </div>
-          <div v-if="searchDish.length>0" style="overflow: hidden"
-               class="flex-shrink-1 blue lighten-5">
-            <template v-for="(dish,index) in searchDish">
-              <v-card @click="searchDishClick(dish.code)" elevation="0"
-                      :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
-                      :class="index===0?'first':''"
-                      :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large"
-                      class="d-flex  px-1 py-1 align-start">
-                <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
-                </div>
-                <v-spacer></v-spacer>
-                <div v-if="dish.isFree==='1'"
-                     style="padding:2px 4px;border-radius: 4px;"
-                     class="price d-flex align-center green lighten-3 white--text">
-                  {{ $t('Frei') }}
-                </div>
-                <div v-else class="price d-flex align-center text-no-wrap text-truncate">
-                  {{ dish.price | priceDisplay }}
-                </div>
-              </v-card>
-            </template>
-          </div>
-          <div class="text-caption text--secondary" style="font-size: 14px !important;">
-            按Enter(回车键)确定<br>
-            按ESC键或者退格键关闭此窗口
-          </div>
-        </v-card>
-      </keep-alive>
+                    class="pa-4">
+              <div>
+                <h1>{{ input }}</h1>
+              </div>
+              <div v-if="searchDish.length>0" style="overflow: hidden"
+                   class="flex-shrink-1 blue lighten-5">
+                <template v-for="(dish,index) in searchDish">
+                  <v-card @click="searchDishClick(dish.code)" elevation="0"
+                          :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
+                          :class="index===0?'first':''"
+                          :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large"
+                          class="d-flex  px-1 py-1 align-start">
+                    <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
+                    </div>
+                    <v-spacer></v-spacer>
+                    <div v-if="dish.isFree==='1'"
+                         style="padding:2px 4px;border-radius: 4px;"
+                         class="price d-flex align-center green lighten-3 white--text">
+                      {{ $t('Frei') }}
+                    </div>
+                    <div v-else class="price d-flex align-center text-no-wrap text-truncate">
+                      {{ dish.price | priceDisplay }}
+                    </div>
+                  </v-card>
+                </template>
+              </div>
+              <div class="text-caption text--secondary" style="font-size: 14px !important;">
+                按Enter(回车键)确定<br>
+                按ESC键或者退格键关闭此窗口
+              </div>
+            </v-card>
+          </v-fade-transition>
+        </keep-alive>
+      </template>
 
       <v-dialog max-width="300" v-model="extraDishShow">
         <v-card width="550">
@@ -448,6 +555,7 @@ left: 350px"
           </v-card-actions>
         </v-card>
       </v-dialog>
+
       <discount-dialog
           :discount-model-show="discountModelShow"
           :id="id"
@@ -456,6 +564,7 @@ left: 350px"
           ref="discount"
           @visibility-changed="(val)=>this.discountModelShow=val"
       />
+
       <ModificationDrawer
           ref="modification"
           @visibility-changed="changeModification"
@@ -465,6 +574,7 @@ left: 350px"
           :mod="submitModification"
           :password="password"
       />
+
       <check-out-drawer
           :id="tableDetailInfo.order.id"
           @visibility-changed="changeCheckOut"
@@ -475,6 +585,7 @@ left: 350px"
           :discount-str="discountStr"
           :discount-ratio="discountRatio"
           :visible="checkoutShow"/>
+
       <buffet-start-dialog
           :initial-u-i="initialUI"
           :id="tableDetailInfo.order.id"
@@ -589,14 +700,14 @@ export default {
   },
   data: function () {
     return {
-
+      keyboardMode: true,
       tab: null,
-      addressFormOpen: null,
+      addressFormOpen: true,
       consumeTypeList: [],
 
       keyboardLayout: GlobalConfig.topKeyboardKey.split(',').concat(keyboardLayout),
       displayInput: '',
-
+      feedback: '',
       checkoutShow: false,
       extraDishShow: false,
       modificationShow: false,
@@ -795,6 +906,7 @@ export default {
     },
     async findAndOrderDish (code, count = 1) {
       if (count < 1) {
+        this.feedback = '❌不能加入负数菜品'
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
         return
       }
@@ -821,9 +933,10 @@ export default {
           blockReady()
           return
         }
-
+        this.feedback = '✅' + dish.code + '.' + dish.dishName + '*' + count + '已经加入购物车'
         this.addDish(dish, parseInt(count))
       } else {
+        this.feedback = '❌没有找到菜号为: ' + code + '的菜品'
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
       }
 
@@ -961,20 +1074,10 @@ export default {
     clear: function () {
       this.cartListModel.clear()
     },
-    findDishByCode: function (code) {
-      for (const d of this.cartListModel.list) {
-        if (d.code === code) {
-          return this.cartListModel.list.indexOf(d)
-        }
-      }
-      return -1
-    },
     removeDish: function (index) {
       this.cartListModel.add(this.cartListModel.list[index], -1)
     },
-    removeDishWithCode: function (code) {
-      this.removeDish(this.findDishByCode(code))
-    },
+
     submitModification: function (_mod, dish, count, saveInfo) {
       dish.apply = _mod// here we add a apply
       dish.forceFormat = true
@@ -991,6 +1094,7 @@ export default {
     },
     async initialUI (forceReload = false) {
       this.input = ''
+      this.feedback = ''
       this.displayInput = ''
       this.discountModelShow = false
       this.buffetDialogShow = false
@@ -1094,7 +1198,7 @@ export default {
         }
         await this.getOrderedDish()
       } catch (e) {
-
+        console.log(e)
       }
     },
     async acceptOrder (reason = 'ok') {
@@ -1109,7 +1213,7 @@ export default {
           timeReal = dayjs(addressInfo.date + ' ' + addressInfo.time, 'YYYY-MM-DD HH:mm')
         }
       }
-      timeReal.add(time, 'm')
+      timeReal = timeReal.add(time, 'm')
       await this.acceptOrder(timeReal.format('DD.MM.YYYY HH:mm'))
     },
     async rejectOrder () {
@@ -1192,11 +1296,7 @@ export default {
           blockReady()
           return
         }
-        if (t.startsWith('-') && t.length >= 2) {
-          this.removeDishWithCode(t.substring(1))
-          blockReady()
-          return
-        } else if (t.indexOf('*') !== -1) {
+        if (t.indexOf('*') !== -1) {
           let [code, count] = this.getCodeAndCountFromInput(t)
           count = parseInt(count)
           await this.findAndOrderDish(code, count)

@@ -42,6 +42,7 @@
             </v-item>
           </v-item-group>
         </v-card>
+
         <v-card
             class="pa-2 px-4" elevation="0"
             color="rgba(0,0,0,0.2)"

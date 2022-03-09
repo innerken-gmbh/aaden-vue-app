@@ -1,5 +1,5 @@
 <template>
-  <v-btn x-large rounded elevation="0" dark :loading="loading" @click="!loading?$emit('click'):''" :disabled="disabled"
+  <v-btn large rounded elevation="0" dark :loading="loading" @click="!loading?$emit('click'):''" :disabled="disabled"
          :color="color">
     <div class="d-flex justify-center" style="width: 100%">
       <v-icon>{{ icon }}</v-icon>

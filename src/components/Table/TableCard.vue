@@ -22,6 +22,28 @@
       <div class="tableCardName">
         {{ table.tableName }}
       </div>
+      <template v-if="table.inUse">
+        <div :style="{
+             background:findConsumeTypeColorById(table.consumeType)}"
+             style="
+           position: absolute;
+           left: 8px;
+           bottom: 8px;
+
+           z-index:0;
+          width: 6px;
+         height: 6px;
+                border-radius: 4px;">
+        </div>
+        <div class="d-flex flex-column align-center" style="z-index: 2">
+          <div class="d-flex mt-1">
+            <div v-for="info in table.infos" :key="info">
+              <table-info-display :info-key="info" :table="table"/>
+            </div>
+          </div>
+        </div>
+
+      </template>
       <template v-if="!table.inUse&&table.reservations.length>0">
         <v-btn color="primary lighten-2" x-small
                text
@@ -52,31 +74,6 @@
           </v-chip>
         </template>
       </div>
-
-      <template v-if="table.inUse">
-        <div :style="{
-             background:findConsumeTypeColorById(table.consumeType)}"
-             style="
-           position: absolute;
-           right: 0;
-           left: 0;
-           max-width: 60px;
-           bottom: 8px;
-           margin: auto;
-           z-index:0;
-          width: 40%;
-         height: 4px;
-                border-radius: 4px;">
-        </div>
-        <div class="d-flex flex-column align-center" style="z-index: 2">
-          <div class="d-flex mt-1">
-            <div v-for="info in table.infos" :key="info">
-              <table-info-display :info-key="info" :table="table"/>
-            </div>
-          </div>
-        </div>
-
-      </template>
 
     </v-card>
     <div :class="tableColor" class="chair top"></div>

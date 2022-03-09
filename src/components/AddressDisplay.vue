@@ -1,78 +1,31 @@
 <template>
-  <v-card>
+  <div @click="openAddressForm">
     <template v-if="rawAddressInfo">
-      <addresses-card :raw-address-info="address">
-        <template v-slot:time>
-          <v-card-subtitle>
-            <span v-if="address.date">{{ $t('Erwartete Zeit') }}:</span>
-            <template v-if="address.oldTime">
-              <span>{{ address.oldTime }}</span>
-            </template>
-            <template v-else>
-              {{ address.time }}
-            </template>
-          </v-card-subtitle>
-        </template>
-        <template #title>
-          <v-chip>
-            <template v-if="address.oldTime">
-              <span>{{ address.oldTime }}</span>
-            </template>
-            <template v-else>
-              {{ address.time }}
-            </template>
-          </v-chip>
-        </template>
-        <template v-slot:action>
-          <v-card-actions>
-            <v-btn icon @click="openAddressForm">
-              <v-icon>mdi-pencil-box</v-icon>
-            </v-btn>
-            <v-btn class="ml-n2" icon @click="deleteAddress">
-              <v-icon>mdi-trash-can</v-icon>
-            </v-btn>
-            <template v-if="address.oldTime">
-              <v-spacer></v-spacer>
-              <span>{{ address.date }}</span>
-            </template>
-            <template v-else-if="consumeTypeStatusId<1">
-              <div>
-                <template
-                    v-for="(time) in [0,5,10,15,20,30,60]"
-                >
-                  <v-chip
-                      class="elevation-1"
-                      :key="time"
-                      color="success"
-                      @click="$emit('accept',time)"
-                  >
-                    + {{ time }}
-                  </v-chip>
-                </template>
-                <v-chip color="error" @click="$emit('reject')">{{ $t('拒绝') }}</v-chip>
-              </div>
-            </template>
-          </v-card-actions>
-        </template>
-      </addresses-card>
+      <address-pill :address="address"/>
     </template>
     <address-form
+        :current-address="address"
         @address-submit="submit"
-        :menu-show.sync="showMenu">
+        :menu-show.sync="showMenu"
+    >
+      <v-btn @click="deleteAddress">
+        <v-icon left>mdi-trash-can</v-icon>
+        删除地址
+      </v-btn>
     </address-form>
-  </v-card>
+  </div>
 
 </template>
 
 <script>
 import { DefaultAddressInfo } from '@/oldjs/StaticModel'
 import AddressForm from '@/components/AddressForm'
-import AddressesCard from '@/components/AddressesCard'
+import AddressPill from '@/components/subcomponent/AddressPill'
 
 export default {
   name: 'AddressDisplay',
   components: {
-    AddressesCard,
+    AddressPill,
     AddressForm
   },
   props: {
