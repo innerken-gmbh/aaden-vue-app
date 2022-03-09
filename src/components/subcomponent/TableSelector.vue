@@ -9,40 +9,11 @@
           overflow: scroll"
       >
         <table-blue-print
-            :out-side-table-list="tableInCurrentSection"
+            :additional-filter="tableFilter"
+            :out-side-table-list="tableList"
             :editing="false"
             @table-clicked="tableSelected"
         />
-        <v-card
-            color="white"
-            class="d-flex"
-            style="position: absolute;bottom: 36px;
-              box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.08);
-                right: 0;
-                margin: auto;
-                width: min-content;
-                border-radius: 8px;
-                          left: 0;max-width: calc(100vw - 684px);
-               ">
-          <v-item-group v-dragscroll v-model="currentSectionIndex"
-                        mandatory
-                        style="display: grid;
-                          grid-auto-columns: max-content;
-                          grid-gap: 8px;
-                          grid-auto-flow: column;overflow-x: scroll">
-
-            <v-item v-for="section of notTakeawaySection" v-bind:key="section.id+'categorytypes'"
-                    v-slot="{active,toggle}">
-              <v-card :elevation="active?4:0"
-                      style="border-radius: 8px"
-                      :color="active?'primary':''"
-                      class="px-6 py-2 text-body-1" @click="toggle"
-                      :dark="active">{{ section.name }}
-              </v-card>
-            </v-item>
-          </v-item-group>
-        </v-card>
-
         <v-card
             class="pa-2 px-4" elevation="0"
             color="rgba(0,0,0,0.2)"
@@ -61,8 +32,7 @@ import { dragscroll } from 'vue-dragscroll'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { mapMutations, mapState } from 'vuex'
 import TableBluePrint from '@/components/TableBluePrint'
-import { getSectionList, getTableListWithCells } from '@/oldjs/api'
-import { defaultSection } from '@/oldjs/defaultConst'
+import { getTableListWithCells } from '@/oldjs/api'
 
 export default {
   name: 'TableSelector',
@@ -89,23 +59,6 @@ export default {
     }
   },
   computed: {
-    tableInCurrentSection () {
-      const filter = t => {
-        let res = t.sectionId === this.currentSection.id
-        if (this.tableFilter) {
-          res = res && this.tableFilter(t)
-        }
-        return res
-      }
-      return this.tableList.filter(filter)
-    },
-
-    currentSection () {
-      return this.notTakeawaySection[this.currentSectionIndex] ?? defaultSection
-    },
-    notTakeawaySection () {
-      return this.sectionList.filter(it => it.id !== '6')
-    },
     ...mapState(['tableSelectDialogShow', 'tableFilter']),
     realShow: {
       get: function () {
@@ -123,12 +76,8 @@ export default {
       this.TABLE_PICKED(table)
     },
     ...mapMutations(['HIDE_TABLE_PICK_DIALOG', 'TABLE_PICKED']),
-    async refreshSectionList () {
-      this.sectionList = (await getSectionList())
-        .filter(it => it.tableCount > 0)
-    },
+
     async initial () {
-      await this.refreshSectionList()
       this.tableList = await getTableListWithCells()
     }
   }

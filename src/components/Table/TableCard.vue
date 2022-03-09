@@ -76,10 +76,12 @@
       </div>
 
     </v-card>
-    <div :class="tableColor" class="chair top"></div>
-    <div :class="tableColor" class="chair left"></div>
-    <div :class="tableColor" class="chair bottom"></div>
-    <div :class="tableColor" class="chair right"></div>
+    <template v-if="!cardOnly">
+      <div :class="tableColor" class="chair top"></div>
+      <div :class="tableColor" class="chair left"></div>
+      <div :class="tableColor" class="chair bottom"></div>
+      <div :class="tableColor" class="chair right"></div>
+    </template>
 
   </div>
 </template>
@@ -95,7 +97,8 @@ export default {
   name: 'TableCard',
   components: { TableInfoDisplay },
   props: {
-    tableInfo: {}
+    tableInfo: {},
+    cardOnly: { default: false }
   },
   methods: {
     showReservationDialog () {

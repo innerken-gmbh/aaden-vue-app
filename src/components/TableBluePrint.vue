@@ -11,30 +11,50 @@
          :style="{
           transform:'scale('+scale+')'
        }">
-      <template v-for="i in tableWithInfo">
-        <vue-draggable-resizable
-            :min-height="80"
-            :min-width="60"
-            :max-height="180"
-            :max-width="180"
-            :draggable="editing"
-            :resizable="editing"
-            :key="i.id"
-            :h="i.h" :w="i.w"
-            :x="i.x" :y="i.y"
-            @dragstop="(...args)=>onDrag(i,...args)"
-            @resizestop="(...args)=>onResize(i,...args)"
-            :snap="true"
-            :parent="true">
-          <table-card
-              @click="selectTable(i)"
-              :table-background-color-func="tableBackgroundColorFunc"
-              :table-color-is-dark="tableColorIsDark"
-              :table-info="i"
-              @reservation-clicked="showReservation"
-          ></table-card>
-        </vue-draggable-resizable>
+      <template v-if="currentSectionIndex!==0">
+        <template v-for="i in tableWithInfo">
+          <vue-draggable-resizable
+              :min-height="80"
+              :min-width="60"
+              :max-height="180"
+              :max-width="180"
+              :draggable="editing"
+              :resizable="editing"
+              :key="i.id"
+              :h="i.h" :w="i.w"
+              :x="i.x" :y="i.y"
+              @dragstop="(...args)=>onDrag(i,...args)"
+              @resizestop="(...args)=>onResize(i,...args)"
+              :snap="true"
+              :parent="true">
+            <table-card
+                @click="selectTable(i)"
+                :table-background-color-func="tableBackgroundColorFunc"
+                :table-color-is-dark="tableColorIsDark"
+                :table-info="i"
+                @reservation-clicked="showReservation"
+            ></table-card>
+          </vue-draggable-resizable>
+        </template>
       </template>
+      <template v-else>
+        <div style="display: grid;grid-template-columns: repeat(12,1fr);grid-auto-rows: 108px;grid-gap: 8px">
+          <template v-for="i in tableWithInfo">
+            <table-card
+                :key="i.id"
+                @click="selectTable(i)"
+                :table-background-color-func="tableBackgroundColorFunc"
+                :table-color-is-dark="tableColorIsDark"
+                :table-info="i"
+                :card-only="true"
+                @reservation-clicked="showReservation"
+            ></table-card>
+          </template>
+
+        </div>
+
+      </template>
+
     </div>
     <!--    工具栏-->
     <div style="position: absolute;left:24px;bottom: 12px">
@@ -59,6 +79,41 @@
       </div>
 
     </div>
+    <v-card
+        color="white"
+        class="d-flex"
+        style="position: absolute;bottom: 36px;
+              box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.08);
+                right: 0;
+                margin: auto;
+                width: min-content;
+                border-radius: 8px;
+                          left: 0;max-width: calc(100vw - 684px);
+               ">
+      <v-item-group v-dragscroll v-model="currentSectionIndex"
+                    mandatory
+                    style="display: grid;
+                          grid-auto-columns: max-content;
+                          grid-gap: 8px;
+                          grid-auto-flow: column;overflow-x: scroll">
+        <v-item v-slot="{active,toggle}">
+          <v-card elevation="0" style="border-radius: 8px"
+                  :color="active?'primary':''"
+                  class="px-6 py-2 text-body-1" @click="toggle"
+                  :dark="active">全部
+          </v-card>
+        </v-item>
+        <v-item v-for="section of notTakeawaySection" :key="section.id+'categorytypes'"
+                v-slot="{active,toggle}">
+          <v-card :elevation="active?4:0"
+                  style="border-radius: 8px"
+                  :color="active?'primary':''"
+                  class="px-6 py-2 text-body-1" @click="toggle"
+                  :dark="active">{{ section.name }}
+          </v-card>
+        </v-item>
+      </v-item-group>
+    </v-card>
     <v-dialog max-width="400px" v-model="reservationDialog">
       <v-card color="#f6f6f6">
         <v-card-title>本桌后续预定</v-card-title>
@@ -127,7 +182,7 @@
 <script>
 import { dragscroll } from 'vue-dragscroll'
 import { defaultSection } from '@/oldjs/defaultConst'
-import { setTableLocation } from '@/oldjs/api'
+import { getSectionList, setTableLocation } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import debounce from 'lodash-es/debounce'
 import TableCard from '@/components/Table/TableCard'
@@ -180,41 +235,52 @@ export default {
     dragscroll
   },
   props: {
-    currentSection: {
-      default: () => defaultSection
-    },
     outSideTableList: Array,
     tableBackgroundColorFunc: Function,
     tableColorIsDark: Function,
-    returnTableKey: { default: 'tableName' }
-
+    returnTableKey: { default: 'tableName' },
+    additionalFilter: Function
   },
 
   computed: {
     tableWithInfo () {
-      return this.tableList
+      return this.tableInCurrentSection
+    },
+    tableInCurrentSection () {
+      const filter = t => {
+        let res = t.sectionId === this.currentSection?.id
+        if (this.currentSectionIndex === 0) {
+          res = true
+        }
+
+        if (this.additionalFilter) {
+          res = res && this.additionalFilter(t)
+        }
+        return res
+      }
+      return this.tableList.filter(filter)
+    },
+
+    currentSection () {
+      return this.currentSectionIndex !== 0 ? this.notTakeawaySection[this.currentSectionIndex - 1] ?? defaultSection : null
+    },
+    notTakeawaySection () {
+      return this.sectionList.filter(it => it.id !== '6')
     }
   },
   watch: {
     async outSideTableList (val) {
-      if (!this.editing) {
-        const reservations = groupBy(await getCurrentReservation(), 'tableId')
-        this.tableList = val.map(t => {
-          [t.x, t.w] = decodeNumber(t.cells[0]?.x);
-          [t.y, t.h] = decodeNumber(t.cells[0]?.y)
-          t.w = t.w > 50 ? t.w : 'auto'
-          t.h = t.h > 50 ? t.h : 'auto'
-          t.x = t.x ? t.x : 0
-          t.y = t.y ? t.y : 0
-          t.reservations = reservations[t.tableId] ?? []
-          return t
-        })
-      }
-    },
-    currentSection () {
-      this.tableList = []
-      this.$emit('need-refresh')
-      this.$emit('update:editing', false)
+      const reservations = groupBy(await getCurrentReservation(), 'tableId')
+      this.tableList = val.map(t => {
+        [t.x, t.w] = decodeNumber(t.cells[0]?.x);
+        [t.y, t.h] = decodeNumber(t.cells[0]?.y)
+        t.w = t.w > 50 ? t.w : 'auto'
+        t.h = t.h > 50 ? t.h : 'auto'
+        t.x = t.x ? t.x : 0
+        t.y = t.y ? t.y : 0
+        t.reservations = reservations[t.tableId] ?? []
+        return t
+      })
     },
     scale (val) {
       GlobalConfig.updateSettings('tableBluePrintScale', val)
@@ -229,7 +295,10 @@ export default {
       await cancelReservation(id)
       this.reservationDialog = false
     },
-
+    async refreshSectionList () {
+      this.sectionList = (await getSectionList())
+        .filter(it => it.tableCount > 0)
+    },
     showReservation (e) {
       this.activeTable = e
       this.reservationDialog = true
@@ -253,7 +322,6 @@ export default {
       }
     },
     shouldUpdateSize: debounce(submitTable, 300)
-
   },
   data: function () {
     return {
@@ -266,11 +334,14 @@ export default {
       y: 0,
       scale: GlobalConfig.tableBluePrintScale,
       reservationDialog: null,
-      activeTable: null
+      activeTable: null,
+      currentSectionIndex: 0,
+      sectionList: []
     }
   },
   async mounted () {
-    this.$nextTick(() => {
+    this.refreshSectionList()
+    this.$nextTick(async () => {
       this.height = this.$refs.blueprintContainer.clientHeight
       this.width = this.$refs.blueprintContainer.clientWidth - 50
     })

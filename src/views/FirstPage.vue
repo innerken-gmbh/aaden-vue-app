@@ -183,41 +183,11 @@
           overflow: scroll
 ">
           <table-blue-print
+              :out-side-table-list="tableList"
               @edit-table-clicked="showEditTableDialog"
               @table-clicked="openOrEnterTable"
-              @need-refresh="refreshTables"
-              :out-side-table-list="tableInCurrentSection"
-              :current-section="currentSection"/>
+          />
         </div>
-        <v-card
-            color="white"
-            class="d-flex"
-            style="position: fixed;bottom: 36px;
-              box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.08);
-                right: 0;
-                margin: auto;
-                width: min-content;
-                border-radius: 8px;
-                          left: 0;max-width: calc(100vw - 684px);
-                          z-index: 15;">
-          <v-item-group v-dragscroll v-model="currentSectionIndex"
-                        mandatory
-                        style="display: grid;
-                          grid-auto-columns: max-content;
-                          grid-gap: 8px;
-                          grid-auto-flow: column;overflow-x: scroll">
-
-            <v-item v-for="section of notTakeawaySection" v-bind:key="section.id+'categorytypes'"
-                    v-slot="{active,toggle}">
-              <v-card :elevation="active?4:0"
-                      style="border-radius: 8px"
-                      :color="active?'primary':''"
-                      class="px-6 py-2 text-body-1" @click="toggle"
-                      :dark="active">{{ section.name }}
-              </v-card>
-            </v-item>
-          </v-item-group>
-        </v-card>
 
         <div class="d-flex flex-column" style="
            position: absolute;
@@ -531,10 +501,9 @@ import GlobalConfig, {
 import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
 import TimeDisplay from '@/components/TimeDisplay'
-import { getSectionList, getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
+import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
 import Keyboard from '@/components/Keyboard'
 import TableBluePrint from '@/components/TableBluePrint'
-import { defaultSection } from '@/oldjs/defaultConst'
 import { mapGetters, mapMutations } from 'vuex'
 import TableListItem from '@/components/Table/TableListItem'
 import draggable from 'vuedraggable'
@@ -600,8 +569,6 @@ export default {
       Config: GlobalConfig,
       falsePrinterList: [],
       tableList: [],
-      sectionList: [],
-      currentSectionIndex: 0,
 
       currentView: parseInt(GlobalConfig.currentView),
 
@@ -649,9 +616,6 @@ export default {
         return s
       })
     },
-    tableInCurrentSection () {
-      return this.tableList.filter(t => t.sectionId === this.currentSection.id)
-    },
 
     activeList: function () {
       return this.tableList.filter(TableFixedSectionId.notTogoFilter)
@@ -670,12 +634,6 @@ export default {
 
     hasBadPrint () {
       return this.falsePrinterList ? this.falsePrinterList.length > 0 : false
-    },
-    notTakeawaySection () {
-      return this.sectionList.filter(it => it.id !== '6')
-    },
-    currentSection () {
-      return this.notTakeawaySection[this.currentSectionIndex] ?? defaultSection
     }
 
   },
@@ -829,10 +787,7 @@ export default {
         }
       }
     },
-    async refreshSectionList () {
-      this.sectionList = (await getSectionList())
-        .filter(it => it.tableCount > 0)
-    },
+
     async loadRestaurantInfo () {
       this.restaurantInfo = await loadRestaurantInfo()
       this.takeawayEnabled = this.restaurantInfo.currentlyOpening === '1'
@@ -857,7 +812,7 @@ export default {
   mounted: async function () {
     this.initPage()
     this.servantList = await getServantList()
-    await this.refreshSectionList()
+
     getRestaurantInfo()
 
     this.loadRestaurantInfo()
