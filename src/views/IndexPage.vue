@@ -60,6 +60,9 @@
             </v-card>
           </v-dialog>
           <v-tabs class="mx-2" show-arrows v-model="currentSectionIndex">
+            <v-tab>
+              全部
+            </v-tab>
             <template v-for="area of sectionList">
               <v-tab :key="area.id">
                 {{ area.name }}
@@ -68,10 +71,9 @@
           </v-tabs>
         </v-toolbar-items>
       </template>
-      <template #slot:right-slot>
+      <template #right-slot>
         <v-toolbar-items class="mx-2">
           <update-fragment></update-fragment>
-
           <v-btn @click="isEditing=!isEditing" :dark="isEditing">
             <v-icon>mdi-pencil-box</v-icon>
           </v-btn>
@@ -154,7 +156,7 @@
         </template>
       </v-card>
       <v-card else class="flex-grow-1 d-flex" style="position: relative">
-        <div style="height: calc(100vh - 48px);width: 100%;overflow: scroll">
+        <div v-if="currentSectionIndex!==0" style="height: calc(100vh - 48px);width: 100%;overflow: scroll">
           <table-blue-print
               @edit-table-clicked="showEditTableDialog"
               @table-clicked="openOrEnterTable"
@@ -164,8 +166,24 @@
               :current-table.sync="currentTable"
               :current-section="currentSection"/>
         </div>
+        <div v-else v-dragscroll style="display: flex;overflow-x: scroll">
+          <div v-for="a in realArea" :key="a.id">
+            <div class="pa-2 text-h5">
+              {{ a.areaName }}
+            </div>
+            <div
+                style="height: calc(100vh - 100px);display:grid;grid-template-rows: repeat(6,1fr);grid-auto-flow: column"
+                :style="{gridTemplateColumns:'repeat('+a.tables.length/6+',1fr)'}">
+              <div v-for="table in a.tables" :key="table.id"
+                   :style="{width:Config.gridSizeX,height:Config.gridSize}"
+              >
+                <table-card :table-info="table"></table-card>
+              </div>
+            </div>
+          </div>
+        </div>
         <v-card
-            v-if="showOtherOrder"
+            v-if="showOtherOrder&&currentSectionIndex!==0"
             elevation="2"
             class="flex-shrink-0"
             style="position: absolute;right: 0;overflow-y: scroll;height: calc(100vh - 48px); display: grid;
@@ -190,6 +208,7 @@
           </table-list-item>
         </v-card>
         <v-card @click="showOtherOrder=!showOtherOrder" elevation="1" tile
+                v-if="currentSectionIndex!==0"
                 class="d-flex align-center"
                 :style="{right:showOtherOrder?'204px':0}"
                 style="height: 48px;width: 32px;position: absolute;top:8px;background: white">
@@ -367,6 +386,7 @@ import { mapMutations, mapState } from 'vuex'
 import UpdateFragment from '@/components/fragments/UpdateFragment'
 import TableListItem from '@/components/Table/TableListItem'
 import draggable from 'vuedraggable'
+import TableCard from '@/components/Table/TableCard'
 
 const keyboardLayout =
     [
@@ -382,6 +402,7 @@ export default {
     dragscroll
   },
   components: {
+    TableCard,
     TableListItem,
     UpdateFragment,
     OpenTableForm,
@@ -500,7 +521,7 @@ export default {
     },
 
     currentSection () {
-      return this.sectionList[this.currentSectionIndex] ?? defaultSection
+      return this.currentSectionIndex === 0 ? defaultSection : this.sectionList[this.currentSectionIndex - 1] ?? defaultSection
     }
 
   },
@@ -604,6 +625,7 @@ export default {
     async refreshTables () {
       if (!this.useOrderView) {
         this.tableList = await getTableListWithCells()
+        this.areas = await getActiveTables()
       } else {
         this.areas = await getActiveTables()
       }
