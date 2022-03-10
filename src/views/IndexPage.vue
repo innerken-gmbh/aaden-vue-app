@@ -74,7 +74,7 @@
       <template #right-slot>
         <v-toolbar-items class="mx-2">
           <update-fragment></update-fragment>
-          <v-btn @click="isEditing=!isEditing" :dark="isEditing">
+          <v-btn v-if="currentSectionIndex!==0" @click="isEditing=!isEditing" :dark="isEditing">
             <v-icon>mdi-pencil-box</v-icon>
           </v-btn>
           <v-btn @click="saveCurrentSection()" color="primary" v-if="isEditing">
@@ -172,12 +172,14 @@
               {{ a.areaName }}
             </div>
             <div
-                style="height: calc(100vh - 100px);display:grid;grid-template-rows: repeat(6,1fr);grid-auto-flow: column"
+                style="height: calc(100vh - 100px);display:grid;grid-template-rows: repeat(6,1fr);
+                grid-auto-columns: max-content;
+                grid-auto-flow: column"
                 :style="{gridTemplateColumns:'repeat('+a.tables.length/6+',1fr)'}">
               <div v-for="table in a.tables" :key="table.id"
-                   :style="{width:Config.gridSizeX,height:Config.gridSize}"
+                   :style="{width:Config.gridSizeX+'px',height:Config.gridSize+'px'}"
               >
-                <table-card :table-info="table"></table-card>
+                <table-card @click="openOrEnterTable(table.tableName)" :table-info="table"></table-card>
               </div>
             </div>
           </div>
