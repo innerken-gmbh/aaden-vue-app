@@ -23,18 +23,6 @@
         {{ table.tableName }}
       </div>
       <template v-if="table.inUse">
-        <div :style="{
-             background:findConsumeTypeColorById(table.consumeType)}"
-             style="
-           position: absolute;
-           left: 8px;
-           bottom: 8px;
-
-           z-index:0;
-          width: 6px;
-         height: 6px;
-                border-radius: 4px;">
-        </div>
         <div class="d-flex flex-column align-center" style="z-index: 2">
           <div class="d-flex mt-1">
             <div v-for="info in table.infos" :key="info">
@@ -87,7 +75,6 @@
 </template>
 
 <script>
-import { findConsumeTypeById } from '@/oldjs/common'
 import { getColorLightness } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { defaultTable } from '@/api/restaurantInfoService'
@@ -103,12 +90,6 @@ export default {
   methods: {
     showReservationDialog () {
       this.$emit('reservation-clicked', this.tableInfo)
-    },
-    findConsumeTypeColorById (id) {
-      return findConsumeTypeById(id)?.color ?? this.$vuetify.theme.currentTheme.primary
-    },
-    findConsumeTypeById (id) {
-      return findConsumeTypeById(id).name
     },
     colorIsDark (color) {
       return getColorLightness(color) < 128

@@ -38,7 +38,10 @@
         </template>
       </template>
       <template v-else>
-        <div style="display: grid;grid-template-columns: repeat(12,1fr);grid-auto-rows: 108px;grid-gap: 8px">
+        <div
+
+            style="display: grid;grid-template-rows: repeat(auto-fill,108px);grid-auto-flow:column;
+            grid-auto-columns:96px;grid-gap: 8px;height: 100%">
           <template v-for="i in tableWithInfo">
             <table-card
                 :key="i.id"
@@ -54,10 +57,9 @@
         </div>
 
       </template>
-
     </div>
     <!--    工具栏-->
-    <div style="position: absolute;left:24px;bottom: 12px">
+    <div style="position: absolute;left:24px;bottom: 12px" v-if="currentSectionIndex!==0">
       <v-btn-toggle rounded>
         <v-btn @click="scale-=0.05">
           <v-icon>mdi-minus</v-icon>
@@ -270,7 +272,12 @@ export default {
   },
   watch: {
     async outSideTableList (val) {
-      const reservations = groupBy(await getCurrentReservation(), 'tableId')
+      let reservations
+      try {
+        reservations = groupBy(await getCurrentReservation(), 'tableId')
+      } catch (e) {
+        reservations = []
+      }
       this.tableList = val.map(t => {
         [t.x, t.w] = decodeNumber(t.cells[0]?.x);
         [t.y, t.h] = decodeNumber(t.cells[0]?.y)
@@ -281,6 +288,7 @@ export default {
         t.reservations = reservations[t.tableId] ?? []
         return t
       })
+      console.log(val)
     },
     scale (val) {
       GlobalConfig.updateSettings('tableBluePrintScale', val)

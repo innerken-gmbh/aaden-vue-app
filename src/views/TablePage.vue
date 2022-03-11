@@ -702,7 +702,7 @@ export default {
     return {
       keyboardMode: true,
       tab: null,
-      addressFormOpen: true,
+      addressFormOpen: false,
       consumeTypeList: [],
 
       keyboardLayout: GlobalConfig.topKeyboardKey.split(',').concat(keyboardLayout),

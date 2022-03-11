@@ -259,6 +259,7 @@ export default {
       this.$emit('update:menuShow', val)
     },
     menuShow: async function (val) {
+      console.log(val)
       this.realShow = val
       if (val) {
         this.initialMenu()

@@ -3,43 +3,45 @@
     <v-navigation-drawer
         dark color="primary"
         mini-variant
-        expand-on-hover
         permanent stateless
         style="z-index: 100" app>
       <v-card color="transparent" elevation="0" class="d-flex flex-column" style="height: 100vh">
-        <v-list nav dense>
-          <v-list-item>
-            <v-list-item-avatar>
-              <v-avatar class="ml-n3" @click="drawer=!drawer">
-                <v-icon>mdi-menu</v-icon>
-              </v-avatar>
-            </v-list-item-avatar>
-          </v-list-item>
-        </v-list>
-
-        <v-divider></v-divider>
+        <div class="flex-shrink-0 pa-2 py-4">
+          <div style="width: 100%">
+            <v-img
+                :src="require('@/assets/logoWhite.png')"/>
+          </div>
+        </div>
+        <div style="display: grid;grid-auto-flow: row;grid-gap: 12px">
+          <v-card color="transparent" elevation="0" @click="goHome" class="d-flex flex-column align-center py-2">
+            <div>
+              <v-icon>mdi-silverware</v-icon>
+            </div>
+            <div class="mt-2 text-caption">
+              {{ $t('点餐') }}
+            </div>
+          </v-card>
+          <v-card color="transparent" elevation="0" @click="jumpToSales" class="d-flex flex-column align-center py-2">
+            <div>
+              <v-icon>mdi-cash</v-icon>
+            </div>
+            <div class="mt-2 text-caption">
+              {{ $t('销售额') }}
+            </div>
+          </v-card>
+          <v-card color="transparent" elevation="0" @click="jumpToBoss" class="d-flex flex-column align-center py-2">
+            <div>
+              <v-icon>mdi-home-analytics</v-icon>
+            </div>
+            <div class="mt-2 text-caption">
+              {{ $t('CHEF') }}
+            </div>
+          </v-card>
+        </div>
 
         <v-list
             nav
         >
-          <v-list-item link @click="goHome">
-            <v-list-item-icon>
-              <v-icon>mdi-silverware</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title> {{ $t('点餐') }}</v-list-item-title>
-          </v-list-item>
-          <v-list-item link @click="jumpToSales">
-            <v-list-item-icon>
-              <v-icon>mdi-cash</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title> {{ $t('销售额') }}</v-list-item-title>
-          </v-list-item>
-          <v-list-item link @click="jumpToBoss">
-            <v-list-item-icon>
-              <v-icon>mdi-home-analytics</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title> {{ $t('CHEF') }}</v-list-item-title>
-          </v-list-item>
           <!--          <v-list-item link>-->
           <!--            <v-list-item-icon @click="jumpToVip">-->
           <!--              <v-icon>mdi-smart-card</v-icon>-->
@@ -50,19 +52,13 @@
         <v-spacer>
 
         </v-spacer>
-        <div class="d-flex  flex-shrink-0 align-center pa-2">
-          <div style="width: 70px">
-            <v-img width="100%"
-                   :src="require('@/assets/aadenLogo.png')"/>
-          </div>
-          <span class="text-no-wrap ml-2">v {{ version }}</span>
-        </div>
+        <span class="text-no-wrap text-caption ml-2">{{ version }}</span>
+
       </v-card>
 
     </v-navigation-drawer>
     <v-main app>
       <router-view></router-view>
-      <!--        下面是侧边栏的逻辑-->
     </v-main>
   </div>
 </template>
@@ -185,5 +181,9 @@ export default {
 
 .alert {
   background: red;
+}
+
+.navItem {
+
 }
 </style>

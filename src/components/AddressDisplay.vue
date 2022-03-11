@@ -8,7 +8,7 @@
         @address-submit="submit"
         :menu-show.sync="showMenu"
     >
-      <v-btn @click="deleteAddress">
+      <v-btn @click="deleteAddress" v-if="rawAddressInfo">
         <v-icon left>mdi-trash-can</v-icon>
         删除地址
       </v-btn>
