@@ -11,55 +11,33 @@
          :style="{
           transform:'scale('+scale+')'
        }">
-      <template v-if="currentSectionIndex!==0">
-        <template v-for="i in tableWithInfo">
-          <vue-draggable-resizable
-              :min-height="80"
-              :min-width="60"
-              :max-height="180"
-              :max-width="180"
-              :draggable="editing"
-              :resizable="editing"
-              :key="i.id"
-              :h="i.h" :w="i.w"
-              :x="i.x" :y="i.y"
-              @dragstop="(...args)=>onDrag(i,...args)"
-              @resizestop="(...args)=>onResize(i,...args)"
-              :snap="true"
-              :parent="true">
-            <table-card
-                @click="selectTable(i)"
-                :table-background-color-func="tableBackgroundColorFunc"
-                :table-color-is-dark="tableColorIsDark"
-                :table-info="i"
-                @reservation-clicked="showReservation"
-            ></table-card>
-          </vue-draggable-resizable>
-        </template>
-      </template>
-      <template v-else>
-        <div
-
-            style="display: grid;grid-template-rows: repeat(auto-fill,108px);grid-auto-flow:column;
-            grid-auto-columns:96px;grid-gap: 8px;height: 100%">
-          <template v-for="i in tableWithInfo">
-            <table-card
-                :key="i.id"
-                @click="selectTable(i)"
-                :table-background-color-func="tableBackgroundColorFunc"
-                :table-color-is-dark="tableColorIsDark"
-                :table-info="i"
-                :card-only="true"
-                @reservation-clicked="showReservation"
-            ></table-card>
-          </template>
-
-        </div>
-
+      <template v-for="i in tableWithInfo">
+        <vue-draggable-resizable
+            :min-height="80"
+            :min-width="60"
+            :max-height="180"
+            :max-width="180"
+            :draggable="editing"
+            :resizable="editing"
+            :key="i.id"
+            :h="i.h" :w="i.w"
+            :x="i.x" :y="i.y"
+            @dragstop="(...args)=>onDrag(i,...args)"
+            @resizestop="(...args)=>onResize(i,...args)"
+            :snap="true"
+            :parent="true">
+          <table-card
+              @click="selectTable(i)"
+              :table-background-color-func="tableBackgroundColorFunc"
+              :table-color-is-dark="tableColorIsDark"
+              :table-info="i"
+              @reservation-clicked="showReservation"
+          ></table-card>
+        </vue-draggable-resizable>
       </template>
     </div>
     <!--    工具栏-->
-    <div style="position: absolute;left:24px;bottom: 12px" v-if="currentSectionIndex!==0">
+    <div style="position: absolute;left:24px;bottom: 12px">
       <v-btn-toggle rounded>
         <v-btn @click="scale-=0.05">
           <v-icon>mdi-minus</v-icon>
@@ -252,7 +230,7 @@ export default {
       const filter = t => {
         let res = t.sectionId === this.currentSection?.id
         if (this.currentSectionIndex === 0) {
-          res = true
+          res = t.sectionId !== '6'
         }
 
         if (this.additionalFilter) {
@@ -281,6 +259,7 @@ export default {
       this.tableList = val.map(t => {
         [t.x, t.w] = decodeNumber(t.cells[0]?.x);
         [t.y, t.h] = decodeNumber(t.cells[0]?.y)
+
         t.w = t.w > 50 ? t.w : 'auto'
         t.h = t.h > 50 ? t.h : 'auto'
         t.x = t.x ? t.x : 0
