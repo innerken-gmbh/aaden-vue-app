@@ -122,6 +122,7 @@ export const DefaultBuffetSetting = {
   maxDineTimeMin: 120,
   childRoundDishCount: 3
 }
+
 export const DefaultAddressInfo = {
   firstName: '',
   lastName: '',
