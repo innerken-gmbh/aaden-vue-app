@@ -234,7 +234,7 @@ export default {
   computed: {
     totalDiscount () {
       return this.discountList.reduce((arr, i) => {
-        arr += parseFloat(i.orderInfo.value)
+        arr += parseFloat(i?.orderInfo?.value ?? 0)
         return arr
       }, 0)
     },
