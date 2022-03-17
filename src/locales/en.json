@@ -279,5 +279,7 @@
   "金额或百分比": "Amount or percentage",
   "销售额": "Sales",
   "验证错误": "Validation error",
-  "重置所有桌子": ""
+  "重置所有桌子": "Reset table-position",
+  "All": "All",
+  "TOGO": "Delivery"
 }

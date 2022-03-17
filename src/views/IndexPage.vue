@@ -61,7 +61,7 @@
           </v-dialog>
           <v-tabs class="mx-2" show-arrows v-model="currentSectionIndex">
             <v-tab>
-              全部
+              {{ $t('All') }}
             </v-tab>
             <template v-for="area of sectionList">
               <v-tab :key="area.id">
@@ -523,7 +523,9 @@ export default {
     },
 
     currentSection () {
-      return this.currentSectionIndex === 0 ? defaultSection : this.sectionList[this.currentSectionIndex - 1] ?? defaultSection
+      const res = this.currentSectionIndex === 0 ? defaultSection : this.sectionList[this.currentSectionIndex - 1] ?? defaultSection
+
+      return res
     }
 
   },
@@ -745,6 +747,8 @@ export default {
     async refreshSectionList () {
       this.sectionList = (await getSectionList())
         .filter(it => it.id !== '6' && it.tableCount > 0)
+
+      console.log('sectionList', this.sectionList)
     },
     async checkTse () {
       this.tseStatus = true
