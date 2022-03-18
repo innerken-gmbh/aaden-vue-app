@@ -450,7 +450,7 @@ export default {
       tableList: [],
       sectionList: [],
       currentTable: null,
-      currentSectionIndex: GlobalConfig.currentSection,
+      currentSectionIndex: 0,
       salesDialogShow: false,
       memberCardDialogShow: false,
       memberCardInfo: {
@@ -479,7 +479,7 @@ export default {
       GlobalConfig.updateSettings('showRightMenu', val)
     },
     currentSectionIndex: function (val) {
-      GlobalConfig.updateSettings('currentSectionIndex', val)
+      GlobalConfig.updateSettings('currentSection', val)
     },
     showOtherOrder: function (val) {
       GlobalConfig.updateSettings('showOtherOrder', val)
@@ -779,6 +779,9 @@ export default {
 
     this.servantList = await getServantList()
     await this.refreshSectionList()
+    this.$nextTick(() => {
+      this.currentSectionIndex = parseInt(GlobalConfig.currentSection)
+    })
     if (GlobalConfig.defaultPassword) {
       this.currentServant = this.findServant(GlobalConfig.defaultPassword)
     }
