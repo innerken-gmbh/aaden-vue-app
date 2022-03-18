@@ -295,7 +295,7 @@
         <v-spacer></v-spacer>
         <div v-if="!isEditing">
           <v-card class="mt-2 pa-2">
-            <div class="pa-2">{{ $t("请输入桌号") }}</div>
+            <div class="pa-2">{{ $t('请输入桌号') }}</div>
             <v-text-field
                 class="ma-2"
                 hide-details
@@ -450,7 +450,7 @@ export default {
       tableList: [],
       sectionList: [],
       currentTable: null,
-      currentSectionIndex: 0,
+      currentSectionIndex: GlobalConfig.currentSection,
       salesDialogShow: false,
       memberCardDialogShow: false,
       memberCardInfo: {
@@ -477,6 +477,9 @@ export default {
     },
     showRightMenu: function (val) {
       GlobalConfig.updateSettings('showRightMenu', val)
+    },
+    currentSectionIndex: function (val) {
+      GlobalConfig.updateSettings('currentSectionIndex', val)
     },
     showOtherOrder: function (val) {
       GlobalConfig.updateSettings('showOtherOrder', val)
