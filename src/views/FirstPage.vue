@@ -61,7 +61,11 @@
       </v-item-group>
 
       <template #right>
-        <div style="min-width: 200px" class="d-flex justify-end">
+
+        <div style="min-width: 200px" class="d-flex align-center justify-end">
+          <div>
+            <time-display></time-display>
+          </div>
           <v-btn icon elevation="0" @click="reprintAll" v-hide-simple v-if="hasBadPrint" color="error">
             <v-icon>mdi-printer-off</v-icon>
           </v-btn>

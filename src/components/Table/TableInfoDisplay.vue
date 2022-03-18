@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column" style="width: 24px;overflow: hidden"
+  <div class="d-flex flex-column" style="width: 36px;overflow: hidden"
        :class="metaData.classFunc ? metaData.classFunc(table[infoKey]) :''">
     <template v-if="metaData.icon">
       <v-icon small>{{ metaData.icon }}</v-icon>
