@@ -20,6 +20,7 @@
   "main": "background.js",
   "dependencies": {
     "aaden-base-model": "^0.1.115",
+    "biewangle": "^1.0.11",
     "core-js": "^3.19.2",
     "dayjs": "^1.10.7",
     "hillo": "^1.1.23",

@@ -118,7 +118,7 @@
                   :raw-address-info="realAddressInfo"/>
               <v-spacer></v-spacer>
               <div class="d-flex align-center flex-grow-0 mr-n2" style="max-width: 40%">
-                <v-btn icon elevation="0" class="mr-4">
+                <v-btn icon elevation="0" class="mr-4" disabled>
                   <v-icon>mdi-swap-horizontal</v-icon>
                 </v-btn>
 
@@ -139,7 +139,7 @@
             </div>
             <v-divider class="mb-2"></v-divider>
             <v-card v-if="!keyboardMode"
-                    class="mb-4 d-flex"
+                    class="d-flex"
                     elevation="0"
                     color="transparent"
             >
@@ -178,8 +178,9 @@
               </v-card>
 
             </v-card>
+            <v-divider class="my-2"></v-divider>
             <v-card v-if="!keyboardMode" v-dragscroll color="transparent" elevation="0"
-                    class="dragscroll dishCardListContainer flex-grow-1">
+                    class="dragscroll dishCardListContainer flex-grow-1" style=";position: relative">
               <div v-if="!activeCategoryId">
                 <v-item-group
                     class="dishCardList">
@@ -209,35 +210,76 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                   </template>
                 </v-item-group>
               </div>
-              <div class="dishCardList" v-if="activeCategoryId">
-                <v-card elevation="0" v-if="activeCategoryId"
-                        style="width: 100%;height: 112px;
+              <template v-if="activeCategoryId">
+                <div style="display: grid;grid-template-columns: 1fr 108px;grid-gap: 24px">
+
+                  <div class="dishCardList">
+                    <v-card elevation="0" v-if="activeCategoryId"
+                            style="width: 100%;height: 112px;
                         color: #ff8c50;
                         border-radius: 12px"
-                        @click="activeCategoryId=null" class="d-flex align-center"
-                >
-                  <div style="width: 100%" class="d-flex flex-column justify-center align-center flex-wrap">
-                    <v-icon large color="#ff8c50">mdi-menu-open</v-icon>
-                    <div>{{ $t('return') }}</div>
+                            @click="activeCategoryId=null" class="d-flex align-center"
+                    >
+                      <div style="width: 100%" class="d-flex flex-column justify-center align-center flex-wrap">
+                        <v-icon large color="#ff8c50">mdi-menu-open</v-icon>
+                        <div>{{ $t('return') }}</div>
+                      </div>
+                    </v-card>
+                    <template v-for="dish of filteredDish">
+                      <dish-block
+                          v-ripple
+                          :key="'dish'+dish.code"
+                          :code="dish.code"
+                          :count="dish.count"
+                          :display-color="dish.displayColor"
+                          :dish-name="dish.dishName"
+                          :foreground="dish.foreground"
+                          :font-size="Config.dishBlockFontSize"
+                          :have-mod="dish.haveMod"
+                          :is-free="dish.isFree"
+                          :price="dish.price"
+                          @click-tune="showModification(dish,1)"
+                          @click="orderOneDish(dish.code)"/>
+                    </template>
                   </div>
-                </v-card>
-                <template v-for="dish of filteredDish">
-                  <dish-block
-                      v-ripple
-                      :key="'dish'+dish.code"
-                      :code="dish.code"
-                      :count="dish.count"
-                      :display-color="dish.displayColor"
-                      :dish-name="dish.dishName"
-                      :foreground="dish.foreground"
-                      :font-size="Config.dishBlockFontSize"
-                      :have-mod="dish.haveMod"
-                      :is-free="dish.isFree"
-                      :price="dish.price"
-                      @click-tune="showModification(dish,1)"
-                      @click="orderOneDish(dish.code)"/>
-                </template>
-              </div>
+                  <div></div>
+
+                </div>
+                <div v-dragscroll style="width: 108px;height: calc(100vh - 192px);overflow: hidden;position: fixed;right: 12px;top: 132px">
+                  <v-item-group
+
+                      style="display: grid;grid-auto-columns: 108px;grid-auto-rows: 48px;grid-auto-flow: row;grid-gap: 4px">
+                    <template v-for="category of filteredC">
+                      <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
+                        <v-card elevation="0"
+                                :dark="activeCategoryId===category.id"
+                                :color="activeCategoryId===category.id?'primary':'white'"
+                                style="
+                      position: relative;
+                      width: 100%;
+                      height: 48px;
+                      font-size: 16px;
+                        white-space: nowrap;
+  border-radius: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;"
+                                class="d-flex align-center justify-center text-center pa-2"
+                                @click="changeCategory(category.id,toggle)">
+                          <div style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis">
+                            {{ category.name }}
+                          </div>
+
+                          <div style="position: absolute;width: 40%;bottom: 0;
+left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
+                               :style="{background:category.color}"></div>
+                        </v-card>
+                      </v-item>
+                    </template>
+                  </v-item-group>
+                </div>
+
+              </template>
+
               <div style="width: 100%;height: 160px"></div>
             </v-card>
             <div style="display: grid;grid-template-columns: 1fr 360px;height: calc(100vh - 130px);grid-gap: 16px"
@@ -651,6 +693,7 @@ import BuffetStatusCard from '@/components/fragments/BuffetStatusCard'
 import i18n from '../i18n'
 import dayjs from 'dayjs'
 import { TableFilter } from '@/api/tableService'
+import { Remember } from '@/api/remember'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -700,7 +743,7 @@ export default {
   },
   data: function () {
     return {
-      keyboardMode: true,
+      keyboardMode: Remember.keyboardMode,
       tab: null,
       addressFormOpen: false,
       consumeTypeList: [],
@@ -1562,6 +1605,9 @@ export default {
     },
     refresh: function () {
       this.realInitial()
+    },
+    keyboardMode: function (val) {
+      Remember.keyboardMode = val
     },
     realConsumeTypeId (val) {
       console.log('I change')

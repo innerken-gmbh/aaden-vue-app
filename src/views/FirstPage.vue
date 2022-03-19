@@ -9,7 +9,7 @@
         </v-chip>
       </div>
       <v-spacer></v-spacer>
-      <v-item-group mandatory v-model="currentView" style="width: max-content">
+      <v-item-group mandatory v-model="currentView" style="width: max-content" class="align-self-center">
         <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
           <v-item #default="{active,toggle}">
             <div
@@ -521,6 +521,7 @@ import TrailingNumber from '@/components/widget/TrailingNumber'
 import Reservation from '@/components/fragments/ReservationFragment'
 import TakeawayOrderItem from '@/components/Table/TakeawayOrderItem'
 import { acceptOrder, loadRestaurantInfo, syncTakeawaySettingToCloud } from '@/api/api'
+import { Remember } from '@/api/remember'
 
 const keyboardLayout =
     [
@@ -575,7 +576,7 @@ export default {
       falsePrinterList: [],
       tableList: [],
 
-      currentView: parseInt(GlobalConfig.currentView),
+      currentView: parseInt(Remember.currentView),
 
       showOtherOrder: GlobalConfig.showOtherOrder,
       tableInfoDisplayOrder: GlobalConfig.getTableInfoKeys(),
@@ -585,8 +586,7 @@ export default {
   },
   watch: {
     currentView (val) {
-      console.log(this.currentView)
-      GlobalConfig.updateSettings('currentView', val)
+      Remember.currentView = val
     },
     tableInfoDisplayOrder: function (val) {
       GlobalConfig.updateSettings('tableInfoDisplayOrder', val)
