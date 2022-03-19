@@ -236,7 +236,7 @@
             grid-gap: 8px;
             width: 100%;
                 ">
-                <v-card @click="takeawayClicked" height="72px" elevation="0" color="grey lighten-4"
+                <v-card  v-if="takeawayList.length>0" @click="takeawayClicked" height="72px" elevation="0" color="grey lighten-4"
                         class="pa-2 d-flex align-center">
                   <v-icon left>mdi-plus</v-icon>
                   <h4>新增</h4>
