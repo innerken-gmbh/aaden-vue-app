@@ -187,6 +187,7 @@
           overflow: scroll
 ">
           <table-blue-print
+              @need-refresh="refreshTables"
               :out-side-table-list="tableList"
               @edit-table-clicked="showEditTableDialog"
               @table-clicked="openOrEnterTable"

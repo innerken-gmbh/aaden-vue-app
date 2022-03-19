@@ -168,42 +168,50 @@ import debounce from 'lodash-es/debounce'
 import TableCard from '@/components/Table/TableCard'
 import { cancelReservation, getCurrentReservation, moveReservation } from '@/api/ReservationService'
 import { groupBy } from 'lodash-es'
+import uniqBy from 'lodash-es/uniqBy'
+import IKUtils from 'innerken-js-utils'
 
-const limit = 10000
-
-function encodeTwoNumber (a, b) {
-  return a * limit + b
-}
-
-function decodeNumber (number) {
-  return [Math.floor(number / limit), number % limit]
-}
-
-async function refreshAllTablesPosition (listOfTable, containerHeight, containerWidth) {
+async function refreshAllTablesPosition (listOfTable, containerHeight, containerWidth, sectionId) {
+  IKUtils.showLoading(true)
   const defaultWidth = GlobalConfig.defaultTileWidth
   const defaultHeight = GlobalConfig.defaultTileHeight
   const rowCount = Math.floor(containerHeight / defaultHeight)
-  const colCount = Math.floor(containerWidth / defaultWidth)
+  const colCount = Math.floor((containerWidth - 300) / defaultWidth)
   console.log(rowCount, colCount)
   let count = 0
   for (const table of listOfTable) {
     const currentRow = Math.floor(count / colCount)
     const currentCol = count % colCount
     console.log(currentCol, currentRow)
-    await submitTable(table, currentCol * defaultWidth, currentRow * defaultHeight, defaultWidth, defaultHeight)
+    await submitTable(table, currentCol * defaultWidth, currentRow * defaultHeight, defaultWidth - 12, defaultHeight - 12, sectionId)
     count++
   }
+  IKUtils.toast()
 }
 
-async function submitTable (table, x, y, w, h) {
+async function submitTable (table, x, y, w, h, currentSectionId) {
   w = w ?? (table.w !== 'auto' ? table.w : 50)
   h = h ?? (table.h !== 'auto' ? table.h : 50)
+  currentSectionId = currentSectionId + ''
 
-  table.cells = [{
-    tableId: table.id,
-    x: encodeTwoNumber(x, w),
-    y: encodeTwoNumber(y, h)
-  }]
+  const newCell = Object.assign(table.cells.find(c => c.sectionId === currentSectionId) ?? {
+    sectionId: currentSectionId
+  }, {
+    x: x,
+    y: y,
+    w: w,
+    h: h
+  })
+  const supplyMentSectionId = currentSectionId === '0' ? table.sectionId : '0'
+  console.log(supplyMentSectionId, table, currentSectionId)
+  table.cells = uniqBy([table.cells.filter(c => c.sectionId && c.sectionId !== currentSectionId), newCell].flat().map(c => {
+    c.sectionId = c.sectionId ?? supplyMentSectionId
+    return c
+  }), function (c) {
+    return c.sectionId
+  }
+  )
+  console.log(table.cells)
 
   await setTableLocation(table)
 }
@@ -240,9 +248,8 @@ export default {
       }
       return this.tableList.filter(filter)
     },
-
     currentSection () {
-      return this.currentSectionIndex !== 0 ? this.notTakeawaySection[this.currentSectionIndex - 1] ?? defaultSection : null
+      return this.currentSectionIndex !== 0 ? this.notTakeawaySection[this.currentSectionIndex - 1] ?? defaultSection : { id: 0 }
     },
     notTakeawaySection () {
       return this.sectionList.filter(it => it.id !== '6')
@@ -257,9 +264,16 @@ export default {
         reservations = []
       }
       this.tableList = val.map(t => {
-        [t.x, t.w] = decodeNumber(t.cells[0]?.x);
-        [t.y, t.h] = decodeNumber(t.cells[0]?.y)
-
+        const cell = t.cells.find(c => c.sectionId === this.currentSection.id) ?? t.cells?.[0] ?? {
+          x: 0,
+          y: 0,
+          w: 50,
+          h: 50
+        }
+        t.x = parseInt(cell.x)
+        t.y = parseInt(cell.y)
+        t.w = parseInt(cell.w)
+        t.h = parseInt(cell.h)
         t.w = t.w > 50 ? t.w : 'auto'
         t.h = t.h > 50 ? t.h : 'auto'
         t.x = t.x ? t.x : 0
@@ -271,6 +285,9 @@ export default {
     },
     scale (val) {
       GlobalConfig.updateSettings('tableBluePrintScale', val)
+    },
+    currentSectionIndex (val) {
+      this.$emit('need-refresh')
     }
   },
   methods: {
@@ -291,15 +308,16 @@ export default {
       this.reservationDialog = true
     },
     async refreshTables () {
-      await refreshAllTablesPosition(this.tableList, this.height, this.width)
+      await refreshAllTablesPosition(this.tableList, this.height, this.width, this.currentSection.id)
+      this.$emit('need-refresh')
     },
     debounce,
-    onResize: function (table, x, y, width, height) {
-      this.shouldUpdateSize(table, x, y, width, height)
+    onResize: function (table, x, y, width, height, sectionId) {
+      this.shouldUpdateSize(table, x, y, width, height, this.currentSection.id)
     },
     onDrag: function (table, x, y) {
       console.log(table, x, y, 'drag')
-      this.shouldUpdateSize(table, x, y)
+      this.shouldUpdateSize(table, x, y, table.w, table.h, this.currentSection.id)
     },
     selectTable (table) {
       if (!this.editing) {

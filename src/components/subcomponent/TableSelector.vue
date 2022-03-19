@@ -12,6 +12,7 @@
             :additional-filter="tableFilter"
             :out-side-table-list="tableList"
             :editing="false"
+            @need-refresh="initial"
             @table-clicked="tableSelected"
         />
         <v-card
