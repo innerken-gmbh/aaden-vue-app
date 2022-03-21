@@ -80,7 +80,7 @@
           <v-card elevation="0" style="border-radius: 8px"
                   :color="active?'primary':''"
                   class="px-6 py-2 text-body-1" @click="toggle"
-                  :dark="active">全部
+                  :dark="active">{{ $t('全部') }}
           </v-card>
         </v-item>
         <v-item v-for="section of notTakeawaySection" :key="section.id+'categorytypes'"

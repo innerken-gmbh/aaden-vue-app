@@ -282,9 +282,9 @@
 
     </v-card>
     <dialog-with-keyboard @close="showNumberKeyboard=false" :show="showNumberKeyboard"
-                          @submit="addCashRecord" title='请输入支出金额，如果是收入就输入负数'
+                          @submit="addCashRecord" :title=" $t('请输入支出金额，如果是收入就输入负数')"
                           :keys="keyboardNumber">
-      <v-text-field placeholder="如果需要，请点击这里用键盘输入备注" v-model="cashNote"></v-text-field>
+      <v-text-field :placeholder=" $t('如果需要，请点击这里用键盘输入备注')" v-model="cashNote"></v-text-field>
     </dialog-with-keyboard>
   </v-dialog>
 </template>

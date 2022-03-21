@@ -70,7 +70,7 @@
                   <v-icon left>
                     mdi-trash-can
                   </v-icon>
-                  清空购物车
+                  {{ $t('清空购物车') }}
                 </v-btn>
               </template>
               <template>
@@ -173,7 +173,7 @@
                       class="d-flex justify-center align-center px-4">
 
                 <v-icon left>mdi-keyboard</v-icon>
-                键盘和菜号
+                {{ $t('键盘和菜号') }}
 
               </v-card>
 
@@ -290,7 +290,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                 <div v-if="searchDish.length>0" style="overflow: hidden"
                      class="flex-shrink-1 blue lighten-5">
                   <v-card elevation="0" class="pa-1 py-3">
-                    搜索结果
+                    {{ $t('搜索结果') }}
                   </v-card>
                   <template v-for="(dish,index) in searchDish">
                     <v-card @click="searchDishClick(dish.code)" elevation="0"
@@ -317,7 +317,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                     <div>
                       <v-icon color="grey lighten-1" x-large>mdi-keyboard</v-icon>
                     </div>
-                    <div class="text--disabled">请使用键盘或直接在右侧输入</div>
+                    <div class="text--disabled">{{ $t('请使用键盘或直接在右侧输入') }}</div>
                   </div>
                 </div>
 
@@ -331,12 +331,12 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                         class="d-flex align-center px-4">
 
                   <v-icon left>mdi-menu</v-icon>
-                  查看分类菜单
+                  {{ $t('查看分类菜单') }}
                 </v-card>
                 <div class="pa-2 text-h6">
                   <template v-if="displayInput">
-                    {{ Config.numberFirst ? '数量 * 菜号' : '菜号 * 数量' }}<br>
-                    正在输入...
+                    {{ Config.numberFirst ? $t('数量 * 菜号') : $t('菜号 * 数量') }}<br>
+                    {{ $t('正在输入...') }}
                   </template>
                   <template v-else>
                     {{ feedback }}
@@ -348,7 +348,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                       hide-details
                       solo-inverted
                       class="my-2"
-                      :placeholder="Config.numberFirst?'数量 * 菜号':'菜号 * 数量'"
+                      :placeholder="Config.numberFirst?$t('数量 * 菜号'):$t('菜号 * 数量')"
                       height="96px"
                       style="font-size: 36px"
                       ref="ins"
@@ -575,8 +575,8 @@ left: 350px"
                 </template>
               </div>
               <div class="text-caption text--secondary" style="font-size: 14px !important;">
-                按Enter(回车键)确定<br>
-                按ESC键或者退格键关闭此窗口
+                {{ $t('按Enter(回车键)确定') }}<br>
+                {{ $t('按ESC键或者退格键关闭此窗口') }}
               </div>
             </v-card>
           </v-fade-transition>

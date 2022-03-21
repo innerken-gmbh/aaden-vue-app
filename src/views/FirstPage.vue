@@ -4,7 +4,7 @@
       <div style="min-width: 200px" class="d-flex">
         <div v-if="restaurantInfo" class="text-h6 font-weight-bold">{{ restaurantInfo.name }}</div>
         <v-chip label color="white" class="ml-2 d-flex align-center">
-          <span>正在营业</span>
+          <span>{{ $t('正在营业') }}</span>
           <v-icon right color="success">mdi-checkbox-marked-circle</v-icon>
         </v-chip>
       </div>
@@ -18,7 +18,7 @@
                 :class="active?' active':' text--disabled'"
             >
               <v-icon left>mdi-silverware</v-icon>
-              堂食
+              {{ $t('堂食') }}
               <trailing-number>
                 {{ activeList.length }}
               </trailing-number>
@@ -31,7 +31,7 @@
                 :class="active?' active':' text--disabled'"
             >
               <v-icon left>mdi-truck-fast</v-icon>
-              外卖
+              {{ $t('外卖') }}
               <trailing-number>
                 {{ takeawayList.length }}
               </trailing-number>
@@ -44,7 +44,7 @@
                 :class="active?' active':' text--disabled'"
             >
               <v-icon left>mdi-account</v-icon>
-              <span style="padding: 2px 4px">跑堂订单</span>
+              <span style="padding: 2px 4px">{{ $t('跑堂订单') }}</span>
             </div>
           </v-item>
           <v-item #default="{active,toggle}">
@@ -54,7 +54,7 @@
                 :class="active?' active':' text--disabled'"
             >
               <v-icon left>mdi-calendar</v-icon>
-              预定
+              {{ $t('预定') }}
             </div>
           </v-item>
         </div>
@@ -220,7 +220,7 @@
                 <template v-else>
                   <v-btn @click.stop="takeawayClicked" elevation="0" color="success">
                     <v-icon left>mdi-plus</v-icon>
-                    新增
+                    {{ $t('新增') }}
                   </v-btn>
                 </template>
               </v-card>
@@ -229,17 +229,17 @@
                   v-dragscroll
                   class="flex-shrink-0 mt-2 pb-2"
                   style="
-             display: grid;
-             max-height: calc(100vh - 120px);
-            grid-auto-columns: auto;
-            overflow-y: scroll;
-            grid-gap: 8px;
-            width: 100%;
+                     display: grid;
+                     max-height: calc(100vh - 120px);
+                     grid-auto-columns: auto;
+                     overflow-y: scroll;
+                     grid-gap: 8px;
+                     width: 100%;
                 ">
                 <v-card  v-if="takeawayList.length>0" @click="takeawayClicked" height="72px" elevation="0" color="grey lighten-4"
                         class="pa-2 d-flex align-center">
                   <v-icon left>mdi-plus</v-icon>
-                  <h4>新增</h4>
+                  <h4>{{ $t('新增') }}</h4>
                 </v-card>
                 <table-gird-item
                     v-for="table in takeawayList"
@@ -264,7 +264,7 @@
                   style="border-radius: 12px"
                   width="100%"
                   height="calc(100vh - 96px)">
-            <div class="text-subtitle-2">未接单
+            <div class="text-subtitle-2">{{ $t('未接单') }}
               <trailing-number>
                 {{ notAccepted.length }}
               </trailing-number>
@@ -286,7 +286,7 @@
                   class="pa-4 d-flex flex-column"
                   style="border-radius: 12px"
                   height="calc(100vh - 96px)">
-            <div class="text-subtitle-2">已接单
+            <div class="text-subtitle-2">{{ $t('已接单') }}
               <trailing-number>
                 {{ accepted.length }}
               </trailing-number>
@@ -306,7 +306,7 @@
                   class="pa-4"
                   style="border-radius: 12px"
                   height="calc(100vh - 96px)">
-            <div class="text-subtitle-2">可取走
+            <div class="text-subtitle-2">{{ $t('可取走') }}
               <trailing-number>0</trailing-number>
             </div>
 
@@ -319,7 +319,7 @@
                     class="pa-4">
               <div class="text-subtitle-2 d-flex align-center">
                 <v-icon class="mr-2">mdi-truck-fast</v-icon>
-                新增外卖订单
+                {{ $t('新增外卖订单') }}
                 <v-spacer></v-spacer>
                 <v-icon>mdi-plus</v-icon>
               </div>
@@ -330,7 +330,7 @@
                     elevation="0"
                     style="border-radius: 12px"
                     class="pa-4 mt-4">
-              <div class="text-subtitle-2 d-flex">外卖网站设置
+              <div class="text-subtitle-2 d-flex">{{ $t('外卖网站设置') }}
                 <v-spacer></v-spacer>
                 <template v-if="loading">
                   <v-progress-circular indeterminate></v-progress-circular>
@@ -339,7 +339,7 @@
                   <v-chip label color="white" small class="ml-2 d-flex align-center">
                     <v-icon left color="success">mdi-checkbox-marked-circle</v-icon>
                     <span>
-                  已经同步
+                  {{ $t('已经同步') }}
                              </span>
                   </v-chip>
                 </template>
@@ -347,9 +347,9 @@
               <div class="text-body-1">
                 <div class="py-2 mt-4 d-flex align-center">
                   <div>
-                    接受外部订单
+                    {{ $t('接受外部订单') }}
                     <div class="caption">
-                      关闭此选项的话，外卖网站会暂时关闭
+                      {{ $t('关闭此选项的话，外卖网站会暂时关闭') }}
                     </div>
                   </div>
 
@@ -374,7 +374,7 @@
                     elevation="0"
                     style="border-radius: 12px"
                     class="pa-4 flex-grow-1 mt-4">
-              <div class="text-subtitle-2">非今日订单
+              <div class="text-subtitle-2">{{ $t('非今日订单') }}
                 <trailing-number>
                   0
                 </trailing-number>
@@ -463,8 +463,8 @@
         <h1>{{ buffer }}</h1>
       </div>
       <div class="text-caption text--secondary" style="font-size: 14px !important;">
-        按Enter(回车键)确定<br>
-        按ESC键或者退格键关闭此窗口
+        {{ $t('按Enter(回车键)确定') }}<br>
+        {{ $t('按ESC键或者退格键关闭此窗口') }}
       </div>
 
     </v-card>
