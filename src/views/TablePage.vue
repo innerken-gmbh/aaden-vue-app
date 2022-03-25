@@ -491,8 +491,8 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
       <template v-if="splitOrderListModel.list.length>0">
         <div class="bottomCart surface d-flex justify-end"
              style="background: rgba(0,0,0,0.4);  top: 0;
-z-index: 50;
-left: 350px"
+                    z-index: 50;
+                    left: 350px"
              v-cloak
              @click="removeAllFromSplitOrder"
              id="splitOrderContainer">
@@ -518,7 +518,6 @@ left: 350px"
               </v-btn>
               <v-btn x-large class="  mt-1"
                      v-on:click="dishesChangeTable">
-                <!--                     v-on:click="dishesChangeTable()">-->
                 <v-icon left>mdi-inbox-arrow-up</v-icon>
                 {{ $t('tableChange') }}
               </v-btn>
@@ -596,7 +595,6 @@ left: 350px"
           <v-card-actions>
             <v-spacer/>
             <v-btn class="primary" @click="addExtraDish">{{ $t('确定') }}</v-btn>
-
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -607,6 +605,9 @@ left: 350px"
           :total-price="tableDetailInfo.order.totalPrice"
           :initial-u-i="initialUI"
           ref="discount"
+          :orderId="tableDetailInfo.order.id"
+          :dishesItems="splitOrderListModel.list"
+          :useDishesDiscount="useDishesDiscount"
           @visibility-changed="(val)=>this.discountModelShow=val"
       />
 
@@ -667,7 +668,7 @@ import hillo from 'hillo'
 import {
   checkOut,
   deleteDishes,
-  dishesSetDiscount,
+  // dishesSetDiscount,
   getColorLightness,
   optionalAuthorize,
   printZwichenBon
@@ -746,6 +747,7 @@ export default {
   },
   data: function () {
     return {
+      useDishesDiscount: false,
       keyboardMode: Remember.keyboardMode,
       tab: null,
       addressFormOpen: false,
@@ -941,9 +943,7 @@ export default {
           }
           this.discountRatio = discountRatio
         }
-      } catch (e) {
-
-      }
+      } catch (e) {}
     },
     discountShow () {
       optionalAuthorize(() => {
@@ -1068,7 +1068,14 @@ export default {
     },
 
     dishesSetDiscount: function () {
-      dishesSetDiscount(this.tableDetailInfo.order.id, this.splitOrderListModel.list, this.initialUI)
+      // this.useDishesDiscount = true
+
+      optionalAuthorize(() => {
+        this.discountModelShow = true
+        this.useDishesDiscount = true
+      }, '', !GlobalConfig.discountWithoutPassword)
+
+      // dishesSetDiscount(this.tableDetailInfo.order.id, this.splitOrderListModel.list, this.initialUI)
     },
 
     printZwichenBon: function () {
