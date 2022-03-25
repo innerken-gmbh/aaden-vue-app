@@ -26,7 +26,7 @@ import hillo from 'hillo'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
 import Keyboard from '@/components/Keyboard'
-import { popAuthorize } from '@/oldjs/common'
+import { popAuthorize, loadingComplete } from '@/oldjs/common'
 
 const keyboardLayout =
   [
@@ -49,7 +49,13 @@ export default {
       default: () => () => {
       }
     },
-    totalPrice: {}
+    totalPrice: {},
+    orderId: {},
+    dishesItems: {},
+    useDishesDiscount: {
+      style: Boolean,
+      default: false
+    }
   },
   data: function () {
     return {
@@ -142,11 +148,23 @@ export default {
       }
     },
     async sendDiscount (discountStr) {
-      await hillo.post('Complex.php?op=setDiscount', {
-        tableId: this.id,
-        discountStr
-      })
-      this.initialUI()
+      if (this.useDishesDiscount) {
+        const res = await hillo.post('Dishes.php?op=setDiscountToDishes', {
+          discountStr: discountStr,
+          orderId: this.orderId,
+          dishes: JSON.stringify(this.dishesItems)
+        })
+        if (res) {
+          loadingComplete()
+          this.initialUI()
+        }
+      } else {
+        await hillo.post('Complex.php?op=setDiscount', {
+          tableId: this.id,
+          discountStr
+        })
+        this.initialUI()
+      }
     }
   },
 
