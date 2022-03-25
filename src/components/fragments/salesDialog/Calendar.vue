@@ -10,11 +10,12 @@
               <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
               <th class="text-left">{{ $t('time') }}</th>
               <th class="text-left">{{ $t('Summe') }}</th>
+              <th class="text-left">{{ $t('operation') }}</th>
             </tr>
             </thead>
             <tbody>
             <template v-for="order in bills.orders">
-              <tr v-bind:key="order.orderId" @click="startChangePaymentMethodForOrder(order)">
+              <tr v-bind:key="order.orderId">
                 <td>
                   <span class="font-weight-bold">{{ order.tableName }}</span> / {{ order.orderId }}
                 </td>
@@ -27,6 +28,15 @@
                   }})</span>/
                   {{ order.paymentMethodStrings }}<b v-if="order.discountStr">/
                   {{ '-' + order.discountStr.replace('p', '%') }}</b>
+                </td>
+                <td>
+                  <v-btn @click="reprintOrder(order.orderId)" small text color="primary">补打订单</v-btn>
+                  <v-btn small
+                         text
+                         color="primary"
+                         class="ml-2"
+                         @click="startChangePaymentMethodForOrder(order)">更换支付方式
+                  </v-btn>
                 </td>
               </tr>
             </template>
@@ -94,9 +104,8 @@
         </v-card>
       </v-card>
     </div>
-    <v-dialog v-model="checkOutDialog">
+    <v-dialog v-model="checkOutDialog" fullscreen>
       <v-card width="100%">
-        <v-card-title>{{ $t('请输入新的结账方式') }}</v-card-title>
         <check-out-calculator
             style="height: 564px"
             @payment-cancel="checkOutDialog=false"
@@ -183,7 +192,8 @@ import {
   previewZBon,
   printXBon,
   printZBon,
-  printZBonUseDate
+  printZBonUseDate,
+  reprintOrder
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 import CheckOutCalculator from '@/components/CheckOutCalculator'
@@ -266,6 +276,7 @@ export default {
   methods: {
     async changePaymentMethod (paymentLog = []) {
       if (paymentLog?.length > 0) {
+        IKUtils.showLoading()
         const res = await changePayMethodForOrder(this.changeOrderId, paymentLog)
         console.log(res)
         IKUtils.toast('OK')
@@ -275,7 +286,11 @@ export default {
       }
       await this.loadData()
     },
-
+    async reprintOrder (orderId) {
+      IKUtils.showLoading()
+      await reprintOrder(orderId)
+      IKUtils.toast()
+    },
     startChangePaymentMethodForOrder (order) {
       this.changeOrderId = order.orderId
       this.changeOrderTotal = order.totalPrice

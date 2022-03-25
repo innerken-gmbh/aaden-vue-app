@@ -7,14 +7,18 @@
       <v-card color="transparent" elevation="0"
               class="d-flex flex-column"
               style="height: 100vh">
-        <div class="flex-shrink-0 pa-3 py-4">
+        <div class="flex-shrink-0 pa-4 py-4">
           <div style="width: 100%">
             <v-img
                 :src="require('@/assets/logo.png')"/>
           </div>
         </div>
         <div style="display: grid;grid-auto-flow: row;grid-gap: 12px">
-          <v-card color="transparent" elevation="0" @click="goHome" class="d-flex flex-column align-center py-2">
+          <v-card
+              color="transparent"
+              elevation="0"
+              @click="goHome"
+              class="d-flex flex-column align-center py-1">
             <div>
               <v-icon>mdi-silverware</v-icon>
             </div>
@@ -22,7 +26,7 @@
               {{ $t('点餐') }}
             </div>
           </v-card>
-          <v-card color="transparent" elevation="0" @click="jumpToSales" class="d-flex flex-column align-center py-2">
+          <v-card color="transparent" elevation="0" @click="jumpToSales" class="d-flex flex-column align-center py-1">
             <div>
               <v-icon>mdi-cash</v-icon>
             </div>
@@ -30,7 +34,7 @@
               {{ $t('销售额') }}
             </div>
           </v-card>
-          <v-card color="transparent" elevation="0" @click="jumpToBoss" class="d-flex flex-column align-center py-2">
+          <v-card color="transparent" elevation="0" @click="jumpToBoss" class="d-flex flex-column align-center py-1">
             <div>
               <v-icon>mdi-home-analytics</v-icon>
             </div>
@@ -39,21 +43,11 @@
             </div>
           </v-card>
         </div>
-
-        <v-list
-            nav
-        >
-          <!--          <v-list-item link>-->
-          <!--            <v-list-item-icon @click="jumpToVip">-->
-          <!--              <v-icon>mdi-smart-card</v-icon>-->
-          <!--            </v-list-item-icon>-->
-          <!--            <v-list-item-title>{{ $t('VIP') }}</v-list-item-title>-->
-          <!--          </v-list-item>-->
-        </v-list>
-        <v-spacer>
-
-        </v-spacer>
-        <span class="text-no-wrap text-caption ml-2">{{ version }}</span>
+        <v-spacer/>
+        <div class="text-center"><b>A</b>aden</div>
+        <div class="text-no-wrap text-caption text-center2 ml-2">
+          {{ version }}
+        </div>
 
       </v-card>
 

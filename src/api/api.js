@@ -162,3 +162,13 @@ export async function safeRequest (func) {
     IKUtils.showError(e.data.info)
   }
 }
+
+export async function reprintOrder (orderId, type = 0) {
+  await safeRequest(async () => {
+    await hillo.post('BackendData.php?op=reprintOrder', {
+      id: orderId,
+      withTitle: type,
+      printCount: 1
+    })
+  })
+}

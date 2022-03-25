@@ -10,13 +10,13 @@ const TableInfoMetaDataSetting = {
       const [hour, minute] = v.split(':')
       const diff = timeFromNowInMinute(hour, minute)
       console.log(diff, v)
-      return diff > GlobalConfig.maxEatMinute ? 'error--text font-weight-bold' : ''
+      return diff > GlobalConfig.maxEatMinute ? 'error font-weight-bold' : ''
     }
   },
   servantName: { icon: 'mdi-account' },
   dishCount: {
     icon: 'mdi-silverware-fork-knife',
-    classFunc: (v) => parseInt(v) === 0 ? 'error--text' : ''
+    classFunc: (v) => parseInt(v) === 0 ? 'error' : ''
   },
   totalPrice: { icon: 'mdi-currency-eur' },
   buffetCount: { icon: 'mdi-account-multiple' },

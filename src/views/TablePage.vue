@@ -138,55 +138,56 @@
 
             </div>
             <v-divider class="mb-2"></v-divider>
-            <v-card v-if="!keyboardMode"
-                    class="d-flex"
-                    elevation="0"
-                    color="transparent"
-            >
-              <template>
-                <v-item-group v-dragscroll v-model="activeDCT"
-                              mandatory
-                              style="display: grid;
+            <template v-if="!keyboardMode">
+              <v-card
+                  class="d-flex"
+                  elevation="0"
+                  color="transparent"
+              >
+                <template>
+                  <v-item-group v-dragscroll v-model="activeDCT"
+                                mandatory
+                                style="display: grid;
                           grid-gap: 8px;
                           grid-auto-columns: 120px;
                           grid-auto-flow: column;
                           overflow-x: scroll">
 
-                  <v-item v-for="ct of dct" v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
-                    <v-card :elevation="active?4:0"
-                            height="48"
-                            style="border-radius: 12px;font-size: 18px"
-                            class="d-flex justify-center align-center"
-                            :color="active?'primary':''"
-                            @click="toggle"
-                            :dark="active">{{ ct.name }}
-                    </v-card>
-                  </v-item>
-                </v-item-group>
-                <v-spacer></v-spacer>
-              </template>
+                    <v-item v-for="ct of dct" v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
+                      <v-card :elevation="active?4:0"
+                              height="48"
+                              style="border-radius: 12px;font-size: 18px"
+                              class="d-flex justify-center align-center"
+                              :color="active?'primary':''"
+                              @click="toggle"
+                              :dark="active">{{ ct.name }}
+                      </v-card>
+                    </v-item>
+                  </v-item-group>
+                  <v-spacer></v-spacer>
+                </template>
 
-              <v-card height="48"
-                      @click="keyboardMode=true"
-                      elevation="0"
-                      style="border-radius: 12px;font-size: 18px"
-                      class="d-flex justify-center align-center px-4">
+                <v-card height="48"
+                        @click="keyboardMode=true"
+                        elevation="0"
+                        style="border-radius: 12px;font-size: 18px"
+                        class="d-flex justify-center align-center px-4">
 
-                <v-icon left>mdi-keyboard</v-icon>
-                {{ $t('键盘和菜号') }}
+                  <v-icon left>mdi-keyboard</v-icon>
+                  {{ $t('键盘和菜号') }}
+
+                </v-card>
 
               </v-card>
-
-            </v-card>
-            <v-divider class="my-2"></v-divider>
-            <v-card v-if="!keyboardMode" v-dragscroll color="transparent" elevation="0"
-                    class="dragscroll dishCardListContainer flex-grow-1" style=";position: relative">
-              <div v-if="!activeCategoryId">
-                <v-item-group
-                    class="dishCardList">
-                  <template v-for="category of filteredC">
-                    <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
-                      <v-card elevation="0" style="
+              <v-divider class="my-2"></v-divider>
+              <v-card v-dragscroll color="transparent" elevation="0"
+                      class="dragscroll dishCardListContainer flex-grow-1" style=";position: relative">
+                <div v-if="!activeCategoryId">
+                  <v-item-group
+                      class="dishCardList">
+                    <template v-for="category of filteredC">
+                      <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
+                        <v-card elevation="0" style="
                       position: relative;
                       width: 100%;
                       height: 112px;
@@ -199,62 +200,63 @@
   border-radius: 12px;
   overflow: hidden;
   text-overflow: ellipsis;"
-                              class="d-flex align-center justify-center text-center pa-2"
-                              @click="changeCategory(category.id,toggle)">
-                        {{ category.name }}
-                        <div style="position: absolute;width: 40%;top: 12px;
+                                class="d-flex align-center justify-center text-center pa-2"
+                                @click="changeCategory(category.id,toggle)">
+                          {{ category.name }}
+                          <div style="position: absolute;width: 40%;top: 12px;
 left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
-                             :style="{background:category.color}"></div>
-                      </v-card>
-                    </v-item>
-                  </template>
-                </v-item-group>
-              </div>
-              <template v-if="activeCategoryId">
-                <div style="display: grid;grid-template-columns: 1fr 108px;grid-gap: 24px">
+                               :style="{background:category.color}"></div>
+                        </v-card>
+                      </v-item>
+                    </template>
+                  </v-item-group>
+                </div>
+                <template v-if="activeCategoryId">
+                  <div style="display: grid;grid-template-columns: 1fr 108px;grid-gap: 24px">
 
-                  <div class="dishCardList">
-                    <v-card elevation="0" v-if="activeCategoryId"
-                            style="width: 100%;height: 112px;
+                    <div class="dishCardList">
+                      <v-card elevation="0" v-if="activeCategoryId"
+                              style="width: 100%;height: 112px;
                         color: #ff8c50;
                         border-radius: 12px"
-                            @click="activeCategoryId=null" class="d-flex align-center"
-                    >
-                      <div style="width: 100%" class="d-flex flex-column justify-center align-center flex-wrap">
-                        <v-icon large color="#ff8c50">mdi-menu-open</v-icon>
-                        <div>{{ $t('return') }}</div>
-                      </div>
-                    </v-card>
-                    <template v-for="dish of filteredDish">
-                      <dish-block
-                          v-ripple
-                          :key="'dish'+dish.code"
-                          :code="dish.code"
-                          :count="dish.count"
-                          :display-color="dish.displayColor"
-                          :dish-name="dish.dishName"
-                          :foreground="dish.foreground"
-                          :font-size="Config.dishBlockFontSize"
-                          :have-mod="dish.haveMod"
-                          :is-free="dish.isFree"
-                          :price="dish.price"
-                          @click-tune="showModification(dish,1)"
-                          @click="orderOneDish(dish.code)"/>
-                    </template>
+                              @click="activeCategoryId=null" class="d-flex align-center"
+                      >
+                        <div style="width: 100%" class="d-flex flex-column justify-center align-center flex-wrap">
+                          <v-icon large color="#ff8c50">mdi-menu-open</v-icon>
+                          <div>{{ $t('return') }}</div>
+                        </div>
+                      </v-card>
+                      <template v-for="dish of filteredDish">
+                        <dish-block
+                            v-ripple
+                            :key="'dish'+dish.code"
+                            :code="dish.code"
+                            :count="dish.count"
+                            :display-color="dish.displayColor"
+                            :dish-name="dish.dishName"
+                            :foreground="dish.foreground"
+                            :font-size="Config.dishBlockFontSize"
+                            :have-mod="dish.haveMod"
+                            :is-free="dish.isFree"
+                            :price="dish.price"
+                            @click-tune="showModification(dish,1)"
+                            @click="orderOneDish(dish.code)"/>
+                      </template>
+                    </div>
+                    <div></div>
+
                   </div>
-                  <div></div>
+                  <div v-dragscroll
+                       style="width: 108px;height: calc(100vh - 192px);overflow: hidden;position: fixed;right: 12px;top: 132px">
+                    <v-item-group
 
-                </div>
-                <div v-dragscroll style="width: 108px;height: calc(100vh - 192px);overflow: hidden;position: fixed;right: 12px;top: 132px">
-                  <v-item-group
-
-                      style="display: grid;grid-auto-columns: 108px;grid-auto-rows: 48px;grid-auto-flow: row;grid-gap: 4px">
-                    <template v-for="category of filteredC">
-                      <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
-                        <v-card elevation="0"
-                                :dark="activeCategoryId===category.id"
-                                :color="activeCategoryId===category.id?'primary':'white'"
-                                style="
+                        style="display: grid;grid-auto-columns: 108px;grid-auto-rows: 48px;grid-auto-flow: row;grid-gap: 4px">
+                      <template v-for="category of filteredC">
+                        <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
+                          <v-card elevation="0"
+                                  :dark="activeCategoryId===category.id"
+                                  :color="activeCategoryId===category.id?'primary':'white'"
+                                  style="
                       position: relative;
                       width: 100%;
                       height: 48px;
@@ -263,25 +265,26 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
   border-radius: 12px;
   overflow: hidden;
   text-overflow: ellipsis;"
-                                class="d-flex align-center justify-center text-center pa-2"
-                                @click="changeCategory(category.id,toggle)">
-                          <div style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis">
-                            {{ category.name }}
-                          </div>
+                                  class="d-flex align-center justify-center text-center pa-2"
+                                  @click="changeCategory(category.id,toggle)">
+                            <div style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis">
+                              {{ category.name }}
+                            </div>
 
-                          <div style="position: absolute;width: 40%;bottom: 0;
+                            <div style="position: absolute;width: 40%;bottom: 0;
 left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
-                               :style="{background:category.color}"></div>
-                        </v-card>
-                      </v-item>
-                    </template>
-                  </v-item-group>
-                </div>
+                                 :style="{background:category.color}"></div>
+                          </v-card>
+                        </v-item>
+                      </template>
+                    </v-item-group>
+                  </div>
 
-              </template>
+                </template>
 
-              <div style="width: 100%;height: 160px"></div>
-            </v-card>
+                <div style="width: 100%;height: 160px"></div>
+              </v-card>
+            </template>
             <div style="display: grid;grid-template-columns: 1fr 360px;height: calc(100vh - 130px);grid-gap: 16px"
                  class="flex-grow-1"
                  v-else>
@@ -685,7 +688,7 @@ import IKUtils from 'innerken-js-utils'
 import Keyboard from '@/components/Keyboard'
 import DiscountDialog from '@/components/fragments/DiscountDialog'
 import AddressDisplay from '@/components/AddressDisplay'
-import { acceptOrder, safeRequest } from '@/api/api'
+import { acceptOrder, reprintOrder, safeRequest } from '@/api/api'
 import GridButton from '@/components/GridButton'
 import { mapGetters } from 'vuex'
 import BuffetStartDialog from '@/components/fragments/BuffetStartDialog'
@@ -1313,11 +1316,7 @@ export default {
     async zwitchenBon () {
       this.isSendingRequest = true
       try {
-        await hillo.post('BackendData.php?op=reprintOrder', {
-          id: this.tableDetailInfo.order.id,
-          withTitle: 0,
-          printCount: 1
-        })
+        await reprintOrder(this.tableDetailInfo.order.id, 0)
         toast()
         blockReady()
       } catch (e) {

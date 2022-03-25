@@ -1,7 +1,8 @@
 <template>
   <div class="d-flex fill-height">
-    <div style="width: 480px;max-height: 700px;height: 100%" class="calculator pa-2 d-flex flex-column fill-height">
-      <v-card style="width: 100%" class="display pa-4 d-flex
+    <v-card elevation="1" style="width: 480px;height: 100vh"
+            class="calculator pa-2 d-flex flex-column">
+      <v-card elevation="0" style="width: 100%;" class="pa-4 d-flex
                  justify-space-between align-end">
         <div>
           <div class="totalBlock">
@@ -32,56 +33,57 @@
             </v-chip>
           </div>
           <div style="width:240px;height: 64px">
-            <v-text-field height="64px" reverse solo
+            <v-text-field height="64px" reverse
                           class="payingNumber py-1 text-right"
                           v-model="inputBuffer"
                           :placeholder="''+remainTotal.toFixed(2)"/>
           </div>
         </div>
       </v-card>
-      <v-sheet elevation="2" class="keyboard flex-grow-1 pa-4">
-        <!--                keyBoard-->
-        <template v-for="i in keyArr.flat()">
-          <v-btn :ripple="false" v-if="i!=='mdi-dots-horizontal'" @click="input(i)" block x-large
-                 class="key"
-                 style="height: 100%"
-                 :elevation="2"
-                 :key="'key'+i">
-            <v-icon v-if="!isNaN(i)" x-large>mdi-numeric-{{ i }}</v-icon>
-            <v-icon x-large v-else>{{ i }}</v-icon>
-          </v-btn>
-          <v-menu offset-x :key="'key'+i" v-else>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn @click="input(i)" block x-large class="key"
-                     style="height: 100%"
-                     :elevation="2"
-                     v-bind="attrs"
-                     v-on="on"
-                     :key="'key'+i">
-                <v-icon x-large>{{ i }}</v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item
-                @click="input(item)"
-                v-for="(item, index) in realExtraPaymentMethodName"
-                :key="index"
-              >
-                <v-list-item-icon>
-                  <v-icon>{{ realExtraPaymentMethod[index] }}</v-icon>
-                </v-list-item-icon>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    {{ item }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </template>
-      </v-sheet>
-    </div>
-    <div style="width: calc(100vw - 200px - 480px)" class="paymentLog pa-2">
+      <div class="pa-4">
+        <h4>其他支付方式</h4>
+        <div
+            class="pa-1 mt-1"
+            style="display: grid;grid-auto-columns: 96px;grid-gap: 8px;
+           overflow-x: scroll;grid-auto-flow: column">
+          <v-card elevation="0" color="#f6f6f6" class="pa-2" style="height: 96px" @click="input(item)"
+                  v-for="(item, index) in realExtraPaymentMethodName"
+                  :key="index">
+            {{ item }}
+          </v-card>
+        </div>
+      </div>
+      <div class="px-4">
+        <div class="keyboard">
+          <!--                keyBoard-->
+          <template v-for="i in keyArr.flat()">
+            <v-btn :ripple="false" v-if="i!=='mdi-dots-horizontal'" @click="input(i)" block x-large
+                   class="key"
+                   style="height: 96px"
+                   :elevation="0"
+                   :key="'key'+i">
+              <v-icon v-if="!isNaN(i)" x-large>mdi-numeric-{{ i }}</v-icon>
+              <v-icon x-large v-else>{{ i }}</v-icon>
+            </v-btn>
+            <v-menu offset-x :key="'key'+i" v-else>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn @click="input(i)" block x-large class="key"
+                       style="height: 96px"
+                       :elevation="0"
+                       v-bind="attrs"
+                       v-on="on"
+                       :key="'key'+i">
+                  <v-icon x-large>{{ i }}</v-icon>
+                </v-btn>
+              </template>
+
+            </v-menu>
+          </template>
+        </div>
+      </div>
+
+    </v-card>
+    <div style="width: 480px;max-width: calc(100vw - 480px)" class="paymentLog pa-2">
       <div class="my-3 d-flex align-center" style="width: 100%">
         <h3>{{ $t('结账明细') }}</h3>
         <v-spacer></v-spacer>
@@ -145,9 +147,9 @@
           </h4>
           <v-sheet class="my-2" style="background: transparent">
             <v-chip-group
-              v-model="billType"
-              mandatory column
-              active-class="primary--text">
+                v-model="billType"
+                mandatory column
+                active-class="primary--text">
               <v-chip x-large label>
                 {{ $t('tableCheckOutBillTypeOptionNormal') }}
               </v-chip>
@@ -161,34 +163,34 @@
           </v-sheet>
         </v-sheet>
         <v-divider class="my-3"></v-divider>
-        <div class="pa-2">
-          <v-btn color="success"
-                 @click="checkOut()"
-                 elevation="0"
-                 :disabled="!readyToCheckOut"
-                 tile fab block x-large> {{ $t('tableCheckOutConfirm') }}
-          </v-btn>
-        </div>
-      </div>
-      <div v-else style="height: 120px">
-        <h4>{{ $t('无小费,现金,普通账单请使用快速结账') }}</h4>
-        <div class="pa-2">
-          <v-btn color="primary"
-                 @click="checkOut(true)"
-                 elevation="0"
-                 :disabled="paymentLog.length!==0"
-                 tile fab block x-large> {{ $t('QuickBill') }}
-          </v-btn>
-        </div>
-      </div>
-      <div class="pa-2">
-        <v-btn tile fab
-               outlined
-               @click="cancel"
-               color="error" block x-large>
-          {{ $t('cancel') }}
+
+        <v-btn color="success"
+               @click="checkOut()"
+               elevation="0"
+               :disabled="!readyToCheckOut"
+               block x-large> {{ $t('tableCheckOutConfirm') }}
         </v-btn>
+
       </div>
+      <div v-else>
+        <h4>{{ $t('无小费,现金,普通账单请使用快速结账') }}</h4>
+
+        <v-btn color="primary" class="mt-2"
+               x-large
+               @click="checkOut(true)"
+               elevation="0"
+               :disabled="paymentLog.length!==0" block> {{ $t('QuickBill') }}
+        </v-btn>
+
+      </div>
+      <v-btn outlined
+             class="mt-2"
+             x-large
+             @click="cancel"
+             color="error" block>
+        {{ $t('cancel') }}
+      </v-btn>
+
     </div>
   </div>
 </template>
@@ -251,13 +253,13 @@ export default {
           [1, 2, 3, 'mdi-minus'],
           [4, 5, 6, 'mdi-backspace'],
           [7, 8, 9, 'mdi-credit-card-outline'],
-          ['mdi-dots-horizontal', 0, 'mdi-circle-small', 'mdi-cash-usd']]
+          ['', 0, 'mdi-circle-small', 'mdi-cash-usd']]
       } else {
         return [
           [1, 2, 3, 'mdi-minus'],
           [4, 5, 6, 'mdi-backspace'],
           [7, 8, 9, 'mdi-bell'],
-          ['mdi-dots-horizontal', 0, 'mdi-circle-small', 'mdi-cash-usd']]
+          ['', 0, 'mdi-circle-small', 'mdi-cash-usd']]
       }
     },
     realExtraPaymentMethod: function () {
@@ -453,8 +455,7 @@ export default {
 
 .keyboard {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   grid-gap: 4px;
 }
 

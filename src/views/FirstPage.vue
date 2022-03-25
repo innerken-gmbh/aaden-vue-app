@@ -3,10 +3,6 @@
     <navgation>
       <div style="min-width: 200px" class="d-flex">
         <div v-if="restaurantInfo" class="text-h6 font-weight-bold">{{ restaurantInfo.name }}</div>
-        <v-chip label color="white" class="ml-2 d-flex align-center">
-          <span>{{ $t('正在营业') }}</span>
-          <v-icon right color="success">mdi-checkbox-marked-circle</v-icon>
-        </v-chip>
       </div>
       <v-spacer></v-spacer>
       <v-item-group mandatory v-model="currentView" style="width: max-content" class="align-self-center">

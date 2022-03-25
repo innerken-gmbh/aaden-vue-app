@@ -36,13 +36,19 @@
       </template>
     </div>
     <!--    工具栏-->
-    <div style="position: absolute;left:24px;bottom: 12px">
-      <v-btn-toggle rounded>
+    <div style="position: absolute;left:24px;bottom: 36px" class="d-flex">
+      <v-btn-toggle dense class="mr-2">
         <v-btn @click="scale-=0.05">
           <v-icon>mdi-minus</v-icon>
         </v-btn>
         <v-btn @click="editing=!editing">
-          <v-icon>mdi-pencil-box-multiple</v-icon>
+          <template v-if="!editing">
+            <v-icon>mdi-pencil-box-multiple</v-icon>
+          </template>
+          <template v-else>
+            <v-icon>mdi-content-save</v-icon>
+          </template>
+
         </v-btn>
         <v-btn @click="scale+=0.05">
           <v-icon>mdi-plus</v-icon>
@@ -52,11 +58,10 @@
           {{ $t('重置所有桌子') }}
         </v-btn>
       </v-btn-toggle>
-      <div class="d-flex align-center">0.3x
+      <div v-if="editing" class="d-flex align-center" style="width: 96px">0.3x
         <v-slider hide-details :min="0.3" :step="0.01" :max="1" v-model="scale"></v-slider>
         1x
       </div>
-
     </div>
     <v-card
         color="white"
@@ -153,7 +158,6 @@
       </v-card>
 
     </v-dialog>
-
   </div>
 
 </template>

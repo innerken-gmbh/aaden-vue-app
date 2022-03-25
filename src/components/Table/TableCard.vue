@@ -12,7 +12,7 @@
         :color="tableColor"
         @click='$emit("click",table.tableName)'>
 
-      <div class="tableCardName">
+      <div class="tableCardName" :class="table.inUse?'mt-1':''">
         {{ table.tableName }}
       </div>
       <template v-if="table.inUse">
@@ -38,7 +38,7 @@
           {{ findConsumeTypeById(table.consumeType) }}
         </div>
         <div class="d-flex flex-column align-center" style="z-index: 2">
-          <div class="d-flex mt-1">
+          <div class="mt-1" style="display: grid;grid-template-columns: repeat(2,1fr);grid-gap: 2px">
             <div v-for="info in table.infos" :key="info">
               <table-info-display :info-key="info" :table="table"/>
             </div>
