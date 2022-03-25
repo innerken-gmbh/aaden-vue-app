@@ -1,15 +1,16 @@
 <template>
   <div>
     <v-navigation-drawer
-        dark color="primary"
         mini-variant
         permanent stateless
         style="z-index: 100" app>
-      <v-card color="transparent" elevation="0" class="d-flex flex-column" style="height: 100vh">
-        <div class="flex-shrink-0 pa-2 py-4">
+      <v-card color="transparent" elevation="0"
+              class="d-flex flex-column"
+              style="height: 100vh">
+        <div class="flex-shrink-0 pa-3 py-4">
           <div style="width: 100%">
             <v-img
-                :src="require('@/assets/logoWhite.png')"/>
+                :src="require('@/assets/logo.png')"/>
           </div>
         </div>
         <div style="display: grid;grid-auto-flow: row;grid-gap: 12px">

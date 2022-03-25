@@ -70,6 +70,7 @@
             <v-icon>mdi-printer-off</v-icon>
           </v-btn>
           <v-dialog
+              max-width="400"
               v-model="menu"
               :close-on-content-click="false"
               :nudge-width="300"
@@ -236,7 +237,8 @@
                      grid-gap: 8px;
                      width: 100%;
                 ">
-                <v-card  v-if="takeawayList.length>0" @click="takeawayClicked" height="72px" elevation="0" color="grey lighten-4"
+                <v-card v-if="takeawayList.length>0" @click="takeawayClicked" height="72px" elevation="0"
+                        color="grey lighten-4"
                         class="pa-2 d-flex align-center">
                   <v-icon left>mdi-plus</v-icon>
                   <h4>{{ $t('新增') }}</h4>

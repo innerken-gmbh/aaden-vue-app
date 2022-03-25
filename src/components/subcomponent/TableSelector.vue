@@ -12,6 +12,7 @@
             :additional-filter="tableFilter"
             :out-side-table-list="tableList"
             :editing="false"
+            :return-table-key="requiredTableKey"
             @need-refresh="initial"
             @table-clicked="tableSelected"
         />
@@ -60,7 +61,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['tableSelectDialogShow', 'tableFilter']),
+    ...mapState(['tableSelectDialogShow', 'tableFilter', 'requiredTableKey']),
     realShow: {
       get: function () {
         return this.tableSelectDialogShow

@@ -5,7 +5,6 @@
          style="
          height:calc(100vh - 64px);
          width: 100%;
-       overflow: hidden;
        transform-origin: left top;
        background: #e8e8e8;"
          :style="{

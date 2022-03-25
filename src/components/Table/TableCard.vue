@@ -5,24 +5,38 @@
        position: relative"
        class="pa-1">
     <v-card
+        dark
         height="100%"
         elevation="0"
         class="tableCard d-flex flex-column align-center justify-center"
         :color="tableColor"
         @click='$emit("click",table.tableName)'>
-      <div class="personDot" style="position: absolute">
-        <template v-for="i in parseInt(table.seatCount)">
-          <div :key="i+table.tableName+'person'" class="dot"></div>
-        </template>
-        <template v-for="i in parseInt(table.childCount)">
-          <div :key="i+table.tableName+'child'" class="dot child"></div>
-        </template>
-      </div>
 
       <div class="tableCardName">
         {{ table.tableName }}
       </div>
       <template v-if="table.inUse">
+        <div class="personDot" style="position: absolute">
+          <template v-for="i in parseInt(table.seatCount)">
+            <div :key="i+table.tableName+'person'" class="dot"></div>
+          </template>
+          <template v-for="i in parseInt(table.childCount)">
+            <div :key="i+table.tableName+'child'" class="dot child"></div>
+          </template>
+        </div>
+        <div :style="{
+             background:findConsumeTypeColorById(table.consumeType)}"
+             style="
+           position: absolute;
+           right: 0px;
+           top: 0px;
+           padding: 1px 2px;
+           color: white;
+            font-size: 10px;
+           z-index:0;
+                border-radius: 4px;">
+          {{ findConsumeTypeById(table.consumeType) }}
+        </div>
         <div class="d-flex flex-column align-center" style="z-index: 2">
           <div class="d-flex mt-1">
             <div v-for="info in table.infos" :key="info">
@@ -62,15 +76,7 @@
           </v-chip>
         </template>
       </div>
-
     </v-card>
-    <template v-if="!cardOnly">
-      <div :class="tableColor" class="chair top"></div>
-      <div :class="tableColor" class="chair left"></div>
-      <div :class="tableColor" class="chair bottom"></div>
-      <div :class="tableColor" class="chair right"></div>
-    </template>
-
   </div>
 </template>
 
@@ -79,6 +85,7 @@ import { getColorLightness } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { defaultTable } from '@/api/restaurantInfoService'
 import TableInfoDisplay from '@/components/Table/TableInfoDisplay'
+import { findConsumeTypeById } from '@/oldjs/common'
 
 export default {
   name: 'TableCard',
@@ -88,6 +95,12 @@ export default {
     cardOnly: { default: false }
   },
   methods: {
+    findConsumeTypeColorById (id) {
+      return findConsumeTypeById(id)?.color ?? this.$vuetify.theme.currentTheme.primary
+    },
+    findConsumeTypeById (id) {
+      return findConsumeTypeById(id).name
+    },
     showReservationDialog () {
       this.$emit('reservation-clicked', this.tableInfo)
     },
@@ -111,7 +124,7 @@ export default {
       return '20px'
     },
     tableColor () {
-      return this.table.inUse ? 'primary lighten-4' : '#f6f6f6'
+      return this.table.inUse ? 'primary' : '#f6f6f6'
     },
     tableChipList () {
       let allowCount = 1
