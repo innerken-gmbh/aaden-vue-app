@@ -115,25 +115,6 @@
                   </v-list-item>
                 </template>
               </v-list>
-
-              <v-card>
-                <v-select label="堂食桌子显示标签"></v-select>
-                <v-select label="自助桌子显示标签"></v-select>
-                <v-card-title>{{ $t('显示内容排序') }}</v-card-title>
-                <v-card-text>
-                  <draggable v-model="tableInfoDisplayOrder">
-                    <transition-group>
-                      <v-card class="pa-2 d-flex"
-                              v-for="element in tableInfoDisplayOrder" :key="element">
-                        {{ $t(element) }}
-                        <v-spacer></v-spacer>
-                        <v-icon>mdi-drag-horizontal-variant</v-icon>
-                      </v-card>
-                    </transition-group>
-                  </draggable>
-                </v-card-text>
-              </v-card>
-
               <v-card-actions>
                 <v-btn text @click="hardReload">Clear</v-btn>
                 <v-spacer></v-spacer>
@@ -509,7 +490,6 @@ import Keyboard from '@/components/Keyboard'
 import TableBluePrint from '@/components/TableBluePrint'
 import { mapGetters, mapMutations } from 'vuex'
 import TableListItem from '@/components/Table/TableListItem'
-import draggable from 'vuedraggable'
 import TableGirdItem from '@/components/Table/TableGridItem'
 import { TableFixedSectionId } from '@/api/tableService'
 import Navgation from '@/components/Navgation'
@@ -544,8 +524,7 @@ export default {
     TableListItem,
     TableBluePrint,
     Keyboard,
-    TimeDisplay,
-    draggable
+    TimeDisplay
   },
   props: {
     refresh: {

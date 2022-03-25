@@ -24,7 +24,9 @@ export async function loadConfig () {
 
 export function refreshGetter () {
   GlobalConfig.getTableInfoKeys = () => {
-    return GlobalConfig.tableInfoDisplayOrder ? GlobalConfig.tableInfoDisplayOrder.split(',') : GlobalConfig.tableInfoKeys
+    return GlobalConfig.tableInfoDisplayOrder
+      ? GlobalConfig.tableInfoDisplayOrder.split(',')
+      : GlobalConfig.tableInfoKeys
   }
 }
 
