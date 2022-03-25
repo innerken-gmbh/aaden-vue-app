@@ -99,10 +99,6 @@
                     </v-tab-item>
                   </template>
                   <v-tab-item>
-                    <discount-and-storno
-                        :discounted-dishes="discountedDishes"/>
-                  </v-tab-item>
-                  <v-tab-item>
                     <v-card>
                       <div class="d-flex pa-1">
                         <div v-if="realShow" class="pa-2 flex-grow-1">

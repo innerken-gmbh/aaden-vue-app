@@ -345,11 +345,11 @@ export default {
     }
   },
   async mounted () {
-    this.refreshSectionList()
     this.$nextTick(async () => {
       this.height = this.$refs.blueprintContainer.clientHeight
       this.width = this.$refs.blueprintContainer.clientWidth - 50
     })
+    await this.refreshSectionList()
   }
 }
 </script>

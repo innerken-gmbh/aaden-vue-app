@@ -32,7 +32,7 @@
               <template v-if="isBoss">
                 <template v-if="Config.UseDailyZbon">
                   <v-tab-item>
-                    <calendar :single-z-bon-date="singleZBonDate" :real-show="realShow"/>
+                    <calendar :single-z-bon-date="singleZBonDate"/>
                   </v-tab-item>
                 </template>
                 <template v-else>
@@ -107,7 +107,7 @@
                 <v-tab-item>
                   <v-card>
                     <div class="d-flex pa-1">
-                      <div v-if="realShow" class="pa-2 flex-grow-1">
+                      <div class="pa-2 flex-grow-1">
                         <v-simple-table height="calc(100vh - 108px)" fixed-header>
                           <template v-slot:default>
                             <thead>
@@ -173,7 +173,7 @@
               <v-tab-item>
                 <v-card>
                   <div class="d-flex pa-1">
-                    <div v-if="realShow" class="pa-2 flex-grow-1">
+                    <div class="pa-2 flex-grow-1">
                       <v-simple-table height="calc(100vh - 108px)" fixed-header>
                         <template v-slot:default>
                           <thead>
@@ -377,21 +377,11 @@ export default {
       return this.billContent.taxInfos?.filter(t => t.consumeTypeName === 'Total')
     },
 
-    realShow: {
-      get: function () {
-        return this.salesDialogShow
-      },
-      set: function (val) {
-        this.$emit('visibility-changed', val)
-      }
-    },
-
     lastZBonPrintTimeDisplayString () {
       return this.lastZBonPrintDate?.format('DD.MM, YYYY HH:mm:ss')
     }
 
   },
-
   methods: {
     async addCashRecord (amount) {
       await manageCashAccount(-amount, this.cashNote)
@@ -477,12 +467,6 @@ export default {
     },
     async singleZBonDate () {
       await this.loadData()
-    },
-    async realShow (val) {
-      if (val) {
-        this.tabIndex = 0
-        await this.loadData()
-      }
     }
   },
 

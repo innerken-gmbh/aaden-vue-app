@@ -11,7 +11,7 @@
     "drinkCount",
     "buffetRound"
   ],
-  "reservationCloudServerBase": "http://192.168.1.100:8080/",
+  "reservationCloudServerBase": "http://192.168.1.160:8080/",
   "milePayPort": 8181,
   "minTileSize": 80,
   "defaultTileHeight": 120,

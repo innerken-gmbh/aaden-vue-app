@@ -1,10 +1,23 @@
 import { getTableListWithCells } from '@/oldjs/api'
 import { loadAllReservable } from '@/api/ReservationService'
+import { timeFromNowInMinute } from '@/api/dateUtils'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 const TableInfoMetaDataSetting = {
-  createTimestamp: { icon: 'mdi-clock-outline' },
+  createTimestamp: {
+    icon: 'mdi-clock-outline',
+    classFunc: (v) => {
+      const [hour, minute] = v.split(':')
+      const diff = timeFromNowInMinute(hour, minute)
+      console.log(diff, v)
+      return diff > GlobalConfig.maxEatMinute ? 'error--text font-weight-bold' : ''
+    }
+  },
   servantName: { icon: 'mdi-account' },
-  dishCount: { icon: 'mdi-silverware-fork-knife', classFunc: (v) => parseInt(v) === 0 ? 'error--text' : '' },
+  dishCount: {
+    icon: 'mdi-silverware-fork-knife',
+    classFunc: (v) => parseInt(v) === 0 ? 'error--text' : ''
+  },
   totalPrice: { icon: 'mdi-currency-eur' },
   buffetCount: { icon: 'mdi-account-multiple' },
   buffetRound: { icon: 'mdi-animation-outline' },

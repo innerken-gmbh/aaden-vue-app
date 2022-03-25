@@ -105,8 +105,10 @@
         ></check-out-calculator>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="returnDishDialog">
-      <v-simple-table v-if="realShow" height="calc(100vh - 144px)" style="width: 650px" fixed-header>
+    <v-dialog v-model="returnDishDialog" width="fit-content">
+      <v-simple-table v-if="returnDishDialog" height="calc(100vh - 144px)"
+                      style="width: 650px"
+                      fixed-header>
         <template v-slot:default>
           <thead>
           <tr>
@@ -141,8 +143,8 @@
         </template>
       </v-simple-table>
     </v-dialog>
-    <v-dialog v-model="discountDialog">
-      <v-simple-table v-if="realShow" height="calc(100vh - 144px)" style="width: 650px" fixed-header>
+    <v-dialog v-model="discountDialog" width="fit-content">
+      <v-simple-table v-if="discountDialog" height="calc(100vh - 144px)" style="width: 650px" fixed-header>
         <template v-slot:default>
           <thead>
           <tr>
@@ -219,12 +221,6 @@ export default {
     async singleZBonDate () {
       console.log('change')
       await this.loadData()
-    },
-    async realShow (val) {
-      console.log(val)
-      if (val) {
-        await this.loadData()
-      }
     },
     async tabIndex () {
       await this.loadData()

@@ -57,5 +57,6 @@
   "tableBluePrintScale": 1,
   "displayInfoId": "0,1",
   "buffetDisplayInfoId": "4,7",
-  "currentView": 0
+  "currentView": 0,
+  "maxEatMinute": 150
 }

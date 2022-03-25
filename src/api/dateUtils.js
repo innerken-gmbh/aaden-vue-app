@@ -24,3 +24,7 @@ export function sliceTime (startTimeString, endTimeString, duration) {
   res.push(endTime.format(onlyTimeTemplate))
   return res
 }
+
+export function timeFromNowInMinute (hour, minute) {
+  return -dayjs().set('h', hour).set('m', minute).diff(dayjs(), 'm')
+}
