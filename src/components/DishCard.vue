@@ -1,27 +1,34 @@
 <template>
   <div class="dishCard mx-1" style="position: relative">
-    <div class="px-1 py-1 pr-0 d-flex justify-space-between align-baseline">
-      <div class="flex-grow-1 d-flex justify-space-between">
-        <div class='dishName flex-grow-1'>
+    <div class="px-1 py-2 pr-0">
+      <div class="flex-grow-1 d-flex">
+        <span class="dishCount flex-shrink-0">{{ dish.count }}&times;</span>
+        <div class='dishName flex-grow-1 mr-4'>
           <span v-code-hide class='codeRow'>{{ dish.code }}.</span><span>{{ dish.name }}</span>
         </div>
-        <template>
-              <v-chip small label v-if="dish.overrideConsumeTypeId" color="primary">
-                {{ findConsumeTypeById(dish.overrideConsumeTypeId) }}</v-chip>
-              <span v-if="dish.isFree==='1'">{{ $t('Free') }}</span>
-              <template v-else>
-                <span v-if="(dish.tempDiscountMod)&&(Math.abs(parseFloat(dish.tempDiscountMod))>0)">
+        <v-spacer/>
+        <div class="flex-shrink-0">
+          <template>
+            <v-chip small label v-if="dish.overrideConsumeTypeId" class="mr-1" color="primary">
+              {{ findConsumeTypeById(dish.overrideConsumeTypeId) }}
+            </v-chip>
+            <span v-if="dish.isFree==='1'">{{ $t('Free') }}</span>
+            <template v-else>
+                <span class="text-truncate text-no-wrap"
+                      v-if="(dish.tempDiscountMod)&&
+                      (Math.abs(parseFloat(dish.tempDiscountMod))>0)">
                   <s style="font-size: xx-small">{{
                       dish.originPrice | priceDisplay
                     }}</s>{{ dish.realPrice | priceDisplay }}</span>
-                  <span v-else>
+              <span class="text-truncate text-no-wrap" v-else>
                            {{ dish.realPrice | priceDisplay }}
                   </span>
-              </template>
+            </template>
           </template>
+        </div>
 
       </div>
-      <span class="dishCount">&times;{{ dish.count }}</span>
+
     </div>
     <div>
       <div v-show="dish.displayApply.length>0" class="dishMod">
@@ -35,13 +42,13 @@
           </div>
         </div>
       </div>
-      <div v-show="dish.note" class="dishNote">
-        <v-icon color="primary" small class="mr-1">mdi-pencil</v-icon>
+      <v-chip label v-if="dish.note">
+        <v-icon left small class="mr-1">mdi-pencil</v-icon>
         {{ dish.note }}
-      </div>
+      </v-chip>
     </div>
-    <div v-show="expand" class="editRow elevation-3">
-      <v-toolbar @click.stop dense flat>
+    <div v-show="expand">
+      <div @click.stop class="d-flex py-1">
         <template v-if="showEdit">
           <template>
             <v-icon class="mr-2" large
@@ -67,19 +74,21 @@
           </template>
         </template>
         <template v-else>
-          <v-toolbar-items class="flex-grow-1">
-            <v-btn @click="callCallBack(1)" class="flex-grow-1">
+          <div class="flex-grow-1 d-flex">
+            <v-btn elevation="0" @click="callCallBack(1)" class="flex-grow-1 mr-1">
               <span style="font-size: 18px">&times;1</span>
             </v-btn>
-            <v-btn @click="callCallBack(5)">
+            <v-btn class="mr-1" elevation="0" @click="callCallBack(5)">
               <span style="font-size: 18px">&times;5</span>
             </v-btn>
-            <v-btn @click="callCallBack(dish.count)" color="primary">
+            <v-btn elevation="" @click="callCallBack(dish.count)" color="primary">
               <span style="font-size: 18px">{{ $t('All') }}</span>
             </v-btn>
-          </v-toolbar-items>
+
+          </div>
+
         </template>
-      </v-toolbar>
+      </div>
     </div>
   </div>
 </template>
@@ -143,14 +152,13 @@ export default {
 .dishCard {
   margin-top: 4px;
   background: white;
-  border-bottom: 2px dashed #e2e3e5;
 }
 
 .dishCount {
   color: #367aeb;
   width: 36px;
   font-weight: 900;
-  text-align: center;
+  text-align: left;
 }
 
 .basicInfo {
@@ -159,7 +167,6 @@ export default {
 }
 
 .dishName {
-  max-width: 160px;
   word-wrap: break-word;
   text-overflow: ellipsis;
 }
@@ -174,7 +181,6 @@ export default {
   font-size: 14px;
   text-overflow: ellipsis;
   overflow: hidden;
-  border-bottom: 1px solid #6b6b6b;
   margin-bottom: 4px;
   white-space: nowrap;
   padding: 2px 4px;
@@ -187,9 +193,6 @@ export default {
   white-space: nowrap;
   padding: 2px 4px;
   padding-right: 0;
-}
-
-.editRow {
 }
 
 </style>

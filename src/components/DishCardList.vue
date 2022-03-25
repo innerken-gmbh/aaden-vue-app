@@ -1,45 +1,60 @@
 <template>
-  <v-card>
-    <span style="display: none">{{currentDish?currentDish.name:''}}</span>
-    <v-toolbar
-      dense
-      tile
-      class="font-weight-bold"
-      :color="color" dark>
-      <v-toolbar-title>
-        {{ title }}
-      </v-toolbar-title>
-      <v-spacer/>
-      <div class="d-flex align-center">
-        <v-icon color="white">mdi-cash-usd</v-icon>
-        <span class="ml-1">{{ total | priceDisplay }}</span>
-        <v-icon color="white" class="ml-3">mdi-food</v-icon>
-        <span class="ml-1">{{ count }}</span>
-      </div>
-    </v-toolbar>
-    <div v-dragscroll v-show="expand" class="orderDishList"
-         :style="{maxHeight: `calc(100vh - 48px - ${extraHeight})`}"
+  <v-card shaped elevation="0" class="d-flex flex-column flex-grow-1 "
+          style="max-height:calc(100% - 60px)">
+    <div class="d-flex align-center pt-2 px-2">
+      <h2 class="pa-2"> {{ title }}</h2>
+      <v-spacer></v-spacer>
+      <slot name="action">
+        <v-btn v-if="discountDish" @click="$emit('discount-clear')"
+               elevation="0" color="warning">
+          <v-icon left>
+            mdi-sale
+          </v-icon>
+          {{ discountDish.realPrice | priceDisplay }}
+        </v-btn>
+      </slot>
+    </div>
+    <v-divider></v-divider>
+    <div v-dragscroll v-show="expand"
+         class="px-2"
          style="overflow-y: scroll"
     >
       <template v-for="(order,index) in dishList">
         <div @click="checkIfOpen(index)" :key="'order'+title+order.identity">
           <dish-card
-            :expand="index===expandIndex"
-            :color="color"
-            :show-number="showNumber"
-            :click-callback="()=>_clickCallBack(index,order)"
-            :show-edit="showEdit"
-            :dish="order"/>
+              :expand="index===expandIndex"
+              :color="color"
+              :show-number="showNumber"
+              :click-callback="()=>_clickCallBack(index,order)"
+              :show-edit="showEdit"
+              :dish="order"/>
         </div>
       </template>
       <template v-if="discountDish!=null">
         <dish-card
-          :color="color"
-          :show-number="showNumber"
-          :show-edit="showEdit"
-          :dish="discountDish"/>
+            :color="color"
+            :show-number="showNumber"
+            :show-edit="showEdit"
+            :dish="discountDish"/>
       </template>
     </div>
+    <v-spacer></v-spacer>
+    <v-card elevation="0">
+      <v-divider></v-divider>
+      <div class="d-flex pa-2 px-4 align-baseline">
+
+        <v-icon size="28" class="mr-2">mdi-food</v-icon>
+        <span class="ml-1 text-h4  grey--text text--darken-2">{{ count }}</span>
+        <v-spacer></v-spacer>
+        <v-icon class="mr-2" size="28">mdi-cash-usd</v-icon>
+        <span class="ml-1 text-h4 grey--text text--darken-2 font-weight-bold">{{ total | priceDisplay }}</span>
+      </div>
+      <div>
+        <slot></slot>
+      </div>
+
+    </v-card>
+
   </v-card>
 </template>
 
@@ -81,7 +96,7 @@ export default {
     defaultExpand: {},
     showEdit: {},
     color: {
-      default: 'grey darken-3'
+      default: 'white'
     }
   },
   data: function () {

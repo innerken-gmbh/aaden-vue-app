@@ -1,5 +1,5 @@
 <template>
-  <span style="font-size: 28px;font-weight: 900; font-family: 'Roboto',serif">
+  <span style="font-family: 'Roboto',serif;font-weight: bold;" class="mr-4">
       {{ time }}
   </span>
 </template>
@@ -15,6 +15,7 @@ export default {
     }
   },
   created () {
+    this.time = showTime()
     setInterval(() => {
       this.time = showTime()
     }, 1000)

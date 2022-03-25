@@ -1,23 +1,11 @@
 <template>
-  <v-card :disabled="disabled" :color="color" class="gridButton elevation-0"
-          @click="!loading?$emit('click'):''">
-    <div class="mt-7">
-      <template v-if="loading">
-        <v-progress-circular indeterminate color="white"></v-progress-circular>
-      </template>
-      <template v-else>
-        <div class="d-flex justify-center" style="width: 100%">
-          <v-icon color="white">{{ icon }}</v-icon>
-        </div>
-        <div class="d-flex justify-center mt-2 caption text-center"
-             style="width: 100%;color: white;font-size: 16px !important;">
-          {{ text }}
-        </div>
-      </template>
-
+  <v-btn large rounded elevation="0" dark :loading="loading" @click="!loading?$emit('click'):''" :disabled="disabled"
+         :color="color">
+    <div class="d-flex justify-center" style="width: 100%">
+      <v-icon>{{ icon }}</v-icon>
     </div>
-
-  </v-card>
+    {{ text }}
+  </v-btn>
 </template>
 
 <script>
@@ -43,7 +31,6 @@ export default {
 .gridButton {
   display: flex;
   width: 100%;
-  height: 88px;
   justify-content: center;
 
 }

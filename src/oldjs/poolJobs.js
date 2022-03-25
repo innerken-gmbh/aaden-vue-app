@@ -1,5 +1,5 @@
 export const ExecuteQueue = {}
-export const timer = setInterval(execute, 3000)
+export const timer = setInterval(execute, 5000)
 
 function execute () {
   Object.values(ExecuteQueue).forEach(i => {

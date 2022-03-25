@@ -108,8 +108,7 @@ export function setGlobalTableId (id) {
 }
 
 // return password
-export async function popAuthorize (type = '', successCallback = null, force = false,
-  failedCallback = null, tableId = null) {
+export async function popAuthorize (type = '', successCallback = null, force = false, failedCallback = null, tableId = null) {
   const ok = (password) => {
     if (successCallback) {
       successCallback(password)
@@ -132,43 +131,14 @@ export async function popAuthorize (type = '', successCallback = null, force = f
   })
 }
 
-/** should provide a model list */
-
-export async function getActiveTables () {
-  const res = await hillo.get('Tables.php', {
-    op: 'showAllTableWithSection'
+export async function showTableSelector (filter = null, requiredTableKey = 'tableName') {
+  return new Promise(resolve => {
+    store.commit('START_TABLE_PICK', {
+      tableFilter: filter,
+      resolve,
+      requiredTableKey
+    })
   })
-  if (goodRequest(res)) {
-    return reloadTables(res.content)
-  } else {
-    logErrorAndPop(res.info)
-  }
-}
-
-export function getAllTables () {
-  const res = hillo.get('Tables.php?op=justShowAllTable')
-  if (goodRequest(res)) {
-    console.log('justShowAllTable', res)
-  }
-  return res
-}
-
-function reloadTables (arrOfT) {
-  const areaData = []
-  for (const k in arrOfT) {
-    const area = {}
-    area.areaName = k
-    area.tables = arrOfT[k]
-    for (const i of area.tables) {
-      if (i.consumeType) {
-        i.consumeTypeName = findConsumeTypeById(i.consumeType).name
-      } else {
-        i.consumeTypeName = 'AVL'
-      }
-    }
-    areaData.push(area)
-  }
-  return areaData
 }
 
 export async function openOrEnterTable (number, password, onlyOpenTable = false) {
@@ -245,13 +215,12 @@ async function shouldOpenTable (openingTable, pw) {
 
 async function informOpenTable (password = '', number, personCount, childCount) {
   try {
-    const res = await hillo.post('Complex.php?op=openTable',
-      {
-        tableId: number,
-        pw: password,
-        personCount: personCount,
-        childCount: childCount
-      })
+    const res = await hillo.post('Complex.php?op=openTable', {
+      tableId: number,
+      pw: password,
+      personCount: personCount,
+      childCount: childCount
+    })
     jumpToTable(res.content.tableId, res.content.tableName)
   } catch (e) {
     console.log(e)
@@ -264,26 +233,22 @@ export async function openTablePrompt () {
     confirmButtonText: i18n.t('nextStep') + ' &rarr;',
     showCancelButton: true,
     progressSteps: ['1', '2', '3']
-  }).queue([
-    {
-      title: i18n.t('popLabelGuestCount'),
-      input: 'text'
-    },
-    {
-      title: i18n.t('popLabelChildCount'),
-      input: 'text'
-    },
-    {
-      title: i18n.t('popTypeLabel'),
-      input: 'select',
-      inputOptions: {
-        ...consumeTypeList.reduce((cry, i) => {
-          cry[i.id] = i.name
-          return cry
-        }, {})
-      }
+  }).queue([{
+    title: i18n.t('popLabelGuestCount'),
+    input: 'text'
+  }, {
+    title: i18n.t('popLabelChildCount'),
+    input: 'text'
+  }, {
+    title: i18n.t('popTypeLabel'),
+    input: 'select',
+    inputOptions: {
+      ...consumeTypeList.reduce((cry, i) => {
+        cry[i.id] = i.name
+        return cry
+      }, {})
     }
-  ])
+  }])
   if (res.value) {
     if ([4, 6].includes(parseInt(res.value[2]))) {
       const adultDishId = await Swal.fire({
@@ -448,10 +413,7 @@ export async function showInput (title, body = '', input = 'text', inputValue = 
  * @param body
  * @param inputValue
  */
-export async function fastSweetAlertRequest
-(title, input, url, dataName,
-  dataObj, method = 'POST', allowEmpty = false,
-  body = null, inputValue = '') {
+export async function fastSweetAlertRequest (title, input, url, dataName, dataObj, method = 'POST', allowEmpty = false, body = null, inputValue = '') {
   dataObj[dataName] = ''
   const callBack = function (method, data) {
     const request = method === 'POST' ? hillo.post : hillo.silentGet
@@ -461,9 +423,7 @@ export async function fastSweetAlertRequest
         return response
       })
       .catch(error => {
-        Swal.showValidationMessage(
-          `Request failed: ${error?.data?.info ?? 'Error'}`
-        )
+        Swal.showValidationMessage(`Request failed: ${error?.data?.info ?? 'Error'}`)
       })
   }
 
@@ -537,7 +497,6 @@ export function remove (arr, index) {
 
 export function jumpTo (url, params) {
   clearAllTimer()
-  url = url.split('.')[0]
   router.replace({
     name: url,
     params
@@ -563,7 +522,7 @@ export function oldJumpTo (url, params) {
 export function showTime () {
   const date = dayjs()
 
-  return date.format('DD.MM.YYYY HH:mm:ss')
+  return date.format('HH:mm')
 }
 
 export function findElement (id) {
@@ -577,7 +536,8 @@ export function logError (t) {
 }
 
 export function logErrorAndPop (t) {
-  toastError(t)
+  const info = t?.data?.info
+  toastError(info ?? t)
   console.error(t)
   if (blockReady) {
     blockReady()
@@ -595,18 +555,15 @@ export function showTimedAlert (type, title, time = 1000, callback = null) {
     onBeforeOpen: () => {
       Swal.showLoading()
       timerInterval = setInterval(() => {
-        Swal.getContent().querySelector('strong')
-          .textContent = Swal.getTimerLeft()
+        Swal.getContent().querySelector('strong').textContent = Swal.getTimerLeft()
       }, 100)
     },
     onDestroy () {
       clearInterval(timerInterval)
     }
   }).then((result) => {
-    if (
-      /* Read more about handling dismissals below */
-      result.dismiss === Swal.DismissReason.timer
-    ) {
+    if (/* Read more about handling dismissals below */
+      result.dismiss === Swal.DismissReason.timer) {
       if (callback) {
         callback()
       }

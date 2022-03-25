@@ -1,12 +1,33 @@
 import hillo from 'hillo'
 import i18n from '../i18n'
 import GlobalConfig from './LocalGlobalSettings'
-import { getActiveTables, jumpTo, jumpToTable, requestOutTable } from './common'
+import { jumpTo } from './common'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import IKUtils from 'innerken-js-utils'
 
-let dishesList = []
 const dishesDictionary = {}
+const categoryCache = {}
+
+export async function getCategoryListWithCache (consumeTypeId) {
+  if (!categoryCache[consumeTypeId]) {
+    const res = await hillo.get('Category.php?op=withConsumeType', {
+      consumeTypeId: consumeTypeId,
+      lang: GlobalConfig.lang
+    })
+    for (const i of res.content) {
+      if (!i.isActive) {
+        i.isActive = false
+      }
+    }
+    categoryCache[consumeTypeId] = res.content.filter(c => {
+      return c.dishes.length > 0
+    }).map((c) => {
+      c.color = c.color === '' ? '#FFFFFF' : c.color
+      return c
+    })
+  }
+  return categoryCache[consumeTypeId]
+}
 
 export function findDish (code) {
   return dishesDictionary[code.toLowerCase()]
@@ -23,16 +44,6 @@ export function processDishList (dishList) {
     })
   }
   return dishList
-}
-
-export async function getAllDishesWithCache (force = false) {
-  if (force || dishesList.length === 0) {
-    const res = await hillo.get('Dishes.php',
-      { lang: i18n.locale.toUpperCase(), usePrintModAsName: GlobalConfig.usePrintModAsName | 0 })
-    dishesList.length = 0
-    dishesList = processDishList(res.content)
-  }
-  return dishesList
 }
 
 function getComputedOption (dish) {
@@ -99,18 +110,7 @@ export function setDefaultValueForApply (modOptions, _mod) {
 }
 
 export async function goHome () {
-  if (GlobalConfig.FMCVersion) {
-    const t = (await getActiveTables()).reduce((arr, i) => {
-      return arr.concat(i.tables)
-    }, []).find(f => parseInt(f.usageStatus) !== 0)
-    if (!t) {
-      requestOutTable()
-    } else {
-      jumpToTable(t.tableId, t.tableName)
-    }
-  } else {
-    jumpTo('index.html')
-  }
+  jumpTo('order')
 }
 
 export const DefaultBuffetSetting = {
@@ -135,8 +135,8 @@ export const DefaultAddressInfo = {
   email: '',
   oldTime: '',
   date: '',
-  time: '',
-  deliveryMethod: '',
+  time: 'ASAP',
+  deliveryMethod: 'inShop',
   edit: false
 }
 

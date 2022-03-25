@@ -1,12 +1,20 @@
 <template>
-  <v-card>
-    <v-card-title>
-      {{ address.firstName }} {{ address.lastName }}
-      <v-spacer/>
-      {{ address.deliveryMethod }}
-    </v-card-title>
-    <slot name="time"></slot>
+  <div>
+    <v-subheader>当前地址</v-subheader>
+    <v-card-subtitle>
+      <h2>
+        {{ address.deliveryMethod }}
+      </h2>
+      <span v-if="address.date">{{ $t('Erwartete Zeit') }}:</span>
+      <template v-if="address.oldTime">
+        <span>{{ address.oldTime }}</span>
+      </template>
+      <template v-else>
+        {{ address.time }}
+      </template>
+    </v-card-subtitle>
     <v-card-text>
+      <b>{{ address.firstName }}</b> <b>{{ address.lastName }}</b>
       <filter-empty-string-displayer :data="address.addressLine1">
         <b>{{ address.addressLine1 }}</b>
       </filter-empty-string-displayer>
@@ -23,8 +31,11 @@
         {{ address.tel }}
       </filter-empty-string-displayer>
     </v-card-text>
-    <slot name="action"></slot>
-  </v-card>
+    <v-card-actions>
+      <slot></slot>
+    </v-card-actions>
+
+  </div>
 </template>
 
 <script>
@@ -36,6 +47,11 @@ export default {
   components: { FilterEmptyStringDisplayer },
   props: {
     rawAddressInfo: {}
+  },
+  data: function () {
+    return {
+      expand: false
+    }
   },
   computed: {
     address () {

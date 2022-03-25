@@ -1,6 +1,6 @@
 {
   "name": "aaden-vue-app",
-  "version": "0.7.118",
+  "version": "0.7.111",
   "private": true,
   "description": "全新构建的Aaden Vue版本，重新启航，更加牢靠！",
   "author": "juhaodong@gmail.com",
@@ -20,14 +20,12 @@
   "main": "background.js",
   "dependencies": {
     "aaden-base-model": "^0.1.115",
+    "biewangle": "^1.0.11",
     "core-js": "^3.19.2",
     "dayjs": "^1.10.7",
-    "electron-settings": "^4.0.2",
     "hillo": "^1.1.23",
     "innerken-js-utils": "^1.0.10",
     "lodash-es": "^4.17.21",
-    "moment": "^2.29.1",
-    "places.js": "^1.19.0",
     "register-service-worker": "^1.7.2",
     "sweetalert2": "^11.2.1",
     "tone": "^14.7.77",
@@ -38,7 +36,7 @@
     "vue-i18n": "^8.24.4",
     "vue-router": "^3.5.3",
     "vuedraggable": "^2.24.3",
-    "vuetify": "^2.6.0",
+    "vuetify": "^2.6.3",
     "vuetify-google-autocomplete-extend": "^1.0.9",
     "vuex": "^3.6.2"
   },

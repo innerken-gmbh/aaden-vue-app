@@ -25,7 +25,7 @@
   "useEnterTablePermissionCheck": false,
   "useDeleteDishReason": true,
   "autoCompletePLZ": "",
-  "activeCardBackground": "#367aeb",
+  "activeCardBackground": "#eeff00",
   "useTableBluePrint": false,
   "topKeyboardKey": "E,F,B,R",
   "UseDailyZbon": true,
@@ -55,5 +55,8 @@
   "returnDishWithoutPassword": false,
   "discountWithoutPassword": false,
   "tableBluePrintScale": 1,
-  "currentSection": 0
+  "displayInfoId": "0,1",
+  "buffetDisplayInfoId": "4,7",
+  "currentView": 0,
+  "maxEatMinute": 150
 }

@@ -15,21 +15,31 @@ import { reportDeviceInfo } from '@/api/api'
 import { addToQueue } from '@/oldjs/poolJobs'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import IKUtils from 'innerken-js-utils'
+import dayjs from 'dayjs'
+import { onlyTimeFormat } from '@/api/dateUtils'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
 Vue.use(VuetifyGoogleAutocomplete, {
-  apiKey: 'AIzaSyB5lIPQQUJjjY6M-BoqUaZhF21oBbYkd9E',
-  language: 'de'
+  apiKey: 'AIzaSyB5lIPQQUJjjY6M-BoqUaZhF21oBbYkd9E', language: 'de'
 })
 
 Vue.config.productionTip = false
 
-Vue.filter('priceDisplay',
-  function (price) {
-    return parseFloat(price).toFixed(2).replace('.', ',')
-  }
-)
+Vue.filter('priceDisplay', function (price) {
+  return parseFloat(price).toFixed(2).replace('.', ',') + ' €'
+})
+
+Vue.filter('onlyTime', function (str) {
+  return onlyTimeFormat(str)
+})
+
+const relativeTime = require('dayjs/plugin/relativeTime')
+dayjs.extend(relativeTime)
+const duration = require('dayjs/plugin/duration')
+dayjs.extend(duration)
+const isoWeek = require('dayjs/plugin/isoWeek')
+dayjs.extend(isoWeek)
 
 Vue.directive('hide-simple', {
   bind: function (el) {
@@ -48,9 +58,7 @@ Vue.directive('code-hide', {
 })
 
 export function uuidv4 () {
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  )
+  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16))
 }
 
 addToQueue('tablePool', async () => {
@@ -85,11 +93,7 @@ async function initial () {
 
   }
   new Vue({
-    router,
-    store,
-    i18n,
-    vuetify,
-    render: h => h(App)
+    router, store, i18n, vuetify, render: h => h(App)
   }).$mount('#app')
 }
 

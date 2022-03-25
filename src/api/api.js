@@ -4,6 +4,7 @@ import { version } from '../../package.json'
 import { deviceType } from '../assets/FixedConfig.json'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
+import { resetTableStatus } from '@/oldjs/common'
 
 export async function previewZBon (startDate, endDate) {
   return (await hillo.get('ZBon.php?op=previewBySpan', { startDate, endDate })).content
@@ -29,6 +30,7 @@ export async function ZBonList () {
 }
 
 export async function acceptOrder (reason, id) {
+  resetTableStatus(id)
   IKUtils.showLoading(true)
   await hillo.post('Orders.php?op=acceptTakeawayOrder', {
     tableId: id,
@@ -135,4 +137,28 @@ export async function changePayMethodForOrder (orderId, paymentLogs) {
     orderId: orderId,
     paymentLog: JSON.stringify(paymentLogs)
   }))
+}
+
+export const updateRestaurantInfo = function (item) {
+  return hillo.post('Restaurant.php?op=update', {
+    ...item
+  })
+}
+
+export async function syncTakeawaySettingToCloud (newRestaurantInfo) {
+  if (newRestaurantInfo) {
+    await updateRestaurantInfo(newRestaurantInfo)
+  }
+}
+
+export async function loadRestaurantInfo () {
+  return (await hillo.get('Restaurant.php?op=view')).content[0]
+}
+
+export async function safeRequest (func) {
+  try {
+    await func()
+  } catch (e) {
+    IKUtils.showError(e.data.info)
+  }
 }

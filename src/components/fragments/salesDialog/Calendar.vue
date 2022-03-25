@@ -1,7 +1,7 @@
 <template>
-  <v-card>
+  <v-card elevation="0">
     <div class="d-flex">
-      <div v-if="realShow" class="pa-2 flex-grow-1">
+      <div class="pa-2 flex-grow-1">
         <h2>{{ $t('订单列表') }}</h2>
         <v-simple-table height="calc(100vh - 144px)" fixed-header>
           <template v-slot:default>
@@ -34,7 +34,7 @@
           </template>
         </v-simple-table>
       </div>
-      <v-card class="pa-2" style="width: 272px">
+      <v-card elevation="0" class="pa-2" style="width: 272px">
         <v-card elevation="0" class="mt-1">
           <div class="pa-2">
             <div class="d-flex justify-space-between align-center">
@@ -105,8 +105,10 @@
         ></check-out-calculator>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="returnDishDialog">
-      <v-simple-table v-if="realShow" height="calc(100vh - 144px)" style="width: 650px" fixed-header>
+    <v-dialog v-model="returnDishDialog" width="fit-content">
+      <v-simple-table v-if="returnDishDialog" height="calc(100vh - 144px)"
+                      style="width: 650px"
+                      fixed-header>
         <template v-slot:default>
           <thead>
           <tr>
@@ -141,8 +143,8 @@
         </template>
       </v-simple-table>
     </v-dialog>
-    <v-dialog v-model="discountDialog">
-      <v-simple-table v-if="realShow" height="calc(100vh - 144px)" style="width: 650px" fixed-header>
+    <v-dialog v-model="discountDialog" width="fit-content">
+      <v-simple-table v-if="discountDialog" height="calc(100vh - 144px)" style="width: 650px" fixed-header>
         <template v-slot:default>
           <thead>
           <tr>
@@ -213,19 +215,12 @@ export default {
   },
   props: {
     tabIndex: {},
-    realShow: {},
     singleZBonDate: {}
   },
   watch: {
     async singleZBonDate () {
       console.log('change')
       await this.loadData()
-    },
-    async realShow (val) {
-      console.log(val)
-      if (val) {
-        await this.loadData()
-      }
     },
     async tabIndex () {
       await this.loadData()
@@ -312,8 +307,8 @@ export default {
     async loadData () {
       if (this.singleZBonDate != null) {
         this.billData = await previewZBon(this.singleZBonDate, this.singleZBonDate)
+        this.bills = await getBillListForServant(null, this.singleZBonDate)
       }
-      this.bills = await getBillListForServant(null, this.singleZBonDate)
     }
   },
   mounted () {

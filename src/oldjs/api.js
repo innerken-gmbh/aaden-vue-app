@@ -127,6 +127,10 @@ export async function setTableLocation (table) {
   return (await hillo.post('Tables.php?op=setTableLocation', table))
 }
 
+export async function optionalAuthorizeAsync (authType = '', shouldAuthorize = true) {
+  return shouldAuthorize ? await popAuthorize(authType) : GlobalConfig.defaultPassword
+}
+
 export function optionalAuthorize (callback, authType = '', shouldAuthorize = true) {
   if (shouldAuthorize) {
     popAuthorize(authType, () => callback())

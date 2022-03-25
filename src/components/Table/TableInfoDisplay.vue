@@ -1,8 +1,11 @@
 <template>
-  <span :class="metaData.classFunc ? metaData.classFunc(table[infoKey]) : ''">
-    <template v-if="metaData.icon"><v-icon class="mr-1" x-small>{{ metaData.icon }}</v-icon></template>
-    <span>{{ table[infoKey] }}</span>
-  </span>
+  <div class="d-flex flex-column" style="width: 36px;overflow: hidden"
+       :class="metaData.classFunc ? metaData.classFunc(table[infoKey]) :''">
+    <template v-if="metaData.icon">
+      <v-icon small>{{ metaData.icon }}</v-icon>
+    </template>
+    <div style="line-height: 18px;font-size: 10px" class="text-no-wrap">{{ info }}</div>
+  </div>
 </template>
 
 <script>
@@ -12,6 +15,9 @@ export default {
   name: 'TableInfoDisplay',
   props: { infoKey: {}, table: {} },
   computed: {
+    info () {
+      return this.table[this.infoKey]
+    },
     metaData () {
       return TableInfoMetaData[this.infoKey]
     }
