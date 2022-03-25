@@ -235,7 +235,7 @@ export default {
 .personDot
   top: 8px
   left: 8px
-  right: 4px
+  right: 36px
   display: grid
   grid-template-columns: repeat(auto-fit, 6px)
   grid-gap: 4px

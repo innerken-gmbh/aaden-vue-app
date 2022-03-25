@@ -30,12 +30,27 @@
                   {{ '-' + order.discountStr.replace('p', '%') }}</b>
                 </td>
                 <td>
-                  <v-btn @click="reprintOrder(order.orderId)" small text color="primary">补打订单</v-btn>
+                  <v-btn elevation="0" @click="reprintOrder(order.orderId)" small color="primary">
+                    <v-icon left>
+                      mdi-printer-settings
+                    </v-icon>
+                    补打
+                  </v-btn>
                   <v-btn small
-                         text
-                         color="primary"
+                         elevation="0"
+                         color="warning"
                          class="ml-2"
-                         @click="startChangePaymentMethodForOrder(order)">更换支付方式
+                         @click="startChangePaymentMethodForOrder(order)">
+                    <v-icon left>mdi-cash-refund</v-icon>
+                    更换
+                  </v-btn>
+                  <v-btn small
+                         elevation="0"
+                         color="error"
+                         class="ml-2"
+                         @click="startChangePaymentMethodForOrder(order)">
+                    <v-icon>mdi-file-cancel-outline</v-icon>
+
                   </v-btn>
                 </td>
               </tr>
