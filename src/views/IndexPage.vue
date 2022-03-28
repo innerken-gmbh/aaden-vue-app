@@ -15,7 +15,9 @@
         </div>
         <div style="display: grid;grid-auto-flow: row;grid-gap: 12px">
           <v-card
-              color="transparent"
+              tile
+              :dark="isActive('order')"
+              :color="color('order')"
               elevation="0"
               @click="goHome"
               class="d-flex flex-column align-center py-1">
@@ -26,7 +28,11 @@
               {{ $t('点餐') }}
             </div>
           </v-card>
-          <v-card color="transparent" elevation="0" @click="jumpToSales" class="d-flex flex-column align-center py-1">
+          <v-card
+              tile
+              :dark="isActive('sales')"
+              :color="color('sales')" elevation="0"
+              @click="jumpToSales" class="d-flex flex-column align-center py-1">
             <div>
               <v-icon>mdi-cash</v-icon>
             </div>
@@ -34,7 +40,13 @@
               {{ $t('销售额') }}
             </div>
           </v-card>
-          <v-card color="transparent" elevation="0" @click="jumpToBoss" class="d-flex flex-column align-center py-1">
+          <v-card
+              tile
+              :dark="isActive('boss')"
+              :color="color('boss')"
+              elevation="0"
+              @click="jumpToBoss"
+              class="d-flex flex-column align-center py-1">
             <div>
               <v-icon>mdi-home-analytics</v-icon>
             </div>
@@ -74,6 +86,12 @@ export default {
     }
   },
   methods: {
+    color (myName) {
+      return this.isActive(myName) ? 'primary' : 'white'
+    },
+    isActive (myName) {
+      return this.$route.name === myName
+    },
     findServant (pw) {
       if (this.servantList.length > 0) {
         return this.servantList.find(s => s.password === pw)
