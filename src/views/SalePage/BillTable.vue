@@ -27,13 +27,15 @@
               {{ '-' + order.discountStr.replace('p', '%') }}</b>
             </td>
             <td v-if="showOperation">
-              <v-btn elevation="0" @click="reprintOrder(order.orderId)" small color="primary">
+              <v-btn :disabled="order.isReturned==='1'" elevation="0" @click="reprintOrder(order.orderId)" small
+                     color="primary">
                 <v-icon left>
                   mdi-printer-settings
                 </v-icon>
                 补打
               </v-btn>
               <v-btn small
+                     :disabled="order.isReturned==='1'"
                      elevation="0"
                      color="warning"
                      class="ml-2"
@@ -42,6 +44,7 @@
                 更换
               </v-btn>
               <v-btn small
+                     :disabled="order.isReturned==='1'"
                      elevation="0"
                      color="error"
                      class="ml-2"
@@ -72,9 +75,11 @@
 <script>
 import IKUtils from 'innerken-js-utils'
 import { changePayMethodForOrder, reprintOrder } from '@/api/api'
+import CheckOutCalculator from '@/components/GlobalDialog/CheckOutCalculator'
 
 export default {
   name: 'BillTable',
+  components: { CheckOutCalculator },
   data: function () {
     return {
       checkOutDialog: null,
@@ -85,16 +90,15 @@ export default {
   props: { orders: {}, showOperation: { default: false } },
   methods: {
     async changePaymentMethod (paymentLog = []) {
-      if (paymentLog?.length > 0) {
-        IKUtils.showLoading()
-        const res = await changePayMethodForOrder(this.changeOrderId, paymentLog)
-        console.log(res)
-        IKUtils.toast('OK')
-        this.checkOutDialog = false
-      } else {
-        IKUtils.showError('Bitte Eine Paymethod zu wahlen.')
+      if (paymentLog?.length === 0) {
+        paymentLog = [{ id: 1, price: this.changeOrderTotal }]
       }
-      await this.loadData()
+      IKUtils.showLoading()
+      const res = await changePayMethodForOrder(this.changeOrderId, paymentLog)
+      console.log(res)
+      IKUtils.toast('OK')
+      this.checkOutDialog = false
+      this.$emit('need-refresh')
     },
     async reprintOrder (orderId) {
       IKUtils.showLoading()

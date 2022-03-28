@@ -2,7 +2,7 @@
   <v-card elevation="0">
     <div class="d-flex">
       <div class="pa-2 flex-grow-1">
-        <bill-table :orders="bills.orders" :show-operation="true"/>
+        <bill-table @need-refresh="loadData" :orders="bills.orders" :show-operation="true"/>
       </div>
       <v-card elevation="0" class="pa-2" style="width: 272px">
         <v-card elevation="0" class="mt-1">
@@ -203,7 +203,7 @@ export default {
       if (!this.singleZBonDate) {
         return false
       }
-      return dayjs().isAfter(dayjs(this.singleZBonDate, 'YYYY-MM-DD')
+      return dayjs().isAfter(dayjs(this.singleZBonDate[0], 'YYYY-MM-DD')
         .add(1, 'd').hour(4).minute(0))
     }
   },
@@ -211,14 +211,14 @@ export default {
 
     async printXBon () {
       IKUtils.showLoading()
-      await printXBon(this.singleZBonDate, this.singleZBonDate)
+      await printXBon(...this.singleZBonDate)
       IKUtils.toast('OK')
     },
     async printZBon () {
       IKUtils.showConfirm(this.$t('Möchten Sie alle Datensätze drucken?'), this.$t('Bist du sicher?'), async () => {
         IKUtils.showLoading(false)
 
-        await printZBonUseDate(this.singleZBonDate, this.singleZBonDate)
+        await printZBonUseDate(...this.singleZBonDate)
 
         IKUtils.toast('OK')
         await this.loadData()
@@ -227,8 +227,8 @@ export default {
 
     async loadData () {
       if (this.singleZBonDate != null) {
-        this.billData = await previewZBon(this.singleZBonDate, this.singleZBonDate)
-        this.bills = await getBillListForServant(null, this.singleZBonDate)
+        this.billData = await previewZBon(...this.singleZBonDate)
+        this.bills = await getBillListForServant(null, ...this.singleZBonDate)
       }
     }
   },

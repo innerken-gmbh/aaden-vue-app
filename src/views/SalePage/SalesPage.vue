@@ -9,18 +9,14 @@
         <v-tab>{{ $t('Meine Umsatz') }}</v-tab>
       </v-tabs>
       <v-spacer></v-spacer>
-      <v-btn>今天/更换日期</v-btn>
+      <v-toolbar-items>
+        <v-btn color="primary" @click="showDatePicker=true">
+          {{ getNiceLabel(singleZBonDate) }}/更换日期
+        </v-btn>
+
+      </v-toolbar-items>
     </v-toolbar>
     <div class="d-flex" style="height: calc(100vh - 64px)">
-      <div class="pa-2">
-        <v-date-picker
-            class="mt-6"
-            v-if="!Config.servantDataOnlyToday||isBoss"
-            elevation="1"
-            v-model="singleZBonDate"
-            :max="todayDate"
-        />
-      </div>
       <div class="flex-grow-1">
         <v-card-text class="mt-1 d-flex pa-0">
           <div class="pa-2 flex-grow-1">
@@ -101,43 +97,9 @@
                 <v-card>
                   <div class="d-flex pa-1">
                     <div class="pa-2 flex-grow-1">
-                      <v-simple-table height="calc(100vh - 108px)" fixed-header>
-                        <template v-slot:default>
-                          <thead>
-                          <tr>
-                            <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
-                            <th class="text-left">{{ $t('time') }}</th>
-                            <th class="text-left">{{ $t('Summe') }}</th>
-                          </tr>
-                          </thead>
-                          <tbody>
-                          <template v-for="order in displayData.orders">
-                            <tr v-bind:key="order.orderId">
-                              <td>
-                                <span class="font-weight-bold">{{ order.tableName }}</span> / {{ order.orderId }}
-                              </td>
-                              <td>
-                                {{ order.updatedAt }}
-                              </td>
-                              <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
-                                <template v-if="!order.paymentLabel">
-                                  {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{
-                                    order.tipIncome
-                                  }})</span>/
-                                  {{ order.paymentMethodStrings }}
-                                </template>
-                                <template v-else>{{ order.paymentLabel }}</template>
-                                <b v-if="order.discountStr">/
-                                  {{ '-' + order.discountStr.replace('p', '%') }}</b>
-                              </td>
-                            </tr>
-                          </template>
-                          </tbody>
-                        </template>
-                      </v-simple-table>
+                      <bill-table :orders="displayData.orders"></bill-table>
                     </div>
                     <div class="pa-2" style="width: 240px">
-
                       <v-list subheader dense>
                         <v-subheader>{{ $t('Kellner') }} : {{ displayData.servant.name }} ({{ $t('ohne tip') }})
                         </v-subheader>
@@ -195,7 +157,16 @@
         </v-card-text>
       </div>
     </div>
-
+    <v-dialog v-model="showDatePicker" max-width="400px">
+      <v-card color="#f6f6f6" elevation="0" tile class="pa-1 pb-4"
+      >
+        <date-range-picker v-model="dateInput"></date-range-picker>
+        <div class="px-2 mt-2">
+          <v-btn elevation="0" block @click="dateSubmit" color="primary" large>确定</v-btn>
+          <v-btn large block color="error" @click="showDatePicker=false" outlined class="mt-2">取消</v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
     <dialog-with-keyboard @close="showNumberKeyboard=false" :show="showNumberKeyboard"
                           @submit="addCashRecord" :title=" $t('请输入支出金额，如果是收入就输入负数')"
                           :keys="keyboardNumber">
@@ -213,8 +184,6 @@ import {
   getCashInOutDetail,
   manageCashAccount,
   printServantSummary,
-  printXBon,
-  printZBonUseDate,
   showTodayTempDiscountedDishes,
   todayCashStand
 } from '@/api/api'
@@ -223,6 +192,9 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import DialogWithKeyboard from '@/components/Base/DialogWithKeyboard'
 import Calendar from '@/views/SalePage/Fragment/Calendar'
 import { numberKeyLayout } from '@/components/Base/Keyboard/keyModel'
+import BillTable from '@/views/SalePage/BillTable'
+import { getNiceLabel, today } from '@/api/Repository/DateRepository'
+import DateRangePicker from '@/components/GlobalDialog/DateRangePicker'
 
 const defaultDisplayData = {
   orders: [],
@@ -237,6 +209,8 @@ const defaultDisplayData = {
 export default {
   name: 'SalePage',
   components: {
+    DateRangePicker,
+    BillTable,
     DialogWithKeyboard,
     Calendar
   },
@@ -248,6 +222,7 @@ export default {
   },
   data: function () {
     return {
+      showDatePicker: false,
       keyboardNumber: numberKeyLayout,
       showNumberKeyboard: false,
       billData: {
@@ -266,10 +241,10 @@ export default {
       Config: GlobalConfig,
       tabIndex: 0,
       todayCashStand: 0,
-      bills: [],
       displayData: defaultDisplayData,
-      todayDate: dayjs().format('YYYY-MM-DD'),
-      singleZBonDate: null,
+      today,
+      dateInput: [today, today],
+      singleZBonDate: [today, today],
       loaded: false
 
     }
@@ -285,7 +260,8 @@ export default {
       if (!this.singleZBonDate) {
         return false
       }
-      return dayjs().isAfter(dayjs(this.singleZBonDate, 'YYYY-MM-DD').add(1, 'd').hour(4).minute(0))
+      return dayjs().isAfter(dayjs(this.singleZBonDate[0], 'YYYY-MM-DD')
+        .add(1, 'd').hour(4).minute(0))
     },
 
     billContent () {
@@ -298,6 +274,12 @@ export default {
 
   },
   methods: {
+    async dateSubmit () {
+      this.showDatePicker = false
+      this.singleZBonDate = this.dateInput
+      await this.loadData()
+    },
+    getNiceLabel,
     async addCashRecord (amount) {
       await manageCashAccount(-amount, this.cashNote)
       this.cashNote = ''
@@ -306,60 +288,41 @@ export default {
 
     async printSummaryBon () {
       IKUtils.showLoading(true)
-      await printServantSummary(this.password, this.singleZBonDate, this.singleZBonDate)
+      await printServantSummary(this.password, ...this.singleZBonDate)
       IKUtils.toast('OK')
-    },
-
-    async printXBon () {
-      IKUtils.showLoading()
-      await printXBon(this.singleZBonDate, this.singleZBonDate)
-      IKUtils.toast('OK')
-    },
-
-    async printZBon () {
-      IKUtils.showConfirm(this.$t('Möchten Sie alle Datensätze drucken?'), this.$t('Bist du sicher?'), async () => {
-        IKUtils.showLoading(false)
-
-        await printZBonUseDate(this.singleZBonDate, this.singleZBonDate)
-
-        IKUtils.toast('OK')
-        await this.loadData()
-      })
-    },
-
-    initial () {
-      this.singleZBonDate = this.todayDate
-      this.tabIndex = 0
     },
 
     async loadData () {
       if (!this.loaded) {
         return
       }
-      this.displayData = Object.assign({}, defaultDisplayData, await getBillListForServant(this.password ?? GlobalConfig.defaultPassword, this.singleZBonDate))
+      this.displayData = Object.assign({}, defaultDisplayData,
+        await getBillListForServant(this.password ?? GlobalConfig.defaultPassword,
+          ...this.singleZBonDate))
 
       try {
         this.todayCashStand = await todayCashStand()
-        this.discountedDishes = await showTodayTempDiscountedDishes(this.singleZBonDate, this.singleZBonDate)
-        this.cashChangeRecords = await getCashInOutDetail(this.singleZBonDate, this.singleZBonDate)
-        console.log(this.cashChangeRecords)
+        this.discountedDishes = await showTodayTempDiscountedDishes(
+          ...this.singleZBonDate)
+        this.cashChangeRecords = await getCashInOutDetail(
+          ...this.singleZBonDate)
       } catch (e) {
         console.log(e)
       }
+    },
+    initial () {
+      this.singleZBonDate = [today, today]
+      this.tabIndex = 0
     }
   },
 
   watch: {
     async tabIndex () {
       await this.loadData()
-    },
-    async singleZBonDate () {
-      await this.loadData()
     }
   },
 
   async mounted () {
-    console.log(this.password)
     this.initial()
     this.loaded = true
     await this.loadData()

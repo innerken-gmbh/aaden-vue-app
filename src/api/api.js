@@ -21,8 +21,7 @@ export async function printZBon () {
 }
 
 export async function printZBonUseDate (startDate, endDate, printByDay = 1, resetTable = 0) {
-  return (await hillo.post('ZBon.php?op=printZbonBySpan',
-    { startDate, endDate, printByDay, resetTable }))
+  return (await hillo.post('ZBon.php?op=printZbonBySpan', { startDate, endDate, printByDay, resetTable }))
 }
 
 export async function ZBonList () {
@@ -33,8 +32,7 @@ export async function acceptOrder (reason, id) {
   resetTableStatus(id)
   IKUtils.showLoading(true)
   await hillo.post('Orders.php?op=acceptTakeawayOrder', {
-    tableId: id,
-    reason: reason
+    tableId: id, reason: reason
   })
   IKUtils.toast('ok')
 }
@@ -59,8 +57,16 @@ export async function renameMemberCard (oldName, newName) {
   return (await hillo.get('MemberCard.php?op=renameMemberCard', { old: oldName, new: newName }))
 }
 
-export async function getBillListForServant (pw = null, date) {
-  return (await hillo.get('BackendData.php?op=mobileV3StatWithLang', { pw, date, lang: GlobalConfig.lang })).content
+export async function getBillListForServant (pw = null, date, endDate = null) {
+  if (!endDate) {
+    endDate = date
+  }
+  return (await hillo.get('BackendData.php?op=mobileV3StatWithLang', {
+    pw,
+    date,
+    endDate,
+    lang: GlobalConfig.lang
+  })).content
 }
 
 export async function getBuffetPriceDishes () {
@@ -77,10 +83,7 @@ export async function changeOrderToBuffet (orderId, buffetDishes, buffetSetting)
 
 export async function reportDeviceInfo () {
   return (await hillo.post('Route.php?op=deviceLog', {
-    MACAddress: GlobalConfig.uuId,
-    deviceType: deviceType,
-    version: version,
-    note: ''
+    MACAddress: GlobalConfig.uuId, deviceType: deviceType, version: version, note: ''
   }))
 }
 
@@ -98,24 +101,19 @@ export async function previewZBonByTimeSpan (startTime, endTime) {
 
 export async function showTodayTempDiscountedDishes (startTime, endTime) {
   return (await hillo.get('Complex.php?op=showTempDiscountedDishes', {
-    fromDateTime: startTime,
-    toDateTime: endTime,
-    lang: GlobalConfig.lang
+    fromDateTime: startTime, toDateTime: endTime, lang: GlobalConfig.lang
   })).content
 }
 
 export async function showReturnedDishes (startTime, endTime) {
   return (await hillo.get('Complex.php?op=showReturnedDishes', {
-    fromDateTime: startTime,
-    toDateTime: endTime,
-    lang: GlobalConfig.lang
+    fromDateTime: startTime, toDateTime: endTime, lang: GlobalConfig.lang
   })).content
 }
 
 export async function getCashInOutDetail (startDate, endDate) {
   return (await hillo.get('Complex.php?op=getCashInOutDetail', {
-    fromDate: startDate,
-    toDate: endDate
+    fromDate: startDate, toDate: endDate
   })).content
 }
 
@@ -134,8 +132,7 @@ export async function billDetailInfo (id) {
 export async function changePayMethodForOrder (orderId, paymentLogs) {
   console.log(orderId, paymentLogs)
   return (await hillo.post('Complex.php?op=changePayMethodForOrder', {
-    orderId: orderId,
-    paymentLog: JSON.stringify(paymentLogs)
+    orderId: orderId, paymentLog: JSON.stringify(paymentLogs)
   }))
 }
 
@@ -166,9 +163,7 @@ export async function safeRequest (func) {
 export async function reprintOrder (orderId, type = 0) {
   await safeRequest(async () => {
     await hillo.post('BackendData.php?op=reprintOrder', {
-      id: orderId,
-      withTitle: type,
-      printCount: 1
+      id: orderId, withTitle: type, printCount: 1
     })
   })
 }
