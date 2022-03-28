@@ -5,6 +5,12 @@
         <bill-table @need-refresh="loadData" :orders="bills.orders" :show-operation="true"/>
       </div>
       <v-card elevation="0" class="pa-2" style="width: 272px">
+        <div class="pa-2">
+          <h2>统计</h2>
+          <div class="mt-1">扫码绑定老板端App，可以远程查看店内更多细节数据</div>
+          <v-img width="120px" src="@/assets/1.png"></v-img>
+        </div>
+
         <v-card elevation="0" class="mt-1">
           <div class="pa-2">
             <div class="d-flex justify-space-between align-center">
@@ -65,6 +71,7 @@
             {{ $t('ZBon Drücken') }}
           </v-btn>
         </v-card>
+
       </v-card>
     </div>
 
