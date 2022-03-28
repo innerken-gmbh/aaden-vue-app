@@ -30,14 +30,17 @@
           </template>
         </v-card>
         <v-card elevation="0">
-          <v-card color="error lighten-2" dark @click="returnDishDialog=true" class="d-flex align-center pa-2">
+          <v-card color="error lighten-2" dark @click="returnDishDialog=true"
+                  elevation="0"
+                  class="d-flex align-center pa-2">
             <h3>{{ $t('退菜') }}</h3>
             <v-spacer></v-spacer>
             <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }})
               <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
             </h3>
           </v-card>
-          <v-card color="warning lighten-2" dark @click="discountDialog=true" class="d-flex align-center pa-2">
+          <v-card color="warning lighten-2" elevation="0" dark @click="discountDialog=true"
+                  class="d-flex align-center pa-2 mt-2">
             <h3>{{ $t('折扣') }}</h3>
             <v-spacer></v-spacer>
             <h3>{{ totalDiscount | priceDisplay }}({{ discountList.length }})
@@ -45,7 +48,7 @@
             </h3>
           </v-card>
           <v-btn
-              class="mt-1"
+              class="mt-4"
               x-large
               block
               @click="printXBon"

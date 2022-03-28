@@ -9,12 +9,12 @@
         <v-tab>{{ $t('Meine Umsatz') }}</v-tab>
       </v-tabs>
       <v-spacer></v-spacer>
-      <v-toolbar-items>
-        <v-btn color="primary" @click="showDatePicker=true">
-          {{ getNiceLabel(singleZBonDate) }}/更换日期
-        </v-btn>
 
-      </v-toolbar-items>
+      <v-btn large color="primary" @click="showDatePicker=true">
+        <v-icon left>mdi-calendar</v-icon>
+        {{ getNiceLabel(singleZBonDate) }}/更换日期
+      </v-btn>
+
     </v-toolbar>
     <div class="d-flex" style="height: calc(100vh - 64px)">
       <div class="flex-grow-1">
