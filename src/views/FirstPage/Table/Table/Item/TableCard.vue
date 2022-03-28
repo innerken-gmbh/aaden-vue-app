@@ -84,8 +84,8 @@
 import { getColorLightness } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { defaultTable } from '@/api/restaurantInfoService'
-import TableInfoDisplay from '@/components/Table/TableInfoDisplay'
 import { findConsumeTypeById } from '@/oldjs/common'
+import TableInfoDisplay from '@/views/FirstPage/Table/Table/Widget/TableInfoDisplay'
 
 export default {
   name: 'TableCard',

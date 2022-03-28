@@ -15,8 +15,8 @@ import CheckOutCalculator from './CheckOutCalculator'
 import hillo from 'hillo'
 import { toast } from '@/oldjs/common'
 import { goHome } from '@/oldjs/StaticModel'
-import GlobalConfig from '../oldjs/LocalGlobalSettings'
 import { printNow } from '@/oldjs/Timer'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 export default {
   name: 'CheckOutDrawer',

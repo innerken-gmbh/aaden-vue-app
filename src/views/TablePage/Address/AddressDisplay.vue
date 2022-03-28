@@ -19,8 +19,8 @@
 
 <script>
 import { DefaultAddressInfo } from '@/oldjs/StaticModel'
-import AddressForm from '@/components/AddressForm'
-import AddressPill from '@/components/subcomponent/AddressPill'
+import AddressPill from '@/views/TablePage/Address/AddressPill'
+import AddressForm from '@/views/TablePage/Address/AddressForm'
 
 export default {
   name: 'AddressDisplay',

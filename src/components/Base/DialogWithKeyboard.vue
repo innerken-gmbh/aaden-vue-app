@@ -16,7 +16,8 @@
 </template>
 
 <script>
-import KeyboardLayout from './component/Keyboard/KeyboardLayout'
+
+import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 
 const functionKey = ['mdi-backspace', 'OK', 'C']
 export default {

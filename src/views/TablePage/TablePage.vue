@@ -358,8 +358,8 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                       @input="input=displayInput"
                       v-model="displayInput"
                   />
-                  <keyboard @input="numberInput"
-                            :keys="keyboardLayout"></keyboard>
+                  <keyboard-layout @input="numberInput"
+                                   :keys="keyboardLayout"></keyboard-layout>
                 </div>
               </v-card>
 
@@ -665,39 +665,38 @@ import {
 import { getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import Swal from 'sweetalert2'
 import hillo from 'hillo'
-import {
-  checkOut,
-  deleteDishes,
-  // dishesSetDiscount,
-  getColorLightness,
-  optionalAuthorize,
-  printZwichenBon
-} from '@/oldjs/api'
+import { checkOut, deleteDishes, getColorLightness, optionalAuthorize, printZwichenBon } from '@/oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
-import DishCardList from '../components/DishCardList'
-import ModificationDrawer from '../components/ModificationDrawer'
+
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
-import CheckOutDrawer from '../components/CheckOutDrawer'
+
 import { findDish, getCategoryListWithCache, goHome, processDishList } from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
-import GlobalConfig from '../oldjs/LocalGlobalSettings'
+import GlobalConfig from '../../oldjs/LocalGlobalSettings'
 
 import { debounce } from 'lodash-es'
-import DishBlock from '@/components/DishBlock'
+
 import IKUtils from 'innerken-js-utils'
-import Keyboard from '@/components/Keyboard'
-import DiscountDialog from '@/components/fragments/DiscountDialog'
-import AddressDisplay from '@/components/AddressDisplay'
+
 import { acceptOrder, reprintOrder, safeRequest } from '@/api/api'
-import GridButton from '@/components/GridButton'
+
 import { mapGetters } from 'vuex'
-import BuffetStartDialog from '@/components/fragments/BuffetStartDialog'
-import BuffetStatusCard from '@/components/fragments/BuffetStatusCard'
-import i18n from '../i18n'
+
+import i18n from '../../i18n'
 import dayjs from 'dayjs'
 import { TableFilter } from '@/api/tableService'
 import { Remember } from '@/api/remember'
+import BuffetStatusCard from '@/views/TablePage/Dialog/BuffetStatusCard'
+import BuffetStartDialog from '@/views/TablePage/Dialog/BuffetStartDialog'
+import GridButton from '@/components/Base/GridButton'
+import AddressDisplay from '@/views/TablePage/Address/AddressDisplay'
+import DiscountDialog from '@/views/TablePage/Dialog/DiscountDialog'
+import DishBlock from '@/views/TablePage/Dish/DishBlock'
+import CheckOutDrawer from '@/components/GlobalDialog/CheckOutDrawer'
+import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
+import DishCardList from '@/views/TablePage/Dish/DishCardList'
+import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -728,7 +727,7 @@ export default {
     GridButton,
     AddressDisplay,
     DiscountDialog,
-    Keyboard,
+    KeyboardLayout,
     DishBlock,
     CheckOutDrawer,
     ModificationDrawer,
@@ -943,7 +942,8 @@ export default {
           }
           this.discountRatio = discountRatio
         }
-      } catch (e) {}
+      } catch (e) {
+      }
     },
     discountShow () {
       optionalAuthorize(() => {

@@ -3,7 +3,6 @@ import router from '../router'
 import hillo from 'hillo'
 import i18n from '../i18n'
 import GlobalConfig from './LocalGlobalSettings'
-import PrintStatus from './PrintStatus'
 import store from './../store'
 import { clearAllTimer } from '@/oldjs/Timer'
 import dayjs from 'dayjs'
@@ -192,16 +191,9 @@ export async function forceOpenTable (tableName, pw) {
 }
 
 export async function getFalsePrinterList () {
-  const falsePrinterList = (await hillo.get('PrintRecord.php', {
+  return (await hillo.get('PrintRecord.php', {
     op: 'showAbnormalRecords'
   })).content
-  if (falsePrinterList) {
-    falsePrinterList.forEach((item, i) => {
-      item.printStatusString = PrintStatus.getList().find(n => n.id === parseInt(item.printStatus)).name
-    })
-  }
-
-  return falsePrinterList
 }
 
 async function shouldOpenTable (openingTable, pw) {

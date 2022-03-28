@@ -220,9 +220,8 @@ import { toast } from '@/oldjs/common'
 import hillo from 'hillo'
 import { dragscroll } from 'vue-dragscroll/src/main'
 import { DefaultAddressInfo } from '@/oldjs/StaticModel'
-import AddressesCard from '@/components/AddressesCard'
-import i18n from '../i18n'
-import FilterEmptyStringDisplayer from '@/components/utls/filterEmptyStringDisplayer'
+import FilterEmptyStringDisplayer from '@/views/TablePage/Address/filterEmptyStringDisplayer'
+import AddressesCard from '@/views/TablePage/Address/AddressesCard'
 
 export default {
   name: 'AddressForm',
@@ -247,11 +246,11 @@ export default {
       realShow: null,
       createUser: false,
       deliveryMethods: [
-        i18n.t('Abholung'), i18n.t('Lieferung')
+        this.$t('Abholung'), this.$t('Lieferung')
       ],
-      date: new Date().toISOString().substr(0, 10),
+      date: new Date().toISOString().substring(0, 10),
       menu1: null,
-      steps: [i18n.t('customerAddress'), i18n.t('address'), i18n.t('deliveryInfo')]
+      steps: [this.$t('customerAddress'), this.$t('address'), this.$t('deliveryInfo')]
     }
   },
   watch: {

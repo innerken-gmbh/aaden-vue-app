@@ -1,11 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import IndexPage from '../views/IndexPage'
-import TablePage from '../views/TablePage'
+
 import { clearAllTimer } from '@/oldjs/Timer'
 import BossPage from '@/views/BossPage'
-import FirstPage from '@/views/FirstPage'
-import SalesPage from '@/views/SalesPage'
+import IndexPage from '@/views/IndexPage'
+import FirstPage from '@/views/FirstPage/FirstPage'
+import SalesPage from '@/views/SalePage/SalesPage'
+import TablePage from '@/views/TablePage/TablePage'
 
 Vue.use(VueRouter)
 

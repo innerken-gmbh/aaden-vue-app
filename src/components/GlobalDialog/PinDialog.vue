@@ -20,7 +20,7 @@
               @focus="focusEnd" ref="hiddenInput" type="search"
               autocomlete="off" dense hide-details
               v-model="hiddenInput"></v-text-field>
-          <keyboard :keys="keyboardLayout" @input="numberInput"/>
+          <keyboard-layout :keys="keyboardLayout" @input="numberInput"/>
         </template>
         <template v-else>
           <div style="width: 100%;" class="d-flex justify-center align-center pa-4">
@@ -38,9 +38,9 @@
 </template>
 
 <script>
-import Keyboard from '@/components/Keyboard'
 import { mapMutations, mapState } from 'vuex'
 import { checkServant } from '@/oldjs/api'
+import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 
 const keyboardLayout =
     [
@@ -52,7 +52,7 @@ const keyboardLayout =
 
 export default {
   name: 'PinDialog',
-  components: { Keyboard },
+  components: { KeyboardLayout },
   props: {
     id: {},
     initialUI: {

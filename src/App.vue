@@ -13,8 +13,8 @@
 
 <script>
 import { tryToReport } from './oldjs/common'
-import PinDialog from '@/components/subcomponent/PinDialog'
-import TableSelector from '@/components/subcomponent/TableSelector'
+import TableSelector from '@/components/GlobalDialog/TableSelector'
+import PinDialog from '@/components/GlobalDialog/PinDialog'
 
 export default {
   name: 'App',

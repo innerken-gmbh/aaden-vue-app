@@ -40,7 +40,7 @@
 
 <script>
 import { DefaultAddressInfo } from '@/oldjs/StaticModel'
-import FilterEmptyStringDisplayer from '@/components/utls/filterEmptyStringDisplayer'
+import FilterEmptyStringDisplayer from '@/views/TablePage/Address/filterEmptyStringDisplayer'
 
 export default {
   name: 'AddressesCard',

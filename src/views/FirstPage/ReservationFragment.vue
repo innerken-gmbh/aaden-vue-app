@@ -178,7 +178,10 @@
           <v-divider class="my-3"></v-divider>
         </template>
         <div style="display: grid;grid-gap: 8px;" class="mt-8">
-          <v-btn @click="moveReservation(activeReservation.id)" block color="warning" elevation="0">{{ $t('更换桌子') }}</v-btn>
+          <v-btn @click="moveReservation(activeReservation.id)" block color="warning" elevation="0">{{
+              $t('更换桌子')
+            }}
+          </v-btn>
           <v-btn @click="cancelReservation(activeReservation.id)" outlined block color="error" elevation="0">
             {{ $t('取消预定') }}
           </v-btn>

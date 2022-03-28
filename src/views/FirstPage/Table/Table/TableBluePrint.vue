@@ -168,11 +168,11 @@ import { defaultSection } from '@/oldjs/defaultConst'
 import { getSectionList, setTableLocation } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import debounce from 'lodash-es/debounce'
-import TableCard from '@/components/Table/TableCard'
 import { cancelReservation, getCurrentReservation, moveReservation } from '@/api/ReservationService'
 import { groupBy } from 'lodash-es'
 import uniqBy from 'lodash-es/uniqBy'
 import IKUtils from 'innerken-js-utils'
+import TableCard from '@/views/FirstPage/Table/Table/Item/TableCard'
 
 async function refreshAllTablesPosition (listOfTable, containerHeight, containerWidth, sectionId) {
   IKUtils.showLoading(true)

@@ -1,21 +1,22 @@
 <template>
-    <v-bottom-sheet fullscreen v-model="realShow" >
-        <dish-modification
-                ref="modification"
-                :showing="realShow"
-                :old-mod="oldMod"
-                @modification-submit="submit(...$event,dish)"
-                @modification-cancel="realShow=false"
-                :options="dish.modInfo">
-            <template v-slot:before="{price}">
-                <span class="font-weight-black"> {{ dish.name }} €{{parseFloat(dish.price)+price | priceDisplay}}</span>
-            </template>
-        </dish-modification>
-    </v-bottom-sheet>
+  <v-bottom-sheet fullscreen v-model="realShow">
+    <dish-modification
+        ref="modification"
+        :showing="realShow"
+        :old-mod="oldMod"
+        @modification-submit="submit(...$event,dish)"
+        @modification-cancel="realShow=false"
+        :options="dish.modInfo">
+      <template v-slot:before="{price}">
+        <span class="font-weight-black"> {{ dish.name }} €{{ parseFloat(dish.price) + price | priceDisplay }}</span>
+      </template>
+    </dish-modification>
+  </v-bottom-sheet>
 </template>
 
 <script>
-import DishModification from '@/components/DishModification'
+
+import DishModification from '@/views/TablePage/Dialog/DishModification'
 
 export default {
   name: 'ModificationDrawer',

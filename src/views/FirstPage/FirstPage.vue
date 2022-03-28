@@ -220,12 +220,12 @@
                   <v-icon left>mdi-plus</v-icon>
                   <h4>{{ $t('新增') }}</h4>
                 </v-card>
-                <table-gird-item
+                <table-grid-item
                     v-for="table in takeawayList"
                     @click="openOrEnterTable(table.tableName)"
                     :key="table.id" :table-info="table"
                 >
-                </table-gird-item>
+                </table-grid-item>
               </div>
             </div>
 
@@ -418,7 +418,7 @@
               :autofocus="Config.getFocus"
           />
 
-          <keyboard v-if="showKeyboard" @input="numberInput" :keys="keyboardLayout"/>
+          <keyboard-layout v-if="showKeyboard" @input="numberInput" :keys="keyboardLayout"/>
         </v-card>
       </v-tab-item>
       <!--        预定-->
@@ -461,7 +461,7 @@
 </template>
 
 <script>
-import { version } from '../../package.json'
+import { version } from '../../../package.json'
 import {
   blockReady,
   findConsumeTypeById,
@@ -481,25 +481,29 @@ import GlobalConfig, {
   NeededKeys,
   refreshGetter,
   useCurrentConfig
-} from '../oldjs/LocalGlobalSettings'
+} from '../../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
 import PrinterList from 'aaden-base-model/lib/Models/PrinterList'
-import TimeDisplay from '@/components/TimeDisplay'
+
 import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
-import Keyboard from '@/components/Keyboard'
-import TableBluePrint from '@/components/TableBluePrint'
+
 import { mapGetters, mapMutations } from 'vuex'
-import TableListItem from '@/components/Table/TableListItem'
-import TableGirdItem from '@/components/Table/TableGridItem'
 import { TableFixedSectionId } from '@/api/tableService'
-import Navgation from '@/components/Navgation'
-import ToggleUpDownButton from '@/components/widget/ToggleUpDownButton'
+
 import { getRestaurantInfo } from '@/api/restaurantInfoService'
-import TrailingNumber from '@/components/widget/TrailingNumber'
-import Reservation from '@/components/fragments/ReservationFragment'
-import TakeawayOrderItem from '@/components/Table/TakeawayOrderItem'
+
 import { acceptOrder, loadRestaurantInfo, syncTakeawaySettingToCloud } from '@/api/api'
 import { Remember } from '@/api/remember'
+import Reservation from '@/views/FirstPage/ReservationFragment'
+import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
+import TrailingNumber from '@/views/FirstPage/widget/TrailingNumber'
+import ToggleUpDownButton from '@/views/FirstPage/widget/ToggleUpDownButton'
+import Navgation from '@/views/FirstPage/Navgation'
+import TableBluePrint from '@/views/FirstPage/Table/Table/TableBluePrint'
+import TimeDisplay from '@/components/Base/TimeDisplay'
+import TakeawayOrderItem from '@/views/FirstPage/Table/Table/Item/TakeawayOrderItem'
+import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
+import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
 
 const keyboardLayout =
     [
@@ -515,15 +519,15 @@ export default {
     dragscroll
   },
   components: {
+    KeyboardLayout,
     TakeawayOrderItem,
     Reservation,
     TrailingNumber,
     ToggleUpDownButton,
     Navgation,
-    TableGirdItem,
+    TableGridItem,
     TableListItem,
     TableBluePrint,
-    Keyboard,
     TimeDisplay
   },
   props: {

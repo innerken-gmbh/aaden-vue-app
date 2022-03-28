@@ -20,9 +20,9 @@
             </v-card>
           </template>
         </v-sheet>
-        <v-sheet class="pa-2" >
+        <v-sheet class="pa-2">
           {{ findConsumeTypeById(activeConsumeTypeId).name }}
-          <div class="editForm" >
+          <div class="editForm">
             <div class="formRow">
               <div class="formLabel caption">{{ $t('总用餐时间') }}</div>
               <v-slider hide-details max="960" min="0" step="5" thumb-label="always"

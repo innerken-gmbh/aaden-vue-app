@@ -2,62 +2,7 @@
   <v-card elevation="0">
     <div class="d-flex">
       <div class="pa-2 flex-grow-1">
-        <h2>{{ $t('订单列表') }}</h2>
-        <v-simple-table height="calc(100vh - 144px)" fixed-header>
-          <template v-slot:default>
-            <thead>
-            <tr>
-              <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
-              <th class="text-left">{{ $t('time') }}</th>
-              <th class="text-left">{{ $t('Summe') }}</th>
-              <th class="text-left">{{ $t('operation') }}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <template v-for="order in bills.orders">
-              <tr v-bind:key="order.orderId">
-                <td>
-                  <span class="font-weight-bold">{{ order.tableName }}</span> / {{ order.orderId }}
-                </td>
-                <td>
-                  {{ order.updatedAt }}
-                </td>
-                <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
-                  {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{
-                    order.tipIncome
-                  }})</span>/
-                  {{ order.paymentMethodStrings }}<b v-if="order.discountStr">/
-                  {{ '-' + order.discountStr.replace('p', '%') }}</b>
-                </td>
-                <td>
-                  <v-btn elevation="0" @click="reprintOrder(order.orderId)" small color="primary">
-                    <v-icon left>
-                      mdi-printer-settings
-                    </v-icon>
-                    补打
-                  </v-btn>
-                  <v-btn small
-                         elevation="0"
-                         color="warning"
-                         class="ml-2"
-                         @click="startChangePaymentMethodForOrder(order)">
-                    <v-icon left>mdi-cash-refund</v-icon>
-                    更换
-                  </v-btn>
-                  <v-btn small
-                         elevation="0"
-                         color="error"
-                         class="ml-2"
-                         @click="startChangePaymentMethodForOrder(order)">
-                    <v-icon>mdi-file-cancel-outline</v-icon>
-
-                  </v-btn>
-                </td>
-              </tr>
-            </template>
-            </tbody>
-          </template>
-        </v-simple-table>
+        <bill-table :orders="bills.orders" :show-operation="true"/>
       </div>
       <v-card elevation="0" class="pa-2" style="width: 272px">
         <v-card elevation="0" class="mt-1">
@@ -119,16 +64,7 @@
         </v-card>
       </v-card>
     </div>
-    <v-dialog v-model="checkOutDialog" fullscreen>
-      <v-card width="100%">
-        <check-out-calculator
-            style="height: 564px"
-            @payment-cancel="checkOutDialog=false"
-            @payment-submit="changePaymentMethod"
-            :total="changeOrderTotal"
-        ></check-out-calculator>
-      </v-card>
-    </v-dialog>
+
     <v-dialog v-model="returnDishDialog" width="fit-content">
       <v-simple-table v-if="returnDishDialog" height="calc(100vh - 144px)"
                       style="width: 650px"
@@ -199,25 +135,14 @@
 </template>
 
 <script>
-import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import dayjs from 'dayjs'
-import {
-  changePayMethodForOrder,
-  getBillListForServant,
-  previewZBon,
-  printXBon,
-  printZBon,
-  printZBonUseDate,
-  reprintOrder
-} from '@/api/api'
+import { getBillListForServant, previewZBon, printXBon, printZBonUseDate } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
-import CheckOutCalculator from '@/components/CheckOutCalculator'
+import BillTable from '@/views/SalePage/BillTable'
 
 export default {
-  components: {
-    CheckOutCalculator
-  },
   name: 'Calendar',
+  components: { BillTable },
   data: function () {
     return {
       billData: {
@@ -231,9 +156,7 @@ export default {
         }
       },
       bills: [],
-      checkOutDialog: null,
-      changeOrderTotal: 0,
-      changeOrderId: null,
+
       returnDishDialog: null,
       discountDialog: null
     }
@@ -277,40 +200,15 @@ export default {
       return this.billContent.taxInfos?.filter(t => t.consumeTypeName === 'Total')
     },
     shouldShowZBon () {
-      if (GlobalConfig.UseDailyZbon) {
-        if (!this.singleZBonDate) {
-          return false
-        }
-        return dayjs().isAfter(dayjs(this.singleZBonDate, 'YYYY-MM-DD')
-          .add(1, 'd').hour(4).minute(0))
-      } else {
-        return true
+      if (!this.singleZBonDate) {
+        return false
       }
+      return dayjs().isAfter(dayjs(this.singleZBonDate, 'YYYY-MM-DD')
+        .add(1, 'd').hour(4).minute(0))
     }
   },
   methods: {
-    async changePaymentMethod (paymentLog = []) {
-      if (paymentLog?.length > 0) {
-        IKUtils.showLoading()
-        const res = await changePayMethodForOrder(this.changeOrderId, paymentLog)
-        console.log(res)
-        IKUtils.toast('OK')
-        this.checkOutDialog = false
-      } else {
-        IKUtils.showError('Bitte Eine Paymethod zu wahlen.')
-      }
-      await this.loadData()
-    },
-    async reprintOrder (orderId) {
-      IKUtils.showLoading()
-      await reprintOrder(orderId)
-      IKUtils.toast()
-    },
-    startChangePaymentMethodForOrder (order) {
-      this.changeOrderId = order.orderId
-      this.changeOrderTotal = order.totalPrice
-      this.checkOutDialog = true
-    },
+
     async printXBon () {
       IKUtils.showLoading()
       await printXBon(this.singleZBonDate, this.singleZBonDate)
@@ -319,16 +217,9 @@ export default {
     async printZBon () {
       IKUtils.showConfirm(this.$t('Möchten Sie alle Datensätze drucken?'), this.$t('Bist du sicher?'), async () => {
         IKUtils.showLoading(false)
-        if (GlobalConfig.UseDailyZbon) {
-          await printZBonUseDate(this.singleZBonDate, this.singleZBonDate)
-        } else {
-          if (this.lastZBonPrintDate.isAfter(dayjs().subtract(5, 'm'))) {
-            IKUtils.showError(this.$t('Die letzte Druckanforderung wurde innerhalb von 5 Minuten ausgegeben.') +
-                this.$t(' Warten Sie mindestens 5 Minuten, bevor Sie erneut drucken'))
-            return
-          }
-          await printZBon()
-        }
+
+        await printZBonUseDate(this.singleZBonDate, this.singleZBonDate)
+
         IKUtils.toast('OK')
         await this.loadData()
       })

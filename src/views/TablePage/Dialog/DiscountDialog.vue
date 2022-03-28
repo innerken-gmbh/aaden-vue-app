@@ -16,7 +16,7 @@
         </div>
         <v-spacer></v-spacer>
       </v-card-actions>
-      <keyboard :keys="keyboardLayout" @input="numberInput"/>
+      <keyboard-layout :keys="keyboardLayout" @input="numberInput"/>
     </v-card>
   </v-dialog>
 </template>
@@ -25,21 +25,21 @@
 import hillo from 'hillo'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
-import Keyboard from '@/components/Keyboard'
-import { popAuthorize, loadingComplete } from '@/oldjs/common'
+import { loadingComplete, popAuthorize } from '@/oldjs/common'
+import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 
 const keyboardLayout =
-  [
+    [
 
-    '7', '8', '9', 'C',
-    '4', '5', '6', '',
-    '1', '2', '3', '$',
-    'mdi-close-box', '0', '.', '%'
-  ]
+      '7', '8', '9', 'C',
+      '4', '5', '6', '',
+      '1', '2', '3', '$',
+      'mdi-close-box', '0', '.', '%'
+    ]
 
 export default {
   name: 'discountDialog',
-  components: { Keyboard },
+  components: { KeyboardLayout },
   props: {
     discountModelShow: {
       default: false
@@ -136,7 +136,7 @@ export default {
       const value = parseFloat(discountStr.replace('p', ''))
       const ratio = isPercentage ? value / 100 : value / this.totalPrice
       if (GlobalConfig.bigDiscountRatio > 0 &&
-        ratio >= GlobalConfig.bigDiscountRatio) {
+          ratio >= GlobalConfig.bigDiscountRatio) {
         this.realShow = false
         popAuthorize('boss', () => {
           realSubmitDiscount()

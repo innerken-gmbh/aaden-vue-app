@@ -33,8 +33,8 @@
 import { dragscroll } from 'vue-dragscroll'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { mapMutations, mapState } from 'vuex'
-import TableBluePrint from '@/components/TableBluePrint'
 import { getTableListWithCells } from '@/oldjs/api'
+import TableBluePrint from '@/views/FirstPage/Table/Table/TableBluePrint'
 
 export default {
   name: 'TableSelector',

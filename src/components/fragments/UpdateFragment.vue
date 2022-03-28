@@ -2,9 +2,9 @@
   <v-menu v-if="!Config.backendIsOk">
     <template v-slot:activator="{ on, attrs }">
       <v-btn
-        dark
-        v-bind="attrs"
-        v-on="on"
+          dark
+          v-bind="attrs"
+          v-on="on"
       >
         {{ $t('Achtung! Bitte Upgrade') }}
       </v-btn>
@@ -36,10 +36,10 @@
         <v-card-title>{{ $t('正在尝试更新') }}</v-card-title>
         <div style="width: 100%;" class="d-flex justify-center align-center pa-4">
           <v-progress-circular
-            :size="70"
-            :width="7"
-            color="purple"
-            indeterminate
+              :size="70"
+              :width="7"
+              color="purple"
+              indeterminate
           ></v-progress-circular>
         </div>
       </template>
