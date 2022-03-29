@@ -193,8 +193,15 @@ async function refreshAllTablesPosition (listOfTable, containerHeight, container
 }
 
 async function submitTable (table, x, y, w, h, currentSectionId) {
-  w = w ?? (table.w !== 'auto' ? table.w : 50)
-  h = h ?? (table.h !== 'auto' ? table.h : 50)
+  console.log(table, x, y, w, h)
+  w = w ?? (table.w ?? 50)
+  h = h ?? (table.h ?? 50)
+  if (w === 'auto') {
+    w = GlobalConfig.defaultTileWidth
+  }
+  if (h === 'auto') {
+    h = GlobalConfig.defaultTileHeight
+  }
   currentSectionId = currentSectionId + ''
 
   const newCell = Object.assign(table.cells.find(c => c.sectionId === currentSectionId) ?? {
