@@ -20,11 +20,11 @@
               :color="color('order')"
               elevation="0"
               @click="goHome"
-              class="d-flex flex-column align-center py-1">
+              class="d-flex flex-column align-center py-4">
             <div>
               <v-icon>mdi-silverware</v-icon>
             </div>
-            <div class="mt-2 text-caption">
+            <div class="mt-1 text-caption">
               {{ $t('点餐') }}
             </div>
           </v-card>
@@ -32,11 +32,11 @@
               tile
               :dark="isActive('sales')"
               :color="color('sales')" elevation="0"
-              @click="jumpToSales" class="d-flex flex-column align-center py-1">
+              @click="jumpToSales" class="d-flex flex-column align-center py-2">
             <div>
               <v-icon>mdi-cash</v-icon>
             </div>
-            <div class="mt-2 text-caption">
+            <div class="mt-1 text-caption">
               {{ $t('销售额') }}
             </div>
           </v-card>
@@ -46,11 +46,11 @@
               :color="color('boss')"
               elevation="0"
               @click="jumpToBoss"
-              class="d-flex flex-column align-center py-1">
+              class="d-flex flex-column align-center py-2">
             <div>
               <v-icon>mdi-home-analytics</v-icon>
             </div>
-            <div class="mt-2 text-caption">
+            <div class="mt-1 text-caption">
               {{ $t('CHEF') }}
             </div>
           </v-card>
