@@ -9,7 +9,6 @@ const TableInfoMetaDataSetting = {
     classFunc: (v) => {
       const [hour, minute] = v.split(':')
       const diff = timeFromNowInMinute(hour, minute)
-      console.log(diff, v)
       return diff > GlobalConfig.maxEatMinute ? 'error font-weight-bold' : ''
     }
   },
