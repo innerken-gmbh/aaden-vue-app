@@ -43,7 +43,7 @@
               <span style="padding: 2px 4px">{{ $t('跑堂订单') }}</span>
             </div>
           </v-item>
-          <v-item #default="{active,toggle}">
+          <v-item v-if="Config.activeReservation" #default="{active,toggle}">
             <div
                 @click="toggle"
                 class="navigationPillItem"
