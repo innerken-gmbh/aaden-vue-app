@@ -948,6 +948,8 @@ export default {
     discountShow () {
       optionalAuthorize(() => {
         this.discountModelShow = true
+        // HINT： 苏哥，你做了一边以后，另一边不要忘啊！！
+        this.useDishesDiscount = false
       }, '', !GlobalConfig.discountWithoutPassword)
     },
     async findAndOrderDish (code, count = 1) {
@@ -1068,14 +1070,10 @@ export default {
     },
 
     dishesSetDiscount: function () {
-      // this.useDishesDiscount = true
-
       optionalAuthorize(() => {
         this.discountModelShow = true
         this.useDishesDiscount = true
       }, '', !GlobalConfig.discountWithoutPassword)
-
-      // dishesSetDiscount(this.tableDetailInfo.order.id, this.splitOrderListModel.list, this.initialUI)
     },
 
     printZwichenBon: function () {
@@ -1155,9 +1153,9 @@ export default {
       this.activeCategoryId = null
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
-      this.getTableDetail()
-      setGlobalTableId(this.id)
       await this.reloadDish(this.realConsumeTypeId, forceReload)
+      await this.getTableDetail()
+      setGlobalTableId(this.id)
 
       blockReady()
     },
@@ -1719,7 +1717,7 @@ tr:hover {
 
 .bottomCart {
   position: fixed;
-  width: calc(100vw - 304px);
+  width: calc(100vw - 354px);
   height: 100vh;
 }
 

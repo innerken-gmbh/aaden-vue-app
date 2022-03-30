@@ -135,6 +135,10 @@ export default {
       const isPercentage = discountStr.includes('p')
       const value = parseFloat(discountStr.replace('p', ''))
       const ratio = isPercentage ? value / 100 : value / this.totalPrice
+      if (ratio > 1) {
+        IKUtils.showError('折扣不能大于原价')
+        return
+      }
       if (GlobalConfig.bigDiscountRatio > 0 &&
           ratio >= GlobalConfig.bigDiscountRatio) {
         this.realShow = false
