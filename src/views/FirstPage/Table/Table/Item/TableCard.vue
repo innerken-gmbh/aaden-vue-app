@@ -37,22 +37,26 @@
                 border-radius: 4px;">
           {{ findConsumeTypeById(table.consumeType) }}
         </div>
-        <div class="d-flex flex-column align-center" style="z-index: 2">
+        <div class="d-flex flex-column align-center"
+             style="z-index: 2"
+        >
           <div class="mt-1" style="display: grid;grid-template-columns: repeat(2,1fr);grid-gap: 2px">
             <div v-for="info in table.infos" :key="info">
               <table-info-display :info-key="info" :table="table"/>
             </div>
           </div>
         </div>
-
       </template>
+
       <template v-if="!table.inUse&&table.reservations.length>0">
-        <v-btn color="primary lighten-2" x-small
+        <v-btn color="primary lighten-2"
+               x-small
                text
                style="font-size: 10px"
                @click.stop="showReservationDialog"
                class="py-1 pa-0"
-               elevation="0">
+               elevation="0"
+        >
           <v-icon small class="mr-1">mdi-calendar</v-icon>
           <template v-if="table.reservations.length>1">
             {{ table.reservations.length }} |

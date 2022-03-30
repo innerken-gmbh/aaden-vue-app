@@ -13,45 +13,21 @@
                 :src="require('@/assets/logo.png')"/>
           </div>
         </div>
-        <div style="display: grid;grid-auto-flow: row;grid-gap: 12px">
+        <div style="display: grid;grid-auto-flow: row;;grid-gap: 12px">
           <v-card
-              tile
-              :dark="isActive('order')"
-              :color="color('order')"
+              style="width: 100%"
+              v-for="m in menuList"
+              :key="m.icon"
               elevation="0"
-              @click="goHome"
-              class="d-flex flex-column align-center py-4">
-            <div>
-              <v-icon>mdi-silverware</v-icon>
-            </div>
-            <div class="mt-1 text-caption">
-              {{ $t('点餐') }}
-            </div>
-          </v-card>
-          <v-card
-              tile
-              :dark="isActive('sales')"
-              :color="color('sales')" elevation="0"
-              @click="jumpToSales" class="d-flex flex-column align-center py-2">
-            <div>
-              <v-icon>mdi-cash</v-icon>
-            </div>
-            <div class="mt-1 text-caption">
-              {{ $t('销售额') }}
-            </div>
-          </v-card>
-          <v-card
-              tile
-              :dark="isActive('boss')"
-              :color="color('boss')"
-              elevation="0"
-              @click="jumpToBoss"
+              @click="goto(m)"
               class="d-flex flex-column align-center py-2">
             <div>
-              <v-icon>mdi-home-analytics</v-icon>
+              <v-icon :color="color(m.path)">{{ m.icon }}</v-icon>
             </div>
-            <div class="mt-1 text-caption">
-              {{ $t('CHEF') }}
+            <div :class="color(m.path)+'--text'" class="mt-1 text-caption text-no-wrap
+             text-truncate overflow-hidden"
+                 style="font-size: small">
+              {{ $t(m.text) }}
             </div>
           </v-card>
         </div>
@@ -72,7 +48,6 @@
 <script>
 import { jumpTo, popAuthorize } from '@/oldjs/common'
 import { getServantList } from '@/oldjs/api'
-import { goHome } from '@/oldjs/StaticModel'
 
 const version = require('../../package.json').version
 
@@ -82,12 +57,50 @@ export default {
     return {
       version,
       drawer: false,
-      servantList: []
+      servantList: [],
+      menuList: [
+        {
+          icon: 'mdi-silverware',
+          text: '点餐',
+          beforeEnter () {
+            return true
+          },
+          path: 'order'
+        },
+        {
+          icon: 'mdi-cash',
+          text: '销售额',
+          beforeEnter: async () => {
+            const pw = await popAuthorize('', null, true)
+            const servant = this.findServant(pw)
+            return {
+              isBoss: parseInt(servant.permission) === 1,
+              password: pw
+            }
+          },
+          path: 'sales'
+        },
+        {
+          icon: 'mdi-home-analytics',
+          text: 'CHEF',
+          async beforeEnter () {
+            return await popAuthorize('boss')
+          },
+          path: 'boss'
+        }
+      ]
     }
   },
   methods: {
+    async goto (menuItem) {
+      const res = await menuItem.beforeEnter()
+      console.log(res)
+      if (res) {
+        jumpTo(menuItem.path, res)
+      }
+    },
     color (myName) {
-      return this.isActive(myName) ? 'primary' : 'white'
+      return this.isActive(myName) ? 'primary' : ''
     },
     isActive (myName) {
       return this.$route.name === myName
@@ -97,27 +110,7 @@ export default {
         return this.servantList.find(s => s.password === pw)
       }
     },
-    popAuthorize,
-    jumpToBoss () {
-      popAuthorize('boss', () => {
-        jumpTo('boss')
-      })
-    },
-    jumpToSales () {
-      popAuthorize('',
-        (pw) => {
-          const servant = this.findServant(pw)
-          jumpTo('sales', {
-            isBoss: parseInt(servant.permission) === 1,
-            password: pw
-          })
-        }, true)
-    },
-    jumpToVip () {
-    },
-    goHome () {
-      goHome()
-    }
+    popAuthorize
   },
   async mounted () {
     this.servantList = await getServantList()

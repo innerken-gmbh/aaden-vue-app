@@ -171,16 +171,44 @@
               @table-clicked="openOrEnterTable"
           />
         </div>
+        <div style="position: absolute;right: 0;top: 8px;max-height: calc(100%);z-index: 3;">
+          <div
+              style="display: grid;grid-template-rows: auto;grid-gap: 4px;overflow-y: hidden;max-height: calc(100vh - 72px)"
+              v-dragscroll>
+            <v-card style="writing-mode: vertical-lr;text-align: center" elevation="0"
+                    @click="togoClick"
+                    class="head pa-2 d-flex align-center">
 
-        <div class="d-flex flex-column" style="
+              <v-icon style="transform: rotate(90deg)">mdi-truck-fast</v-icon>
+              <span class="mt-4">{{ $t('Togo') }}</span>
+              <span class="white--text primary mt-4"
+                    style="font-size: small;border-radius: 24px;padding: 8px 1px">{{ takeawayList.length }}</span>
+
+            </v-card>
+            <v-card style="writing-mode: vertical-lr;text-align: center" elevation="0"
+                    @click="takeawayClicked"
+                    class="head pa-2 py-4 d-flex align-center">
+              <v-icon>mdi-plus-circle</v-icon>
+              <span class="mt-4">{{ $t('新增') }}</span>
+            </v-card>
+            <v-card v-for="table in takeawayList"
+                    color="primary" dark
+                    :key="table.id" style="writing-mode: vertical-lr;text-align: center" elevation="0"
+                    @click="openOrEnterTable(table.tableName)"
+                    class="head pa-2 py-4 d-flex align-center">
+              <span>   {{ table.tableName }}</span>
+            </v-card>
+
+          </div>
+
+        </div>
+        <div v-if="false" class="d-flex flex-column" style="
            position: absolute;
            right: 8px;
            top:8px;
            width: 240px;
            max-height: calc(100% - 16px);
-
            z-index: 3">
-
           <template>
             <div class="d-flex flex-column" style="height: 100%">
               <v-card elevation="0"
@@ -271,7 +299,7 @@
               </trailing-number>
             </div>
             <div style="display: grid;grid-gap: 12px;overflow-y: scroll;" class="mt-4">
-              <table-gird-item
+              <table-grid-item
                   :big-card="true"
                   v-for="t in accepted"
                   :key="t.tableName"

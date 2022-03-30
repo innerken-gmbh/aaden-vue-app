@@ -310,6 +310,7 @@ export async function requestOutTable (pw = null) {
   if (goodRequest(res)) {
     jumpToTable(res.content.tableId, res.content.tableName)
   } else {
+    console.log(res)
     logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + res.info)
   }
 }
@@ -528,6 +529,7 @@ export function logError (t) {
 }
 
 export function logErrorAndPop (t) {
+  console.log(t)
   const info = t?.data?.info
   toastError(info ?? t)
   console.error(t)

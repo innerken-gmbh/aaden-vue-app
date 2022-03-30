@@ -179,7 +179,7 @@ async function refreshAllTablesPosition (listOfTable, containerHeight, container
   const defaultWidth = GlobalConfig.defaultTileWidth
   const defaultHeight = GlobalConfig.defaultTileHeight
   const rowCount = Math.floor(containerHeight / defaultHeight)
-  const colCount = Math.floor((containerWidth - 300) / defaultWidth)
+  const colCount = Math.floor((containerWidth - 48) / defaultWidth)
   console.log(rowCount, colCount)
   let count = 0
   for (const table of listOfTable) {
