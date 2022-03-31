@@ -69,6 +69,17 @@ export async function getBillListForServant (pw = null, date, endDate = null) {
   })).content
 }
 
+export async function loadBillList (lang, dateStart, dateEnd) {
+  return (await hillo.get('Orders.php?op=withSortAndFilter', {
+    lang,
+    timespan: `${dateStart} - ${dateEnd}`
+  })).content.map(o => {
+    o.returnDishCount = Math.abs(o.returnDishCount ?? 0)
+    o.discountDishCount = Math.abs(o.discountDishCount ?? 0)
+    return o
+  })
+}
+
 export async function getBuffetPriceDishes () {
   return (await hillo.get('ConsumeType.php?op=showBuffetPriceDishToConsumeType', { lang: GlobalConfig.lang })).content
 }

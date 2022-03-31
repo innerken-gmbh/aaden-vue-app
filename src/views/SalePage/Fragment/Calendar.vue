@@ -2,77 +2,100 @@
   <v-card elevation="0">
     <div class="d-flex">
       <div class="pa-2 flex-grow-1">
-        <bill-table @need-refresh="loadData" :orders="bills.orders" :show-operation="true"/>
-      </div>
-      <v-card elevation="0" class="pa-2" style="width: 272px">
-        <div class="pa-2">
-          <h2>统计</h2>
-          <div class="mt-1">扫码绑定老板端App，可以远程查看店内更多细节数据</div>
-          <v-img width="120px" src="@/assets/1.png"></v-img>
-        </div>
+        <v-app-bar dense elevation="0" color="white">
+          <v-text-field
+            style="min-width: 800px"
+            solo dense
+            prepend-inner-icon="mdi-magnify"
+            :placeholder="$t('order_number_table_number_amount')"
+            v-model="search">
+            <template v-slot:append-outer>
 
-        <v-card elevation="0" class="mt-1">
-          <div class="pa-2">
-            <div class="d-flex justify-space-between align-center">
-              <h2 style="font-size: 24px">{{ $t('All') }}{{ $t('Umsatz') }}</h2>
-              <h2 style="font-size: 24px">{{ billContent.fTotal }}</h2>
-            </div>
-            <div class="d-flex justify-space-between mt-1">
-              <div>{{ $t('Netto') }}/ {{ $t('Steuer') }}</div>
-              <div>{{ billContent.fTotalTe }}/{{ billContent.fTotalTax }}</div>
-            </div>
-          </div>
-          <template v-for="(total,index) in taxGroupInfo">
-            <div class="pa-2" :key="total.taxRatePercentage+'-'+index">
-              <div class="d-flex justify-space-between">
-                <h3> {{ $t('Umsatz') }} {{ total.taxRatePercentage }}% </h3>
-                <h3>{{ total.groupTotal }}</h3>
+            </template>
+          </v-text-field>
+          <v-overflow-btn
+            style="width: 40px"
+            class="mx-3 my-2"
+            :items="dropdown_fiter"
+            label="Overflow Btn w/ counter"
+            counter
+            item-value="text"
+          ></v-overflow-btn>
+        </v-app-bar>
+        <bill-table @need-refresh="loadData" :orders="displayOrder" :show-operation="true"/>
+      </div>
+      <v-btn @click="expandStatistic = !expandStatistic" style="right:-30px; z-index:6"  icon><v-icon>mdi-chevron-left</v-icon></v-btn>
+      <v-navigation-drawer right :width="expandStatistic?500:272">
+        <v-card elevation="0" class="pa-2" :width="expandStatistic?500:272">
+<!--          <div class="pa-2">-->
+<!--            <h2>统计</h2>-->
+<!--            <div class="mt-1">扫码绑定老板端App，可以远程查看店内更多细节数据</div>-->
+<!--            <v-img width="120px" src="@/assets/1.png"></v-img>-->
+<!--          </div>-->
+
+          <v-card elevation="0" class="mt-1">
+            <div class="pa-2">
+              <div class="d-flex justify-space-between align-center">
+                <h2 style="font-size: 24px">{{ $t('All') }}{{ $t('Umsatz') }}</h2>
+                <h2 style="font-size: 24px">{{ billContent.fTotal }}</h2>
               </div>
-              <div class="d-flex justify-space-between">
+              <div class="d-flex justify-space-between mt-1">
                 <div>{{ $t('Netto') }}/ {{ $t('Steuer') }}</div>
-                <div>{{ total.nettoumsatz }}/{{ total.umsatzsteuer }}</div>
+                <div>{{ billContent.fTotalTe }}/{{ billContent.fTotalTax }}</div>
               </div>
             </div>
-          </template>
-        </v-card>
-        <v-card elevation="0">
-          <v-card color="error lighten-2" dark @click="returnDishDialog=true"
-                  elevation="0"
-                  class="d-flex align-center pa-2">
-            <h3>{{ $t('退菜') }}</h3>
-            <v-spacer></v-spacer>
-            <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }})
-              <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
-            </h3>
+            <template v-for="(total,index) in taxGroupInfo">
+              <div class="pa-2" :key="total.taxRatePercentage+'-'+index">
+                <div class="d-flex justify-space-between">
+                  <h3> {{ $t('Umsatz') }} {{ total.taxRatePercentage }}% </h3>
+                  <h3>{{ total.groupTotal }}</h3>
+                </div>
+                <div class="d-flex justify-space-between">
+                  <div>{{ $t('Netto') }}/ {{ $t('Steuer') }}</div>
+                  <div>{{ total.nettoumsatz }}/{{ total.umsatzsteuer }}</div>
+                </div>
+              </div>
+            </template>
           </v-card>
-          <v-card color="warning lighten-2" elevation="0" dark @click="discountDialog=true"
-                  class="d-flex align-center pa-2 mt-2">
-            <h3>{{ $t('折扣') }}</h3>
-            <v-spacer></v-spacer>
-            <h3>{{ totalDiscount | priceDisplay }}({{ discountList.length }})
-              <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
-            </h3>
-          </v-card>
-          <v-btn
+          <v-card elevation="0">
+            <v-card color="error lighten-2" dark @click="returnDishDialog=true"
+                    elevation="0"
+                    class="d-flex align-center pa-2">
+              <h3>{{ $t('退菜') }}</h3>
+              <v-spacer></v-spacer>
+              <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }})
+                <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
+              </h3>
+            </v-card>
+            <v-card color="warning lighten-2" elevation="0" dark @click="discountDialog=true"
+                    class="d-flex align-center pa-2 mt-2">
+              <h3>{{ $t('折扣') }}</h3>
+              <v-spacer></v-spacer>
+              <h3>{{ totalDiscount | priceDisplay }}({{ discountList.length }})
+                <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
+              </h3>
+            </v-card>
+            <v-btn
               class="mt-4"
               x-large
               block
               @click="printXBon"
               color="warning">
-            {{ $t('XBon Drücken') }}
-          </v-btn>
-          <v-btn
+              {{ $t('XBon Drücken') }}
+            </v-btn>
+            <v-btn
               class="mt-1"
               block
               v-if="shouldShowZBon"
               x-large
               @click="printZBon"
               color="primary">
-            {{ $t('ZBon Drücken') }}
-          </v-btn>
-        </v-card>
+              {{ $t('ZBon Drücken') }}
+            </v-btn>
+          </v-card>
 
-      </v-card>
+        </v-card>
+      </v-navigation-drawer>
     </div>
 
     <v-dialog v-model="returnDishDialog" width="fit-content">
@@ -146,7 +169,7 @@
 
 <script>
 import dayjs from 'dayjs'
-import { getBillListForServant, previewZBon, printXBon, printZBonUseDate } from '@/api/api'
+import { loadBillList, previewZBon, printXBon, printZBonUseDate } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 import BillTable from '@/views/SalePage/BillTable'
 
@@ -155,6 +178,15 @@ export default {
   components: { BillTable },
   data: function () {
     return {
+      search: '',
+      dropdown_fiter: [
+        { text: '100%' },
+        { text: '75%' },
+        { text: '50%' },
+        { text: '25%' },
+        { text: '0%' }
+      ],
+      expandStatistic: false,
       billData: {
         content: {
           taxInfos: [],
@@ -185,6 +217,13 @@ export default {
     }
   },
   computed: {
+    displayOrder () {
+      return this.bills.filter(i => {
+        if (i.tableName.includes(this.search) || i.orderId.includes(this.search) || i.updatedAt.includes(this.search) || i.totalPrice.includes(this.search)) {
+          return i
+        }
+      })
+    },
     totalDiscount () {
       return this.discountList.reduce((arr, i) => {
         arr += parseFloat(i?.orderInfo?.value ?? 0)
@@ -238,7 +277,14 @@ export default {
     async loadData () {
       if (this.singleZBonDate != null) {
         this.billData = await previewZBon(...this.singleZBonDate)
-        this.bills = await getBillListForServant(null, ...this.singleZBonDate)
+        // this.bills = await getBillListForServant(null, ...this.singleZBonDate)
+        // 此处和上一个接口的区别不是特别大, 仅将updateTimestamp 字段内容加到了 updatedAt中
+        this.bills = await loadBillList('ZH', ...this.singleZBonDate)
+        this.bills.map(i => {
+          i.updatedAt = i.updateTimestamp
+        })
+        console.log(this.bills, 'bills in loadData')
+        console.log(this.singleZBonDate, 'this.singleZBonDate (input)')
       }
     }
   },
