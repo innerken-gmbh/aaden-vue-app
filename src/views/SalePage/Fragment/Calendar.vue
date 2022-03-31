@@ -6,8 +6,8 @@
       </div>
       <v-card elevation="0" class="pa-2" style="width: 272px">
         <div class="pa-2">
-          <h2>统计</h2>
-          <div class="mt-1">扫码绑定老板端App，可以远程查看店内更多细节数据</div>
+          <h2>{{ $t('统计') }}</h2>
+          <div class="mt-1">{{ $t('绑定APP') }}</div>
           <v-img width="120px" src="@/assets/1.png"></v-img>
         </div>
 

@@ -32,7 +32,7 @@
                 <v-icon left>
                   mdi-printer-settings
                 </v-icon>
-                补打
+                {{ $t('补打') }}
               </v-btn>
               <v-btn small
                      :disabled="order.isReturned==='1'"
@@ -41,7 +41,7 @@
                      class="ml-2"
                      @click="startChangePaymentMethodForOrder(order)">
                 <v-icon left>mdi-cash-refund</v-icon>
-                更换
+                {{ $t('更换') }}
               </v-btn>
               <v-btn small
                      :disabled="order.isReturned==='1'"

@@ -48,6 +48,7 @@
 <script>
 import { jumpTo, popAuthorize } from '@/oldjs/common'
 import { getServantList } from '@/oldjs/api'
+import i18n from '../i18n'
 
 const version = require('../../package.json').version
 
@@ -61,7 +62,7 @@ export default {
       menuList: [
         {
           icon: 'mdi-silverware',
-          text: '点餐',
+          text: i18n.t('点餐'),
           beforeEnter () {
             return true
           },
@@ -69,7 +70,7 @@ export default {
         },
         {
           icon: 'mdi-cash',
-          text: '销售额',
+          text: i18n.t('销售额'),
           beforeEnter: async () => {
             const pw = await popAuthorize('', null, true)
             const servant = this.findServant(pw)
@@ -82,7 +83,7 @@ export default {
         },
         {
           icon: 'mdi-home-analytics',
-          text: 'CHEF',
+          text: i18n.t('CHEF'),
           async beforeEnter () {
             return await popAuthorize('boss')
           },

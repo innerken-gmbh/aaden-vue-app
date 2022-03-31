@@ -372,6 +372,7 @@ import {
 } from '@/api/ReservationService'
 import IKUtils from 'innerken-js-utils'
 import { onlyTimeFormat, todayDate } from '@/api/dateUtils'
+import i18n from '../../i18n'
 
 export default {
   name: 'Reservation',
@@ -411,7 +412,7 @@ export default {
   methods: {
     async checkCurrentTime () {
       if (!this.startTime) {
-        IKUtils.showError('请选择订餐时间！')
+        IKUtils.showError(i18n.t('请选择订餐时间！'))
         return
       }
       const res = await checkTableTimeAvailable(
@@ -434,7 +435,7 @@ export default {
     },
     async submitReservation () {
       if (!this.firstName && !this.lastName) {
-        IKUtils.showError('请填写姓名！')
+        IKUtils.showError(i18n.t('请填写姓名！'))
         return
       }
       const res = await addReservation({

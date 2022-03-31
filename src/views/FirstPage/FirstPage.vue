@@ -116,10 +116,10 @@
                 </template>
               </v-list>
               <v-card-actions>
-                <v-btn text @click="hardReload">Clear</v-btn>
+                <v-btn text @click="hardReload">{{ $t('clear') }}</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn text @click="menu = false">Cancel</v-btn>
-                <v-btn color="primary" text @click="useCurrentConfig">Save</v-btn>
+                <v-btn text @click="menu = false">{{ $t('cancel2') }}</v-btn>
+                <v-btn color="primary" text @click="useCurrentConfig">{{ $t('save') }}</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
