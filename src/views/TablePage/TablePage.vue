@@ -611,7 +611,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
           @visibility-changed="(val)=>this.discountModelShow=val"
       />
 
-      <ModificationDrawer
+      <modification-drawer
           ref="modification"
           @visibility-changed="changeModification"
           :modification-show="modificationShow"
