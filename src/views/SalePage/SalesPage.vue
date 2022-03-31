@@ -5,6 +5,7 @@
         <template v-if="isBoss">
           <v-tab>{{ $t('Tag-Sicht') }}</v-tab>
           <v-tab>{{ $t('Kassenbuch') }}</v-tab>
+          <v-tab>菜品统计</v-tab>
         </template>
         <v-tab>{{ $t('Meine Umsatz') }}</v-tab>
       </v-tabs>
@@ -89,6 +90,13 @@
                           </v-btn>
                         </v-list>
                       </div>
+                    </div>
+                  </v-card>
+                </v-tab-item>
+                <v-tab-item>
+                  <v-card>
+                    <div class="d-flex pa-1">
+                      <dish-statistic :single-z-bon-date="singleZBonDate"></dish-statistic>
                     </div>
                   </v-card>
                 </v-tab-item>
@@ -195,6 +203,7 @@ import { numberKeyLayout } from '@/components/Base/Keyboard/keyModel'
 import BillTable from '@/views/SalePage/BillTable'
 import { getNiceLabel, today } from '@/api/Repository/DateRepository'
 import DateRangePicker from '@/components/GlobalDialog/DateRangePicker'
+import DishStatistic from '@/views/SalePage/Fragment/DishStatistic'
 
 const defaultDisplayData = {
   orders: [],
@@ -209,6 +218,7 @@ const defaultDisplayData = {
 export default {
   name: 'SalePage',
   components: {
+    DishStatistic,
     DateRangePicker,
     BillTable,
     DialogWithKeyboard,
