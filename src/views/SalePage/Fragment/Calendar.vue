@@ -13,14 +13,15 @@
 
             </template>
           </v-text-field>
-          <v-overflow-btn
-            style="width: 40px"
-            class="mx-3 my-2"
-            :items="dropdown_fiter"
-            label="Overflow Btn w/ counter"
-            counter
-            item-value="text"
-          ></v-overflow-btn>
+          <v-select
+            :items="paymentFilter"
+            label="Select"
+            multiple
+            chips
+            hint="What are the target regions"
+            persistent-hint
+          ></v-select>
+          <v-spacer></v-spacer>
         </v-app-bar>
         <bill-table @need-refresh="loadData" :orders="displayOrder" :show-operation="true"/>
       </div>
@@ -173,19 +174,20 @@ import { loadBillList, previewZBon, printXBon, printZBonUseDate } from '@/api/ap
 import IKUtils from 'innerken-js-utils'
 import BillTable from '@/views/SalePage/BillTable'
 
+// eslint-disable-next-line no-unused-vars
+const defaultRealFilter = {
+  servant: [],
+  paymentMethod: [],
+  status: []
+}
+
 export default {
   name: 'Calendar',
   components: { BillTable },
   data: function () {
     return {
+      paymentFilter: [],
       search: '',
-      dropdown_fiter: [
-        { text: '100%' },
-        { text: '75%' },
-        { text: '50%' },
-        { text: '25%' },
-        { text: '0%' }
-      ],
       expandStatistic: false,
       billData: {
         content: {
@@ -219,7 +221,7 @@ export default {
   computed: {
     displayOrder () {
       return this.bills.filter(i => {
-        if (i.tableName.includes(this.search) || i.orderId.includes(this.search) || i.updatedAt.includes(this.search) || i.totalPrice.includes(this.search)) {
+        if (i.tableName.includes(this.search) || i.orderId.includes(this.search) || i.totalPrice.includes(this.search)) {
           return i
         }
       })
@@ -283,8 +285,6 @@ export default {
         this.bills.map(i => {
           i.updatedAt = i.updateTimestamp
         })
-        console.log(this.bills, 'bills in loadData')
-        console.log(this.singleZBonDate, 'this.singleZBonDate (input)')
       }
     }
   },

@@ -80,6 +80,15 @@ export async function loadBillList (lang, dateStart, dateEnd) {
   })
 }
 
+export async function loadDishStatistic (startDate, endDate) {
+  return (await hillo.get('BackendData.php', {
+    op: 'dishStatistic',
+    lang: 'ZH',
+    start: startDate,
+    end: endDate
+  })).content
+}
+
 export async function getBuffetPriceDishes () {
   return (await hillo.get('ConsumeType.php?op=showBuffetPriceDishToConsumeType', { lang: GlobalConfig.lang })).content
 }
