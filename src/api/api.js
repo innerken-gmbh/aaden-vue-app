@@ -89,6 +89,16 @@ export async function loadDishStatistic (startDate, endDate) {
   })).content
 }
 
+export async function loadDetailOrder (id) {
+  return hillo.get('BackendData.php', {
+    // params: {
+    op: 'billDetail',
+    lang: GlobalConfig.lang.toUpperCase(),
+    id: id
+    // },
+  })
+}
+
 export async function getBuffetPriceDishes () {
   return (await hillo.get('ConsumeType.php?op=showBuffetPriceDishToConsumeType', { lang: GlobalConfig.lang })).content
 }

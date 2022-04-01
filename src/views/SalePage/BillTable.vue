@@ -52,6 +52,14 @@
                 <v-icon>mdi-file-cancel-outline</v-icon>
 
               </v-btn>
+              <v-btn small
+                     elevation="0"
+                     color="primary"
+                     class="ml-2"
+                     @click="checkOrderDetail(order)">
+                <v-icon>mdi-file-cancel-outline</v-icon>
+
+              </v-btn>
             </td>
           </tr>
         </template>
@@ -68,23 +76,31 @@
         ></check-out-calculator>
       </v-card>
     </v-dialog>
+    <v-dialog max-width="600px" v-model="orderDetailDialog">
+      <v-card width="100%" style="">
+        <order-detail-dialog :order="selectedOrder" @closeDetail="orderDetailDialog = false"></order-detail-dialog>
+      </v-card>
+    </v-dialog>
   </div>
 
 </template>
 
 <script>
 import IKUtils from 'innerken-js-utils'
-import { changePayMethodForOrder, reprintOrder } from '@/api/api'
+import { changePayMethodForOrder, loadDetailOrder, reprintOrder } from '@/api/api'
 import CheckOutCalculator from '@/components/GlobalDialog/CheckOutCalculator'
+import OrderDetailDialog from '@/components/GlobalDialog/OrderDetailDialog'
 
 export default {
   name: 'BillTable',
-  components: { CheckOutCalculator },
+  components: { OrderDetailDialog, CheckOutCalculator },
   data: function () {
     return {
+      orderDetailDialog: false,
       checkOutDialog: null,
       changeOrderTotal: 0,
-      changeOrderId: null
+      changeOrderId: null,
+      selectedOrder: null
     }
   },
   props: { orders: {}, showOperation: { default: false } },
@@ -109,6 +125,12 @@ export default {
       this.changeOrderId = order.orderId
       this.changeOrderTotal = order.totalPrice
       this.checkOutDialog = true
+    },
+    async checkOrderDetail (order) {
+      console.log(order.orderId)
+      this.selectedOrder = await loadDetailOrder(order.orderId)
+      console.log(this.selectedOrder)
+      this.orderDetailDialog = true
     }
   }
 }
