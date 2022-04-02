@@ -1,5 +1,5 @@
 <template>
-  <iframe width="100%" :src="'/admin?Base='+Config.Base+'&lang='+Config.lang"
+  <iframe width="100%" :src="'../admin?Base='+Config.Base+'&lang='+Config.lang"
           style="height: 100vh"></iframe>
 </template>
 
