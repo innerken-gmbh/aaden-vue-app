@@ -804,6 +804,7 @@ export default {
 
     async loadRestaurantInfo () {
       this.restaurantInfo = await loadRestaurantInfo()
+      this.restaurantInfo.name = (this.restaurantInfo?.name ?? '').replace('<BR>', '')
       this.takeawayEnabled = this.restaurantInfo.currentlyOpening === '1'
     },
     async initPage () {
