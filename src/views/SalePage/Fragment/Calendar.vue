@@ -28,11 +28,6 @@
       <v-btn @click="expandStatistic = !expandStatistic" style="right:-30px; z-index:6"  icon><v-icon>mdi-chevron-left</v-icon></v-btn>
       <v-navigation-drawer right :width="expandStatistic?500:272">
         <v-card elevation="0" class="pa-2" :width="expandStatistic?500:272">
-<!--          <div class="pa-2">-->
-<!--            <h2>统计</h2>-->
-<!--            <div class="mt-1">扫码绑定老板端App，可以远程查看店内更多细节数据</div>-->
-<!--            <v-img width="120px" src="@/assets/1.png"></v-img>-->
-<!--          </div>-->
 
           <v-card elevation="0" class="mt-1">
             <div class="pa-2">
@@ -281,7 +276,8 @@ export default {
         this.billData = await previewZBon(...this.singleZBonDate)
         // this.bills = await getBillListForServant(null, ...this.singleZBonDate)
         // 此处和上一个接口的区别不是特别大, 仅将updateTimestamp 字段内容加到了 updatedAt中
-        this.bills = await loadBillList('ZH', ...this.singleZBonDate)
+        this.bills = await loadBillList(...this.singleZBonDate)
+        console.log(this.bills, 'bills')
         this.bills.map(i => {
           i.updatedAt = i.updateTimestamp
         })

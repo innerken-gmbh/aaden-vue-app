@@ -26,6 +26,33 @@ export async function printZBonUseDate (startDate, endDate, printByDay = 1, rese
   return (await hillo.post('ZBon.php?op=printZbonBySpan', { startDate, endDate, printByDay, resetTable }))
 }
 
+// 还缺上传category id
+export async function printSaleBon (startDate, endDate) {
+  return (await hillo.post('Dishes.php?op=printSalesBon', {
+    start: startDate,
+    end: endDate
+  }))
+}
+
+export async function printSaleBonByCode (startDate, endDate) {
+  return (await hillo.post('Dishes.php?op=printSalesBonByDishCode', {
+    start: startDate,
+    end: endDate
+  }))
+}
+
+export async function loadAllConsumeType () {
+  return (await hillo.get('Complex.php', {
+    op: 'showAllConsumeTypeInfo'
+  })).content
+}
+
+export async function returnOrder (id) {
+  return (await hillo.post('Complex.php?op=returnOrder', {
+    orderId: id
+  }))
+}
+
 export async function ZBonList () {
   return (await hillo.get('ZBon.php')).content
 }
@@ -137,9 +164,9 @@ export async function getBillListForServant (pw = null, date, endDate = null) {
   })).content
 }
 
-export async function loadBillList (lang, dateStart, dateEnd) {
+export async function loadBillList (dateStart, dateEnd) {
   return (await hillo.get('Orders.php?op=withSortAndFilter', {
-    lang,
+    lang: GlobalConfig.lang,
     timespan: `${dateStart} - ${dateEnd}`
   })).content.map(o => {
     o.returnDishCount = Math.abs(o.returnDishCount ?? 0)
@@ -151,7 +178,7 @@ export async function loadBillList (lang, dateStart, dateEnd) {
 export async function loadDishStatistic (startDate, endDate) {
   return (await hillo.get('BackendData.php', {
     op: 'dishStatistic',
-    lang: 'ZH',
+    lang: GlobalConfig.lang,
     start: startDate,
     end: endDate
   })).content

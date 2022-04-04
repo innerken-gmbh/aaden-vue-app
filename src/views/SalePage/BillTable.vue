@@ -26,7 +26,15 @@
               {{ order.paymentMethodStrings }}<b v-if="order.discountStr">/
               {{ '-' + order.discountStr.replace('p', '%') }}</b>
             </td>
-            <td v-if="showOperation">
+            <td>
+              <v-btn small
+                     elevation="0"
+                     color="success"
+                     class="mx-2"
+                     @click="checkOrderDetail(order)">
+                <v-icon>mdi-file-outline</v-icon>
+                订单详情
+              </v-btn>
               <v-btn :disabled="order.isReturned==='1'" elevation="0" @click="reprintOrder(order.orderId)" small
                      color="primary">
                 <v-icon left>
@@ -34,32 +42,26 @@
                 </v-icon>
                 补打
               </v-btn>
-              <v-btn small
-                     :disabled="order.isReturned==='1'"
-                     elevation="0"
-                     color="warning"
-                     class="ml-2"
-                     @click="startChangePaymentMethodForOrder(order)">
-                <v-icon left>mdi-cash-refund</v-icon>
-                更换
-              </v-btn>
-              <v-btn small
-                     :disabled="order.isReturned==='1'"
-                     elevation="0"
-                     color="error"
-                     class="ml-2"
-                     @click="startChangePaymentMethodForOrder(order)">
-                <v-icon>mdi-file-cancel-outline</v-icon>
-
-              </v-btn>
-              <v-btn small
-                     elevation="0"
-                     color="primary"
-                     class="ml-2"
-                     @click="checkOrderDetail(order)">
-                <v-icon>mdi-file-cancel-outline</v-icon>
-
-              </v-btn>
+              <template v-if="showOperation">
+                <v-btn small
+                       :disabled="order.isReturned==='1'"
+                       elevation="0"
+                       color="warning"
+                       class="ml-2"
+                       @click="startChangePaymentMethodForOrder(order)">
+                  <v-icon left>mdi-cash-refund</v-icon>
+                  更换
+                </v-btn>
+                <v-btn small
+                       :disabled="order.isReturned==='1'"
+                       elevation="0"
+                       color="error"
+                       class="ml-2"
+                       @click="returnOrder(order.orderId)">
+                  <v-icon>mdi-file-cancel-outline</v-icon>
+                    退单
+                </v-btn>
+              </template>
             </td>
           </tr>
         </template>
@@ -87,7 +89,7 @@
 
 <script>
 import IKUtils from 'innerken-js-utils'
-import { changePayMethodForOrder, loadDetailOrder, reprintOrder } from '@/api/api'
+import { changePayMethodForOrder, loadDetailOrder, reprintOrder, returnOrder } from '@/api/api'
 import CheckOutCalculator from '@/components/GlobalDialog/CheckOutCalculator'
 import OrderDetailDialog from '@/components/GlobalDialog/OrderDetailDialog'
 
@@ -104,6 +106,9 @@ export default {
     }
   },
   props: { orders: {}, showOperation: { default: false } },
+  mounted () {
+    console.log(this.orders, 'orders')
+  },
   methods: {
     async changePaymentMethod (paymentLog = []) {
       if (paymentLog?.length === 0) {
@@ -115,6 +120,11 @@ export default {
       IKUtils.toast('OK')
       this.checkOutDialog = false
       this.$emit('need-refresh')
+    },
+    async returnOrder (orderId) {
+      IKUtils.showLoading()
+      await returnOrder(orderId)
+      IKUtils.toast()
     },
     async reprintOrder (orderId) {
       IKUtils.showLoading()

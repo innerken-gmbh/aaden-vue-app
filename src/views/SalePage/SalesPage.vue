@@ -7,6 +7,7 @@
           <v-tab>{{ $t('Kassenbuch') }}</v-tab>
           <v-tab>菜品统计</v-tab>
           <v-tab>查看跑堂</v-tab>
+          <v-tab>绑定老板端APP</v-tab>
         </template>
         <template v-else>
           <v-tab>{{ $t('Meine Umsatz') }}</v-tab>
@@ -108,6 +109,14 @@
                     <v-card elevation="0" class="flex-grow-1" style="overflow-y: auto; height: 100%;flex-direction: column;">
                       <servant-list :single-z-bon-date="singleZBonDate"></servant-list>
                     </v-card>
+                  </v-card>
+                </v-tab-item>
+                <v-tab-item>
+                  <v-card style="width: 100%;">
+                    <div  class="pa-2 align-center justify-center" style="display:flex;">
+                      <v-img max-width="400px" max-height="400px" src="@/assets/1.png"></v-img>
+                    </div>
+                    <h2 class="mx-auto justify-center text-center">扫码绑定老板端App，可以远程查看店内更多细节数据</h2>
                   </v-card>
                 </v-tab-item>
               </template>

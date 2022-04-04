@@ -1,6 +1,10 @@
 <template>
   <v-card elevation="0" class="servantCardStyle" width="100%">
-    <v-card-title>跑堂日结单</v-card-title>
+    <v-subheader>
+      <v-card-title>跑堂日结单</v-card-title>
+      <v-btn color="primary">打印全部跑堂日结单</v-btn>
+      <v-spacer/>
+    </v-subheader>
     <div style="display: grid; grid-template-columns: repeat(4,1fr); grid-gap: 40px; overflow:scroll;">
       <v-card width="400" v-for="servant in loadAllServant" :key="servant.servant.id">
         <v-subheader dark class="grey lighten-2" style="height: 60px">
@@ -31,6 +35,10 @@
             <div class="text-caption">小费总计</div>
             <div class="text-h5 green--text mt-1"> {{ servant.tipIncome }}</div>
           </v-card>
+          <v-card class="servantSaleCard mx-4">
+            <div class="text-caption">未结账</div>
+            <div class="text-h5 red--text mt-1"> {{ servant.tipIncome }}</div>
+          </v-card>
         </div>
         <div class="mx-8" v-for="pay in fillPayMethodTotal(servant.payMethodTotal,activeId!==servant.servant.id)" :key="pay.id">
           <v-list-item >
@@ -58,11 +66,6 @@ export default {
   name: 'ServantList',
   data: () => {
     return {
-      items: [
-        { text: 'asad' },
-        { text: 'asad' },
-        { text: 'asad' }
-      ],
       activeId: null,
       loadAllServant: null,
       expandPayMethodDetail: false,
