@@ -78,7 +78,6 @@ export default {
   },
   watch: {
     async singleZBonDate () {
-      console.log('change')
       await this.reloadDishes()
     },
     filteredItem (val) {

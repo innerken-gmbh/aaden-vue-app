@@ -6,8 +6,11 @@
           <v-tab>{{ $t('Tag-Sicht') }}</v-tab>
           <v-tab>{{ $t('Kassenbuch') }}</v-tab>
           <v-tab>菜品统计</v-tab>
+          <v-tab>查看跑堂</v-tab>
         </template>
-        <v-tab>{{ $t('Meine Umsatz') }}</v-tab>
+        <template v-else>
+          <v-tab>{{ $t('Meine Umsatz') }}</v-tab>
+        </template>
       </v-tabs>
       <v-spacer></v-spacer>
 
@@ -98,6 +101,13 @@
                     <div class="d-flex pa-1">
                       <dish-statistic :single-z-bon-date="singleZBonDate"></dish-statistic>
                     </div>
+                  </v-card>
+                </v-tab-item>
+                <v-tab-item>
+                  <v-card elevation="0" class="pa-1">
+                    <v-card elevation="0" class="flex-grow-1" style="overflow-y: auto; height: 100%;flex-direction: column;">
+                      <servant-list :single-z-bon-date="singleZBonDate"></servant-list>
+                    </v-card>
                   </v-card>
                 </v-tab-item>
               </template>
@@ -204,6 +214,7 @@ import BillTable from '@/views/SalePage/BillTable'
 import { getNiceLabel, today } from '@/api/Repository/DateRepository'
 import DateRangePicker from '@/components/GlobalDialog/DateRangePicker'
 import DishStatistic from '@/views/SalePage/Fragment/DishStatistic'
+import ServantList from '@/views/SalePage/Fragment/ServantList'
 
 const defaultDisplayData = {
   orders: [],
@@ -218,6 +229,7 @@ const defaultDisplayData = {
 export default {
   name: 'SalePage',
   components: {
+    ServantList,
     DishStatistic,
     DateRangePicker,
     BillTable,
