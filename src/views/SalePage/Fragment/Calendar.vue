@@ -13,21 +13,12 @@
 
             </template>
           </v-text-field>
-          <v-select
-            :items="paymentFilter"
-            label="Select"
-            multiple
-            chips
-            hint="What are the target regions"
-            persistent-hint
-          ></v-select>
           <v-spacer></v-spacer>
         </v-app-bar>
         <bill-table @need-refresh="loadData" :orders="displayOrder" :show-operation="true"/>
       </div>
-      <v-btn @click="expandStatistic = !expandStatistic" style="right:-30px; z-index:6"  icon><v-icon>mdi-chevron-left</v-icon></v-btn>
-      <v-navigation-drawer right :width="expandStatistic?500:272">
-        <v-card elevation="0" class="pa-2" :width="expandStatistic?500:272">
+      <v-navigation-drawer right width="272">
+        <v-card elevation="0" class="pa-2" width="272">
 
           <v-card elevation="0" class="mt-1">
             <div class="pa-2">
@@ -49,6 +40,14 @@
                 <div class="d-flex justify-space-between">
                   <div>{{ $t('Netto') }}/ {{ $t('Steuer') }}</div>
                   <div>{{ total.nettoumsatz }}/{{ total.umsatzsteuer }}</div>
+                </div>
+              </div>
+            </template>
+            <template v-for="pay in paidInfoList">
+              <div class="pa-1 mx-1" :key="pay.id">
+                <div class="d-flex justify-space-between">
+                  <h4>{{ pay.paidName }}</h4>
+                  <div>{{ pay.paidTotal | priceDisplay }}</div>
                 </div>
               </div>
             </template>
@@ -181,9 +180,7 @@ export default {
   components: { BillTable },
   data: function () {
     return {
-      paymentFilter: [],
       search: '',
-      expandStatistic: false,
       billData: {
         content: {
           taxInfos: [],
@@ -195,7 +192,6 @@ export default {
         }
       },
       bills: [],
-
       returnDishDialog: null,
       discountDialog: null
     }
@@ -236,6 +232,9 @@ export default {
     billContent () {
       return this.billData.content
     },
+    paidInfoList () {
+      return this.billContent.paidInfo
+    },
     returnList () {
       return this.billContent.storno
     },
@@ -254,7 +253,6 @@ export default {
     }
   },
   methods: {
-
     async printXBon () {
       IKUtils.showLoading()
       await printXBon(...this.singleZBonDate)
@@ -274,13 +272,14 @@ export default {
     async loadData () {
       if (this.singleZBonDate != null) {
         this.billData = await previewZBon(...this.singleZBonDate)
+        console.log(this.billData, 'billData')
         this.bills = (await getBillListForServant(null, ...this.singleZBonDate)).orders
         // this.bills = await loadBillList(...this.singleZBonDate)
       }
     }
   },
-  mounted () {
-    this.loadData()
+  async mounted () {
+    await this.loadData()
   }
 }
 </script>

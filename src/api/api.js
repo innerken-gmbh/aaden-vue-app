@@ -111,9 +111,7 @@ export async function loadServantList () {
       notPay: res
     }
   })
-  const res = billDataList.filter(s => s.todayTotal >= 0 && s.orders.length > 0)
-
-  return res
+  return billDataList.filter(s => s.todayTotal >= 0 && s.orders.length > 0)
 }
 
 export async function printServantSummaryForToday (pw) {
