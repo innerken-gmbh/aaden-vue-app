@@ -106,9 +106,6 @@ export default {
     }
   },
   props: { orders: {}, showOperation: { default: false } },
-  mounted () {
-    console.log(this.orders, 'orders')
-  },
   methods: {
     async changePaymentMethod (paymentLog = []) {
       if (paymentLog?.length === 0) {
@@ -122,9 +119,12 @@ export default {
       this.$emit('need-refresh')
     },
     async returnOrder (orderId) {
-      IKUtils.showLoading()
-      await returnOrder(orderId)
-      IKUtils.toast()
+      IKUtils.showConfirm('Bist du sicher?', 'Möchten Sie Umsatz Bon stoniren?', () => {
+        IKUtils.showLoading()
+        returnOrder(orderId).then(() => {
+          IKUtils.toast()
+        })
+      })
     },
     async reprintOrder (orderId) {
       IKUtils.showLoading()

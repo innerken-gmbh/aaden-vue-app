@@ -165,7 +165,7 @@
 
 <script>
 import dayjs from 'dayjs'
-import { loadBillList, previewZBon, printXBon, printZBonUseDate } from '@/api/api'
+import { getBillListForServant, previewZBon, printXBon, printZBonUseDate } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 import BillTable from '@/views/SalePage/BillTable'
 
@@ -274,13 +274,8 @@ export default {
     async loadData () {
       if (this.singleZBonDate != null) {
         this.billData = await previewZBon(...this.singleZBonDate)
-        // this.bills = await getBillListForServant(null, ...this.singleZBonDate)
-        // 此处和上一个接口的区别不是特别大, 仅将updateTimestamp 字段内容加到了 updatedAt中
-        this.bills = await loadBillList(...this.singleZBonDate)
-        console.log(this.bills, 'bills')
-        this.bills.map(i => {
-          i.updatedAt = i.updateTimestamp
-        })
+        this.bills = (await getBillListForServant(null, ...this.singleZBonDate)).orders
+        // this.bills = await loadBillList(...this.singleZBonDate)
       }
     }
   },
