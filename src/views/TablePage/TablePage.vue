@@ -336,7 +336,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                   <v-icon left>mdi-menu</v-icon>
                   {{ $t('查看分类菜单') }}
                 </v-card>
-                <div class="pa-2 text-h6">
+                <div class="pa-2 text-h6" style="min-height: 96px">
                   <template v-if="displayInput">
                     {{ Config.numberFirst ? $t('数量 * 菜号') : $t('菜号 * 数量') }}<br>
                     {{ $t('正在输入...') }}
@@ -353,7 +353,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                       class="my-2"
                       :placeholder="Config.numberFirst?$t('数量 * 菜号'):$t('菜号 * 数量')"
                       height="96px"
-                      style="font-size: 36px"
+                      style="font-size: 32px"
                       ref="ins"
                       @input="input=displayInput"
                       v-model="displayInput"
