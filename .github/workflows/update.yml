@@ -47,5 +47,6 @@ jobs:
           echo ${{ github.ref }}
           git checkout master
           echo "here check outed"
+          rm -rf admin
           git merge temp-branch
           git push

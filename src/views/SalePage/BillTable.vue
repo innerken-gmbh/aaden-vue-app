@@ -87,11 +87,17 @@ export default {
       changeOrderId: null
     }
   },
-  props: { orders: {}, showOperation: { default: false } },
+  props: {
+    orders: {},
+    showOperation: { default: false }
+  },
   methods: {
     async changePaymentMethod (paymentLog = []) {
       if (paymentLog?.length === 0) {
-        paymentLog = [{ id: 1, price: this.changeOrderTotal }]
+        paymentLog = [{
+          id: 1,
+          price: this.changeOrderTotal
+        }]
       }
       IKUtils.showLoading()
       const res = await changePayMethodForOrder(this.changeOrderId, paymentLog)
@@ -102,7 +108,8 @@ export default {
     },
     async reprintOrder (orderId) {
       IKUtils.showLoading()
-      await reprintOrder(orderId)
+      const needPrintCompany = await IKUtils.showConfirmAsyn(this.$t('是否需要打印公司账单'), this.$t('重新打印'))
+      await reprintOrder(orderId, needPrintCompany.isConfirmed ? 1 : 0)
       IKUtils.toast()
     },
     startChangePaymentMethodForOrder (order) {
