@@ -372,7 +372,7 @@
                 {{ t.tableName }}
               </h2>
               <div class="pa-2 px-3 mt-2 d-flex align-center">
-                <v-icon size="18" left>mdi-seat</v-icon>{{ t.seatCount?t.seatCount:0 }}
+                <v-icon size="18" left>mdi-seat</v-icon>{{ t.tableSeatCount?t.tableSeatCount:0 }}
               </div>
             </v-card>
           </div>
