@@ -1297,7 +1297,7 @@ export default {
           this.insDecode(this.readBuffer())
           break
         default:
-          if (e.target.nodeName !== 'INPUT') {
+          if (e.target.nodeName !== 'INPUT' && e.key.length < 3) {
             this.displayInput += e.key
             this.input = this.displayInput
           }
