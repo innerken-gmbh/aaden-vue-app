@@ -56,7 +56,7 @@
             color="grey lighten-2" class="pa-4 d-flex flex-column">
       <div class="text-subtitle-2 d-flex align-center">{{ $t('预定列表') }}
         <v-spacer></v-spacer>
-        <v-btn elevation="0">
+        <v-btn elevation="0" @click="loadData">
           <v-icon left>mdi-refresh</v-icon>
           {{ $t('重新加载') }}
         </v-btn>
@@ -361,18 +361,21 @@
       </v-card>
     </v-dialog>
     <v-dialog max-width="600px" v-model="tableSettingDialog">
-      <v-card  color="#f6f6f6" style="border-radius: 12px">
+      <v-card color="#f6f6f6" style="border-radius: 12px">
         <v-card-title>预定桌子设置</v-card-title>
-        <v-card-text  class="pa-4" style="overflow: scroll">
-          <div style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px;max-height: 70vh;overflow-y: scroll">
-            <v-card elevation="0" class="pa-4 d-flex align-center justify-center flex-column" :color="t.reservable?'primary':''"
+        <v-card-text class="pa-4" style="overflow: scroll">
+          <div
+              style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px;max-height: 70vh;overflow-y: scroll">
+            <v-card elevation="0" class="pa-4 d-flex align-center justify-center flex-column"
+                    :color="t.reservable?'primary':''"
                     :dark="t.reservable"
                     @click="setTableReservable(t.tableId,!t.reservable)" v-for="t in tableList" :key="t.id">
               <h2>
                 {{ t.tableName }}
               </h2>
               <div class="pa-2 px-3 mt-2 d-flex align-center">
-                <v-icon size="18" left>mdi-seat</v-icon>{{ t.seatCount?t.seatCount:0 }}
+                <v-icon size="18" left>mdi-seat</v-icon>
+                {{ t.seatCount ? t.seatCount : 0 }}
               </div>
             </v-card>
           </div>
@@ -391,7 +394,8 @@ import {
   getReservation,
   getTimeSlotForDate,
   loadReserveSettings,
-  moveReservation, setReservable
+  moveReservation,
+  setReservable
 } from '@/api/ReservationService'
 import IKUtils from 'innerken-js-utils'
 import { onlyTimeFormat, todayDate } from '@/api/dateUtils'
