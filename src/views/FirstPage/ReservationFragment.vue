@@ -34,10 +34,13 @@
           </div>
         </div>
         <v-btn elevation="0" @click="addNewReservation" block large color="success" class="mt-4">
-          <v-icon>mdi-plus</v-icon>
+          <v-icon left>mdi-plus-box</v-icon>
           {{ $t('新建预定') }}
         </v-btn>
-
+        <v-btn elevation="0" @click="tableSettingDialog=true" block large color="warning" class="mt-4">
+          <v-icon left>mdi-cog-box</v-icon>
+          {{ $t('预定桌子设置') }}
+        </v-btn>
       </v-card>
 
       <v-card
@@ -357,6 +360,26 @@
         </div>
       </v-card>
     </v-dialog>
+    <v-dialog max-width="600px" v-model="tableSettingDialog">
+      <v-card  color="#f6f6f6" style="border-radius: 12px">
+        <v-card-title>预定桌子设置</v-card-title>
+        <v-card-text  class="pa-4" style="overflow: scroll">
+          <div style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px;max-height: 70vh;overflow-y: scroll">
+            <v-card elevation="0" class="pa-4 d-flex align-center justify-center flex-column" :color="t.reservable?'primary':''"
+                    :dark="t.reservable"
+                    @click="setTableReservable(t.tableId,!t.reservable)" v-for="t in tableList" :key="t.id">
+              <h2>
+                {{ t.tableName }}
+              </h2>
+              <div class="pa-2 px-3 mt-2 d-flex align-center">
+                <v-icon size="18" left>mdi-seat</v-icon>{{ t.seatCount?t.seatCount:0 }}
+              </div>
+            </v-card>
+          </div>
+        </v-card-text>
+
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -368,10 +391,11 @@ import {
   getReservation,
   getTimeSlotForDate,
   loadReserveSettings,
-  moveReservation
+  moveReservation, setReservable
 } from '@/api/ReservationService'
 import IKUtils from 'innerken-js-utils'
 import { onlyTimeFormat, todayDate } from '@/api/dateUtils'
+import { loadReservationTableInfo } from '@/api/tableService'
 
 export default {
   name: 'Reservation',
@@ -381,6 +405,9 @@ export default {
       reservations: [],
       timeGap: [],
       activeReservation: null,
+      tableList: [],
+
+      tableSettingDialog: null,
 
       reservationStep: 0,
       reservationAddDialog: false,
@@ -437,6 +464,7 @@ export default {
         IKUtils.showError('请填写姓名！')
         return
       }
+      IKUtils.showLoading()
       const res = await addReservation({
         fromDateTime: this.reservationDate + ' ' + this.startTime + ':00',
         personCount: this.adultCount,
@@ -452,6 +480,7 @@ export default {
       this.reservationAddDialog = false
       this.clearForm()
       await this.loadData()
+      IKUtils.toast()
     },
     clearForm () {
       this.reservationStep = 0
@@ -484,11 +513,18 @@ export default {
     },
     async loadData () {
       await this.loadReservations()
+      await this.getTables()
       this.activeReservation = null
       this.setting = await loadReserveSettings()
       this.timeGap = await getTimeSlotForDate(this.reservationDate, this.setting)
     },
-
+    async getTables () {
+      this.tableList = await loadReservationTableInfo()
+    },
+    async setTableReservable (id, reservable) {
+      await setReservable(id, reservable)
+      await this.getTables()
+    },
     async loadReservations () {
       this.reservations = await getReservation(this.reservationDate)
     }
