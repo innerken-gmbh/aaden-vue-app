@@ -7,6 +7,7 @@
     <div class="d-flex flex-column">
 
       <v-date-picker style="border-radius: 12px"
+                     :min="todayDate"
                      :locale="$i18n.locale"
                      full-width color="primary"
                      v-model="reservationDate"
@@ -405,6 +406,7 @@ export default {
   name: 'Reservation',
   data: function () {
     return {
+      todayDate,
       reservationDate: todayDate,
       reservations: [],
       timeGap: [],
