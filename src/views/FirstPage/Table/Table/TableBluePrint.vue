@@ -17,6 +17,7 @@
             :min-width="60"
             :max-height="180"
             :max-width="200"
+            :prevent-deactivation="false"
             :scaleRation="scale"
             :draggable="editing"
             :resizable="editing"
@@ -329,7 +330,6 @@ export default {
       this.shouldUpdateSize(table, x, y, width, height, this.currentSection.id)
     },
     onDrag: function (table, x, y) {
-      console.log(table, x, y, 'drag')
       this.shouldUpdateSize(table, x, y, table.w, table.h, this.currentSection.id)
     },
     selectTable (table) {

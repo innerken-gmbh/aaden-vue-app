@@ -257,7 +257,6 @@ export default {
 
 .dragging .tableCard
   box-shadow: 1px 3px 12px rgba(0, 0, 0, 0.11) !important
-  z-index: 15
 
 .tableIconRow
   width: 42px
