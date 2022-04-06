@@ -67,7 +67,7 @@ export async function loadReserveSettings () {
 }
 
 export async function addReservation (reservationInfo) {
-  return (await hillo.jsonPost(GlobalConfig.reservationCloudServerBase + 'reservation/add', Object.assign({}, defaultReservationInfo, reservationInfo)))
+  return (await hillo.jsonPost(GlobalConfig.getReservationUrl() + 'reservation/add', Object.assign({}, defaultReservationInfo, reservationInfo)))
 }
 
 export async function moveReservation (reservationId) {
@@ -97,7 +97,7 @@ export async function getTimeSlotForDate (date, setting) {
 }
 
 export async function checkTableTimeAvailable (date, time, personCount) {
-  const res = (await hillo.jsonPost(GlobalConfig.reservationCloudServerBase + 'reservableTable/getTableTime', {
+  const res = (await hillo.jsonPost(GlobalConfig.getReservationUrl() + 'reservableTable/getTableTime', {
     reserveTime: time, reserveDate: date, peopleCount: personCount
   })).data
   if (res.check === true) {
