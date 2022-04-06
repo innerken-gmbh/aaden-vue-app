@@ -255,6 +255,9 @@ export default {
 .dot.child
   background: #FFA726
 
+.dragging .tableCard
+  box-shadow: 1px 3px 12px rgba(0, 0, 0, 0.11) !important
+
 .tableIconRow
   width: 42px
   height: 25px

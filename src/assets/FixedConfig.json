@@ -9,9 +9,9 @@
     "servantName",
     "totalPrice",
     "drinkCount",
+    "buffetCount",
     "buffetRound"
   ],
-  "reservationCloudServerBase": "http://18.194.174.172:8080/",
   "milePayPort": 8181,
   "minTileSize": 80,
   "defaultTileHeight": 120,
