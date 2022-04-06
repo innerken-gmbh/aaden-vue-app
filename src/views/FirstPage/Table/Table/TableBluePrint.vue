@@ -12,12 +12,15 @@
        }">
       <template v-for="i in tableWithInfo">
         <vue-draggable-resizable
-            :min-height="80"
+            class-name-dragging="dragging"
+            :min-height="60"
             :min-width="60"
             :max-height="180"
-            :max-width="180"
+            :max-width="200"
+            :scaleRation="scale"
             :draggable="editing"
             :resizable="editing"
+            :grid="[10,10]"
             :key="i.id"
             :h="i.h" :w="i.w"
             :x="i.x" :y="i.y"
@@ -207,10 +210,10 @@ async function submitTable (table, x, y, w, h, currentSectionId) {
   const newCell = Object.assign(table.cells.find(c => c.sectionId === currentSectionId) ?? {
     sectionId: currentSectionId
   }, {
-    x: x,
-    y: y,
-    w: w,
-    h: h
+    x: Math.round(x / 10) * 10,
+    y: Math.round(y / 10) * 10,
+    w: Math.round(w / 10) * 10,
+    h: Math.round(h / 10) * 10
   })
   const supplyMentSectionId = currentSectionId === '0' ? table.sectionId : '0'
   console.log(supplyMentSectionId, table, currentSectionId)
@@ -364,9 +367,8 @@ export default {
 }
 </script>
 
-<style scoped>
-.vdr {
-  border: none;
-}
+<style scoped lang="sass">
+.vdr
+  border: none
 
 </style>
