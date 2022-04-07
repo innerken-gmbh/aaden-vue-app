@@ -73,15 +73,39 @@
           :headers="headers"
           :items="reservations"
           :search="search">
+        <template #item.action="{item}">
+          <div style="display: grid;grid-gap: 4px;grid-auto-flow: column">
+            <v-btn elevation="0" small @click.stop="confirmReservation(item)">
+              <v-icon left>mdi-check</v-icon>
+              到店
+            </v-btn>
+            <v-btn elevation="0" small @click.stop="toggleActiveReservation(item)">
+              <v-icon left>mdi-open-in-new</v-icon>
+              详情
+            </v-btn>
+          </div>
+
+        </template>
+        <template #item.note="{item}">
+          <div
+              class="text-decoration-underline"
+              style="max-width: 96px;overflow: hidden;white-space: nowrap;
+                  text-overflow: ellipsis">
+            {{ item.note ? item.note : '无' }}
+          </div>
+        </template>
         <template #item.person="{item}">
           <v-chip small>
             <template v-if="item.personCount>0">
-              <v-icon small class="mr-2">mdi-human-male-female</v-icon>
+              <v-icon small class="mr-1">mdi-human-male-female</v-icon>
               {{ item.personCount }}
             </template>
             <template v-if="item.childCount>0">
-              <v-icon small class="ml-2 mr-2">mdi-human-child</v-icon>
+              <v-icon small class="ml-3 mr-1">mdi-human-child</v-icon>
               {{ item.childCount }}
+            </template>
+            <template v-if="item.useStroller==='1'">
+              <v-icon small class="ml-3">mdi-baby-carriage</v-icon>
             </template>
           </v-chip>
 
@@ -91,19 +115,9 @@
             <div class="font-weight-bold">
               {{ item.title }} {{ item.firstName }} {{ item.lastName }}
             </div>
-            <div>{{ item.email }}</div>
-          </div>
-        </template>
-        <template #item.useStroller="{item}">
-          <v-simple-checkbox disabled :value="item.useStroller==='1'"></v-simple-checkbox>
-        </template>
-
-        <template #item.note="{item}">
-          <div
-              class="text-decoration-underline"
-              style="max-width: 96px;overflow: hidden;white-space: nowrap;
-                  text-overflow: ellipsis">
-            {{ item.note ? item.note : '无' }}
+            <div class="text--secondary" style="border-bottom: 1px dashed black;width: fit-content">
+              {{ item.tel }}
+            </div>
           </div>
         </template>
         <template #item.time="{item}">
@@ -176,6 +190,16 @@
             </div>
             <v-divider class="my-3"></v-divider>
           </template>
+          <template v-if="activeReservation.useStroller==='1'">
+            <div class="d-flex">
+              <div class="text-body-1">{{ $t('需要婴儿车') }}</div>
+              <v-spacer></v-spacer>
+              <v-chip small>
+                <v-icon small>mdi-check</v-icon>
+              </v-chip>
+            </div>
+            <v-divider class="my-3"></v-divider>
+          </template>
           <div class="d-flex">
             <div class="text-body-1">{{ $t('桌号') }}</div>
             <v-spacer></v-spacer>
@@ -184,16 +208,7 @@
               {{ activeReservation.tableNameNull }}
             </v-chip>
           </div>
-          <template v-if="activeReservation.useStroller==='1'">
-            <div class="d-flex">
-              <div class="text-subtitle-2">{{ $t('需要婴儿车') }}</div>
-              <v-spacer></v-spacer>
-              <v-chip color="success">
-                <v-icon>mdi-check</v-icon>
-              </v-chip>
-            </div>
-            <v-divider class="my-3"></v-divider>
-          </template>
+
           <div style="display: grid;grid-gap: 8px;" class="mt-8">
             <v-btn @click="moveReservation(activeReservation.id)" block color="warning" elevation="0">{{
                 $t('更换桌子')
@@ -443,12 +458,11 @@ export default {
       otherTime: [],
       headers: [
         { text: '姓名', value: 'user' },
-        { text: '电话', value: 'tel' },
+        { text: '留言', value: 'note' },
         { text: '桌号', value: 'tableNameNull' },
         { text: '人数', value: 'person' },
-        { text: '婴儿车', value: 'useStroller' },
-        { text: '备注', value: 'note' },
-        { text: '时间', value: 'time' }
+        { text: '时间', value: 'time' },
+        { text: '操作', value: 'action' }
 
       ],
       setting: {
@@ -497,6 +511,9 @@ export default {
     useOtherTime (time) {
       this.startTime = onlyTimeFormat(this.reservationDate + ' ' + time)
       this.reservationStep = 2
+    },
+    confirmReservation () {
+
     },
     async submitReservation () {
       if (!this.firstName && !this.lastName) {
