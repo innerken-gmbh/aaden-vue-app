@@ -48,5 +48,6 @@
   "buffetDisplayInfoId": "4,7",
   "currentView": 0,
   "maxEatMinute": 150,
-  "activeReservation": false
+  "activeReservation": false,
+  "reservationCloudServerBase": "192.168.1.160:8080"
 }
