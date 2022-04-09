@@ -55,6 +55,12 @@ export async function loadAllConsumeType () {
   })).content
 }
 
+export async function loadCategory () {
+  return (await hillo.get('Category.php', {
+    lang: GlobalConfig.lang
+  })).content
+}
+
 export async function returnOrder (id) {
   return (await hillo.post('Complex.php?op=returnOrder', {
     orderId: id

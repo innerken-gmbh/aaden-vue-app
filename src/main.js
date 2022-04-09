@@ -30,6 +30,10 @@ Vue.filter('priceDisplay', function (price) {
   return parseFloat(price).toFixed(2).replace('.', ',') + ' €'
 })
 
+Vue.filter('priceDisplay1', function (price) {
+  return parseFloat(price).toFixed(1).replace('.', ',') + ' €'
+})
+
 Vue.filter('onlyTime', function (str) {
   return onlyTimeFormat(str)
 })
