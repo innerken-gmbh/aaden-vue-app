@@ -1,12 +1,10 @@
 import hillo from 'hillo'
 import IKUtils from 'innerken-js-utils'
-import dayjs from 'dayjs'
 import { version } from '../../package.json'
 import { deviceType } from '../assets/FixedConfig.json'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
 import { resetTableStatus } from '@/oldjs/common'
-import _ from 'lodash'
 
 export async function previewZBon (startDate, endDate) {
   return (await hillo.get('ZBon.php?op=previewBySpan', {
@@ -115,17 +113,6 @@ export async function renameMemberCard (oldName, newName) {
   }))
 }
 
-// 此处提醒自己: 之前的table model默认传今天的日期, 所以这里会有 const 今天时间
-// 要考虑 打日结单 是根据上面传的日期还是确实是今日的日期
-
-const todayDateHourSecond = dayjs().subtract(3, 'h')
-  .subtract(59, 'm').format('YYYY-MM-DD')
-
-export async function loadStartAndEndTimeForToday () {
-  return [(await loadLastZBonInfo()).toTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss')]
-  // return [(await getLastZBonInfo()).printTimeStamp, dayjs().format('YYYY-MM-DD HH:mm:ss')]
-}
-
 export async function loadPaymentMethods () {
   return (await hillo.get('PayMethod.php')).content
 }
@@ -134,32 +121,14 @@ export async function loadAllServants () {
   return (await hillo.get('Servant.php')).content
 }
 
-export async function loadServantList () {
-  const billDataList = (await loadLastZbonSlotIndexInfos()).servantList.map(bill => {
-    const res = _.sumBy(bill.orders.filter(i => i.payMethodId === '0'), function (o) {
-      return parseFloat(o.totalPrice)
-    })
-    return {
-      ...bill,
-      notPay: res
-    }
-  })
-  return billDataList.filter(s => s.todayTotal >= 0 && s.orders.length > 0)
+export async function printServantSummaryForToday (pw, startDate, endDate) {
+  window.event.cancelBubble = true // 取消事件的冒泡机制
+  return printServantSummary(pw, startDate, endDate)
 }
 
-export async function printServantSummaryForToday (pw) {
-  window.event.cancelBubble = true // 取消事件的冒泡机制
-  // 此处是从上次打印截止日期到现在
-  const date = (await loadStartAndEndTimeForToday()).map(s => s.split(' ')[0])
-
-  console.log('date', date)
-  // const today = dayjs().format('YYYY-MM-DD'),
-
-  // const start = dayjs().format('YYYY-MM-DD')
-  // const end = dayjs().format('YYYY-MM-DD')
-
-  // return printServantSummary(pw, start, end)
-  return printServantSummary(pw, ...date)
+export async function printAllServantSummaryForToday (startDate, endDate) {
+  const res = await loadAllServants()
+  res.forEach(s => printServantSummaryForToday(s.servant.password, startDate, endDate))
 }
 
 export async function loadZbonRecordList (fromDateTime, toDateTime) {
@@ -169,18 +138,6 @@ export async function loadZbonRecordList (fromDateTime, toDateTime) {
 export async function loadLastZBonInfo () {
   const list = await loadZbonRecordList()
   return list[0]
-}
-
-export async function loadLastZbonSlotIndexInfos () {
-  const taxInfo = await previewZBonByTimeSpan(
-    ...await loadStartAndEndTimeForToday()
-  )
-  const servantList = await Promise.all((await loadAllServants())
-    .map(async s => await getBillListForServant(s.password, todayDateHourSecond)))
-  return {
-    ...taxInfo,
-    servantList
-  }
 }
 
 export async function getBillListForServant (pw = null, date, endDate = null) {
@@ -252,13 +209,6 @@ export async function checkTse () {
   } catch (e) {
     console.log(e)
   }
-}
-
-export async function previewZBonByTimeSpan (startTime, endTime) {
-  return (await hillo.get('ZBon.php?op=previewByTimeSpan', {
-    startTime,
-    endTime
-  })).content
 }
 
 export async function showTodayTempDiscountedDishes (startTime, endTime) {
