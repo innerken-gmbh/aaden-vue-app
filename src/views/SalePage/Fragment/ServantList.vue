@@ -1,12 +1,10 @@
 <template>
-  <div style="max-height: 100vh; overflow-y: scroll">
-    <!--    <v-subheader>-->
-    <!--      <v-card-title>跑堂日结单</v-card-title>-->
-    <!--      <v-btn color="primary">打印全部跑堂日结单</v-btn>-->
-    <!--      <v-spacer/>-->
-    <!--    </v-subheader>-->
+  <div class="px-4" style="max-height: 100vh; overflow-y: scroll">
+    <v-subheader>
+      <v-btn color="primary" @click="allZBon(...singleZBonDate)">打印全部跑堂日结单</v-btn>
+    </v-subheader>
     <div style="display: grid; grid-template-columns: repeat(3,1fr); grid-gap: 20px;">
-      <v-card width="400" elevation="0" color="#f6f6f6" v-for="servant in loadAllServant" :key="servant.servant.id">
+      <v-card width="400" elevation="0" color="#f6f6f6" v-for="servant in displayServantInfo" :key="servant.servant.id">
         <div class="servantName text--h6 text-center mb-1"> {{ servant.servant.name }}</div>
         <div class="d-flex justify-center text-center mb-1">
           <div class="mx-4 lighten-1 grey--text " style="font-weight: 600">
@@ -32,12 +30,13 @@
           <v-list-item>
             {{ pay.name }}
             <v-spacer/>
-            {{ pay.amount | priceDisplay}}
+            {{ pay.amount | priceDisplay }}
           </v-list-item>
           <v-divider></v-divider>
         </div>
         <div class="mx-8 mb-4">
-          <v-btn dark color="orange" block @click="printServantSummaryForToday(servant.servant.password)">打印日结单</v-btn>
+          <v-btn dark color="orange" block @click="singleZBon(servant.servant.password, ...singleZBonDate)">打印日结单
+          </v-btn>
         </div>
       </v-card>
     </div>
@@ -45,8 +44,22 @@
 </template>
 
 <script>
-import { loadPaymentMethods, loadServantList, printServantSummaryForToday } from '@/api/api'
+import {
+  loadPaymentMethods,
+  printServantSummaryForToday,
+  printAllServantSummaryForToday, getBillListForServant, loadAllServants
+} from '@/api/api'
 import i18n from '@/i18n'
+
+const defaultDisplayData = {
+  orders: [],
+  payMethodTotal: [],
+  servant: {
+    id: -1,
+    name: 'Servant 1'
+  },
+  todayTotal: 0
+}
 
 export default {
   name: 'ServantList',
@@ -55,18 +68,35 @@ export default {
       activeId: null,
       loadAllServant: null,
       expandPayMethodDetail: false,
-      paymentMethodList: []
+      paymentMethodList: [],
+      servantInfo: [],
+      servantList: []
     }
   },
   props: {
     singleZBonDate: {}
   },
+  computed: {
+    displayServantInfo () {
+      return this.servantInfo.filter(s => s.todayTotal > 0)
+    }
+  },
   methods: {
-    printServantSummaryForToday,
-    async reloadServantPage () {
-      this.loadAllServant = await loadServantList()
-      console.log(this.loadAllServant, 'loadAllServant')
+    async loadServantsInfo () {
+      this.servantInfo = []
+      for (const s of this.servantList) {
+        this.servantInfo.push(Object.assign({}, defaultDisplayData,
+          await getBillListForServant(s.password,
+            ...this.singleZBonDate)))
+      }
     },
+    async singleZBon (pw, startDate, endDate) {
+      await printServantSummaryForToday(pw, startDate, endDate)
+    },
+    async allZBon (startDate, endDate) {
+      await printAllServantSummaryForToday(startDate, endDate)
+    },
+    // 可以考虑把这个函数放到Utils中
     fillPayMethodTotal (payMethod, withFilter = true) {
       if (withFilter) {
         const filter = (p) => p.id >= 1 && p.id <= 5
@@ -104,13 +134,14 @@ export default {
     }
   },
   watch: {
-    async singleZBonDate () {
-      await this.reloadServantPage()
+    async singleZBonDate (val) {
+      await this.loadServantsInfo()
     }
   },
   async mounted () {
     this.paymentMethodList = await loadPaymentMethods()
-    await this.reloadServantPage()
+    this.servantList = await loadAllServants()
+    await this.loadServantsInfo()
   }
 }
 </script>
@@ -126,8 +157,8 @@ export default {
 }
 
 .servantSaleCard {
-  width: 150px;
-  padding: 1.25rem;
+  width: 180px;
+  padding: 1rem;
   overflow: hidden;
 }
 </style>
