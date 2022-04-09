@@ -1,41 +1,28 @@
 <template>
-  <v-card elevation="0" class="servantCardStyle" width="100%">
-    <v-subheader>
-      <v-card-title>跑堂日结单</v-card-title>
-      <v-btn color="primary">打印全部跑堂日结单</v-btn>
-      <v-spacer/>
-    </v-subheader>
-    <div style="display: grid; grid-template-columns: repeat(4,1fr); grid-gap: 40px; overflow:scroll;">
-      <v-card width="400" v-for="servant in loadAllServant" :key="servant.servant.id">
-        <v-subheader dark class="grey lighten-2" style="height: 60px">
-<!--          <v-spacer></v-spacer>-->
-<!--          <v-btn>日结单</v-btn>-->
-        </v-subheader>
-        <div class="text-center">
-          <v-avatar
-            style="margin-top: -20px"
-            color="indigo"
-            size="56"
-          >
-            <span class="white--text text-h4">{{ servant.servant.name[0] }}</span>
-          </v-avatar>
-        </div>
-        <div class="servantName text--h6 text-center mb-4"> {{ servant.servant.name }}</div>
-        <div class="d-flex justify-center text-center mb-4">
+  <div style="max-height: 100vh; overflow-y: scroll">
+<!--    <v-subheader>-->
+<!--      <v-card-title>跑堂日结单</v-card-title>-->
+<!--      <v-btn color="primary">打印全部跑堂日结单</v-btn>-->
+<!--      <v-spacer/>-->
+<!--    </v-subheader>-->
+    <div style="display: grid; grid-template-columns: repeat(3,1fr); grid-gap: 20px;">
+      <v-card width="400" elevation="0" color="#f6f6f6" v-for="servant in loadAllServant" :key="servant.servant.id">
+        <div class="servantName text--h6 text-center mb-1"> {{ servant.servant.name }}</div>
+        <div class="d-flex justify-center text-center mb-1">
           <div class="mx-4 lighten-1 grey--text " style="font-weight: 600">
             {{ servant.servant.isPartTime === '1' ? '兼职' : '长期' }}
           </div>
         </div>
-        <div class="d-flex justify-center mb-5">
-          <v-card class="servantSaleCard mx-4">
+        <div class="d-flex justify-center mb-4">
+          <v-card elevation="0" class="servantSaleCard mx-4">
             <div class="text-caption">收入总计</div>
-            <div class="text-h5 orange--text mt-1"> {{ servant.todayTotal }}</div>
+            <div class="text-h5 green--text mt-1"> {{ servant.todayTotal }}</div>
           </v-card>
-          <v-card class="servantSaleCard mx-4">
+          <v-card elevation="0" class="servantSaleCard mx-4">
             <div class="text-caption">小费总计</div>
-            <div class="text-h5 green--text mt-1"> {{ servant.tipIncome }}</div>
+            <div class="text-h5 orange--text mt-1"> {{ servant.tipIncome }}</div>
           </v-card>
-          <v-card class="servantSaleCard mx-4">
+          <v-card elevation="0" class="servantSaleCard mx-4">
             <div class="text-caption">未结账</div>
             <div class="text-h5 red--text mt-1"> {{ servant.tipIncome }}</div>
           </v-card>
@@ -53,9 +40,7 @@
         </div>
       </v-card>
     </div>
-    <div class="d-flex">
-    </div>
-  </v-card>
+  </div>
 </template>
 
 <script>
@@ -79,6 +64,7 @@ export default {
     printServantSummaryForToday,
     async reloadServantPage () {
       this.loadAllServant = await loadServantList()
+      console.log(this.loadAllServant, 'loadAllServant')
     },
     fillPayMethodTotal (payMethod, withFilter = true) {
       if (withFilter) {
@@ -105,9 +91,10 @@ export default {
         }]
       } else {
         return this.paymentMethodList.filter(p => p.id > 0 && p.id !== 9).map(p => {
+          console.log(p)
           const r = payMethod.find(t => parseInt(t.payMethodId) === parseInt(p.id))
           return {
-            name: p._langsname,
+            name: p.langs[0].name,
             amount: r?.sumTotal ?? 0,
             id: p.id
           }
@@ -128,13 +115,6 @@ export default {
 </script>
 
 <style scoped>
-.servantCardStyle {
-  box-shadow: 0 12px 50px 2px #13507c24;
-  border-radius: 8px;
-  background-color: #fff;
-  padding: 1.25rem;
-  overflow: hidden;
-}
 
 .servantName {
   font-size: 1.5rem;
@@ -148,26 +128,5 @@ export default {
   width: 150px;
   padding: 1.25rem;
   overflow: hidden;
-}
-
-.servantDesc {
-
-}
-
-.manual-v-layout {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-flex: 1;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  padding-bottom: 8px !important;
-  padding-top: 8px !important;
 }
 </style>

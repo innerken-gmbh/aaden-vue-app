@@ -7,7 +7,8 @@
           <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
           <th class="text-left">{{ $t('time') }}</th>
           <th class="text-left">{{ $t('Summe') }}</th>
-          <th v-if="showOperation" class="text-left">{{ $t('operation') }}</th>
+          <th class="text-left">{{ $t('operation') }}</th>
+          <th class="text-left"></th>
         </tr>
         </thead>
         <tbody>
@@ -20,21 +21,12 @@
               {{ order.updatedAt }}
             </td>
             <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
-              {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{
-                order.tipIncome
-              }})</span>/
+              {{ order.totalPrice }}<span v-if="order.tipIncome>0">({{order.tipIncome }})</span>/
               {{ order.paymentMethodStrings }}<b v-if="order.discountStr">/
               {{ '-' + order.discountStr.replace('p', '%') }}</b>
             </td>
             <td>
-              <v-btn small
-                     elevation="0"
-                     color="success"
-                     class="mx-2"
-                     @click="checkOrderDetail(order)">
-                <v-icon>mdi-file-outline</v-icon>
-                订单详情
-              </v-btn>
+
               <v-btn :disabled="order.isReturned==='1'" elevation="0" @click="reprintOrder(order.orderId)" small
                      color="primary">
                 <v-icon left>
@@ -62,6 +54,15 @@
                     退单
                 </v-btn>
               </template>
+            </td>
+            <td>
+              <v-btn small
+                     icon
+                     elevation="0"
+                     class="mx-2"
+                     @click="checkOrderDetail(order)">
+                <v-icon>mdi-arrow-right-drop-circle-outline</v-icon>
+              </v-btn>
             </td>
           </tr>
         </template>
