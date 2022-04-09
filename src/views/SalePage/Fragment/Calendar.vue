@@ -317,9 +317,7 @@ export default {
     async printZBon () {
       IKUtils.showConfirm(this.$t('Möchten Sie alle Datensätze drucken?'), this.$t('Bist du sicher?'), async () => {
         IKUtils.showLoading(false)
-
         await printZBonUseDate(...this.singleZBonDate)
-
         IKUtils.toast('OK')
         await this.loadData()
       })
@@ -329,7 +327,6 @@ export default {
       this.clearFilter()
       if (this.singleZBonDate != null) {
         this.billData = await previewZBon(...this.singleZBonDate)
-        console.log(this.billData, 'billData')
         this.bills = (await getBillListForServant(null, ...this.singleZBonDate)).orders
       }
     }
@@ -341,6 +338,7 @@ export default {
       i.value = i.password
     })
     this.payMethodList = await loadPaymentMethods()
+    console.log(this.payMethodList)
     this.payMethodList.forEach(i => {
       i.value = i.id
     })

@@ -1,10 +1,10 @@
 <template>
   <div style="max-height: 100vh; overflow-y: scroll">
-<!--    <v-subheader>-->
-<!--      <v-card-title>跑堂日结单</v-card-title>-->
-<!--      <v-btn color="primary">打印全部跑堂日结单</v-btn>-->
-<!--      <v-spacer/>-->
-<!--    </v-subheader>-->
+    <!--    <v-subheader>-->
+    <!--      <v-card-title>跑堂日结单</v-card-title>-->
+    <!--      <v-btn color="primary">打印全部跑堂日结单</v-btn>-->
+    <!--      <v-spacer/>-->
+    <!--    </v-subheader>-->
     <div style="display: grid; grid-template-columns: repeat(3,1fr); grid-gap: 20px;">
       <v-card width="400" elevation="0" color="#f6f6f6" v-for="servant in loadAllServant" :key="servant.servant.id">
         <div class="servantName text--h6 text-center mb-1"> {{ servant.servant.name }}</div>
@@ -14,24 +14,25 @@
           </div>
         </div>
         <div class="d-flex justify-center mb-4">
-          <v-card elevation="0" class="servantSaleCard mx-4">
+          <div class="servantSaleCard ml-4 mx-1">
             <div class="text-caption">收入总计</div>
-            <div class="text-h5 green--text mt-1"> {{ servant.todayTotal }}</div>
-          </v-card>
-          <v-card elevation="0" class="servantSaleCard mx-4">
+            <div class="text-h5 green--text mt-1"> {{ servant.todayTotal | priceDisplay1 }}</div>
+          </div>
+          <div class="servantSaleCard mx-1">
             <div class="text-caption">小费总计</div>
-            <div class="text-h5 orange--text mt-1"> {{ servant.tipIncome }}</div>
-          </v-card>
-          <v-card elevation="0" class="servantSaleCard mx-4">
+            <div class="text-h5 orange--text mt-1"> {{ servant.tipIncome | priceDisplay1 }}</div>
+          </div>
+          <div class="servantSaleCard mx-1">
             <div class="text-caption">未结账</div>
-            <div class="text-h5 red--text mt-1"> {{ servant.tipIncome }}</div>
-          </v-card>
+            <div class="text-h5 red--text mt-1"> {{ servant.tipIncome | priceDisplay1 }}</div>
+          </div>
         </div>
-        <div class="mx-8" v-for="pay in fillPayMethodTotal(servant.payMethodTotal,activeId!==servant.servant.id)" :key="pay.id">
-          <v-list-item >
+        <div class="mx-8" v-for="pay in fillPayMethodTotal(servant.payMethodTotal,activeId!==servant.servant.id)"
+             :key="pay.id">
+          <v-list-item>
             {{ pay.name }}
             <v-spacer/>
-            {{ pay.amount }}
+            {{ pay.amount | priceDisplay}}
           </v-list-item>
           <v-divider></v-divider>
         </div>

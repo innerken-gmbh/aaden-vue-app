@@ -11,6 +11,7 @@
         <thead>
         <tr>
           <th class="text-left">Code/名称</th>
+          <th class="text-left">category</th>
           <th class="text-left">销售数量</th>
           <th class="text-left">单价</th>
           <th class="text-left">总价</th>
@@ -21,6 +22,12 @@
           <tr v-bind:key="record.dishId">
             <td>
               {{ record.code }} / {{ record.name }}
+            </td>
+            <td>
+              <v-chip
+              :color="record.color">
+                {{ record.cateName }}
+              </v-chip>
             </td>
             <td>
               {{ record.totalCount }}
@@ -40,33 +47,8 @@
 </template>
 
 <script>
-import { loadDishStatistic, printSaleBon, printSaleBonByCode } from '@/api/api'
+import { loadCategory, loadDishStatistic, printSaleBon, printSaleBonByCode } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
-
-const HeadersArr = [
-  {
-    text: 'code',
-    align: 'start',
-    value: 'code',
-    sortable: false
-  },
-  {
-    text: 'dishName',
-    align: 'start',
-    value: 'name',
-    sortable: false
-  },
-  {
-    text: 'categoryName',
-    value: 'categoryId',
-    sortable: false
-  },
-  {
-    text: 'num',
-    value: 'totalCount',
-    align: 'start'
-  }
-]
 
 export default {
   name: 'DishStatistic',
@@ -75,10 +57,10 @@ export default {
   },
   data: () => {
     return {
-      headers: HeadersArr,
       filteredItem: [],
       startDate: '',
-      displayItems: []
+      displayItems: [],
+      dishCategory: []
     }
   },
   watch: {
@@ -92,6 +74,14 @@ export default {
   methods: {
     async reloadDishes () {
       this.filteredItem = await loadDishStatistic(...this.singleZBonDate)
+      this.filteredItem.forEach(i => {
+        this.dishCategory.forEach(c => {
+          if (c.id === i.categoryId) {
+            i.cateName = c.langs[0].name
+            i.color = c.color
+          }
+        })
+      })
       this.filteredItem.sort((a, b) => {
         return b.price * b.totalCount - a.price * a.totalCount
       })
@@ -112,6 +102,8 @@ export default {
     }
   },
   async mounted () {
+    this.dishCategory = await loadCategory()
+    console.log(this.dishCategory)
     await this.reloadDishes()
   }
 }
