@@ -100,15 +100,15 @@
                 <v-tab-item>
                   <v-card>
                     <div class="d-flex pa-1">
-                      <dish-statistic :single-z-bon-date="singleZBonDate"></dish-statistic>
+                      <div class="pa-2 flex-grow-1">
+                        <dish-statistic :single-z-bon-date="singleZBonDate"></dish-statistic>
+                      </div>
                     </div>
                   </v-card>
                 </v-tab-item>
                 <v-tab-item>
-                  <v-card elevation="0" class="pa-1">
-                    <v-card elevation="0" class="flex-grow-1" style="overflow-y: auto; height: 100%;flex-direction: column;">
+                  <v-card elevation="0">
                       <servant-list :single-z-bon-date="singleZBonDate"></servant-list>
-                    </v-card>
                   </v-card>
                 </v-tab-item>
                 <v-tab-item>

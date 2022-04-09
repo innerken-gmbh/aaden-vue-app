@@ -2,22 +2,46 @@
   <v-card elevation="0">
     <div class="d-flex">
       <div class="pa-2 flex-grow-1">
-        <v-app-bar dense elevation="0" color="white">
+        <v-app-bar class="mt-1" dense elevation="0" color="white">
           <v-text-field
-            style="min-width: 800px"
-            solo dense
+            class=""
+            style="max-width: 320px"
+            solo
             prepend-inner-icon="mdi-magnify"
             :placeholder="$t('order_number_table_number_amount')"
             v-model="search">
-            <template v-slot:append-outer>
-
-            </template>
           </v-text-field>
+          <v-select
+            chips
+            deletable-chips
+            :items="servantList"
+            v-model="appliedFilter.servant"
+            @change="updateFilter"
+            :item-text="item => item.name"
+            solo
+            class="mx-3"
+            style="max-width: 160px"
+          >
+          </v-select>
+          <v-select
+            chips
+            deletable-chips
+            :items="payMethodList"
+            v-model="appliedFilter.payment"
+            @change="updateFilter"
+            :item-text="item => item.name"
+            solo
+            multiple
+            class="mx-3"
+            style="max-width: 320px"
+          >
+          </v-select>
+          <v-btn icon class="pb-6" @click="clearFilter"><v-icon>mdi-close-circle</v-icon></v-btn>
           <v-spacer></v-spacer>
         </v-app-bar>
         <bill-table @need-refresh="loadData" :orders="displayOrder" :show-operation="true"/>
       </div>
-      <v-navigation-drawer right width="272">
+      <v-navigation-drawer permanent right width="272">
         <v-card elevation="0" class="pa-2" width="272">
 
           <v-card elevation="0" class="mt-1">
@@ -110,7 +134,7 @@
           <tbody>
           <template v-for="order in returnList">
             <tr v-bind:key="order.orderId+order.Dname">
-              <td>
+              <td style="width: 200px">
                 <span class="font-weight-bold">{{ order.name }}</span>/{{ order.orderId }}
               </td>
               <td>
@@ -164,14 +188,21 @@
 
 <script>
 import dayjs from 'dayjs'
-import { getBillListForServant, previewZBon, printXBon, printZBonUseDate } from '@/api/api'
+import {
+  getBillListForServant,
+  loadAllServants,
+  loadPaymentMethods,
+  previewZBon,
+  printXBon,
+  printZBonUseDate
+} from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 import BillTable from '@/views/SalePage/BillTable'
 
 // eslint-disable-next-line no-unused-vars
 const defaultRealFilter = {
-  servant: [],
-  paymentMethod: [],
+  servant: '',
+  payment: [],
   status: []
 }
 
@@ -180,6 +211,9 @@ export default {
   components: { BillTable },
   data: function () {
     return {
+      appliedFilter: defaultRealFilter,
+      servantList: [],
+      payMethodList: [],
       search: '',
       billData: {
         content: {
@@ -202,7 +236,6 @@ export default {
   },
   watch: {
     async singleZBonDate () {
-      console.log('change')
       await this.loadData()
     },
     async tabIndex () {
@@ -210,6 +243,7 @@ export default {
     }
   },
   computed: {
+
     displayOrder () {
       return this.bills.filter(i => {
         if (i.tableName.includes(this.search) || i.orderId.includes(this.search) || i.totalPrice.includes(this.search)) {
@@ -253,6 +287,28 @@ export default {
     }
   },
   methods: {
+    clearFilter () {
+      this.search = ''
+      this.appliedFilter = {
+        servant: '',
+        payment: [],
+        status: []
+      }
+      this.updateFilter()
+    },
+    async updateFilter () {
+      this.search = ''
+      const selectedServantPw = this.appliedFilter.servant
+      const selectedPayMethod = this.appliedFilter.payment
+      this.bills = ((await getBillListForServant(selectedServantPw, ...this.singleZBonDate)).orders)
+      this.bills = this.bills.filter(b => {
+        if (selectedPayMethod?.length > 0 && selectedPayMethod.some(s => b.payMethodId.includes(s))) {
+          return b
+        } else if (selectedPayMethod?.length === 0) {
+          return b
+        }
+      })
+    },
     async printXBon () {
       IKUtils.showLoading()
       await printXBon(...this.singleZBonDate)
@@ -270,16 +326,24 @@ export default {
     },
 
     async loadData () {
+      this.clearFilter()
       if (this.singleZBonDate != null) {
         this.billData = await previewZBon(...this.singleZBonDate)
         console.log(this.billData, 'billData')
         this.bills = (await getBillListForServant(null, ...this.singleZBonDate)).orders
-        // this.bills = await loadBillList(...this.singleZBonDate)
       }
     }
   },
   async mounted () {
     await this.loadData()
+    this.servantList = await loadAllServants()
+    this.servantList.forEach(i => {
+      i.value = i.password
+    })
+    this.payMethodList = await loadPaymentMethods()
+    this.payMethodList.forEach(i => {
+      i.value = i.id
+    })
   }
 }
 </script>
