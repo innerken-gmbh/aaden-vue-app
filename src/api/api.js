@@ -108,10 +108,12 @@ export async function renameMemberCard (oldName, newName) {
     new: newName
   }))
 }
+
 // 此处提醒自己: 之前的table model默认传今天的日期, 所以这里会有 const 今天时间
 // 要考虑 打日结单 是根据上面传的日期还是确实是今日的日期
 
-const todayDateHourSecond = dayjs().subtract(3, 'h').subtract(59, 'm').format('YYYY-MM-DD')
+const todayDateHourSecond = dayjs().subtract(3, 'h')
+  .subtract(59, 'm').format('YYYY-MM-DD')
 
 export async function loadStartAndEndTimeForToday () {
   return [(await loadLastZBonInfo()).toTimestamp, dayjs().format('YYYY-MM-DD HH:mm:ss')]
@@ -128,7 +130,9 @@ export async function loadAllServants () {
 
 export async function loadServantList () {
   const billDataList = (await loadLastZbonSlotIndexInfos()).servantList.map(bill => {
-    const res = _.sumBy(bill.orders.filter(i => i.payMethodId === '0'), function (o) { return parseFloat(o.totalPrice) })
+    const res = _.sumBy(bill.orders.filter(i => i.payMethodId === '0'), function (o) {
+      return parseFloat(o.totalPrice)
+    })
     return {
       ...bill,
       notPay: res
