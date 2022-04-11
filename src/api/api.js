@@ -59,6 +59,12 @@ export async function loadCategory () {
   })).content
 }
 
+export async function loadCategoryType () {
+  return (await hillo.get('CategoryType.php', {
+    lang: GlobalConfig.lang
+  })).content
+}
+
 export async function returnOrder (id) {
   return (await hillo.post('Complex.php?op=returnOrder', {
     orderId: id
@@ -150,17 +156,6 @@ export async function getBillListForServant (pw = null, date, endDate = null) {
     endDate,
     lang: GlobalConfig.lang
   })).content
-}
-
-export async function loadBillList (dateStart, dateEnd) {
-  return (await hillo.get('Orders.php?op=withSortAndFilter', {
-    lang: GlobalConfig.lang,
-    timespan: `${dateStart} - ${dateEnd}`
-  })).content.map(o => {
-    o.returnDishCount = Math.abs(o.returnDishCount ?? 0)
-    o.discountDishCount = Math.abs(o.discountDishCount ?? 0)
-    return o
-  })
 }
 
 export async function loadDishStatistic (startDate, endDate) {

@@ -8,12 +8,13 @@
             style="max-width: 320px"
             solo
             prepend-inner-icon="mdi-magnify"
-            :placeholder="$t('order_number_table_number_amount')"
+            :placeholder="$t('Search order/table')"
             v-model="search">
           </v-text-field>
           <v-select
             chips
             deletable-chips
+            :label="'Servant'"
             :items="servantList"
             v-model="appliedFilter.servant"
             @change="updateFilter"
@@ -26,6 +27,7 @@
           <v-select
             chips
             deletable-chips
+            :label="'Pay Method'"
             :items="payMethodList"
             v-model="appliedFilter.payment"
             @change="updateFilter"
@@ -36,7 +38,7 @@
             style="max-width: 320px"
           >
           </v-select>
-          <v-btn icon class="pb-6" @click="clearFilter"><v-icon>mdi-close-circle</v-icon></v-btn>
+          <v-btn icon class="mb-6" @click="clearFilter"><v-icon>mdi-close-circle</v-icon></v-btn>
           <v-spacer></v-spacer>
         </v-app-bar>
         <bill-table @need-refresh="loadData" :orders="displayOrder" :show-operation="true"/>
@@ -199,7 +201,6 @@ import {
 import IKUtils from 'innerken-js-utils'
 import BillTable from '@/views/SalePage/BillTable'
 
-// eslint-disable-next-line no-unused-vars
 const defaultRealFilter = {
   servant: '',
   payment: [],

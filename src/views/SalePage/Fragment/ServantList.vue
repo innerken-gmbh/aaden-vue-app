@@ -12,7 +12,7 @@
           </div>
         </div>
         <div class="d-flex justify-center mb-4">
-          <div class="servantSaleCard ml-4 mx-1">
+          <div class="servantSaleCard ml-4 mx-1" style="width: 210px">
             <div class="text-caption">收入总计</div>
             <div class="text-h5 green--text mt-1"> {{ servant.todayTotal | priceDisplay1 }}</div>
           </div>
