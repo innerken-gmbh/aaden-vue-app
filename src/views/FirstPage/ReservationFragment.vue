@@ -5,14 +5,12 @@
         grid-gap: 16px;
 ">
     <div class="d-flex flex-column">
-
       <v-date-picker style="border-radius: 12px"
                      :min="todayDate"
                      :locale="$i18n.locale"
                      full-width color="primary"
                      v-model="reservationDate"
       />
-
       <v-card color="white"
               elevation="0"
               style="border-radius: 12px"
@@ -36,7 +34,6 @@
           {{ $t('预定桌子设置') }}
         </v-btn>
       </v-card>
-
       <v-card
           elevation="0"
           class="mt-4 flex-grow-1"
@@ -108,7 +105,6 @@
               <v-icon small class="ml-3">mdi-baby-carriage</v-icon>
             </template>
           </v-chip>
-
         </template>
         <template #item.user="{item}">
           <div class="pa-2">
@@ -480,7 +476,6 @@ export default {
   },
   methods: {
     filterItem (value, search, item) {
-      console.log(value, search, item)
       if (search.trim() === '') {
         return true
       } else {
