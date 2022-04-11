@@ -34,7 +34,7 @@
           <span>支付方式</span>
           <v-spacer></v-spacer>
           <v-chip color="primary" small label>
-            {{ orderInfo.payMethodName }}
+            {{ order.billPaymentInfo[0].name }}
           </v-chip>
         </v-list-item>
       </v-list-item-group>
@@ -186,9 +186,8 @@ export default {
     }
   },
   async mounted () {
+    console.log(this.order)
     this.consumeTypeList = await loadAllConsumeType()
-    console.log(this.consumeTypeList, 'consumeTypeList')
-    console.log(this.order.billInfo.consumeTypeId, 'consumeTypeId')
     this.consumeTypeName = this.consumeTypeList.find(i => i.id === this.order.billInfo.consumeTypeId)?.printName
   }
 }
