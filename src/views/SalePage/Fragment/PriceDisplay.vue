@@ -6,7 +6,7 @@
           <v-col class="mt-8" cols="12" lg="4">
             <v-card elevation="1" style="border-radius: 8px;" class="mx-4 d-flex flex-column align-center justify-center">
               <div class="pa-4">
-                <div  class="my-4">
+                <div  class="my-8">
                   <h6 class="font-weight-bold text-body-1">
                     非德语区标准许可
                   </h6>
@@ -35,7 +35,7 @@
           <v-col class="mt-8" cols="12" lg="5">
             <v-card elevation="1" style="border-radius: 8px;" class="mx-4 d-flex flex-column align-center justify-center">
               <div class="pa-4">
-                <div  class="my-4">
+                <div  class="my-8">
                   <h6 class="font-weight-bold text-body-1">
                     德语区许可
                   </h6>
@@ -74,7 +74,7 @@
     <v-navigation-drawer absolute permanent right width="272" style="border: none">
       <v-card elevation="0" class="pa-2" width="272">
         <v-img class="ml-6" max-width="200px" max-height="200px" src="@/assets/1.png"></v-img>
-        <h2 class="mx-auto justify-center text-center">扫码绑定老板端App，可以远程查看店内更多细节数据</h2>
+        <h4 class="mx-auto justify-center text-center">扫码绑定老板端App，可以远程查看店内更多细节数据</h4>
       </v-card>
     </v-navigation-drawer>
   </v-card>

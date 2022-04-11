@@ -31,7 +31,7 @@
             :items="payMethodList"
             v-model="appliedFilter.payment"
             @change="updateFilter"
-            :item-text="item => item.name"
+            :item-text="item => item.langPayMethodName"
             solo
             multiple
             class="mx-3"
@@ -200,6 +200,7 @@ import {
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 import BillTable from '@/views/SalePage/BillTable'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 const defaultRealFilter = {
   servant: '',
@@ -244,10 +245,9 @@ export default {
     }
   },
   computed: {
-
     displayOrder () {
       return this.bills.filter(i => {
-        if (i.tableName.includes(this.search) || i.orderId.includes(this.search) || i.totalPrice.includes(this.search)) {
+        if (i.tableName.toLowerCase().includes(this.search.toLowerCase()) || i.orderId.includes(this.search) || i.totalPrice.includes(this.search)) {
           return i
         }
       })
@@ -303,7 +303,7 @@ export default {
       const selectedPayMethod = this.appliedFilter.payment
       this.bills = ((await getBillListForServant(selectedServantPw, ...this.singleZBonDate)).orders)
       this.bills = this.bills.filter(b => {
-        if (selectedPayMethod?.length > 0 && selectedPayMethod.some(s => b.payMethodId.includes(s))) {
+        if (selectedPayMethod?.length > 0 && selectedPayMethod.some(s => b.payMethodId === s)) {
           return b
         } else if (selectedPayMethod?.length === 0) {
           return b
@@ -339,9 +339,9 @@ export default {
       i.value = i.password
     })
     this.payMethodList = await loadPaymentMethods()
-    console.log(this.payMethodList)
     this.payMethodList.forEach(i => {
       i.value = i.id
+      i.langPayMethodName = i.langs.filter(l => l.lang.toLowerCase() === GlobalConfig.lang.toLowerCase())[0].name
     })
   }
 }

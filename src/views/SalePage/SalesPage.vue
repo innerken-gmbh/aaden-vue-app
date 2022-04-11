@@ -3,7 +3,7 @@
     <v-toolbar elevation="2">
       <v-tabs v-model="tabIndex">
         <template v-if="isBoss">
-          <v-tab>{{ $t('Tag-Sicht') }}</v-tab>
+          <v-tab>账单列表</v-tab>
           <v-tab>{{ $t('Kassenbuch') }}</v-tab>
           <v-tab>菜品统计</v-tab>
           <v-tab>查看跑堂</v-tab>
@@ -70,7 +70,7 @@
                             <v-list-item-content>
                               <v-list-item-title>
                             <span style="font-size: larger">
-                                   {{ todayCashStand }}
+                                   {{ todayCashStand | priceDisplay}}
                             </span>
                               </v-list-item-title>
                             </v-list-item-content>

@@ -1,28 +1,25 @@
 <template>
-  <div class="px-4" style="max-height: 100vh; overflow-y: scroll">
-    <v-subheader>
+  <div class="px-4" style="max-height: calc(100vh - 112px); overflow-y: scroll">
+    <v-subheader  class="my-4">
       <v-btn color="primary" @click="allZBon(...singleZBonDate)">打印全部跑堂日结单</v-btn>
     </v-subheader>
     <div style="display: grid; grid-template-columns: repeat(3,1fr); grid-gap: 20px;">
-      <v-card width="400" elevation="0" color="#f6f6f6" v-for="servant in displayServantInfo" :key="servant.servant.id">
-        <div class="servantName text--h6 text-center mb-1"> {{ servant.servant.name }}</div>
+      <v-card width="380" elevation="0" color="#f6f6f6" v-for="servant in displayServantInfo" :key="servant.servant.id"
+              @click="openServantInfo(servant)">
+        <div class="servantName text--h6 text-center my-2"> {{ servant.servant.name }}</div>
         <div class="d-flex justify-center text-center mb-1">
           <div class="mx-4 lighten-1 grey--text " style="font-weight: 600">
             {{ servant.servant.isPartTime === '1' ? '兼职' : '长期' }}
           </div>
         </div>
         <div class="d-flex justify-center mb-4">
-          <div class="servantSaleCard ml-4 mx-1" style="width: 210px">
+          <div class="servantSaleCard ml-8 mx-1">
             <div class="text-caption">收入总计</div>
             <div class="text-h5 green--text mt-1"> {{ servant.todayTotal | priceDisplay1 }}</div>
           </div>
           <div class="servantSaleCard mx-1">
             <div class="text-caption">小费总计</div>
             <div class="text-h5 orange--text mt-1"> {{ servant.tipIncome | priceDisplay1 }}</div>
-          </div>
-          <div class="servantSaleCard mx-1">
-            <div class="text-caption">未结账</div>
-            <div class="text-h5 red--text mt-1"> {{ servant.tipIncome | priceDisplay1 }}</div>
           </div>
         </div>
         <div class="mx-8" v-for="pay in fillPayMethodTotal(servant.payMethodTotal,activeId!==servant.servant.id)"
@@ -40,6 +37,44 @@
         </div>
       </v-card>
     </div>
+    <v-dialog v-model="showMorePayment" max-width="400">
+      <v-card max-width="400" v-if="selectedServant !== null">
+        <v-btn @click="showMorePayment = false" icon right absolute>
+          <v-icon>mdi-close-circle</v-icon>
+        </v-btn>
+        <div class="servantName text--h6 text-center mb-1"> {{ selectedServant.servant.name }}</div>
+        <div class="d-flex justify-center text-center mb-1">
+          <div class="mx-4 lighten-1 grey--text " style="font-weight: 600">
+            {{ selectedServant.servant.isPartTime === '1' ? '兼职' : '长期' }}
+          </div>
+        </div>
+        <div class="d-flex justify-center mb-4">
+          <div class="servantSaleCard ml-8 mx-1">
+            <div class="text-caption">收入总计</div>
+            <div class="text-h5 green--text mt-1"> {{ selectedServant.todayTotal | priceDisplay1 }}</div>
+          </div>
+          <div class="servantSaleCard mx-1">
+            <div class="text-caption">小费总计</div>
+            <div class="text-h5 orange--text mt-1"> {{ selectedServant.tipIncome | priceDisplay1 }}</div>
+          </div>
+        </div>
+        <div class="mx-8"
+             v-for="pay in fillPayMethodTotal(selectedServant.payMethodTotal,activeId===selectedServant.servant.id)"
+             :key="pay.id">
+          <v-list-item>
+            {{ pay.name }}
+            <v-spacer/>
+            {{ pay.amount | priceDisplay }}
+          </v-list-item>
+          <v-divider></v-divider>
+        </div>
+        <div class="mx-8 pb-2">
+          <v-btn dark color="orange" block @click="singleZBon(selectedServant.servant.password, ...singleZBonDate)">
+            打印日结单
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -65,12 +100,15 @@ export default {
   name: 'ServantList',
   data: () => {
     return {
+      showMorePayment: false,
+      selectedServant: null,
       activeId: null,
       loadAllServant: null,
       expandPayMethodDetail: false,
       paymentMethodList: [],
       servantInfo: [],
-      servantList: []
+      servantList: [],
+      showTotalPayment: false
     }
   },
   props: {
@@ -82,6 +120,17 @@ export default {
     }
   },
   methods: {
+    openServantInfo (servant) {
+      this.selectedServant = servant
+      this.showMorePayment = true
+    },
+    changeActiveId (activeId) {
+      if (this.activeId === activeId) {
+        this.activeId = null
+      } else {
+        this.activeId = activeId
+      }
+    },
     async loadServantsInfo () {
       this.servantInfo = []
       for (const s of this.servantList) {
@@ -122,7 +171,6 @@ export default {
         }]
       } else {
         return this.paymentMethodList.filter(p => p.id > 0 && p.id !== 9).map(p => {
-          console.log(p)
           const r = payMethod.find(t => parseInt(t.payMethodId) === parseInt(p.id))
           return {
             name: p.langs[0].name,
@@ -157,7 +205,7 @@ export default {
 }
 
 .servantSaleCard {
-  width: 180px;
+  width: 200px;
   padding: 1rem;
   overflow: hidden;
 }
