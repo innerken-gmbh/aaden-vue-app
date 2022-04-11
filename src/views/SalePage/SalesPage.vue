@@ -112,12 +112,7 @@
                   </v-card>
                 </v-tab-item>
                 <v-tab-item>
-                  <v-card style="width: 100%;">
-                    <div  class="pa-2 align-center justify-center" style="display:flex;">
-                      <v-img max-width="400px" max-height="400px" src="@/assets/1.png"></v-img>
-                    </div>
-                    <h2 class="mx-auto justify-center text-center">扫码绑定老板端App，可以远程查看店内更多细节数据</h2>
-                  </v-card>
+                  <price-display></price-display>
                 </v-tab-item>
               </template>
               <v-tab-item>
@@ -224,6 +219,7 @@ import { getNiceLabel, today } from '@/api/Repository/DateRepository'
 import DateRangePicker from '@/components/GlobalDialog/DateRangePicker'
 import DishStatistic from '@/views/SalePage/Fragment/DishStatistic'
 import ServantList from '@/views/SalePage/Fragment/ServantList'
+import PriceDisplay from '@/views/SalePage/Fragment/PriceDisplay'
 
 const defaultDisplayData = {
   orders: [],
@@ -238,6 +234,7 @@ const defaultDisplayData = {
 export default {
   name: 'SalePage',
   components: {
+    PriceDisplay,
     ServantList,
     DishStatistic,
     DateRangePicker,
