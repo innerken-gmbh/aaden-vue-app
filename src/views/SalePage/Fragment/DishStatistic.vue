@@ -7,8 +7,7 @@
         :label="'Category'"
         :items="dishCategory"
         v-model="appliedFilter.category"
-        @change="updateFilter(true)"
-        :item-text="item => item.langs[0].name"
+        item-text="langs[0].name"
         solo
         class="mx-3"
         style="max-width: 320px"
@@ -20,14 +19,15 @@
         :label="'Category Type'"
         :items="dishCategoryTypeList"
         v-model="appliedFilter.categoryType"
-        @change="updateFilter(false)"
-        :item-text="item => item.name"
+        item-text="name"
         solo
         class="mx-3"
         style="max-width: 320px"
       >
       </v-select>
-      <v-btn icon class="mb-6" @click="clearFilter"><v-icon>mdi-close-circle</v-icon></v-btn>
+      <v-btn icon class="mb-6" @click="clearFilter">
+        <v-icon>mdi-close-circle</v-icon>
+      </v-btn>
       <v-btn class="primary mx-2 mb-6" @click="printSaleBon">按销量打印</v-btn>
       <v-btn class="primary mx-2 mb-6" @click="printSaleBonByCode">按菜号打印</v-btn>
     </v-subheader>
@@ -48,7 +48,7 @@
         </span>
       </template>
       <template #item.totalPrice="{item}">
-          {{ item.totalPrice | priceDisplay }}
+        {{ item.totalPrice | priceDisplay }}
       </template>
     </v-data-table>
   </v-card>
@@ -111,7 +111,10 @@ export default {
       ]
     },
     displayItems () {
-      return this.filteredItem
+      return this.filteredItem.filter(i => {
+        return (this.appliedFilter.category === null && this.appliedFilter.categoryType === null) || (this.appliedFilter.category === null && i.categoryTypeId === this.appliedFilter.categoryType) ||
+          (this.appliedFilter.categoryType === null && i.categoryId === this.appliedFilter.category) || (i.categoryTypeId === this.appliedFilter.categoryType && i.categoryId === this.appliedFilter.category)
+      })
     }
   },
   watch: {
@@ -124,15 +127,6 @@ export default {
       this.appliedFilter.category = null
       this.appliedFilter.categoryType = null
       await this.reloadDishes()
-    },
-    async updateFilter (isFilteredByCate) {
-      await this.reloadDishes()
-      isFilteredByCate ? this.appliedFilter.categoryType = null : this.appliedFilter.category = null
-      if (this.appliedFilter.category !== null && this.appliedFilter.categoryType === null) {
-        this.filteredItem = this.filteredItem.filter(b => b.categoryId === this.appliedFilter.category)
-      } else if (this.appliedFilter.category === null && this.appliedFilter.categoryType !== null) {
-        this.filteredItem = this.filteredItem.filter(b => b.categoryTypeId === this.appliedFilter.categoryType)
-      }
     },
     async reloadDishes () {
       this.filteredItem = await loadDishStatistic(...this.singleZBonDate)
