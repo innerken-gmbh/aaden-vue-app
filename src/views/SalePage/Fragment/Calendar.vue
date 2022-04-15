@@ -2,15 +2,28 @@
   <v-card elevation="0">
     <div class="d-flex">
       <div class="pa-2 flex-grow-1">
-        <v-app-bar class="mt-1" dense elevation="0" color="white">
+        <v-app-bar class="mt-1 " style="margin-left: -16px" dense elevation="0" color="white">
           <v-text-field
-            class=""
-            style="max-width: 320px"
+            style="max-width: 240px"
             solo
             prepend-inner-icon="mdi-magnify"
             :placeholder="$t('Search order/table')"
             v-model="search">
           </v-text-field>
+          <v-select
+            chips
+            class="mx-3"
+            deletable-chips
+            :label="'Pay Method'"
+            :items="payMethodList"
+            v-model="appliedFilter.payment"
+            @change="updateFilter"
+            :item-text="item => item.langPayMethodName"
+            solo
+            multiple
+            style="max-width: 240px"
+          >
+          </v-select>
           <v-select
             chips
             deletable-chips
@@ -20,25 +33,12 @@
             @change="updateFilter"
             :item-text="item => item.name"
             solo
-            class="mx-3"
             style="max-width: 160px"
           >
           </v-select>
-          <v-select
-            chips
-            deletable-chips
-            :label="'Pay Method'"
-            :items="payMethodList"
-            v-model="appliedFilter.payment"
-            @change="updateFilter"
-            :item-text="item => item.langPayMethodName"
-            solo
-            multiple
-            class="mx-3"
-            style="max-width: 320px"
-          >
-          </v-select>
-          <v-btn icon class="mb-6" @click="clearFilter"><v-icon>mdi-close-circle</v-icon></v-btn>
+          <v-btn v-if="showClearButton" icon class="mb-6" @click="clearFilter">
+            <v-icon>mdi-close-circle</v-icon>
+          </v-btn>
           <v-spacer></v-spacer>
         </v-app-bar>
         <bill-table @need-refresh="loadData" :orders="displayOrder" :show-operation="true"/>
@@ -69,14 +69,21 @@
                 </div>
               </div>
             </template>
-            <template v-for="pay in paidInfoList">
-              <div class="pa-1 mx-1" :key="pay.id">
-                <div class="d-flex justify-space-between">
-                  <h4>{{ pay.paidName }}</h4>
-                  <div>{{ pay.paidTotal | priceDisplay }}</div>
-                </div>
+            <h3 class="pa-2 font-weight-bold">支付方式:</h3>
+            <div @click="showAllPayment = !showAllPayment">
+              <div v-if="paidInfoList.length <= 6 || showAllPayment">
+                <template v-for="pay in paidInfoList">
+                  <div class="pa-1 mx-1" :key="pay.id">
+                    <div class="d-flex justify-space-between">
+                      <h4>{{ pay.paidName }}</h4>
+                      <div>{{ pay.paidTotal | priceDisplay }}</div>
+                    </div>
+                  </div>
+                </template>
               </div>
-            </template>
+              <div v-else>
+              </div>
+            </div>
           </v-card>
           <v-card elevation="0">
             <v-card color="error lighten-2" dark @click="returnDishDialog=true"
@@ -204,8 +211,7 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 const defaultRealFilter = {
   servant: '',
-  payment: [],
-  status: []
+  payment: []
 }
 
 export default {
@@ -213,6 +219,7 @@ export default {
   components: { BillTable },
   data: function () {
     return {
+      showAllPayment: false,
       appliedFilter: defaultRealFilter,
       servantList: [],
       payMethodList: [],
@@ -245,6 +252,9 @@ export default {
     }
   },
   computed: {
+    showClearButton () {
+      return this.search || this.appliedFilter.servant !== '' || this.appliedFilter.payment.length !== 0
+    },
     displayOrder () {
       return this.bills.filter(i => {
         if (i.tableName.toLowerCase().includes(this.search.toLowerCase()) || i.orderId.includes(this.search) || i.totalPrice.includes(this.search)) {
@@ -292,8 +302,7 @@ export default {
       this.search = ''
       this.appliedFilter = {
         servant: '',
-        payment: [],
-        status: []
+        payment: []
       }
       this.updateFilter()
     },
