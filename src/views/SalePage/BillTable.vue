@@ -44,15 +44,6 @@
                   <v-icon left>mdi-cash-refund</v-icon>
                   更换
                 </v-btn>
-                <v-btn small
-                       :disabled="order.isReturned==='1'"
-                       elevation="0"
-                       color="error"
-                       class="ml-2"
-                       @click="returnOrder(order.orderId)">
-                  <v-icon>mdi-file-cancel-outline</v-icon>
-                    退单
-                </v-btn>
               </template>
             </td>
             <td>
@@ -81,7 +72,7 @@
     </v-dialog>
     <v-dialog max-width="600px" v-model="orderDetailDialog">
       <v-card width="100%" style="">
-        <order-detail-dialog :order="selectedOrder" @closeDetail="orderDetailDialog = false"></order-detail-dialog>
+        <order-detail-dialog :order="selectedOrder" @closeDetail="orderDetailDialog = false" @returnOrder="returnOrder"></order-detail-dialog>
       </v-card>
     </v-dialog>
   </div>
