@@ -1,56 +1,79 @@
 <template>
   <v-card elevation="0" style="width: 100%;">
-    <v-subheader>
-      <v-select
-        chips
-        deletable-chips
-        :label="'Category'"
-        :items="dishCategory"
-        v-model="appliedFilter.category"
-        item-text="langs[0].name"
-        solo
-        class="mx-3"
-        style="max-width: 320px"
-      >
-      </v-select>
-      <v-select
-        chips
-        deletable-chips
-        :label="'Category Type'"
-        :items="dishCategoryTypeList"
-        v-model="appliedFilter.categoryType"
-        item-text="name"
-        solo
-        class="mx-3"
-        style="max-width: 320px"
-      >
-      </v-select>
-      <v-btn icon class="mb-6" @click="clearFilter">
-        <v-icon>mdi-close-circle</v-icon>
-      </v-btn>
-      <v-btn class="primary mx-2 mb-6" @click="printSaleBon">按销量打印</v-btn>
-      <v-btn class="primary mx-2 mb-6" @click="printSaleBonByCode">按菜号打印</v-btn>
-    </v-subheader>
-    <v-data-table
-      :sort-by="['totalPrice']"
-      :sort-desc="[true]"
-      :items="displayItems"
-      :headers="headers">
-      <template #item.category="{item}">
-        <v-chip
-          :color="item.color?item.color:'white'">
-          {{ item.cateName }}
-        </v-chip>
-      </template>
-      <template #item.cateTypeName="{item}">
+    <div class="d-flex">
+      <v-data-table
+        style="min-width: calc(100% - 272px)"
+        :sort-by="orderBySales ? ['totalPrice']: ['totalCount']"
+        :sort-desc="[true]"
+        :items="displayItems"
+        :headers="headers">
+        <template v-slot:top>
+          <v-subheader style="margin-left: -28px">
+            <v-select
+              chips
+              deletable-chips
+              :label="'Category'"
+              :items="dishCategory"
+              v-model="appliedFilter.category"
+              item-text="langs[0].name"
+              solo
+              class="mx-3"
+              style="max-width: 300px"
+            >
+            </v-select>
+            <v-select
+              chips
+              deletable-chips
+              :label="'Category Type'"
+              :items="dishCategoryTypeList"
+              v-model="appliedFilter.categoryType"
+              item-text="name"
+              solo
+              style="max-width: 160px"
+            >
+            </v-select>
+            <v-btn v-if="showClear" icon class="mb-6" @click="clearFilter">
+              <v-icon>mdi-close-circle</v-icon>
+            </v-btn>
+          </v-subheader>
+        </template>
+        <template #item.name="{item}">
+          <span class="font-weight-bold">
+            {{ item.name }}
+          </span>
+        </template>
+        <template #item.category="{item}">
+          <v-chip
+            :color="item.color?item.color:'white'">
+            {{ item.cateName }}
+          </v-chip>
+        </template>
+        <template #item.cateTypeName="{item}">
         <span class="font-weight-bold">
           {{ item.cateTypeName }}
         </span>
-      </template>
-      <template #item.totalPrice="{item}">
-        {{ item.totalPrice | priceDisplay }}
-      </template>
-    </v-data-table>
+        </template>
+        <template #item.totalPrice="{item}">
+          {{ item.totalPrice | priceDisplay }}
+        </template>
+      </v-data-table>
+      <v-navigation-drawer permanent right width="272">
+        <v-card elevation="0" class="pa-2" width="272">
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-switch
+              v-model="orderBySales"
+              flat
+              :label="orderBySales ? '按销售额排序' : '按销量排序'"
+            ></v-switch>
+            <v-spacer></v-spacer>
+          </v-card-actions>
+
+          <v-btn x-large dark block class="orange mx-2 mb-6" @click="printSaleBon">按销量打印</v-btn>
+          <v-btn x-large dark block class="orange mx-2 mb-6" @click="printSaleBonByCode">按菜号打印</v-btn>
+        </v-card>
+      </v-navigation-drawer>
+    </div>
   </v-card>
 </template>
 
@@ -70,6 +93,7 @@ export default {
   },
   data: () => {
     return {
+      orderBySales: true,
       appliedFilter: defaultRealFilter,
       filteredItem: [],
       startDate: '',
@@ -78,6 +102,9 @@ export default {
     }
   },
   computed: {
+    showClear () {
+      return this.appliedFilter.category || this.appliedFilter.categoryType
+    },
     headers () {
       return [
         {

@@ -121,6 +121,7 @@ export default {
         IKUtils.showLoading()
         returnOrder(orderId).then(() => {
           IKUtils.toast()
+          this.$emit('need-refresh')
         })
       })
     },
