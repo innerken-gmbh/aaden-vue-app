@@ -1,11 +1,11 @@
 <template>
-  <v-dialog v-model="realShow" max-width="960px">
-    <v-card width="460px">
+  <v-dialog v-model="realShow" max-width="460px">
+    <v-card width="100%">
       <div v-if="title" class="pa-2" style="font-size: 24px;">
         {{ title }}
       </div>
       <div class="pa-2">
-        <v-text-field type="number" style="font-size: 24px;" v-model="buffer" hide-details></v-text-field>
+        <v-text-field  style="font-size: 24px;" v-model="buffer" hide-details></v-text-field>
       </div>
       <div class="pa-2">
         <slot></slot>
