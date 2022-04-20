@@ -69,10 +69,13 @@
                 </div>
               </div>
             </template>
-            <h3 class="pa-2 font-weight-bold">支付方式:</h3>
-            <div @click="showAllPayment = !showAllPayment">
-              <div v-if="paidInfoList.length <= 6 || showAllPayment">
-                <template v-for="pay in paidInfoList">
+            <div class="d-flex justify-space-between">
+              <h3 class="pa-2 font-weight-bold">支付方式:</h3>
+              <div v-if="paidInfoList.length > 5"><v-btn @click="showAllPayment = !showAllPayment" small class="primary">{{ !showAllPayment? '更多' : '收起'}}</v-btn></div>
+            </div>
+
+              <div v-if="!showAllPayment && paidInfoList.length > 5">
+                <template v-for="pay in paidInfoList.slice(0, 5)">
                   <div class="pa-1 mx-1" :key="pay.id">
                     <div class="d-flex justify-space-between">
                       <h4>{{ pay.paidName }}</h4>
@@ -80,9 +83,21 @@
                     </div>
                   </div>
                 </template>
+                <div class="pa-1 mx-1">
+                  <div class="d-flex justify-space-between">
+                    <h4>...</h4>
+                  </div>
+                </div>
               </div>
-              <div v-else>
-              </div>
+            <div v-else>
+              <template v-for="pay in paidInfoList">
+                <div class="pa-1 mx-1" :key="pay.id">
+                  <div class="d-flex justify-space-between">
+                    <h4>{{ pay.paidName }}</h4>
+                    <div>{{ pay.paidTotal | priceDisplay }}</div>
+                  </div>
+                </div>
+              </template>
             </div>
           </v-card>
           <v-card elevation="0">
@@ -253,7 +268,7 @@ export default {
   },
   computed: {
     showClearButton () {
-      return this.search || this.appliedFilter.servant !== '' || this.appliedFilter.payment.length !== 0
+      return this.search || this.appliedFilter.servant !== '' || this.appliedFilter.payment?.length !== 0
     },
     displayOrder () {
       return this.bills.filter(i => {
