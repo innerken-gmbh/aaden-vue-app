@@ -1,8 +1,9 @@
 <template>
   <v-card elevation="0" style="width: 100%;">
-    <div class="d-flex">
+    <div class="d-flex flex-grow-1">
       <v-data-table
         style="min-width: calc(100% - 272px)"
+        height="calc(100vh - 200px)"
         :sort-by="orderBySales ? ['totalPrice']: ['totalCount']"
         :sort-desc="[true]"
         :items="displayItems"
@@ -16,7 +17,7 @@
               item-text="langs[0].name"
               solo
               class="mx-3"
-              style="max-width: 300px"
+              style="max-width: 240px"
             >
             </v-select>
             <v-select
