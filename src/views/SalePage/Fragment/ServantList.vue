@@ -1,41 +1,99 @@
 <template>
   <div class="px-4" style="max-height: calc(100vh - 112px); overflow-y: scroll">
     <v-subheader class="my-4">
-      <v-btn color="primary" @click="allZBon(...singleZBonDate)">打印全部跑堂日结单</v-btn>
+      <v-spacer></v-spacer>
+      <v-btn x-large dark class="orange mr-2 mb-6" style="position: absolute; right: 0" @click="allZBon(...singleZBonDate)">打印全部跑堂日结单</v-btn>
     </v-subheader>
-    <div style="display: grid; grid-template-columns: repeat(3,1fr); grid-gap: 20px;">
-      <v-card width="380"  elevation="0" color="#f6f6f6" v-for="servant in displayServantInfo" :key="servant.servant.id"
-              @click="changeActiveId(servant.servant.id)">
-        <div class="servantName text--h6 text-center my-2"> {{ servant.servant.name }}</div>
-        <div class="d-flex justify-center text-center mb-1">
-          <div class="mx-4 lighten-1 grey--text " style="font-weight: 600">
-            {{ servant.servant.isPartTime === '1' ? '兼职' : '长期' }}
+    <div
+      style="overflow: scroll; "
+      class="mt-2 mx-4">
+      <div style="display: grid; grid-template-columns: repeat(3,1fr); grid-gap: 20px; grid-auto-rows: 305px;min-height: calc(90vh - 120px)">
+        <div
+          v-for="s in displayServantInfo"
+          :key="s.servant.id"
+          style="background: #f0f0f0;overflow: visible; border-radius: 16px; "
+          :style="activeId===s.servant.id ? {zIndex: 100}:{}"
+          @click="changeActiveId(s.servant.id)"
+        >
+          <div
+            style="background: #f0f0f0;"
+            class="pa-2"
+          >
+            <div class="d-flex justify-space-between align-center py-2">
+              <div class="display-1">
+                {{ s.servant.name }}
+              </div>
+              <v-btn
+                class="mr-0"
+                small
+                color="warning"
+                @click="singleZBon(s.servant.password)"
+              >
+                {{ $t('打印日结单') }}
+              </v-btn>
+            </div>
+
+            <v-divider></v-divider>
+            <div>
+              <div class="py-2">
+                <div
+                  v-for="pay in fillPayMethodTotal(s.payMethodTotal,activeId!==s.servant.id)"
+                  :key="pay.id"
+                  class="d-flex justify-space-between pt-1"
+                >
+                  <div class="label">
+                    {{ pay.name }}
+                  </div>
+                  <div class="value font-weight-bold">
+                    {{ pay.amount | priceDisplay }}
+                  </div>
+                </div>
+
+                <div
+                  class="d-flex justify-start py-1"
+                >
+                  <div
+                    v-if="activeId!==s.servant.id"
+                    style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
+                  >
+                    {{ $t('展示更多') }}
+                  </div>
+                  <div
+                    v-else
+                    style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
+                  >
+                    {{ $t('收起') }}
+                  </div>
+                </div>
+              </div>
+
+              <v-divider></v-divider>
+
+              <div
+                class="d-flex justify-space-between pt-1"
+              >
+                <div class="label">
+                  {{ $t('小费') }}
+                </div>
+                <div class="value font-weight-bold">
+                  {{ s.tipIncome ? s.tipIncome : 0 | priceDisplay }}
+                </div>
+              </div>
+
+              <div
+                class="d-flex justify-space-between pt-1 "
+              >
+                <div class="label">
+                  {{ $t('今日总计(含小费)') }}
+                </div>
+                <div class="value font-weight-bold">
+                  {{ s.todayTotal ? s.todayTotal : 0 | priceDisplay }}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="d-flex mb-4">
-          <div class="servantSaleCard ml-8">
-            <div class="text-caption">收入总计</div>
-            <div class="text-h6 green--text mt-1"> {{ servant.todayTotal | priceDisplay }}</div>
-          </div>
-          <div class="servantSaleCard">
-            <div class="text-caption">小费总计</div>
-            <div class="text-h6 orange--text mt-1"> {{ servant.tipIncome | priceDisplay }}</div>
-          </div>
-        </div>
-        <div class="mx-8" v-for="pay in fillPayMethodTotal(servant.payMethodTotal,activeId!==servant.servant.id)"
-             :key="pay.id">
-          <v-list-item>
-            {{ pay.name }}
-            <v-spacer/>
-            {{ pay.amount | priceDisplay }}
-          </v-list-item>
-          <v-divider></v-divider>
-        </div>
-        <div class="mx-8 mb-4">
-          <v-btn dark color="orange" block @click="singleZBon(servant.servant.password, ...singleZBonDate)">打印日结单
-          </v-btn>
-        </div>
-      </v-card>
+      </div>
     </div>
   </div>
 </template>
@@ -63,7 +121,6 @@ export default {
   data: () => {
     return {
       activeId: null,
-      loadAllServant: null,
       expandPayMethodDetail: false,
       paymentMethodList: [],
       servantInfo: [],
@@ -76,6 +133,7 @@ export default {
   },
   computed: {
     displayServantInfo () {
+      console.log(this.servantInfo, 'this.servantInfo')
       return this.servantInfo.filter(s => s.todayTotal > 0)
     }
   },

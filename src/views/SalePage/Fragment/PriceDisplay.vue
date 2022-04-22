@@ -3,8 +3,7 @@
     <div style="display:flex;">
       <v-container>
         <v-row   class="pa-2 justify-center align-center d-flex">
-          <v-col class="mt-8" cols="12" lg="1"></v-col>
-          <v-col class="mt-8" cols="12" lg="4">
+          <v-col class="mt-8" cols="12" lg="4" md="5">
             <v-card elevation="1" style="border-radius: 8px;" class="mx-4 d-flex flex-column align-center justify-center">
               <div class="pa-4">
                 <div  class="my-8">
@@ -38,7 +37,7 @@
               </div>
             </v-card>
           </v-col>
-          <v-col class="mt-8" cols="12" lg="5">
+          <v-col class="mt-8" cols="12" lg="5" md="6">
             <v-card elevation="1" style="border-radius: 8px;" class="mx-4 d-flex flex-column align-center justify-center">
               <div class="pa-4">
                 <div  class="my-8">
@@ -78,7 +77,6 @@
               </div>
             </v-card>
           </v-col>
-          <v-col class="mt-8" cols="12" lg="2"></v-col>
         </v-row>
       </v-container>
     </div>

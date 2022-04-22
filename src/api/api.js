@@ -134,6 +134,7 @@ export async function printServantSummaryForToday (pw, startDate, endDate) {
 
 export async function printAllServantSummaryForToday (startDate, endDate) {
   const res = await loadAllServants()
+  console.log(res, 'res in print all')
   res.forEach(s => printServantSummaryForToday(s.servant.password, startDate, endDate))
 }
 
