@@ -25,8 +25,6 @@
           >
           </v-select>
           <v-select
-            chips
-            deletable-chips
             :label="'Servant'"
             :items="servantList"
             v-model="appliedFilter.servant"
@@ -36,8 +34,9 @@
             style="max-width: 160px"
           >
           </v-select>
-          <v-btn v-if="showClearButton" icon class="mb-6" @click="clearFilter">
+          <v-btn v-if="showClearButton" text class="mb-6" @click="clearFilter">
             <v-icon>mdi-close-circle</v-icon>
+            清除
           </v-btn>
           <v-spacer></v-spacer>
         </v-app-bar>

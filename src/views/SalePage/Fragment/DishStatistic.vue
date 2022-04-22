@@ -10,8 +10,6 @@
         <template v-slot:top>
           <v-subheader style="margin-left: -28px">
             <v-select
-              chips
-              deletable-chips
               :label="'Category'"
               :items="dishCategory"
               v-model="appliedFilter.category"
@@ -22,8 +20,6 @@
             >
             </v-select>
             <v-select
-              chips
-              deletable-chips
               :label="'Category Type'"
               :items="dishCategoryTypeList"
               v-model="appliedFilter.categoryType"
@@ -32,8 +28,9 @@
               style="max-width: 160px"
             >
             </v-select>
-            <v-btn v-if="showClear" icon class="mb-6" @click="clearFilter">
+            <v-btn v-if="showClear" text class="mb-6" @click="clearFilter">
               <v-icon>mdi-close-circle</v-icon>
+              清除
             </v-btn>
           </v-subheader>
         </template>
