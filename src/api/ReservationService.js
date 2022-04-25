@@ -70,6 +70,10 @@ export async function addReservation (reservationInfo) {
   return (await hillo.jsonPost(GlobalConfig.getReservationUrl() + 'reservation/add', Object.assign({}, defaultReservationInfo, reservationInfo)))
 }
 
+export async function confirmReservation (id) {
+  return (await hillo.post('Tables.php?op=completeReservation', Object.assign({}, { reservationId: id })))
+}
+
 export async function moveReservation (reservationId) {
   const newTableId = await showTableSelector(null, 'tableId')
 
