@@ -127,15 +127,15 @@ export async function loadAllServants () {
   return (await hillo.get('Servant.php')).content
 }
 
-export async function printServantSummaryForToday (pw, startDate, endDate) {
+export async function printServantSummaryByDate (pw, startDate, endDate) {
   window.event.cancelBubble = true // 取消事件的冒泡机制
   return printServantSummary(pw, startDate, endDate)
 }
 
-export async function printAllServantSummaryForToday (startDate, endDate) {
+export async function printAllServantSummaryByDate (startDate, endDate) {
   const res = await loadAllServants()
   console.log(res, 'res in print all')
-  res.forEach(s => printServantSummaryForToday(s.servant.password, startDate, endDate))
+  res.forEach(s => printServantSummaryByDate(s.servant.password, startDate, endDate))
 }
 
 export async function loadZbonRecordList (fromDateTime, toDateTime) {

@@ -76,7 +76,7 @@
                 <template v-for="pay in paidInfoList.slice(0, 5)">
                   <div class="pa-1 mx-1" :key="pay.id">
                     <div class="d-flex justify-space-between">
-                      <h4>{{ pay.paidName }}</h4>
+                      <h4>{{ pay.paidName }} {{ pay.paidCount > 0 ? '(' + pay.paidCount + ')' : ''}}</h4>
                       <div>{{ pay.paidTotal | priceDisplay }}</div>
                     </div>
                   </div>
@@ -91,7 +91,7 @@
               <template v-for="pay in paidInfoList">
                 <div class="pa-1 mx-1" :key="pay.id">
                   <div class="d-flex justify-space-between">
-                    <h4>{{ pay.paidName }}</h4>
+                    <h4>{{ pay.paidName }} {{ pay.paidCount !== 0 ? '(' + pay.paidCount + ')' : '' }}</h4>
                     <div>{{ pay.paidTotal | priceDisplay }}</div>
                   </div>
                 </div>
@@ -291,6 +291,7 @@ export default {
       return this.billData.content
     },
     paidInfoList () {
+      console.log(this.billContent.paidInfo)
       return this.billContent.paidInfo
     },
     returnList () {

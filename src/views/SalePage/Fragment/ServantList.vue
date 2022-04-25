@@ -104,8 +104,8 @@
 <script>
 import {
   loadPaymentMethods,
-  printServantSummaryForToday,
-  printAllServantSummaryForToday, getBillListForServant, loadAllServants
+  printServantSummaryByDate,
+  printAllServantSummaryByDate, getBillListForServant, loadAllServants
 } from '@/api/api'
 import i18n from '@/i18n'
 
@@ -152,10 +152,10 @@ export default {
       }
     },
     async singleZBon (pw, startDate, endDate) {
-      await printServantSummaryForToday(pw, startDate, endDate)
+      await printServantSummaryByDate(pw, startDate, endDate)
     },
     async allZBon (startDate, endDate) {
-      await printAllServantSummaryForToday(startDate, endDate)
+      await printAllServantSummaryByDate(startDate, endDate)
     },
     fillPayMethodTotal (payMethod, withFilter = true) {
       if (withFilter) {
