@@ -525,6 +525,7 @@ export default {
     async confirmReservation (id) {
       const res = await confirmReservation(id)
       console.log(res)
+      await this.loadData()
     },
     async submitReservation () {
       if (!this.firstName && !this.lastName) {
