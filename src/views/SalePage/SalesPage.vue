@@ -3,11 +3,11 @@
     <v-toolbar elevation="2">
       <v-tabs v-model="tabIndex">
         <template v-if="isBoss">
-          <v-tab>账单列表</v-tab>
+          <v-tab>{{ $t('账单列表') }}</v-tab>
           <v-tab>{{ $t('Kassenbuch') }}</v-tab>
-          <v-tab>菜品统计</v-tab>
-          <v-tab>查看跑堂</v-tab>
-          <v-tab>绑定老板端APP</v-tab>
+          <v-tab>{{ $t('菜品统计') }}</v-tab>
+          <v-tab>{{ $t('查看跑堂') }}</v-tab>
+          <v-tab>{{ $t('绑定老板端APP') }}</v-tab>
         </template>
         <template v-else>
           <v-tab>{{ $t('Meine Umsatz') }}</v-tab>
@@ -17,7 +17,7 @@
 
       <v-btn large color="primary" @click="showDatePicker=true">
         <v-icon left>mdi-calendar</v-icon>
-        {{ getNiceLabel(singleZBonDate) }}/更换日期
+        {{ getNiceLabel(singleZBonDate) }}/{{ $t('更换日期') }}
       </v-btn>
 
     </v-toolbar>
@@ -184,8 +184,8 @@
       >
         <date-range-picker v-model="dateInput"></date-range-picker>
         <div class="px-2 mt-2">
-          <v-btn elevation="0" block @click="dateSubmit" color="primary" large>确定</v-btn>
-          <v-btn large block color="error" @click="showDatePicker=false" outlined class="mt-2">取消</v-btn>
+          <v-btn elevation="0" block @click="dateSubmit" color="primary" large>{{ $t('确定') }}</v-btn>
+          <v-btn large block color="error" @click="showDatePicker=false" outlined class="mt-2">{{ $t('取消') }}</v-btn>
         </div>
       </v-card>
     </v-dialog>

@@ -11,7 +11,7 @@
       <v-list flat class="mx-2">
         <v-list-item-group>
           <v-list-item>
-            <span>服务员</span>
+            <span>{{ $t('服务员') }}</span>
             <v-spacer></v-spacer>
             <span>
             {{ orderInfo.servantName }}
@@ -19,7 +19,7 @@
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item>
-            <span>桌号</span>
+            <span>{{ $t('桌号') }}</span>
             <v-spacer></v-spacer>
             <span>
             {{ orderInfo.tableName }}
@@ -27,7 +27,7 @@
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item>
-            <span>消费类型</span>
+            <span>{{ $t('消费类型') }}</span>
             <v-spacer></v-spacer>
             <span>
             {{ consumeTypeName }}
@@ -35,7 +35,7 @@
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item>
-            <span>订单状态</span>
+            <span>{{ $t('订单状态') }}</span>
             <v-spacer></v-spacer>
             <v-chip label small :color="isPaid?'success':'error'">
               {{ isPaid ? $t('paid') : $t('not_paid') }}
@@ -43,13 +43,13 @@
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item>
-            <span>totalPrice</span>
+            <span>{{ $t('总价') }}</span>
             <v-spacer></v-spacer>
             <span>{{ orderInfo.totalPrice | priceDisplay }}</span>
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item v-if="isPaid">
-            <span>支付方式</span>
+            <span>{{ $t('支付方式') }}</span>
             <v-spacer></v-spacer>
             <v-chip color="primary" small label>
               {{ order.billPaymentInfo[0].name }}
@@ -64,15 +64,15 @@
                  color="error"
                  @click="$emit('return-order', orderInfo.id)">
             <v-icon>mdi-file-cancel-outline</v-icon>
-            {{ isReturned ? '已退单' : '退单' + orderInfo.id }}
+            {{ isReturned ? $t('已退单') : $t('退单') + orderInfo.id }}
           </v-btn>
         </v-list-item-group>
       </v-list>
       <div v-if="orderInfo">
         <div class="timeLineGridContainer">
           <strong>{{ orderInfo.startTime }}</strong>
-          <div><strong>开始用餐</strong></div>
-          <strong v-if="!isPaid" class="red--text">尚未结账</strong>
+          <div><strong>{{ $t('开始用餐') }}</strong></div>
+          <strong v-if="!isPaid" class="red--text">{{ $t('尚未结账') }}</strong>
         </div>
         <template v-if="displayDetailInfo">
           <template v-for="t in Object.keys(displayDetailInfo)">
@@ -168,13 +168,13 @@ export default {
         let name
         switch (o.dishStatus) {
           case '-1':
-            name = '退菜'
+            name = this.$t('退菜')
             break
           case '-100':
-            name = '分单'
+            name = this.$t('分单')
             break
           default:
-            name = '点餐'
+            name = this.$t('点餐')
         }
         o.dishStatusName = name
         return o

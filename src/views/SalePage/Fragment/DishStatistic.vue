@@ -32,7 +32,7 @@
             </v-select>
             <v-btn v-if="showClear" text class="mb-6" @click="clearFilter">
               <v-icon>mdi-close-circle</v-icon>
-              清除
+              {{ $t('清除') }}
             </v-btn>
           </v-subheader>
         </template>
@@ -68,8 +68,8 @@
             <v-spacer></v-spacer>
           </v-card-actions>
 
-          <v-btn x-large dark block class="orange mx-2 mb-6" @click="printSaleBon">按销量打印</v-btn>
-          <v-btn x-large dark block class="orange mx-2 mb-6" @click="printSaleBonByCode">按菜号打印</v-btn>
+          <v-btn x-large dark block class="orange mx-2 mb-6" @click="printSaleBon">{{ $t('按销量打印') }}</v-btn>
+          <v-btn x-large dark block class="orange mx-2 mb-6" @click="printSaleBonByCode">{{ $t('按菜号打印') }}</v-btn>
         </v-card>
       </v-navigation-drawer>
     </div>
@@ -107,31 +107,31 @@ export default {
     headers () {
       return [
         {
-          text: 'code',
+          text: this.$t('code'),
           sortable: false,
           value: 'code'
         },
         {
-          text: 'name',
+          text: this.$t('name'),
           sortable: false,
           value: 'name'
         },
         {
-          text: 'category',
+          text: this.$t('category'),
           sortable: false,
           value: 'category'
         },
         {
-          text: 'category Type',
+          text: this.$t('category Type'),
           sortable: false,
           value: 'cateTypeName'
         },
         {
-          text: 'totalCount',
+          text: this.$t('totalCount'),
           value: 'totalCount'
         },
         {
-          text: 'totalPrice',
+          text: this.$t('totalPrice'),
           value: 'totalPrice'
         }
       ]
@@ -169,16 +169,16 @@ export default {
       })
     },
     async printSaleBon () {
-      IKUtils.showConfirm('Bist du sicher?', 'Möchten Sie Umsatz Bon drucken?', () => {
+      IKUtils.showConfirm(this.$t('Bist du sicher?'), this.$t('Möchten Sie Umsatz Bon drucken?'), () => {
         printSaleBon(this.singleZBonDate[0], this.singleZBonDate[1]).then(() => {
-          IKUtils.toast('Erfolgreich drucken!')
+          IKUtils.toast(this.$t('Erfolgreich drucken!'))
         })
       })
     },
     async printSaleBonByCode () {
-      IKUtils.showConfirm('Bist du sicher?', 'Möchten Sie Umsatz Bon drucken?', () => {
+      IKUtils.showConfirm(this.$t('Bist du sicher?'), this.$t('Möchten Sie Umsatz Bon drucken?'), () => {
         printSaleBonByCode(this.singleZBonDate[0], this.singleZBonDate[1]).then(() => {
-          IKUtils.toast('Erfolgreich drucken!')
+          IKUtils.toast(this.$t('Erfolgreich drucken!'))
         })
       })
     }

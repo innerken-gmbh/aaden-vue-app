@@ -12,7 +12,7 @@
           </v-text-field>
           <v-select
             class="ml-3"
-            :label="'Pay Method'"
+            :label="$t('支付方式')"
             :items="payMethodList"
             v-model="appliedFilter.payment"
             @change="updateFilter"
@@ -24,7 +24,7 @@
           </v-select>
           <v-select
             class="ml-3"
-            :label="'Servant'"
+            :label="$t('服务员')"
             :items="servantList"
             v-model="appliedFilter.servant"
             @change="updateFilter"
@@ -35,7 +35,7 @@
           </v-select>
           <v-btn v-if="showClearButton" text class="mb-6" @click="clearFilter">
             <v-icon>mdi-close-circle</v-icon>
-            清除
+            {{ $t('清除') }}
           </v-btn>
           <v-spacer></v-spacer>
         </v-subheader>
@@ -68,8 +68,8 @@
               </div>
             </template>
             <div class="d-flex justify-space-between">
-              <h3 class="pa-2 font-weight-bold">支付方式:</h3>
-              <div v-if="paidInfoList && paidInfoList.length > 5"><v-btn @click="showAllPayment = !showAllPayment" small class="primary">{{ !showAllPayment? '更多' : '收起'}}</v-btn></div>
+              <h3 class="pa-2 font-weight-bold">{{ $t('支付方式') }}:</h3>
+              <div v-if="paidInfoList && paidInfoList.length > 5"><v-btn @click="showAllPayment = !showAllPayment" small class="primary">{{ !showAllPayment? $t('更多') : $t('收起')}}</v-btn></div>
             </div>
 
               <div v-if="!showAllPayment && paidInfoList && paidInfoList.length > 5">

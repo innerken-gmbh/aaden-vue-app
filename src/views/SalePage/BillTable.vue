@@ -8,7 +8,7 @@
           <th class="text-left">{{ $t('time') }}</th>
           <th class="text-left">{{ $t('Summe') }}</th>
           <th class="text-left">{{ $t('operation') }}</th>
-          <th class="text-left">订单详情</th>
+          <th class="text-left">{{ $t('订单详情') }}</th>
         </tr>
         </thead>
         <tbody>
@@ -32,7 +32,7 @@
                 <v-icon left>
                   mdi-printer-settings
                 </v-icon>
-                补打
+                {{ $t('补打') }}
               </v-btn>
               <template v-if="showOperation">
                 <v-btn small
@@ -42,7 +42,7 @@
                        class="ml-2"
                        @click="startChangePaymentMethodForOrder(order)">
                   <v-icon left>mdi-cash-refund</v-icon>
-                  更换
+                  {{ $t('更换') }}
                 </v-btn>
               </template>
             </td>
@@ -121,7 +121,7 @@ export default {
       this.$emit('need-refresh')
     },
     async returnOrder (orderId) {
-      IKUtils.showConfirm('Bist du sicher?', 'Möchten Sie Umsatz Bon stoniren?', () => {
+      IKUtils.showConfirm(this.$t('Bist du sicher?'), this.$t('Möchten Sie Umsatz Bon stoniren?'), () => {
         IKUtils.showLoading()
         returnOrder(orderId).then(() => {
           IKUtils.toast()

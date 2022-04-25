@@ -94,7 +94,7 @@
       </div>
       <v-navigation-drawer permanent right width="272">
         <v-card elevation="0" class="pl-6">
-          <v-btn right x-large dark class="orange mb-6 mt-2" block @click="allZBon(...singleZBonDate)">打印全部跑堂日结单</v-btn>
+          <v-btn right x-large dark class="orange mb-6 mt-2" block @click="allZBon(...singleZBonDate)">{{ $t('打印全部跑堂日结单') }}</v-btn>
         </v-card>
       </v-navigation-drawer>
     </div>
@@ -136,7 +136,6 @@ export default {
   },
   computed: {
     displayServantInfo () {
-      console.log(this.servantInfo, 'this.servantInfo')
       return this.servantInfo.filter(s => s.todayTotal > 0)
     }
   },
