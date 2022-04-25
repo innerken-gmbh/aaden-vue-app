@@ -50,6 +50,10 @@
           <v-icon left>mdi-refresh</v-icon>
           {{ $t('重新加载') }}
         </v-btn>
+        <div @click="showAllReservation=!showAllReservation" class="d-flex align-center text-body-2 mr-2">
+          <v-simple-checkbox hide-details dense v-model="showAllReservation"></v-simple-checkbox>
+          {{ $t('展示全部') }}
+        </div>
         <div style="max-width: 196px">
           <v-text-field
               v-model="search"
@@ -68,11 +72,14 @@
           :custom-filter="filterItem"
           @click:row="toggleActiveReservation"
           :headers="headers"
-          :items="reservations"
+          :items="displayReservationItems"
           :search="search">
         <template #item.action="{item}">
           <div style="display: grid;grid-gap: 4px;grid-auto-flow: column">
-            <v-btn elevation="0" small @click.stop="confirmReservation(item)">
+
+            <v-btn :color="item.completed==='1'?'success':''"
+                   elevation="0" small
+                   @click.stop="confirmReservation(item.id)">
               <v-icon left>mdi-check</v-icon>
               到店
             </v-btn>
@@ -122,7 +129,6 @@
             {{ item.fromDateTime | onlyTime }} - {{ item.toDateTime | onlyTime }}
           </v-chip>
         </template>
-
       </v-data-table>
     </v-card>
     <v-dialog max-width="600px" v-model="showReservation">
@@ -417,6 +423,7 @@ import {
   addReservation,
   cancelReservation,
   checkTableTimeAvailable,
+  confirmReservation,
   getReservation,
   getTimeSlotForDate,
   loadReserveSettings,
@@ -433,6 +440,8 @@ export default {
     return {
       todayDate,
       reservationDate: todayDate,
+      showAllReservation: false,
+
       reservations: [],
       timeGap: [],
       activeReservation: null,
@@ -464,6 +473,12 @@ export default {
       setting: {
         gap: 'PT15M'
       }
+    }
+  },
+  computed: {
+    displayReservationItems () {
+      console.log(this.showAllReservation, '123')
+      return this.reservations.filter(item => (this.showAllReservation || item.completed === '0'))
     }
   },
   watch: {
@@ -507,15 +522,16 @@ export default {
       this.startTime = onlyTimeFormat(this.reservationDate + ' ' + time)
       this.reservationStep = 2
     },
-    confirmReservation () {
-
+    async confirmReservation (id) {
+      const res = await confirmReservation(id)
+      console.log(res)
     },
     async submitReservation () {
       if (!this.firstName && !this.lastName) {
         IKUtils.showError('请填写姓名！')
         return
       }
-      IKUtils.showLoading()
+      IKUtils.showLoading(true)
       const res = await addReservation({
         fromDateTime: this.reservationDate + ' ' + this.startTime + ':00',
         personCount: this.adultCount,
