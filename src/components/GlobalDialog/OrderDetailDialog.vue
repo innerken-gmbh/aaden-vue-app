@@ -58,15 +58,16 @@
             </v-chip>
           </v-list-item>
           <v-divider></v-divider>
-              <v-btn small
-                     block
-                     class="mt-2"
-                     elevation="0"
-                     color="error"
-                     @click="$emit('returnOrder', orderInfo.id)">
-                <v-icon>mdi-file-cancel-outline</v-icon>
-                退单 {{orderInfo.id}}
-              </v-btn>
+          <v-btn small
+                 :disabled="isReturned"
+                 block
+                 class="mt-2"
+                 elevation="0"
+                 color="error"
+                 @click="$emit('returnOrder', orderInfo.id)">
+            <v-icon>mdi-file-cancel-outline</v-icon>
+            {{ isReturned ? '已退单' : '退单' + orderInfo.id }}
+          </v-btn>
         </v-list-item-group>
       </v-list>
       <div v-if="orderInfo">
@@ -128,9 +129,7 @@ import { groupBy } from 'lodash-es'
 export default {
   name: 'OrderDetailDialog',
   props: {
-    id: {},
-    order: {},
-    isReturn: {}
+    order: {}
   },
   data: () => {
     return {
@@ -138,6 +137,9 @@ export default {
     }
   },
   computed: {
+    isReturned () {
+      return this.order.isReturned === '1'
+    },
     orderInfo () {
       return this.order.billInfo
     },
@@ -184,13 +186,9 @@ export default {
   methods: {
     cancel () {
       this.$emit('closeDetail')
-    },
-    findInList (id, list) {
-      return list.map(i => i.id === id)
     }
   },
   async mounted () {
-    console.log(this.order)
     this.consumeTypeList = await loadAllConsumeType()
     this.consumeTypeName = this.consumeTypeList.find(i => i.id === this.order.billInfo.consumeTypeId)?.printName
   }

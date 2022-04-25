@@ -137,9 +137,8 @@ export default {
       this.checkOutDialog = true
     },
     async checkOrderDetail (order) {
-      console.log(order.orderId)
       this.selectedOrder = await loadDetailOrder(order.orderId)
-      console.log(this.selectedOrder)
+      this.selectedOrder.isReturned = order.isReturned
       this.orderDetailDialog = true
     }
   }

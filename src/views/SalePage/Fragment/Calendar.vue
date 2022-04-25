@@ -70,10 +70,10 @@
             </template>
             <div class="d-flex justify-space-between">
               <h3 class="pa-2 font-weight-bold">支付方式:</h3>
-              <div v-if="paidInfoList.length > 5"><v-btn @click="showAllPayment = !showAllPayment" small class="primary">{{ !showAllPayment? '更多' : '收起'}}</v-btn></div>
+              <div v-if="paidInfoList && paidInfoList.length > 5"><v-btn @click="showAllPayment = !showAllPayment" small class="primary">{{ !showAllPayment? '更多' : '收起'}}</v-btn></div>
             </div>
 
-              <div v-if="!showAllPayment && paidInfoList.length > 5">
+              <div v-if="!showAllPayment && paidInfoList && paidInfoList.length > 5">
                 <template v-for="pay in paidInfoList.slice(0, 5)">
                   <div class="pa-1 mx-1" :key="pay.id">
                     <div class="d-flex justify-space-between">
@@ -292,6 +292,7 @@ export default {
       return this.billData.content
     },
     paidInfoList () {
+      console.log(this.billContent.paidInfo, 'this.billContent.paidInfo')
       return this.billContent.paidInfo
     },
     returnList () {
