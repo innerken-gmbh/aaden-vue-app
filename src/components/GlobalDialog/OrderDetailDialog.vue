@@ -1,9 +1,7 @@
 <template>
   <v-card class="fill-height lighten-4 grey">
     <v-subheader>
-      <h2 style="color: black">Order: {{ orderInfo.id }}
-        <!--        <v-card-subtitle class="tableName"> Table:{{ orderInfo.tableName }}</v-card-subtitle>-->
-      </h2>
+      <h2 style="color: black">Order: {{ orderInfo.id }}</h2>
       <v-spacer></v-spacer>
       <v-btn icon @click="cancel">
         <v-icon>mdi-close</v-icon>
@@ -39,8 +37,8 @@
           <v-list-item>
             <span>订单状态</span>
             <v-spacer></v-spacer>
-            <v-chip label small :color="orderInfo.paymentStatus==='1'?'success':'error'">
-              {{ orderInfo.paymentStatus === '1' ? $t('paid') : $t('not_paid') }}
+            <v-chip label small :color="isPaid?'success':'error'">
+              {{ isPaid ? $t('paid') : $t('not_paid') }}
             </v-chip>
           </v-list-item>
           <v-divider></v-divider>
@@ -64,7 +62,7 @@
                  class="mt-2"
                  elevation="0"
                  color="error"
-                 @click="$emit('returnOrder', orderInfo.id)">
+                 @click="$emit('return-order', orderInfo.id)">
             <v-icon>mdi-file-cancel-outline</v-icon>
             {{ isReturned ? '已退单' : '退单' + orderInfo.id }}
           </v-btn>
@@ -144,7 +142,7 @@ export default {
       return this.order.billInfo
     },
     isPaid () {
-      return this.order.billPaymentInfo[0]
+      return this.order.billInfo.paymentStatus === '1'
     },
     displayDetailInfo () {
       const groupedInfo = groupBy(this.detailedOrders, 'time')
@@ -185,7 +183,7 @@ export default {
   },
   methods: {
     cancel () {
-      this.$emit('closeDetail')
+      this.$emit('close-detail')
     }
   },
   async mounted () {

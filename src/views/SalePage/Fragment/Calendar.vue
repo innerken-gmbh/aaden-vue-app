@@ -2,7 +2,7 @@
   <v-card elevation="0">
     <div class="d-flex">
       <div class="pa-2 flex-grow-1">
-        <v-app-bar class="mt-1 " style="margin-left: -16px" dense elevation="0" color="white">
+        <v-subheader style="display: flex">
           <v-text-field
             style="max-width: 240px"
             solo
@@ -11,9 +11,7 @@
             v-model="search">
           </v-text-field>
           <v-select
-            chips
-            class="mx-3"
-            deletable-chips
+            class="ml-3"
             :label="'Pay Method'"
             :items="payMethodList"
             v-model="appliedFilter.payment"
@@ -25,6 +23,7 @@
           >
           </v-select>
           <v-select
+            class="ml-3"
             :label="'Servant'"
             :items="servantList"
             v-model="appliedFilter.servant"
@@ -39,7 +38,7 @@
             清除
           </v-btn>
           <v-spacer></v-spacer>
-        </v-app-bar>
+        </v-subheader>
         <bill-table @need-refresh="loadData" :orders="displayOrder" :show-operation="true"/>
       </div>
       <v-navigation-drawer permanent right width="272">
@@ -292,7 +291,6 @@ export default {
       return this.billData.content
     },
     paidInfoList () {
-      console.log(this.billContent.paidInfo, 'this.billContent.paidInfo')
       return this.billContent.paidInfo
     },
     returnList () {

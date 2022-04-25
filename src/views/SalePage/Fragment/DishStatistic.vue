@@ -16,7 +16,7 @@
               v-model="appliedFilter.category"
               item-text="langs[0].name"
               solo
-              class="mx-3"
+              class="ml-3"
               style="max-width: 240px"
             >
             </v-select>
@@ -26,6 +26,7 @@
               v-model="appliedFilter.categoryType"
               item-text="name"
               solo
+              class="ml-3"
               style="max-width: 160px"
             >
             </v-select>
