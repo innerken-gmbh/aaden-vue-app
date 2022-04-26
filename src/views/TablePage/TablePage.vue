@@ -963,7 +963,7 @@ export default {
 
       if (dish) {
         if (parseInt(GlobalConfig.oneStepOrderNumber) !== -1 && count > GlobalConfig.oneStepOrderNumber) {
-          const res = await showConfirmAsyn(this.$t('wirklich?'), count)
+          const res = await showConfirmAsyn(this.$t('wirklich?'), '你确定要点' + count + '个菜吗')
           if (!res?.value) {
             showTimedAlert('warning', 'abrechen')
           }
@@ -1295,6 +1295,7 @@ export default {
           break
         case 'Enter':
           this.insDecode(this.readBuffer())
+          e.preventDefault()
           break
         default:
           if (e.target.nodeName !== 'INPUT' && e.key.length < 3) {
@@ -1452,7 +1453,7 @@ export default {
       }, 20)
     },
     async realInitial () {
-      window.onkeydown = this.listenKeyDown
+      window.onkeyup = this.listenKeyDown
       await this.initialUI(true)
     },
     updateActiveDCT (index) {
