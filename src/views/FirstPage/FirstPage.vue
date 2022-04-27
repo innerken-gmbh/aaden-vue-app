@@ -2,7 +2,7 @@
   <div>
     <navgation>
       <div style="min-width: 200px" class="d-flex">
-        <div v-if="restaurantInfo" class="text-h6 font-weight-bold">{{ restaurantInfo.name }}</div>
+        <div v-if="restaurantInfo" class="text-h6 font-weight-bold">{{ restaurantInfo.displayName }}</div>
       </div>
       <v-spacer></v-spacer>
       <v-item-group mandatory v-model="currentView" style="width: max-content" class="align-self-center">
@@ -804,7 +804,7 @@ export default {
 
     async loadRestaurantInfo () {
       this.restaurantInfo = await loadRestaurantInfo()
-      this.restaurantInfo.name = (this.restaurantInfo?.name ?? '').replace('<BR>', '')
+      this.restaurantInfo.displayName = (this.restaurantInfo?.name ?? '').replace('<BR>', '')
       this.takeawayEnabled = this.restaurantInfo.currentlyOpening === '1'
     },
     async initPage () {

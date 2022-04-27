@@ -1028,14 +1028,9 @@ export default {
     async getCategory (consumeTypeId = 1, force = false) {
       if (this.categories.length === 0 || force) {
         console.log('reloadDishUseConsumeTypeId', consumeTypeId)
-
         this.categories = await getCategoryListWithCache(consumeTypeId)
         this.dishes = processDishList(this.categories.reduce((arr, i) => {
-          arr.push(...i.dishes.map(d => {
-            d.displayColor = d.color === '' ? '#FFFFFF' : d.color
-            d.foreground = getColorLightness(d.displayColor) > 128 ? '#000' : '#fff'
-            return IKUtils.deepCopy(d)
-          }))
+          arr.push(...i.dishes)
           return arr
         }, []))
         this.cartListModel.setDishList(this.dishes)

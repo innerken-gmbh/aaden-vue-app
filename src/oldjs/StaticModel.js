@@ -4,6 +4,7 @@ import GlobalConfig from './LocalGlobalSettings'
 import { jumpTo } from './common'
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 import IKUtils from 'innerken-js-utils'
+import { getColorLightness } from '@/oldjs/api'
 
 const dishesDictionary = {}
 const categoryCache = {}
@@ -37,7 +38,9 @@ export function processDishList (dishList) {
   if (dishList.length > 0) {
     dishList = StandardDishesListFactory().formatList(dishList).map(d => {
       d.options = getComputedOption(d)
-      return d
+      d.displayColor = d.color === '' ? '#FFFFFF' : d.color
+      d.foreground = getColorLightness(d.displayColor) > 128 ? '#000' : '#fff'
+      return IKUtils.deepCopy(d)
     })
     dishList.forEach(d => {
       dishesDictionary[d.code.toLowerCase()] = d
