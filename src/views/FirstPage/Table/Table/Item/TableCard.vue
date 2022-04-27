@@ -12,7 +12,10 @@
         :color="tableColor"
         @click='$emit("click",table.tableName)'>
 
-      <div class="tableCardName" :class="table.inUse?'mt-1':''">
+      <div class="tableCardName d-flex align-center justify-center" :class="table.inUse?'mt-1':''">
+        <template v-if="table.inCall">
+          <v-icon class="mr-1" size="18">mdi-bell</v-icon>
+        </template>
         {{ table.tableName }}
       </div>
       <template v-if="table.inUse">
@@ -66,13 +69,8 @@
 
       </template>
       <div style="position:absolute;right: -4px;top: -4px">
-        <template v-if="table.inCall">
-          <v-chip color="error" small class="px-1">
-            <v-icon small>mdi-bell</v-icon>
-          </v-chip>
 
-        </template>
-        <template v-else-if="table.reservations.length>0&&table.inUse">
+        <template v-if="table.reservations.length>0&&table.inUse">
           <v-chip @click.stop="showReservationDialog" class="px-2 py-1" small height="min-content" color="warning"
                   elevation="0">
             <v-icon small class="mr-1">mdi-calendar</v-icon>
@@ -128,7 +126,7 @@ export default {
       return '20px'
     },
     tableColor () {
-      return this.table.inUse ? 'primary' : '#f6f6f6'
+      return this.table.inCall ? 'warning' : this.table.inUse ? 'primary' : '#f6f6f6'
     },
     tableChipList () {
       let allowCount = 1

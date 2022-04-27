@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mr-16">
     <div class="flex-grow-1 pa-2"
          ref="blueprintContainer"
          style="
@@ -172,8 +172,7 @@ import { defaultSection } from '@/oldjs/defaultConst'
 import { getSectionList, setTableLocation } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import debounce from 'lodash-es/debounce'
-import { cancelReservation, getCurrentReservation, moveReservation } from '@/api/ReservationService'
-import { groupBy } from 'lodash-es'
+import { cancelReservation, moveReservation } from '@/api/ReservationService'
 import uniqBy from 'lodash-es/uniqBy'
 import IKUtils from 'innerken-js-utils'
 import TableCard from '@/views/FirstPage/Table/Table/Item/TableCard'
@@ -271,12 +270,6 @@ export default {
   },
   watch: {
     async outSideTableList (val) {
-      let reservations
-      try {
-        reservations = groupBy(await getCurrentReservation(), 'tableId')
-      } catch (e) {
-        reservations = []
-      }
       this.tableList = val.map(t => {
         const cell = t.cells.find(c => c.sectionId === this.currentSection.id) ?? t.cells?.[0] ?? {
           x: 0,
@@ -292,10 +285,8 @@ export default {
         t.h = t.h > 50 ? t.h : 'auto'
         t.x = t.x ? t.x : 0
         t.y = t.y ? t.y : 0
-        t.reservations = reservations[t.tableId] ?? []
         return t
       })
-      console.log(val)
     },
     scale (val) {
       GlobalConfig.updateSettings('tableBluePrintScale', val)
