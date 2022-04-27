@@ -808,7 +808,7 @@ export default {
       this.takeawayEnabled = this.restaurantInfo.currentlyOpening === '1'
     },
     async initPage () {
-      window.onkeydown = this.listenKeyDown
+      window.onkeyup = this.listenKeyDown
       this.refreshPrinterList()
       getAllDishes()
       await getConsumeTypeList()
