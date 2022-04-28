@@ -1338,7 +1338,7 @@ export default {
     },
     async realInitial () {
       this.breakCount = 0
-      window.onkeydown = this.listenKeyDown
+      window.onkeyup = this.listenKeyDown
 
       if (GlobalConfig.getFocus) {
         this.autoGetFocus()

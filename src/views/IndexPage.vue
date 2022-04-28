@@ -751,7 +751,7 @@ export default {
       this.tseInfo = 'OK'
     },
     async initPage () {
-      window.onkeydown = this.listenKeyDown
+      window.onkeyup = this.listenKeyDown
       this.refreshTables()
       this.refreshPrinterList()
       getAllDishes()
