@@ -428,7 +428,7 @@ export default {
 
     async printZBon () {
       IKUtils.showConfirm(this.$t('Möchten Sie alle Datensätze drucken?'), this.$t('Bist du sicher?'), async () => {
-        IKUtils.showLoading(false)
+        IKUtils.showLoading(true)
         if (GlobalConfig.UseDailyZbon) {
           await printZBonUseDate(this.singleZBonDate, this.singleZBonDate)
         } else {
