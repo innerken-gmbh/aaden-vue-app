@@ -30,8 +30,8 @@
             <span>{{ $t('消费类型') }}</span>
             <v-spacer></v-spacer>
             <span>
-            {{ consumeTypeName }}
-          </span>
+            {{ consumeTypeName | shorterName }}
+            </span>
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item>

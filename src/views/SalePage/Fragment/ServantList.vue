@@ -155,7 +155,7 @@ export default {
       await printServantSummaryByDate(pw, startDate, endDate)
     },
     async allZBon (startDate, endDate) {
-      await printAllServantSummaryByDate(startDate, endDate)
+      await printAllServantSummaryByDate(this.displayServantInfo, startDate, endDate)
     },
     fillPayMethodTotal (payMethod, withFilter = true) {
       if (withFilter) {

@@ -132,10 +132,8 @@ export async function printServantSummaryByDate (pw, startDate, endDate) {
   return printServantSummary(pw, startDate, endDate)
 }
 
-export async function printAllServantSummaryByDate (startDate, endDate) {
-  const res = await loadAllServants()
-  console.log(res, 'res in print all')
-  res.forEach(s => printServantSummaryByDate(s.servant.password, startDate, endDate))
+export async function printAllServantSummaryByDate (servantList, startDate, endDate) {
+  servantList.forEach(s => printServantSummaryByDate(s.servant.password, startDate, endDate))
 }
 
 export async function loadZbonRecordList (fromDateTime, toDateTime) {

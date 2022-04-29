@@ -30,6 +30,10 @@ Vue.filter('priceDisplay', function (price) {
   return parseFloat(price).toFixed(2).replace('.', ',') + ' €'
 })
 
+Vue.filter('shorterName', function (longName) {
+  return longName.replace('Japanisches', 'JP')
+})
+
 Vue.filter('onlyTime', function (str) {
   return onlyTimeFormat(str)
 })
