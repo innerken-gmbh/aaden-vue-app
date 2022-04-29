@@ -2,22 +2,46 @@
   <v-card elevation="0">
     <div class="d-flex">
       <div class="pa-2 flex-grow-1">
-        <v-app-bar dense elevation="0" color="white">
+        <v-subheader style="display: flex">
           <v-text-field
-            style="min-width: 800px"
-            solo dense
+            style="max-width: 240px"
+            solo
             prepend-inner-icon="mdi-magnify"
-            :placeholder="$t('order_number_table_number_amount')"
+            :placeholder="$t('Search order/table')"
             v-model="search">
-            <template v-slot:append-outer>
-
-            </template>
           </v-text-field>
+          <v-select
+            class="ml-3"
+            :label="$t('支付方式')"
+            :items="payMethodList"
+            v-model="appliedFilter.payment"
+            @change="updateFilter"
+            :item-text="item => item.langPayMethodName"
+            solo
+            multiple
+            style="max-width: 240px"
+          >
+          </v-select>
+          <v-select
+            class="ml-3"
+            :label="$t('服务员')"
+            :items="servantList"
+            v-model="appliedFilter.servant"
+            @change="updateFilter"
+            :item-text="item => item.name"
+            solo
+            style="max-width: 160px"
+          >
+          </v-select>
+          <v-btn v-if="showClearButton" text class="mb-6" @click="clearFilter">
+            <v-icon>mdi-close-circle</v-icon>
+            {{ $t('清除') }}
+          </v-btn>
           <v-spacer></v-spacer>
-        </v-app-bar>
+        </v-subheader>
         <bill-table @need-refresh="loadData" :orders="displayOrder" :show-operation="true"/>
       </div>
-      <v-navigation-drawer right width="272">
+      <v-navigation-drawer permanent right width="272">
         <v-card elevation="0" class="pa-2" width="272">
 
           <v-card elevation="0" class="mt-1">
@@ -43,14 +67,36 @@
                 </div>
               </div>
             </template>
-            <template v-for="pay in paidInfoList">
-              <div class="pa-1 mx-1" :key="pay.id">
-                <div class="d-flex justify-space-between">
-                  <h4>{{ pay.paidName }}</h4>
-                  <div>{{ pay.paidTotal | priceDisplay }}</div>
+            <div class="d-flex justify-space-between">
+              <h3 class="pa-2 font-weight-bold">{{ $t('支付方式') }}:</h3>
+              <div v-if="paidInfoList && paidInfoList.length > 5"><v-btn @click="showAllPayment = !showAllPayment" small class="primary">{{ !showAllPayment? $t('更多') : $t('收起')}}</v-btn></div>
+            </div>
+
+              <div v-if="!showAllPayment && paidInfoList && paidInfoList.length > 5">
+                <template v-for="pay in paidInfoList.slice(0, 5)">
+                  <div class="pa-1 mx-1" :key="pay.id">
+                    <div class="d-flex justify-space-between">
+                      <h4>{{ pay.paidName }} {{ pay.paidCount > 0 ? '(' + pay.paidCount + ')' : ''}}</h4>
+                      <div>{{ pay.paidTotal | priceDisplay }}</div>
+                    </div>
+                  </div>
+                </template>
+                <div class="pa-1 mx-1">
+                  <div class="d-flex justify-space-between">
+                    <h4>...</h4>
+                  </div>
                 </div>
               </div>
-            </template>
+            <div v-else>
+              <template v-for="pay in paidInfoList">
+                <div class="pa-1 mx-1" :key="pay.id">
+                  <div class="d-flex justify-space-between">
+                    <h4>{{ pay.paidName }} {{ pay.paidCount !== 0 ? '(' + pay.paidCount + ')' : '' }}</h4>
+                    <div>{{ pay.paidTotal | priceDisplay }}</div>
+                  </div>
+                </div>
+              </template>
+            </div>
           </v-card>
           <v-card elevation="0">
             <v-card color="error lighten-2" dark @click="returnDishDialog=true"
@@ -110,7 +156,7 @@
           <tbody>
           <template v-for="order in returnList">
             <tr v-bind:key="order.orderId+order.Dname">
-              <td>
+              <td style="width: 200px">
                 <span class="font-weight-bold">{{ order.name }}</span>/{{ order.orderId }}
               </td>
               <td>
@@ -164,15 +210,21 @@
 
 <script>
 import dayjs from 'dayjs'
-import { getBillListForServant, previewZBon, printXBon, printZBonUseDate } from '@/api/api'
+import {
+  getBillListForServant,
+  loadAllServants,
+  loadPaymentMethods,
+  previewZBon,
+  printXBon,
+  printZBonUseDate
+} from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 import BillTable from '@/views/SalePage/BillTable'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
-// eslint-disable-next-line no-unused-vars
 const defaultRealFilter = {
-  servant: [],
-  paymentMethod: [],
-  status: []
+  servant: '',
+  payment: []
 }
 
 export default {
@@ -180,6 +232,10 @@ export default {
   components: { BillTable },
   data: function () {
     return {
+      showAllPayment: false,
+      appliedFilter: defaultRealFilter,
+      servantList: [],
+      payMethodList: [],
       search: '',
       billData: {
         content: {
@@ -202,7 +258,6 @@ export default {
   },
   watch: {
     async singleZBonDate () {
-      console.log('change')
       await this.loadData()
     },
     async tabIndex () {
@@ -210,9 +265,12 @@ export default {
     }
   },
   computed: {
+    showClearButton () {
+      return this.search || this.appliedFilter.servant !== '' || this.appliedFilter.payment?.length !== 0
+    },
     displayOrder () {
       return this.bills.filter(i => {
-        if (i.tableName.includes(this.search) || i.orderId.includes(this.search) || i.totalPrice.includes(this.search)) {
+        if (i.tableName.toLowerCase().includes(this.search.toLowerCase()) || i.orderId.includes(this.search) || i.totalPrice.includes(this.search)) {
           return i
         }
       })
@@ -233,6 +291,7 @@ export default {
       return this.billData.content
     },
     paidInfoList () {
+      console.log(this.billContent.paidInfo)
       return this.billContent.paidInfo
     },
     returnList () {
@@ -253,6 +312,27 @@ export default {
     }
   },
   methods: {
+    clearFilter () {
+      this.search = ''
+      this.appliedFilter = {
+        servant: '',
+        payment: []
+      }
+      this.updateFilter()
+    },
+    async updateFilter () {
+      this.search = ''
+      const selectedServantPw = this.appliedFilter.servant
+      const selectedPayMethod = this.appliedFilter.payment
+      this.bills = ((await getBillListForServant(selectedServantPw, ...this.singleZBonDate)).orders)
+      this.bills = this.bills.filter(b => {
+        if (selectedPayMethod?.length > 0 && selectedPayMethod.some(s => b.payMethodId === s)) {
+          return b
+        } else if (selectedPayMethod?.length === 0) {
+          return b
+        }
+      })
+    },
     async printXBon () {
       IKUtils.showLoading()
       await printXBon(...this.singleZBonDate)
@@ -261,25 +341,31 @@ export default {
     async printZBon () {
       IKUtils.showConfirm(this.$t('Möchten Sie alle Datensätze drucken?'), this.$t('Bist du sicher?'), async () => {
         IKUtils.showLoading(false)
-
         await printZBonUseDate(...this.singleZBonDate)
-
         IKUtils.toast('OK')
         await this.loadData()
       })
     },
 
     async loadData () {
+      this.clearFilter()
       if (this.singleZBonDate != null) {
         this.billData = await previewZBon(...this.singleZBonDate)
-        console.log(this.billData, 'billData')
         this.bills = (await getBillListForServant(null, ...this.singleZBonDate)).orders
-        // this.bills = await loadBillList(...this.singleZBonDate)
       }
     }
   },
   async mounted () {
     await this.loadData()
+    this.servantList = await loadAllServants()
+    this.servantList.forEach(i => {
+      i.value = i.password
+    })
+    this.payMethodList = await loadPaymentMethods()
+    this.payMethodList.forEach(i => {
+      i.value = i.id
+      i.langPayMethodName = i.langs.filter(l => l.lang.toLowerCase() === GlobalConfig.lang.toLowerCase())[0].name
+    })
   }
 }
 </script>

@@ -1,84 +1,161 @@
 <template>
-  <v-card elevation="0" class="servantCardStyle" width="100%">
-    <v-subheader>
-      <v-card-title>跑堂日结单</v-card-title>
-      <v-btn color="primary">打印全部跑堂日结单</v-btn>
-      <v-spacer/>
-    </v-subheader>
-    <div style="display: grid; grid-template-columns: repeat(4,1fr); grid-gap: 40px; overflow:scroll;">
-      <v-card width="400" v-for="servant in loadAllServant" :key="servant.servant.id">
-        <v-subheader dark class="grey lighten-2" style="height: 60px">
-<!--          <v-spacer></v-spacer>-->
-<!--          <v-btn>日结单</v-btn>-->
-        </v-subheader>
-        <div class="text-center">
-          <v-avatar
-            style="margin-top: -20px"
-            color="indigo"
-            size="56"
+  <div style="max-height: calc(100vh - 112px); overflow-y: scroll">
+    <div class="d-flex">
+      <div
+        style="min-width: calc(100% - 272px)"
+        class="mt-2 mx-4">
+        <div style="display: grid; grid-template-columns: repeat(3,1fr); grid-gap: 20px; grid-auto-rows: 305px;min-height: calc(90vh - 120px)">
+          <div
+            v-for="s in displayServantInfo"
+            :key="s.servant.id"
+            style="background: #f0f0f0;overflow: visible; border-radius: 16px; "
+            :style="activeId===s.servant.id ? {zIndex: 100}:{}"
+            @click="changeActiveId(s.servant.id)"
           >
-            <span class="white--text text-h4">{{ servant.servant.name[0] }}</span>
-          </v-avatar>
-        </div>
-        <div class="servantName text--h6 text-center mb-4"> {{ servant.servant.name }}</div>
-        <div class="d-flex justify-center text-center mb-4">
-          <div class="mx-4 lighten-1 grey--text " style="font-weight: 600">
-            {{ servant.servant.isPartTime === '1' ? '兼职' : '长期' }}
+            <div
+              style="background: #f0f0f0;"
+              class="pa-2"
+            >
+              <div class="d-flex justify-space-between align-center py-2">
+                <div class="display-1">
+                  {{ s.servant.name }}
+                </div>
+                <v-btn
+                  class="mr-0"
+                  small
+                  color="warning"
+                  @click="singleZBon(s.servant.password)"
+                >
+                  {{ $t('打印日结单') }}
+                </v-btn>
+              </div>
+
+              <v-divider></v-divider>
+              <div>
+                <div class="py-2">
+                  <div
+                    v-for="pay in fillPayMethodTotal(s.payMethodTotal,activeId!==s.servant.id)"
+                    :key="pay.id"
+                    class="d-flex justify-space-between pt-1"
+                  >
+                    <div class="label">
+                      {{ pay.name }}
+                    </div>
+                    <div class="value font-weight-bold">
+                      {{ pay.amount | priceDisplay }}
+                    </div>
+                  </div>
+
+                  <div
+                    class="d-flex justify-start py-1"
+                  >
+                    <div
+                      v-if="activeId!==s.servant.id"
+                      style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
+                    >
+                      {{ $t('展示更多') }}
+                    </div>
+                    <div
+                      v-else
+                      style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
+                    >
+                      {{ $t('收起') }}
+                    </div>
+                  </div>
+                </div>
+
+                <v-divider></v-divider>
+
+                <div
+                  class="d-flex justify-space-between pt-1"
+                >
+                  <div class="label">
+                    {{ $t('小费') }}
+                  </div>
+                  <div class="value font-weight-bold">
+                    {{ s.tipIncome ? s.tipIncome : 0 | priceDisplay }}
+                  </div>
+                </div>
+
+                <div
+                  class="d-flex justify-space-between pt-1 "
+                >
+                  <div class="label">
+                    {{ $t('今日总计(含小费)') }}
+                  </div>
+                  <div class="value font-weight-bold">
+                    {{ s.todayTotal ? s.todayTotal : 0 | priceDisplay }}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="d-flex justify-center mb-5">
-          <v-card class="servantSaleCard mx-4">
-            <div class="text-caption">收入总计</div>
-            <div class="text-h5 orange--text mt-1"> {{ servant.todayTotal }}</div>
-          </v-card>
-          <v-card class="servantSaleCard mx-4">
-            <div class="text-caption">小费总计</div>
-            <div class="text-h5 green--text mt-1"> {{ servant.tipIncome }}</div>
-          </v-card>
-          <v-card class="servantSaleCard mx-4">
-            <div class="text-caption">未结账</div>
-            <div class="text-h5 red--text mt-1"> {{ servant.tipIncome }}</div>
-          </v-card>
-        </div>
-        <div class="mx-8" v-for="pay in fillPayMethodTotal(servant.payMethodTotal,activeId!==servant.servant.id)" :key="pay.id">
-          <v-list-item >
-            {{ pay.name }}
-            <v-spacer/>
-            {{ pay.amount }}
-          </v-list-item>
-          <v-divider></v-divider>
-        </div>
-        <div class="mx-8 mb-4">
-          <v-btn dark color="orange" block @click="printServantSummaryForToday(servant.servant.password)">打印日结单</v-btn>
-        </div>
-      </v-card>
+      </div>
+      <v-navigation-drawer permanent right width="272">
+        <v-card elevation="0" class="pl-6">
+          <v-btn right x-large dark class="orange mb-6 mt-2" block @click="allZBon(...singleZBonDate)">{{ $t('打印全部跑堂日结单') }}</v-btn>
+        </v-card>
+      </v-navigation-drawer>
     </div>
-    <div class="d-flex">
-    </div>
-  </v-card>
+  </div>
 </template>
 
 <script>
-import { loadPaymentMethods, loadServantList, printServantSummaryForToday } from '@/api/api'
+import {
+  loadPaymentMethods,
+  printServantSummaryByDate,
+  printAllServantSummaryByDate, getBillListForServant, loadAllServants
+} from '@/api/api'
 import i18n from '@/i18n'
+
+const defaultDisplayData = {
+  orders: [],
+  payMethodTotal: [],
+  servant: {
+    id: -1,
+    name: 'Servant 1'
+  },
+  todayTotal: 0
+}
 
 export default {
   name: 'ServantList',
   data: () => {
     return {
       activeId: null,
-      loadAllServant: null,
       expandPayMethodDetail: false,
-      paymentMethodList: []
+      paymentMethodList: [],
+      servantInfo: [],
+      servantList: [],
+      showTotalPayment: false
     }
   },
   props: {
     singleZBonDate: {}
   },
+  computed: {
+    displayServantInfo () {
+      return this.servantInfo.filter(s => s.todayTotal > 0)
+    }
+  },
   methods: {
-    printServantSummaryForToday,
-    async reloadServantPage () {
-      this.loadAllServant = await loadServantList()
+    changeActiveId (activeId) {
+      this.activeId === activeId ? this.activeId = null : this.activeId = activeId
+    },
+    async loadServantsInfo () {
+      this.servantInfo = []
+      for (const s of this.servantList) {
+        this.servantInfo.push(Object.assign({}, defaultDisplayData,
+          await getBillListForServant(s.password,
+            ...this.singleZBonDate)))
+      }
+    },
+    async singleZBon (pw, startDate, endDate) {
+      await printServantSummaryByDate(pw, startDate, endDate)
+    },
+    async allZBon (startDate, endDate) {
+      await printAllServantSummaryByDate(startDate, endDate)
     },
     fillPayMethodTotal (payMethod, withFilter = true) {
       if (withFilter) {
@@ -107,7 +184,7 @@ export default {
         return this.paymentMethodList.filter(p => p.id > 0 && p.id !== 9).map(p => {
           const r = payMethod.find(t => parseInt(t.payMethodId) === parseInt(p.id))
           return {
-            name: p._langsname,
+            name: p.langs[0].name,
             amount: r?.sumTotal ?? 0,
             id: p.id
           }
@@ -116,25 +193,19 @@ export default {
     }
   },
   watch: {
-    async singleZBonDate () {
-      await this.reloadServantPage()
+    async singleZBonDate (val) {
+      await this.loadServantsInfo()
     }
   },
   async mounted () {
     this.paymentMethodList = await loadPaymentMethods()
-    await this.reloadServantPage()
+    this.servantList = await loadAllServants()
+    await this.loadServantsInfo()
   }
 }
 </script>
 
 <style scoped>
-.servantCardStyle {
-  box-shadow: 0 12px 50px 2px #13507c24;
-  border-radius: 8px;
-  background-color: #fff;
-  padding: 1.25rem;
-  overflow: hidden;
-}
 
 .servantName {
   font-size: 1.5rem;
@@ -145,29 +216,7 @@ export default {
 }
 
 .servantSaleCard {
-  width: 150px;
-  padding: 1.25rem;
-  overflow: hidden;
-}
-
-.servantDesc {
-
-}
-
-.manual-v-layout {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-flex: 1;
-  -ms-flex: 1 1 auto;
-  flex: 1 1 auto;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  padding-bottom: 8px !important;
-  padding-top: 8px !important;
+  width: 200px;
+  padding: 1rem;
 }
 </style>

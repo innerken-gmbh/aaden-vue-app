@@ -3,11 +3,11 @@
     <v-toolbar elevation="2">
       <v-tabs v-model="tabIndex">
         <template v-if="isBoss">
-          <v-tab>{{ $t('Tag-Sicht') }}</v-tab>
+          <v-tab>{{ $t('账单列表') }}</v-tab>
           <v-tab>{{ $t('Kassenbuch') }}</v-tab>
-          <v-tab>菜品统计</v-tab>
-          <v-tab>查看跑堂</v-tab>
-          <v-tab>绑定老板端APP</v-tab>
+          <v-tab>{{ $t('菜品统计') }}</v-tab>
+          <v-tab>{{ $t('查看跑堂') }}</v-tab>
+          <v-tab>{{ $t('绑定老板端APP') }}</v-tab>
         </template>
         <template v-else>
           <v-tab>{{ $t('Meine Umsatz') }}</v-tab>
@@ -17,7 +17,7 @@
 
       <v-btn large color="primary" @click="showDatePicker=true">
         <v-icon left>mdi-calendar</v-icon>
-        {{ getNiceLabel(singleZBonDate) }}/更换日期
+        {{ getNiceLabel(singleZBonDate) }}/{{ $t('更换日期') }}
       </v-btn>
 
     </v-toolbar>
@@ -70,7 +70,7 @@
                             <v-list-item-content>
                               <v-list-item-title>
                             <span style="font-size: larger">
-                                   {{ todayCashStand }}
+                                   {{ todayCashStand | priceDisplay}}
                             </span>
                               </v-list-item-title>
                             </v-list-item-content>
@@ -100,24 +100,19 @@
                 <v-tab-item>
                   <v-card>
                     <div class="d-flex pa-1">
-                      <dish-statistic :single-z-bon-date="singleZBonDate"></dish-statistic>
+                      <div class="pa-2 flex-grow-1">
+                        <dish-statistic :single-z-bon-date="singleZBonDate"></dish-statistic>
+                      </div>
                     </div>
                   </v-card>
                 </v-tab-item>
                 <v-tab-item>
-                  <v-card elevation="0" class="pa-1">
-                    <v-card elevation="0" class="flex-grow-1" style="overflow-y: auto; height: 100%;flex-direction: column;">
+                  <v-card elevation="0">
                       <servant-list :single-z-bon-date="singleZBonDate"></servant-list>
-                    </v-card>
                   </v-card>
                 </v-tab-item>
                 <v-tab-item>
-                  <v-card style="width: 100%;">
-                    <div  class="pa-2 align-center justify-center" style="display:flex;">
-                      <v-img max-width="400px" max-height="400px" src="@/assets/1.png"></v-img>
-                    </div>
-                    <h2 class="mx-auto justify-center text-center">扫码绑定老板端App，可以远程查看店内更多细节数据</h2>
-                  </v-card>
+                  <price-display></price-display>
                 </v-tab-item>
               </template>
               <v-tab-item>
@@ -189,8 +184,8 @@
       >
         <date-range-picker v-model="dateInput"></date-range-picker>
         <div class="px-2 mt-2">
-          <v-btn elevation="0" block @click="dateSubmit" color="primary" large>确定</v-btn>
-          <v-btn large block color="error" @click="showDatePicker=false" outlined class="mt-2">取消</v-btn>
+          <v-btn elevation="0" block @click="dateSubmit" color="primary" large>{{ $t('确定') }}</v-btn>
+          <v-btn large block color="error" @click="showDatePicker=false" outlined class="mt-2">{{ $t('取消') }}</v-btn>
         </div>
       </v-card>
     </v-dialog>
@@ -224,6 +219,7 @@ import { getNiceLabel, today } from '@/api/Repository/DateRepository'
 import DateRangePicker from '@/components/GlobalDialog/DateRangePicker'
 import DishStatistic from '@/views/SalePage/Fragment/DishStatistic'
 import ServantList from '@/views/SalePage/Fragment/ServantList'
+import PriceDisplay from '@/views/SalePage/Fragment/PriceDisplay'
 
 const defaultDisplayData = {
   orders: [],
@@ -238,6 +234,7 @@ const defaultDisplayData = {
 export default {
   name: 'SalePage',
   components: {
+    PriceDisplay,
     ServantList,
     DishStatistic,
     DateRangePicker,
