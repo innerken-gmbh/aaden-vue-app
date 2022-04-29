@@ -3,9 +3,7 @@ import { loadAllReservable } from '@/api/ReservationService'
 import { timeFromNowInMinute } from '@/api/dateUtils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
-const ServantColorArray = [
-  'pink', 'green', 'blue', 'red', 'yellow'
-]
+const ServantColorArray = ['pink', 'green', 'blue', 'red', 'purple']
 
 const TableInfoMetaDataSetting = {
   createTimestamp: {
@@ -19,9 +17,12 @@ const TableInfoMetaDataSetting = {
   servantName: {
     icon: 'mdi-account',
     classFunc: (v) => {
-      v = v.length > 7 ? v.slice(0, 7) : v
-      console.log(parseInt(v))
-      return ServantColorArray[v.length % 5]
+      let sum = 0
+      for (let i = 0; i < v.length; i++) {
+        console.log(v[i].charCodeAt(0))
+        sum += v[i].charCodeAt(0)
+      }
+      return ServantColorArray[sum % 5]
     }
   },
   dishCount: {

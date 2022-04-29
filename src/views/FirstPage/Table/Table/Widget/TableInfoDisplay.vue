@@ -9,7 +9,7 @@
     </template>
     <div
         style="line-height: 10px;font-size: 10px;border-radius: 2px;width: fit-content;padding: 2px;margin-top: 2px"
-        class="text-no-wrap">{{ info }}
+        class="text-no-wrap">{{ info.length > 5 ? info.slice(0, 5) : info }}
     </div>
   </div>
 </template>
