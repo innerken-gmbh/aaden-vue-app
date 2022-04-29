@@ -361,11 +361,18 @@
   "category": "Kategorie",
   "category Type": "Kategorie Typ",
   "totalCount": "totalCount",
-  "非德语区标准许可": "Nicht-deutschsprachige Standardlizenz",
+  "非德语区标准许可": "Nicht-deutsch Standardlizenz",
   "德语区许可": "Deutschsprachige Standardlizenz",
   "远程查看店内数据": "Daten in der Filiale aus der Ferne ansehen",
   "支持三个设备同步数据": "Unterstützung für drei Geräte zur Synchronisierung von Daten",
   "Datev数据集成": "Datev Data Integration",
   "更多新特性": "Weitere neue Funktionen",
-  "扫码绑定老板端App": "QR-Code scannen, um Boss App zu binden"
+  "扫码绑定老板端App": "QR-Code scannen, um Boss App zu binden",
+  "订单详情": "Bestelldetails",
+  "今天": "Heute",
+  "跑堂": "Kellner",
+  "折扣内容": "Rabatt",
+  "退菜内容": "Zurückgeben",
+  "退菜理由": "Rückgabegrund",
+  "订单状态": "Status der Bestellung"
 }

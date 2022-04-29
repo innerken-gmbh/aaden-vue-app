@@ -372,5 +372,12 @@
   "支持三个设备同步数据": "Support three devices to synchronize data",
   "Datev数据集成": "Datev Data Integration",
   "更多新特性": "Other new features",
-  "扫码绑定老板端App": "Scan QR code to bind boss-side App"
+  "扫码绑定老板端App": "Scan QR code to bind boss-side App",
+  "订单详情": "Order detail",
+  "今天": "Today",
+  "跑堂": "Server",
+  "折扣内容": "Discount",
+  "退菜内容": "Returned",
+  "退菜理由": "Returned Reason",
+  "订单状态": "Order Status"
 }
