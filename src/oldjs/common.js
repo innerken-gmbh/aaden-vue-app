@@ -67,7 +67,7 @@ export function findConsumeTypeById (id) {
       return i
     }
   }
-  return { name: '' }
+  return { name: '', color: '#367aeb' }
 }
 
 export async function resetTableStatus (tableId) {

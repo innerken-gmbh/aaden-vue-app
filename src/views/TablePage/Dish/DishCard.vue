@@ -9,9 +9,6 @@
         <v-spacer/>
         <div class="flex-shrink-0">
           <template>
-            <v-chip small label v-if="dish.overrideConsumeTypeId" class="mr-1" color="primary">
-              {{ findConsumeTypeById(dish.overrideConsumeTypeId) }}
-            </v-chip>
             <span v-if="dish.isFree==='1'">{{ $t('Free') }}</span>
             <template v-else>
                 <span class="text-truncate text-no-wrap"
@@ -95,7 +92,6 @@
 
 <script>
 import Swal from 'sweetalert2'
-import { findConsumeTypeById } from '@/oldjs/common'
 
 export default {
   name: 'DishCard',
@@ -117,9 +113,6 @@ export default {
     expand: { default: false }
   },
   methods: {
-    findConsumeTypeById (id) {
-      return findConsumeTypeById(id).name
-    },
     editCallBack () {
       this.dish.edit()
       this.dish.change(-1)
@@ -152,6 +145,7 @@ export default {
 .dishCard {
   margin-top: 4px;
   background: white;
+  font-size: 18px;
 }
 
 .dishCount {

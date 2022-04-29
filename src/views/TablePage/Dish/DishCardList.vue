@@ -19,17 +19,41 @@
          class="px-2"
          style="overflow-y: scroll"
     >
-      <template v-for="(order,index) in dishList">
-        <div @click="checkIfOpen(index)" :key="'order'+title+order.identity">
-          <dish-card
-              :expand="index===expandIndex"
-              :color="color"
-              :show-number="showNumber"
-              :click-callback="()=>_clickCallBack(index,order)"
-              :show-edit="showEdit"
-              :dish="order"/>
-        </div>
+      <template v-if="Object.keys(dishList).length>1">
+        <template v-for="(consumeType) in Object.keys(dishList)">
+          <div :key="consumeType">
+            <v-chip small label color="primary" class="mx-1 text-subtitle-1 mt-2">
+              {{ findConsumeTypeById(consumeType) }}
+            </v-chip>
+            <template v-for="(order) in dishList[consumeType]">
+              <div @click="checkIfOpen(order.index)" :key="'order'+title+order.identity">
+                <dish-card
+                    :expand="order.index===expandIndex"
+                    :color="color"
+                    :show-number="showNumber"
+                    :click-callback="()=>_clickCallBack(order.index,order)"
+                    :show-edit="showEdit"
+                    :dish="order"/>
+              </div>
+            </template>
+            <div style="width: 100%;height: 2px;border: 1px dashed #f6f6f6"></div>
+          </div>
+        </template>
       </template>
+      <template v-else>
+        <template v-for="(order) in Object.values(dishList)[0]">
+          <div @click="checkIfOpen(order.index)" :key="'order'+title+order.identity">
+            <dish-card
+                :expand="order.index===expandIndex"
+                :color="color"
+                :show-number="showNumber"
+                :click-callback="()=>_clickCallBack(order.index,order)"
+                :show-edit="showEdit"
+                :dish="order"/>
+          </div>
+        </template>
+      </template>
+
       <template v-if="discountDish!=null">
         <dish-card
             :color="color"
@@ -61,6 +85,8 @@
 <script>
 import { dragscroll } from 'vue-dragscroll'
 import DishCard from './DishCard'
+import { groupBy } from 'lodash-es'
+import { findConsumeTypeById } from '@/oldjs/common'
 
 export default {
   name: 'DishCardList',
@@ -135,6 +161,9 @@ export default {
       }
       this.clickCallback(index)
     },
+    findConsumeTypeById (id) {
+      return findConsumeTypeById(id).name || '其他'
+    },
     checkIfOpen (index) {
       const dish = this.dishListModel.list[index]
       if (this.showEdit || dish.count > 1) {
@@ -151,12 +180,21 @@ export default {
   },
   computed: {
     dishList: function () {
-      const list = [...this.dishListModel.list]
+      const list = [...this.dishListModel.list].map((d, i) => {
+        d.index = i
+        return d
+      })
+
+      const dishOverrideCT = groupBy(list, (i) => {
+        return i.overrideConsumeTypeId ?? ''
+      })
+      console.log(dishOverrideCT)
+
       if (this.reverse) {
         list.reverse()
       }
 
-      return list
+      return dishOverrideCT
     },
     originTotal: function () {
       return this.dishListModel.list.length > 0 ? this.dishListModel.total() : 0
