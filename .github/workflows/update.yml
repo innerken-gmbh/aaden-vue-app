@@ -4,7 +4,6 @@
 name: Merge Admin
 
 on:
-  - push
   - workflow_dispatch
 
 jobs:
