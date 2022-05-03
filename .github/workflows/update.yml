@@ -5,6 +5,7 @@ name: Merge Admin
 
 on:
   - workflow_dispatch
+  - push
 
 jobs:
   build:
@@ -19,7 +20,7 @@ jobs:
           repository: innerken-gmbh/aaden-vue-admin
           token: ${{ secrets.PT }}
           path: admin
-          ref: emBeded
+          ref: candidate
 
       - name: Use Node.js 16.x
         uses: actions/setup-node@v1
