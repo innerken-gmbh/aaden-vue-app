@@ -638,6 +638,37 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
           @visibility-changed="(val)=>this.buffetDialogShow=val"
           :buffet-dialog-show="buffetDialogShow"></buffet-start-dialog>
     </template>
+<<<<<<< Updated upstream:src/views/TablePage/TablePage.vue
+=======
+
+    <table-change-selector
+        :active-status="false"
+        @table-select="changeTable"
+        :servant-password="servantPassword"
+        :title="$t('tableChange')"
+        :menu-show.sync="showTableChange"
+        :current-table-name="tableDetailInfo.tableBasicInfo.name"
+    ></table-change-selector>
+
+    <table-change-selector
+        :active-status="false"
+        :dishTableChange="true"
+        @table-select="dishesChangeTable"
+        :servant-password="servantPassword"
+        :title="$t('tableChange')"
+        :menu-show.sync="showDishesTableChange"
+        :current-table-name="tableDetailInfo.tableBasicInfo.name"
+    ></table-change-selector>
+
+    <table-change-selector
+        :active-status="true"
+        @table-select="mergeTable"
+        :servant-password="servantPassword"
+        :title="$t('tableMerge')"
+        :menu-show.sync="showTableMerge"
+        :current-table-name="tableDetailInfo.tableBasicInfo.name"
+    ></table-change-selector>
+>>>>>>> Stashed changes:src/views/TablePage.vue
   </div>
 </template>
 
