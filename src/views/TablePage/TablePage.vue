@@ -981,10 +981,10 @@ export default {
           blockReady()
           return
         }
-        this.feedback = '✅' + dish.code + '.' + dish.dishName + '*' + count + '已经加入购物车'
+        this.feedback = '✅' + dish.code + '.' + dish.dishName + '*' + count + i18n.t('已经加入购物车')
         this.addDish(dish, parseInt(count))
       } else {
-        this.feedback = '❌没有找到菜号为: ' + code + '的菜品'
+        this.feedback = '❌' + i18n.t('没有找到菜号为') + ': ' + code + i18n.t('的菜品')
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
       }
 
