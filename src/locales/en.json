@@ -323,7 +323,7 @@
   "配送方式": "Delivery method",
   "重新加载": "Reloading",
   "重新打印": "Reprint",
-  "重置所有桌子": "",
+  "重置所有桌子": "Reset tables",
   "金额": "Amount",
   "金额或百分比": "Amount or percentage",
   "销售额": "Sales",
@@ -379,5 +379,17 @@
   "折扣内容": "Discount",
   "退菜内容": "Returned",
   "退菜理由": "Returned Reason",
-  "订单状态": "Order Status"
+  "订单状态": "Order Status",
+  "昨天": "Gestern",
+  "本周": "This week",
+  "上周": "Last week",
+  "本月": "This month",
+  "上月": "Last month",
+  "今年": "This year",
+  "日期范围": "Date Range",
+  "已经加入购物车": "Added to cart",
+  "没有找到菜号为": "Dish-number not found",
+  "的菜品": "",
+  "按销售额排序": "Sort by sales",
+  "按销量排序": "Sort by quantity"
 }

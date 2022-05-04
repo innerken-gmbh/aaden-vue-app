@@ -319,6 +319,7 @@
   "配送方式": "Versandart",
   "重新加载": "Neu laden",
   "重新打印": "Erneut D.",
+  "重置所有桌子": "Tablellen zurücksetzen",
   "金额": "Menge",
   "金额或百分比": "Betrag oder Prozentsatz",
   "销售额": "Umsatz",
@@ -374,5 +375,17 @@
   "折扣内容": "Rabatt",
   "退菜内容": "Zurückgeben",
   "退菜理由": "Rückgabegrund",
-  "订单状态": "Status der Bestellung"
+  "订单状态": "Status der Bestellung",
+  "昨天": "Gestern",
+  "本周": "Diese Woche",
+  "上周": "Letzte Woche",
+  "本月": "Dieser Monate",
+  "上月": "Letzter Monate",
+  "今年": "Dieses Jahr",
+  "日期范围": "Datumsbereich",
+  "已经加入购物车": "Warenkorb",
+  "没有找到菜号为": "Geschirrnummer gefunden",
+  "的菜品": "",
+  "按销售额排序": "Sortieren nach Umsatz",
+  "按销量排序": "Sortieren nach Anzahl"
 }
