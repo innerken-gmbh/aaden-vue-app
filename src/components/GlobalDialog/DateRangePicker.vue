@@ -1,6 +1,6 @@
 <template>
   <div class="pa-1">
-    <h3>日期范围</h3>
+    <h3>{{$t('日期范围')}}</h3>
     <div class="mt-2">
       <div style="display: grid;grid-template-columns: repeat(2,1fr);grid-gap: 8px">
         <div>
@@ -71,10 +71,9 @@
           @click="dateRange=d.dateRange()">
         <div class="d-flex justify-center align-center text-body-1"
              style="height: 100%">
-          {{ d.label }}
+          {{ $t(d.label) }}
         </div>
       </base-card>
-      ˛
 
     </div>
   </div>

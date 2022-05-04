@@ -379,5 +379,12 @@
   "折扣内容": "Discount",
   "退菜内容": "Returned",
   "退菜理由": "Returned Reason",
-  "订单状态": "Order Status"
+  "订单状态": "Order Status",
+  "昨天": "Gestern",
+  "本周": "This week",
+  "上周": "Last week",
+  "本月": "This month",
+  "上月": "Last month",
+  "今年": "This year",
+  "日期范围": "Date Range"
 }
