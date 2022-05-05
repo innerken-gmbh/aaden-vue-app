@@ -374,5 +374,12 @@
   "折扣内容": "Rabatt",
   "退菜内容": "Zurückgeben",
   "退菜理由": "Rückgabegrund",
-  "订单状态": "Status der Bestellung"
+  "订单状态": "Status der Bestellung",
+  "昨天": "Gestern",
+  "本周": "Diese Woche",
+  "上周": "Letzte Woche",
+  "本月": "Dieser Monate",
+  "上月": "Letzter Monate",
+  "今年": "Dieses Jahr",
+  "日期范围": "Datumsbereich"
 }
