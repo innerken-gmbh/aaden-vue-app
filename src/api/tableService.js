@@ -3,6 +3,8 @@ import { loadAllReservable } from '@/api/ReservationService'
 import { timeFromNowInMinute } from '@/api/dateUtils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
+const ServantColorArray = ['pink', 'green', 'blue', 'red', 'purple']
+
 const TableInfoMetaDataSetting = {
   createTimestamp: {
     icon: 'mdi-clock-outline',
@@ -12,7 +14,17 @@ const TableInfoMetaDataSetting = {
       return diff > GlobalConfig.maxEatMinute ? 'error font-weight-bold' : ''
     }
   },
-  servantName: { icon: 'mdi-account' },
+  servantName: {
+    icon: 'mdi-account',
+    classFunc: (v) => {
+      let sum = 0
+      for (let i = 0; i < v.length; i++) {
+        console.log(v[i].charCodeAt(0))
+        sum += v[i].charCodeAt(0)
+      }
+      return ServantColorArray[sum % 5]
+    }
+  },
   dishCount: {
     icon: 'mdi-silverware-fork-knife', classFunc: (v) => parseInt(v) === 0 ? 'error' : ''
   },

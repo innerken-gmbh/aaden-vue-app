@@ -14,7 +14,7 @@
     <v-spacer/>
     <div>
       <div class="caption">
-        {{ table.buffetCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
+        {{ table.dishCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
       </div>
       <div class="caption text-right">
         {{ table.createTimestamp }}/<span
