@@ -14,8 +14,7 @@ const TableInfoMetaDataSetting = {
   },
   servantName: { icon: 'mdi-account' },
   dishCount: {
-    icon: 'mdi-silverware-fork-knife',
-    classFunc: (v) => parseInt(v) === 0 ? 'error' : ''
+    icon: 'mdi-silverware-fork-knife', classFunc: (v) => parseInt(v) === 0 ? 'error' : ''
   },
   totalPrice: { icon: 'mdi-currency-eur' },
   buffetCount: { icon: 'mdi-account-multiple' },
@@ -61,4 +60,10 @@ export async function loadReservationTableInfo () {
       it.reservable = reservableTableSet.has(it.tableId)
       return it
     })
+}
+
+const ServantColors = ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff']
+
+export function getColorFromName (name = '') {
+  return ServantColors[name.charCodeAt(0) % ServantColors.length - 1]
 }
