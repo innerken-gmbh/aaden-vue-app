@@ -480,6 +480,7 @@ left: 304px"
 
     <table-change-selector
         :active-status="false"
+        :dishTableChange="true"
         @table-select="dishesChangeTable"
         :servant-password="servantPassword"
         :title="$t('tableChange')"

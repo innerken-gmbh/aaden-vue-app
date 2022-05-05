@@ -61,7 +61,7 @@
           </v-dialog>
           <v-tabs class="mx-2" show-arrows v-model="currentSectionIndex">
             <v-tab>
-              全部
+              {{ $t('All') }}
             </v-tab>
             <template v-for="area of sectionList">
               <v-tab :key="area.id">

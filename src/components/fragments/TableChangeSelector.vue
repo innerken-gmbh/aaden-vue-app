@@ -10,8 +10,13 @@
           <v-icon>mdi-close</v-icon>
         </v-btn>
         <template v-slot:extension>
+
           <v-tabs grow v-model="tab">
-            <v-tab @click="activeSection(section.id)" v-for="section in sections" :key="section.id" >
+            <v-tab @click="showAllTable=true">
+              <span class="areaTitle font-weight-bold"
+                    style="font-size: 20px; color: black">{{ $t('All')}}</span>
+            </v-tab>
+            <v-tab @click="activeSection(section.id)" v-for="section in sections" :key="section.id">
               <span class="areaTitle font-weight-bold"
                     style="font-size: 20px; color: black">{{ section.name }}</span>
             </v-tab>
@@ -22,7 +27,8 @@
         <div class="pa-2" style="display: grid; grid-template-columns: repeat(auto-fill,64px); grid-gap: 12px;">
           <v-btn v-for="(table) in displayTables"
                  :key="table.tableId"
-                 style="height: 64px"
+                 style="height: 64px;"
+                 :style="table.usageStatus === '1' ? {backgroundColor: '#3a86ff', color: 'white'}: {}"
                  @click="$emit('table-select',table.tableName)"
           >
             {{ table.tableName }}
@@ -60,6 +66,7 @@ export default {
   },
   data: function () {
     return {
+      showAllTable: false,
       tab: null,
       realShow: null,
       sections: [],
@@ -71,14 +78,19 @@ export default {
     displayTables () {
       const active = this.activeStatus ? '1' : '0'
       let res = null
-      if (this.dishTableChange) {
+
+      if (this.showAllTable) {
         res = this.tables.filter(t => t.sectionId !== '6')
-          .filter(t => !this.activeSectionId || t.sectionId === this.activeSectionId)
-          .filter(t => t.tableName !== this.currentTableName)
       } else {
-        res = this.tables.filter(t => t.sectionId !== '6').filter(t => t.usageStatus === active)
-          .filter(t => !this.activeSectionId || t.sectionId === this.activeSectionId)
-          .filter(t => t.tableName !== this.currentTableName)
+        if (this.dishTableChange) {
+          res = this.tables.filter(t => t.sectionId !== '6')
+            .filter(t => !this.activeSectionId || t.sectionId === this.activeSectionId)
+            .filter(t => t.tableName !== this.currentTableName)
+        } else {
+          res = this.tables.filter(t => t.sectionId !== '6').filter(t => t.usageStatus === active)
+            .filter(t => !this.activeSectionId || t.sectionId === this.activeSectionId)
+            .filter(t => t.tableName !== this.currentTableName)
+        }
       }
       return res
     }
@@ -99,6 +111,7 @@ export default {
   },
   methods: {
     activeSection (id) {
+      this.showAllTable = false
       this.activeSectionId = id
     },
     initialMenu: async function () {
