@@ -20,7 +20,7 @@
          style="overflow-y: scroll"
     >
       <template v-for="(order,index) in dishList">
-        <div @click="checkIfOpen(index)" :key="'order'+title+order.identity">
+        <div @click="checkIfOpen(index)" :key="'order'+title+order.identity" style="font-size: larger">
           <dish-card
               :expand="index===expandIndex"
               :color="color"
