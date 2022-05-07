@@ -862,7 +862,7 @@ export default {
     },
     async editNote () {
       const note = await Swal.fire({
-        title: '备注',
+        title: this.$t('备注'),
         input: 'text',
         inputValue: this.cartCurrentDish.note
       })
@@ -954,7 +954,7 @@ export default {
     },
     async findAndOrderDish (code, count = 1) {
       if (count < 1) {
-        this.feedback = '❌不能加入负数菜品'
+        this.feedback = '❌' + this.$t('不能加入负数菜品')
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
         return
       }
@@ -963,7 +963,7 @@ export default {
 
       if (dish) {
         if (parseInt(GlobalConfig.oneStepOrderNumber) !== -1 && count > GlobalConfig.oneStepOrderNumber) {
-          const res = await showConfirmAsyn(this.$t('wirklich?'), '你确定要点' + count + '个菜吗')
+          const res = await showConfirmAsyn(this.$t('wirklich?'), this.$t('你确定要点') + ' ' + count + this.$t('个菜吗'))
           if (!res?.value) {
             showTimedAlert('warning', 'abrechen')
           }
@@ -981,10 +981,10 @@ export default {
           blockReady()
           return
         }
-        this.feedback = '✅' + dish.code + '.' + dish.dishName + '*' + count + '已经加入购物车'
+        this.feedback = '✅' + dish.code + '.' + dish.dishName + '*' + count + this.$t('已经加入购物车')
         this.addDish(dish, parseInt(count))
       } else {
-        this.feedback = '❌没有找到菜号为: ' + code + '的菜品'
+        this.feedback = '❌' + this.$t('没有找到菜号为') + ': ' + code + this.$t('的菜品')
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
       }
 

@@ -81,11 +81,11 @@
                    elevation="0" small
                    @click.stop="confirmReservation(item.id)">
               <v-icon left>mdi-check</v-icon>
-              到店
+              {{ $t('到店') }}
             </v-btn>
             <v-btn elevation="0" small @click.stop="toggleActiveReservation(item)">
               <v-icon left>mdi-open-in-new</v-icon>
-              详情
+              {{ $t('详情') }}
             </v-btn>
           </div>
 

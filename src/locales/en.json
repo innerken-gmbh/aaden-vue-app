@@ -433,5 +433,13 @@
   "上月": "Last month",
   "今年": "This year",
   "日期范围": "Date Range",
-  "验证错误": "Validation error"
+  "验证错误": "Validation error",
+  "没有找到菜号为": "dish number not found for",
+  "的菜品": "",
+  "已经加入购物车": "Added to cart",
+  "你确定要点": "Are you sure you want to order",
+  "个菜吗": "dishes",
+  "不能加入负数菜品": "Can't add negative dishes",
+  "到店": "Arrival",
+  "详情": "Details"
 }

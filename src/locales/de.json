@@ -430,5 +430,13 @@
   "上月": "Letzter Monate",
   "今年": "Dieses Jahr",
   "日期范围": "Datumsbereich",
-  "falschEingaben": "falsch Eingaben"
+  "falschEingaben": "falsch Eingaben",
+  "没有找到菜号为": "Gerichtnummer nicht gefunden",
+  "的菜品": "",
+  "已经加入购物车": "In den Warenkorb gelegt",
+  "你确定要点": "Sind Sie sicher, bestellen",
+  "个菜吗": "Gerichte",
+  "不能加入负数菜品": "Keine negativen Gerichte hinzufügen",
+  "到店": "Ankunft",
+  "详情": "Einzelheiten"
 }
