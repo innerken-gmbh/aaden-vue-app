@@ -3,7 +3,8 @@ import { loadAllReservable } from '@/api/ReservationService'
 import { timeFromNowInMinute } from '@/api/dateUtils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
-const ServantColorArray = ['pink  darken-4', 'green  darken-4', 'blue  darken-4', 'red  darken-4', 'purple  darken-4', 'yellow darken-4', 'orange darken-4']
+const ServantColorArray = ['pink  darken-4', 'green  darken-4', 'blue  darken-4',
+  'red  darken-4', 'purple  darken-4', 'yellow darken-4', 'orange darken-4', 'indigo darken-2']
 
 const TableInfoMetaDataSetting = {
   createTimestamp: {
