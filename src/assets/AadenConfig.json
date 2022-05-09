@@ -32,7 +32,7 @@
   "skipCartConfirm": false,
   "VIPCardCode": "eag",
   "defaultCancelReason": "falsh eingabe",
-  "selectableConsumeTypeId": "1,2,4,6",
+  "selectableConsumeTypeId": "1,2",
   "servantDataOnlyToday": false,
   "useOpenTableConfirm": false,
   "useEnterKeyToPay": false,
