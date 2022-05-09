@@ -36,7 +36,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "Images/关于我们/虚线@2x.png"
   },
   {
-    "revision": "bfb50a3ed91a1b96f50d",
+    "revision": "50c87f421c9cab7dc90c",
     "url": "css/app.cb82bfcf.css"
   },
   {
@@ -68,7 +68,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "css/chunk-2d03c501.f4f2c1ce.css"
   },
   {
-    "revision": "3e15d5df584c6957ad07",
+    "revision": "c2a8affc04b492ea62c3",
     "url": "css/chunk-31a799e8.25c16ecc.css"
   },
   {
@@ -328,12 +328,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "img/vuetify.c0e24719.svg"
   },
   {
-    "revision": "3b8566e8484172a2c3cb44c649889d6a",
+    "revision": "6a0c4783fd79bcb1f28a46f5579dba6a",
     "url": "index.html"
   },
   {
-    "revision": "bfb50a3ed91a1b96f50d",
-    "url": "js/app.75af5833.js"
+    "revision": "50c87f421c9cab7dc90c",
+    "url": "js/app.c32b6765.js"
   },
   {
     "revision": "8d4a07e7afb08cb86a28",
@@ -436,8 +436,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "js/chunk-25745c8c.a66221a2.js"
   },
   {
-    "revision": "b370f764d3512d661986",
-    "url": "js/chunk-2955abdd.19ac8d69.js"
+    "revision": "df408bc8449e10a6b912",
+    "url": "js/chunk-2955abdd.a8f14eec.js"
   },
   {
     "revision": "bea017ba015ea1eeeec6",
@@ -496,8 +496,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "js/chunk-2d222422.39b4cfbe.js"
   },
   {
-    "revision": "3e15d5df584c6957ad07",
-    "url": "js/chunk-31a799e8.5a7b6a2d.js"
+    "revision": "c2a8affc04b492ea62c3",
+    "url": "js/chunk-31a799e8.ee5f213f.js"
   },
   {
     "revision": "b02740c93d9ec073d8ac",
@@ -636,8 +636,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "js/chunk-6ff33668.9f8eb83d.js"
   },
   {
-    "revision": "44354e4b5dc5660a4e3f",
-    "url": "js/chunk-781e0a09.2d4f0e50.js"
+    "revision": "8c7cf1cc2e4a6e2cddca",
+    "url": "js/chunk-781e0a09.f8eb7934.js"
   },
   {
     "revision": "41f751e40426dc3e1e88",
