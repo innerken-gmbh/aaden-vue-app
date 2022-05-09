@@ -188,7 +188,6 @@ async function refreshAllTablesPosition (listOfTable, containerHeight, container
   for (const table of listOfTable) {
     const currentRow = Math.floor(count / colCount)
     const currentCol = count % colCount
-    console.log(currentCol, currentRow)
     await submitTable(table, currentCol * defaultWidth, currentRow * defaultHeight, defaultWidth - 12, defaultHeight - 12, sectionId)
     count++
   }
