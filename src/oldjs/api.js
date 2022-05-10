@@ -4,9 +4,7 @@ import hillo from 'hillo'
 import i18n from '../i18n'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
-export function splitOrder (discountStr = '', id, items,
-  initialUI, print,
-  payMethod, tipIncome, memberCardId) {
+export function splitOrder (discountStr = '', id, items, initialUI, print, payMethod, tipIncome, memberCardId) {
   print = parseInt(print)
   let withTitle = 0
   let printCount = 1
@@ -48,9 +46,7 @@ export function fetchOrder () {
  * @param {number} tipIncome
  * @param {null} memberCardId
  */
-export function checkOut (pw = '', tableId, print = 1,
-  payMethod = 1, tipIncome = 0,
-  memberCardId) {
+export function checkOut (pw = '', tableId, print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
   let withTitle = 0
   let printCount = 1
   if (parseInt(print) === 2) {
@@ -75,33 +71,22 @@ export function checkOut (pw = '', tableId, print = 1,
   })
 }
 
-export async function deleteDishes (id, items, initialUI) {
-  optionalAuthorize(async function () {
-    if (GlobalConfig.useDeleteDishReason) {
-      const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopReturnDishInfo'),
-        'text',
-        'Complex.php?op=deleteDishes', 'reason',
-        {
-          tableId: id,
-          dishes: JSON.stringify(items)
-        }, 'POST',
-        true, null, GlobalConfig.defaultCancelReason
-      )
-      if (res) {
-        GlobalConfig.updateSettings('defaultCancelReason', res.originalData)
-        loadingComplete()
-        initialUI()
-      }
-    } else {
-      await hillo.post('Complex.php?op=deleteDishes', {
-        tableId: id,
-        dishes: JSON.stringify(items),
-        reason: i18n.t('falschEingaben')
-      })
+export async function deleteDishes (id, items) {
+  await optionalAuthorizeAsync('boss', !GlobalConfig.returnDishWithoutPassword)
+  if (GlobalConfig.useDeleteDishReason) {
+    const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopReturnDishInfo'), 'text', 'Complex.php?op=deleteDishes', 'reason', {
+      tableId: id, dishes: JSON.stringify(items)
+    }, 'POST', true, null, GlobalConfig.defaultCancelReason)
+    if (res) {
+      GlobalConfig.updateSettings('defaultCancelReason', res.originalData)
       loadingComplete()
-      initialUI()
     }
-  }, 'boss', !GlobalConfig.returnDishWithoutPassword)
+  } else {
+    await hillo.post('Complex.php?op=deleteDishes', {
+      tableId: id, dishes: JSON.stringify(items), reason: i18n.t('falschEingaben')
+    })
+    loadingComplete()
+  }
 }
 
 export async function getTableListWithCells () {
@@ -127,31 +112,8 @@ export async function setTableLocation (table) {
   return (await hillo.post('Tables.php?op=setTableLocation', table))
 }
 
-export async function optionalAuthorizeAsync (authType = '', shouldAuthorize = true) {
-  return shouldAuthorize ? await popAuthorize(authType) : GlobalConfig.defaultPassword
-}
-
-export function optionalAuthorize (callback, authType = '', shouldAuthorize = true) {
-  if (shouldAuthorize) {
-    popAuthorize(authType, () => callback())
-  } else {
-    callback()
-  }
-}
-
-export function dishesSetDiscount (orderId, items, initialUI) {
-  optionalAuthorize(async () => {
-    const res = await fastSweetAlertRequest(i18n.t('请输入折扣'),
-      'text',
-      'Dishes.php?op=setDiscountToDishes', 'discountStr', {
-        orderId: orderId,
-        dishes: JSON.stringify(items)
-      }, 'POST')
-    if (res) {
-      loadingComplete()
-      initialUI()
-    }
-  }, '', !GlobalConfig.discountWithoutPassword)
+export async function optionalAuthorizeAsync (authType = '', shouldAuthorize = true, defaultPassword = null, force = false, tableId = null) {
+  return shouldAuthorize ? await popAuthorize(authType, force, tableId) : (defaultPassword ?? GlobalConfig.defaultPassword)
 }
 
 export function printZwichenBon (tableId, items) {

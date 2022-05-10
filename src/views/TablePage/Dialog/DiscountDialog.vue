@@ -25,8 +25,9 @@
 import hillo from 'hillo'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
-import { loadingComplete, popAuthorize } from '@/oldjs/common'
+import { loadingComplete } from '@/oldjs/common'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
+import { optionalAuthorizeAsync } from '@/oldjs/api'
 
 const keyboardLayout =
     [
@@ -139,17 +140,13 @@ export default {
         IKUtils.showError('折扣不能大于原价')
         return
       }
-      if (GlobalConfig.bigDiscountRatio > 0 &&
-          ratio >= GlobalConfig.bigDiscountRatio) {
-        this.realShow = false
-        popAuthorize('boss', () => {
-          realSubmitDiscount()
-        }, true, () => {
-          this.realShow = true
-        })
-      } else {
-        realSubmitDiscount()
-      }
+      await optionalAuthorizeAsync('boss',
+        GlobalConfig.bigDiscountRatio > 0 &&
+          ratio >= GlobalConfig.bigDiscountRatio,
+        '',
+        true, this.id)
+
+      await realSubmitDiscount()
     },
     async sendDiscount (discountStr) {
       if (this.useDishesDiscount) {

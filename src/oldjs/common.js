@@ -7,6 +7,7 @@ import store from './../store'
 import { clearAllTimer } from '@/oldjs/Timer'
 import dayjs from 'dayjs'
 import { capitalize } from 'lodash-es/string'
+import { optionalAuthorizeAsync } from '@/oldjs/api'
 
 const Config = GlobalConfig
 
@@ -43,8 +44,7 @@ export function tryToReport () {
 export async function getConsumeTypeList () {
   if (consumeTypeList.length === 0) {
     const res = await hillo.get('Complex.php', {
-      op: 'showAllConsumeTypeInfo',
-      chaos: timeStampNow()
+      op: 'showAllConsumeTypeInfo', chaos: timeStampNow()
     })
     res.content.forEach(ct => {
       ct.name = getCurrentLangObj(ct.langs).name
@@ -72,18 +72,14 @@ export function findConsumeTypeById (id) {
 
 export async function resetTableStatus (tableId) {
   return await hillo.get('Complex.php', {
-    op: 'resetTableCallStatus',
-    tableId: tableId,
-    chaos: timeStampNow()
+    op: 'resetTableCallStatus', tableId: tableId, chaos: timeStampNow()
   })
 }
 
-export async function jumpToTable (tableId, tableName) {
-  await resetTableStatus(tableId)
+export function jumpToTable (tableId, tableName) {
+  resetTableStatus(tableId)
   const params = Object.assign({
-    id: tableId,
-    tableId,
-    tableName
+    id: tableId, tableId, tableName
   })
   jumpTo('table', params)
 }
@@ -107,25 +103,14 @@ export function setGlobalTableId (id) {
 }
 
 // return password
-export async function popAuthorize (type = '', successCallback = null, force = false, failedCallback = null, tableId = null) {
-  const ok = (password) => {
-    if (successCallback) {
-      successCallback(password)
-    }
-  }
+export async function popAuthorize (type = '', force = false, tableId = null) {
   const typeIsBoss = type === 'boss'
   if (!force && ((typeIsBoss && !GlobalConfig.UseBossPassword) || (!typeIsBoss && !GlobalConfig.usePassword))) {
-    ok(GlobalConfig.defaultPassword)
     return GlobalConfig.defaultPassword
   }
   return new Promise(resolve => {
     store.commit('START_AUTHORIZE', {
-      typeIsBoss,
-      successCallback,
-      force,
-      failedCallback,
-      tableId,
-      resolve
+      typeIsBoss, force, tableId, resolve
     })
   })
 }
@@ -133,14 +118,12 @@ export async function popAuthorize (type = '', successCallback = null, force = f
 export async function showTableSelector (filter = null, requiredTableKey = 'tableName') {
   return new Promise(resolve => {
     store.commit('START_TABLE_PICK', {
-      tableFilter: filter,
-      resolve,
-      requiredTableKey
+      tableFilter: filter, resolve, requiredTableKey
     })
   })
 }
 
-export async function openOrEnterTable (number, password, onlyOpenTable = false) {
+export async function openOrEnterTable (number, password) {
   try {
     const table = (await hillo.silentGet('Tables.php', { name: number })).content[0]
     if (table.usageStatus === '0') {
@@ -154,29 +137,17 @@ export async function openOrEnterTable (number, password, onlyOpenTable = false)
           return
         }
       }
-      if (password) {
-        shouldOpenTable(table.id, password)
-      } else {
-        popAuthorize('', (pw) => shouldOpenTable(table.id, pw), false, false, table.id)
-      }
-    } else if (table.usageStatus === '1' && !onlyOpenTable) {
-      const enterTable = () => {
-        jumpToTable(table.id, table.name)
-      }
-      if (GlobalConfig.useEnterTablePermissionCheck) {
-        popAuthorize('', () => {
-          enterTable()
-        }, false, false, table.id)
-      } else {
-        enterTable()
-      }
+      const pw = await optionalAuthorizeAsync('', password, password, false, table.id)
+      await informOpenTable(pw, table.id)
+    } else if (table.usageStatus === '1') {
+      await optionalAuthorizeAsync('', GlobalConfig.useEnterTablePermissionCheck, null, false, table.id)
+      jumpToTable(table.id, table.name)
     }
   } catch (e) {
     if (number.includes('.')) {
-      popAuthorize('', async (pw) => {
-        const res = (await forceOpenTable(number, pw)).content
-        jumpToTable('' + res.tableId, res.tableName)
-      }, false)
+      const pw = await popAuthorize('')
+      const res = (await forceOpenTable(number, pw)).content
+      jumpToTable('' + res.tableId, res.tableName)
     } else {
       logErrorAndPop(e)
     }
@@ -185,8 +156,7 @@ export async function openOrEnterTable (number, password, onlyOpenTable = false)
 
 export async function forceOpenTable (tableName, pw) {
   return await hillo.post('Complex.php?op=forceOpenTable', {
-    tableName,
-    pw
+    tableName, pw
   })
 }
 
@@ -196,22 +166,10 @@ export async function getFalsePrinterList () {
   })).content
 }
 
-async function shouldOpenTable (openingTable, pw) {
-  if (!Config.useOpenTablePrompt) {
-    openTableCallback(openingTable, pw, 1, 0, 1)
-    return
-  }
-  const result = await openTablePrompt()
-  openTableCallback(openingTable, pw, ...result)
-}
-
-async function informOpenTable (password = '', number, personCount, childCount) {
+async function informOpenTable (password = '', tableId, personCount = 1, childCount = 0) {
   try {
     const res = await hillo.post('Complex.php?op=openTable', {
-      tableId: number,
-      pw: password,
-      personCount: personCount,
-      childCount: childCount
+      tableId: tableId, pw: password, personCount: personCount, childCount: childCount
     })
     jumpToTable(res.content.tableId, res.content.tableName)
   } catch (e) {
@@ -220,92 +178,13 @@ async function informOpenTable (password = '', number, personCount, childCount) 
   }
 }
 
-export async function openTablePrompt () {
-  const res = await Swal.mixin({
-    confirmButtonText: i18n.t('nextStep') + ' &rarr;',
-    showCancelButton: true,
-    progressSteps: ['1', '2', '3']
-  }).queue([{
-    title: i18n.t('popLabelGuestCount'),
-    input: 'text'
-  }, {
-    title: i18n.t('popLabelChildCount'),
-    input: 'text'
-  }, {
-    title: i18n.t('popTypeLabel'),
-    input: 'select',
-    inputOptions: {
-      ...consumeTypeList.reduce((cry, i) => {
-        cry[i.id] = i.name
-        return cry
-      }, {})
-    }
-  }])
-  if (res.value) {
-    if ([4, 6].includes(parseInt(res.value[2]))) {
-      const adultDishId = await Swal.fire({
-        title: i18n.t('key'),
-        input: 'select',
-        inputOptions: {
-          ...Dishes
-            .filter(i => i.dishesCategoryTypeId === '8')
-            .reduce((cry, i) => {
-              cry[i.dishId] = i.dishName
-              return cry
-            }, {})
-        }
-      })
-      res.value.push(adultDishId.value)
-    }
-    return res.value
-  }
-}
-
-export function parseIntAndSetDefault (val, de = 0) {
-  let number = parseInt(val)
-  if (isNaN(number)) {
-    number = de
-  }
-  return number
-}
-
-export function openTableCallback (openingTable, pw = null, guestCount, childCount, consumeType, adultDishId) {
-  [guestCount, childCount] = [guestCount, childCount].map(parseIntAndSetDefault)
-  pw = pw ?? Config.defaultPassword
-  const openTableType = parseInt(consumeType)
-  switch (openTableType) {
-    case 1:
-      informOpenTable(pw, openingTable, guestCount, childCount)// todo 添加开桌类型
-      break
-    case 2:
-      requestOutTable(pw)
-      break
-    case 4:
-    case 6:
-      informOpenJpTable(pw, openingTable, guestCount, childCount, adultDishId)
-      break
-    default:
-      logErrorAndPop(i18n.t('选择了错误的开桌类型'))
-  }
-}
-
-export function informOpenJpTable (password, number, personCount, childCount, adultDishId) {
-  hillo.post('Complex.php?op=openJapanBuffetTable', {
-    tableId: number,
-    pw: password,
-    adultCount: personCount,
-    childCount: childCount,
-    adultDishId: adultDishId
-  }).then(res => jumpToTable(res.content.tableId, res.content.tableName))
-    .catch(err => {
-      logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + err.info)
-    })
+export function openTableCallback (tableId, pw, guestCount = 1, childCount = 0) {
+  informOpenTable(pw, tableId, guestCount, childCount)
 }
 
 export async function requestOutTable (pw = null) {
   const res = await hillo.post('Complex.php?op=openTakeawayTable', {
-    pw: pw ?? Config.defaultPassword,
-    personCount: 0
+    pw: pw ?? Config.defaultPassword, personCount: 0
   })
   if (goodRequest(res)) {
     jumpToTable(res.content.tableId, res.content.tableName)
@@ -346,8 +225,7 @@ export function toast (str = 'Ok', callback, type) {
     }
   })
   Toast.fire({
-    title: str,
-    icon: type
+    title: str, icon: type
   })
 }
 
@@ -450,18 +328,14 @@ export async function fastSweetAlertRequest (title, input, url, dataName, dataOb
 
 export function toastError (str) {
   Swal.fire({
-    icon: 'error',
-    title: str,
-    showConfirmButton: true
+    icon: 'error', title: str, showConfirmButton: true
 
   })
 }
 
 export function toManage () {
   oldJumpTo('admin/index.html', {
-    DeviceId: GlobalConfig.DeviceId,
-    lang: GlobalConfig.lang,
-    Base: GlobalConfig.Base
+    DeviceId: GlobalConfig.DeviceId, lang: GlobalConfig.lang, Base: GlobalConfig.Base
   })
 }
 
@@ -491,8 +365,7 @@ export function remove (arr, index) {
 export function jumpTo (url, params) {
   clearAllTimer()
   router.replace({
-    name: url,
-    params
+    name: url, params
   })
 }
 
