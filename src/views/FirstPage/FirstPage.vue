@@ -586,7 +586,7 @@ export default {
 
       currentView: parseInt(Remember.currentView),
 
-      showOtherOrder: GlobalConfig.showOtherOrder,
+      showOtherOrder: Remember.showOtherOrder,
       tableInfoDisplayOrder: GlobalConfig.getTableInfoKeys(),
       loading: false
 
@@ -603,7 +603,7 @@ export default {
     },
 
     showOtherOrder: function (val) {
-      GlobalConfig.updateSettings('showOtherOrder', val)
+      Remember.showOtherOrder = val
       this.refreshTables()
     },
     refresh: function () {

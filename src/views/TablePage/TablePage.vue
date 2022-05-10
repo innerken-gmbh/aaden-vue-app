@@ -1105,12 +1105,6 @@ export default {
         dish.overrideConsumeTypeId = this.realConsumeTypeId
         dish.forceFormat = true
       }
-      if (!GlobalConfig.useCart) {
-        const tmp = IKUtils.deepCopy(dish)
-        tmp.count = 1
-        await this.orderDish([tmp])
-        return
-      }
       setTimeout(() => {
         this.cartListModel.add(dish, count)
       }, 1)

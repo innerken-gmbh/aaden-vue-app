@@ -176,6 +176,7 @@ import { cancelReservation, moveReservation } from '@/api/ReservationService'
 import uniqBy from 'lodash-es/uniqBy'
 import IKUtils from 'innerken-js-utils'
 import TableCard from '@/views/FirstPage/Table/Table/Item/TableCard'
+import { Remember } from '@/api/remember'
 
 async function refreshAllTablesPosition (listOfTable, containerHeight, containerWidth, sectionId) {
   IKUtils.showLoading(true)
@@ -281,7 +282,7 @@ export default {
       })
     },
     scale (val) {
-      GlobalConfig.updateSettings('tableBluePrintScale', val)
+      Remember.tableBluePrintScale = val
     },
     currentSectionIndex (val) {
       this.$emit('need-refresh')
@@ -333,7 +334,7 @@ export default {
       height: 0,
       x: 0,
       y: 0,
-      scale: GlobalConfig.tableBluePrintScale,
+      scale: parseFloat(Remember.tableBluePrintScale),
       reservationDialog: null,
       activeTable: null,
       currentSectionIndex: 0,
