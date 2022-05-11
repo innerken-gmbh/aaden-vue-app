@@ -564,7 +564,6 @@ export default {
   data: function () {
     return {
       showKeyboard: false,
-
       keyboardLayout: keyboardLayout,
       NeededKeys,
       restaurantInfo: null,
@@ -582,9 +581,7 @@ export default {
       Config: GlobalConfig,
       falsePrinterList: [],
       tableList: [],
-
       currentView: parseInt(Remember.currentView),
-
       showOtherOrder: Remember.showOtherOrder,
       loading: false
 
