@@ -506,7 +506,6 @@ import GlobalConfig, {
   forceChangeLanguage,
   hardReload,
   NeededKeys,
-  refreshGetter,
   useCurrentConfig
 } from '../../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
@@ -587,7 +586,6 @@ export default {
       currentView: parseInt(Remember.currentView),
 
       showOtherOrder: Remember.showOtherOrder,
-      tableInfoDisplayOrder: GlobalConfig.getTableInfoKeys(),
       loading: false
 
     }
@@ -595,11 +593,6 @@ export default {
   watch: {
     currentView (val) {
       Remember.currentView = val
-    },
-    tableInfoDisplayOrder: function (val) {
-      GlobalConfig.updateSettings('tableInfoDisplayOrder', val)
-      refreshGetter()
-      this.refreshTables()
     },
 
     showOtherOrder: function (val) {

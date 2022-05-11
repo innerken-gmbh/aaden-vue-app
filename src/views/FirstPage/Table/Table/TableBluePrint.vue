@@ -40,32 +40,40 @@
       </template>
     </div>
     <!--    工具栏-->
-    <div style="position: absolute;left:24px;bottom: 36px" class="d-flex">
-      <v-btn-toggle dense class="mr-2">
-        <v-btn @click="scale-=0.05">
-          <v-icon>mdi-minus</v-icon>
-        </v-btn>
-        <v-btn @click="editing=!editing">
-          <template v-if="!editing">
-            <v-icon>mdi-pencil-box-multiple</v-icon>
-          </template>
-          <template v-else>
-            <v-icon>mdi-content-save</v-icon>
-          </template>
-
-        </v-btn>
-        <v-btn @click="scale+=0.05">
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-        <v-btn v-if="editing" @click="refreshTables">
-          <v-icon left>mdi-refresh</v-icon>
-          {{ $t('重置所有桌子') }}
-        </v-btn>
-      </v-btn-toggle>
-      <div v-if="editing" class="d-flex align-center" style="width: 96px">0.3x
-        <v-slider hide-details :min="0.3" :step="0.01" :max="1" v-model="scale"></v-slider>
-        1x
+    <div style="position: absolute;left:24px;bottom: 36px">
+      <div v-if="editing">
+        <h2>{{ $t('cardDisplayInfoEdit') }}</h2>
+        <v-select :items="allKeys" return-object v-model="key1"></v-select>
+        <v-select :items="allKeys" return-object v-model="key2"></v-select>
       </div>
+      <div class="d-flex">
+        <v-btn-toggle dense class="mr-2">
+          <v-btn @click="scale-=0.05">
+            <v-icon>mdi-minus</v-icon>
+          </v-btn>
+          <v-btn @click="editing=!editing">
+            <template v-if="!editing">
+              <v-icon>mdi-pencil-box-multiple</v-icon>
+            </template>
+            <template v-else>
+              <v-icon>mdi-content-save</v-icon>
+            </template>
+
+          </v-btn>
+          <v-btn @click="scale+=0.05">
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+          <v-btn v-if="editing" @click="refreshTables">
+            <v-icon left>mdi-refresh</v-icon>
+            {{ $t('重置所有桌子') }}
+          </v-btn>
+        </v-btn-toggle>
+        <div v-if="editing" class="d-flex align-center" style="width: 96px">0.3x
+          <v-slider hide-details :min="0.3" :step="0.01" :max="1" v-model="scale"></v-slider>
+          1x
+        </div>
+      </div>
+
     </div>
     <v-card
         color="white"
@@ -262,6 +270,12 @@ export default {
     }
   },
   watch: {
+    key1 (val) {
+      Remember.tableDisplayKeys = [val, Remember.tableDisplayKeys[1]]
+    },
+    key2 (val) {
+      Remember.tableDisplayKeys = [Remember.tableDisplayKeys[1], val]
+    },
     async outSideTableList (val) {
       this.tableList = val.map(t => {
         const cell = t.cells.find(c => c.sectionId === this.currentSection.id) ?? t.cells?.[0] ?? {
@@ -338,7 +352,10 @@ export default {
       reservationDialog: null,
       activeTable: null,
       currentSectionIndex: 0,
-      sectionList: []
+      sectionList: [],
+      allKeys: GlobalConfig.tableInfoKeys,
+      key1: Remember.tableDisplayKeys[0],
+      key2: Remember.tableDisplayKeys[1]
     }
   },
   async mounted () {
@@ -347,6 +364,7 @@ export default {
       this.width = this.$refs.blueprintContainer.clientWidth - 50
     })
     await this.refreshSectionList()
+    console.log(Remember.tableDisplayKeys)
   }
 }
 </script>
