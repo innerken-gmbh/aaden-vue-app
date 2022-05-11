@@ -298,7 +298,7 @@ export default {
     scale (val) {
       Remember.tableBluePrintScale = val
     },
-    currentSectionIndex (val) {
+    currentSectionIndex () {
       this.$emit('need-refresh')
     }
   },
@@ -324,7 +324,7 @@ export default {
       this.$emit('need-refresh')
     },
     debounce,
-    onResize: function (table, x, y, width, height, sectionId) {
+    onResize: function (table, x, y, width, height) {
       this.shouldUpdateSize(table, x, y, width, height, this.currentSection.id)
     },
     onDrag: function (table, x, y) {
