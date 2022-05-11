@@ -88,6 +88,7 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { defaultTable } from '@/api/restaurantInfoService'
 import { findConsumeTypeById } from '@/oldjs/common'
 import TableInfoDisplay from '@/views/FirstPage/Table/Table/Widget/TableInfoDisplay'
+import { Remember } from '@/api/remember'
 
 export default {
   name: 'TableCard',
@@ -110,7 +111,7 @@ export default {
       return getColorLightness(color) < 128
     },
     getKeys () {
-      return GlobalConfig.getTableInfoKeys()
+      return Remember.tableDisplayKeys
     }
   },
   computed: {

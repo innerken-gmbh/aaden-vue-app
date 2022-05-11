@@ -665,7 +665,7 @@ import {
 import { getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import Swal from 'sweetalert2'
 import hillo from 'hillo'
-import { checkOut, deleteDishes, getColorLightness, optionalAuthorize, printZwichenBon } from '@/oldjs/api'
+import { checkOut, deleteDishes, getColorLightness, optionalAuthorizeAsync, printZwichenBon } from '@/oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
 
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
@@ -945,12 +945,10 @@ export default {
       } catch (e) {
       }
     },
-    discountShow () {
-      optionalAuthorize(() => {
-        this.discountModelShow = true
-        // HINT： 苏哥，你做了一边以后，另一边不要忘啊！！
-        this.useDishesDiscount = false
-      }, '', !GlobalConfig.discountWithoutPassword)
+    async discountShow () {
+      await optionalAuthorizeAsync('', !GlobalConfig.discountWithoutPassword)
+      this.discountModelShow = true
+      this.useDishesDiscount = false
     },
     async findAndOrderDish (code, count = 1) {
       if (count < 1) {
@@ -1060,15 +1058,15 @@ export default {
         this.removeFromSplitOrder(0)
       }
     },
-    deleteDishes: function () {
-      deleteDishes(this.id, this.splitOrderListModel.list, this.initialUI)
+    deleteDishes: async function () {
+      await deleteDishes(this.id, this.splitOrderListModel.list)
+      await this.initialUI()
     },
 
-    dishesSetDiscount: function () {
-      optionalAuthorize(() => {
-        this.discountModelShow = true
-        this.useDishesDiscount = true
-      }, '', !GlobalConfig.discountWithoutPassword)
+    dishesSetDiscount: async function () {
+      await optionalAuthorizeAsync('', !GlobalConfig.discountWithoutPassword)
+      this.discountModelShow = true
+      this.useDishesDiscount = true
     },
 
     printZwichenBon: function () {
@@ -1106,12 +1104,6 @@ export default {
       if (this.realConsumeTypeId !== this.consumeTypeId) {
         dish.overrideConsumeTypeId = this.realConsumeTypeId
         dish.forceFormat = true
-      }
-      if (!GlobalConfig.useCart) {
-        const tmp = IKUtils.deepCopy(dish)
-        tmp.count = 1
-        await this.orderDish([tmp])
-        return
       }
       setTimeout(() => {
         this.cartListModel.add(dish, count)
@@ -1205,25 +1197,16 @@ export default {
       this.initialUI()
     },
     needSplitOrder: async function () {
-      const realEnd = async (pw = '') => {
-        this.password = pw
-        this.checkoutShow = true
-        checkoutFactory.clear()
-        checkoutFactory.loadTTDishList(this.splitOrderListModel.list)
-        this.checkOutModel = {
-          total: checkoutFactory.total(),
-          count: checkoutFactory.count(),
-          list: checkoutFactory.list
-        }
-        this.checkOutType = 'splitOrder'
+      this.password = await optionalAuthorizeAsync('', GlobalConfig.checkOutUsePassword, '', true, this.id)
+      this.checkoutShow = true
+      checkoutFactory.clear()
+      checkoutFactory.loadTTDishList(this.splitOrderListModel.list)
+      this.checkOutModel = {
+        total: checkoutFactory.total(),
+        count: checkoutFactory.count(),
+        list: checkoutFactory.list
       }
-      if (GlobalConfig.checkOutUsePassword) {
-        popAuthorize('', async (pw) => {
-          await realEnd(pw)
-        }, true, false, this.id)
-      } else {
-        await realEnd()
-      }
+      this.checkOutType = 'splitOrder'
     },
     anyMenuOpen () {
       return this.modificationShow || this.checkoutShow ||
@@ -1379,13 +1362,10 @@ export default {
               setTimeout(async () => {
                 const res = await showConfirmAsyn(this.$t('Zahlung ohne tip mit bar?'))
                 if (res.value) {
-                  if (GlobalConfig.checkOutUsePassword) {
-                    popAuthorize('', (pw) => {
-                      this.checkOut(pw)
-                    }, true, false, this.id)
-                  } else {
-                    this.checkOut()
-                  }
+                  const pw = await optionalAuthorizeAsync('',
+                    GlobalConfig.checkOutUsePassword,
+                    null, true, this.id)
+                  this.checkOut(pw)
                 }
                 blockReady()
               }, 10)
@@ -1438,13 +1418,12 @@ export default {
         this.password = pw
       }
       setTimeout(async () => {
-        if (GlobalConfig.checkOutUsePassword) {
-          popAuthorize('', async (pw) => {
-            await realCheckOut(pw)
-          }, true, false, this.id)
-        } else {
-          await realCheckOut()
-        }
+        const pw = await optionalAuthorizeAsync('',
+          GlobalConfig.checkOutUsePassword,
+          '', true,
+          this.id)
+
+        await realCheckOut(pw)
       }, 20)
     },
     async realInitial () {

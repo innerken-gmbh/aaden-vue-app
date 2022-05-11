@@ -3,11 +3,7 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-let successCallbackFunction = () => {
-}
 let resolve = () => {
-}
-let failedCallback = () => {
 }
 
 let tablePickResolve = () => {
@@ -50,14 +46,10 @@ export default new Vuex.Store({
       state.tableId = args.tableId
       state.isAuthorizeTypeSuper = args.typeIsBoss
       state.pinDialogShow = true
-      successCallbackFunction = args.successCallback
+
       resolve = args.resolve
-      failedCallback = args.failedCallback
     },
     AUTHORIZE_OK (state, payload) {
-      if (successCallbackFunction) {
-        successCallbackFunction(payload)
-      }
       if (resolve) {
         resolve(payload)
       }
@@ -65,10 +57,6 @@ export default new Vuex.Store({
       state.pinDialogShow = false
     },
     HIDE_AUTHORIZE_DIALOG (state) {
-      if (failedCallback) {
-        failedCallback()
-      }
-
       state.pinDialogShow = false
     }
 

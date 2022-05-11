@@ -5,6 +5,7 @@ import { deviceType } from '../assets/FixedConfig.json'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
 import { resetTableStatus } from '@/oldjs/common'
+import { Remember } from '@/api/remember'
 
 export async function previewZBon (startDate, endDate) {
   return (await hillo.get('ZBon.php?op=previewBySpan', {
@@ -190,7 +191,7 @@ export async function changeOrderToBuffet (orderId, buffetDishes, buffetSetting)
 
 export async function reportDeviceInfo () {
   return (await hillo.post('Route.php?op=deviceLog', {
-    MACAddress: GlobalConfig.uuId,
+    MACAddress: Remember.uuid,
     deviceType: deviceType,
     version: version,
     note: ''

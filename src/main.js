@@ -17,6 +17,7 @@ import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import IKUtils from 'innerken-js-utils'
 import dayjs from 'dayjs'
 import { onlyTimeFormat } from '@/api/dateUtils'
+import { Remember } from '@/api/remember'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
@@ -86,8 +87,8 @@ addToQueue('tablePool', async () => {
 
 async function initial () {
   await loadConfig()
-  if (!GlobalConfig.uuId) {
-    GlobalConfig.updateSettings('uuId', uuidv4())
+  if (!Remember.uuid) {
+    Remember.uuid = uuidv4()
   }
 
   i18n.locale = GlobalConfig.lang.toLowerCase()

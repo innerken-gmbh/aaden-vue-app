@@ -71,7 +71,7 @@ export default {
           icon: 'mdi-cash',
           text: '销售额',
           beforeEnter: async () => {
-            const pw = await popAuthorize('', null, true)
+            const pw = await popAuthorize('', true)
             const servant = this.findServant(pw)
             return {
               isBoss: parseInt(servant.permission) === 1,
@@ -109,8 +109,7 @@ export default {
       if (this.servantList.length > 0) {
         return this.servantList.find(s => s.password === pw)
       }
-    },
-    popAuthorize
+    }
   },
   async mounted () {
     this.servantList = await getServantList()

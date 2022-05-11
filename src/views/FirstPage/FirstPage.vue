@@ -441,7 +441,6 @@
               class="ma-2 pt-1"
               hide-details
               style="font-size: 24px"
-              ref="ins"
               v-model="buffer"
               :autofocus="Config.getFocus"
           />
@@ -507,7 +506,6 @@ import GlobalConfig, {
   forceChangeLanguage,
   hardReload,
   NeededKeys,
-  refreshGetter,
   useCurrentConfig
 } from '../../oldjs/LocalGlobalSettings'
 import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
@@ -587,8 +585,7 @@ export default {
 
       currentView: parseInt(Remember.currentView),
 
-      showOtherOrder: GlobalConfig.showOtherOrder,
-      tableInfoDisplayOrder: GlobalConfig.getTableInfoKeys(),
+      showOtherOrder: Remember.showOtherOrder,
       loading: false
 
     }
@@ -597,14 +594,9 @@ export default {
     currentView (val) {
       Remember.currentView = val
     },
-    tableInfoDisplayOrder: function (val) {
-      GlobalConfig.updateSettings('tableInfoDisplayOrder', val)
-      refreshGetter()
-      this.refreshTables()
-    },
 
     showOtherOrder: function (val) {
-      GlobalConfig.updateSettings('showOtherOrder', val)
+      Remember.showOtherOrder = val
       this.refreshTables()
     },
     refresh: function () {
@@ -782,24 +774,15 @@ export default {
       }
       if (t !== '') {
         if (t.toLowerCase() === 'w') {
-          popAuthorize('', requestOutTable)
+          const pw = await popAuthorize('')
+          await requestOutTable(pw)
         } else {
-          this.openOrEnterTable(t)
+          await this.openOrEnterTable(t)
         }
       }
     },
     anyMenuOpen () {
       return Swal.isVisible() || this.menu || this.systemDialogShow
-    },
-    autoGetFocus () {
-      if (this.anyMenuOpen()) {
-        return
-      }
-      if (this.$refs.ins !== document.activeElement) {
-        if (this.$refs.ins?.focus) {
-          this.$refs.ins.focus()
-        }
-      }
     },
 
     async loadRestaurantInfo () {
@@ -818,9 +801,6 @@ export default {
         setInterval(this.refreshTables, 5000),
         setInterval(this.refreshPrinterList, 20000)
       ]
-      if (GlobalConfig.getFocus) {
-        list.push(setInterval(this.autoGetFocus, 1000))
-      }
       list.map(addToTimerList)
     }
   },
