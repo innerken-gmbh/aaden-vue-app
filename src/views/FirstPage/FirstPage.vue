@@ -101,7 +101,7 @@
               <v-list dense>
                 <template v-for="key in NeededKeys">
                   <v-list-item dense :key="'config'+key">
-                    <v-list-item-title>{{ key }}</v-list-item-title>
+                    <v-list-item-title>{{ $t(key) }}</v-list-item-title>
                     <template v-if="typeof Config[key]==='boolean'">
                       <v-list-item-action>
                         <v-switch v-model="Config[key]" color="purple"></v-switch>
