@@ -642,7 +642,7 @@ export default {
     },
     async acceptOrder (reason = 'ok', id) {
       await acceptOrder(reason, id)
-      this.refreshTables()
+      await this.refreshTables()
     },
 
     togoClick () {
