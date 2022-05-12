@@ -1,22 +1,23 @@
 <template>
   <div>
-    <v-simple-table height="calc(100vh - 144px)" fixed-header>
+    <v-simple-table height="calc(100vh - 64px)" fixed-header class="transparent">
       <template v-slot:default>
-        <thead>
+        <thead class="transparent">
         <tr>
-          <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
+          <th class="text-left">{{ $t('Tisch Nr.') }}</th>
+          <th>{{ $t('R. Nr.') }}</th>
           <th class="text-left">{{ $t('time') }}</th>
           <th class="text-left">{{ $t('Summe') }}</th>
-          <th class="text-left">{{ $t('operation') }}</th>
-          <th class="text-left">{{ $t('订单详情') }}</th>
+          <th class="text-left" style="width: 300px">{{ $t('operation') }}</th>
         </tr>
         </thead>
         <tbody>
         <template v-for="order in orders">
           <tr v-bind:key="order.orderId">
             <td>
-              <span class="font-weight-bold">{{ order.tableName }}</span> / {{ order.orderId }}
+              <span class="font-weight-bold">{{ order.tableName }}</span>
             </td>
+            <td>{{ order.orderId }}</td>
             <td>
               {{ order.updatedAt }}
             </td>
@@ -26,9 +27,12 @@
               {{ '-' + order.discountStr.replace('p', '%') }}</b>
             </td>
             <td>
-
-              <v-btn :disabled="order.isReturned==='1'" elevation="0" @click="reprintOrder(order.orderId)" small
-                     color="primary">
+              <v-btn
+                text
+                :disabled="order.isReturned==='1'"
+                @click="reprintOrder(order.orderId)"
+                small
+                color="primary">
                 <v-icon left>
                   mdi-printer-settings
                 </v-icon>
@@ -36,8 +40,8 @@
               </v-btn>
               <template v-if="showOperation">
                 <v-btn small
+                       text
                        :disabled="order.isReturned==='1'"
-                       elevation="0"
                        color="warning"
                        class="ml-2"
                        @click="startChangePaymentMethodForOrder(order)">
@@ -45,14 +49,12 @@
                   {{ $t('更换') }}
                 </v-btn>
               </template>
-            </td>
-            <td>
               <v-btn small
-                     elevation="0"
-                     class="mx-2"
-                     icon
+                     class="ml-2"
+                     text
                      @click="checkOrderDetail(order)">
-                <v-icon>mdi-arrow-right-drop-circle-outline</v-icon>
+                <v-icon left>mdi-arrow-right-drop-circle-outline</v-icon>
+                {{ $t('详情') }}
               </v-btn>
             </td>
           </tr>

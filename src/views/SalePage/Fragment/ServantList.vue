@@ -2,9 +2,9 @@
   <div style="max-height: calc(100vh - 112px); overflow-y: scroll">
     <div class="d-flex">
       <div
-        style="min-width: calc(100% - 272px)"
-        class="mt-2 mx-4">
-        <div style="display: grid; grid-template-columns: repeat(3,1fr); grid-gap: 20px; grid-auto-rows: 305px;min-height: calc(90vh - 120px)">
+        class="mt-2 mx-4 flex-grow-1">
+        <div
+          style="display: grid; grid-template-columns: repeat(3,1fr); grid-gap: 20px; grid-auto-rows: 305px;min-height: calc(90vh - 120px)">
           <div
             v-for="s in displayServantInfo"
             :key="s.servant.id"
@@ -92,20 +92,23 @@
           </div>
         </div>
       </div>
-      <v-navigation-drawer permanent right width="272">
-        <v-card elevation="0" class="pl-6">
-          <v-btn right x-large dark class="orange mb-6 mt-2" block @click="allZBon(...singleZBonDate)">{{ $t('打印全部跑堂日结单') }}</v-btn>
-        </v-card>
-      </v-navigation-drawer>
+
+      <v-card elevation="0" class="pl-6">
+        <v-btn right x-large dark class="orange mb-6 mt-2" block @click="allZBon(...singleZBonDate)">
+          {{ $t('打印全部跑堂日结单') }}
+        </v-btn>
+      </v-card>
     </div>
   </div>
 </template>
 
 <script>
 import {
+  getBillListForServant,
+  loadAllServants,
   loadPaymentMethods,
-  printServantSummaryByDate,
-  printAllServantSummaryByDate, getBillListForServant, loadAllServants
+  printAllServantSummaryByDate,
+  printServantSummaryByDate
 } from '@/api/api'
 import i18n from '@/i18n'
 

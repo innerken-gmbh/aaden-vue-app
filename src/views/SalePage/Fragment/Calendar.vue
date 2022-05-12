@@ -1,144 +1,115 @@
 <template>
-  <v-card elevation="0">
+  <v-card elevation="0" style="position: relative" color="#f6f6f6">
     <div class="d-flex">
-      <div class="pa-2 flex-grow-1">
-        <v-subheader style="display: flex">
+      <div class="flex-grow-1">
+        <bill-table @need-refresh="loadData" :orders="displayOrder" :show-operation="true"/>
+      </div>
+      <v-card elevation="0" class="pa-4" width="300">
+        <v-sheet class="text-body-1">
+          <h4>{{ $t('statistic') }}</h4>
+          <div class="mt-4">
+            <div class="d-flex justify-space-between align-center">
+              <div style="font-size: 24px">{{ $t('All') }}{{ $t('Umsatz') }}</div>
+              <div style="font-size: 24px" class="font-weight-bold">{{ billContent.total | priceDisplay }}</div>
+            </div>
+            <div class="d-flex justify-space-between mt-1">
+              <div>{{ $t('Netto') }}/ {{ $t('Steuer') }}</div>
+              <div>{{ billContent.fTotalTe }}/{{ billContent.fTotalTax }}</div>
+            </div>
+            <v-divider class="my-2"></v-divider>
+          </div>
+          <template v-for="(total,index) in taxGroupInfo">
+            <div :key="total.taxRatePercentage+'-'+index">
+              <div class="d-flex justify-space-between">
+                <div> {{ $t('Umsatz') }} {{ total.taxRatePercentage }}%</div>
+                <div class="font-weight-bold">{{ total.groupTotal | priceDisplay }}</div>
+              </div>
+              <div class="d-flex justify-space-between">
+                <div>{{ $t('Netto') }}/ {{ $t('Steuer') }}</div>
+                <div>{{ total.nettoumsatz }}/{{ total.umsatzsteuer }}</div>
+              </div>
+              <v-divider class="my-2"></v-divider>
+            </div>
+          </template>
+          <v-card color="error lighten-2" dark @click="returnDishDialog=true"
+                  elevation="0"
+                  class="d-flex align-center pa-2">
+            <h3>{{ $t('退菜') }}</h3>
+            <v-spacer></v-spacer>
+            <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }})
+              <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
+            </h3>
+          </v-card>
+          <v-card color="warning lighten-2" elevation="0" dark @click="discountDialog=true"
+                  class="d-flex align-center pa-2 mt-2">
+            <h3>{{ $t('折扣') }}</h3>
+            <v-spacer></v-spacer>
+            <h3>{{ totalDiscount | priceDisplay }}({{ discountList.length }})
+              <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
+            </h3>
+          </v-card>
+
+        </v-sheet>
+        <v-card elevation="0">
+
+          <v-btn
+            class="mt-4"
+            elevation="0"
+            x-large
+            block
+            @click="printXBon"
+            color="warning">
+            {{ $t('XBon Drücken') }}
+          </v-btn>
+          <v-btn
+            class="mt-2"
+            elevation="0"
+            block
+            v-if="shouldShowZBon"
+            x-large
+            @click="printZBon"
+            color="primary">
+            {{ $t('ZBon Drücken') }}
+          </v-btn>
+        </v-card>
+
+      </v-card>
+
+    </div>
+    <div style="position: fixed;bottom: 0;left: 56px;width: calc(100vw - 356px)">
+      <v-card elevation="1" class="d-flex px-4 pt-2" color="white" tile>
+        <div style="display: grid;grid-auto-flow: column;grid-gap: 8px;">
           <v-text-field
-            style="max-width: 240px"
-            solo
             prepend-inner-icon="mdi-magnify"
             :placeholder="$t('Search order/table')"
             v-model="search">
           </v-text-field>
           <v-select
-            class="ml-3"
             :label="$t('支付方式')"
             :items="payMethodList"
             v-model="appliedFilter.payment"
             @change="updateFilter"
             :item-text="item => item.langPayMethodName"
-            solo
             multiple
-            style="max-width: 240px"
           >
           </v-select>
           <v-select
-            class="ml-3"
             :label="$t('服务员')"
             :items="servantList"
             v-model="appliedFilter.servant"
             @change="updateFilter"
             :item-text="item => item.name"
-            solo
-            style="max-width: 160px"
           >
           </v-select>
-          <v-btn v-if="showClearButton" text class="mb-6" @click="clearFilter">
+          <v-btn v-if="showClearButton" @click="clearFilter" class="mt-2">
             <v-icon>mdi-close-circle</v-icon>
             {{ $t('清除') }}
           </v-btn>
-          <v-spacer></v-spacer>
-        </v-subheader>
-        <bill-table @need-refresh="loadData" :orders="displayOrder" :show-operation="true"/>
-      </div>
-      <v-navigation-drawer permanent right width="272">
-        <v-card elevation="0" class="pa-2" width="272">
+        </div>
 
-          <v-card elevation="0" class="mt-1">
-            <div class="pa-2">
-              <div class="d-flex justify-space-between align-center">
-                <h2 style="font-size: 24px">{{ $t('All') }}{{ $t('Umsatz') }}</h2>
-                <h2 style="font-size: 24px">{{ billContent.fTotal }}</h2>
-              </div>
-              <div class="d-flex justify-space-between mt-1">
-                <div>{{ $t('Netto') }}/ {{ $t('Steuer') }}</div>
-                <div>{{ billContent.fTotalTe }}/{{ billContent.fTotalTax }}</div>
-              </div>
-            </div>
-            <template v-for="(total,index) in taxGroupInfo">
-              <div class="pa-2" :key="total.taxRatePercentage+'-'+index">
-                <div class="d-flex justify-space-between">
-                  <h3> {{ $t('Umsatz') }} {{ total.taxRatePercentage }}% </h3>
-                  <h3>{{ total.groupTotal }}</h3>
-                </div>
-                <div class="d-flex justify-space-between">
-                  <div>{{ $t('Netto') }}/ {{ $t('Steuer') }}</div>
-                  <div>{{ total.nettoumsatz }}/{{ total.umsatzsteuer }}</div>
-                </div>
-              </div>
-            </template>
-            <div class="d-flex justify-space-between">
-              <h3 class="pa-2 font-weight-bold">{{ $t('支付方式') }}:</h3>
-              <div v-if="paidInfoList && paidInfoList.length > 5"><v-btn @click="showAllPayment = !showAllPayment" small class="primary">{{ !showAllPayment? $t('更多') : $t('收起')}}</v-btn></div>
-            </div>
-
-              <div v-if="!showAllPayment && paidInfoList && paidInfoList.length > 5">
-                <template v-for="pay in paidInfoList.slice(0, 5)">
-                  <div class="pa-1 mx-1" :key="pay.id">
-                    <div class="d-flex justify-space-between">
-                      <h4>{{ pay.paidName }} {{ pay.paidCount > 0 ? '(' + pay.paidCount + ')' : ''}}</h4>
-                      <div>{{ pay.paidTotal | priceDisplay }}</div>
-                    </div>
-                  </div>
-                </template>
-                <div class="pa-1 mx-1">
-                  <div class="d-flex justify-space-between">
-                    <h4>...</h4>
-                  </div>
-                </div>
-              </div>
-            <div v-else>
-              <template v-for="pay in paidInfoList">
-                <div class="pa-1 mx-1" :key="pay.id">
-                  <div class="d-flex justify-space-between">
-                    <h4>{{ pay.paidName }} {{ pay.paidCount !== 0 ? '(' + pay.paidCount + ')' : '' }}</h4>
-                    <div>{{ pay.paidTotal | priceDisplay }}</div>
-                  </div>
-                </div>
-              </template>
-            </div>
-          </v-card>
-          <v-card elevation="0">
-            <v-card color="error lighten-2" dark @click="returnDishDialog=true"
-                    elevation="0"
-                    class="d-flex align-center pa-2">
-              <h3>{{ $t('退菜') }}</h3>
-              <v-spacer></v-spacer>
-              <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }})
-                <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
-              </h3>
-            </v-card>
-            <v-card color="warning lighten-2" elevation="0" dark @click="discountDialog=true"
-                    class="d-flex align-center pa-2 mt-2">
-              <h3>{{ $t('折扣') }}</h3>
-              <v-spacer></v-spacer>
-              <h3>{{ totalDiscount | priceDisplay }}({{ discountList.length }})
-                <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
-              </h3>
-            </v-card>
-            <v-btn
-              class="mt-4"
-              x-large
-              block
-              @click="printXBon"
-              color="warning">
-              {{ $t('XBon Drücken') }}
-            </v-btn>
-            <v-btn
-              class="mt-1"
-              block
-              v-if="shouldShowZBon"
-              x-large
-              @click="printZBon"
-              color="primary">
-              {{ $t('ZBon Drücken') }}
-            </v-btn>
-          </v-card>
-
-        </v-card>
-      </v-navigation-drawer>
+        <v-spacer></v-spacer>
+      </v-card>
     </div>
-
     <v-dialog v-model="returnDishDialog" width="fit-content">
       <v-simple-table v-if="returnDishDialog" height="calc(100vh - 144px)"
                       style="width: 650px"

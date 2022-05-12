@@ -11,7 +11,8 @@ export function onlyTimeFormat (str) {
 
 export function sliceTime (startTimeString, endTimeString, duration) {
   const [startTime, endTime] = dayjs(startTimeString, timestampTemplate)
-    .isBefore(dayjs(endTimeString, timestampTemplate)) ? [dayjs(startTimeString, timestampTemplate), dayjs(endTimeString, timestampTemplate)] : [dayjs(endTimeString, timestampTemplate), dayjs(startTimeString, timestampTemplate)]
+    .isBefore(dayjs(endTimeString, timestampTemplate)) ? [dayjs(startTimeString, timestampTemplate), dayjs(endTimeString, timestampTemplate)]
+    : [dayjs(endTimeString, timestampTemplate), dayjs(startTimeString, timestampTemplate)]
 
   const durationD = dayjs.duration(duration)
   const res = []

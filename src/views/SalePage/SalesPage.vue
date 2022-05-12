@@ -1,6 +1,6 @@
 <template>
   <div style="width: 100%">
-    <v-toolbar elevation="2">
+    <v-toolbar outlined>
       <v-tabs v-model="tabIndex">
         <template v-if="isBoss">
           <v-tab>{{ $t('账单列表') }}</v-tab>
@@ -15,7 +15,7 @@
       </v-tabs>
       <v-spacer></v-spacer>
 
-      <v-btn large color="primary" @click="showDatePicker=true">
+      <v-btn elevation="0" x-large color="primary" @click="showDatePicker=true" text>
         <v-icon left>mdi-calendar</v-icon>
         {{ getNiceLabel(singleZBonDate) }}/{{ $t('更换日期') }}
       </v-btn>
@@ -23,8 +23,8 @@
     </v-toolbar>
     <div class="d-flex" style="height: calc(100vh - 64px)">
       <div class="flex-grow-1">
-        <v-card-text class="mt-1 d-flex pa-0">
-          <div class="pa-2 flex-grow-1">
+        <v-card-text class="d-flex pa-0">
+          <div class="flex-grow-1">
             <v-tabs-items v-model="tabIndex">
               <template v-if="isBoss">
                 <template>
@@ -70,7 +70,7 @@
                             <v-list-item-content>
                               <v-list-item-title>
                             <span style="font-size: larger">
-                                   {{ todayCashStand | priceDisplay}}
+                                   {{ todayCashStand | priceDisplay }}
                             </span>
                               </v-list-item-title>
                             </v-list-item-content>
@@ -86,10 +86,10 @@
                             </v-list-item-content>
                           </v-list-item>
                           <v-btn
-                              x-large
-                              block
-                              @click="showNumberKeyboard=true"
-                              color="warning">
+                            x-large
+                            block
+                            @click="showNumberKeyboard=true"
+                            color="warning">
                             {{ $t('新增记录') }}
                           </v-btn>
                         </v-list>
@@ -108,7 +108,7 @@
                 </v-tab-item>
                 <v-tab-item>
                   <v-card elevation="0">
-                      <servant-list :single-z-bon-date="singleZBonDate"></servant-list>
+                    <servant-list :single-z-bon-date="singleZBonDate"></servant-list>
                   </v-card>
                 </v-tab-item>
                 <v-tab-item>
