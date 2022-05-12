@@ -1,26 +1,26 @@
 <template>
   <div>
     <v-navigation-drawer
-        mini-variant
-        permanent stateless
-        style="z-index: 100" app>
+      mini-variant
+      permanent stateless
+      style="z-index: 100" app>
       <v-card color="transparent" elevation="0"
               class="d-flex flex-column"
               style="height: 100vh">
         <div class="flex-shrink-0 pa-4 py-4">
           <div style="width: 100%">
             <v-img
-                :src="require('@/assets/logo.png')"/>
+              :src="require('@/assets/logo.png')"/>
           </div>
         </div>
         <div style="display: grid;grid-auto-flow: row;;grid-gap: 12px">
           <v-card
-              style="width: 100%"
-              v-for="m in menuList"
-              :key="m.icon"
-              elevation="0"
-              @click="goto(m)"
-              class="d-flex flex-column align-center py-2">
+            style="width: 100%"
+            v-for="m in menuList"
+            :key="m.icon"
+            elevation="0"
+            @click="goto(m)"
+            class="d-flex flex-column align-center py-2">
             <div>
               <v-icon :color="color(m.path)">{{ m.icon }}</v-icon>
             </div>
@@ -48,6 +48,7 @@
 <script>
 import { jumpTo, popAuthorize } from '@/oldjs/common'
 import { getServantList } from '@/oldjs/api'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 const version = require('../../package.json').version
 
@@ -113,6 +114,10 @@ export default {
   },
   async mounted () {
     this.servantList = await getServantList()
+    if (this.servantList.find(s => s.password !== GlobalConfig.defaultPassword)) {
+      GlobalConfig.updateSettings('defaultPassword', this.servantList[0].password)
+      GlobalConfig.defaultPassword = this.servantList[0].password
+    }
   }
 }
 </script>
