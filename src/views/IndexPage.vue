@@ -49,6 +49,9 @@
 import { jumpTo, popAuthorize } from '@/oldjs/common'
 import { getServantList } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import { printZBon, ZBonList } from '@/api/api'
+import dayjs from 'dayjs'
+import IKUtils from 'innerken-js-utils'
 
 const version = require('../../package.json').version
 
@@ -117,6 +120,18 @@ export default {
     if (this.servantList.find(s => s.password !== GlobalConfig.defaultPassword)) {
       GlobalConfig.updateSettings('defaultPassword', this.servantList[0].password)
       GlobalConfig.defaultPassword = this.servantList[0].password
+    }
+    if (GlobalConfig.usePrintZBonAlert) {
+      const lastZBonPrintDate = dayjs((await ZBonList())?.[0]?.createTimeStamp ?? '1970-01-01 00:00:00')
+      const hoursBefore = dayjs().subtract(32, 'hour')
+      if (lastZBonPrintDate.isBefore(hoursBefore) && GlobalConfig.printZBonAlert) {
+        const res = await IKUtils.showConfirmAsyn(this.$t('Bitte beachten Sie, dass Sie ZBon seit 36 Stunden nicht mehr gedruckt haben'),
+          this.$t('Jetzt drucken?'))
+        console.log(res)
+        if (res.isConfirmed) {
+          await printZBon()
+        }
+      }
     }
   }
 }
