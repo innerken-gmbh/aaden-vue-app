@@ -9,9 +9,9 @@
         <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
           <v-item #default="{active,toggle}">
             <div
-                @click="toggle"
-                class="navigationPillItem"
-                :class="active?' active':' text--disabled'"
+              @click="toggle"
+              class="navigationPillItem"
+              :class="active?' active':' text--disabled'"
             >
               <v-icon left>mdi-silverware</v-icon>
               {{ $t('堂食') }}
@@ -22,9 +22,9 @@
           </v-item>
           <v-item #default="{active,toggle}">
             <div
-                @click="toggle"
-                class="navigationPillItem"
-                :class="active?' active':' text--disabled'"
+              @click="toggle"
+              class="navigationPillItem"
+              :class="active?' active':' text--disabled'"
             >
               <v-icon left>mdi-truck-fast</v-icon>
               {{ $t('外卖') }}
@@ -35,9 +35,9 @@
           </v-item>
           <v-item #default="{active,toggle}">
             <div
-                @click="toggle"
-                class="navigationPillItem"
-                :class="active?' active':' text--disabled'"
+              @click="toggle"
+              class="navigationPillItem"
+              :class="active?' active':' text--disabled'"
             >
               <v-icon left>mdi-account</v-icon>
               <span style="padding: 2px 4px">{{ $t('跑堂订单') }}</span>
@@ -45,9 +45,9 @@
           </v-item>
           <v-item v-if="Config.activeReservation" #default="{active,toggle}">
             <div
-                @click="toggle"
-                class="navigationPillItem"
-                :class="active?' active':' text--disabled'"
+              @click="toggle"
+              class="navigationPillItem"
+              :class="active?' active':' text--disabled'"
             >
               <v-icon left>mdi-calendar</v-icon>
               {{ $t('预定') }}
@@ -65,23 +65,18 @@
           <v-btn icon elevation="0" @click="reprintAll" v-hide-simple v-if="hasBadPrint" color="error">
             <v-icon>mdi-printer-off</v-icon>
           </v-btn>
+          <v-btn @click="showConfig" icon>
+            <v-icon>
+              mdi-cog-outline
+            </v-icon>
+          </v-btn>
           <v-dialog
-              max-width="400"
-              v-model="menu"
-              :close-on-content-click="false"
-              :nudge-width="300"
-              :max-height="600"
+            max-width="400"
+            v-model="menu"
+            :close-on-content-click="false"
+            :nudge-width="300"
+            :max-height="600"
           >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn v-bind="attrs"
-                     v-on="on"
-                     icon>
-                <v-icon>
-                  mdi-cog-outline
-                </v-icon>
-              </v-btn>
-            </template>
-
             <v-card color="white">
               <v-list>
                 <v-list-item>
@@ -124,8 +119,8 @@
             </v-card>
           </v-dialog>
           <v-menu
-              left
-              bottom
+            left
+            bottom
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn tile
@@ -165,16 +160,16 @@
           overflow: scroll
 ">
           <table-blue-print
-              @need-refresh="refreshTables"
-              :out-side-table-list="tableList"
-              @edit-table-clicked="showEditTableDialog"
-              @table-clicked="openOrEnterTable"
+            @need-refresh="refreshTables"
+            :out-side-table-list="tableList"
+            @edit-table-clicked="showEditTableDialog"
+            @table-clicked="openOrEnterTable"
           />
         </div>
         <div style="position: absolute;right: 0;top: 8px;max-height: calc(100%);z-index: 3;">
           <div
-              style="display: grid;grid-template-rows: auto;grid-gap: 4px;overflow-y: hidden;max-height: calc(100vh - 72px)"
-              v-dragscroll>
+            style="display: grid;grid-template-rows: auto;grid-gap: 4px;overflow-y: hidden;max-height: calc(100vh - 72px)"
+            v-dragscroll>
             <v-card style="writing-mode: vertical-lr;text-align: center" elevation="0"
                     @click="togoClick"
                     class="head pa-2 d-flex align-center">
@@ -231,10 +226,10 @@
                 </template>
               </v-card>
               <div
-                  v-if="showOtherOrder"
-                  v-dragscroll
-                  class="flex-shrink-0 mt-2 pb-2"
-                  style="
+                v-if="showOtherOrder"
+                v-dragscroll
+                class="flex-shrink-0 mt-2 pb-2"
+                style="
                      display: grid;
                      max-height: calc(100vh - 120px);
                      grid-auto-columns: auto;
@@ -249,9 +244,9 @@
                   <h4>{{ $t('新增') }}</h4>
                 </v-card>
                 <table-grid-item
-                    v-for="table in takeawayList"
-                    @click="openOrEnterTable(table.tableName)"
-                    :key="table.id" :table-info="table"
+                  v-for="table in takeawayList"
+                  @click="openOrEnterTable(table.tableName)"
+                  :key="table.id" :table-info="table"
                 >
                 </table-grid-item>
               </div>
@@ -279,12 +274,12 @@
             <div style="display: grid;grid-gap: 12px;overflow-y: scroll;max-height:calc(100vh - 150px) ;"
                  class="mt-4">
               <takeaway-order-item
-                  @accept="acceptOrder"
-                  :big-card="true"
-                  v-for="t in notAccepted"
-                  :key="t.tableName"
-                  @click="openOrEnterTable(t.tableName)"
-                  :table-info="t"/>
+                @accept="acceptOrder"
+                :big-card="true"
+                v-for="t in notAccepted"
+                :key="t.tableName"
+                @click="openOrEnterTable(t.tableName)"
+                :table-info="t"/>
             </div>
 
           </v-card>
@@ -300,11 +295,11 @@
             </div>
             <div style="display: grid;grid-gap: 12px;overflow-y: scroll;" class="mt-4">
               <table-grid-item
-                  :big-card="true"
-                  v-for="t in accepted"
-                  :key="t.tableName"
-                  @click="openOrEnterTable(t.tableName)"
-                  :table-info="t"/>
+                :big-card="true"
+                v-for="t in accepted"
+                :key="t.tableName"
+                @click="openOrEnterTable(t.tableName)"
+                :table-info="t"/>
             </div>
 
           </v-card>
@@ -435,14 +430,14 @@
         <v-card class="pa-2"
                 style="position: fixed;right: 0;bottom:0;width: 320px;z-index: 15">
           <v-text-field
-              :placeholder=" $t('请输入桌号')"
-              @click:append="showKeyboard=!showKeyboard"
-              :append-icon="showKeyboard?'mdi-keyboard-close':'mdi-keyboard'"
-              class="ma-2 pt-1"
-              hide-details
-              style="font-size: 24px"
-              v-model="buffer"
-              :autofocus="Config.getFocus"
+            :placeholder=" $t('请输入桌号')"
+            @click:append="showKeyboard=!showKeyboard"
+            :append-icon="showKeyboard?'mdi-keyboard-close':'mdi-keyboard'"
+            class="ma-2 pt-1"
+            hide-details
+            style="font-size: 24px"
+            v-model="buffer"
+            :autofocus="Config.getFocus"
           />
 
           <keyboard-layout v-if="showKeyboard" @input="numberInput" :keys="keyboardLayout"/>
@@ -532,12 +527,12 @@ import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
 import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
 
 const keyboardLayout =
-    [
-      '7', '8', '9', 'C',
-      '4', '5', '6', 'mdi-cash-lock-open',
-      '1', '2', '3', '',
-      'W', '0', '.', 'OK'
-    ]
+  [
+    '7', '8', '9', 'C',
+    '4', '5', '6', 'mdi-cash-lock-open',
+    '1', '2', '3', '',
+    'W', '0', '.', 'OK'
+  ]
 
 export default {
   name: 'FirstPage',
@@ -641,6 +636,10 @@ export default {
 
   },
   methods: {
+    async showConfig () {
+      await popAuthorize('boss', true)
+      this.menu = true
+    },
     async acceptOrder (reason = 'ok', id) {
       await acceptOrder(reason, id)
       this.refreshTables()
