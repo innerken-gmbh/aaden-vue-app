@@ -1117,6 +1117,9 @@ export default {
     },
 
     submitModification: function (_mod, dish, count, saveInfo) {
+      if (this.count !== 1) {
+        count = this.count
+      }
       dish.apply = _mod// here we add a apply
       dish.forceFormat = true
 
