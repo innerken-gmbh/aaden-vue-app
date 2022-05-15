@@ -116,7 +116,7 @@
   "category": "Category",
   "category Type": "Category type",
   "changeTableUseBossPassword": "Change table use boss password",
-  "checkOutUsePassword": "Checkout use password",
+  "checkOutUsePassword": "Use password to checkout",
   "childCount": "Number of children",
   "city": "City",
   "code": "Code",
@@ -259,7 +259,7 @@
   "unit": "unit",
   "updateFold": "Update fold",
   "useAttributeSort": "Use attribute sort",
-  "useBossPassword": "Use boss password",
+  "UseBossPassword": "Use boss password",
   "useCart": "Use cart",
   "useConfigButton": "Use config button",
   "useDeleteDishReason": "Use delete dish reason",
@@ -457,5 +457,9 @@
   "预定": "Reservation",
   "预定列表": "Reservation List",
   "预定设置": "Reservation Setting",
-  "验证错误": "Validation error"
+  "验证错误": "Validation error",
+  "选择一个桌子": "Table select",
+  "其他支付方式": "Other Paymethod",
+  "按销售额排序": "Sort by sales",
+  "按销量排序": "Sort by quantity"
 }

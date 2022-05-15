@@ -41,7 +41,7 @@
         </div>
       </v-card>
       <div class="pa-4">
-        <h4>其他支付方式</h4>
+        <h4>{{ $t('其他支付方式') }}</h4>
         <div
             class="pa-1 mt-1"
             style="display: grid;grid-auto-columns: 96px;grid-gap: 8px;
