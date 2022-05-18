@@ -558,10 +558,10 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
               </div>
               <div v-if="searchDish.length>0" style="overflow: hidden"
                    class="flex-shrink-1 blue lighten-5">
-                <template v-for="(dish,index) in searchDish">
+                <template v-for="(dish) in searchDish">
                   <v-card @click="searchDishClick(dish.code)" elevation="0"
                           :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
-                          :class="index===0?'first':''"
+                          :class="dish.first"
                           :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large"
                           class="d-flex  px-1 py-1 align-start">
                     <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
@@ -787,7 +787,7 @@ export default {
       activeDCT: 0,
       filteredDish: [],
       searchDish: [],
-      i: 0,
+      dishNumber: 0,
       Config: GlobalConfig,
       /* input**/
       buffer: '',
@@ -810,48 +810,32 @@ export default {
 
     }
   },
-  mounted () {
-    // 全局监听键盘上下键事件
-    const _this = this
-    document.onkeyup = function (e) {
-      if (e.code === 'ArrowDown') {
-        console.log('ArrowDown')
-        _this.downChoose()
-      } else if (e.code === 'ArrowUp') {
-        console.log('ArrowUp')
-        _this.upChoose()
-      } else if (e.code === 'enter' || e.code === 'Enter') {
-        console.log('enter')
-        console.log('Enter')
-        _this.searchDishClick()
-      }
-    }
-  },
   methods: {
     downChoose () {
-      this.i += 1
+      this.dishNumber += 1
       this.searchDish.forEach((items) => {
         if (items.first === 'first') {
           items.first = ''
         }
       })
-      if (this.i === this.searchDish.length) {
-        this.i = 0
+      if (this.dishNumber === this.searchDish.length) {
+        this.dishNumber = 0
       }
-      this.searchDish[this.i].first = 'first'
+      this.searchDish[this.dishNumber].first = 'first'
       this.$forceUpdate()
+      console.log(this.searchDish)
     },
     upChoose () {
-      this.i -= 1
+      this.dishNumber -= 1
       this.searchDish.forEach((items) => {
         if (items.first === 'first') {
           items.first = ''
         }
       })
-      if (this.i < 0) {
-        this.i = this.searchDish.length
+      if (this.dishNumber < 0) {
+        this.dishNumber = this.searchDish.length - 1
       }
-      this.searchDish[this.i].first = 'first'
+      this.searchDish[this.dishNumber].first = 'first'
       this.$forceUpdate()
     },
     getColorLightness,
@@ -1083,6 +1067,11 @@ export default {
       await this.findAndOrderDish(code)
     },
     readBuffer: function (clear = true) {
+      this.searchDish.forEach((items) => {
+        if (items.first === 'first') {
+          this.input = items.code
+        }
+      })
       const ins = this.buffer === '' ? this.input : this.buffer
       if (clear) {
         this.displayInput = ''
@@ -1318,6 +1307,12 @@ export default {
         case 'Enter':
           this.insDecode(this.readBuffer())
           e.preventDefault()
+          break
+        case 'ArrowDown':
+          this.downChoose()
+          break
+        case 'ArrowUp':
+          this.upChoose()
           break
         default:
           if (e.target.nodeName !== 'INPUT' && e.key.length < 3) {
