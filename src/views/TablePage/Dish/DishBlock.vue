@@ -42,7 +42,8 @@ export default {
   computed: {
     autoFontSize () {
       const length = this.dishName?.length ?? 0
-      return length < 32 ? 18 : (length < 48 ? 14 : 10)
+      console.log(this.fontSize)
+      return this.fontSize === '-1' ? length < 32 ? 18 : (length < 48 ? 14 : 10) : this.fontSize
     }
   }
 
