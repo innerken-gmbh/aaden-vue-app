@@ -276,9 +276,6 @@ export default {
     key2 (val) {
       Remember.tableDisplayKeys = [Remember.tableDisplayKeys[1], val]
     },
-    allKeys (val) {
-      GlobalConfig.tableInfoKeys
-    },
     async outSideTableList (val) {
       this.tableList = val.map(t => {
         const cell = t.cells.find(c => c.sectionId === this.currentSection.id) ?? t.cells?.[0] ?? {
@@ -357,12 +354,11 @@ export default {
       activeTable: null,
       currentSectionIndex: 0,
       sectionList: [],
-
+      allKeys: GlobalConfig.tableInfoKeys,
       key1: Remember.tableDisplayKeys[0],
       key2: Remember.tableDisplayKeys[1]
     }
   },
-
   async mounted () {
     this.$nextTick(async () => {
       this.height = this.$refs.blueprintContainer.clientHeight
