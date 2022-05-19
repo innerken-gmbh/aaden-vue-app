@@ -41,11 +41,11 @@
     </div>
     <!--    工具栏-->
     <div style="position: absolute;left:24px;bottom: 36px">
-      <div v-if="editing">
+      <v-card v-if="editing" style="z-index: 100; margin-left: 2px" flat class="pa-3 mb-1">
         <h2>{{ $t('cardDisplayInfoEdit') }}</h2>
         <v-select :items="allKeys" return-object v-model="key1"></v-select>
         <v-select :items="allKeys" return-object v-model="key2"></v-select>
-      </div>
+      </v-card>
       <div class="d-flex">
         <v-btn-toggle dense class="mr-2">
           <v-btn @click="scale-=0.05">
@@ -276,6 +276,9 @@ export default {
     key2 (val) {
       Remember.tableDisplayKeys = [Remember.tableDisplayKeys[1], val]
     },
+    allKeys (val) {
+      GlobalConfig.tableInfoKeys
+    },
     async outSideTableList (val) {
       this.tableList = val.map(t => {
         const cell = t.cells.find(c => c.sectionId === this.currentSection.id) ?? t.cells?.[0] ?? {
@@ -297,6 +300,7 @@ export default {
     },
     scale (val) {
       Remember.tableBluePrintScale = val
+      console.log(' Remember.tableBluePrintScale', Remember.tableBluePrintScale)
     },
     currentSectionIndex () {
       this.$emit('need-refresh')
@@ -353,11 +357,12 @@ export default {
       activeTable: null,
       currentSectionIndex: 0,
       sectionList: [],
-      allKeys: GlobalConfig.tableInfoKeys,
+
       key1: Remember.tableDisplayKeys[0],
       key2: Remember.tableDisplayKeys[1]
     }
   },
+
   async mounted () {
     this.$nextTick(async () => {
       this.height = this.$refs.blueprintContainer.clientHeight

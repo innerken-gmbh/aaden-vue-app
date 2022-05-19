@@ -321,7 +321,7 @@
   "尚未结账": "Noch Nicht Bezahlt",
   "展开": "erweitern",
   "展示更多": "Mehr",
-  "已接单": "Eingegangene Bestellung",
+  "已接单": "Empfangene Bestellungen",
   "已经加入购物车": "In den Warenkorb gelegt",
   "已经取消": "Abgesagt",
   "已经同步": "Bereits synchronisiert",
@@ -379,7 +379,7 @@
   "更换桌子": "Ersatz-Tisch",
   "更新用户": "Aktualisieren",
   "服务员": "Server",
-  "未接单": "Keine Bestellung angenommen",
+  "未接单": "Nicht Empfangene Bestellungen",
   "本周": "Diese Woche",
   "本月": "Dieser Monate",
   "查看分类菜单": "Ansicht des Kategoriemenüs",
@@ -456,5 +456,6 @@
   "预定列表": "Buchungsliste",
   "预定设置": "Einstellung von Reservierung",
   "验证错误": "Verifizierungsfehler",
-  "Frei": "Frei"
+  "Frei": "Frei",
+  "cardDisplayInfoEdit": "Karteinfo. Editor"
 }
