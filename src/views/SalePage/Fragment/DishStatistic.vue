@@ -63,7 +63,7 @@
             <v-switch
               v-model="orderBySales"
               flat
-              :label="orderBySales ? '按销售额排序' : '按销量排序'"
+              :label="orderBySales ? $t('按销售额排序') : $t('按销量排序')"
             ></v-switch>
             <v-spacer></v-spacer>
           </v-card-actions>

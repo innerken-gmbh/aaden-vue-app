@@ -8,7 +8,7 @@
              class=" px-2 mr-1 white--text red"
              v-show="count>0">{{ count }}</span>
     <div v-code-hide style="font-size: 16px" class="text-truncate">{{ code }}</div>
-    <span :style="{fontSize:fontSize+'px'}" class="name">
+    <span :style="{fontSize:autoFontSize+'px'}" class="name">
         {{ dishName }}
       </span>
     <div style="align-items: center;flex-wrap: wrap">
@@ -37,6 +37,13 @@ export default {
   data: function () {
     return {
       Config: GlobalConfig
+    }
+  },
+  computed: {
+    autoFontSize () {
+      const length = this.dishName?.length ?? 0
+      console.log(this.fontSize)
+      return this.fontSize === '-1' ? length < 32 ? 18 : (length < 48 ? 14 : 10) : this.fontSize
     }
   }
 
