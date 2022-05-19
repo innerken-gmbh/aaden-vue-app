@@ -1,5 +1,6 @@
 import { loadBaseConfig } from 'aaden-base-model/lib/Models/GlobalSettings'
 import i18n from '@/i18n'
+import dayjs from 'dayjs'
 
 const fix = require('@/assets/FixedConfig.json')
 const defaultConfig = require('@/assets/AadenConfig.json')
@@ -18,6 +19,7 @@ export async function loadConfig () {
     GlobalConfig.getReservationUrl = function () {
       return GlobalConfig.Protocol + GlobalConfig.reservationCloudServerBase + '/'
     }
+    GlobalConfig.startUpTimestamp = dayjs().utcOffset()
     refreshGetter()
     window.Config = GlobalConfig
   } catch (e) {
