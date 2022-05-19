@@ -296,10 +296,10 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                     {{ $t('搜索结果') }}
                   </v-card>
                   <!--                  需要监听键盘的地方-->
-                    <template v-for="(dish) in searchDish">
+                  <template v-for="(dish,index) in searchDish">
                       <v-card @click="searchDishClick(dish.code)" elevation="0"
                               :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
-                              :class="dish.first"
+                              :class="index === indexActive ? 'first' : ''"
                               :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large"
                               class="d-flex  px-1 py-1 align-start"
                       >
@@ -558,10 +558,10 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
               </div>
               <div v-if="searchDish.length>0" style="overflow: hidden"
                    class="flex-shrink-1 blue lighten-5">
-                <template v-for="(dish) in searchDish">
+                <template v-for="(dish,index) in searchDish">
                   <v-card @click="searchDishClick(dish.code)" elevation="0"
                           :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
-                          :class="dish.first"
+                          :class="index===indexActive?'first':''"
                           :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large"
                           class="d-flex  px-1 py-1 align-start">
                     <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
@@ -787,7 +787,7 @@ export default {
       activeDCT: 0,
       filteredDish: [],
       searchDish: [],
-      dishNumber: 0,
+      indexActive: 0,
       Config: GlobalConfig,
       /* input**/
       buffer: '',
@@ -812,31 +812,16 @@ export default {
   },
   methods: {
     downChoose () {
-      this.dishNumber += 1
-      this.searchDish.forEach((items) => {
-        if (items.first === 'first') {
-          items.first = ''
-        }
-      })
-      if (this.dishNumber === this.searchDish.length) {
-        this.dishNumber = 0
+      this.indexActive += 1
+      if (this.indexActive === this.searchDish.length) {
+        this.indexActive = 0
       }
-      this.searchDish[this.dishNumber].first = 'first'
-      this.$forceUpdate()
-      console.log(this.searchDish)
     },
     upChoose () {
-      this.dishNumber -= 1
-      this.searchDish.forEach((items) => {
-        if (items.first === 'first') {
-          items.first = ''
-        }
-      })
-      if (this.dishNumber < 0) {
-        this.dishNumber = this.searchDish.length - 1
+      this.indexActive -= 1
+      if (this.indexActive < 0) {
+        this.indexActive = this.searchDish.length - 1
       }
-      this.searchDish[this.dishNumber].first = 'first'
-      this.$forceUpdate()
     },
     getColorLightness,
     async mergeTable () {
@@ -1067,11 +1052,7 @@ export default {
       await this.findAndOrderDish(code)
     },
     readBuffer: function (clear = true) {
-      this.searchDish.forEach((items) => {
-        if (items.first === 'first') {
-          this.input = items.code
-        }
-      })
+      this.input = this.searchDish[this.indexActive].code
       const ins = this.buffer === '' ? this.input : this.buffer
       if (clear) {
         this.displayInput = ''
@@ -1498,9 +1479,6 @@ export default {
     updateSearchDish () {
       if (this.input) {
         this.searchDish = this.searchDishes()
-        this.searchDish.forEach((item, index) => {
-          item.first = index === 0 ? 'first' : ''
-        })
       } else {
         this.searchDish = []
       }
