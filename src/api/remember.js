@@ -1,5 +1,4 @@
 import { LocalSettingManager } from 'biewangle'
-import i18n from '@/i18n'
 
 export const Remember = LocalSettingManager.config({
   keyboardMode: true,
@@ -7,5 +6,5 @@ export const Remember = LocalSettingManager.config({
   uuid: '',
   showOtherOrder: false,
   tableBluePrintScale: 1,
-  tableDisplayKeys: [i18n.t('createTimestamp'), i18n.t('servantName')]
+  tableDisplayKeys: ['createTimestamp', 'servantName']
 })
