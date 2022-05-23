@@ -185,6 +185,7 @@ import uniqBy from 'lodash-es/uniqBy'
 import IKUtils from 'innerken-js-utils'
 import TableCard from '@/views/FirstPage/Table/Table/Item/TableCard'
 import { Remember } from '@/api/remember'
+import i18n from '@/i18n'
 
 async function refreshAllTablesPosition (listOfTable, containerHeight, containerWidth, sectionId) {
   IKUtils.showLoading(true)
@@ -267,6 +268,9 @@ export default {
     },
     notTakeawaySection () {
       return this.sectionList.filter(it => it.id !== '6')
+    },
+    allKeys () {
+      return GlobalConfig.tableInfoKeys.map(item => i18n.t(item))
     }
   },
   watch: {
@@ -354,7 +358,7 @@ export default {
       activeTable: null,
       currentSectionIndex: 0,
       sectionList: [],
-      allKeys: GlobalConfig.tableInfoKeys,
+      // allKeys: GlobalConfig.tableInfoKeys,
       key1: Remember.tableDisplayKeys[0],
       key2: Remember.tableDisplayKeys[1]
     }
