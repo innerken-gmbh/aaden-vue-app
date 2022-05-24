@@ -1054,21 +1054,16 @@ export default {
     readBuffer: function (clear = true) {
       if (this.input.includes('*')) {
         let [code, count] = this.input.split('*')
+        const searchDishCode = this.searchDish[this.indexActive].code
         if (GlobalConfig.numberFirst) {
           [code, count] = [count, code]
+          this.input = [count, searchDishCode].join('*')
+        } else {
+          this.input = [searchDishCode, count].join('*')
         }
-        const searchDishCode = code.replace(code, this.searchDish[this.indexActive].code)
-        this.input = [searchDishCode, count].join('*')
+      } else {
+        this.input = this.searchDish[this.indexActive].code
       }
-      // if (this.input.includes('*')) {
-      //   const searchDishCode = this.input.split('*')[0].replace(this.input.split('*')[0], this.searchDish[this.indexActive].code)
-      //   console.log(searchDishCode)
-      //   const count = this.input.split('*')[1]
-      //   console.log(count)
-      //   const a = [searchDishCode, count]
-      //   this.input = a.join('*')
-      //   console.log(this.input)
-      // }
       const ins = this.buffer === '' ? this.input : this.buffer
       if (clear) {
         this.displayInput = ''
