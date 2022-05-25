@@ -295,25 +295,27 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                   <v-card elevation="0" class="pa-1 py-3">
                     {{ $t('搜索结果') }}
                   </v-card>
+                  <!--                  需要监听键盘的地方-->
                   <template v-for="(dish,index) in searchDish">
-                    <v-card @click="searchDishClick(dish.code)" elevation="0"
-                            :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
-                            :class="index===0?'first':''"
-                            :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large"
-                            class="d-flex  px-1 py-1 align-start">
-                      <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
-                      </div>
-                      <v-spacer></v-spacer>
-                      <div v-if="dish.isFree==='1'"
-                           style="padding:2px 4px;border-radius: 4px;"
-                           class="price d-flex align-center green lighten-3 white--text">
-                        {{ $t('Frei') }}
-                      </div>
-                      <div v-else class="price d-flex align-center text-no-wrap text-truncate">
-                        {{ dish.price | priceDisplay }}
-                      </div>
-                    </v-card>
-                  </template>
+                      <v-card @click="searchDishClick(dish.code)" elevation="0"
+                              :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
+                              :class="index === indexActive ? 'first' : ''"
+                              :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large"
+                              class="d-flex  px-1 py-1 align-start"
+                      >
+                        <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
+                        </div>
+                        <v-spacer></v-spacer>
+                        <div v-if="dish.isFree==='1'"
+                             style="padding:2px 4px;border-radius: 4px;"
+                             class="price d-flex align-center green lighten-3 white--text">
+                          {{ $t('Frei') }}
+                        </div>
+                        <div v-else class="price d-flex align-center text-no-wrap text-truncate">
+                          {{ dish.price | priceDisplay }}
+                        </div>
+                      </v-card>
+                    </template>
                 </div>
                 <div class="d-flex align-center justify-center" style="height: 100%;width: 100%" v-else>
                   <div class="d-flex flex-column align-center">
@@ -559,7 +561,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                 <template v-for="(dish,index) in searchDish">
                   <v-card @click="searchDishClick(dish.code)" elevation="0"
                           :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
-                          :class="index===0?'first':''"
+                          :class="index===indexActive?'first':''"
                           :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large"
                           class="d-flex  px-1 py-1 align-start">
                     <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
@@ -785,7 +787,7 @@ export default {
       activeDCT: 0,
       filteredDish: [],
       searchDish: [],
-
+      indexActive: 0,
       Config: GlobalConfig,
       /* input**/
       buffer: '',
@@ -808,8 +810,19 @@ export default {
 
     }
   },
-
   methods: {
+    downChoose () {
+      this.indexActive += 1
+      if (this.indexActive === this.searchDish.length) {
+        this.indexActive = 0
+      }
+    },
+    upChoose () {
+      this.indexActive -= 1
+      if (this.indexActive < 0) {
+        this.indexActive = this.searchDish.length - 1
+      }
+    },
     getColorLightness,
     async mergeTable () {
       const password = await popAuthorize(GlobalConfig.mergeTableUseBossPassword ? 'boss' : '')
@@ -1039,6 +1052,18 @@ export default {
       await this.findAndOrderDish(code)
     },
     readBuffer: function (clear = true) {
+      if (this.input.includes('*')) {
+        let [code, count] = this.input.split('*')
+        const searchDishCode = this.searchDish[this.indexActive].code
+        if (GlobalConfig.numberFirst) {
+          [code, count] = [count, code]
+          this.input = [count, searchDishCode].join('*')
+        } else {
+          this.input = [searchDishCode, count].join('*')
+        }
+      } else {
+        this.input = this.searchDish[this.indexActive].code
+      }
       const ins = this.buffer === '' ? this.input : this.buffer
       if (clear) {
         this.displayInput = ''
@@ -1277,6 +1302,12 @@ export default {
         case 'Enter':
           this.insDecode(this.readBuffer())
           e.preventDefault()
+          break
+        case 'ArrowDown':
+          this.downChoose()
+          break
+        case 'ArrowUp':
+          this.upChoose()
           break
         default:
           if (e.target.nodeName !== 'INPUT' && e.key.length < 3) {
