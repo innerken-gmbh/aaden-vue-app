@@ -41,7 +41,7 @@
     </div>
     <!--    工具栏-->
     <div style="position: absolute;left:24px;bottom: 36px">
-      <v-card v-if="editing" style="z-index: 100; margin-left: 2px" flat class="pa-3 mb-1">
+      <v-card v-if="editing&&showTableEditInfoCard" style="z-index: 100; margin-left: 2px" flat class="pa-3 mb-1">
         <h2>{{ $t('cardDisplayInfoEdit') }}</h2>
         <v-select :items="allKeys" return-object v-model="key1"></v-select>
         <v-select :items="allKeys" return-object v-model="key2"></v-select>
@@ -66,6 +66,9 @@
           <v-btn v-if="editing" @click="refreshTables">
             <v-icon left>mdi-refresh</v-icon>
             {{ $t('重置所有桌子') }}
+          </v-btn>
+          <v-btn v-if="editing" @click="showTableEditInfoCard=!showTableEditInfoCard">
+            <v-icon>mdi-book-information-variant</v-icon>
           </v-btn>
         </v-btn-toggle>
         <div v-if="editing" class="d-flex align-center" style="width: 96px">0.3x
@@ -274,7 +277,7 @@ export default {
       Remember.tableDisplayKeys = [val, Remember.tableDisplayKeys[1]]
     },
     key2 (val) {
-      Remember.tableDisplayKeys = [Remember.tableDisplayKeys[1], val]
+      Remember.tableDisplayKeys = [Remember.tableDisplayKeys[0], val]
     },
     async outSideTableList (val) {
       this.tableList = val.map(t => {
@@ -342,6 +345,7 @@ export default {
   },
   data: function () {
     return {
+      showTableEditInfoCard: false,
       editing: false,
       tableList: [],
       Config: GlobalConfig,

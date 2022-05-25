@@ -297,25 +297,25 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                   </v-card>
                   <!--                  需要监听键盘的地方-->
                   <template v-for="(dish,index) in searchDish">
-                      <v-card @click="searchDishClick(dish.code)" elevation="0"
-                              :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
-                              :class="index === indexActive ? 'first' : ''"
-                              :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large"
-                              class="d-flex  px-1 py-1 align-start"
-                      >
-                        <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
-                        </div>
-                        <v-spacer></v-spacer>
-                        <div v-if="dish.isFree==='1'"
-                             style="padding:2px 4px;border-radius: 4px;"
-                             class="price d-flex align-center green lighten-3 white--text">
-                          {{ $t('Frei') }}
-                        </div>
-                        <div v-else class="price d-flex align-center text-no-wrap text-truncate">
-                          {{ dish.price | priceDisplay }}
-                        </div>
-                      </v-card>
-                    </template>
+                    <v-card @click="searchDishClick(dish.code)" elevation="0"
+                            :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" tile
+                            :class="index === indexActive ? 'first' : ''"
+                            :key="dish.id" style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large"
+                            class="d-flex  px-1 py-1 align-start"
+                    >
+                      <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
+                      </div>
+                      <v-spacer></v-spacer>
+                      <div v-if="dish.isFree==='1'"
+                           style="padding:2px 4px;border-radius: 4px;"
+                           class="price d-flex align-center green lighten-3 white--text">
+                        {{ $t('Frei') }}
+                      </div>
+                      <div v-else class="price d-flex align-center text-no-wrap text-truncate">
+                        {{ dish.price | priceDisplay }}
+                      </div>
+                    </v-card>
+                  </template>
                 </div>
                 <div class="d-flex align-center justify-center" style="height: 100%;width: 100%" v-else>
                   <div class="d-flex flex-column align-center">
@@ -1054,15 +1054,16 @@ export default {
     readBuffer: function (clear = true) {
       if (this.input.includes('*')) {
         let [code, count] = this.input.split('*')
-        const searchDishCode = this.searchDish[this.indexActive].code
+        const searchDishCode = this.searchDish?.[this.indexActive]?.code
+        if (searchDishCode) {
+          code = searchDishCode
+        }
         if (GlobalConfig.numberFirst) {
           [code, count] = [count, code]
-          this.input = [count, searchDishCode].join('*')
-        } else {
-          this.input = [searchDishCode, count].join('*')
         }
+        this.input = [count, code].join('*')
       } else {
-        this.input = this.searchDish[this.indexActive].code
+        this.input = this.searchDish[this.indexActive]?.code ?? this.input
       }
       const ins = this.buffer === '' ? this.input : this.buffer
       if (clear) {
@@ -1070,6 +1071,7 @@ export default {
         this.buffer = ''
         this.input = ''
       }
+
       return ins
     },
     // requestOutTable,
@@ -1496,6 +1498,7 @@ export default {
       } else {
         this.searchDish = []
       }
+      this.indexActive = 0
     },
     searchDishes () {
       const list = this.dishes
