@@ -61,7 +61,7 @@
         </v-card>
         <v-card elevation="0">
           <v-card color="error lighten-2" dark @click="returnDishDialog=true" class="d-flex align-center pa-2">
-            <h3>{{ $t('退菜') }}</h3>
+            <h3>{{ $t('dishCancel') }}</h3>
             <v-spacer></v-spacer>
             <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }})
               <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
@@ -89,7 +89,7 @@
               x-large
               @click="printZBon"
               color="primary">
-            {{ $t('ZBon Drücken') }}
+            {{ $t('ZBon_print') }}
           </v-btn>
         </v-card>
       </v-card>
@@ -112,7 +112,7 @@
           <tr>
             <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
             <th class="text-left">{{ $t('time') }}</th>
-            <th class="text-left">{{ $t('跑堂') }}</th>
+            <th class="text-left">{{ $t('Kellner') }}</th>
             <th class="text-left">{{ $t('退菜内容') }}</th>
             <th class="text-left">{{ $t('退菜理由') }}</th>
           </tr>
@@ -148,7 +148,7 @@
           <tr>
             <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
             <th class="text-left">{{ $t('time') }}</th>
-            <th class="text-left">{{ $t('跑堂') }}</th>
+            <th class="text-left">{{ $t('Kellner') }}</th>
             <th class="text-left">{{ $t('折扣内容') }}</th>
           </tr>
           </thead>

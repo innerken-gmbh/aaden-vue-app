@@ -279,5 +279,13 @@
   "金额或百分比": "Amount or percentage",
   "销售额": "Sales",
   "验证错误": "Validation error",
-  "重置所有桌子": ""
+  "重置所有桌子": "Reset Tables",
+  "订单列表": "Order List",
+  "退菜内容": "Refund content",
+  "退菜理由": "Reason for return",
+  "折扣内容": "Discount Content",
+  "ZBon_print": "ZBon print",
+  "请输入新的结账方式": "Please enter a new checkout method",
+  "新增记录": "New Record"
+
 }

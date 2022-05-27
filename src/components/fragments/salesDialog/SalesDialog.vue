@@ -12,6 +12,7 @@
                 elevation="2"
                 v-model="singleZBonDate"
                 :max="todayDate"
+                :locale="Config.lang"
             />
           </div>
         </div>
@@ -92,7 +93,7 @@
                               x-large
                               @click="printZBon"
                               color="primary">
-                            {{ $t('ZBon Drücken') }}
+                            {{ $t('ZBon_print') }}
                           </v-btn>
                         </v-card-actions>
                       </v-card>

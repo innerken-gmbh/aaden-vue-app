@@ -112,7 +112,7 @@
   "deviceList": "Geräteliste",
   "discount": "Rabatt",
   "dish": "Gerichte",
-  "dishCancel": "Storno",
+  "dishCancel": "Storn.",
   "dishCount": "Anzahl der Gerichte",
   "dishImage": "Gerichtbild",
   "dishList": "Gerichtsliste",
@@ -260,7 +260,7 @@
   "给菜品打折": "Rabatt",
   "网络错误": "Netzwerkfehler",
   "订单号": "Bestellnr.",
-  "详细账务": "Detaillierte Abrechnung",
+  "详细账务": "Det. Abr.",
   "请输入折扣": "Bitte Rabatt eingeben",
   "请输入桌号": "Bitte geben Sie die Tischnummer ein",
   "请选择日本餐类型": "Bitte die Janapnische Kategorie auswählen",
@@ -274,5 +274,13 @@
   "金额": "Menge",
   "金额或百分比": "Betrag oder Prozentsatz",
   "销售额": "Umsatz",
-  "验证错误": "Verifizierungsfehler"
+  "验证错误": "Verifizierungsfehler",
+  "重置所有桌子": "Tabellen zurücksetzen",
+  "订单列表": "Order List",
+  "退菜内容": "Rückgabesinhalt",
+  "退菜理由": "Grund für die Rückgabe",
+  "折扣内容": "Rabattsinhalt",
+  "ZBon_print": "ZBon Drücken",
+  "请输入新的结账方式": "Bitte eine neue Bezahlmethode eingeben",
+  "新增记录": "Neuer Datensatz"
 }
