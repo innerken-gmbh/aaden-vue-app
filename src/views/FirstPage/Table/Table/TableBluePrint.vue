@@ -10,6 +10,7 @@
          :style="{
           transform:'scale('+scale+')'
        }">
+
       <template v-for="i in tableWithInfo">
         <vue-draggable-resizable
             class-name-dragging="dragging"
@@ -39,6 +40,7 @@
         </vue-draggable-resizable>
       </template>
     </div>
+
     <!--    工具栏-->
     <div style="position: absolute;left:24px;bottom: 36px">
       <v-card v-if="editing&&showTableEditInfoCard" style="z-index: 100; margin-left: 2px" flat class="pa-3 mb-1">
