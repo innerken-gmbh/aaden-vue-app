@@ -463,5 +463,6 @@
   "预定设置": "Reservation Setting",
   "验证错误": "Validation error",
   "usePrintZBonAlert": "Use ZBon print alert",
-  "Rows_per_page": "Rows per page"
+  "Rows_per_page": "Rows per page",
+  "折扣不能大于原价": "Discounts cannot be greater than the original price"
 }

@@ -137,7 +137,7 @@ export default {
       const value = parseFloat(discountStr.replace('p', ''))
       const ratio = isPercentage ? value / 100 : value / this.totalPrice
       if (ratio > 1) {
-        IKUtils.showError('折扣不能大于原价')
+        IKUtils.showError(this.$t('折扣不能大于原价'))
         return
       }
       await optionalAuthorizeAsync('boss',

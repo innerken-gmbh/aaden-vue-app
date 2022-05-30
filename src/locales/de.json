@@ -465,5 +465,6 @@
   "预定列表": "Buchungsliste",
   "预定设置": "Einstellung von Reservierung",
   "验证错误": "Verifizierungsfehler",
-  "Rows_per_page": "Zeilen pro Seite"
+  "Rows_per_page": "Zeilen pro Seite",
+  "折扣不能大于原价": "Die Rabatte dürfen nicht höher als der ursprüngliche Preis sein"
 }
