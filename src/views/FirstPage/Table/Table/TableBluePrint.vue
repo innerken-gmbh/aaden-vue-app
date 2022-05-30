@@ -355,7 +355,7 @@ export default {
       height: 0,
       x: 0,
       y: 0,
-      scale: parseFloat(Remember.tableBluePrintScale),
+      scale: parseFloat(Remember.tableBluePrintScale || 1),
       reservationDialog: null,
       activeTable: null,
       currentSectionIndex: 0,
