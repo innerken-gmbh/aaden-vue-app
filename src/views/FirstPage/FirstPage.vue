@@ -111,10 +111,10 @@
                 </template>
               </v-list>
               <v-card-actions>
-                <v-btn text @click="hardReload">Clear</v-btn>
+                <v-btn text @click="hardReload">{{ $t('清除') }}</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn text @click="menu = false">Cancel</v-btn>
-                <v-btn color="primary" text @click="useCurrentConfig">Save</v-btn>
+                <v-btn text @click="menu = false">{{ $t('取消') }}</v-btn>
+                <v-btn color="primary" text @click="useCurrentConfig">{{ $t('保存') }}</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -458,7 +458,6 @@
             text-align: center;
             border-radius: 12px;
             z-index: 15;width: fit-content;height: fit-content"
-
             class="pa-4">
       <div>
         <h1>{{ buffer }}</h1>

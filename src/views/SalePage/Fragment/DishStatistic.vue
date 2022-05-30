@@ -7,11 +7,13 @@
         :sort-by="orderBySales ? ['totalPrice']: ['totalCount']"
         :sort-desc="[true]"
         :items="displayItems"
-        :headers="headers">
+        :headers="headers"
+        :footer-props="{'items-per-page-text': $t('Rows_per_page')+':' }"
+      >
         <template v-slot:top>
           <v-subheader style="margin-left: -28px">
             <v-select
-              :label="'Category'"
+              :label="$t('category')"
               :items="dishCategory"
               v-model="appliedFilter.category"
               item-text="langs[0].name"
@@ -21,7 +23,7 @@
             >
             </v-select>
             <v-select
-              :label="'Category Type'"
+              :label="$t('category Type')"
               :items="dishCategoryTypeList"
               v-model="appliedFilter.categoryType"
               item-text="name"
@@ -149,6 +151,7 @@ export default {
     }
   },
   methods: {
+
     async clearFilter () {
       this.appliedFilter.category = null
       this.appliedFilter.categoryType = null
