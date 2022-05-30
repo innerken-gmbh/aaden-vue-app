@@ -123,7 +123,7 @@ export default {
       this.$emit('need-refresh')
     },
     async returnOrder (orderId) {
-      IKUtils.showConfirm(this.$t('Bist du sicher?'), this.$t('Möchten Sie Umsatz Bon stoniren?'), () => {
+      IKUtils.showConfirm(this.$t('Bist du sicher?'), this.$t('Möchten Sie die Rechnung stornieren?'), () => {
         IKUtils.showLoading()
         returnOrder(orderId).then(() => {
           IKUtils.toast()

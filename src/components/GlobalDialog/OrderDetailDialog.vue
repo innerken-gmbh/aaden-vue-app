@@ -1,7 +1,7 @@
 <template>
   <v-card class="fill-height lighten-4 grey">
     <v-subheader>
-      <h2 style="color: black">Order: {{ orderInfo.id }}</h2>
+      <h2 style="color: black">{{ $t('Order') }}: {{ orderInfo.id }}</h2>
       <v-spacer></v-spacer>
       <v-btn icon @click="cancel">
         <v-icon>mdi-close</v-icon>

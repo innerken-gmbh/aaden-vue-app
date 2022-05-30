@@ -231,7 +231,7 @@
   "startDate": "Startdatum",
   "startTime": "Anfangszeit",
   "state": "Bundesland",
-  "statistic": "Statistic",
+  "statistic": "Statistik",
   "statistics": "Statistische Informationen",
   "status": "Zustand",
   "submit": "Senden",
@@ -319,7 +319,7 @@
   "备注": "Notize",
   "外卖": "TOGO",
   "外卖网站设置": "TOGO-Website zum Mitnehmen",
-  "如果需要，请点击这里用键盘输入备注": "Falls erforderlich, klicken Sie bitte hier, um eine Notiz über Ihre Tastatur einzugeben",
+  "如果需要，请点击这里用键盘输入备注": "Falls erforderlich, bitte eine Notiz here eingeben",
   "姓": "Nachname",
   "将要支付": "BEZAHL",
   "小费": "Trinkgeld",
@@ -430,7 +430,6 @@
   "详细账务": "Detaillierte Abrechnung",
   "请使用键盘或直接在右侧输入": "Bitte benutzen Sie die Tastatur oder tippen Sie direkt nach rechts",
   "请输入折扣": "Bitte Rabatt eingeben",
-  "请输入折扣2": "Bitte Rabatt2 eingeben",
   "请输入支出金额，如果是收入就输入负数": "Bitte geben Sie den Betrag der Ausgaben an, geben Sie einen negativen Betrag ein, wenn es sich um Einnahmen handelt",
   "请输入桌号": "Bitte geben Sie die Tischnummer ein",
   "请选择日本餐类型": "Bitte die Janapnische Kategorie auswählen",
@@ -466,5 +465,7 @@
   "预定设置": "Einstellung von Reservierung",
   "验证错误": "Verifizierungsfehler",
   "Rows_per_page": "Zeilen pro Seite",
-  "折扣不能大于原价": "Die Rabatte dürfen nicht höher als der ursprüngliche Preis sein"
+  "折扣不能大于原价": "Die Rabatte dürfen nicht höher als der ursprüngliche Preis sein",
+  "Order": "Bestellung",
+  "Möchten Sie die Rechnung stornieren?": "Möchten Sie die Rechnung stornieren?"
 }
