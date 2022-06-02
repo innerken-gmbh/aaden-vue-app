@@ -1052,20 +1052,22 @@ export default {
       await this.findAndOrderDish(code)
     },
     readBuffer: function (clear = true) {
+      let tempInput = ''
       if (this.input.includes('*')) {
-        let [code, count] = this.input.split('*')
+        let [code, count] = this.getCodeAndCountFromInput(this.input)
         const searchDishCode = this.searchDish?.[this.indexActive]?.code
         if (searchDishCode) {
           code = searchDishCode
         }
         if (GlobalConfig.numberFirst) {
-          [code, count] = [count, code]
+          tempInput = [count, code].join('*')
+        } else {
+          tempInput = [code, count].join('*')
         }
-        this.input = [count, code].join('*')
       } else {
-        this.input = this.searchDish[this.indexActive]?.code ?? this.input
+        tempInput = this.searchDish[this.indexActive]?.code ?? this.input
       }
-      const ins = this.buffer === '' ? this.input : this.buffer
+      const ins = this.buffer === '' ? tempInput : this.buffer
       if (clear) {
         this.displayInput = ''
         this.buffer = ''
