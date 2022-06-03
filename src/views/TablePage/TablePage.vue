@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div @click="keyboardInput=''">
     <template v-cloak>
       <v-main>
         <div style="display: grid;
@@ -339,7 +339,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                   {{ $t('查看分类菜单') }}
                 </v-card>
                 <div class="pa-2 text-h6" style="min-height: 96px">
-                  <template v-if="displayInput">
+                  <template v-if="keyboardInput">
                     {{ Config.numberFirst ? $t('数量 * 菜号') : $t('菜号 * 数量') }}<br>
                     {{ $t('正在输入...') }}
                   </template>
@@ -348,17 +348,17 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                   </template>
                 </div>
                 <v-spacer></v-spacer>
-                <div class="pa-2 flex-shrink-0">
+                <div class="pa-2 flex-shrink-0" @click.stop>
                   <v-text-field
                       hide-details
+                      readonly
                       solo-inverted
                       class="my-2"
                       :placeholder="Config.numberFirst?$t('数量 * 菜号'):$t('菜号 * 数量')"
                       height="96px"
                       style="font-size: 32px"
                       ref="ins"
-                      @input="input=displayInput"
-                      v-model="displayInput"
+                      v-model="keyboardInput"
                   />
                   <keyboard-layout @input="numberInput"
                                    :keys="keyboardLayout"></keyboard-layout>
@@ -544,7 +544,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
       <template v-if="!keyboardMode">
         <keep-alive>
           <v-fade-transition>
-            <v-card v-if="input"
+            <v-card v-if="keyboardInput||currentCodeBuffer"
                     style="position:fixed;top: 0;right: 0;
             margin: auto;
             box-shadow: 0 3px 16px var(--v-primary-lighten4);
@@ -554,7 +554,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
             z-index: 15;width: fit-content;height: fit-content"
                     class="pa-4">
               <div>
-                <h1>{{ input }}</h1>
+                <h1>{{ keyboardInput }}</h1>
               </div>
               <div v-if="searchDish.length>0" style="overflow: hidden"
                    class="flex-shrink-1 blue lighten-5">
@@ -755,7 +755,6 @@ export default {
       consumeTypeList: [],
 
       keyboardLayout: GlobalConfig.topKeyboardKey.split(',').concat(keyboardLayout),
-      displayInput: '',
       feedback: '',
       checkoutShow: false,
       extraDishShow: false,
@@ -789,9 +788,6 @@ export default {
       searchDish: [],
       indexActive: 0,
       Config: GlobalConfig,
-      /* input**/
-      buffer: '',
-      input: '',
       //* */
       splitOrderListModel: splitOrderFactory,
       orderListModel: orderListFactory,
@@ -806,7 +802,11 @@ export default {
       },
       currentDish: defaultCurrentDish,
       cartCurrentDish: null,
-      password: ''
+      password: '',
+
+      /* new input */
+      keyboardInput: '',
+      currentCodeBuffer: ''
 
     }
   },
@@ -890,25 +890,24 @@ export default {
       toast()
     },
     numberInput (key) {
-      if (this.displayInput == null) {
-        this.displayInput = ''
+      if (this.keyboardInput == null) {
+        this.keyboardInput = ''
       }
       switch (key) {
         case 'mdi-close':
-          this.displayInput += '*'
+          this.keyboardInput += '*'
           break
         case 'C':
-          this.displayInput = ''
+          this.keyboardInput = ''
           break
         case 'OK':
-          this.insDecode(this.displayInput)
-          this.displayInput = ''
+          this.insDecode(this.keyboardInput)
+          this.resetInputAndBuffer()
           break
         default:
-          this.displayInput += key
+          this.keyboardInput += key
           break
       }
-      this.input = this.displayInput
     },
 
     changeCategory (id, toggle) {
@@ -996,7 +995,6 @@ export default {
         this.addDish(dish, parseInt(count))
       } else {
         this.feedback = '❌' + this.$t('没有找到菜号为') + ': ' + code + this.$t('的菜品')
-        showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
       }
 
       blockReady()
@@ -1048,33 +1046,7 @@ export default {
       }
     },
     orderOneDish: async function (code) {
-      this.displayInput = ''
       await this.findAndOrderDish(code)
-    },
-    readBuffer: function (clear = true) {
-      let tempInput = ''
-      if (this.input.includes('*')) {
-        let [code, count] = this.getCodeAndCountFromInput(this.input)
-        const searchDishCode = this.searchDish?.[this.indexActive]?.code
-        if (searchDishCode) {
-          code = searchDishCode
-        }
-        if (GlobalConfig.numberFirst) {
-          tempInput = [count, code].join('*')
-        } else {
-          tempInput = [code, count].join('*')
-        }
-      } else {
-        tempInput = this.searchDish[this.indexActive]?.code ?? this.input
-      }
-      const ins = this.buffer === '' ? tempInput : this.buffer
-      if (clear) {
-        this.displayInput = ''
-        this.buffer = ''
-        this.input = ''
-      }
-
-      return ins
     },
     // requestOutTable,
     removeFromSplitOrder: function (index) {
@@ -1163,9 +1135,8 @@ export default {
       blockReady()
     },
     async initialUI (forceReload = false) {
-      this.input = ''
       this.feedback = ''
-      this.displayInput = ''
+      this.resetInputAndBuffer()
       this.discountModelShow = false
       this.buffetDialogShow = false
       this.overrideConsumeTypeIndex = null
@@ -1184,8 +1155,8 @@ export default {
       this.updateActiveDCT(0)
     },
     back () {
-      if (this.displayInput !== '') {
-        this.displayInput = ''
+      if (this.keyboardInput || this.currentCodeBuffer) {
+        this.resetInputAndBuffer()
       } else if (this.discountModelShow) {
         this.discountModelShow = false
       } else if (this.buffetDialogShow) {
@@ -1204,11 +1175,20 @@ export default {
       }
       blockReady()
     },
+
     async searchDishClick (code) {
-      this.input = code
+      this.currentCodeBuffer = code
       await this.findAndOrderDish(code)
-      this.displayInput = ''
+      this.keyboardInput = ''
     },
+
+    resetInputAndBuffer () {
+      this.currentCodeBuffer = ''
+      this.keyboardInput = ''
+      this.indexActive = -1
+      this.updateSearchDish()
+    },
+
     discountClear () {
       this.submitDiscount('')
     },
@@ -1292,19 +1272,19 @@ export default {
       if (this.isSendingRequest) {
         return
       }
-      if (this.displayInput === null) {
-        this.displayInput = ''
+      if (this.keyboardInput === null) {
+        this.keyboardInput = ''
       }
       switch (e.key) {
         case 'Backspace':
-          this.displayInput = ''
-          this.input = this.displayInput
+          this.keyboardInput = ''
           break
         case 'Escape':
           this.back()
           break
         case 'Enter':
-          this.insDecode(this.readBuffer())
+          this.insDecode(this.keyboardInput)
+          this.resetInputAndBuffer()
           e.preventDefault()
           break
         case 'ArrowDown':
@@ -1315,8 +1295,7 @@ export default {
           break
         default:
           if (e.target.nodeName !== 'INPUT' && e.key.length < 3) {
-            this.displayInput += e.key
-            this.input = this.displayInput
+            this.keyboardInput += e.key
           }
       }
     },
@@ -1481,21 +1460,21 @@ export default {
     debounce: debounce((f) => {
       f()
     }, 200, { trailing: true }),
-    getCodeAndCountFromInput (input = '') {
+    getCodeAndCountFromInput (string = '') {
       let [code, count] = ['', 1]
-      if (input.includes('*')) {
-        [code, count] = input.split('*')
+      if (string.includes('*')) {
+        [code, count] = string.split('*')
         if (GlobalConfig.numberFirst) {
           [code, count] = [count, code]
         }
         count = parseInt(count)
       } else {
-        code = input
+        code = string
       }
       return [code, count]
     },
     updateSearchDish () {
-      if (this.input) {
+      if (this.keyboardInput || this.currentCodeBuffer) {
         this.searchDish = this.searchDishes()
       } else {
         this.searchDish = []
@@ -1504,20 +1483,29 @@ export default {
     },
     searchDishes () {
       const list = this.dishes
-      if (this.input) {
-        if (this.input !== '' && !this.input.includes('/')) {
-          const [buffer] = this.getCodeAndCountFromInput(this.input)
+      const searchWord = this.currentCodeBuffer || this.keyboardInput
+      const codeOnly = !!this.currentCodeBuffer
+      if (searchWord) {
+        if (searchWord !== '' && !searchWord.includes('/')) {
+          const [code] = this.getCodeAndCountFromInput(searchWord)
           const result = []
-          for (const d of list) {
-            if (d.code.toLowerCase().startsWith(buffer.toLowerCase())) {
-              d.rank = 999 + d.code.length
-              result.push(d)
-            } else if (d.dishName.toLowerCase().startsWith(buffer.toLowerCase())) {
-              d.rank = d.dishName.length
-              result.push(d)
-            }
-            if (result.length > 5) {
-              break
+          const exactMatch = findDish(code)
+          if (exactMatch) {
+            exactMatch.rank = -999 + exactMatch.code.length
+            result.push(exactMatch)
+          }
+          if (!codeOnly) {
+            for (const d of list) {
+              if (d.code.toLowerCase().startsWith(code.toLowerCase()) && d.code !== code) {
+                d.rank = 999 + d.code.length
+                result.push(d)
+              } else if (d.dishName.toLowerCase().startsWith(code.toLowerCase())) {
+                d.rank = d.dishName.length
+                result.push(d)
+              }
+              if (result.length > 5) {
+                break
+              }
             }
           }
           return result.sort((a, b) => {
@@ -1535,7 +1523,7 @@ export default {
     },
     filterDish () {
       let list = this.dishes
-      if (!this.displayInput) {
+      if (!this.keyboardInput) {
         const dct = this.dct[this.activeDCT]
         list = list.filter((item) => {
           return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
@@ -1546,6 +1534,9 @@ export default {
       }
 
       return list
+    },
+    clearInput () {
+
     }
   },
   computed: {
@@ -1604,9 +1595,7 @@ export default {
   },
   watch: {
     activeDCT: function (val) {
-      console.log(val)
-      this.input = null
-      this.displayInput = null
+      this.keyboardInput = ''
       this.activeCategoryId = null
       this.updateFilteredDish()
     },
@@ -1616,7 +1605,11 @@ export default {
     activeCategoryId: function (val) {
       this.updateFilteredDish()
     },
-    input: function () {
+    keyboardInput: function () {
+      if (this.keyboardInput) {
+        this.currentCodeBuffer = ''
+        this.indexActive = ''
+      }
       this.debounce(
         this.updateSearchDish
       )
