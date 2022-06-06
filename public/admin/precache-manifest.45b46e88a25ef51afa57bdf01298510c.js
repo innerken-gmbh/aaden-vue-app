@@ -36,7 +36,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "Images/关于我们/虚线@2x.png"
   },
   {
-    "revision": "362796c2ba8e018504d2",
+    "revision": "6c1a65903896ab632c54",
     "url": "css/app.cb82bfcf.css"
   },
   {
@@ -104,10 +104,6 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "css/chunk-5032dc3f.e9c514cd.css"
   },
   {
-    "revision": "a5916a8a624b6f2d1742",
-    "url": "css/chunk-546474f4.89ae370a.css"
-  },
-  {
     "revision": "096a25720c30e26b5fcb",
     "url": "css/chunk-58485d56.2d52ccdd.css"
   },
@@ -142,6 +138,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "d17e90ed80a4c60357c1",
     "url": "css/chunk-699ef3d1.2c6579cf.css"
+  },
+  {
+    "revision": "50c3e25b436d1c907b89",
+    "url": "css/chunk-71e3c806.7d5d75c7.css"
   },
   {
     "revision": "c6f0f76d84ac5d0f061a",
@@ -328,12 +328,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "img/vuetify.c0e24719.svg"
   },
   {
-    "revision": "094fb5ea23e6a2a41ca1750e2543ee5b",
+    "revision": "69ec5d2592f40e4aca4ed395ffcf7819",
     "url": "index.html"
   },
   {
-    "revision": "362796c2ba8e018504d2",
-    "url": "js/app.5ecf445d.js"
+    "revision": "6c1a65903896ab632c54",
+    "url": "js/app.6d4329f7.js"
   },
   {
     "revision": "b44e2edea64a3b366ddf",
@@ -544,10 +544,6 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "js/chunk-53dbd874.2d1d8561.js"
   },
   {
-    "revision": "a5916a8a624b6f2d1742",
-    "url": "js/chunk-546474f4.fb292a80.js"
-  },
-  {
     "revision": "fc2e96c434aa0a7cefbb",
     "url": "js/chunk-565b1754.54d9e889.js"
   },
@@ -618,6 +614,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
     "revision": "24f9dc258d274a8e7bdf",
     "url": "js/chunk-6fb364a2.115b144b.js"
+  },
+  {
+    "revision": "50c3e25b436d1c907b89",
+    "url": "js/chunk-71e3c806.9beed863.js"
   },
   {
     "revision": "7022c55baa4c17af87c7",
