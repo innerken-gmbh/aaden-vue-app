@@ -6,13 +6,14 @@ name: Merge Admin
 on:
   - workflow_dispatch
   - push
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Commit File
         uses: actions/checkout@v2
+
 
       - name: ADMIN
         uses: actions/checkout@v2
