@@ -14,6 +14,7 @@
           </div>
         </div>
         <div style="display: grid;grid-auto-flow: row;;grid-gap: 12px">
+
           <v-card
               style="width: 100%"
               v-for="m in menuList"
@@ -39,7 +40,6 @@
 
       </v-card>
 
-      
     </v-navigation-drawer>
     <v-main app>
       <router-view></router-view>
