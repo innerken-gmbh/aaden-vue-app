@@ -1,5 +1,6 @@
 <template>
   <div>
+
     <v-navigation-drawer
         mini-variant
         permanent stateless
