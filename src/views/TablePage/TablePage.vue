@@ -292,7 +292,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
 
                 <div v-if="searchDish.length>0" style="overflow: hidden"
                      class="flex-shrink-1 blue lighten-5">
-                  <v-card elevation="0" class="pa-1 py-3">
+                  <v-card elevation="0" class="px-2 py-3">
                     {{ $t('搜索结果') }}
                   </v-card>
                   <!--                  需要监听键盘的地方-->
