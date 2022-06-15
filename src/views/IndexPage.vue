@@ -1,5 +1,6 @@
 <template>
   <div>
+
     <v-navigation-drawer
         mini-variant
         permanent stateless
@@ -14,6 +15,7 @@
           </div>
         </div>
         <div style="display: grid;grid-auto-flow: row;;grid-gap: 12px">
+
           <v-card
               style="width: 100%"
               v-for="m in menuList"
