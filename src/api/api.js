@@ -21,7 +21,12 @@ export async function printZBon () {
 
 export async function printZBonUseDate (startDate, endDate, printByDay = 1, resetTable = 0) {
   return (await hillo.post('ZBon.php?op=printZbonBySpan',
-    { startDate, endDate, printByDay, resetTable }))
+    {
+      startDate,
+      endDate,
+      printByDay,
+      resetTable
+    }))
 }
 
 export async function ZBonList () {
