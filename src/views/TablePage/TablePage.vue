@@ -1266,6 +1266,7 @@ export default {
       }
     },
     listenKeyDown (e) {
+      console.log(e)
       if (Swal.isVisible()) {
         return
       }
@@ -1444,7 +1445,7 @@ export default {
       }, 20)
     },
     async realInitial () {
-      window.onkeyup = this.listenKeyDown
+      window.onkeydown = this.listenKeyDown
       await this.initialUI(true)
     },
     updateActiveDCT (index) {
@@ -1625,7 +1626,7 @@ export default {
       this.reloadDish(val, true)
     }
   },
-  async created () {
+  async mounted () {
     await getConsumeTypeList()
     await this.getDCT()
     const selectableId = GlobalConfig.selectableConsumeTypeId?.split(',')
