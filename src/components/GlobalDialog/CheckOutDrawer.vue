@@ -1,5 +1,5 @@
 <template>
-  <v-navigation-drawer width="fit-content" left fixed temporary v-model="realShow" touchless>
+  <v-navigation-drawer width="fit-content" left fixed temporary v-model="realShow" touchless stateless>
     <v-card class="fill-height">
       <check-out-calculator
           :id="id"
