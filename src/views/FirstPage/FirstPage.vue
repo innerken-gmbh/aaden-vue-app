@@ -727,6 +727,7 @@ export default {
         await Promise.all(this.falsePrinterList.map(async (i) => {
           await PrinterList.reprint(i)
         }))
+        await this.refreshPrinterList()
       } catch (e) {
 
       }
