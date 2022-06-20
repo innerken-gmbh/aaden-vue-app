@@ -1266,7 +1266,6 @@ export default {
       }
     },
     listenKeyDown (e) {
-      console.log(e)
       if (Swal.isVisible()) {
         return
       }
