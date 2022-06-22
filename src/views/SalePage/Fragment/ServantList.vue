@@ -2,93 +2,96 @@
   <div style="max-height: calc(100vh - 112px); overflow-y: scroll">
     <div class="d-flex">
       <div
-        class="mt-2 mx-4 flex-grow-1">
+          class="mt-2 mx-4 flex-grow-1">
         <div
-          style="display: grid; grid-template-columns: repeat(3,1fr); grid-gap: 20px; grid-auto-rows: 305px;min-height: calc(90vh - 120px)">
+            style="display: grid; grid-template-columns: repeat(3,1fr); grid-gap: 20px; grid-auto-rows: 315px;min-height: calc(90vh - 120px)">
           <div
-            v-for="s in displayServantInfo"
-            :key="s.servant.id"
-            style="background: #f0f0f0;overflow: visible; border-radius: 16px; "
-            :style="activeId===s.servant.id ? {zIndex: 100}:{}"
-            @click="changeActiveId(s.servant.id)"
+              v-for="s in displayServantInfo"
+              :key="s.servant.id"
+              style="background: #f0f0f0;overflow: visible; border-radius: 16px;"
+              :style="activeId===s.servant.id ? {zIndex: 100}:{}"
+              @click="changeActiveId(s.servant.id)"
           >
-            <div
-              style="background: #f0f0f0;"
-              class="pa-2"
-            >
-              <div class="d-flex justify-space-between align-center py-2">
-                <div class="display-1">
-                  {{ s.servant.name }}
-                </div>
-                <v-btn
-                  class="mr-0"
-                  small
-                  color="warning"
-                  @click="singleZBon(s.servant.password)"
-                >
-                  {{ $t('打印日结单') }}
-                </v-btn>
-              </div>
-
-              <v-divider></v-divider>
-              <div>
-                <div class="py-2">
-                  <div
-                    v-for="pay in fillPayMethodTotal(s.payMethodTotal,activeId!==s.servant.id)"
-                    :key="pay.id"
-                    class="d-flex justify-space-between pt-1"
-                  >
-                    <div class="label">
-                      {{ pay.name }}
-                    </div>
-                    <div class="value font-weight-bold">
-                      {{ pay.amount | priceDisplay }}
-                    </div>
+            <div>
+              <div
+                  style="background: #f0f0f0;border-radius: 16px;border: 5px solid black"
+                  class="pa-2"
+              >
+                <div class="d-flex justify-space-between align-center py-2">
+                  <div class="display-1">
+                    {{ s.servant.name }}
                   </div>
-
-                  <div
-                    class="d-flex justify-start py-1"
+                  <v-btn
+                      class="mr-0"
+                      small
+                      color="warning"
+                      @click="singleZBon(s.servant.password)"
                   >
-                    <div
-                      v-if="activeId!==s.servant.id"
-                      style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
-                    >
-                      {{ $t('展示更多') }}
-                    </div>
-                    <div
-                      v-else
-                      style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
-                    >
-                      {{ $t('收起') }}
-                    </div>
-                  </div>
+                    {{ $t('打印日结单') }}
+                  </v-btn>
                 </div>
 
                 <v-divider></v-divider>
+                <div>
+                  <div class="py-2">
+                    <div
+                        v-for="pay in fillPayMethodTotal(s.payMethodTotal,activeId!==s.servant.id)"
+                        :key="pay.id"
+                        class="d-flex justify-space-between pt-1"
+                    >
+                      <div class="label">
+                        {{ pay.name }}
+                      </div>
+                      <div class="value font-weight-bold">
+                        {{ pay.amount | priceDisplay }}
+                      </div>
+                    </div>
 
-                <div
-                  class="d-flex justify-space-between pt-1"
-                >
-                  <div class="label">
-                    {{ $t('小费') }}
+                    <div
+                        class="d-flex justify-start py-1"
+                    >
+                      <div
+                          v-if="activeId!==s.servant.id"
+                          style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
+                      >
+                        {{ $t('展示更多') }}
+                      </div>
+                      <div
+                          v-else
+                          style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
+                      >
+                        {{ $t('收起') }}
+                      </div>
+                    </div>
                   </div>
-                  <div class="value font-weight-bold">
-                    {{ s.tipIncome ? s.tipIncome : 0 | priceDisplay }}
-                  </div>
-                </div>
 
-                <div
-                  class="d-flex justify-space-between pt-1 "
-                >
-                  <div class="label">
-                    {{ $t('今日总计(含小费)') }}
+                  <v-divider></v-divider>
+
+                  <div
+                      class="d-flex justify-space-between pt-1"
+                  >
+                    <div class="label">
+                      {{ $t('小费') }}
+                    </div>
+                    <div class="value font-weight-bold">
+                      {{ s.tipIncome ? s.tipIncome : 0 | priceDisplay }}
+                    </div>
                   </div>
-                  <div class="value font-weight-bold">
-                    {{ s.todayTotal ? s.todayTotal : 0 | priceDisplay }}
+
+                  <div
+                      class="d-flex justify-space-between pt-1 "
+                  >
+                    <div class="label">
+                      {{ $t('今日总计(含小费)') }}
+                    </div>
+                    <div class="value font-weight-bold">
+                      {{ s.todayTotal ? s.todayTotal : 0 | priceDisplay }}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
