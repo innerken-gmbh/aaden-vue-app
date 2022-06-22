@@ -28,11 +28,11 @@
             </td>
             <td>
               <v-btn
-                text
-                :disabled="order.isReturned==='1'"
-                @click="reprintOrder(order.orderId)"
-                small
-                color="primary">
+                  text
+                  :disabled="order.isReturned==='1'"
+                  @click="reprintOrder(order.orderId)"
+                  small
+                  color="primary">
                 <v-icon left>
                   mdi-printer-settings
                 </v-icon>
@@ -62,13 +62,22 @@
         </tbody>
       </template>
     </v-simple-table>
+    <v-dialog v-model="reprintDialog" max-width="300px">
+      <v-card>
+        <v-card-title>{{ $t('选择补打账单类型') }}</v-card-title>
+        <v-card-text>
+          <v-btn block large elevation="0" @click="realReprintOrder">{{ $t('公司账单') }}</v-btn>
+          <v-btn block large class="mt-4" elevation="0" @click="realReprintOrder(0)">{{ $t('普通账单') }}</v-btn>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <v-dialog v-model="checkOutDialog" fullscreen>
       <v-card width="100%">
         <check-out-calculator
-          style="height: 564px"
-          @payment-cancel="checkOutDialog=false"
-          @payment-submit="changePaymentMethod"
-          :total="changeOrderTotal"
+            style="height: 564px"
+            @payment-cancel="checkOutDialog=false"
+            @payment-submit="changePaymentMethod"
+            :total="changeOrderTotal"
         ></check-out-calculator>
       </v-card>
     </v-dialog>
@@ -100,6 +109,8 @@ export default {
       checkOutDialog: null,
       changeOrderTotal: 0,
       changeOrderId: null,
+      reprintOrderId: null,
+      reprintDialog: null,
       selectedOrder: null
     }
   },
@@ -132,9 +143,13 @@ export default {
       })
     },
     async reprintOrder (orderId) {
+      this.reprintOrderId = orderId
+      this.reprintDialog = true
+    },
+    async realReprintOrder (type = 1) {
       IKUtils.showLoading()
-      const needPrintCompany = await IKUtils.showConfirmAsyn(this.$t('是否需要打印公司账单'), this.$t('重新打印'))
-      await reprintOrder(orderId, needPrintCompany.isConfirmed ? 1 : 0)
+      await reprintOrder(this.reprintOrderId, type)
+      this.reprintDialog = false
       IKUtils.toast()
     },
     startChangePaymentMethodForOrder (order) {

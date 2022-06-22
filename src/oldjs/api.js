@@ -34,10 +34,6 @@ export function openDrawer () {
   hillo.get('Printer.php?op=openDrawer')
 }
 
-export function fetchOrder () {
-  hillo.get('CloudStuff/FetchOrdersForAllTerminal.php')
-}
-
 /**
  * @param pw
  * @param {string} tableId
@@ -101,12 +97,6 @@ export async function getTableListWithCells () {
   })
 }
 
-export async function addNewTable (table) {
-  table.name = table.tableName
-  table.seatCount = table?.cells?.length ?? 0
-  return (await hillo.post('Tables.php?op=add', table)).content.id
-}
-
 export async function setTableLocation (table) {
   table.cellsJson = JSON.stringify(table.cells)
   return (await hillo.post('Tables.php?op=setTableLocation', table))
@@ -128,10 +118,6 @@ export async function getServantList () {
 
 export async function getSectionList () {
   return (await hillo.get('Section.php?op=view')).content
-}
-
-export async function updateSection (section) {
-  return (await hillo.post('Section.php?op=updateSize', section))
 }
 
 export function getColorLightness (c) {
