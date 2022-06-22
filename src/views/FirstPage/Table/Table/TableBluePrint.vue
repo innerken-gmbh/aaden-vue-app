@@ -50,7 +50,7 @@
       </v-card>
       <div class="d-flex">
         <v-btn-toggle dense class="mr-2">
-          <v-btn @click="scale-=0.05">
+          <v-btn v-if="editing" @click="scale-=0.05">
             <v-icon>mdi-minus</v-icon>
           </v-btn>
           <v-btn @click="editing=!editing">
@@ -60,9 +60,8 @@
             <template v-else>
               <v-icon>mdi-content-save</v-icon>
             </template>
-
           </v-btn>
-          <v-btn @click="scale+=0.05">
+          <v-btn v-if="editing" @click="scale+=0.05">
             <v-icon>mdi-plus</v-icon>
           </v-btn>
           <v-btn v-if="editing" @click="refreshTables">
