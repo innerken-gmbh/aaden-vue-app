@@ -31,7 +31,6 @@
                     {{ $t('打印日结单') }}
                   </v-btn>
                 </div>
-
                 <v-divider></v-divider>
                 <div>
                   <div class="py-2">
