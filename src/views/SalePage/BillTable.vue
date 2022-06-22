@@ -64,10 +64,15 @@
     </v-simple-table>
     <v-dialog v-model="reprintDialog" max-width="300px">
       <v-card>
-        <v-card-title>{{ $t('选择补打账单类型') }}</v-card-title>
+        <v-card-title>{{ $t('tableCheckOutBillTypeLabel') }}</v-card-title>
         <v-card-text>
-          <v-btn block large elevation="0" @click="realReprintOrder">{{ $t('公司账单') }}</v-btn>
-          <v-btn block large class="mt-4" elevation="0" @click="realReprintOrder(0)">{{ $t('普通账单') }}</v-btn>
+          <v-btn block large elevation="0" @click="realReprintOrder">{{
+              $t('tableCheckOutBillTypeOptionCompany')
+            }}
+          </v-btn>
+          <v-btn block large class="mt-4" elevation="0" @click="realReprintOrder(0)">
+            {{ $t('tableCheckOutBillTypeOptionNormal') }}
+          </v-btn>
         </v-card-text>
       </v-card>
     </v-dialog>
