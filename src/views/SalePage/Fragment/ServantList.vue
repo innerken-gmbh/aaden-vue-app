@@ -24,6 +24,7 @@
                   <v-btn
                       class="mr-0"
                       small
+                      elevation="0"
                       color="warning"
                       @click="singleZBon(s.servant.password)"
                   >
