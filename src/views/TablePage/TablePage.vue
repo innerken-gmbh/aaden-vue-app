@@ -77,8 +77,7 @@
                 <v-card class="d-flex align-center" color="primary">
                   <v-btn large :loading="isSendingRequest"
                          elevation="0"
-                         dark
-                         color="warning"
+                         color="primary"
                          @click="orderDish(cartListModel.list,false)" class="mr-1 ml-2">
                     <v-icon>mdi-printer-off</v-icon>
                   </v-btn>
