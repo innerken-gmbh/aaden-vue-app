@@ -9,6 +9,7 @@
           overflow: scroll"
       >
         <table-blue-print
+            v-if="realShow"
             :additional-filter="tableFilter"
             :out-side-table-list="tableList"
             :editing="false"

@@ -1048,7 +1048,6 @@ export default {
     orderOneDish: async function (code) {
       await this.findAndOrderDish(code)
     },
-    // requestOutTable,
     removeFromSplitOrder: function (index) {
       const realItem = IKUtils.deepCopy(this.splitOrderListModel.list[index])
       this.splitOrderListModel.add(realItem, -1)
