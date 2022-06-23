@@ -215,7 +215,6 @@ const defaultRealName = {
   'mdi-credit-card-outline': '2',
   KreditCard: '3',
   Gutschein: '4',
-  SumUp: '10',
   'mdi-dots-horizontal': 'more'
 }
 export default {
@@ -240,7 +239,7 @@ export default {
       extraPaymentMethod: [
         'mdi-card-account-details',
         'mdi-cards'],
-      extraPaymentMethodName: ['Gutschein', 'SumUp'],
+      extraPaymentMethodName: ['Gutschein'],
       paymentLog: [],
       milePayLog: [],
       PaymentStatus
