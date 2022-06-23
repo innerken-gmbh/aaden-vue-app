@@ -46,7 +46,6 @@
                         {{ pay.amount | priceDisplay }}
                       </div>
                     </div>
-
                     <div
                         class="d-flex justify-start py-1"
                     >
@@ -64,9 +63,7 @@
                       </div>
                     </div>
                   </div>
-
                   <v-divider></v-divider>
-
                   <div
                       class="d-flex justify-space-between pt-1"
                   >
@@ -77,7 +74,6 @@
                       {{ s.tipIncome ? s.tipIncome : 0 | priceDisplay }}
                     </div>
                   </div>
-
                   <div
                       class="d-flex justify-space-between pt-1 "
                   >
@@ -91,7 +87,6 @@
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -152,9 +147,11 @@ export default {
     async loadServantsInfo () {
       this.servantInfo = []
       for (const s of this.servantList) {
-        this.servantInfo.push(Object.assign({}, defaultDisplayData,
+        this.servantInfo.push(Object.assign({},
+          defaultDisplayData,
           await getBillListForServant(s.password,
-            ...this.singleZBonDate)))
+            ...this.singleZBonDate
+          )))
       }
     },
     async singleZBon (pw, startDate, endDate) {
