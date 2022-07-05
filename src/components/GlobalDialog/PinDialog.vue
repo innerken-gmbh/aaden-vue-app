@@ -7,7 +7,9 @@
       <span class="caption"></span>
       <div class="pa-1">
         <template v-if="!loading">
-          <div style="display: grid;grid-template-columns: repeat(3,1fr);grid-gap: 16px" class="pa-4">
+          <div style="display: grid;grid-gap: 16px" class="pa-4"
+               :style="{gridTemplateColumns:'repeat('+(slots.length>3?slots.length:3)+',1fr)'}"
+          >
             <template v-for="(s,i) in slots">
               <div :key="i" class="slot" :class="s.length>0?'':' empty'">{{ s ? s : '-' }}</div>
             </template>
