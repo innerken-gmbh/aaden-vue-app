@@ -14,12 +14,12 @@
           </div>
           <v-text-field
               style="width: 0;height: 0"
-
               autofocus
               @keydown.enter="check"
               @focus="focusEnd" ref="hiddenInput" type="search"
               autocomlete="off" dense hide-details
-              v-model="hiddenInput"></v-text-field>
+              v-model="hiddenInput"
+          />
           <keyboard-layout :keys="keyboardLayout" @input="numberInput"/>
         </template>
         <template v-else>
@@ -41,6 +41,7 @@
 import { mapMutations, mapState } from 'vuex'
 import { checkServant } from '@/oldjs/api'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
+import hillo from 'hillo'
 
 const keyboardLayout =
     [
@@ -75,6 +76,15 @@ export default {
   methods: {
     ...mapMutations(['HIDE_AUTHORIZE_DIALOG', 'AUTHORIZE_OK']),
     async check () {
+      if (this.isAuthorizeTypeSuper) {
+        try {
+          const res = await hillo.silentGet('Servant.php?op=bossStartWith', { pw: this.localPinInput })
+          console.log(res)
+          return
+        } catch (e) {
+
+        }
+      }
       this.loading = true
       try {
         await checkServant(this.isAuthorizeTypeSuper, this.localPinInput, this.tableId)
@@ -104,7 +114,7 @@ export default {
         case '9':
         case '0':
         case '.':
-          if (this.localPinInput.length === 3) {
+          if (this.localPinInput.length === 6) {
             return
           }
           this.localPinInput += key
@@ -140,12 +150,13 @@ export default {
       }
     },
     hiddenInput (val) {
-      if (this.localPinInput !== val.slice(0, 3)) {
-        this.localPinInput = val.slice(0, 3)
+      console.log(val)
+      if (this.localPinInput !== val.slice(0, 6)) {
+        this.localPinInput = val.slice(0, 6)
       }
     },
     localPinInput (val) {
-      if (val?.length === 3) {
+      if (val?.length >= 3) {
         this.check()
       }
       this.hiddenInput = val

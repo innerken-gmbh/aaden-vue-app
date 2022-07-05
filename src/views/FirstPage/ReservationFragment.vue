@@ -225,7 +225,6 @@
         </div>
       </v-card>
     </v-dialog>
-
     <v-dialog max-width="600px" v-model="reservationAddDialog">
       <v-card style="border-radius: 12px"
               class="pa-4" elevation="0" color="grey lighten-4" v-if="reservationStep===0">
