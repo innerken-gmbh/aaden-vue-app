@@ -82,7 +82,9 @@ export default {
         try {
           const res = await hillo.silentGet('Servant.php?op=bossStartWith', { pw: this.localPinInput })
           console.log(res)
-          return
+          if (!res) {
+            return
+          }
         } catch (e) {
 
         }
