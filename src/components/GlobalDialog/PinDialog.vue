@@ -80,8 +80,8 @@ export default {
     async check () {
       if (this.isAuthorizeTypeSuper) {
         try {
-          const res = await hillo.silentGet('Servant.php?op=bossStartWith', { pw: this.localPinInput })
-          console.log(res)
+          const res = (await hillo.silentGet('Servant.php?op=bossStartWith', { pw: this.localPinInput })).content
+          console.log(res, 'res')
           if (!res) {
             return
           }
