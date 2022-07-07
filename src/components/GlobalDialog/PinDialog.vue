@@ -78,17 +78,16 @@ export default {
   methods: {
     ...mapMutations(['HIDE_AUTHORIZE_DIALOG', 'AUTHORIZE_OK']),
     async check () {
-      if (this.isAuthorizeTypeSuper) {
-        try {
-          const res = (await hillo.silentGet('Servant.php?op=bossStartWith', { pw: this.localPinInput })).content
-          console.log(res, 'res')
-          if (!res) {
-            return
-          }
-        } catch (e) {
-
+      try {
+        const res = (await hillo.silentGet('Servant.php?op=bossStartWith', { pw: this.localPinInput })).content
+        console.log(res, 'res')
+        if (!res) {
+          return
         }
+      } catch (e) {
+
       }
+
       this.loading = true
       try {
         await checkServant(this.isAuthorizeTypeSuper, this.localPinInput, this.tableId)
