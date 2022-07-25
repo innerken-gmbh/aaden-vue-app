@@ -210,9 +210,10 @@ const defaultRealName = {
   'mdi-backspace': 'back',
   'mdi-restart': 'clear',
   'mdi-circle-small': '.',
-  'mdi-cash-usd': '1',
-  'mdi-bell': '9',
-  'mdi-credit-card-outline': '2',
+  BAR: '1',
+  RÜC: '1',
+  TIP: '9',
+  EC: '2',
   KreditCard: '3',
   Gutschein: '4',
   'mdi-dots-horizontal': 'more'
@@ -251,14 +252,14 @@ export default {
         return [
           [1, 2, 3, 'mdi-minus'],
           [4, 5, 6, 'mdi-backspace'],
-          [7, 8, 9, 'mdi-credit-card-outline'],
-          ['', 0, 'mdi-circle-small', 'mdi-cash-usd']]
+          [7, 8, 9, 'EC'],
+          ['', 0, 'mdi-circle-small', 'BAR']]
       } else {
         return [
           [1, 2, 3, 'mdi-minus'],
           [4, 5, 6, 'mdi-backspace'],
-          [7, 8, 9, 'mdi-bell'],
-          ['', 0, 'mdi-circle-small', 'mdi-cash-usd']]
+          [7, 8, 9, 'TIP'],
+          ['', 0, 'mdi-circle-small', 'RÜC']]
       }
     },
     realExtraPaymentMethod: function () {
@@ -357,7 +358,7 @@ export default {
           this.paymentLog.push({
             id: 9,
             price: this.remainTotal,
-            icon: 'mdi-bell',
+            icon: 'TIP',
             hash: +this.paymentLog.length + 'p' + price + 'icon' + icon
           })
         }
@@ -369,6 +370,7 @@ export default {
         return
       }
       const icon = Object.entries(this.realName).find(([k, v]) => v === type)[0]
+      console.log(icon)
       const hash = this.paymentLog.length + 'p' + price + 'icon' + icon
       const obj = {
         id: type,
