@@ -271,6 +271,7 @@
             <div style="display: grid;grid-gap: 12px;overflow-y: scroll;max-height:calc(100vh - 150px) ;"
                  class="mt-4">
               <takeaway-order-item
+                  @reject="rejectOrder"
                   @accept="acceptOrder"
                   :big-card="true"
                   v-for="t in notAccepted"
@@ -481,7 +482,7 @@
 <script>
 import { version } from '../../../package.json'
 import {
-  blockReady,
+  blockReady, fastSweetAlertRequest,
   findConsumeTypeById,
   getAllDishes,
   getConsumeTypeList,
@@ -518,6 +519,7 @@ import TimeDisplay from '@/components/Base/TimeDisplay'
 import TakeawayOrderItem from '@/views/FirstPage/Table/Table/Item/TakeawayOrderItem'
 import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
 import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
+import i18n from '@/i18n'
 
 const keyboardLayout =
     [
@@ -632,7 +634,14 @@ export default {
       await acceptOrder(reason, id)
       await this.refreshTables()
     },
-
+    async rejectOrder (id) {
+      const res = await fastSweetAlertRequest(i18n.t('Ablehnen, ein Ground Eingeben'), 'text',
+        'Orders.php?op=rejectTakeAwayOrder', 'reason',
+        { tableId: id })
+      if (res) {
+        await this.refreshTables()
+      }
+    },
     togoClick () {
       if (this.takeawayList.length > 0) {
         this.showOtherOrder = !this.showOtherOrder
