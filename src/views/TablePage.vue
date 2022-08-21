@@ -289,6 +289,7 @@
                   icon="mdi-silverware"
                   :text="$t('ChangeToBuffet')"
                   color="#ff7961"
+                  v-hide-simple
                   @click="buffetDialogShow=true"
               />
             </div>
