@@ -13,7 +13,5 @@
     "buffetRound"
   ],
   "milePayPort": 8181,
-  "minTileSize": 80,
-  "defaultTileHeight": 120,
-  "defaultTileWidth": 100
+  "minTileSize": 80
 }
