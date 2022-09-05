@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-simple-table height="calc(100vh - 64px)" fixed-header class="transparent">
+    <v-simple-table height="calc(100vh - 136px)" fixed-header class="transparent">
       <template v-slot:default>
         <thead class="transparent">
         <tr>
