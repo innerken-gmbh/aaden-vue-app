@@ -111,7 +111,6 @@
                   class="ml-8"
                   :should-open-menu.sync="addressFormOpen"
                   @address-change="submitRawAddressInfo"
-                  v-if="consumeTypeId===2"
                   @accept="acceptOrderWithTime"
                   @reject="rejectOrder"
                   :consume-type-status-id="consumeTypeStatusId"
@@ -433,14 +432,15 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                   color="#ffb13b"
                   @click="changeServant"
               />
+              <grid-button
+                  :loading="isSendingRequest"
+                  icon="mdi-map"
+                  :text="$t('customerAddress')"
+                  color="indigo"
+                  @click="addressFormOpen=true"
+              />
               <template v-if="consumeTypeId===2">
-                <grid-button
-                    :loading="isSendingRequest"
-                    icon="mdi-map"
-                    :text="$t('customerAddress')"
-                    color="indigo"
-                    @click="addressFormOpen=true"
-                />
+
                 <template v-if="consumeTypeStatusId<2">
                   <template
                       v-for="(time) in [0,15,20,30,60]"
