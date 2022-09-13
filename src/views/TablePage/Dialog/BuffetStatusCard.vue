@@ -3,13 +3,13 @@
     <v-list dense>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>{{ $t('当前轮数') }}/{{ $t('总轮数') }}</v-list-item-title>
+          <v-list-item-title>{{ $t('current_round') }}/{{ $t('total_number_of_rounds') }}</v-list-item-title>
         </v-list-item-content>
         <v-list-item-action-text>{{ currentRound }}/{{ tableBuffetConfig.totalRound }}</v-list-item-action-text>
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>{{ $t('每轮时间') }}/{{ $t('总用餐时间') }}</v-list-item-title>
+          <v-list-item-title>{{ $t('time_per_round_min') }}/{{ $t('maximum_mealtime_min') }}</v-list-item-title>
         </v-list-item-content>
         <v-list-item-action-text>
           {{ tableBuffetConfig.roundTime / 60 }}
@@ -19,7 +19,7 @@
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>{{ $t('成人/儿童可点菜品数') }}</v-list-item-title>
+          <v-list-item-title>{{ $t('adult_child_can_order_per_round') }}</v-list-item-title>
         </v-list-item-content>
         <v-list-item-action-text>{{
             tableBuffetConfig.roundDishCount

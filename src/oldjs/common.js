@@ -132,7 +132,7 @@ export async function openOrEnterTable (number, password) {
         return
       }
       if (GlobalConfig.useOpenTableConfirm && !GlobalConfig.usePassword) {
-        const result = await showConfirmAsyn(capitalize(number) + i18n.t(' Öffnen?'), i18n.t('Neue Tisch'))
+        const result = await showConfirmAsyn(capitalize(number) + i18n.t(' open_table'), i18n.t('Neue Tisch'))
         if (!result.isConfirmed) {
           return
         }

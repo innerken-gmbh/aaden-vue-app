@@ -20,18 +20,18 @@
                     hide-details
                     autocomlete="off"
                     type="search"
-                    :label="$t('电话')"
+                    :label="$t('telefon')"
                     v-model="searchTel"
                     autofocus
                 />
                 <v-row>
                   <v-col cols="6">
                     <v-text-field hide-details autocomlete="off"
-                                  type="search" :label="$t('名')" v-model="rawAddressInfo.firstName"></v-text-field>
+                                  type="search" :label="$t('first_name')" v-model="rawAddressInfo.firstName"></v-text-field>
                   </v-col>
                   <v-col cols="6">
                     <v-text-field hide-details autocomlete="off"
-                                  type="search" :label="$t('姓')" v-model="rawAddressInfo.lastName"></v-text-field>
+                                  type="search" :label="$t('last_name')" v-model="rawAddressInfo.lastName"></v-text-field>
                   </v-col>
                 </v-row>
                 <vuetify-google-autocomplete
@@ -40,7 +40,7 @@
                     autocomlete="off"
                     id="map"
                     country="DE"
-                    :placeholder="$t('地址搜索')"
+                    :placeholder="$t('address_search')"
                     clearable
                     :component-restrictions="
                           Config.autoCompletePLZ.split(',').length>0?Config.autoCompletePLZ.split(','):
@@ -49,31 +49,31 @@
                 />
                 <v-row dense>
                   <v-col cols="6">
-                    <v-text-field hide-details :label="$t('地址行1')" autocomlete="off"
+                    <v-text-field hide-details :label="$t('address1')" autocomlete="off"
                                   type="search" v-model="rawAddressInfo.addressLine1"></v-text-field>
                   </v-col>
                   <v-col cols="6">
-                    <v-text-field hide-details :label="$t('地址行2')" autocomlete="off"
+                    <v-text-field hide-details :label="$t('address2')" autocomlete="off"
                                   type="search" v-model="rawAddressInfo.addressline2"></v-text-field>
                   </v-col>
                   <v-col cols="6">
-                    <v-text-field hide-details :label="$t('城市')" autocomlete="off"
+                    <v-text-field hide-details :label="$t('City')" autocomlete="off"
                                   type="search" v-model="rawAddressInfo.city"></v-text-field>
                   </v-col>
                   <v-col cols="6">
-                    <v-text-field hide-details :label="$t('邮编')" autocomlete="off"
+                    <v-text-field hide-details :label="$t('postcode')" autocomlete="off"
                                   type="search" v-model="rawAddressInfo.plz"></v-text-field>
                   </v-col>
                 </v-row>
-                <v-text-field hide-details :label="$t('邮箱')" autocomlete="off"
+                <v-text-field hide-details :label="$t('Email')" autocomlete="off"
                               type="search" v-model="rawAddressInfo.email"></v-text-field>
                 <v-row dense>
                   <v-col cols="3">
                     <v-btn color="error" block @click="createUser=false">{{ $t('return') }}</v-btn>
                   </v-col>
                   <v-col cols="9">
-                    <v-btn v-if="userIsNew" color="primary" @click="submitNewUserInfo" block>{{ $t('新增用户') }}</v-btn>
-                    <v-btn v-else @click="updateUserInfo" color="warning" block>{{ $t('更新用户') }}</v-btn>
+                    <v-btn v-if="userIsNew" color="primary" @click="submitNewUserInfo" block>{{ $t('new_users') }}</v-btn>
+                    <v-btn v-else @click="updateUserInfo" color="warning" block>{{ $t('update_users_info') }}</v-btn>
                   </v-col>
                 </v-row>
               </template>
@@ -81,14 +81,14 @@
                 <v-text-field
                     clearable
                     v-model="searchTel"
-                    :label="$t('电话查找')"
+                    :label="$t('telefonsearch')"
                     autocomplete="off"
                     hide-details
                     type="search"
                 />
                 <v-divider></v-divider>
                 <div v-if="telHint.length===0">
-                  <v-btn color="primary" block @click="startCreateUser">{{ $t('新增用户') }}</v-btn>
+                  <v-btn color="primary" block @click="startCreateUser">{{ $t('new_users') }}</v-btn>
                 </div>
                 <div style="max-height: 400px;overflow-y: scroll">
                   <v-card :key="user.id" v-for="user in telHint"
@@ -103,11 +103,11 @@
                       <span>{{ user.rawInfo.firstName }} {{ user.rawInfo.lastName }}</span>
                       <v-btn text @click.stop="editUser(user)">
                         <v-icon left>mdi-pencil-box</v-icon>
-                        {{ $t('变更') }}
+                        {{ $t('Change') }}
                       </v-btn>
                       <v-btn text>
                         <v-icon left>mdi-check</v-icon>
-                        {{ $t('确定') }}
+                        {{ $t('submit') }}
                       </v-btn>
                     </div>
 
@@ -140,11 +140,11 @@
               <v-spacer></v-spacer>
               <div class="d-flex mt-8">
                 <v-btn elevation="0" large class="flex-grow-0" color="warning" @click="clearAddressInfo">{{
-                    $t('变更')
+                    $t('Change')
                   }}
                 </v-btn>
                 <v-btn elevation="0" large class="flex-grow-1 ml-4" color="primary" @click="step=2">{{
-                    $t('确定')
+                    $t('submit')
                   }}
                 </v-btn>
               </div>
@@ -169,7 +169,7 @@
                         <template v-slot:activator="{ on, attrs }">
                           <v-text-field
                               v-model="rawAddressInfo.date"
-                              :label="$t('日期')"
+                              :label="$t('date')"
                               prepend-icon="mdi-calendar"
                               v-bind="attrs"
                               @blur="date=rawAddressInfo.date"
@@ -184,14 +184,14 @@
                       </v-menu>
                     </v-col>
                     <v-col cols="6">
-                      <v-text-field :label="$t('时间')" v-model="rawAddressInfo.time"></v-text-field>
+                      <v-text-field :label="$t('date')" v-model="rawAddressInfo.time"></v-text-field>
                     </v-col>
                     <v-col cols="6">
-                      <v-text-field :label="$t('备注')" v-model="rawAddressInfo.note"></v-text-field>
+                      <v-text-field :label="$t('note')" v-model="rawAddressInfo.note"></v-text-field>
                     </v-col>
                     <v-col cols="6">
                       <v-select :items="deliveryMethods"
-                                :label="$t('配送方式')"
+                                :label="$t('delivery_method')"
                                 return-object
                                 hide-details
                                 v-model="rawAddressInfo.deliveryMethod"

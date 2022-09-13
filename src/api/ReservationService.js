@@ -83,7 +83,7 @@ export async function moveReservation (reservationId) {
 }
 
 export async function cancelReservation (reservationId) {
-  const res = await IKUtils.showConfirmAsyn('取消预定将会发送一封邮件来通知预定的客人。', '您是否确定取消此预定？')
+  const res = await IKUtils.showConfirmAsyn(this.$t('one_email_will_be_sent_if_reservation_is_cancelled' + '。'), this.$t('are_you_sure_to_cancel_the_reservation' + '？'))
   if (res.isConfirmed) {
     return (await hillo.post('Tables.php?op=cancelReservation', {
       reservationId

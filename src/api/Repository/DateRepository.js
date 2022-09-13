@@ -9,37 +9,37 @@ const now = dayjs().subtract(3, 'hour').subtract(59, 'minute')
 
 export const today = standardFormatter(now)
 export const predefinedDateRangeList = [{
-  label: '今天',
+  label: 'today',
   dateRange: function () {
     return [today, today]
   }
 }, {
-  label: '昨天',
+  label: 'yesterday',
   dateRange: function () {
     return [standardFormatter(now.subtract(1, 'day')), standardFormatter(now.subtract(1, 'day'))]
   }
 }, {
-  label: '本周',
+  label: 'this_week',
   dateRange: function () {
     return [standardFormatter(now.startOf('week')), today]
   }
 }, {
-  label: '上周',
+  label: 'last_week',
   dateRange: function () {
     return [standardFormatter(now.subtract(1, 'week').startOf('week')), standardFormatter(now.subtract(1, 'week').endOf('week'))]
   }
 }, {
-  label: '本月',
+  label: 'this_month',
   dateRange: function () {
     return [standardFormatter(now.startOf('month')), today]
   }
 }, {
-  label: '上月',
+  label: 'last_month',
   dateRange: function () {
     return [standardFormatter(now.subtract(1, 'month').startOf('month')), standardFormatter(now.subtract(1, 'month').endOf('month'))]
   }
 }, {
-  label: '今年',
+  label: 'this_year',
   dateRange: function () {
     return [standardFormatter(now.startOf('year')), today]
   }

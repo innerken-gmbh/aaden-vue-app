@@ -2,7 +2,7 @@
   <v-dialog v-model="realShow">
     <v-card>
       <v-toolbar dense dark>
-        <v-toolbar-title>{{ $t('会员卡') }}</v-toolbar-title>
+        <v-toolbar-title>{{ $t('VIP_Card') }}</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
       <div class="d-flex pa-2 align-start">
@@ -20,8 +20,8 @@
                 <v-list-item-content>
                   <v-list-item-title>{{card.note}}/{{ "****"+card.longId.substr(4) }}
                   </v-list-item-title>
-                  <v-list-item-subtitle>{{$t('时间')}}: {{ card.createdAt }}</v-list-item-subtitle>
-                  <v-list-item-subtitle>{{ $t('金额') }}: {{ card.leftAmount|priceDisplay }}/{{ card.totalAmount|priceDisplay }}
+                  <v-list-item-subtitle>{{$t('time')}}: {{ card.createdAt }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{ $t('amount') }}: {{ card.leftAmount|priceDisplay }}/{{ card.totalAmount|priceDisplay }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
@@ -51,7 +51,7 @@
                       record.amount|priceDisplay
                     }}
                   </v-list-item-title>
-                  <v-list-item-subtitle>{{$t('时间')}}: {{ record.createdAt }}</v-list-item-subtitle>
+                  <v-list-item-subtitle>{{$t('time')}}: {{ record.createdAt }}</v-list-item-subtitle>
                   <v-list-item-subtitle>{{ $t('RechnungNr') }}.: {{ record.orderId }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
