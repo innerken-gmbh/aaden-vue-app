@@ -9,7 +9,10 @@
           <h4>{{ $t('statistic') }}</h4>
           <div class="mt-4">
             <div class="d-flex justify-space-between align-center">
+              <div class="hideMore"
+                   style="max-width: 150px">
               <div style="font-size: 24px">{{ $t('All') }}{{ $t('Umsatz') }}</div>
+              </div>
               <div style="font-size: 24px" class="font-weight-bold">{{ billContent.total | priceDisplay }}</div>
             </div>
             <div class="d-flex justify-space-between mt-1">
@@ -34,7 +37,12 @@
           <v-card color="error lighten-2" dark @click="returnDishDialog=true"
                   elevation="0"
                   class="d-flex align-center pa-2">
+            <div
+              class="hideMore"
+              style="max-width: 90px"
+            >
             <h3>{{ $t('cancel_order') }}</h3>
+            </div>
             <v-spacer></v-spacer>
             <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }})
               <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
@@ -342,5 +350,10 @@ export default {
 </script>
 
 <style scoped>
+.hideMore{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 </style>
