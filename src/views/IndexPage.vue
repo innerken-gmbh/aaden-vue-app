@@ -26,10 +26,13 @@
             <div>
               <v-icon :color="color(m.path)">{{ m.icon }}</v-icon>
             </div>
+            <div class="hideMore"
+                 style="max-width: 56px">
             <div :class="color(m.path)+'--text'" class="mt-1 text-caption text-no-wrap
              text-truncate overflow-hidden"
                  style="font-size: small">
               {{ $t(m.text) }}
+            </div>
             </div>
           </v-card>
         </div>
@@ -214,5 +217,10 @@ export default {
 
 .navItem {
 
+}
+.hideMore{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

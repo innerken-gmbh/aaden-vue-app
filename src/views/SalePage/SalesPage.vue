@@ -90,7 +90,12 @@
                             block
                             @click="showNumberKeyboard=true"
                             color="warning">
+                            <div
+                              class="hideMore"
+                              style="max-width: 200px"
+                            >
                             {{ $t('create_new_record') }}
+                            </div>
                           </v-btn>
                         </v-list>
                       </div>
