@@ -1962,10 +1962,10 @@
   resolved "https://registry.npmjs.org/@xtuc/long/-/long-4.2.2.tgz"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-aaden-base-model@^0.1.115:
-  version "0.1.115"
-  resolved "https://registry.npmjs.org/aaden-base-model/-/aaden-base-model-0.1.115.tgz"
-  integrity sha512-hiTjGd3KIyPEGPB35zIJdoinaIrRu6BxdarwVhngPsq0t737WgYOdnGUph5UymlOSTOJQMHXqjDvqTv9ePK8UQ==
+aaden-base-model@^0.1.116:
+  version "0.1.116"
+  resolved "https://registry.yarnpkg.com/aaden-base-model/-/aaden-base-model-0.1.116.tgz#fe6ee7e81e1e3edcc29a87cde0d00f524a02150d"
+  integrity sha512-6kwdp4KUvCDRSuGcbZSnsj1jNNuNUVzr3afTBchPYJkHUTNncnWG7JOve1PfjqYkv4o4e4W1yur8ozTHYtnJ5g==
   dependencies:
     electron "^10.1.3"
     electron-settings "^4.0.2"

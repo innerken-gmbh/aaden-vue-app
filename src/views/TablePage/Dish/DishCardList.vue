@@ -138,9 +138,6 @@ export default {
       },
       immediate: true
     },
-    currentSourceMark: function (val) {
-      console.log(val)
-    },
     defaultExpand: function (val) {
       this.expand = val
     }
@@ -181,10 +178,11 @@ export default {
       const list = [...this.dishListModel.list].filter(it => {
         return (this.activeSourceMark === '' || it.sourceMark === this.activeSourceMark) && (!this.onlyPaid || it.realPrice !== 0)
       })
+      console.log(this.dishListModel.list)
       if (this.reverse) {
         list.reverse()
       }
-      console.log(this.activeSourceMark + 'dwadwa')
+      console.log(this.activeSourceMark, 'source mark')
       return list
     },
     originTotal: function () {
