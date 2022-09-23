@@ -90,8 +90,7 @@ async function initial () {
   if (!Remember.uuid) {
     Remember.uuid = uuidv4()
   }
-
-  i18n.locale = GlobalConfig.lang.toLowerCase()
+  i18n.locale = GlobalConfig.frontEndLang.toLowerCase()
   try {
     reportDeviceInfo().then(r => console.log(r))
   } catch (e) {

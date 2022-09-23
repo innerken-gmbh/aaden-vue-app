@@ -31,6 +31,5 @@ function loadLocaleMessages () {
 export default new VueI18n({
   locale: localStorage.getItem('frontEndLang')?.toLowerCase() || 'de',
   fallbackLocale: 'de',
-  // silentTranslationWarn: true,
   messages: loadLocaleMessages()
 })
