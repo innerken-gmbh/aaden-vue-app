@@ -81,27 +81,20 @@ export default {
       if (print > 1) {
         printCount = 2
       }
-      if (paymentLog.length === 0) {
-        paymentLog.push({
-          id: 1,
-          price: this.totalPrice
-        })
-      }
-
       const checkOutData = {
         tableId: this.tableId,
         dishes: JSON.stringify(this.order.list),
         withTitle,
         printCount,
         payMethod: 1,
-        paymentLog: JSON.stringify(paymentLog),
         discountStr: '',
         pw: this.password
       }
-      console.log(paymentLog)
-      if (paymentLog.length === 0) {
-        delete checkOutData.paymentLog
+
+      if (paymentLog.length > 0) {
+        checkOutData.paymentLog = JSON.stringify(paymentLog)
       }
+
       if (this.discountRatio !== 0) {
         checkOutData.discountStr = (this.discountStr ?? '')
           .indexOf('p') !== -1 ? this.discountStr : (this.order.total * this.discountRatio)
