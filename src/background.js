@@ -20,12 +20,8 @@ protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: tru
 
 function createWindow () {
   // Create the browser window.
-  const splash = new BrowserWindow({
-    width: 500, height: 300, transparent: false, frame: false, alwaysOnTop: true
-  })
+
   createProtocol('app')
-  splash.loadFile('app//./splash.html')
-  splash.center()
   win = new BrowserWindow({
     width: 1920,
     height: 1080,
@@ -45,13 +41,10 @@ function createWindow () {
     win.loadURL('app://./index.html')
   }
   win.once('ready-to-show', () => {
-    setTimeout(() => {
-      splash.close()
-      win.show()
-      if (Debug) {
-        win.webContents.openDevTools()
-      }
-    }, 3000)
+    win.show()
+    if (Debug) {
+      win.webContents.openDevTools()
+    }
   })
 
   win.on('closed', () => {
