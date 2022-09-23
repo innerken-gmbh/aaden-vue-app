@@ -4,6 +4,12 @@
     <div class="d-flex align-center pt-2 px-2">
       <h2 class="pa-2"> {{ title }}</h2>
       <v-spacer></v-spacer>
+      <v-btn icon :color="onlyPaid?'success':'warning'"
+             class="mr-2"
+             @click="onlyPaid=!onlyPaid"
+      >
+        <v-icon>mdi-cash</v-icon>
+      </v-btn>
       <slot name="action">
         <v-btn v-if="discountDish" @click="$emit('discount-clear')"
                elevation="0" color="warning">
@@ -15,6 +21,17 @@
       </slot>
     </div>
     <v-divider></v-divider>
+    <div v-if="shouldDisplaySourceMarks">
+      <div class="pa-2 d-flex" style="max-width: 100%;">
+        <v-chip-group v-model="currentSourceMark" active-class="primary--text">
+          <v-chip v-for="mark in sourceMarks" :key="mark">
+            {{ mark == null ? 'Other' : mark }}
+          </v-chip>
+        </v-chip-group>
+      </div>
+      <v-divider></v-divider>
+    </div>
+
     <div v-dragscroll v-show="expand"
          class="px-2"
          style="overflow-y: scroll"
@@ -23,7 +40,6 @@
         <div @click="checkIfOpen(index)" :key="'order'+title+order.identity" style="font-size: larger">
           <dish-card
               :expand="index===expandIndex"
-              :color="color"
               :show-number="showNumber"
               :click-callback="()=>_clickCallBack(index,order)"
               :show-edit="showEdit"
@@ -32,7 +48,6 @@
       </template>
       <template v-if="discountDish!=null">
         <dish-card
-            :color="color"
             :show-number="showNumber"
             :show-edit="showEdit"
             :dish="discountDish"/>
@@ -95,14 +110,16 @@ export default {
     },
     defaultExpand: {},
     showEdit: {},
-    color: {
-      default: 'white'
+    sourceMarks: {
+      default: () => []
     }
   },
   data: function () {
     return {
       expand: this.defaultExpand,
-      expandIndex: null
+      expandIndex: null,
+      currentSourceMark: null,
+      onlyPaid: true
     }
   },
   watch: {
@@ -121,6 +138,9 @@ export default {
       },
       immediate: true
     },
+    currentSourceMark: function (val) {
+      console.log(val)
+    },
     defaultExpand: function (val) {
       this.expand = val
     }
@@ -133,10 +153,11 @@ export default {
       if (dish.count === 0) {
         this.expandIndex = null
       }
-      this.clickCallback(index)
+      this.clickCallback(dish)
     },
     checkIfOpen (index) {
-      const dish = this.dishListModel.list[index]
+      const dish = this.dishList[index]
+      console.log(dish)
       if (this.showEdit || dish.count > 1) {
         if (this.expandIndex === index) {
           this.expandIndex = null
@@ -144,14 +165,22 @@ export default {
           this.expandIndex = index
         }
       } else {
-        this.clickCallback(index)
+        this.clickCallback(dish)
         this.expandIndex = null
       }
     }
   },
   computed: {
+    activeSourceMark () {
+      return (this.currentSourceMark === null || typeof this.currentSourceMark === 'undefined') ? '' : this.sourceMarks[this.currentSourceMark]
+    },
+    shouldDisplaySourceMarks: function () {
+      return this.sourceMarks.length > 1
+    },
     dishList: function () {
-      const list = [...this.dishListModel.list]
+      const list = [...this.dishListModel.list].filter(it => {
+        return (this.activeSourceMark === '' || it.sourceMark === this.activeSourceMark) && (!this.onlyPaid || !it.isFree)
+      })
       if (this.reverse) {
         list.reverse()
       }

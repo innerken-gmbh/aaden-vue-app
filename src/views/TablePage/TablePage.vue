@@ -20,15 +20,14 @@
               <div class="text-h4 text-capitalize white--text mr-4">
                 {{ tableDetailInfo.tableBasicInfo.name }}
               </div>
-
             </v-card>
-
             <keep-alive>
               <dish-card-list
                   @discount-clear="discountClear"
                   v-if="cartListModel.list.length===0"
                   :dish-list-model="orderListModel"
                   :discount-ratio="discountRatio"
+                  :source-marks="sourceMarks"
                   :default-expand="cartListModel.list.length===0"
                   :click-callback="addToSplit"
                   :title="$t('haveOrderedDish')"
@@ -242,8 +241,6 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                             @click="orderOneDish(dish.code)"/>
                       </template>
                     </div>
-                    <div></div>
-
                   </div>
                   <div v-dragscroll
                        style="width: 108px;height: calc(100vh - 192px);overflow: hidden;position: fixed;right: 12px;top: 132px">
@@ -278,9 +275,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                       </template>
                     </v-item-group>
                   </div>
-
                 </template>
-
                 <div style="width: 100%;height: 160px"></div>
               </v-card>
             </template>
@@ -485,9 +480,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
             </div>
 
           </v-card>
-
         </div>
-
       </v-main>
       <!--      right panel-->
       <template v-if="splitOrderListModel.list.length>0">
@@ -653,7 +646,6 @@ import {
   findConsumeTypeById,
   getConsumeTypeList,
   isBlocking,
-  jumpToTable,
   loadingComplete,
   logError,
   logErrorAndPop,
@@ -667,7 +659,7 @@ import {
 import { getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import Swal from 'sweetalert2'
 import hillo from 'hillo'
-import { checkOut, deleteDishes, getColorLightness, optionalAuthorizeAsync, printZwichenBon } from '@/oldjs/api'
+import { checkOut, deleteDishes, optionalAuthorizeAsync, printZwichenBon } from '@/oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
 
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
@@ -806,24 +798,11 @@ export default {
 
       /* new input */
       keyboardInput: '',
-      currentCodeBuffer: ''
-
+      currentCodeBuffer: '',
+      currentSourceMark: null
     }
   },
   methods: {
-    downChoose () {
-      this.indexActive += 1
-      if (this.indexActive === this.searchDish.length) {
-        this.indexActive = 0
-      }
-    },
-    upChoose () {
-      this.indexActive -= 1
-      if (this.indexActive < 0) {
-        this.indexActive = this.searchDish.length - 1
-      }
-    },
-    getColorLightness,
     async mergeTable () {
       const password = await popAuthorize(GlobalConfig.mergeTableUseBossPassword ? 'boss' : '')
       if (password) {
@@ -865,7 +844,7 @@ export default {
           })
         if (res) {
           loadingComplete()
-          this.initialUI()
+          await this.initialUI()
         }
       }
     },
@@ -945,6 +924,7 @@ export default {
             d.originPrice = d.price
             return d
           })
+          //* mark by ju
           const discountInfo = result.filter(r => r.code === '-1')
           const noDiscount = result.filter(r => r.code !== '-1')
           this.orderListModel.loadTTDishList(noDiscount)
@@ -1048,14 +1028,14 @@ export default {
     orderOneDish: async function (code) {
       await this.findAndOrderDish(code)
     },
-    removeFromSplitOrder: function (index) {
-      const realItem = IKUtils.deepCopy(this.splitOrderListModel.list[index])
+    removeFromSplitOrder: function (dish) {
+      const realItem = IKUtils.deepCopy(dish)
       this.splitOrderListModel.add(realItem, -1)
       this.orderListModel.add(realItem, 1)
     },
     removeAllFromSplitOrder: function () {
       while (this.splitOrderListModel.list.length > 0) {
-        this.removeFromSplitOrder(0)
+        this.removeFromSplitOrder(this.splitOrderListModel.list[0])
       }
     },
     deleteDishes: async function () {
@@ -1072,8 +1052,8 @@ export default {
     printZwichenBon: function () {
       printZwichenBon(this.id, this.splitOrderListModel.list)
     },
-    addToSplit: function (index) {
-      const item = IKUtils.deepCopy(this.orderListModel.list[index])
+    addToSplit: function (dish) {
+      const item = IKUtils.deepCopy(dish)
       if (item.code === '-1') {
         logErrorAndPop('折扣菜品不能被加入到分单里')
         return
@@ -1112,8 +1092,8 @@ export default {
     clear: function () {
       this.cartListModel.clear()
     },
-    removeDish: function (index) {
-      this.cartListModel.add(this.cartListModel.list[index], -1)
+    removeDish: function (dish) {
+      this.cartListModel.add(dish, -1)
     },
 
     submitModification: function (_mod, dish, count, saveInfo) {
@@ -1174,13 +1154,11 @@ export default {
       }
       blockReady()
     },
-
     async searchDishClick (code) {
       this.currentCodeBuffer = code
       await this.findAndOrderDish(code)
       this.keyboardInput = ''
     },
-
     resetInputAndBuffer () {
       this.currentCodeBuffer = ''
       this.keyboardInput = ''
@@ -1202,10 +1180,6 @@ export default {
         memberCardId = null
       }
       checkOut(pw, this.id, print, payMethod, tipIncome, memberCardId)
-    },
-    jumpToTable: function (tableId, tableName) {
-      jumpToTable(tableId, tableName)
-      this.initialUI()
     },
     needSplitOrder: async function () {
       this.password = await optionalAuthorizeAsync('', GlobalConfig.checkOutUsePassword, '', true, this.id)
@@ -1285,12 +1259,6 @@ export default {
           this.insDecode(this.keyboardInput)
           this.resetInputAndBuffer()
           e.preventDefault()
-          break
-        case 'ArrowDown':
-          this.downChoose()
-          break
-        case 'ArrowUp':
-          this.upChoose()
           break
         default:
           if (e.target.nodeName !== 'INPUT' && e.key.length < 3) {
@@ -1533,22 +1501,16 @@ export default {
       }
 
       return list
-    },
-    clearInput () {
-
     }
   },
   computed: {
     ...mapGetters(['systemDialogShow']),
+    sourceMarks: function () {
+      return this.tableDetailInfo?.sourceMarks ?? []
+    },
+
     totalPrice: function () {
       return this.tableDetailInfo.order?.totalPrice ?? 0
-    },
-    telHint: function () {
-      const info = this.userInfo
-      return info.reduce((arr, i) => {
-        arr.push(i.email)
-        return arr
-      }, [])
     },
     realAddressInfo () {
       if (this.tableDetailInfo.order.rawAddressInfo?.length > 0) {
@@ -1564,11 +1526,9 @@ export default {
         return null
       }
     },
-
     consumeTypeId () {
       return parseInt(this.tableDetailInfo.order.consumeTypeId ?? 1)
     },
-
     overrideConsumeTypeId () {
       if ((this.overrideConsumeTypeIndex || this.overrideConsumeTypeIndex === 0) && this.consumeTypeList?.length > this.overrideConsumeTypeIndex) {
         return parseInt(this.consumeTypeList[this.overrideConsumeTypeIndex].id)
@@ -1576,15 +1536,12 @@ export default {
         return null
       }
     },
-
     realConsumeTypeId () {
       return this.overrideConsumeTypeId && this.overrideConsumeTypeId !== this.consumeTypeId ? this.overrideConsumeTypeId : this.consumeTypeId ?? 1
     },
-
     consumeTypeStatusId () {
       return parseInt(this.tableDetailInfo.order.consumeTypeStatusId ?? 2)
     },
-
     filteredC: function () {
       const dct = this.dct[this.activeDCT]
       return this.categories.filter((item) => {
@@ -1636,8 +1593,7 @@ export default {
     } else {
       this.consumeTypeList = consumeTypeList
     }
-
-    this.realInitial()
+    await this.realInitial()
   }
 }
 </script>
