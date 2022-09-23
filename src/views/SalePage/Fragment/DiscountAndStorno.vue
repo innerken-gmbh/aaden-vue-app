@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>{{ $t('单菜品折扣') }}
+    <v-card-title>{{ $t('discount') }}
       <v-spacer></v-spacer>
       {{ totalDiscountValue }}
     </v-card-title>

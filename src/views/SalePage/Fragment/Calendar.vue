@@ -34,7 +34,7 @@
           <v-card color="error lighten-2" dark @click="returnDishDialog=true"
                   elevation="0"
                   class="d-flex align-center pa-2">
-            <h3>{{ $t('退菜') }}</h3>
+            <h3>{{ $t('cancel_order') }}</h3>
             <v-spacer></v-spacer>
             <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }})
               <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
@@ -42,7 +42,7 @@
           </v-card>
           <v-card color="warning lighten-2" elevation="0" dark @click="discountDialog=true"
                   class="d-flex align-center pa-2 mt-2">
-            <h3>{{ $t('折扣') }}</h3>
+            <h3>{{ $t('discount2') }}</h3>
             <v-spacer></v-spacer>
             <h3>{{ totalDiscount | priceDisplay }}({{ discountList.length }})
               <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
@@ -85,7 +85,7 @@
             v-model="search">
           </v-text-field>
           <v-select
-            :label="$t('支付方式')"
+            :label="$t('payment_method')"
             :items="payMethodList"
             v-model="appliedFilter.payment"
             @change="updateFilter"
@@ -94,7 +94,7 @@
           >
           </v-select>
           <v-select
-            :label="$t('服务员')"
+            :label="$t('Server')"
             :items="servantList"
             v-model="appliedFilter.servant"
             @change="updateFilter"
@@ -103,7 +103,7 @@
           </v-select>
           <v-btn v-if="showClearButton" @click="clearFilter" class="mt-2">
             <v-icon>mdi-close-circle</v-icon>
-            {{ $t('清除') }}
+            {{ $t('Clear') }}
           </v-btn>
         </div>
 
@@ -119,9 +119,9 @@
           <tr>
             <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
             <th class="text-left">{{ $t('time') }}</th>
-            <th class="text-left">{{ $t('跑堂') }}</th>
-            <th class="text-left">{{ $t('退菜内容') }}</th>
-            <th class="text-left">{{ $t('退菜理由') }}</th>
+            <th class="text-left">{{ $t('Server') }}</th>
+            <th class="text-left">{{ $t('return_dish_content') }}</th>
+            <th class="text-left">{{ $t('return_dish_reason') }}</th>
           </tr>
           </thead>
           <tbody>
@@ -155,8 +155,8 @@
           <tr>
             <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
             <th class="text-left">{{ $t('time') }}</th>
-            <th class="text-left">{{ $t('跑堂') }}</th>
-            <th class="text-left">{{ $t('折扣内容') }}</th>
+            <th class="text-left">{{ $t('Server') }}</th>
+            <th class="text-left">{{ $t('discount_content') }}</th>
           </tr>
           </thead>
           <tbody>

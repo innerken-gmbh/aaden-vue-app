@@ -66,7 +66,7 @@
           </v-btn>
           <v-btn v-if="editing" @click="refreshTables">
             <v-icon left>mdi-refresh</v-icon>
-            {{ $t('重置所有桌子') }}
+            {{ $t('reset_all_tables') }}
           </v-btn>
           <v-btn v-if="editing" @click="showTableEditInfoCard=!showTableEditInfoCard">
             <v-icon>mdi-book-information-variant</v-icon>
@@ -100,7 +100,7 @@
           <v-card elevation="0" style="border-radius: 8px"
                   :color="active?'primary':''"
                   class="px-6 py-2 text-body-1" @click="toggle"
-                  :dark="active">{{ $t('全部') }}
+                  :dark="active">{{ $t('All') }}
           </v-card>
         </v-item>
         <v-item v-for="section of notTakeawaySection" :key="section.id+'categorytypes'"
@@ -116,7 +116,7 @@
     </v-card>
     <v-dialog max-width="400px" v-model="reservationDialog">
       <v-card color="#f6f6f6">
-        <v-card-title>本桌后续预定</v-card-title>
+        <v-card-title>{{ $t('following_table_reservation') }}</v-card-title>
         <v-card-text>
           <template v-if="activeTable">
             <div style="display: grid;grid-gap: 12px;overflow-y: scroll;
@@ -155,10 +155,10 @@
                   <v-spacer/>
                   <div class="d-flex align-end flex-column">
                     <div class="mt-1">
-                      <v-btn @click="cancelReservation(re.id)" small color="error" elevation="0">取消预定</v-btn>
+                      <v-btn @click="cancelReservation(re.id)" small color="error" elevation="0">{{ $t('cancel_reservation') }}</v-btn>
                     </div>
                     <div class="mt-1">
-                      <v-btn @click="moveReservation(re.id)" small color="warning" elevation="0">换位置</v-btn>
+                      <v-btn @click="moveReservation(re.id)" small color="warning" elevation="0">{{ $t('move_reservation') }}</v-btn>
                     </div>
 
                   </div>

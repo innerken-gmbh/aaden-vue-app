@@ -66,8 +66,15 @@ export function setDeviceId (id) {
 }
 
 export function changeLanguage (l) {
-  GlobalConfig.updateSettings('lang', l)
-  i18n.locale = l.toLowerCase()
+  const backServerLang = ['DE', 'ZH', 'EN']
+  if (backServerLang.includes(l)) {
+    GlobalConfig.updateSettings('lang', l)
+    i18n.locale = l.toLowerCase()
+  } else {
+    GlobalConfig.updateSettings('lang', 'DE')
+    i18n.locale = 'DE'.toLowerCase()
+  }
+
   // reload()
 }
 

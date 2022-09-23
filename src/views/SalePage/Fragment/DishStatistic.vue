@@ -34,7 +34,7 @@
             </v-select>
             <v-btn v-if="showClear" text class="mb-6" @click="clearFilter">
               <v-icon>mdi-close-circle</v-icon>
-              {{ $t('清除') }}
+              {{ $t('Clear') }}
             </v-btn>
           </v-subheader>
         </template>
@@ -65,13 +65,13 @@
             <v-switch
               v-model="orderBySales"
               flat
-              :label="orderBySales ? $t('按销售额排序') : $t('按销量排序')"
+              :label="orderBySales ? $t('sort_by_sales') : $t('sort_by_quantity')"
             ></v-switch>
             <v-spacer></v-spacer>
           </v-card-actions>
 
-          <v-btn x-large dark block class="orange mx-2 mb-6" @click="printSaleBon">{{ $t('按销量打印') }}</v-btn>
-          <v-btn x-large dark block class="orange mx-2 mb-6" @click="printSaleBonByCode">{{ $t('按菜号打印') }}</v-btn>
+          <v-btn x-large dark block class="orange mx-2 mb-6" @click="printSaleBon">{{ $t('print_by_sales') }}</v-btn>
+          <v-btn x-large dark block class="orange mx-2 mb-6" @click="printSaleBonByCode">{{ $t('print_by_code') }}</v-btn>
         </v-card>
       </v-navigation-drawer>
     </div>

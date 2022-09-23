@@ -3,11 +3,11 @@
     <v-toolbar outlined>
       <v-tabs v-model="tabIndex">
         <template v-if="isBoss">
-          <v-tab>{{ $t('账单列表') }}</v-tab>
+          <v-tab>{{ $t('bill_list') }}</v-tab>
           <v-tab>{{ $t('Kassenbuch') }}</v-tab>
-          <v-tab>{{ $t('菜品统计') }}</v-tab>
-          <v-tab>{{ $t('查看跑堂') }}</v-tab>
-          <v-tab>{{ $t('绑定老板端APP') }}</v-tab>
+          <v-tab>{{ $t('dishes_statistics') }}</v-tab>
+          <v-tab>{{ $t('show_waiter') }}</v-tab>
+          <v-tab>{{ $t('bind_boss_app') }}</v-tab>
         </template>
         <template v-else>
           <v-tab>{{ $t('Meine Umsatz') }}</v-tab>
@@ -17,7 +17,7 @@
 
       <v-btn elevation="0" x-large color="primary" @click="showDatePicker=true" text>
         <v-icon left>mdi-calendar</v-icon>
-        {{ getNiceLabel(singleZBonDate) }}/{{ $t('更换日期') }}
+        {{ getNiceLabel(singleZBonDate) }}/{{ $t('change_date') }}
       </v-btn>
 
     </v-toolbar>
@@ -41,7 +41,7 @@
                             <thead>
                             <tr>
                               <th class="text-left">{{ $t('R. Nr.') }}/{{ $t('time') }}</th>
-                              <th class="text-left">{{ $t('备注') }}</th>
+                              <th class="text-left">{{ $t('note') }}</th>
                               <th class="text-left">{{ $t('Summe') }}</th>
                             </tr>
                             </thead>
@@ -75,7 +75,7 @@
                               </v-list-item-title>
                             </v-list-item-content>
                           </v-list-item>
-                          <v-subheader>{{ $t('Änderung des Tages') }}</v-subheader>
+                          <v-subheader>{{ $t('daily_change_amount') }}</v-subheader>
                           <v-list-item>
                             <v-list-item-content>
                               <v-list-item-title>
@@ -90,7 +90,7 @@
                             block
                             @click="showNumberKeyboard=true"
                             color="warning">
-                            {{ $t('新增记录') }}
+                            {{ $t('create_new_record') }}
                           </v-btn>
                         </v-list>
                       </div>
@@ -184,15 +184,15 @@
       >
         <date-range-picker v-model="dateInput"></date-range-picker>
         <div class="px-2 mt-2">
-          <v-btn elevation="0" block @click="dateSubmit" color="primary" large>{{ $t('确定') }}</v-btn>
-          <v-btn large block color="error" @click="showDatePicker=false" outlined class="mt-2">{{ $t('取消') }}</v-btn>
+          <v-btn elevation="0" block @click="dateSubmit" color="primary" large>{{ $t('submit') }}</v-btn>
+          <v-btn large block color="error" @click="showDatePicker=false" outlined class="mt-2">{{ $t('Cancel') }}</v-btn>
         </div>
       </v-card>
     </v-dialog>
     <dialog-with-keyboard @close="showNumberKeyboard=false" :show="showNumberKeyboard"
-                          @submit="addCashRecord" :title=" $t('请输入支出金额，如果是收入就输入负数')"
+                          @submit="addCashRecord" :title=" $t('pls_enter_the_amount_of_expenses_if_the_enternumber_is_negative')"
                           :keys="keyboardNumber">
-      <v-text-field :placeholder=" $t('如果需要，请点击这里用键盘输入备注')" v-model="cashNote"></v-text-field>
+      <v-text-field :placeholder=" $t('if_necessary_pls_click_here_to_enter_a_note_using_the_keyboard')" v-model="cashNote"></v-text-field>
     </dialog-with-keyboard>
   </div>
 

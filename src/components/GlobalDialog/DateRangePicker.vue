@@ -1,6 +1,6 @@
 <template>
   <div class="pa-1">
-    <h3>{{$t('日期范围')}}</h3>
+    <h3>{{$t('date_range')}}</h3>
     <div class="mt-2">
       <div style="display: grid;grid-template-columns: repeat(2,1fr);grid-gap: 8px">
         <div>
@@ -12,8 +12,8 @@
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                   v-model="startDate"
-                  label="从..."
-                  placeholder="从..."
+                  :label="this.$t('from...')"
+                  :placeholder="this.$t('from...')"
                   prepend-inner-icon="mdi-calendar"
                   readonly
                   hide-details
@@ -39,8 +39,8 @@
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                   v-model="endDate"
-                  label="到..."
-                  placeholder="到..."
+                  :label="this.$t('to...')"
+                  :placeholder="this.$t('to...')"
                   prepend-inner-icon="mdi-calendar"
                   readonly
                   hide-details

@@ -67,7 +67,7 @@ export default {
       menuList: [
         {
           icon: 'mdi-silverware',
-          text: '点餐',
+          text: this.$t('order'),
           beforeEnter () {
             return true
           },
@@ -75,7 +75,7 @@ export default {
         },
         {
           icon: 'mdi-cash',
-          text: '销售额',
+          text: this.$t('Sales'),
           beforeEnter: async () => {
             const pw = await popAuthorize('', true)
             const servant = this.findServant(pw)

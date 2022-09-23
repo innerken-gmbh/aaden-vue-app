@@ -28,7 +28,7 @@
                       color="warning"
                       @click="singleZBon(s.servant.password)"
                   >
-                    {{ $t('打印日结单') }}
+                    {{ $t('print_daily_summary_bon') }}
                   </v-btn>
                 </div>
                 <v-divider></v-divider>
@@ -53,13 +53,13 @@
                           v-if="activeId!==s.servant.id"
                           style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
                       >
-                        {{ $t('展示更多') }}
+                        {{ $t('expand_more') }}
                       </div>
                       <div
                           v-else
                           style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
                       >
-                        {{ $t('收起') }}
+                        {{ $t('shrink') }}
                       </div>
                     </div>
                   </div>
@@ -68,7 +68,7 @@
                       class="d-flex justify-space-between pt-1"
                   >
                     <div class="label">
-                      {{ $t('小费') }}
+                      {{ $t('tip2') }}
                     </div>
                     <div class="value font-weight-bold">
                       {{ s.tipIncome ? s.tipIncome : 0 | priceDisplay }}
@@ -78,7 +78,7 @@
                       class="d-flex justify-space-between pt-1 "
                   >
                     <div class="label">
-                      {{ $t('今日总计(含小费)') }}
+                      {{ $t('today_total_including_tips') }}
                     </div>
                     <div class="value font-weight-bold">
                       {{ s.todayTotal ? s.todayTotal : 0 | priceDisplay }}
@@ -93,7 +93,7 @@
 
       <v-card elevation="0" class="pl-6">
         <v-btn right x-large dark class="orange mb-6 mt-2" block @click="allZBon(...singleZBonDate)">
-          {{ $t('打印全部跑堂日结单') }}
+          {{ $t('print_all_summary_bon') }}
         </v-btn>
       </v-card>
     </div>

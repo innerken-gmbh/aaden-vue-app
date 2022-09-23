@@ -62,14 +62,14 @@
                 :dish-list-model="cartListModel"
                 :show-edit="true"
                 :click-callback="removeDish"
-                :title="$t('新增菜品')"
+                :title="$t('new_dish')"
                 :default-expand="true">
               <template #action>
                 <v-btn @click="cartListModel.clear()" elevation="0" color="error">
                   <v-icon left>
                     mdi-trash-can
                   </v-icon>
-                  {{ $t('清空购物车') }}
+                  {{ $t('empty_shopping_cart') }}
                 </v-btn>
               </template>
               <template>
@@ -89,7 +89,7 @@
                          color="primary"
                          @click="orderDish(cartListModel.list)" dark>
                     <v-icon size="28" left>mdi-printer</v-icon>
-                    <span class="text-h6">  {{ $t('下单') }}</span>
+                    <span class="text-h6">  {{ $t('place_an_order') }}</span>
                   </v-btn>
                 </v-card>
               </template>
@@ -172,7 +172,7 @@
                         class="d-flex justify-center align-center px-4">
 
                   <v-icon left>mdi-keyboard</v-icon>
-                  {{ $t('键盘和菜号') }}
+                  {{ $t('keyboard_and_dishNumber') }}
 
                 </v-card>
 
@@ -287,7 +287,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                 <div v-if="searchDish.length>0" style="overflow: hidden"
                      class="flex-shrink-1 blue lighten-5">
                   <v-card elevation="0" class="px-2 py-3">
-                    {{ $t('搜索结果') }}
+                    {{ $t('search_result') }}
                   </v-card>
                   <!--                  需要监听键盘的地方-->
                   <template v-for="(dish,index) in searchDish">
@@ -316,7 +316,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                     <div>
                       <v-icon color="grey lighten-1" x-large>mdi-keyboard</v-icon>
                     </div>
-                    <div class="text--disabled">{{ $t('请使用键盘或直接在右侧输入') }}</div>
+                    <div class="text--disabled">{{ $t('pls_use_the_keyboard_or_type_directly_to_the_right') }}</div>
                   </div>
                 </div>
 
@@ -330,12 +330,12 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                         class="d-flex align-center px-4">
 
                   <v-icon left>mdi-menu</v-icon>
-                  {{ $t('查看分类菜单') }}
+                  {{ $t('view_category_menu') }}
                 </v-card>
                 <div class="pa-2 text-h6" style="min-height: 96px">
                   <template v-if="keyboardInput">
-                    {{ Config.numberFirst ? $t('数量 * 菜号') : $t('菜号 * 数量') }}<br>
-                    {{ $t('正在输入...') }}
+                    {{ Config.numberFirst ? $t('quantity_x_dishNumber') : $t('dishNumber_x_quantity') }}<br>
+                    {{ $t('being_input...') }}
                   </template>
                   <template v-else>
                     {{ feedback }}
@@ -348,7 +348,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                       readonly
                       solo-inverted
                       class="my-2"
-                      :placeholder="Config.numberFirst?$t('数量 * 菜号'):$t('菜号 * 数量')"
+                      :placeholder="Config.numberFirst?$t('quantity_x_dishNumber'):$t('dishNumber_x_quantity')"
                       height="96px"
                       style="font-size: 32px"
                       ref="ins"
@@ -394,13 +394,13 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                   :loading="isSendingRequest"
                   icon="mdi-printer"
                   color="warning"
-                  :text="$t('重新打印')"
+                  :text="$t('reprint')"
                   @click="reprintOrder"
               />
               <grid-button
                   :loading="isSendingRequest"
                   icon="mdi-printer-pos"
-                  :text="$t('临时账单')"
+                  :text="$t('temporary_bill')"
                   color="#24b646"
                   @click="zwitchenBon"
               />
@@ -423,7 +423,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
               <grid-button
                   :loading="isSendingRequest"
                   icon="mdi-account"
-                  :text="$t('Übergabe')"
+                  :text="$t('transfer_waiter')"
                   color="#ffb13b"
                   @click="changeServant"
               />
@@ -449,7 +449,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                         :text="time"/>
 
                   </template>
-                  <grid-button color="error" @click="rejectOrder" icon="mdi-minus" :text="$t('拒绝')"/>
+                  <grid-button color="error" @click="rejectOrder" icon="mdi-minus" :text="$t('Rejection')"/>
                 </template>
               </template>
               <template v-else-if="consumeTypeStatusId<2">
@@ -463,7 +463,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                 <grid-button
                     :loading="isSendingRequest"
                     icon="mdi-close"
-                    :text="$t('Ablehnen')"
+                    :text="$t('Reject')"
                     color="error"
                     @click="rejectOrder"
                 />
@@ -509,7 +509,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
               <v-btn x-large class=" mt-1 "
                      v-on:click="dishesSetDiscount()">
                 <v-icon left>mdi-sale</v-icon>
-                {{ $t('给菜品打折') }}
+                {{ $t('give_dish_a_discount') }}
               </v-btn>
               <v-btn x-large class="  mt-1"
                      v-on:click="dishesChangeTable">
@@ -519,7 +519,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
               <v-btn x-large class="  mt-1"
                      v-on:click="printZwichenBon()">
                 <v-icon left>mdi-bandcamp</v-icon>
-                {{ $t('临时账单') }}
+                {{ $t('temporary_bill') }}
               </v-btn>
             </div>
             <dish-card-list
@@ -572,8 +572,8 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                 </template>
               </div>
               <div class="text-caption text--secondary" style="font-size: 14px !important;">
-                {{ $t('按Enter(回车键)确定') }}<br>
-                {{ $t('按ESC键或者退格键关闭此窗口') }}
+                {{ $t('press_ESC_to_enter_window') }}<br>
+                {{ $t('press_ESC_or_close_window') }}
               </div>
             </v-card>
           </v-fade-transition>
@@ -584,12 +584,12 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
         <v-card width="550">
           <v-card-title class="font-weight-bold"> {{ currentDish.name }}</v-card-title>
           <v-card-text>
-            <v-text-field :label="$t('金额')" autofocus v-model="currentDish.currentPrice"/>
+            <v-text-field :label="$t('amount')" autofocus v-model="currentDish.currentPrice"/>
             <v-text-field :label="$t('name')" v-model="currentDish.currentName"/>
           </v-card-text>
           <v-card-actions>
             <v-spacer/>
-            <v-btn class="primary" @click="addExtraDish">{{ $t('确定') }}</v-btn>
+            <v-btn class="primary" @click="addExtraDish">{{ $t('submit') }}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -854,7 +854,7 @@ export default {
     },
     async editNote () {
       const note = await Swal.fire({
-        title: this.$t('备注'),
+        title: this.$t('note'),
         input: 'text',
         inputValue: this.cartCurrentDish.note
       })
@@ -944,7 +944,7 @@ export default {
     },
     async findAndOrderDish (code, count = 1) {
       if (count < 1) {
-        this.feedback = '❌' + this.$t('不能加入负数菜品')
+        this.feedback = '❌' + this.$t('can_not_add_negative_dishes')
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
         return
       }
@@ -953,7 +953,7 @@ export default {
 
       if (dish) {
         if (parseInt(GlobalConfig.oneStepOrderNumber) !== -1 && count > GlobalConfig.oneStepOrderNumber) {
-          const res = await showConfirmAsyn(this.$t('wirklich?'), this.$t('你确定要点') + ' ' + count + this.$t('个菜吗'))
+          const res = await showConfirmAsyn(this.$t('wirklich?'), this.$tc('are_you_sure_to_order_N_dish', 1, { n: count }))
           if (!res?.value) {
             showTimedAlert('warning', 'abrechen')
           }
@@ -971,10 +971,10 @@ export default {
           blockReady()
           return
         }
-        this.feedback = '✅' + dish.code + '.' + dish.dishName + '*' + count + this.$t('已经加入购物车')
+        this.feedback = '✅' + dish.code + '.' + dish.dishName + '*' + count + this.$t('added_to_cart')
         this.addDish(dish, parseInt(count))
       } else {
-        this.feedback = '❌' + this.$t('没有找到菜号为') + ': ' + code + this.$t('的菜品')
+        this.feedback = '❌' + this.$t('dish_number_N_not_found', { n: code })
       }
 
       blockReady()
@@ -1055,7 +1055,7 @@ export default {
     addToSplit: function (dish) {
       const item = IKUtils.deepCopy(dish)
       if (item.code === '-1') {
-        logErrorAndPop('折扣菜品不能被加入到分单里')
+        logErrorAndPop(this.$t('discount_dish_can_not_be_added_into_split_bill'))
         return
       }
       this.orderListModel.add(item, -1)

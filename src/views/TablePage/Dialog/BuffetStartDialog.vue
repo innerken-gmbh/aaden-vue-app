@@ -24,29 +24,29 @@
           {{ findConsumeTypeById(activeConsumeTypeId).name }}
           <div class="editForm">
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('总用餐时间') }}</div>
+              <div class="formLabel caption">{{ $t('maximum_mealtime_min') }}</div>
               <v-slider hide-details max="960" min="0" step="5" thumb-label="always"
                         v-model="buffetSetting.maxDineTimeMin"></v-slider>
             </div>
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('每轮时间') }}</div>
+              <div class="formLabel caption">{{ $t('time_per_round_min') }}</div>
               <v-slider hide-details max="60" min="0" step="2" thumb-label="always"
                         v-model="buffetSetting.roundTimeMin"></v-slider>
             </div>
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('总轮数') }}</div>
+              <div class="formLabel caption">{{ $t('total_number_of_rounds') }}</div>
               <v-text-field dense hide-details type="number"
                             v-model="buffetSetting.totalRound"></v-text-field>
             </div>
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('成人每轮可点菜数') }}</div>
+              <div class="formLabel caption">{{ $t('adult_can_order_per_round') }}</div>
 
               <v-text-field dense hide-details type="number"
                             v-model="buffetSetting.roundDishCount"></v-text-field>
 
             </div>
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('儿童每轮可点菜数') }}</div>
+              <div class="formLabel caption">{{ $t('kids_can_order_per_round') }}</div>
 
               <v-text-field dense hide-details type="number"
                             v-model="buffetSetting.childRoundDishCount"></v-text-field>

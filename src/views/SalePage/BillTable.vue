@@ -36,7 +36,7 @@
                 <v-icon left>
                   mdi-printer-settings
                 </v-icon>
-                {{ $t('补打') }}
+                {{ $tc('reprint',1) }}
               </v-btn>
               <template v-if="showOperation">
                 <v-btn small
@@ -46,7 +46,7 @@
                        class="ml-2"
                        @click="startChangePaymentMethodForOrder(order)">
                   <v-icon left>mdi-cash-refund</v-icon>
-                  {{ $t('更换') }}
+                  {{ $t('replace') }}
                 </v-btn>
               </template>
               <v-btn small
@@ -54,7 +54,7 @@
                      text
                      @click="checkOrderDetail(order)">
                 <v-icon left>mdi-arrow-right-drop-circle-outline</v-icon>
-                {{ $t('详情') }}
+                {{ $t('Details') }}
               </v-btn>
             </td>
           </tr>
