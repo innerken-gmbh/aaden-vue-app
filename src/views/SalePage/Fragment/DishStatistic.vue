@@ -81,6 +81,7 @@
 <script>
 import { loadCategory, loadCategoryType, loadDishStatistic, printSaleBon, printSaleBonByCode } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
+import i18n from '@/i18n'
 
 const defaultRealFilter = {
   category: null,
@@ -109,31 +110,31 @@ export default {
     headers () {
       return [
         {
-          text: this.$t('code'),
+          text: i18n.t('code'),
           sortable: false,
           value: 'code'
         },
         {
-          text: this.$t('name'),
+          text: i18n.t('name'),
           sortable: false,
           value: 'name'
         },
         {
-          text: this.$t('category'),
+          text: i18n.t('category'),
           sortable: false,
           value: 'category'
         },
         {
-          text: this.$t('category Type'),
+          text: i18n.t('category Type'),
           sortable: false,
           value: 'cateTypeName'
         },
         {
-          text: this.$t('totalCount'),
+          text: i18n.t('totalCount'),
           value: 'totalCount'
         },
         {
-          text: this.$t('totalPrice'),
+          text: i18n.t('totalPrice'),
           value: 'totalPrice'
         }
       ]
@@ -172,16 +173,16 @@ export default {
       })
     },
     async printSaleBon () {
-      IKUtils.showConfirm(this.$t('Bist du sicher?'), this.$t('Möchten Sie Umsatz Bon drucken?'), () => {
+      IKUtils.showConfirm(i18n.t('Bist du sicher?'), i18n.t('Möchten Sie Umsatz Bon drucken?'), () => {
         printSaleBon(this.singleZBonDate[0], this.singleZBonDate[1]).then(() => {
-          IKUtils.toast(this.$t('Erfolgreich drucken!'))
+          IKUtils.toast(i18n.t('Erfolgreich drucken!'))
         })
       })
     },
     async printSaleBonByCode () {
-      IKUtils.showConfirm(this.$t('Bist du sicher?'), this.$t('Möchten Sie Umsatz Bon drucken?'), () => {
+      IKUtils.showConfirm(i18n.t('Bist du sicher?'), i18n.t('Möchten Sie Umsatz Bon drucken?'), () => {
         printSaleBonByCode(this.singleZBonDate[0], this.singleZBonDate[1]).then(() => {
-          IKUtils.toast(this.$t('Erfolgreich drucken!'))
+          IKUtils.toast(i18n.t('Erfolgreich drucken!'))
         })
       })
     }

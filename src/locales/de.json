@@ -82,7 +82,7 @@
   "Zahlung ohne tip mit bar?": "Kein Trinkgeld in bar?",
   "Zeit nach Bestätigung": "Zeit nach Bestätigung",
   "Zu andere Kellner übergebe": "Zu andere Kellner übergebe",
-  "Zurück": "Zwischen",
+  "Zurück": "Zurück",
   "aboutUs": "Über uns",
   "aboutUsBusinessContent": "Die Konzeption des Aaden-Systems basiert auf den Meinungen vieler Mitarbeiter mit langjähriger Erfahrung in der Gastronomie.\n                            Wir haben ein tiefes Verständnis für die tatsächlichen Bedürfnisse der Gastronomiefachleute - vom Chef bis zu jedem Mitarbeiter.\n                            Dies führte zur Einführung der integrierten Lösung für digitales Catering in der Aaden Smart Cloud. Bestellung von Scannern, Mitnehmen, Buchung von Webseiten und Verwaltung von Tischen vor Ort. \n                            Flexibler Einsatz und effizientes Design verändern das Managementmodell der Gastronomie von oben nach unten.\n                            Das Aaden-System ist auch das letzte System, das Sie benötigen, da die flexible Bereitstellungsoption [1] die Möglichkeit der Softwareentwicklung bietet.\n                            Von einem kleinen Café bis zu einem riesigen Buffetrestaurant mit Tausenden von Sitzplätzen ist das Aaden-System immer an Ihrer Seite wie ein Kamin.",
   "aboutUsBusinessTitle": "Unser Geschäftsfeld",
@@ -319,7 +319,7 @@
   "备注": "Notize",
   "外卖": "TOGO",
   "外卖网站设置": "TOGO-Website zum Mitnehmen",
-  "如果需要，请点击这里用键盘输入备注": "Falls erforderlich, klicken Sie bitte hier, um eine Notiz über Ihre Tastatur einzugeben",
+  "如果需要，请点击这里用键盘输入备注": "Falls erforderlich, klicken Sie bitte hier, um eine Notiz",
   "姓": "Nachname",
   "将要支付": "BEZAHL",
   "小费": "Trinkgeld",
@@ -465,5 +465,10 @@
   "预定列表": "Buchungsliste",
   "预定设置": "Einstellung von Reservierung",
   "验证错误": "Verifizierungsfehler",
-  "Rows_per_page": "Zeilen pro Seite"
+  "Rows_per_page": "Zeilen pro Seite",
+  "nowAddress": "Die aktuelle adresse",
+  "Möchten Sie Umsatz Bon drucken?": "Möchten Sie Umsatz Bon drucken？",
+  "Bist du sicher?": "Bist du sicher?",
+  "Erfolgreich drucken!": "Erfolgreich drucken!",
+  "OK": "Ja"
 }

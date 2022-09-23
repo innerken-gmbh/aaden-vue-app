@@ -463,5 +463,11 @@
   "预定设置": "预定设置",
   "验证错误": "验证错误",
   "cardDisplayInfoEdit": "卡片显示信息编辑",
-  "Rows_per_page": "每页数量"
+  "Rows_per_page": "每页数量",
+  "nowAddress": "当前地址",
+  "Möchten Sie Umsatz Bon drucken?": "您想打印销售总结单吗？",
+  "Bist du sicher?": "您确定吗？",
+  "Erfolgreich drucken!": "打印成功！",
+  "OK": "确定"
+
 }

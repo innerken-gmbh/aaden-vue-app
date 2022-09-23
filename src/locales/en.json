@@ -316,7 +316,7 @@
   "备注": "Note",
   "外卖": "TOGO",
   "外卖网站设置": "Takeaway website setting",
-  "如果需要，请点击这里用键盘输入备注": "If necessary, please click here to enter a note using the keyboard",
+  "如果需要，请点击这里用键盘输入备注": "If necessary, click here to enter a note using the keyboard",
   "姓": "Last name",
   "将要支付": "Will have to pay",
   "小费": "Tip",
@@ -463,5 +463,10 @@
   "预定设置": "Reservation Setting",
   "验证错误": "Validation error",
   "usePrintZBonAlert": "Use ZBon print alert",
-  "Rows_per_page": "Rows per page"
+  "Rows_per_page": "Rows per page",
+  "nowAddress": "The current address",
+  "Möchten Sie Umsatz Bon drucken?": "Would you like to print a sales summary?",
+  "Bist du sicher?": "Are you Sure？",
+  "Erfolgreich drucken!": "Print Successful！",
+  "OK": "OK"
 }

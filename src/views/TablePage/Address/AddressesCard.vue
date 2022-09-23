@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-subheader>当前地址</v-subheader>
+    <v-subheader>{{ $t('nowAddress') }}</v-subheader>
     <v-card-subtitle>
       <h2>
         {{ address.deliveryMethod }}
