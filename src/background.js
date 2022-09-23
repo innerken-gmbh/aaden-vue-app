@@ -90,25 +90,9 @@ if (!gotTheLock) {
 
   // 创建 myWindow, 加载应用的其余部分, etc...
   app.whenReady().then(async () => {
-    if (isDevelopment && !process.env.IS_TEST) {
-      // Install Vue Devtools
-      // Devtools extensions are broken in Electron 6.0.0 and greater
-      // See https://github.com/nklayman/vue-cli-plugin-electron-builder/issues/378 for more info
-      // Electron will not launch with Devtools extensions installed on Windows 10 with dark mode
-      // If you are not using Windows 10 dark mode, you may uncomment these lines
-      // In addition, if the linked issue is closed, you can upgrade electron and uncomment these lines
-      // try {
-      //   await installVueDevtools()
-      // } catch (e) {
-      //   console.error('Vue Devtools failed to install:', e.toString())
-      // }
-    }
-    console.log(settings.getSync('config'))
     if (!settings.hasSync('config')) {
-      console.log('nosetting found use Default')
       settings.setSync('config', require('@/assets/AadenConfig.json'))
     }
-    console.log(settings.getSync('config'), 'end-Setting')
     createWindow()
   })
 }
