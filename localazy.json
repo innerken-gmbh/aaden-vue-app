@@ -7,7 +7,5 @@
   },
   "download": {
     "files": "src/locales/${lang}.json"
-  },
-  "conversion": {},
-  "transformations": []
+  }
 }

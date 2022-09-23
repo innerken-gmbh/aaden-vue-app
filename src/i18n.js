@@ -1,8 +1,19 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import GlobalConfig from './oldjs/LocalGlobalSettings'
 
 Vue.use(VueI18n)
+
+export function loadTransLangs () {
+  const langs = require.context('./locales', true, /[A-Za-z0-9-_,\s]+\.json$/i)
+    .keys()
+    .map(
+      function (item) {
+        return item.match(/([A-Za-z0-9-_]+)\./i)[1].toUpperCase()
+      }
+    )
+  const res = langs.filter(lang => lang && lang.length > 1)
+  return res
+}
 
 function loadLocaleMessages () {
   const locales = require.context('./locales', true, /[A-Za-z0-9-_,\s]+\.json$/i)
@@ -18,7 +29,7 @@ function loadLocaleMessages () {
 }
 
 export default new VueI18n({
-  locale: GlobalConfig?.lang.toLowerCase() || 'de',
+  locale: localStorage.getItem('frontEndLang')?.toLowerCase() || 'de',
   fallbackLocale: 'de',
   // silentTranslationWarn: true,
   messages: loadLocaleMessages()
