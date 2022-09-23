@@ -179,7 +179,6 @@ export default {
     },
     dishList: function () {
       const list = [...this.dishListModel.list].filter(it => {
-        console.log(it)
         return (this.activeSourceMark === '' || it.sourceMark === this.activeSourceMark) && (!this.onlyPaid || it.realPrice !== 0)
       })
       if (this.reverse) {
