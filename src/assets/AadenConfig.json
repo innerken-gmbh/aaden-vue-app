@@ -37,5 +37,6 @@
   "reservationCloudServerBase": "192.168.1.160:8080",
   "usePrintZBonAlert": false,
   "defaultTileHeight": 120,
-  "defaultTileWidth": 100
+  "defaultTileWidth": 100,
+  "useEdgeAdmin": true
 }

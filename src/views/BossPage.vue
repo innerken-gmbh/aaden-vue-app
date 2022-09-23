@@ -1,6 +1,6 @@
 <template>
   <iframe width="100%"
-          :src="'http://'+Config.Base+'/Admin?Base='+Config.Base+'&lang='+Config.lang+'&chaos='+Config.startUpTimestamp"
+          :src="'http://'+Config.Base+'/'+endPoint+'?Base='+Config.Base+'&lang='+Config.lang+'&chaos='+Config.startUpTimestamp"
           style="height: 100vh"></iframe>
 </template>
 
@@ -11,7 +11,8 @@ export default {
   name: 'BossPage',
   data: function () {
     return {
-      Config: GlobalConfig
+      Config: GlobalConfig,
+      endPoint: GlobalConfig.useEdgeAdmin ? 'Admin-Edge' : 'Admin'
     }
   }
 }

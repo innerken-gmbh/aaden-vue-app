@@ -7,7 +7,11 @@ import IKUtils from 'innerken-js-utils'
 import { getColorLightness } from '@/oldjs/api'
 
 const dishesDictionary = {}
-const categoryCache = {}
+let categoryCache = {}
+
+export function resetCache () {
+  categoryCache = {}
+}
 
 export async function getCategoryListWithCache (consumeTypeId) {
   if (!categoryCache[consumeTypeId]) {

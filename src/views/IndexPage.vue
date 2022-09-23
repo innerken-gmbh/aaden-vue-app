@@ -38,7 +38,6 @@
         <div class="text-no-wrap text-caption text-center2 ml-2">
           {{ version }}
         </div>
-
       </v-card>
 
     </v-navigation-drawer>
@@ -54,6 +53,7 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { printZBon, ZBonList } from '@/api/api'
 import dayjs from 'dayjs'
 import IKUtils from 'innerken-js-utils'
+import { resetCache } from '@/oldjs/StaticModel'
 
 const version = require('../../package.json').version
 
@@ -67,7 +67,7 @@ export default {
       menuList: [
         {
           icon: 'mdi-silverware',
-          text: this.$t('order'),
+          text: ('order'),
           beforeEnter () {
             return true
           },
@@ -75,7 +75,7 @@ export default {
         },
         {
           icon: 'mdi-cash',
-          text: this.$t('Sales'),
+          text: ('Sales'),
           beforeEnter: async () => {
             const pw = await popAuthorize('', true)
             const servant = this.findServant(pw)
@@ -100,8 +100,10 @@ export default {
   methods: {
     async goto (menuItem) {
       const res = await menuItem.beforeEnter()
-      console.log(res)
       if (res) {
+        if (menuItem.path === 'order') {
+          resetCache()
+        }
         jumpTo(menuItem.path, res)
       }
     },
