@@ -129,15 +129,11 @@
               </v-btn>
             </template>
             <v-list>
-              <v-list-item @click="changeLanguage('ZH')"
-              >
-                <v-list-item-title>{{ $t('langZH') }}</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="changeLanguage('EN')">
-                <v-list-item-title>{{ $t('langEN') }}</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="changeLanguage('DE')">
-                <v-list-item-title>{{ $t('langDE') }}</v-list-item-title>
+
+              <v-list-item v-for="(lang,index) in transLangs"
+                           :key="'translang'+index"
+                           @click="changeLanguage(lang)">
+                <v-list-item-title>{{ $t(lang)}}</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -519,7 +515,7 @@ import TimeDisplay from '@/components/Base/TimeDisplay'
 import TakeawayOrderItem from '@/views/FirstPage/Table/Table/Item/TakeawayOrderItem'
 import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
 import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
-import i18n from '@/i18n'
+import i18n, { loadTransLangs } from '@/i18n'
 
 const keyboardLayout =
     [
@@ -577,6 +573,7 @@ export default {
     }
   },
   watch: {
+
     currentView (val) {
       Remember.currentView = val
     },
@@ -622,10 +619,14 @@ export default {
     },
     notAccepted: function () {
       return this.takeawayList.filter(it => it.consumeTypeStatusId < 2)
+    },
+    transLangs () {
+      return this.loadTransLangs()
     }
 
   },
   methods: {
+    loadTransLangs,
     async showConfig () {
       await popAuthorize('boss', true)
       this.menu = true
@@ -778,6 +779,7 @@ export default {
       ]
       list.map(addToTimerList)
     }
+
   },
   mounted: async function () {
     this.initPage()

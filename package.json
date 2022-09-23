@@ -15,7 +15,9 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
     "release": "sudo snap install snapcraft --classic && snapcraft login --with log && npm run electron:build",
-    "update": "dotenv -e .env.local -- release-it --ci --no-npm-publish"
+    "update": "dotenv -e .env.local -- release-it --ci --no-npm-publish",
+    "upload-i18n": "localazy upload",
+    "update-i18n": "localazy download"
   },
   "main": "background.js",
   "dependencies": {
