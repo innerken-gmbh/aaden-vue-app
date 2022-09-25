@@ -28,7 +28,11 @@ Vue.use(VuetifyGoogleAutocomplete, {
 Vue.config.productionTip = false
 
 Vue.filter('priceDisplay', function (price) {
-  return parseFloat(price).toFixed(2).replace('.', ',') + ' €'
+  let d = price
+  if (price.includes(',') && price.includes('.')) {
+    d = price.replace('.', '').replace(',', '.')
+  }
+  return parseFloat(d).toFixed(2).replace('.', ',') + ' €'
 })
 
 Vue.filter('shorterName', function (longName) {
