@@ -58,7 +58,7 @@ function getCurrentLangObj (langs) {
 }
 
 function findNameByLang (langs, lang) {
-  return langs?.find(l => l.lang === lang) ?? { name: '' }
+  return langs?.find(l => l.lang.toUpperCase() === lang.toUpperCase()) ?? { name: '' }
 }
 
 export function findConsumeTypeById (id) {

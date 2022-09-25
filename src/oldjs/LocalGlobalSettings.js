@@ -4,14 +4,13 @@ import dayjs from 'dayjs'
 
 const fix = require('@/assets/FixedConfig.json')
 const defaultConfig = require('@/assets/AadenConfig.json')
-let GlobalConfig = Object.assign({ frontEndLang: 'de' }, defaultConfig, fix)
+let GlobalConfig = Object.assign({}, defaultConfig, fix)
 
 export let NeededKeys = []
 
 export async function loadConfig () {
   try {
     GlobalConfig = Object.assign(GlobalConfig, await loadBaseConfig(defaultConfig), fix)
-    changeLanguage(GlobalConfig.lang)
     NeededKeys = GlobalConfig.neededKeys
     GlobalConfig.getMilepayUrl = function () {
       return GlobalConfig.Protocol + GlobalConfig.Base + ':' + GlobalConfig.milePayPort + '/milePay/'
