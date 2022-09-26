@@ -391,6 +391,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
             grid-auto-columns: min-content;
             grid-gap: 6px;grid-auto-flow: column">
               <grid-button
+                  v-if="!Config.simpleVersion"
                   :loading="isSendingRequest"
                   icon="mdi-printer"
                   color="warning"
