@@ -1120,12 +1120,12 @@ export default {
       this.buffetDialogShow = false
       this.overrideConsumeTypeIndex = null
       this.activeCategoryId = null
+      this.currentSourceMark = null
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
       await this.reloadDish(this.realConsumeTypeId, forceReload)
       await this.getTableDetail()
       setGlobalTableId(this.id)
-
       blockReady()
     },
     async reloadDish (consumeTypeId, force = false) {

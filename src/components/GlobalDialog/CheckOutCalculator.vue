@@ -54,67 +54,16 @@
         </div>
       </div>
       <div class="px-4">
-        <div class="keyboard">
-          <!--                keyBoard-->
-          <template v-for="i in keyArr.flat()">
-            <v-btn :ripple="false" v-if="i!=='mdi-dots-horizontal'" @click="input(i)" block x-large
-                   class="key"
-                   style="height: 96px"
-                   :elevation="0"
-                   :key="'key'+i">
-              <v-icon v-if="!isNaN(i)" x-large>mdi-numeric-{{ i }}</v-icon>
-              <v-icon x-large v-else>{{ i }}</v-icon>
-            </v-btn>
-            <v-menu offset-x :key="'key'+i" v-else>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn @click="input(i)" block x-large class="key"
-                       style="height: 96px"
-                       :elevation="0"
-                       v-bind="attrs"
-                       v-on="on"
-                       :key="'key'+i">
-                  <v-icon x-large>{{ i }}</v-icon>
-                </v-btn>
-              </template>
-
-            </v-menu>
-          </template>
-        </div>
+        <keyboard-layout :keys="keyArr" @input="input"/>
       </div>
 
     </v-card>
     <div style="width: 480px;max-width: calc(100vw - 480px)" class="paymentLog pa-2">
       <div class="my-3 d-flex align-center" style="width: 100%">
         <h3>{{ $t('bill_log') }}</h3>
-        <v-spacer></v-spacer>
-        <v-btn @click="refreshMilePay" icon>
-          <v-icon>mdi-refresh</v-icon>
-        </v-btn>
       </div>
       <v-divider></v-divider>
       <div class="my-3" v-dragscroll style="max-height: calc(100vh - 560px);overflow:hidden">
-        <template v-if="milePayLog.length>0">
-          <h1>Milepay</h1>
-        </template>
-        <template v-for="paymentInfo in milePayLog">
-          <v-sheet :key="paymentInfo.id" :elevation="0"
-                   style="width: 100%" class="d-flex justify-space-between align-center">
-            <h2 class="font-weight-bold"
-                style="font-size: 16px">
-              {{ paymentInfo.amount / 100|priceDisplay }}/ {{ paymentInfo.channel }}/{{ paymentInfo.method }}
-            </h2>
-            <div>
-              <v-btn v-if="paymentInfo.status===PaymentStatus.PENDING" @click="replayMilePay(paymentInfo.id)" icon
-                     color="error">
-                <v-icon>mdi-replay</v-icon>
-              </v-btn>
-              <v-btn v-else icon color="success">
-                <v-icon>mdi-check</v-icon>
-              </v-btn>
-            </div>
-          </v-sheet>
-          <v-divider :key="'d'+paymentInfo.id"></v-divider>
-        </template>
         <template v-for="(paymentInfo,index) in paymentLog">
           <v-sheet :key="'price'+paymentInfo.hash" :elevation="0"
                    style="width: 100%" class="d-flex justify-space-between pa-2 my-1">
@@ -200,32 +149,36 @@
 import { dragscroll } from 'vue-dragscroll'
 import { fastSweetAlertRequest } from '@/oldjs/common'
 import hillo from 'hillo'
-import { uuidv4 } from '@/main'
-import { createMilePayOrder, getPaymentByOrderId, PaymentStatus, replayMilePayOrder } from '@/api/milepayIntergration'
+import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
-const milepayIds = [-10, -11]
+const fixedNames = {
+  cash: 'cash',
+  card: 'card',
+  return: 'returnMoney',
+  tip: 'tip',
+  vip: 'coupon'
+}
 const defaultRealName = {
   'mdi-minus': 'reverse',
   'mdi-backspace': 'back',
   'mdi-restart': 'clear',
   'mdi-circle-small': '.',
-  BAR: '1',
-  RÜC: '1',
-  TIP: '9',
-  EC: '2',
-  KreditCard: '3',
-  Gutschein: '4',
   'mdi-dots-horizontal': 'more'
 }
+
+defaultRealName[fixedNames.cash] = '1'
+defaultRealName[fixedNames.card] = '2'
+defaultRealName[fixedNames.tip] = '9'
+defaultRealName[fixedNames.return] = '1'
+defaultRealName[fixedNames.vip] = '4'
+
 export default {
   name: 'CheckOutCalculator',
+  components: { KeyboardLayout },
   props: {
     total: {
       default: 0
-    },
-    id: { // use orderId as default,when not passed, will be a random string instead.
-      default: uuidv4()
     }
   },
   directives: {
@@ -241,31 +194,26 @@ export default {
         'mdi-card-account-details',
         'mdi-cards'],
       extraPaymentMethodName: ['Gutschein'],
-      paymentLog: [],
-      milePayLog: [],
-      PaymentStatus
+      paymentLog: []
     }
   },
   computed: {
     keyArr: function () {
       if (this.remainTotal >= 0) {
         return [
-          [1, 2, 3, 'mdi-minus'],
-          [4, 5, 6, 'mdi-backspace'],
-          [7, 8, 9, 'EC'],
-          ['', 0, 'mdi-circle-small', 'BAR']]
+          '1', '2', '3', 'mdi-minus',
+          '4', '5', '6', 'mdi-backspace',
+          '7', '8', '9', fixedNames.card,
+          '', '0', 'mdi-circle-small', fixedNames.cash
+        ]
       } else {
         return [
-          [1, 2, 3, 'mdi-minus'],
-          [4, 5, 6, 'mdi-backspace'],
-          [7, 8, 9, 'TIP'],
-          ['', 0, 'mdi-circle-small', 'RÜC']]
+          '', '', '', '',
+          '', '', '', '',
+          '', '', '', fixedNames.tip,
+          '', '', '', fixedNames.return
+        ]
       }
-    },
-    realExtraPaymentMethod: function () {
-      const res = this.extraPaymentMethod
-      res.push(...this.paymentMethods.map(p => p.icon || p.id))
-      return res
     },
     realExtraPaymentMethodName: function () {
       const res = this.extraPaymentMethodName
@@ -299,16 +247,6 @@ export default {
         this.$set(this.realName, p.name, p.id)
       })
     },
-    async replayMilePay (id) {
-      try {
-        const res = await replayMilePayOrder(id)
-        console.log(res)
-        this.addPaymentLogToList(res.localContext, res.amount / 100, 'MilePay', res.paymentRequestId)
-        this.refreshMilePay()
-      } catch (e) {
-        console.log(e, 'replay failed')
-      }
-    },
     equals (a, b) {
       return Math.abs(a - b) < 0.001
     },
@@ -327,10 +265,6 @@ export default {
     },
     clearBuffer () {
       this.inputBuffer = ''
-    },
-    async refreshMilePay () {
-      this.milePayLog = (await getPaymentByOrderId(this.id)).filter(d => [PaymentStatus.PENDING, PaymentStatus.SUCCESSFUL].includes(d.status))
-      console.log(this.milePayLog)
     },
     readBuffer (clear = true) {
       if (this.inputBuffer === '') {
@@ -370,7 +304,6 @@ export default {
         return
       }
       const icon = Object.entries(this.realName).find(([k, v]) => v === type)[0]
-      console.log(icon)
       const hash = this.paymentLog.length + 'p' + price + 'icon' + icon
       const obj = {
         id: type,
@@ -392,18 +325,6 @@ export default {
         } else {
           return
         }
-      } else if (milepayIds.includes(parseInt(type))) {
-        const payMethod = this.paymentMethods.find(p => parseInt(type) === parseInt(p.id))
-
-        try {
-          const apiKey = JSON.parse(payMethod.apiKey)
-          const res = await createMilePayOrder(this.id, price, apiKey, type)
-          this.refreshMilePay()
-          console.log(res)
-        } catch (e) {
-          console.log(e)
-          return
-        }
       }
       this.addPaymentLogToList(obj.id, obj.price, obj.icon, obj.hash, obj.memberCardId)
     },
@@ -411,6 +332,7 @@ export default {
       this.paymentLog.splice(index, 1)
     },
     async input (input) {
+      console.log(input)
       if (!isNaN(parseInt(input))) {
         this.inputBuffer += input
       } else {

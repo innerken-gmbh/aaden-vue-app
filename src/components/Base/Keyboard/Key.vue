@@ -5,7 +5,7 @@
     <template v-if="keyName.startsWith('mdi')">
       <v-icon large>{{ keyName }}</v-icon>
     </template>
-    <template v-else>{{ keyName }}</template>
+    <template v-else>{{ !isNaN(keyName) ? keyName : $t(keyName) }}</template>
   </div>
 </template>
 

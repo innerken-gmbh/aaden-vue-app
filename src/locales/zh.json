@@ -471,5 +471,11 @@
   "yesIAm": "是的，我确定",
   "yesterday": "昨天",
   "zbonList": "Zbon列表",
-  "zoom": "缩放"
+  "zoom": "缩放",
+  "card": "刷卡",
+  "cash": "现金",
+  "returnMoney": "找零",
+  "tip": "小费",
+  "coupon": "代金券"
+
 }
