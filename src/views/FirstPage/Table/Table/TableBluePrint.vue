@@ -90,7 +90,7 @@
                 border-radius: 8px;
                           left: 0;max-width: calc(100vw - 684px);
                ">
-      <v-item-group v-dragscroll v-model="currentSectionIndex"
+      <v-item-group v-dragscroll
                     mandatory
                     style="display: grid;
                           grid-auto-columns: max-content;
@@ -98,8 +98,9 @@
                           grid-auto-flow: column;overflow-x: scroll">
         <v-item v-slot="{active,toggle}">
           <v-card elevation="0" style="border-radius: 8px"
+                  v-if="Config.showAllTableButton"
                   :color="active?'primary':''"
-                  class="px-6 py-2 text-body-1" @click="toggle"
+                  class="px-6 py-2 text-body-1" @click="activeSectionId=-1;toggle()"
                   :dark="active">{{ $t('All') }}
           </v-card>
         </v-item>
@@ -108,7 +109,7 @@
           <v-card :elevation="active?4:0"
                   style="border-radius: 8px"
                   :color="active?'primary':''"
-                  class="px-6 py-2 text-body-1" @click="toggle"
+                  class="px-6 py-2 text-body-1" @click="activeSectionId=section.id;toggle()"
                   :dark="active">{{ section.name }}
           </v-card>
         </v-item>
@@ -155,10 +156,14 @@
                   <v-spacer/>
                   <div class="d-flex align-end flex-column">
                     <div class="mt-1">
-                      <v-btn @click="cancelReservation(re.id)" small color="error" elevation="0">{{ $t('cancel_reservation') }}</v-btn>
+                      <v-btn @click="cancelReservation(re.id)" small color="error" elevation="0">
+                        {{ $t('cancel_reservation') }}
+                      </v-btn>
                     </div>
                     <div class="mt-1">
-                      <v-btn @click="moveReservation(re.id)" small color="warning" elevation="0">{{ $t('move_reservation') }}</v-btn>
+                      <v-btn @click="moveReservation(re.id)" small color="warning" elevation="0">
+                        {{ $t('move_reservation') }}
+                      </v-btn>
                     </div>
 
                   </div>
@@ -255,7 +260,7 @@ export default {
     tableInCurrentSection () {
       const filter = t => {
         let res = t.sectionId === this.currentSection?.id
-        if (this.currentSectionIndex === 0) {
+        if (this.activeSectionId === -1 && GlobalConfig.showAllTableButton) {
           res = t.sectionId !== '6'
         }
 
@@ -267,7 +272,12 @@ export default {
       return this.tableList.filter(filter)
     },
     currentSection () {
-      return this.currentSectionIndex !== 0 ? this.notTakeawaySection[this.currentSectionIndex - 1] ?? defaultSection : { id: 0 }
+      console.log(this.activeSectionId)
+      if (GlobalConfig.showAllTableButton) {
+        return (this.activeSectionId !== -1) ? this.notTakeawaySection.find(it => it.id === this.activeSectionId) ?? defaultSection : { id: 0 }
+      } else {
+        return this.notTakeawaySection.find(it => it.id === this.activeSectionId)
+      }
     },
     notTakeawaySection () {
       return this.sectionList.filter(it => it.id !== '6')
@@ -282,7 +292,8 @@ export default {
     },
     async outSideTableList (val) {
       this.tableList = val.map(t => {
-        const cell = t.cells.find(c => c.sectionId === this.currentSection.id) ?? t.cells?.[0] ?? {
+        const sectionId = this.currentSection?.id ?? 0
+        const cell = t.cells.find(c => c.sectionId === sectionId) ?? t.cells?.[0] ?? {
           x: 0,
           y: 0,
           w: 50,
@@ -303,7 +314,7 @@ export default {
       Remember.tableBluePrintScale = val
       console.log(' Remember.tableBluePrintScale', Remember.tableBluePrintScale)
     },
-    currentSectionIndex () {
+    activeSectionId () {
       this.$emit('need-refresh')
     }
   },
@@ -319,6 +330,9 @@ export default {
     async refreshSectionList () {
       this.sectionList = (await getSectionList())
         .filter(it => it.tableCount > 0)
+      if (!GlobalConfig.showAllTableButton) {
+        this.activeSectionId = this.sectionList[0].id
+      }
     },
     showReservation (e) {
       this.activeTable = e
@@ -357,7 +371,7 @@ export default {
       scale: parseFloat(Remember.tableBluePrintScale || 1),
       reservationDialog: null,
       activeTable: null,
-      currentSectionIndex: 0,
+      activeSectionId: -1,
       sectionList: [],
       allKeys: GlobalConfig.tableInfoKeys,
       key1: Remember.tableDisplayKeys[0],

@@ -39,5 +39,6 @@
   "defaultTileHeight": 120,
   "defaultTileWidth": 100,
   "useEdgeAdmin": true,
-  "frontEndLang": "de"
+  "frontEndLang": "de",
+  "showAllTableButton": true
 }
