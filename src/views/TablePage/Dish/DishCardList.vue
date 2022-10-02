@@ -144,6 +144,7 @@ export default {
   },
   methods: {
     resetExpandIndex () {
+      this.currentSourceMark = null
       this.expandIndex = this.resetCurrentExpandIndex ? (this.reverse ? 0 : this.dishList.length - 1) : null
     },
     _clickCallBack (index, dish) {

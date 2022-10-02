@@ -799,8 +799,7 @@ export default {
 
       /* new input */
       keyboardInput: '',
-      currentCodeBuffer: '',
-      currentSourceMark: null
+      currentCodeBuffer: ''
     }
   },
   methods: {
@@ -1121,7 +1120,6 @@ export default {
       this.buffetDialogShow = false
       this.overrideConsumeTypeIndex = null
       this.activeCategoryId = null
-      this.currentSourceMark = null
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
       await this.reloadDish(this.realConsumeTypeId, forceReload)
