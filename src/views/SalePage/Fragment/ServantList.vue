@@ -84,6 +84,16 @@
                       {{ s.todayTotal ? s.todayTotal : 0 | priceDisplay }}
                     </div>
                   </div>
+                  <div
+                      class="d-flex justify-space-between pt-1 "
+                  >
+                    <div class="label">
+                      {{ $t('cash') }} - {{ $t('tip') }}
+                    </div>
+                    <div class="value font-weight-bold">
+                      {{ cash(s.payMethodTotal) | priceDisplay }}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -91,9 +101,11 @@
         </div>
       </div>
 
-      <v-card elevation="0" class="pl-6">
+      <v-card elevation="0">
         <v-btn right x-large dark class="orange mb-6 mt-2" block @click="allZBon(...singleZBonDate)">
-          {{ $t('print_all_summary_bon') }}
+          <div style="width: 160px" class="hideMore">
+            {{ $t('print_all_summary_bon') }}
+          </div>
         </v-btn>
       </v-card>
     </div>
@@ -193,6 +205,9 @@ export default {
           }
         })
       }
+    },
+    cash (payMethod) {
+      return parseFloat(payMethod.find(it => parseInt(it.payMethodId) === 1)?.sumTotal ?? 0) + parseFloat(payMethod.find(it => parseInt(it.payMethodId) === 9)?.sumTotal ?? 0)
     }
   },
   watch: {

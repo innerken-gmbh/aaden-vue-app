@@ -4,14 +4,14 @@
       <div class="flex-grow-1">
         <bill-table @need-refresh="loadData" :orders="displayOrder" :show-operation="true"/>
       </div>
-      <v-card elevation="0" class="pa-4" width="300">
+      <v-card elevation="0" class="pa-4" width="300" style="overflow-y: scroll">
         <v-sheet class="text-body-1">
           <h4>{{ $t('statistic') }}</h4>
           <div class="mt-4">
             <div class="d-flex justify-space-between align-center">
               <div class="hideMore"
                    style="max-width: 150px">
-              <div style="font-size: 24px">{{ $t('All') }}{{ $t('Umsatz') }}</div>
+                <div style="font-size: 24px">{{ $t('All') }}{{ $t('Umsatz') }}</div>
               </div>
               <div style="font-size: 24px" class="font-weight-bold">{{ billContent.total | priceDisplay }}</div>
             </div>
@@ -34,14 +34,26 @@
               <v-divider class="my-2"></v-divider>
             </div>
           </template>
+          <v-sheet>
+            <div class="d-flex" v-for="p in paidInfoList" :key="p.id">
+              <div>
+                {{p.paidName}}
+              </div>
+              <v-spacer></v-spacer>
+              <div class="font-weight-bold">
+                {{p.paidTotal | priceDisplay}}
+              </div>
+            </div>
+          </v-sheet>
+          <v-divider class="my-4"></v-divider>
           <v-card color="error lighten-2" dark @click="returnDishDialog=true"
                   elevation="0"
                   class="d-flex align-center pa-2">
             <div
-              class="hideMore"
-              style="max-width: 90px"
+                class="hideMore"
+                style="max-width: 90px"
             >
-            <h3>{{ $t('cancel_order') }}</h3>
+              <h3>{{ $t('cancel_order') }}</h3>
             </div>
             <v-spacer></v-spacer>
             <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }})
@@ -56,27 +68,28 @@
               <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
             </h3>
           </v-card>
-
         </v-sheet>
+        <v-divider></v-divider>
+
         <v-card elevation="0">
 
           <v-btn
-            class="mt-4"
-            elevation="0"
-            x-large
-            block
-            @click="printXBon"
-            color="warning">
+              class="mt-4"
+              elevation="0"
+              x-large
+              block
+              @click="printXBon"
+              color="warning">
             {{ $t('XBon Drücken') }}
           </v-btn>
           <v-btn
-            class="mt-2"
-            elevation="0"
-            block
-            v-if="shouldShowZBon"
-            x-large
-            @click="printZBon"
-            color="primary">
+              class="mt-2"
+              elevation="0"
+              block
+              v-if="shouldShowZBon"
+              x-large
+              @click="printZBon"
+              color="primary">
             {{ $t('ZBon Drücken') }}
           </v-btn>
         </v-card>
@@ -88,25 +101,25 @@
       <v-card elevation="1" class="d-flex px-4 pt-2" color="white" tile>
         <div style="display: grid;grid-auto-flow: column;grid-gap: 8px;">
           <v-text-field
-            prepend-inner-icon="mdi-magnify"
-            :placeholder="$t('Search order/table')"
-            v-model="search">
+              prepend-inner-icon="mdi-magnify"
+              :placeholder="$t('Search order/table')"
+              v-model="search">
           </v-text-field>
           <v-select
-            :label="$t('payment_method')"
-            :items="payMethodList"
-            v-model="appliedFilter.payment"
-            @change="updateFilter"
-            :item-text="item => item.langPayMethodName"
-            multiple
+              :label="$t('payment_method')"
+              :items="payMethodList"
+              v-model="appliedFilter.payment"
+              @change="updateFilter"
+              :item-text="item => item.langPayMethodName"
+              multiple
           >
           </v-select>
           <v-select
-            :label="$t('Server')"
-            :items="servantList"
-            v-model="appliedFilter.servant"
-            @change="updateFilter"
-            :item-text="item => item.name"
+              :label="$t('Server')"
+              :items="servantList"
+              v-model="appliedFilter.servant"
+              @change="updateFilter"
+              :item-text="item => item.name"
           >
           </v-select>
           <v-btn v-if="showClearButton" @click="clearFilter" class="mt-2">
@@ -223,6 +236,7 @@ export default {
           fTotalTax: 0,
           storno: [],
           discount: [],
+          paidInfo: [],
           fTotalTe: 0
         }
       },
@@ -270,7 +284,6 @@ export default {
       return this.billData.content
     },
     paidInfoList () {
-      console.log(this.billContent.paidInfo)
       return this.billContent.paidInfo
     },
     returnList () {
@@ -350,7 +363,7 @@ export default {
 </script>
 
 <style scoped>
-.hideMore{
+.hideMore {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
