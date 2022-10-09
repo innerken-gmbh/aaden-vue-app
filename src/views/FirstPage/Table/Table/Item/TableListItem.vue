@@ -48,7 +48,6 @@ export default {
       const res = Object.assign({}, defaultTable, this.tableInfo)
       res.inUse = res.usageStatus === '1'
       res.inCall = res.callService === '1'
-      console.log(res)
       return res
     }
   },
