@@ -136,7 +136,7 @@
               <v-list-item v-for="(lang,index) in transLangs"
                            :key="'translang'+index"
                            @click="changeLanguage(lang)">
-                <v-list-item-title>{{ $t(lang)}}</v-list-item-title>
+                <v-list-item-title>{{ $t(lang) }}</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -481,7 +481,8 @@
 <script>
 import { version } from '../../../package.json'
 import {
-  blockReady, fastSweetAlertRequest,
+  blockReady,
+  fastSweetAlertRequest,
   findConsumeTypeById,
   getAllDishes,
   getConsumeTypeList,
@@ -606,7 +607,7 @@ export default {
       return this.servantList.map(s => {
         s.tables = this.activeTables.filter(t => t.servantId === s.id)
         return s
-      })
+      }).filter(s => s.tables.length > 0)
     },
 
     activeList: function () {

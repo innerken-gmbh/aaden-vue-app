@@ -13,8 +13,11 @@
   white-space: nowrap;">{{ table.tableName }}</span>
     <v-spacer/>
     <div>
-      <div class="caption">
+      <div class="caption" v-if="table.consumeType==='1'||table.consumeType==='2'||table.consumeType==='5'">
         {{ table.dishCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
+      </div>
+      <div class="caption" v-else>
+        <v-icon>mdi-account</v-icon>{{ table.buffetCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
       </div>
       <div class="caption text-right">
         {{ table.createTimestamp }}/<span
