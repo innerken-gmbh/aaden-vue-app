@@ -16,7 +16,7 @@
       <div class="caption" v-if="table.consumeType==='1'||table.consumeType==='2'||table.consumeType==='5'">
         {{ table.dishCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
       </div>
-      <div class="caption" v-else>
+      <div class="caption d-flex align-center justify-end" v-else>
         <v-icon x-small>mdi-account</v-icon>
         {{ parseInt(table.seatCount)+parseInt(table.childCount) }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
       </div>
