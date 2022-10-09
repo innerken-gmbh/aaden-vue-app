@@ -49,7 +49,7 @@
           <v-card elevation="0" color="#f6f6f6" class="pa-2" style="height: 96px" @click="input(item)"
                   v-for="(item, index) in realExtraPaymentMethodName"
                   :key="index">
-            {{ item }}
+            {{ item==='coupon'?$t('coupon'):item }}
           </v-card>
         </div>
       </div>
@@ -193,7 +193,7 @@ export default {
       extraPaymentMethod: [
         'mdi-card-account-details',
         'mdi-cards'],
-      extraPaymentMethodName: ['Gutschein'],
+      extraPaymentMethodName: [fixedNames.vip],
       paymentLog: []
     }
   },
@@ -303,6 +303,7 @@ export default {
       if (price === 0) {
         return
       }
+      console.log(this.realName, type)
       const icon = Object.entries(this.realName).find(([k, v]) => v === type)[0]
       const hash = this.paymentLog.length + 'p' + price + 'icon' + icon
       const obj = {
