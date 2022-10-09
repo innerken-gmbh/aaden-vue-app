@@ -12,21 +12,22 @@
   text-overflow: ellipsis;
   white-space: nowrap;">{{ table.tableName }}</span>
     <v-spacer/>
-    <div>
+    <div style="text-align: right">
       <div class="caption" v-if="table.consumeType==='1'||table.consumeType==='2'||table.consumeType==='5'">
         {{ table.dishCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
       </div>
       <div class="caption" v-else>
-        <v-icon>mdi-account</v-icon>{{ table.buffetCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
+        <v-icon x-small>mdi-account</v-icon>
+        {{ parseInt(table.seatCount)+parseInt(table.childCount) }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
       </div>
-      <div class="caption text-right">
-        {{ table.createTimestamp }}/<span
-          class="pa-1"
-          style="border-radius: 4px"
+      <div class="caption text-right d-flex align-center">
+        {{ table.createTimestamp }}/<div
+          class="px-1 hideMore"
+          style="border-radius: 4px;max-width: 60px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis"
           :style="{
                       background:findConsumeTypeColorById(table.consumeType),
                       color:colorIsDark(findConsumeTypeColorById(table.consumeType))?'#fff':'#000'}"
-      >{{ findConsumeTypeById(table.consumeType) }}</span>
+      >{{ findConsumeTypeById(table.consumeType) }}</div>
       </div>
     </div>
   </v-card>
@@ -47,6 +48,7 @@ export default {
       const res = Object.assign({}, defaultTable, this.tableInfo)
       res.inUse = res.usageStatus === '1'
       res.inCall = res.callService === '1'
+      console.log(res)
       return res
     }
   },
