@@ -1,6 +1,6 @@
 <template>
 
-  <v-card height="112px" elevation="0" @click="$emit('click')"
+  <v-card height="124px" elevation="0" @click="$emit('click')"
           style="position:relative;"
           :style="{backgroundColor:''+displayColor,color:''+foreground,}"
           class="dishBlock d-flex flex-column fill-height justify-center align-center pa-2">
@@ -11,16 +11,17 @@
     <span :style="{fontSize:autoFontSize+'px'}" class="name">
         {{ dishName }}
       </span>
-    <div style="align-items: center;flex-wrap: wrap">
+    <v-card :dark="haveMod>0" @click="haveMod>0?$emit('click-tune'):$emit('click')" elevation="0" :color="haveMod>0?'warning':''" class="pa-1 mt-1"
+            style="align-items: center;flex-wrap: wrap">
       <div v-if="isFree==='1'"
            class="price d-flex align-center green lighten-3 white--text px-1 rounded">
         {{ $t('Frei') }}
       </div>
-      <div v-else class="price d-flex align-center text--secondary">
+      <div v-else class="price d-flex align-center">
         {{ price | priceDisplay }}
-        <template v-if="haveMod>0"><span style="color: red"> *</span></template>
+        <template v-if="haveMod>0"><v-icon small right>mdi-cog</v-icon></template>
       </div>
-    </div>
+    </v-card>
   </v-card>
 
 </template>
@@ -42,7 +43,6 @@ export default {
   computed: {
     autoFontSize () {
       const length = this.dishName?.length ?? 0
-      console.log(this.fontSize)
       return this.fontSize === '-1' ? length < 32 ? 18 : (length < 48 ? 14 : 10) : this.fontSize
     }
   }

@@ -38,7 +38,10 @@
   "usePrintZBonAlert": false,
   "defaultTileHeight": 120,
   "defaultTileWidth": 100,
-  "useEdgeAdmin": true,
+  "useEdgeAdmin": false,
   "frontEndLang": "de",
-  "showAllTableButton": true
+  "showAllTableButton": true,
+  "showTableList": false,
+  "showConfigButton": false,
+  "showDrawerButton": false
 }

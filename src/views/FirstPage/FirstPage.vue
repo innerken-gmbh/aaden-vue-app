@@ -62,6 +62,9 @@
           <div>
             <time-display></time-display>
           </div>
+          <v-btn v-if="Config.showDrawerButton" @click="openDrawer" icon>
+            <v-icon>mdi-lock-open</v-icon>
+          </v-btn>
           <v-btn @click="showConfig" icon>
             <v-icon>
               mdi-cog-outline
@@ -627,6 +630,7 @@ export default {
   },
   methods: {
     loadTransLangs,
+    openDrawer,
     async showConfig () {
       await popAuthorize('boss', true)
       this.menu = true
@@ -697,7 +701,6 @@ export default {
 
     useCurrentConfig,
     hardReload,
-    openDrawer,
     openOrEnterTable: openOrEnterTable,
     ...mapMutations(['HIDE_AUTHORIZE_DIALOG']),
     initialUI () {

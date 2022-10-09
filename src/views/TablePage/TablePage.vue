@@ -188,7 +188,7 @@
                         <v-card elevation="0" style="
                       position: relative;
                       width: 100%;
-                      height: 112px;
+                      height: 124px;
                       font-size: 18px;
                       font-weight: 500;
                         display: -webkit-box;
@@ -214,7 +214,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
 
                     <div class="dishCardList">
                       <v-card elevation="0" v-if="activeCategoryId"
-                              style="width: 100%;height: 112px;
+                              style="width: 100%;height: 124px;
                         color: #ff8c50;
                         border-radius: 12px"
                               @click="activeCategoryId=null" class="d-flex align-center"
@@ -961,11 +961,6 @@ export default {
         dish.name = dish.dishName
         dish.name = dish.name.length > 28
           ? dish.name.substring(0, 28) + '...' : dish.name
-        if (dish.haveMod > 0) {
-          this.showModification(dish, count)
-          blockReady()
-          return
-        }
         if (dish.code.toLowerCase().includes('ea')) {
           this.showExtraDish(dish)
           blockReady()

@@ -10,8 +10,21 @@
          :style="{
           transform:'scale('+scale+')'
        }">
+      <template v-if="Config.showTableList">
+        <div style="display: grid;grid-template-columns: repeat(auto-fill,minmax(0,100px));grid-auto-rows: 140px">
+          <table-card
+              :key="i.id"
+              v-for="i in tableWithInfo"
+              @click="selectTable(i)"
+              :table-background-color-func="tableBackgroundColorFunc"
+              :table-color-is-dark="tableColorIsDark"
+              :table-info="i"
+              @reservation-clicked="showReservation"
+          ></table-card>
+        </div>
 
-      <template v-for="i in tableWithInfo">
+      </template>
+      <template v-else v-for="i in tableWithInfo">
         <vue-draggable-resizable
             class-name-dragging="dragging"
             :min-height="60"
@@ -312,7 +325,6 @@ export default {
     },
     scale (val) {
       Remember.tableBluePrintScale = val
-      console.log(' Remember.tableBluePrintScale', Remember.tableBluePrintScale)
     },
     activeSectionId () {
       this.$emit('need-refresh')
@@ -366,8 +378,6 @@ export default {
       Config: GlobalConfig,
       width: 0,
       height: 0,
-      x: 0,
-      y: 0,
       scale: parseFloat(Remember.tableBluePrintScale || 1),
       reservationDialog: null,
       activeTable: null,
@@ -384,7 +394,6 @@ export default {
       this.width = this.$refs.blueprintContainer.clientWidth - 50
     })
     await this.refreshSectionList()
-    console.log(Remember.tableDisplayKeys)
   }
 }
 </script>

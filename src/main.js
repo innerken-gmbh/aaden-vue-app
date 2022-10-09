@@ -22,12 +22,14 @@ import { Remember } from '@/api/remember'
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
 Vue.use(VuetifyGoogleAutocomplete, {
-  apiKey: 'AIzaSyB5lIPQQUJjjY6M-BoqUaZhF21oBbYkd9E', language: 'de'
+  apiKey: 'AIzaSyB5lIPQQUJjjY6M-BoqUaZhF21oBbYkd9E',
+  language: 'de'
 })
 
 Vue.config.productionTip = false
 
 Vue.filter('priceDisplay', function (price) {
+  price = price ?? 0
   let d = price
   if (price.includes && price.includes(',') && price?.includes('.')) {
     d = price.replace('.', '').replace(',', '.')
@@ -101,7 +103,11 @@ async function initial () {
 
   }
   new Vue({
-    router, store, i18n, vuetify, render: h => h(App)
+    router,
+    store,
+    i18n,
+    vuetify,
+    render: h => h(App)
   }).$mount('#app')
 }
 

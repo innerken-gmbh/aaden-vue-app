@@ -49,8 +49,6 @@ export function getNiceLabel (dateRange) {
   return i18n.t(predefinedDateRangeList.find(s => s.dateRange().join(',') === dateRange.join(','))?.label) ?? (dateRange[0] === dateRange[1] ? dateRange[0] : dateRange.join(' ~ '))
 }
 
-const stripeDateFormat = 'ddd, DD MMM YYYY HH:mm:ss '
-
-export function convertStripeDate (stripeDateString) {
-  return standardFormatter(dayjs(stripeDateString, stripeDateFormat))
+export function getToday () {
+  return standardFormatter(dayjs().subtract(3, 'hour').subtract(59, 'minute'))
 }
