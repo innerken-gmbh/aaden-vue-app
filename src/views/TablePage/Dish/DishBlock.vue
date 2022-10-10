@@ -11,7 +11,7 @@
     <span :style="{fontSize:autoFontSize+'px'}" class="name">
         {{ dishName }}
       </span>
-    <v-card :dark="haveMod>0" @click="haveMod>0?$emit('click-tune'):$emit('click')" elevation="0" :color="haveMod>0?'warning':''" class="pa-1 mt-1"
+    <v-card :dark="haveMod>0" @click.stop="haveMod>0?$emit('click-tune'):$emit('click')" elevation="0" :color="haveMod>0?'warning':''" class="pa-1 mt-1"
             style="align-items: center;flex-wrap: wrap">
       <div v-if="isFree==='1'"
            class="price d-flex align-center green lighten-3 white--text px-1 rounded">
