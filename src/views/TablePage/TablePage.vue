@@ -961,6 +961,11 @@ export default {
         dish.name = dish.dishName
         dish.name = dish.name.length > 28
           ? dish.name.substring(0, 28) + '...' : dish.name
+        if (dish.haveMod > 0) {
+          this.submitModification(null, dish, count)
+          blockReady()
+          return
+        }
         if (dish.code.toLowerCase().includes('ea')) {
           this.showExtraDish(dish)
           blockReady()
