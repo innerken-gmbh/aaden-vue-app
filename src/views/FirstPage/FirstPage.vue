@@ -422,7 +422,6 @@
             </v-card>
 
           </template>
-
         </v-card>
         <v-card class="pa-2"
                 style="position: fixed;right: 0;bottom:0;width: 320px;z-index: 15">
@@ -436,7 +435,6 @@
               v-model="buffer"
               :autofocus="Config.getFocus"
           />
-
           <keyboard-layout v-if="showKeyboard" @input="numberInput" :keys="keyboardLayout"/>
         </v-card>
       </v-tab-item>
