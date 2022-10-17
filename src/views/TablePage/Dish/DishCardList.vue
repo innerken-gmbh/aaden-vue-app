@@ -76,6 +76,7 @@
 <script>
 import { dragscroll } from 'vue-dragscroll'
 import DishCard from './DishCard'
+import { Remember } from '@/api/remember'
 
 export default {
   name: 'DishCardList',
@@ -119,7 +120,7 @@ export default {
       expand: this.defaultExpand,
       expandIndex: null,
       currentSourceMark: null,
-      onlyPaid: true
+      onlyPaid: !Remember.showFreeDish
     }
   },
   watch: {
@@ -137,6 +138,9 @@ export default {
         }
       },
       immediate: true
+    },
+    onlyPaid (val) {
+      Remember.showFreeDish = val
     },
     defaultExpand: function (val) {
       this.expand = val

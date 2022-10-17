@@ -6,5 +6,6 @@ export const Remember = LocalSettingManager.config({
   uuid: '',
   showOtherOrder: false,
   tableBluePrintScale: 1,
-  tableDisplayKeys: ['createTimestamp', 'servantName']
+  tableDisplayKeys: ['createTimestamp', 'servantName'],
+  showFreeDish: false
 })
