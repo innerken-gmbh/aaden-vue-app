@@ -86,15 +86,15 @@
                             </v-list-item-content>
                           </v-list-item>
                           <v-btn
-                            x-large
-                            block
-                            @click="showNumberKeyboard=true"
-                            color="warning">
+                              x-large
+                              block
+                              @click="showNumberKeyboard=true"
+                              color="warning">
                             <div
-                              class="hideMore"
-                              style="max-width: 200px"
+                                class="hideMore"
+                                style="max-width: 200px"
                             >
-                            {{ $t('create_new_record') }}
+                              {{ $t('create_new_record') }}
                             </div>
                           </v-btn>
                         </v-list>
@@ -190,14 +190,19 @@
         <date-range-picker v-model="dateInput"></date-range-picker>
         <div class="px-2 mt-2">
           <v-btn elevation="0" block @click="dateSubmit" color="primary" large>{{ $t('submit') }}</v-btn>
-          <v-btn large block color="error" @click="showDatePicker=false" outlined class="mt-2">{{ $t('Cancel') }}</v-btn>
+          <v-btn large block color="error" @click="showDatePicker=false" outlined class="mt-2">{{
+              $t('Cancel')
+            }}
+          </v-btn>
         </div>
       </v-card>
     </v-dialog>
     <dialog-with-keyboard @close="showNumberKeyboard=false" :show="showNumberKeyboard"
-                          @submit="addCashRecord" :title=" $t('pls_enter_the_amount_of_expenses_if_the_enternumber_is_negative')"
+                          @submit="addCashRecord"
+                          :title=" $t('pls_enter_the_amount_of_expenses_if_the_enternumber_is_negative')"
                           :keys="keyboardNumber">
-      <v-text-field :placeholder=" $t('if_necessary_pls_click_here_to_enter_a_note_using_the_keyboard')" v-model="cashNote"></v-text-field>
+      <v-text-field :placeholder=" $t('if_necessary_pls_click_here_to_enter_a_note_using_the_keyboard')"
+                    v-model="cashNote"></v-text-field>
     </dialog-with-keyboard>
   </div>
 
@@ -220,7 +225,7 @@ import DialogWithKeyboard from '@/components/Base/DialogWithKeyboard'
 import Calendar from '@/views/SalePage/Fragment/Calendar'
 import { numberKeyLayout } from '@/components/Base/Keyboard/keyModel'
 import BillTable from '@/views/SalePage/BillTable'
-import { getNiceLabel, today } from '@/api/Repository/DateRepository'
+import { getNiceLabel, getToday, today } from '@/api/Repository/DateRepository'
 import DateRangePicker from '@/components/GlobalDialog/DateRangePicker'
 import DishStatistic from '@/views/SalePage/Fragment/DishStatistic'
 import ServantList from '@/views/SalePage/Fragment/ServantList'
@@ -344,7 +349,7 @@ export default {
       }
     },
     initial () {
-      this.singleZBonDate = [today, today]
+      this.singleZBonDate = [getToday(), getToday()]
       this.tabIndex = 0
     }
   },

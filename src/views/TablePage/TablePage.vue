@@ -1052,6 +1052,7 @@ export default {
     printZwichenBon: function () {
       printZwichenBon(this.id, this.splitOrderListModel.list)
     },
+
     addToSplit: function (dish) {
       const item = IKUtils.deepCopy(dish)
       if (item.code === '-1') {
@@ -1061,6 +1062,7 @@ export default {
       this.orderListModel.add(item, -1)
       this.splitOrderListModel.add(item, 1)
     },
+
     addExtraDish () {
       const dish = IKUtils.deepCopy(this.currentDish)
       if (dish.currentPrice === '') {
