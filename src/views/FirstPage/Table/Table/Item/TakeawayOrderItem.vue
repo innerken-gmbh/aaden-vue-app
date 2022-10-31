@@ -40,7 +40,7 @@
       </v-chip>
       <div>
         <template
-            v-for="(time) in [0,10,15,20,30,60]"
+            v-for="(time) in [0,10,15,20,30,40,50,60]"
         >
           <v-chip
               label
