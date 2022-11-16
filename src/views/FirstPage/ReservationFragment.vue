@@ -35,10 +35,10 @@
         </v-btn>
       </v-card>
       <v-card
-          elevation="0"
-          class="mt-4 flex-grow-1"
-          style="border-radius: 12px"
-          color="grey lighten-2"
+        elevation="0"
+        class="mt-4 flex-grow-1"
+        style="border-radius: 12px"
+        color="grey lighten-2"
       >
       </v-card>
     </div>
@@ -56,24 +56,24 @@
         </div>
         <div style="max-width: 196px">
           <v-text-field
-              v-model="search"
-              append-icon="mdi-magnify"
-              label="Search"
-              solo
-              dense
-              hide-details
+            v-model="search"
+            append-icon="mdi-magnify"
+            label="Search"
+            solo
+            dense
+            hide-details
           ></v-text-field>
         </div>
 
       </v-card-title>
       <v-data-table
-          height="calc(100vh - 224px)"
-          fixed-header
-          :custom-filter="filterItem"
-          @click:row="toggleActiveReservation"
-          :headers="headers"
-          :items="displayReservationItems"
-          :search="search">
+        height="calc(100vh - 224px)"
+        fixed-header
+        :custom-filter="filterItem"
+        @click:row="toggleActiveReservation"
+        :headers="headers"
+        :items="displayReservationItems"
+        :search="search">
         <template #item.action="{item}">
           <div style="display: grid;grid-gap: 4px;grid-auto-flow: column">
 
@@ -92,8 +92,8 @@
         </template>
         <template #item.note="{item}">
           <div
-              class="text-decoration-underline"
-              style="max-width: 96px;overflow: hidden;white-space: nowrap;
+            class="text-decoration-underline"
+            style="max-width: 96px;overflow: hidden;white-space: nowrap;
                   text-overflow: ellipsis">
             {{ item.note ? item.note : $t('nothing') }}
           </div>
@@ -396,7 +396,7 @@
         <v-card-title>{{ $t('reserved_table_setting') }}</v-card-title>
         <v-card-text class="pa-4" style="overflow: scroll">
           <div
-              style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px;max-height: 70vh;overflow-y: scroll">
+            style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px;max-height: 70vh;overflow-y: scroll">
             <v-card elevation="0" class="pa-4 d-flex align-center justify-center flex-column"
                     :color="t.reservable?'primary':''"
                     :dark="t.reservable"
@@ -569,6 +569,8 @@ export default {
     },
     async cancelReservation (id) {
       await cancelReservation(id)
+      this.showReservation = false
+      this.activeReservation = null
       await this.loadReservations()
     },
 
