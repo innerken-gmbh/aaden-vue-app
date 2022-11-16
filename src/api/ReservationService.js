@@ -4,6 +4,7 @@ import { sliceTime, standardDateTemplate, timestampTemplate } from '@/api/dateUt
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
 import { showTableSelector } from '@/oldjs/common'
+import i18n from '@/i18n'
 
 export async function loadAllReservable () {
   return (await hillo.get('Tables.php?op=getAllReservable')).content
@@ -83,7 +84,7 @@ export async function moveReservation (reservationId) {
 }
 
 export async function cancelReservation (reservationId) {
-  const res = await IKUtils.showConfirmAsyn(this.$t('one_email_will_be_sent_if_reservation_is_cancelled' + '。'), this.$t('are_you_sure_to_cancel_the_reservation' + '？'))
+  const res = await IKUtils.showConfirmAsyn(i18n.t('one_email_will_be_sent_if_reservation_is_cancelled' + '。'), i18n.t('are_you_sure_to_cancel_the_reservation' + '？'))
   if (res.isConfirmed) {
     return (await hillo.post('Tables.php?op=cancelReservation', {
       reservationId
