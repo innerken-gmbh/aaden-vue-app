@@ -1071,7 +1071,7 @@ export default {
       if (dish.currentName === '') {
         dish.currentName = dish.name
       }
-      dish.originPrice = dish.currentPrice
+      dish.originPrice = dish.currentPrice.toString().replace(',', '.')
       dish.price = dish.originPrice
       dish.forceFormat = true
       dish.name = dish.currentName
