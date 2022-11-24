@@ -86,6 +86,15 @@ export async function acceptOrder (reason, id) {
   IKUtils.toast('ok')
 }
 
+export async function readyToPick (id) {
+  IKUtils.showLoading(true)
+  await hillo.post('Orders.php?op=changeOrderPickUpStatus', {
+    orderId: id,
+    status: 1
+  })
+  IKUtils.toast('ok')
+}
+
 export async function previewServantSummary (pw, start, end) {
   return (await hillo.get('Servant.php?op=previewSummary', {
     pw,

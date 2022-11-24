@@ -9,7 +9,7 @@
     :key="table.id">
 
     <div class="text-body-1 text-truncate text-no-wrap" style="max-width: 220px">
-      <span class="font-weight-bold">#{{ table.tableName }}</span>
+      #{{ table.tableName }}
       <span class="text-capitalize ml-1"
             v-if="table.addressInfo">{{
           table.addressInfo.firstName
@@ -35,7 +35,7 @@
         {{ $t(table.addressInfo.deliveryMethod) }} @ <b>{{ table.addressInfo.time }}</b>
       </v-chip>
     </div>
-    <v-card v-if="bigCard"
+    <v-card v-if="bigCard&&table.addressInfo.toNow"
             :class="(table.addressInfo.toNow>30
             ?'success':table.addressInfo.toNow>15
             ?'warning':'error')+'--text'"
@@ -48,16 +48,11 @@
               margin: auto;
               height: fit-content;
             text-align: center;">
-      <template v-if="table.addressInfo.toNow">
-        <div class="font-weight-black text-h6">{{ Math.abs(table.addressInfo.toNow) }}</div>
-        <div class="font-weight-regular text-body-2 mt-n2">
-          Min
-        </div>
-      </template>
 
-      <v-card @click.stop="$emit('click-ok')" class="pa-2 rounded" elevation="0" color="#f6f6f6">
-        <v-icon>mdi-shopping</v-icon>
-      </v-card>
+      <div class="font-weight-black text-h6">{{ Math.abs(table.addressInfo.toNow) }}</div>
+      <div class="font-weight-regular text-body-2 mt-n2">
+        Min
+      </div>
     </v-card>
   </v-card>
 </template>
@@ -67,7 +62,7 @@ import { getColorLightness } from '@/oldjs/api'
 import { beautifulTable, getRestaurantInfo } from '@/api/restaurantInfoService'
 
 export default {
-  name: 'TableGirdItem',
+  name: 'PickUpItem',
   props: {
     tableInfo: {},
     bigCard: { default: false }
