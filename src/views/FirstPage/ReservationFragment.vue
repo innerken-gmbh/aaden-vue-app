@@ -587,7 +587,10 @@ export default {
       this.activeReservation = null
       this.setting = await loadReserveSettings()
       this.timeGap = await getTimeSlotForDate(this.reservationDate, this.setting)
-      this.userId = GlobalConfig.Base.split('.')[0].replace(/\D/g, '')
+      if (parseInt(GlobalConfig.DeviceId) === -1) {
+        IKUtils.showError('请检查配置项DeviceID')
+      }
+      this.userId = parseInt(GlobalConfig.DeviceId)
     },
     async getTables () {
       this.tableList = await loadReservationTableInfo()
