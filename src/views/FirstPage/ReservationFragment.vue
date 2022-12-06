@@ -380,7 +380,7 @@
 
           <template>
             <div class="d-flex">
-              <div class="text-subtitle-2">{{ $t('need_stroller') }}</div>
+              <div class="text-subtitle-2">{{ $t('c') }}</div>
               <v-spacer></v-spacer>
               <v-simple-checkbox v-model="useStroller"/>
             </div>
