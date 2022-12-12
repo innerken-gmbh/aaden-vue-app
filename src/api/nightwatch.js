@@ -7,7 +7,7 @@ export async function update () {
   await hillo.get('MyVersion.php?op=update', {}, { timeout: 100000 })
   // IKUtils.toast('loading ok')
   if (!await checkCurrentVersion()) {
-    // IKUtils.showError(i18n.t('Automatisches Update fehler.'), i18n.t('Bitte Aaden Support kontakt und Upgrade'))
+    // IKUtils.showError(i18n.t('Automatisches Update fehler.'), i18n.t('AadenSupport'))
   }
 }
 
@@ -33,7 +33,7 @@ export async function checkCurrentVersion (slient = false) {
     GlobalConfig.backendIsOk = checkVersion(currentVersion, GlobalConfig.requiredBackendVersion)
     return GlobalConfig.backendIsOk
   } catch (e) {
-    IKUtils.showError(i18n.t('Deine Backend Version ist zu alt. Bitte Aaden Support kontakt und Upgrade'), i18n.$t('Achtung'))
+    IKUtils.showError(i18n.t('BackendOutdatedErrorMessage'), i18n.$t('Notice'))
     GlobalConfig.backendIsOk = true
     return true
   }

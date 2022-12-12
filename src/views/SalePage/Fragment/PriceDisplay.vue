@@ -42,7 +42,7 @@
               <div class="pa-4">
                 <div  class="my-8">
                   <h6 class="font-weight-bold text-body-1">
-                    {{ $t('german_standard_license') }}
+                    {{ $t('GermanStandardLicense') }}
                   </h6>
                 </div>
                 <div class="mt-8" style="display: flex; min-height: 7rem">
@@ -63,10 +63,10 @@
                     <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('support_three_devices_to_synchronize_data') }}
                   </div>
                   <div class="align-center d-flex my-2">
-                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('Datev数据集成') }}
+                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('DatevIntegration') }}
                   </div>
                   <div class="align-center d-flex my-2">
-                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('more_new_features') }}
+                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('MoreNewFeatures') }}
                   </div>
                 </div>
               </div>

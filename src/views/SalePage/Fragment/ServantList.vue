@@ -53,7 +53,7 @@
                           v-if="activeId!==s.servant.id"
                           style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
                       >
-                        {{ $t('expand_more') }}
+                        {{ $t('ExpandMore') }}
                       </div>
                       <div
                           v-else
@@ -88,7 +88,7 @@
                       class="d-flex justify-space-between pt-1 "
                   >
                     <div class="label">
-                      {{ $t('cash') }} - {{ $t('tip') }}
+                      {{ $t('Cash') }} - {{ $t('tip') }}
                     </div>
                     <div class="value font-weight-bold">
                       {{ cash(s.payMethodTotal) | priceDisplay }}

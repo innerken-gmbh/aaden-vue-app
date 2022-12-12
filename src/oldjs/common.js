@@ -132,7 +132,7 @@ export async function openOrEnterTable (number, password) {
         return
       }
       if (GlobalConfig.useOpenTableConfirm && !GlobalConfig.usePassword) {
-        const result = await showConfirmAsyn(capitalize(number) + i18n.t(' open_table'), i18n.t('Neue Tisch'))
+        const result = await showConfirmAsyn(capitalize(number) + i18n.t(' open_table'), i18n.t('NewTable'))
         if (!result.isConfirmed) {
           return
         }
@@ -194,7 +194,7 @@ export async function requestOutTable (pw = null) {
   }
 }
 
-export function showConfirmAsyn (str, title = i18n.t('areYouSure')) {
+export function showConfirmAsyn (str, title = i18n.t('AreYouSure')) {
   return Swal.fire({
     title: title,
     html: str,
@@ -203,7 +203,7 @@ export function showConfirmAsyn (str, title = i18n.t('areYouSure')) {
     confirmButtonColor: '#3085d6',
     cancelButtonColor: '#d33',
     confirmButtonText: i18n.t('yesIAm'),
-    cancelButtonText: i18n.t('cancel')
+    cancelButtonText: i18n.t('Cancel')
   })
 }
 
@@ -259,7 +259,7 @@ export async function showInput (title, body = '', input = 'text', inputValue = 
     },
     inputValue: inputValue,
     showCancelButton: true,
-    confirmButtonText: i18n.t('confirm'),
+    confirmButtonText: i18n.t('Confirm'),
     showLoaderOnConfirm: true,
     preConfirm: (data) => {
       return !(!data && !allowEmpty)
@@ -307,8 +307,8 @@ export async function fastSweetAlertRequest (title, input, url, dataName, dataOb
     },
     inputValue: inputValue,
     showCancelButton: true,
-    confirmButtonText: i18n.t('confirm'),
-    cancelButtonText: i18n.t('cancel'),
+    confirmButtonText: i18n.t('Confirm'),
+    cancelButtonText: i18n.t('Cancel'),
     showLoaderOnConfirm: true,
     preConfirm: (data) => {
       if (!data && !allowEmpty) {

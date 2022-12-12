@@ -11,7 +11,7 @@
       <v-list flat class="mx-2">
         <v-list-item-group>
           <v-list-item>
-            <span>{{ $t('Server') }}</span>
+            <span>{{ $t('WaiterInfo') }}</span>
             <v-spacer></v-spacer>
             <span>
             {{ orderInfo.servantName }}
@@ -19,7 +19,7 @@
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item>
-            <span>{{ $t('Table_No.') }}</span>
+            <span>{{ $t('TableNumber') }}</span>
             <v-spacer></v-spacer>
             <span>
             {{ orderInfo.tableName }}
@@ -27,7 +27,7 @@
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item>
-            <span>{{ $t('consume_type') }}</span>
+            <span>{{ $t('ConsumeType') }}</span>
             <v-spacer></v-spacer>
             <span>
             {{ consumeTypeName | shorterName }}
@@ -64,7 +64,7 @@
                  color="error"
                  @click="$emit('return-order', orderInfo.id)">
             <v-icon>mdi-file-cancel-outline</v-icon>
-            {{ isReturned ? $t('cancelled') : $t('cancel_order') + orderInfo.id }}
+            {{ isReturned ? $t('Refunded') : $t('CancelOrder') + orderInfo.id }}
           </v-btn>
         </v-list-item-group>
       </v-list>
@@ -72,7 +72,7 @@
         <div class="timeLineGridContainer">
           <strong>{{ orderInfo.startTime }}</strong>
           <div><strong>{{ $t('start_dining') }}</strong></div>
-          <strong v-if="!isPaid" class="red--text">{{ $t('checkout_pending') }}</strong>
+          <strong v-if="!isPaid" class="red--text">{{ $t('CheckoutPending') }}</strong>
         </div>
         <template v-if="displayDetailInfo">
           <template v-for="t in Object.keys(displayDetailInfo)">
@@ -168,13 +168,13 @@ export default {
         let name
         switch (o.dishStatus) {
           case '-1':
-            name = this.$t('cancel_order')
+            name = this.$t('CancelOrder')
             break
           case '-100':
-            name = this.$t('billSplit')
+            name = this.$t('BillSplit')
             break
           default:
-            name = this.$t('dishOrder')
+            name = this.$t('BuyNow')
         }
         o.dishStatusName = name
         return o

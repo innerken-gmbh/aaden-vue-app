@@ -91,7 +91,7 @@ export default {
         },
         {
           icon: 'mdi-home-analytics',
-          text: 'CHEF',
+          text: 'Chef',
           async beforeEnter () {
             return await popAuthorize('boss')
           },
@@ -132,8 +132,8 @@ export default {
       const lastZBonPrintDate = dayjs((await ZBonList())?.[0]?.createTimeStamp ?? '1970-01-01 00:00:00')
       const hoursBefore = dayjs().subtract(32, 'hour')
       if (lastZBonPrintDate.isBefore(hoursBefore) && GlobalConfig.printZBonAlert) {
-        const res = await IKUtils.showConfirmAsyn(this.$t('Bitte beachten Sie, dass Sie ZBon seit 36 Stunden nicht mehr gedruckt haben'),
-          this.$t('Jetzt drucken?'))
+        const res = await IKUtils.showConfirmAsyn(this.$t('NotePrintZBon'),
+          this.$t('PrintNow'))
         console.log(res)
         if (res.isConfirmed) {
           await printZBon()

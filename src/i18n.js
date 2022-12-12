@@ -11,8 +11,7 @@ export function loadTransLangs () {
         return item.match(/([A-Za-z0-9-_]+)\./i)[1].toUpperCase()
       }
     )
-  const res = langs.filter(lang => lang && lang.length > 1)
-  return res
+  return langs.filter(lang => lang && lang.length > 1)
 }
 
 function loadLocaleMessages () {

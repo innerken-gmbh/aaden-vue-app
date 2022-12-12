@@ -8,12 +8,12 @@
         :sort-desc="[true]"
         :items="displayItems"
         :headers="headers"
-        :footer-props="{'items-per-page-text': $t('Rows_per_page')+':' }"
+        :footer-props="{'items-per-page-text': $t('RowsPerPage')+':' }"
       >
         <template v-slot:top>
           <v-subheader style="margin-left: -28px">
             <v-select
-              :label="$t('category')"
+              :label="$t('MenuCard')"
               :items="dishCategory"
               v-model="appliedFilter.category"
               item-text="langs[0].name"
@@ -23,7 +23,7 @@
             >
             </v-select>
             <v-select
-              :label="$t('category Type')"
+              :label="$t('MenuType')"
               :items="dishCategoryTypeList"
               v-model="appliedFilter.categoryType"
               item-text="name"
@@ -110,7 +110,7 @@ export default {
     headers () {
       return [
         {
-          text: i18n.t('code'),
+          text: i18n.t('DishCode'),
           sortable: false,
           value: 'code'
         },
@@ -120,12 +120,12 @@ export default {
           value: 'name'
         },
         {
-          text: i18n.t('category'),
+          text: i18n.t('MenuCard'),
           sortable: false,
           value: 'category'
         },
         {
-          text: i18n.t('category Type'),
+          text: i18n.t('MenuType'),
           sortable: false,
           value: 'cateTypeName'
         },
@@ -173,14 +173,14 @@ export default {
       })
     },
     async printSaleBon () {
-      IKUtils.showConfirm(i18n.t('Bist du sicher?'), i18n.t('Möchten Sie Umsatz Bon drucken?'), () => {
+      IKUtils.showConfirm(i18n.t('AreYouSure'), i18n.t('Möchten Sie Umsatz Bon drucken?'), () => {
         printSaleBon(this.singleZBonDate[0], this.singleZBonDate[1]).then(() => {
           IKUtils.toast(i18n.t('Erfolgreich drucken!'))
         })
       })
     },
     async printSaleBonByCode () {
-      IKUtils.showConfirm(i18n.t('Bist du sicher?'), i18n.t('Möchten Sie Umsatz Bon drucken?'), () => {
+      IKUtils.showConfirm(i18n.t('AreYouSure'), i18n.t('Möchten Sie Umsatz Bon drucken?'), () => {
         printSaleBonByCode(this.singleZBonDate[0], this.singleZBonDate[1]).then(() => {
           IKUtils.toast(i18n.t('Erfolgreich drucken!'))
         })

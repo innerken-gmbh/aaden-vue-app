@@ -21,13 +21,13 @@
           <v-chip class="ml-2 d-flex align-center" color="white" label small>
             <v-icon color="success" left>mdi-checkbox-marked-circle</v-icon>
             <span>
-                  {{ $t('already_synchronized') }}
+                  {{ $t('Synchronized') }}
           </span>
           </v-chip>
         </div>
         <v-btn block class="mt-4" color="success" elevation="0" large @click="addNewReservation">
           <v-icon left>mdi-plus-box</v-icon>
-          {{ $t('create_new_reservation') }}
+          {{ $t('CreateNewReservation') }}
         </v-btn>
         <v-btn block class="mt-4" color="warning" elevation="0" large @click="tableSettingDialog=true">
           <v-icon left>mdi-cog-box</v-icon>
@@ -52,7 +52,7 @@
         </v-btn>
         <div class="d-flex align-center text-body-2 mr-2" @click="showAllReservation=!showAllReservation">
           <v-simple-checkbox v-model="showAllReservation" dense hide-details></v-simple-checkbox>
-          {{ $t('display_all') }}
+          {{ $t('DisplayAll') }}
         </div>
         <div style="max-width: 196px">
           <v-text-field
@@ -147,7 +147,7 @@
           </v-chip>
           <v-chip v-else color="error" small>
             <v-icon left>mdi-remove</v-icon>
-            {{ $t('already_cancelled') }}
+            {{ $t('AlreadyCancelled') }}
           </v-chip>
         </div>
 
@@ -194,7 +194,7 @@
           </template>
           <template v-if="activeReservation.useStroller==='1'">
             <div class="d-flex">
-              <div class="text-body-1">{{ $t('need_stroller') }}</div>
+              <div class="text-body-1">{{ $t('NeedStroller') }}</div>
               <v-spacer></v-spacer>
               <v-chip small>
                 <v-icon small>mdi-check</v-icon>
@@ -203,7 +203,7 @@
             <v-divider class="my-3"></v-divider>
           </template>
           <div class="d-flex">
-            <div class="text-body-1">{{ $t('Table_No.') }}</div>
+            <div class="text-body-1">{{ $t('TableNumber') }}</div>
             <v-spacer></v-spacer>
             <v-chip color="primary lighten-2" label>
               <v-icon left>mdi-map-marker-check-outline</v-icon>
@@ -217,7 +217,7 @@
               }}
             </v-btn>
             <v-btn block color="error" elevation="0" outlined @click="cancelReservation(activeReservation.id)">
-              {{ $t('cancel_reservation') }}
+              {{ $t('CancelReservation') }}
             </v-btn>
 
           </div>
@@ -230,10 +230,10 @@
               class="pa-4" color="grey lighten-4" elevation="0" style="border-radius: 12px">
         <div class="d-flex">
           <div class="text-subtitle-1">
-            {{ $t('create_new_reservation') }}
+            {{ $t('CreateNewReservation') }}
           </div>
           <v-spacer></v-spacer>
-          {{ $t('enter_the_time_and_number_of_people_to_determine_if_a_table_is_available') }}
+          {{ $t('EnterTimeAndNumberOfPeopleToDetermineIfATableIsAvailable') }}
         </div>
         <div class="mt-8">
           <div class="d-flex align-center">
@@ -259,7 +259,7 @@
           </div>
           <v-divider class="my-2"></v-divider>
           <div class="d-flex align-center">
-            <div class="text-subtitle-2">{{ $t('Number_of_children') }}</div>
+            <div class="text-subtitle-2">{{ $t('NumberOfChildren') }}</div>
             <v-icon class=" ml-2">mdi-human-child</v-icon>
             <v-spacer></v-spacer>
 
@@ -285,7 +285,7 @@
         <div>
           <div v-if="otherTime.length>0">
             <v-chip color="primary" label>
-              {{ $t('following_time_slots_are_still_available') }}
+              {{ $t('FollowingTimeSlotsAreStillAvailable') }}
             </v-chip>
             <div class="d-flex flex-wrap mt-2">
               <v-chip v-for="time in otherTime" :key="time" class="ma-1" large @click="useOtherTime(time)">
@@ -310,7 +310,7 @@
               color="grey lighten-4" elevation="0" style="border-radius: 12px">
         <div class="d-flex">
           <div class="text-subtitle-1">
-            {{ $t('create_new_reservation') }}
+            {{ $t('CreateNewReservation') }}
           </div>
           <v-spacer></v-spacer>
           <v-chip color="success" small>
@@ -349,7 +349,7 @@
           </div>
           <v-divider class="my-2"></v-divider>
           <div class="d-flex align-center">
-            <div class="text-subtitle-2">{{ $t('Number_of_children') }}</div>
+            <div class="text-subtitle-2">{{ $t('NumberOfChildren') }}</div>
             <v-spacer></v-spacer>
             <v-icon class="ml-2 mr-2">mdi-human-child</v-icon>
             {{ childCount }}
@@ -380,7 +380,7 @@
 
           <template>
             <div class="d-flex">
-              <div class="text-subtitle-2">{{ $t('c') }}</div>
+              <div class="text-subtitle-2">{{ $t('NeedStroller') }}</div>
               <v-spacer></v-spacer>
               <v-simple-checkbox v-model="useStroller"/>
             </div>

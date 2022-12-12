@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>{{ $t('discount') }}
+    <v-card-title>{{ $t('Discount') }}
       <v-spacer></v-spacer>
       {{ totalDiscountValue }}
     </v-card-title>
@@ -8,9 +8,9 @@
       <template v-slot:default>
         <thead>
         <tr>
-          <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
-          <th class="text-left">{{ $t('time') }}/{{ $t('Kellner') }}</th>
-          <th class="text-left">{{ $t('discount') }}</th>
+          <th class="text-left">{{ $t('TableNumber') }} / {{ $t('SerialNumber') }}</th>
+          <th class="text-left">{{ $t('time') }}/{{ $t('Waiter') }}</th>
+          <th class="text-left">{{ $t('Discount') }}</th>
         </tr>
         </thead>
         <tbody>

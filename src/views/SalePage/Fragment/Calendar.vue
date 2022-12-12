@@ -11,12 +11,12 @@
             <div class="d-flex justify-space-between align-center">
               <div class="hideMore"
                    style="max-width: 150px">
-                <div style="font-size: 24px">{{ $t('All') }}{{ $t('Umsatz') }}</div>
+                <div style="font-size: 24px">{{ $t('All') }}{{ $t('Sales') }}</div>
               </div>
               <div style="font-size: 24px" class="font-weight-bold">{{ billContent.total | priceDisplay }}</div>
             </div>
             <div class="d-flex justify-space-between mt-1">
-              <div>{{ $t('Netto') }}/ {{ $t('Steuer') }}</div>
+              <div>{{ $t('NetWorth') }}/ {{ $t('Taxes') }}</div>
               <div>{{ billContent.fTotalTe }}/{{ billContent.fTotalTax }}</div>
             </div>
             <v-divider class="my-2"></v-divider>
@@ -24,11 +24,11 @@
           <template v-for="(total,index) in taxGroupInfo">
             <div :key="total.taxRatePercentage+'-'+index">
               <div class="d-flex justify-space-between">
-                <div> {{ $t('Umsatz') }} {{ total.taxRatePercentage }}%</div>
+                <div> {{ $t('Sales') }} {{ total.taxRatePercentage }}%</div>
                 <div class="font-weight-bold">{{ total.groupTotal | priceDisplay }}</div>
               </div>
               <div class="d-flex justify-space-between">
-                <div>{{ $t('Netto') }}/ {{ $t('Steuer') }}</div>
+                <div>{{ $t('NetWorth') }}/ {{ $t('Taxes') }}</div>
                 <div>{{ total.nettoumsatz }}/{{ total.umsatzsteuer }}</div>
               </div>
               <v-divider class="my-2"></v-divider>
@@ -53,7 +53,7 @@
                 class="hideMore"
                 style="max-width: 90px"
             >
-              <h3>{{ $t('cancel_order') }}</h3>
+              <h3>{{ $t('CancelOrder') }}</h3>
             </div>
             <v-spacer></v-spacer>
             <h3>{{ totalReturn | priceDisplay }}({{ returnList.length }})
@@ -62,7 +62,7 @@
           </v-card>
           <v-card color="warning lighten-2" elevation="0" dark @click="discountDialog=true"
                   class="d-flex align-center pa-2 mt-2">
-            <h3>{{ $t('discount2') }}</h3>
+            <h3>{{ $t('Discount') }}</h3>
             <v-spacer></v-spacer>
             <h3>{{ totalDiscount | priceDisplay }}({{ discountList.length }})
               <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
@@ -80,7 +80,7 @@
               block
               @click="printXBon"
               color="warning">
-            {{ $t('XBon Drücken') }}
+            {{ $t('PrintXBon') }}
           </v-btn>
           <v-btn
               class="mt-2"
@@ -90,7 +90,7 @@
               x-large
               @click="printZBon"
               color="primary">
-            {{ $t('ZBon Drücken') }}
+            {{ $t('PrintZBon') }}
           </v-btn>
         </v-card>
 
@@ -102,7 +102,7 @@
         <div style="display: grid;grid-auto-flow: column;grid-gap: 8px;">
           <v-text-field
               prepend-inner-icon="mdi-magnify"
-              :placeholder="$t('Search order/table')"
+              :placeholder="$t('SearchOrderTable')"
               v-model="search">
           </v-text-field>
           <v-select
@@ -115,7 +115,7 @@
           >
           </v-select>
           <v-select
-              :label="$t('Server')"
+              :label="$t('WaiterInfo')"
               :items="servantList"
               v-model="appliedFilter.servant"
               @change="updateFilter"
@@ -138,9 +138,9 @@
         <template v-slot:default>
           <thead>
           <tr>
-            <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
+            <th class="text-left">{{ $t('TableNumber') }} / {{ $t('SerialNumber') }}</th>
             <th class="text-left">{{ $t('time') }}</th>
-            <th class="text-left">{{ $t('Server') }}</th>
+            <th class="text-left">{{ $t('WaiterInfo') }}</th>
             <th class="text-left">{{ $t('return_dish_content') }}</th>
             <th class="text-left">{{ $t('return_dish_reason') }}</th>
           </tr>
@@ -174,10 +174,10 @@
         <template v-slot:default>
           <thead>
           <tr>
-            <th class="text-left">{{ $t('Tisch Nr.') }} / {{ $t('R. Nr.') }}</th>
+            <th class="text-left">{{ $t('TableNumber') }} / {{ $t('SerialNumber') }}</th>
             <th class="text-left">{{ $t('time') }}</th>
-            <th class="text-left">{{ $t('Server') }}</th>
-            <th class="text-left">{{ $t('discount_content') }}</th>
+            <th class="text-left">{{ $t('WaiterInfo') }}</th>
+            <th class="text-left">{{ $t('DiscountContent') }}</th>
           </tr>
           </thead>
           <tbody>
@@ -331,7 +331,7 @@ export default {
       IKUtils.toast('OK')
     },
     async printZBon () {
-      IKUtils.showConfirm(this.$t('Möchten Sie alle Datensätze drucken?'), this.$t('Bist du sicher?'), async () => {
+      IKUtils.showConfirm(this.$t('PrintAllRecords'), this.$t('AreYouSure'), async () => {
         IKUtils.showLoading(false)
         await printZBonUseDate(...this.singleZBonDate)
         IKUtils.toast('OK')

@@ -60,7 +60,7 @@
     </v-card>
     <div style="width: 480px;max-width: calc(100vw - 480px)" class="paymentLog pa-2">
       <div class="my-3 d-flex align-center" style="width: 100%">
-        <h3>{{ $t('bill_log') }}</h3>
+        <h3>{{ $t('BillLog') }}</h3>
       </div>
       <v-divider></v-divider>
       <div class="my-3" v-dragscroll style="max-height: calc(100vh - 560px);overflow:hidden">
@@ -122,7 +122,7 @@
 
       </div>
       <div v-else>
-        <h4>{{ $t('fast_check_out_without_tips') }}</h4>
+        <h4>{{ $t('FastCheckoutWithoutTips') }}</h4>
 
         <v-btn color="primary" class="mt-2"
                x-large
@@ -137,7 +137,7 @@
              x-large
              @click="cancel"
              color="error" block>
-        {{ $t('cancel') }}
+        {{ $t('Cancel') }}
       </v-btn>
 
     </div>

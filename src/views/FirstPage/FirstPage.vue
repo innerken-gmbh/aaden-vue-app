@@ -14,7 +14,7 @@
               :class="active?' active':' text--disabled'"
             >
               <v-icon left>mdi-silverware</v-icon>
-              {{ $t('Dine_in') }}
+              {{ $t('DineIn') }}
               <trailing-number>
                 {{ activeList.length }}
               </trailing-number>
@@ -83,7 +83,7 @@
                   <v-list-item-content>
                     <v-list-item-title>Aaden App</v-list-item-title>
                     <v-list-item-subtitle>
-                      {{ $t('Version') }} {{ version }}
+                      {{ $t('CurrentVersion') }} {{ version }}
                     </v-list-item-subtitle>
                   </v-list-item-content>
 
@@ -171,7 +171,7 @@
                     class="head pa-2 d-flex align-center">
 
               <v-icon style="transform: rotate(90deg)">mdi-truck-fast</v-icon>
-              <span class="mt-4">{{ $t('Togo') }}</span>
+              <span class="mt-4">{{ $t('ToGo') }}</span>
               <span class="white--text primary mt-4"
                     style="font-size: small;border-radius: 24px;padding: 8px 1px">{{ takeawayList.length }}</span>
 
@@ -207,7 +207,7 @@
                       class="head d-flex align-center pa-2">
                 <h4>
                   <v-icon left>mdi-truck-fast</v-icon>
-                  {{ $t('Togo') }}
+                  {{ $t('ToGo') }}
                 </h4>
                 <v-spacer/>
                 <template v-if="takeawayList.length>0">
@@ -306,7 +306,7 @@
                   class="pa-4"
                   style="border-radius: 12px"
                   height="calc(100vh - 96px)">
-            <div class="text-subtitle-2">{{ $t('can_be_picked_up') }}
+            <div class="text-subtitle-2">{{ $t('CanBePickedUp') }}
               <trailing-number>{{ picked.length }}</trailing-number>
             </div>
             <div style="display: grid;grid-gap: 12px;overflow-y: scroll;" class="mt-4">
@@ -329,7 +329,7 @@
                     class="pa-4">
               <div class="text-subtitle-2 d-flex align-center">
                 <v-icon class="mr-2">mdi-truck-fast</v-icon>
-                {{ $t('add_takeaway_orders') }}
+                {{ $t('AddTakeawayOrders') }}
                 <v-spacer></v-spacer>
                 <v-icon>mdi-plus</v-icon>
               </div>
@@ -349,7 +349,7 @@
                   <v-chip label color="white" small class="ml-2 d-flex align-center">
                     <v-icon left color="success">mdi-checkbox-marked-circle</v-icon>
                     <span>
-                  {{ $t('already_synchronized') }}
+                  {{ $t('Synchronized') }}
                              </span>
                   </v-chip>
                 </template>
@@ -357,9 +357,9 @@
               <div class="text-body-1">
                 <div class="py-2 mt-4 d-flex align-center">
                   <div>
-                    {{ $t('accept_external_orders') }}
+                    {{ $t('AcceptExternalOrders') }}
                     <div class="caption">
-                      {{ $t('if_this_option_is_turned_off_the_takeaway_site_will_be_temporarily_closed') }}
+                      {{ $t('IfThisOptionIsTurnedOffTheTakeawaySiteWillBeTemporarilyClosed') }}
                     </div>
                   </div>
 
@@ -437,7 +437,7 @@
         <v-card class="pa-2"
                 style="position: fixed;right: 0;bottom:0;width: 320px;z-index: 15">
           <v-text-field
-            :placeholder=" $t('enter_the_table_number')"
+            :placeholder=" $t('EnterTableNumber')"
             @click:append="showKeyboard=!showKeyboard"
             :append-icon="showKeyboard?'mdi-keyboard-close':'mdi-keyboard'"
             class="ma-2 pt-1"
@@ -661,7 +661,7 @@ export default {
       await this.refreshTables()
     },
     async rejectOrder (id) {
-      const res = await fastSweetAlertRequest(i18n.t('Ablehnen, ein Ground Eingeben'), 'text',
+      const res = await fastSweetAlertRequest(i18n.t('RevocationDishReason'), 'text',
         'Orders.php?op=rejectTakeAwayOrder', 'reason',
         { tableId: id })
       if (res) {
