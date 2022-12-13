@@ -24,36 +24,36 @@
           {{ findConsumeTypeById(activeConsumeTypeId).name }}
           <div class="editForm">
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('maximum_mealtime_min') }}</div>
+              <div class="formLabel caption">{{ $t('MinMaxMealtime') }}</div>
               <v-slider hide-details max="960" min="0" step="5" thumb-label="always"
                         v-model="buffetSetting.maxDineTimeMin"></v-slider>
             </div>
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('time_per_round_min') }}</div>
+              <div class="formLabel caption">{{ $t('TimePerRoundMin') }}</div>
               <v-slider hide-details max="60" min="0" step="2" thumb-label="always"
                         v-model="buffetSetting.roundTimeMin"></v-slider>
             </div>
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('total_number_of_rounds') }}</div>
+              <div class="formLabel caption">{{ $t('TotalNumberOfRounds') }}</div>
               <v-text-field dense hide-details type="number"
                             v-model="buffetSetting.totalRound"></v-text-field>
             </div>
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('adult_can_order_per_round') }}</div>
+              <div class="formLabel caption">{{ $t('AdultCanOrderPerRound') }}</div>
 
               <v-text-field dense hide-details type="number"
                             v-model="buffetSetting.roundDishCount"></v-text-field>
 
             </div>
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('kids_can_order_per_round') }}</div>
+              <div class="formLabel caption">{{ $t('KidsCanOrderPerRound') }}</div>
 
               <v-text-field dense hide-details type="number"
                             v-model="buffetSetting.childRoundDishCount"></v-text-field>
 
             </div>
             <div class="formRow mt-4">
-              <v-btn block color="primary" @click="submit">{{ $t('bestellen') }}</v-btn>
+              <v-btn block color="primary" @click="submit">{{ $t('BuyNow') }}</v-btn>
 
             </div>
           </div>

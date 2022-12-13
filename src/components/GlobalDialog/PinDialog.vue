@@ -2,7 +2,7 @@
   <v-dialog max-width="400px" v-model="realShow">
     <v-card>
       <v-toolbar tile :color="error?'error':'primary'" dark elevation="0">
-        <v-toolbar-title>{{ $t('Bitte Passwort Eingeben') }}</v-toolbar-title>
+        <v-toolbar-title>{{ $t('PleaseEnterPassword') }}</v-toolbar-title>
       </v-toolbar>
       <span class="caption"></span>
       <div class="pa-1">

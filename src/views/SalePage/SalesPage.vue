@@ -3,21 +3,21 @@
     <v-toolbar outlined>
       <v-tabs v-model="tabIndex">
         <template v-if="isBoss">
-          <v-tab>{{ $t('bill_list') }}</v-tab>
-          <v-tab>{{ $t('Kassenbuch') }}</v-tab>
-          <v-tab>{{ $t('dishes_statistics') }}</v-tab>
-          <v-tab>{{ $t('show_waiter') }}</v-tab>
-          <v-tab>{{ $t('bind_boss_app') }}</v-tab>
+          <v-tab>{{ $t('BillList') }}</v-tab>
+          <v-tab>{{ $t('CashBook') }}</v-tab>
+          <v-tab>{{ $t('DishStatistics') }}</v-tab>
+          <v-tab>{{ $t('WaiterShow') }}</v-tab>
+          <v-tab>{{ $t('BindTheBossApp') }}</v-tab>
         </template>
         <template v-else>
-          <v-tab>{{ $t('Meine Umsatz') }}</v-tab>
+          <v-tab>{{ $t('SalesDetails') }}</v-tab>
         </template>
       </v-tabs>
       <v-spacer></v-spacer>
 
       <v-btn elevation="0" x-large color="primary" @click="showDatePicker=true" text>
         <v-icon left>mdi-calendar</v-icon>
-        {{ getNiceLabel(singleZBonDate) }}/{{ $t('change_date') }}
+        {{ getNiceLabel(singleZBonDate) }}/{{ $t('ChangeDate') }}
       </v-btn>
 
     </v-toolbar>
@@ -40,9 +40,9 @@
                           <template v-slot:default>
                             <thead>
                             <tr>
-                              <th class="text-left">{{ $t('R. Nr.') }}/{{ $t('time') }}</th>
+                              <th class="text-left">{{ $t('SerialNumber') }}/{{ $t('time') }}</th>
                               <th class="text-left">{{ $t('note') }}</th>
-                              <th class="text-left">{{ $t('Summe') }}</th>
+                              <th class="text-left">{{ $t('AmountOfConsumption') }}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -65,7 +65,7 @@
                       </div>
                       <div class="pa-2" style="width: 272px">
                         <v-list subheader two-line>
-                          <v-subheader>{{ $t('Kassen Stand') }}</v-subheader>
+                          <v-subheader>{{ $t('TotalCash') }}</v-subheader>
                           <v-list-item>
                             <v-list-item-content>
                               <v-list-item-title>
@@ -75,7 +75,7 @@
                               </v-list-item-title>
                             </v-list-item-content>
                           </v-list-item>
-                          <v-subheader>{{ $t('daily_change_amount') }}</v-subheader>
+                          <v-subheader>{{ $t('DailyChangeAmount') }}</v-subheader>
                           <v-list-item>
                             <v-list-item-content>
                               <v-list-item-title>
@@ -94,7 +94,7 @@
                                 class="hideMore"
                                 style="max-width: 200px"
                             >
-                              {{ $t('create_new_record') }}
+                              {{ $t('CreateNewRecord') }}
                             </div>
                           </v-btn>
                         </v-list>
@@ -128,12 +128,12 @@
                     </div>
                     <div class="pa-2" style="width: 240px">
                       <v-list subheader dense>
-                        <v-subheader>{{ $t('Kellner') }} : {{ displayData.servant.name }} ({{ $t('ohne tip') }})
+                        <v-subheader>{{ $t('Waiter') }} : {{ displayData.servant.name }} ({{ $t('WithoutTip') }})
                         </v-subheader>
                         <v-list-item>
                           <v-list-item-content>
                             <v-list-item-title>
-                              {{ $t('Umsatz') }}
+                              {{ $t('Sales') }}
                             </v-list-item-title>
                           </v-list-item-content>
                           <v-list-item-action>
@@ -173,7 +173,7 @@
                         <v-divider></v-divider>
                       </v-list>
                       <v-btn block @click="printSummaryBon" color="primary" class="mt-4">
-                        {{ $t('KellnerBon') }}
+                        {{ $t('WaiterBon') }}
                       </v-btn>
                     </div>
                   </div>
@@ -199,9 +199,9 @@
     </v-dialog>
     <dialog-with-keyboard @close="showNumberKeyboard=false" :show="showNumberKeyboard"
                           @submit="addCashRecord"
-                          :title=" $t('pls_enter_the_amount_of_expenses_if_the_enternumber_is_negative')"
+                          :title=" $t('PleaseEnterAamountOfExpensesIfEnternumberNegative')"
                           :keys="keyboardNumber">
-      <v-text-field :placeholder=" $t('if_necessary_pls_click_here_to_enter_a_note_using_the_keyboard')"
+      <v-text-field :placeholder=" $t('IfNecessaryPlsClickHereToEnterANoteUsingTheKeyboard')"
                     v-model="cashNote"></v-text-field>
     </dialog-with-keyboard>
   </div>

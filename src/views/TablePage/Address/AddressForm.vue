@@ -27,7 +27,7 @@
                 <v-row>
                   <v-col cols="6">
                     <v-text-field hide-details autocomlete="off"
-                                  type="search" :label="$t('first_name')" v-model="rawAddressInfo.firstName"></v-text-field>
+                                  type="search" :label="$t('FirstName')" v-model="rawAddressInfo.firstName"></v-text-field>
                   </v-col>
                   <v-col cols="6">
                     <v-text-field hide-details autocomlete="off"
@@ -40,7 +40,7 @@
                     autocomlete="off"
                     id="map"
                     country="DE"
-                    :placeholder="$t('address_search')"
+                    :placeholder="$t('SearchAddress')"
                     clearable
                     :component-restrictions="
                           Config.autoCompletePLZ.split(',').length>0?Config.autoCompletePLZ.split(','):
@@ -49,11 +49,11 @@
                 />
                 <v-row dense>
                   <v-col cols="6">
-                    <v-text-field hide-details :label="$t('address1')" autocomlete="off"
+                    <v-text-field hide-details :label="$t('AddressLine01')" autocomlete="off"
                                   type="search" v-model="rawAddressInfo.addressLine1"></v-text-field>
                   </v-col>
                   <v-col cols="6">
-                    <v-text-field hide-details :label="$t('address2')" autocomlete="off"
+                    <v-text-field hide-details :label="$t('AddressLine02')" autocomlete="off"
                                   type="search" v-model="rawAddressInfo.addressline2"></v-text-field>
                   </v-col>
                   <v-col cols="6">
@@ -72,8 +72,8 @@
                     <v-btn color="error" block @click="createUser=false">{{ $t('return') }}</v-btn>
                   </v-col>
                   <v-col cols="9">
-                    <v-btn v-if="userIsNew" color="primary" @click="submitNewUserInfo" block>{{ $t('new_users') }}</v-btn>
-                    <v-btn v-else @click="updateUserInfo" color="warning" block>{{ $t('update_users_info') }}</v-btn>
+                    <v-btn v-if="userIsNew" color="primary" @click="submitNewUserInfo" block>{{ $t('NewUser') }}</v-btn>
+                    <v-btn v-else @click="updateUserInfo" color="warning" block>{{ $t('UpdateUserInfo') }}</v-btn>
                   </v-col>
                 </v-row>
               </template>
@@ -81,14 +81,14 @@
                 <v-text-field
                     clearable
                     v-model="searchTel"
-                    :label="$t('telefonsearch')"
+                    :label="$t('SearchByTelefon')"
                     autocomplete="off"
                     hide-details
                     type="search"
                 />
                 <v-divider></v-divider>
                 <div v-if="telHint.length===0">
-                  <v-btn color="primary" block @click="startCreateUser">{{ $t('new_users') }}</v-btn>
+                  <v-btn color="primary" block @click="startCreateUser">{{ $t('NewUser') }}</v-btn>
                 </div>
                 <div style="max-height: 400px;overflow-y: scroll">
                   <v-card :key="user.id" v-for="user in telHint"
@@ -169,7 +169,7 @@
                         <template v-slot:activator="{ on, attrs }">
                           <v-text-field
                               v-model="rawAddressInfo.date"
-                              :label="$t('date')"
+                              :label="$t('Date')"
                               prepend-icon="mdi-calendar"
                               v-bind="attrs"
                               @blur="date=rawAddressInfo.date"
@@ -184,14 +184,14 @@
                       </v-menu>
                     </v-col>
                     <v-col cols="6">
-                      <v-text-field :label="$t('date')" v-model="rawAddressInfo.time"></v-text-field>
+                      <v-text-field :label="$t('Date')" v-model="rawAddressInfo.time"></v-text-field>
                     </v-col>
                     <v-col cols="6">
                       <v-text-field :label="$t('note')" v-model="rawAddressInfo.note"></v-text-field>
                     </v-col>
                     <v-col cols="6">
                       <v-select :items="deliveryMethods"
-                                :label="$t('delivery_method')"
+                                :label="$t('DeliveryMethod')"
                                 return-object
                                 hide-details
                                 v-model="rawAddressInfo.deliveryMethod"
@@ -201,7 +201,7 @@
                 </div>
                 <v-spacer></v-spacer>
                 <v-btn v-if="haveAddress" @click="submitRawAddressInfo" block class="flex-grow-0 primary">{{
-                    $t('confirm')
+                    $t('Confirm')
                   }}
                 </v-btn>
               </div>
@@ -246,11 +246,11 @@ export default {
       realShow: null,
       createUser: false,
       deliveryMethods: [
-        this.$t('Abholung'), this.$t('Lieferung')
+        this.$t('Pickup'), this.$t('Delivery')
       ],
       date: new Date().toISOString().substring(0, 10),
       menu1: null,
-      steps: [this.$t('customerAddress'), this.$t('address'), this.$t('deliveryInfo')]
+      steps: [this.$t('CustomerAddress'), this.$t('Address'), this.$t('DeliveryInfo')]
     }
   },
   watch: {
@@ -341,7 +341,7 @@ export default {
   computed: {
     currentTitle: function () {
       return this.steps[this.step]
-      // return i18n.t('customerAddress')
+      // return i18n.t('CustomerAddress')
     },
     userIsNew: function () {
       return !this.userInfo.some(d => d.email === this.searchTel)

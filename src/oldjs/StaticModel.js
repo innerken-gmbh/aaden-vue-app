@@ -148,5 +148,5 @@ export const DefaultAddressInfo = {
 }
 
 export const DeliveryMethods = [
-  i18n.t('Abholung'), i18n.t('Lieferung')
+  i18n.t('Pickup'), i18n.t('Delivery')
 ]

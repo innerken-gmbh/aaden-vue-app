@@ -1,11 +1,11 @@
 <template>
   <div>
-    <v-subheader>{{ $t('current_address') }}</v-subheader>
+    <v-subheader>{{ $t('CurrentAddress') }}</v-subheader>
     <v-card-subtitle>
       <h2>
         {{ address.deliveryMethod }}
       </h2>
-      <span v-if="address.date">{{ $t('Erwartete Zeit') }}:</span>
+      <span v-if="address.date">{{ $t('ExpectedTime') }}:</span>
       <template v-if="address.oldTime">
         <span>{{ address.oldTime }}</span>
       </template>

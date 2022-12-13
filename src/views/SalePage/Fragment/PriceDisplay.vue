@@ -8,7 +8,7 @@
               <div class="pa-4">
                 <div  class="my-8">
                   <h6 class="font-weight-bold text-body-1">
-                    {{ $t('non_german_standard_license') }}
+                    {{ $t('NonGermanStandardLicense') }}
                   </h6>
                 </div>
                 <div class="mt-8" style="display: flex; min-height: 7rem">
@@ -23,17 +23,17 @@
               <div class="mt-2 pa-8 align-center justify-center" style="text-align: left; width:100%; background-color: #fafafa; height: auto;overflow: visible;">
                 <div class="my-6 text-h6">
                   <div class="align-center d-flex my-2">
-                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('remote_view_of_in_store_data') }}
+                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('RemoteViewOfStoreData') }}
                   </div>
                   <div class="align-center d-flex my-2">
-                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('support_three_devices_to_synchronize_data') }}
+                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('SupportThreeDevicesToSynchronizeData') }}
                   </div>
                 </div>
               </div>
               <div style="height: 100px; width:100%; background-color: #fafafa;"></div>
               <div style="position: absolute; bottom: 10px">
                 <v-img class="ml-4" max-width="100px" max-height="100px" src="@/assets/1.png"></v-img>
-                <h4>{{ $t('qrcode_scannen_to_bind_boss_side_app') }}</h4>
+                <h4>{{ $t('ScanQRCodeToBindBossApp') }}</h4>
               </div>
             </v-card>
           </v-col>
@@ -42,7 +42,7 @@
               <div class="pa-4">
                 <div  class="my-8">
                   <h6 class="font-weight-bold text-body-1">
-                    {{ $t('german_standard_license') }}
+                    {{ $t('GermanStandardLicense') }}
                   </h6>
                 </div>
                 <div class="mt-8" style="display: flex; min-height: 7rem">
@@ -57,23 +57,23 @@
               <div class="mt-2 pa-8 align-center justify-center" style="text-align: left; width:100%; background-color: #fafafa; height: auto;overflow: visible;">
                 <div class="my-6 text-h6">
                   <div class="align-center d-flex my-2">
-                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('remote_view_of_in_store_data') }}
+                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('RemoteViewOfStoreData') }}
                   </div>
                   <div class="align-center d-flex my-2">
-                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('support_three_devices_to_synchronize_data') }}
+                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('SupportThreeDevicesToSynchronizeData') }}
                   </div>
                   <div class="align-center d-flex my-2">
-                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('Datev数据集成') }}
+                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('DatevIntegration') }}
                   </div>
                   <div class="align-center d-flex my-2">
-                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('more_new_features') }}
+                    <v-icon class="theme--light light-green--text mx-2">mdi-check</v-icon>{{ $t('MoreNewFeatures') }}
                   </div>
                 </div>
               </div>
               <div style="height: 100px; width:100%; background-color: #fafafa;"></div>
               <div style="position: absolute; bottom: 10px">
                 <v-img class="ml-4" max-width="100px" max-height="100px" src="@/assets/1.png"></v-img>
-                <h4>{{ $t('qrcode_scannen_to_bind_boss_side_app') }}</h4>
+                <h4>{{ $t('ScanQRCodeToBindBossApp') }}</h4>
               </div>
             </v-card>
           </v-col>

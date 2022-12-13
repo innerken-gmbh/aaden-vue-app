@@ -1,6 +1,6 @@
 <template>
   <div class="pa-1">
-    <h3>{{ $t('date_range') }}</h3>
+    <h3>{{ $t('DateRange') }}</h3>
     <div class="mt-2">
       <div style="display: grid;grid-template-columns: repeat(2,1fr);grid-gap: 8px">
         <div>
@@ -12,8 +12,8 @@
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                   v-model="startDate"
-                  :label="$t('from...')"
-                  :placeholder="$t('from...')"
+                  :label="$t('From')"
+                  :placeholder="$t('From')"
                   prepend-inner-icon="mdi-calendar"
                   readonly
                   hide-details
@@ -39,8 +39,8 @@
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                   v-model="endDate"
-                  :label="$t('to...')"
-                  :placeholder="$t('to...')"
+                  :label="$t('InputTo')"
+                  :placeholder="$t('InputTo')"
                   prepend-inner-icon="mdi-calendar"
                   readonly
                   hide-details

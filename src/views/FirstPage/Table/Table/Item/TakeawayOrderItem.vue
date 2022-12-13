@@ -53,7 +53,7 @@
             + {{ time }}
           </v-chip>
         </template>
-        <v-chip label outlined color="error" @click.stop="$emit('reject',tableInfo.tableId)">{{ $t('Rejection') }}</v-chip>
+        <v-chip label outlined color="error" @click.stop="$emit('reject',tableInfo.tableId)">{{ $t('Reject') }}</v-chip>
       </div>
     </div>
   </v-card>

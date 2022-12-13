@@ -2,11 +2,11 @@
   <v-dialog max-width="400px" v-model="realShow">
     <v-card>
       <v-toolbar tile color="primary" dark elevation="0">
-        <v-toolbar-title> {{ $t('pls_enter_discount2') }}</v-toolbar-title>
+        <v-toolbar-title> {{ $t('PleaseEnterDiscount2') }}</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
-        <v-text-field :label="$t('amount_or_percentage')"
-                      :messages="$t('cash_discount_usetips')" v-model="localDiscountStr"></v-text-field>
+        <v-text-field :label="$t('AmountOrPercentage')"
+                      :messages="$t('CashDiscountUseTips')" v-model="localDiscountStr"></v-text-field>
       </v-card-text>
       <v-card-actions>
         <div class="d-flex flex-wrap">
@@ -137,7 +137,7 @@ export default {
       const value = parseFloat(discountStr.replace('p', ''))
       const ratio = isPercentage ? value / 100 : value / this.totalPrice
       if (ratio > 1) {
-        IKUtils.showError(this.$t('discount_should_not_greater_than_original_price'))
+        IKUtils.showError(this.$t('DiscountShouldNotGreaterThanOriginalPrice'))
         return
       }
       await optionalAuthorizeAsync('boss',

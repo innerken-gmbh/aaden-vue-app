@@ -4,10 +4,10 @@
       <template v-slot:default>
         <thead class="transparent">
         <tr>
-          <th class="text-left">{{ $t('Tisch Nr.') }}</th>
-          <th>{{ $t('R. Nr.') }}</th>
+          <th class="text-left">{{ $t('TableNumber') }}</th>
+          <th>{{ $t('SerialNumber') }}</th>
           <th class="text-left">{{ $t('time') }}</th>
-          <th class="text-left">{{ $t('Summe') }}</th>
+          <th class="text-left">{{ $t('AmountOfConsumption') }}</th>
           <th class="text-left" style="width: 300px">{{ $t('operation') }}</th>
         </tr>
         </thead>
@@ -138,7 +138,7 @@ export default {
       this.$emit('need-refresh')
     },
     async returnOrder (orderId) {
-      IKUtils.showConfirm(this.$t('Bist du sicher?'), this.$t('Möchten Sie Umsatz Bon stoniren?'), () => {
+      IKUtils.showConfirm(this.$t('AreYouSure'), this.$t('Möchten Sie Umsatz Bon stoniren?'), () => {
         IKUtils.showLoading()
         returnOrder(orderId).then(() => {
           IKUtils.toast()

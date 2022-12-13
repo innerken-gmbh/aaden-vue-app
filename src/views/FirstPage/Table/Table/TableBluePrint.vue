@@ -57,7 +57,7 @@
     <!--    工具栏-->
     <div style="position: absolute;left:24px;bottom: 36px">
       <v-card v-if="editing&&showTableEditInfoCard" style="z-index: 100; margin-left: 2px" flat class="pa-3 mb-1">
-        <h2>{{ $t('cardDisplayInfoEdit') }}</h2>
+        <h2>{{ $t('EditDisplayCardInfo') }}</h2>
         <v-select :items="allKeys" return-object v-model="key1"></v-select>
         <v-select :items="allKeys" return-object v-model="key2"></v-select>
       </v-card>
@@ -79,7 +79,7 @@
           </v-btn>
           <v-btn v-if="editing" @click="refreshTables">
             <v-icon left>mdi-refresh</v-icon>
-            {{ $t('reset_all_tables') }}
+            {{ $t('ResetAllTables') }}
           </v-btn>
           <v-btn v-if="editing" @click="showTableEditInfoCard=!showTableEditInfoCard">
             <v-icon>mdi-book-information-variant</v-icon>
@@ -130,7 +130,7 @@
     </v-card>
     <v-dialog max-width="400px" v-model="reservationDialog">
       <v-card color="#f6f6f6">
-        <v-card-title>{{ $t('following_table_reservation') }}</v-card-title>
+        <v-card-title>{{ $t('FollowingTableReservation') }}</v-card-title>
         <v-card-text>
           <template v-if="activeTable">
             <div style="display: grid;grid-gap: 12px;overflow-y: scroll;
@@ -170,12 +170,12 @@
                   <div class="d-flex align-end flex-column">
                     <div class="mt-1">
                       <v-btn @click="cancelReservation(re.id)" small color="error" elevation="0">
-                        {{ $t('cancel_reservation') }}
+                        {{ $t('CancelReservation') }}
                       </v-btn>
                     </div>
                     <div class="mt-1">
                       <v-btn @click="moveReservation(re.id)" small color="warning" elevation="0">
-                        {{ $t('move_reservation') }}
+                        {{ $t('ChangePosition') }}
                       </v-btn>
                     </div>
 

@@ -25,7 +25,7 @@
             @click="submitModification"
         >
           <v-icon left>mdi-check</v-icon>
-          {{ $t('confirm') }}
+          {{ $t('Confirm') }}
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>

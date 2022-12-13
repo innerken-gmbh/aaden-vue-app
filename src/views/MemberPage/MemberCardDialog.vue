@@ -2,7 +2,7 @@
   <v-dialog v-model="realShow">
     <v-card>
       <v-toolbar dense dark>
-        <v-toolbar-title>{{ $t('VIP_Card') }}</v-toolbar-title>
+        <v-toolbar-title>{{ $t('VIPCard') }}</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
       <div class="d-flex pa-2 align-start">
@@ -11,17 +11,17 @@
             <v-text-field @keydown.enter="trySelectCurrentCard" clearable
                           hide-details
                           v-model="cardSearch" autofocus
-                          :label="$t('Suchen')"></v-text-field>
+                          :label="$t('SearchVipNumber')"></v-text-field>
           </v-list-item>
           <v-list subheader max-height="300px" style="overflow: scroll">
-            <v-subheader>{{ $t('Liste') }}</v-subheader>
+            <v-subheader>{{ $t('ListVipNumbers') }}</v-subheader>
             <template v-for="(card) in filteredMemberCardList">
               <v-list-item @click="selectedCardId=card.longId" :key="card.id">
                 <v-list-item-content>
                   <v-list-item-title>{{card.note}}/{{ "****"+card.longId.substr(4) }}
                   </v-list-item-title>
                   <v-list-item-subtitle>{{$t('time')}}: {{ card.createdAt }}</v-list-item-subtitle>
-                  <v-list-item-subtitle>{{ $t('amount') }}: {{ card.leftAmount|priceDisplay }}/{{ card.totalAmount|priceDisplay }}
+                  <v-list-item-subtitle>{{ $t('Amount') }}: {{ card.leftAmount|priceDisplay }}/{{ card.totalAmount|priceDisplay }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
@@ -52,7 +52,7 @@
                     }}
                   </v-list-item-title>
                   <v-list-item-subtitle>{{$t('time')}}: {{ record.createdAt }}</v-list-item-subtitle>
-                  <v-list-item-subtitle>{{ $t('RechnungNr') }}.: {{ record.orderId }}
+                  <v-list-item-subtitle>{{ $t('BillNumber') }}.: {{ record.orderId }}
                   </v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
@@ -64,7 +64,7 @@
         <v-spacer></v-spacer>
         <v-btn @click="realShow=!realShow">
           <v-icon left>mdi-close</v-icon>
-          {{ $t('cancel') }}
+          {{ $t('Cancel') }}
         </v-btn>
       </v-card-actions>
     </v-card>

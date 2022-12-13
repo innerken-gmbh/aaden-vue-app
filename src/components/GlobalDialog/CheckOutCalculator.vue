@@ -8,7 +8,7 @@
           <div class="totalBlock">
             <div>
               <v-chip dark label color="primary" small>
-                {{ $t('total_payable') }}
+                {{ $t('TotalPayable') }}
               </v-chip>
             </div>
             <span class="totalNumber">
@@ -18,7 +18,7 @@
           <div class="totalBlock">
             <div>
               <v-chip dark label class="font-weight-bold" color="error" small>
-                {{ $t('payment_still_required') }}
+                {{ $t('PaymentStillRequired') }}
               </v-chip>
             </div>
             <span class="totalNumber">
@@ -29,7 +29,7 @@
         <div class="totalBlock">
           <div>
             <v-chip dark label color="success">
-              {{ $t('will_have_to_pay') }}
+              {{ $t('PayWillHaveTo') }}
             </v-chip>
           </div>
           <div style="width:240px;height: 64px">
@@ -41,7 +41,7 @@
         </div>
       </v-card>
       <div class="pa-4">
-        <h4>{{ $t('other_paymethod') }}</h4>
+        <h4>{{ $t('OtherPaymentMethods') }}</h4>
         <div
             class="pa-1 mt-1"
             style="display: grid;grid-auto-columns: 96px;grid-gap: 8px;
@@ -49,7 +49,7 @@
           <v-card elevation="0" color="#f6f6f6" class="pa-2" style="height: 96px" @click="input(item)"
                   v-for="(item, index) in realExtraPaymentMethodName"
                   :key="index">
-            {{ item==='coupon'?$t('coupon'):item }}
+            {{ item==='coupon'?$t('Coupon'):item }}
           </v-card>
         </div>
       </div>
@@ -60,7 +60,7 @@
     </v-card>
     <div style="width: 480px;max-width: calc(100vw - 480px)" class="paymentLog pa-2">
       <div class="my-3 d-flex align-center" style="width: 100%">
-        <h3>{{ $t('bill_log') }}</h3>
+        <h3>{{ $t('BillLog') }}</h3>
       </div>
       <v-divider></v-divider>
       <div class="my-3" v-dragscroll style="max-height: calc(100vh - 560px);overflow:hidden">
@@ -122,7 +122,7 @@
 
       </div>
       <div v-else>
-        <h4>{{ $t('fast_check_out_without_tips') }}</h4>
+        <h4>{{ $t('FastCheckoutWithoutTips') }}</h4>
 
         <v-btn color="primary" class="mt-2"
                x-large
@@ -137,7 +137,7 @@
              x-large
              @click="cancel"
              color="error" block>
-        {{ $t('cancel') }}
+        {{ $t('Cancel') }}
       </v-btn>
 
     </div>

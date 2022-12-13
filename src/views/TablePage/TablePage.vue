@@ -30,12 +30,12 @@
                   :source-marks="sourceMarks"
                   :default-expand="cartListModel.list.length===0"
                   :click-callback="addToSplit"
-                  :title="$t('haveOrderedDish')"
+                  :title="$t('DishesOrdered')"
               >
                 <template #action>
                   <v-btn color="warning" elevation="0" :loading="isSendingRequest" @click="discountShow">
                     <v-icon>mdi-sale</v-icon>
-                    {{ $t('discount') }}
+                    {{ $t('Discount') }}
                   </v-btn>
                 </template>
                 <v-card class="d-flex align-center">
@@ -62,14 +62,14 @@
                 :dish-list-model="cartListModel"
                 :show-edit="true"
                 :click-callback="removeDish"
-                :title="$t('new_dish')"
+                :title="$t('New')"
                 :default-expand="true">
               <template #action>
                 <v-btn @click="cartListModel.clear()" elevation="0" color="error">
                   <v-icon left>
                     mdi-trash-can
                   </v-icon>
-                  {{ $t('empty_shopping_cart') }}
+                  {{ $t('EmptyShoppingCart') }}
                 </v-btn>
               </template>
               <template>
@@ -89,7 +89,7 @@
                          color="primary"
                          @click="orderDish(cartListModel.list)" dark>
                     <v-icon size="28" left>mdi-printer</v-icon>
-                    <span class="text-h6">  {{ $t('place_an_order') }}</span>
+                    <span class="text-h6">  {{ $t('PlaceAnOrder') }}</span>
                   </v-btn>
                 </v-card>
               </template>
@@ -172,7 +172,7 @@
                         class="d-flex justify-center align-center px-4">
 
                   <v-icon left>mdi-keyboard</v-icon>
-                  {{ $t('keyboard_and_dishNumber') }}
+                  {{ $t('KeyboardAndDishNumber') }}
 
                 </v-card>
 
@@ -287,7 +287,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                 <div v-if="searchDish.length>0" style="overflow: hidden"
                      class="flex-shrink-1 blue lighten-5">
                   <v-card elevation="0" class="px-2 py-3">
-                    {{ $t('search_result') }}
+                    {{ $t('SearchResult') }}
                   </v-card>
                   <!--                  需要监听键盘的地方-->
                   <template v-for="(dish,index) in searchDish">
@@ -316,7 +316,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                     <div>
                       <v-icon color="grey lighten-1" x-large>mdi-keyboard</v-icon>
                     </div>
-                    <div class="text--disabled">{{ $t('pls_use_the_keyboard_or_type_directly_to_the_right') }}</div>
+                    <div class="text--disabled">{{ $t('PleaseUseKeyboardOrType') }}</div>
                   </div>
                 </div>
 
@@ -330,12 +330,12 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                         class="d-flex align-center px-4">
 
                   <v-icon left>mdi-menu</v-icon>
-                  {{ $t('view_category_menu') }}
+                  {{ $t('ViewCategoryMenu') }}
                 </v-card>
                 <div class="pa-2 text-h6" style="min-height: 96px">
                   <template v-if="keyboardInput">
-                    {{ Config.numberFirst ? $t('quantity_x_dishNumber') : $t('dishNumber_x_quantity') }}<br>
-                    {{ $t('being_input...') }}
+                    {{ Config.numberFirst ? $t('QuantityDishNumber') : $t('DishNumberQuantity') }}<br>
+                    {{ $t('Input') }}
                   </template>
                   <template v-else>
                     {{ feedback }}
@@ -348,7 +348,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                       readonly
                       solo-inverted
                       class="my-2"
-                      :placeholder="Config.numberFirst?$t('quantity_x_dishNumber'):$t('dishNumber_x_quantity')"
+                      :placeholder="Config.numberFirst?$t('quantity_x_dishNumber'):$t('DishNumberQuantity')"
                       height="96px"
                       style="font-size: 32px"
                       ref="ins"
@@ -401,7 +401,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
               <grid-button
                   :loading="isSendingRequest"
                   icon="mdi-printer-pos"
-                  :text="$t('temporary_bill')"
+                  :text="$t('TemporaryBill')"
                   color="#24b646"
                   @click="zwitchenBon"
               />
@@ -424,14 +424,14 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
               <grid-button
                   :loading="isSendingRequest"
                   icon="mdi-account"
-                  :text="$t('transfer_waiter')"
+                  :text="$t('WaiterTransfer')"
                   color="#ffb13b"
                   @click="changeServant"
               />
               <grid-button
                   :loading="isSendingRequest"
                   icon="mdi-map"
-                  :text="$t('customerAddress')"
+                  :text="$t('CustomerAddress')"
                   color="indigo"
                   @click="addressFormOpen=true"
               />
@@ -450,14 +450,14 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                         :text="time"/>
 
                   </template>
-                  <grid-button color="error" @click="rejectOrder" icon="mdi-minus" :text="$t('Rejection')"/>
+                  <grid-button color="error" @click="rejectOrder" icon="mdi-minus" :text="$t('Reject')"/>
                 </template>
               </template>
               <template v-else-if="consumeTypeStatusId<2">
                 <grid-button
                     :loading="isSendingRequest"
                     icon="mdi-check"
-                    :text="$t('Akzept.')"
+                    :text="$t('Accept')"
                     color="success"
                     @click="acceptOrder"
                 />
@@ -496,21 +496,21 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
             <div class="pa-1 d-flex flex-column">
               <v-btn x-large color="error" class=" mt-1 " @click="removeAllFromSplitOrder()">
                 <v-icon left>mdi-close-circle</v-icon>
-                {{ $t('cancel') }}
+                {{ $t('Cancel') }}
               </v-btn>
               <v-btn x-large class=" mt-1 " @click="needSplitOrder()">
                 <v-icon left>mdi-set-split</v-icon>
-                {{ $t('billSplit') }}
+                {{ $t('BillSplit') }}
               </v-btn>
               <v-btn x-large class=" mt-1 "
                      v-on:click="deleteDishes()">
                 <v-icon left>mdi-calendar-remove</v-icon>
-                {{ $t('dishCancel') }}
+                {{ $t('DishCancel') }}
               </v-btn>
               <v-btn x-large class=" mt-1 "
                      v-on:click="dishesSetDiscount()">
                 <v-icon left>mdi-sale</v-icon>
-                {{ $t('give_dish_a_discount') }}
+                {{ $t('GiveDishADiscount') }}
               </v-btn>
               <v-btn x-large class="  mt-1"
                      v-on:click="dishesChangeTable">
@@ -520,7 +520,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
               <v-btn x-large class="  mt-1"
                      v-on:click="printZwichenBon()">
                 <v-icon left>mdi-bandcamp</v-icon>
-                {{ $t('temporary_bill') }}
+                {{ $t('TemporaryBill') }}
               </v-btn>
             </div>
             <dish-card-list
@@ -573,8 +573,8 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
                 </template>
               </div>
               <div class="text-caption text--secondary" style="font-size: 14px !important;">
-                {{ $t('press_ESC_to_enter_window') }}<br>
-                {{ $t('press_ESC_or_close_window') }}
+                {{ $t('PressESCToEnterWindow') }}<br>
+                {{ $t('PressESCToCloseWindow') }}
               </div>
             </v-card>
           </v-fade-transition>
@@ -585,7 +585,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"
         <v-card width="550">
           <v-card-title class="font-weight-bold"> {{ currentDish.name }}</v-card-title>
           <v-card-text>
-            <v-text-field :label="$t('amount')" autofocus v-model="currentDish.currentPrice"/>
+            <v-text-field :label="$t('Amount')" autofocus v-model="currentDish.currentPrice"/>
             <v-text-field :label="$t('name')" v-model="currentDish.currentName"/>
           </v-card-text>
           <v-card-actions>
@@ -897,7 +897,7 @@ export default {
     },
 
     async changeServant () {
-      const res = await fastSweetAlertRequest(this.$t('Zu andere Kellner übergebe'),
+      const res = await fastSweetAlertRequest(this.$t('WaiterPagePasswordPrompt'),
         'password',
         'Orders.php?op=changeServantForTable', 'pw',
         { tableId: this.id }, 'POST')
@@ -944,7 +944,7 @@ export default {
     },
     async findAndOrderDish (code, count = 1) {
       if (count < 1) {
-        this.feedback = '❌' + this.$t('can_not_add_negative_dishes')
+        this.feedback = '❌' + this.$t('CanNotAddNegativeDishes')
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
         return
       }
@@ -953,7 +953,7 @@ export default {
 
       if (dish) {
         if (parseInt(GlobalConfig.oneStepOrderNumber) !== -1 && count > GlobalConfig.oneStepOrderNumber) {
-          const res = await showConfirmAsyn(this.$t('wirklich?'), this.$tc('are_you_sure_to_order_N_dish', 1, { n: count }))
+          const res = await showConfirmAsyn(this.$t('AreYouSure'), this.$tc('AreYouSureToOrderDish', 1, { n: count }))
           if (!res?.value) {
             showTimedAlert('warning', 'abrechen')
           }
@@ -971,10 +971,10 @@ export default {
           blockReady()
           return
         }
-        this.feedback = '✅' + dish.code + '.' + dish.dishName + '*' + count + this.$t('added_to_cart')
+        this.feedback = '✅' + dish.code + '.' + dish.dishName + '*' + count + this.$t('AddedToCart')
         this.addDish(dish, parseInt(count))
       } else {
-        this.feedback = '❌' + this.$t('dish_number_N_not_found', { n: code })
+        this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
       }
 
       blockReady()
@@ -1056,7 +1056,7 @@ export default {
     addToSplit: function (dish) {
       const item = IKUtils.deepCopy(dish)
       if (item.code === '-1') {
-        logErrorAndPop(this.$t('discount_dish_can_not_be_added_into_split_bill'))
+        logErrorAndPop(this.$t('DiscountDishCanNotBeAddedIntoSplitBill'))
         return
       }
       this.orderListModel.add(item, -1)
@@ -1232,7 +1232,7 @@ export default {
       await this.acceptOrder(timeReal.format('DD.MM.YYYY HH:mm'))
     },
     async rejectOrder () {
-      const res = await fastSweetAlertRequest(i18n.t('Ablehnen, ein Ground Eingeben'), 'text',
+      const res = await fastSweetAlertRequest(i18n.t('RevocationDishReason'), 'text',
         'Orders.php?op=rejectTakeAwayOrder', 'reason',
         { tableId: this.id })
       if (res) {
@@ -1345,7 +1345,7 @@ export default {
           } else {
             if (GlobalConfig.useEnterKeyToPay) {
               setTimeout(async () => {
-                const res = await showConfirmAsyn(this.$t('Zahlung ohne tip mit bar?'))
+                const res = await showConfirmAsyn(this.$t('PaidWithoutTip'))
                 if (res.value) {
                   const pw = await optionalAuthorizeAsync('',
                     GlobalConfig.checkOutUsePassword,

@@ -79,7 +79,7 @@ export async function deleteDishes (id, items) {
     }
   } else {
     await hillo.post('Complex.php?op=deleteDishes', {
-      tableId: id, dishes: JSON.stringify(items), reason: i18n.t('falschEingaben')
+      tableId: id, dishes: JSON.stringify(items), reason: i18n.t('InputError')
     })
     loadingComplete()
   }
