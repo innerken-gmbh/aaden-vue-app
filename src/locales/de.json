@@ -1,5 +1,6 @@
 {
   "AadenSupport" : "Bitte wenden Sie sich an den Aaden-Kundendienst und aktualisieren Sie",
+  "Abholung" : "Abholung",
   "Accept" : "Akzeptieren",
   "AcceptExternalOrders" : "Externe Bestellungen annehmen",
   "AddTakeawayOrders" : "Togo hinzufügen",
@@ -180,7 +181,7 @@
   "RowsPerPage" : "Menge pro Seite",
   "Sales" : "Verkäufe",
   "SalesDetails" : "Tourdetails",
-  "Save" : "behalten",
+  "Save" : "Speichern",
   "ScanQRCodeToBindBossApp" : "Scannen Sie den Code, um die Boss-App zu binden",
   "SearchAddress" : "Adresssuche",
   "SearchByTelefon" : "Telefonsuche",
