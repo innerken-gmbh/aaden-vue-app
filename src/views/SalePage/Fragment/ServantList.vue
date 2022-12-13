@@ -28,7 +28,7 @@
                       color="warning"
                       @click="singleZBon(s.servant.password)"
                   >
-                    {{ $t('print_daily_summary_bon') }}
+                    {{ $t('PrintDailySummaryBon') }}
                   </v-btn>
                 </div>
                 <v-divider></v-divider>
@@ -78,7 +78,7 @@
                       class="d-flex justify-space-between pt-1 "
                   >
                     <div class="label">
-                      {{ $t('today_total_including_tips') }}
+                      {{ $t('TodayTotalIncludingTips') }}
                     </div>
                     <div class="value font-weight-bold">
                       {{ s.todayTotal ? s.todayTotal : 0 | priceDisplay }}
@@ -104,7 +104,7 @@
       <v-card elevation="0">
         <v-btn right x-large dark class="orange mb-6 mt-2" block @click="allZBon(...singleZBonDate)">
           <div style="width: 160px" class="hideMore">
-            {{ $t('print_all_summary_bon') }}
+            {{ $t('PrintAllSummaryBon') }}
           </div>
         </v-btn>
       </v-card>

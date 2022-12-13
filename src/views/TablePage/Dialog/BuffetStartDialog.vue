@@ -29,12 +29,12 @@
                         v-model="buffetSetting.maxDineTimeMin"></v-slider>
             </div>
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('time_per_round_min') }}</div>
+              <div class="formLabel caption">{{ $t('TimePerRoundMin') }}</div>
               <v-slider hide-details max="60" min="0" step="2" thumb-label="always"
                         v-model="buffetSetting.roundTimeMin"></v-slider>
             </div>
             <div class="formRow">
-              <div class="formLabel caption">{{ $t('total_number_of_rounds') }}</div>
+              <div class="formLabel caption">{{ $t('TotalNumberOfRounds') }}</div>
               <v-text-field dense hide-details type="number"
                             v-model="buffetSetting.totalRound"></v-text-field>
             </div>

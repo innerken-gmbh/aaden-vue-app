@@ -72,8 +72,8 @@
                     <v-btn color="error" block @click="createUser=false">{{ $t('return') }}</v-btn>
                   </v-col>
                   <v-col cols="9">
-                    <v-btn v-if="userIsNew" color="primary" @click="submitNewUserInfo" block>{{ $t('new_users') }}</v-btn>
-                    <v-btn v-else @click="updateUserInfo" color="warning" block>{{ $t('update_users_info') }}</v-btn>
+                    <v-btn v-if="userIsNew" color="primary" @click="submitNewUserInfo" block>{{ $t('NewUser') }}</v-btn>
+                    <v-btn v-else @click="updateUserInfo" color="warning" block>{{ $t('UpdateUserInfo') }}</v-btn>
                   </v-col>
                 </v-row>
               </template>
@@ -81,14 +81,14 @@
                 <v-text-field
                     clearable
                     v-model="searchTel"
-                    :label="$t('telefonsearch')"
+                    :label="$t('SearchByTelefon')"
                     autocomplete="off"
                     hide-details
                     type="search"
                 />
                 <v-divider></v-divider>
                 <div v-if="telHint.length===0">
-                  <v-btn color="primary" block @click="startCreateUser">{{ $t('new_users') }}</v-btn>
+                  <v-btn color="primary" block @click="startCreateUser">{{ $t('NewUser') }}</v-btn>
                 </div>
                 <div style="max-height: 400px;overflow-y: scroll">
                   <v-card :key="user.id" v-for="user in telHint"

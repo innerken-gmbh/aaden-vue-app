@@ -86,7 +86,7 @@ export async function moveReservation (reservationId) {
 
 export async function cancelReservation (reservationId) {
   const res = await IKUtils.showConfirmAsyn(
-    i18n.t('one_email_will_be_sent_if_reservation_is_cancelled'),
+    i18n.t('EmailWillBeSentIfReservationIsCancelled'),
     i18n.t('AreYouSureToCancelTheReservation')
   )
   if (res.isConfirmed) {

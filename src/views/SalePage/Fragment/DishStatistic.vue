@@ -65,13 +65,13 @@
             <v-switch
               v-model="orderBySales"
               flat
-              :label="orderBySales ? $t('sort_by_sales') : $t('sort_by_quantity')"
+              :label="orderBySales ? $t('SortBySales') : $t('SortByQuantity')"
             ></v-switch>
             <v-spacer></v-spacer>
           </v-card-actions>
 
-          <v-btn x-large dark block class="orange mx-2 mb-6" @click="printSaleBon">{{ $t('print_by_sales') }}</v-btn>
-          <v-btn x-large dark block class="orange mx-2 mb-6" @click="printSaleBonByCode">{{ $t('print_by_code') }}</v-btn>
+          <v-btn x-large dark block class="orange mx-2 mb-6" @click="printSaleBon">{{ $t('PrintBySales') }}</v-btn>
+          <v-btn x-large dark block class="orange mx-2 mb-6" @click="printSaleBonByCode">{{ $t('PrintByCode') }}</v-btn>
         </v-card>
       </v-navigation-drawer>
     </div>

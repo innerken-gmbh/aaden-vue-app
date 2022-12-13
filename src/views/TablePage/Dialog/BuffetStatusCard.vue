@@ -3,13 +3,13 @@
     <v-list dense>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>{{ $t('CurrentRound') }}/{{ $t('total_number_of_rounds') }}</v-list-item-title>
+          <v-list-item-title>{{ $t('CurrentRound') }}/{{ $t('TotalNumberOfRounds') }}</v-list-item-title>
         </v-list-item-content>
         <v-list-item-action-text>{{ currentRound }}/{{ tableBuffetConfig.totalRound }}</v-list-item-action-text>
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>{{ $t('time_per_round_min') }}/{{ $t('maximum_mealtime_min') }}</v-list-item-title>
+          <v-list-item-title>{{ $t('TimePerRoundMin') }}/{{ $t('MinMaxMealtime') }}</v-list-item-title>
         </v-list-item-content>
         <v-list-item-action-text>
           {{ tableBuffetConfig.roundTime / 60 }}

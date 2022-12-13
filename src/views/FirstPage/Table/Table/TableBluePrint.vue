@@ -79,7 +79,7 @@
           </v-btn>
           <v-btn v-if="editing" @click="refreshTables">
             <v-icon left>mdi-refresh</v-icon>
-            {{ $t('reset_all_tables') }}
+            {{ $t('ResetAllTables') }}
           </v-btn>
           <v-btn v-if="editing" @click="showTableEditInfoCard=!showTableEditInfoCard">
             <v-icon>mdi-book-information-variant</v-icon>
@@ -175,7 +175,7 @@
                     </div>
                     <div class="mt-1">
                       <v-btn @click="moveReservation(re.id)" small color="warning" elevation="0">
-                        {{ $t('move_reservation') }}
+                        {{ $t('ChangePosition') }}
                       </v-btn>
                     </div>
 

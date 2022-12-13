@@ -16,7 +16,7 @@
               elevation="0"
               style="border-radius: 12px">
         <div class="text-subtitle-2 d-flex">
-          {{ $t('reservation_setting') }}
+          {{ $t('ReservationSetting') }}
           <v-spacer></v-spacer>
           <v-chip class="ml-2 d-flex align-center" color="white" label small>
             <v-icon color="success" left>mdi-checkbox-marked-circle</v-icon>
@@ -31,7 +31,7 @@
         </v-btn>
         <v-btn block class="mt-4" color="warning" elevation="0" large @click="tableSettingDialog=true">
           <v-icon left>mdi-cog-box</v-icon>
-          {{ $t('reserved_table_setting') }}
+          {{ $t('ReservedTableSetting') }}
         </v-btn>
       </v-card>
       <v-card
@@ -44,7 +44,7 @@
     </div>
     <v-card elevation="0" style="border-radius: 12px">
       <v-card-title style="background: #f6f6f6">
-        {{ $t('reservation_list') }}
+        {{ $t('ReservationList') }}
         <v-spacer></v-spacer>
         <v-btn class="mr-2" elevation="0" @click="loadData">
           <v-icon left>mdi-refresh</v-icon>
@@ -95,7 +95,7 @@
             class="text-decoration-underline"
             style="max-width: 96px;overflow: hidden;white-space: nowrap;
                   text-overflow: ellipsis">
-            {{ item.note ? item.note : $t('nothing') }}
+            {{ item.note ? item.note : $t('Nothing') }}
           </div>
         </template>
         <template #item.person="{item}">
@@ -161,7 +161,7 @@
           </div>
           <v-divider class="my-3"></v-divider>
           <div class="d-flex">
-            <div class="text-body-1">{{ $t('number_of_people') }}</div>
+            <div class="text-body-1">{{ $t('NumberOfPeople') }}</div>
             <v-spacer></v-spacer>
             <v-icon class="mr-2">mdi-human-male-female</v-icon>
             {{ activeReservation.personCount }}
@@ -213,7 +213,7 @@
 
           <div class="mt-8" style="display: grid;grid-gap: 8px;">
             <v-btn block color="warning" elevation="0" @click="moveReservation(activeReservation.id)">{{
-                $t('replace_table')
+                $t('ReplaceTable')
               }}
             </v-btn>
             <v-btn block color="error" elevation="0" outlined @click="cancelReservation(activeReservation.id)">
@@ -245,7 +245,7 @@
           </div>
           <v-divider class="my-2"></v-divider>
           <div class="d-flex align-center">
-            <div class="text-body-1">{{ $t('number_of_adults') }}</div>
+            <div class="text-body-1">{{ $t('NumberOfAdults') }}</div>
             <v-icon class="ml-2">mdi-human-male-female</v-icon>
             <v-spacer></v-spacer>
 
@@ -296,7 +296,7 @@
           </div>
           <div v-else class="d-flex align-center flex-column mt-8" style="height: 200px">
             <v-icon x-large>mdi-kettle-steam</v-icon>
-            <div class="mt-4">{{ $t('sorry_there_are_no_available_tables_on_this_day') }}</div>
+            <div class="mt-4">{{ $t('ThereNoAvailableTablesOnThisDay') }}</div>
             <v-btn class="mt-8" text @click="reservationAddDialog=false">
               <v-icon left>mdi-close</v-icon>
               {{ $t('Close') }}
@@ -342,7 +342,7 @@
 
           <v-divider class="my-2"></v-divider>
           <div class="d-flex align-center">
-            <div class="text-subtitle-2">{{ $t('number_of_adults') }}</div>
+            <div class="text-subtitle-2">{{ $t('NumberOfAdults') }}</div>
             <v-spacer></v-spacer>
             <v-icon class="mr-2">mdi-human-male-female</v-icon>
             {{ adultCount }}
@@ -393,7 +393,7 @@
     </v-dialog>
     <v-dialog v-model="tableSettingDialog" max-width="600px">
       <v-card color="#f6f6f6" style="border-radius: 12px">
-        <v-card-title>{{ $t('reserved_table_setting') }}</v-card-title>
+        <v-card-title>{{ $t('ReservedTableSetting') }}</v-card-title>
         <v-card-text class="pa-4" style="overflow: scroll">
           <div
             style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px;max-height: 70vh;overflow-y: scroll">
@@ -501,7 +501,7 @@ export default {
     },
     async checkCurrentTime () {
       if (!this.startTime) {
-        IKUtils.showError(this.$t('pls_select_reservation_time') + '！')
+        IKUtils.showError(this.$t('PleaseSelectReservationTime') + '！')
         return
       }
       const res = await checkTableTimeAvailable(
@@ -530,7 +530,7 @@ export default {
     },
     async submitReservation () {
       if (!this.firstName && !this.lastName) {
-        IKUtils.showError(this.$t('pls_enter_name') + '!')
+        IKUtils.showError(this.$t('PleaseEnterName') + '!')
         return
       }
       IKUtils.showLoading(true)

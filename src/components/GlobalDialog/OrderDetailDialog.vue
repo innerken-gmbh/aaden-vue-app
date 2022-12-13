@@ -35,21 +35,21 @@
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item>
-            <span>{{ $t('order_status') }}</span>
+            <span>{{ $t('OrderStatus') }}</span>
             <v-spacer></v-spacer>
             <v-chip label small :color="isPaid?'success':'error'">
-              {{ isPaid ? $t('paid') : $t('not_paid') }}
+              {{ isPaid ? $t('Paid') : $t('PaidNot') }}
             </v-chip>
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item>
-            <span>{{ $t('total_price') }}</span>
+            <span>{{ $t('TotalPrice') }}</span>
             <v-spacer></v-spacer>
             <span>{{ orderInfo.totalPrice | priceDisplay }}</span>
           </v-list-item>
           <v-divider></v-divider>
           <v-list-item v-if="isPaid">
-            <span>{{ $t('payment_method') }}</span>
+            <span>{{ $t('PaymentMethod') }}</span>
             <v-spacer></v-spacer>
             <v-chip color="primary" small label>
               {{ order.billPaymentInfo[0].name }}
@@ -71,7 +71,7 @@
       <div v-if="orderInfo">
         <div class="timeLineGridContainer">
           <strong>{{ orderInfo.startTime }}</strong>
-          <div><strong>{{ $t('start_dining') }}</strong></div>
+          <div><strong>{{ $t('StartDining') }}</strong></div>
           <strong v-if="!isPaid" class="red--text">{{ $t('CheckoutPending') }}</strong>
         </div>
         <template v-if="displayDetailInfo">

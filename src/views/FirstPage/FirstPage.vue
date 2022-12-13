@@ -40,7 +40,7 @@
               :class="active?' active':' text--disabled'"
             >
               <v-icon left>mdi-account</v-icon>
-              <span style="padding: 2px 4px">{{ $t('server_order') }}</span>
+              <span style="padding: 2px 4px">{{ $t('ServerOrder') }}</span>
             </div>
           </v-item>
           <v-item v-if="Config.activeReservation" #default="{active,toggle}">
@@ -50,7 +50,7 @@
               :class="active?' active':' text--disabled'"
             >
               <v-icon left>mdi-calendar</v-icon>
-              {{ $t('reservation') }}
+              {{ $t('Reservation') }}
             </div>
           </v-item>
         </div>
@@ -262,7 +262,7 @@
                   style="border-radius: 12px"
                   width="100%"
                   height="calc(100vh - 96px)">
-            <div class="text-subtitle-2">{{ $t('not_received_orders') }}
+            <div class="text-subtitle-2">{{ $t('NotReceivedOrders') }}
               <trailing-number>
                 {{ notAccepted.length }}
               </trailing-number>
@@ -285,7 +285,7 @@
                   class="pa-4 d-flex flex-column"
                   style="border-radius: 12px"
                   height="calc(100vh - 96px)">
-            <div class="text-subtitle-2">{{ $t('received_orders') }}
+            <div class="text-subtitle-2">{{ $t('ReceivedOrders') }}
               <trailing-number>
                 {{ accepted.length }}
               </trailing-number>
@@ -340,7 +340,7 @@
                     elevation="0"
                     style="border-radius: 12px"
                     class="pa-4 mt-4">
-              <div class="text-subtitle-2 d-flex">{{ $t('takeaway_website_setting') }}
+              <div class="text-subtitle-2 d-flex">{{ $t('TakeawayWebsiteSetting') }}
                 <v-spacer></v-spacer>
                 <template v-if="loading">
                   <v-progress-circular indeterminate></v-progress-circular>
@@ -384,7 +384,7 @@
                     elevation="0"
                     style="border-radius: 12px"
                     class="pa-4 flex-grow-1 mt-4">
-              <div class="text-subtitle-2">{{ $t('non_today_orders') }}
+              <div class="text-subtitle-2">{{ $t('NonTodayOrders') }}
                 <trailing-number>
                   0
                 </trailing-number>
@@ -469,8 +469,8 @@
         <h1>{{ buffer }}</h1>
       </div>
       <div class="text-caption text--secondary" style="font-size: 14px !important;">
-        {{ $t('press_ESC_to_enter_window') }}<br>
-        {{ $t('press_ESC_or_close_window') }}
+        {{ $t('PressESCToEnterWindow') }}<br>
+        {{ $t('PressESCToCloseWindow') }}
       </div>
 
     </v-card>

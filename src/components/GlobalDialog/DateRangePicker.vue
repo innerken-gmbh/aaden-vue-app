@@ -39,8 +39,8 @@
             <template v-slot:activator="{ on, attrs }">
               <v-text-field
                   v-model="endDate"
-                  :label="$t('to...')"
-                  :placeholder="$t('to...')"
+                  :label="$t('InputTo')"
+                  :placeholder="$t('InputTo')"
                   prepend-inner-icon="mdi-calendar"
                   readonly
                   hide-details

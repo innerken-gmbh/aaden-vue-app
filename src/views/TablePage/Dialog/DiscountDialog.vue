@@ -2,7 +2,7 @@
   <v-dialog max-width="400px" v-model="realShow">
     <v-card>
       <v-toolbar tile color="primary" dark elevation="0">
-        <v-toolbar-title> {{ $t('pls_enter_discount2') }}</v-toolbar-title>
+        <v-toolbar-title> {{ $t('PleaseEnterDiscount2') }}</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
         <v-text-field :label="$t('AmountOrPercentage')"

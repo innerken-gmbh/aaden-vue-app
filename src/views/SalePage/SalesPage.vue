@@ -6,7 +6,7 @@
           <v-tab>{{ $t('BillList') }}</v-tab>
           <v-tab>{{ $t('CashBook') }}</v-tab>
           <v-tab>{{ $t('DishStatistics') }}</v-tab>
-          <v-tab>{{ $t('show_waiter') }}</v-tab>
+          <v-tab>{{ $t('WaiterShow') }}</v-tab>
           <v-tab>{{ $t('BindTheBossApp') }}</v-tab>
         </template>
         <template v-else>
@@ -94,7 +94,7 @@
                                 class="hideMore"
                                 style="max-width: 200px"
                             >
-                              {{ $t('create_new_record') }}
+                              {{ $t('CreateNewRecord') }}
                             </div>
                           </v-btn>
                         </v-list>
@@ -128,7 +128,7 @@
                     </div>
                     <div class="pa-2" style="width: 240px">
                       <v-list subheader dense>
-                        <v-subheader>{{ $t('Kellner') }} : {{ displayData.servant.name }} ({{ $t('ohne tip') }})
+                        <v-subheader>{{ $t('Waiter') }} : {{ displayData.servant.name }} ({{ $t('WithoutTip') }})
                         </v-subheader>
                         <v-list-item>
                           <v-list-item-content>
@@ -199,7 +199,7 @@
     </v-dialog>
     <dialog-with-keyboard @close="showNumberKeyboard=false" :show="showNumberKeyboard"
                           @submit="addCashRecord"
-                          :title=" $t('pls_enter_the_amount_of_expenses_if_the_enternumber_is_negative')"
+                          :title=" $t('PleaseEnterAamountOfExpensesIfEnternumberNegative')"
                           :keys="keyboardNumber">
       <v-text-field :placeholder=" $t('IfNecessaryPlsClickHereToEnterANoteUsingTheKeyboard')"
                     v-model="cashNote"></v-text-field>

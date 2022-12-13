@@ -6,12 +6,12 @@
       </div>
       <v-card elevation="0" class="pa-4" width="300" style="overflow-y: scroll">
         <v-sheet class="text-body-1">
-          <h4>{{ $t('statistic') }}</h4>
+          <h4>{{ $t('Statistic') }}</h4>
           <div class="mt-4">
             <div class="d-flex justify-space-between align-center">
               <div class="hideMore"
                    style="max-width: 150px">
-                <div style="font-size: 24px">{{ $t('All') }}{{ $t('Sales') }}</div>
+                <div style="font-size: 24px">{{ $t('All') }} {{ $t('Sales') }}</div>
               </div>
               <div style="font-size: 24px" class="font-weight-bold">{{ billContent.total | priceDisplay }}</div>
             </div>
@@ -106,7 +106,7 @@
               v-model="search">
           </v-text-field>
           <v-select
-              :label="$t('payment_method')"
+              :label="$t('PaymentMethod')"
               :items="payMethodList"
               v-model="appliedFilter.payment"
               @change="updateFilter"
@@ -141,8 +141,8 @@
             <th class="text-left">{{ $t('TableNumber') }} / {{ $t('SerialNumber') }}</th>
             <th class="text-left">{{ $t('time') }}</th>
             <th class="text-left">{{ $t('WaiterInfo') }}</th>
-            <th class="text-left">{{ $t('return_dish_content') }}</th>
-            <th class="text-left">{{ $t('return_dish_reason') }}</th>
+            <th class="text-left">{{ $t('ReturnDishContent') }}</th>
+            <th class="text-left">{{ $t('ReturnDishReason') }}</th>
           </tr>
           </thead>
           <tbody>

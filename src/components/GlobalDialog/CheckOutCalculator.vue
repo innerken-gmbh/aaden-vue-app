@@ -8,7 +8,7 @@
           <div class="totalBlock">
             <div>
               <v-chip dark label color="primary" small>
-                {{ $t('total_payable') }}
+                {{ $t('TotalPayable') }}
               </v-chip>
             </div>
             <span class="totalNumber">
@@ -18,7 +18,7 @@
           <div class="totalBlock">
             <div>
               <v-chip dark label class="font-weight-bold" color="error" small>
-                {{ $t('payment_still_required') }}
+                {{ $t('PaymentStillRequired') }}
               </v-chip>
             </div>
             <span class="totalNumber">
@@ -29,7 +29,7 @@
         <div class="totalBlock">
           <div>
             <v-chip dark label color="success">
-              {{ $t('will_have_to_pay') }}
+              {{ $t('PayWillHaveTo') }}
             </v-chip>
           </div>
           <div style="width:240px;height: 64px">
@@ -41,7 +41,7 @@
         </div>
       </v-card>
       <div class="pa-4">
-        <h4>{{ $t('other_paymethod') }}</h4>
+        <h4>{{ $t('OtherPaymentMethods') }}</h4>
         <div
             class="pa-1 mt-1"
             style="display: grid;grid-auto-columns: 96px;grid-gap: 8px;
@@ -49,7 +49,7 @@
           <v-card elevation="0" color="#f6f6f6" class="pa-2" style="height: 96px" @click="input(item)"
                   v-for="(item, index) in realExtraPaymentMethodName"
                   :key="index">
-            {{ item==='coupon'?$t('coupon'):item }}
+            {{ item==='coupon'?$t('Coupon'):item }}
           </v-card>
         </div>
       </div>
