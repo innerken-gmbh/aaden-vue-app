@@ -659,7 +659,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
             <v-spacer></v-spacer>
             <v-btn
               class="primary  mt-4 lighten-2" elevation="0" style="border-radius: 36px"
-              width="100%" @click="submitReason(-1)"
+              width="100%" @click="saveReason()"
             >
               确定
             </v-btn>
@@ -871,17 +871,22 @@ export default {
       this.deleteDishReason = ''
       this.deleteDishReasonDialog = true
     },
+    async saveReason () {
+      let note = ''
+      if (this.deleteDishReason) {
+        note = this.deleteDishReason
+      } else {
+        note = this.reasons[0]
+      }
+      await this.storageChange(note)
+      showSuccessMessage()
+      this.deleteDishReasonDialog = false
+      await this.initialUI()
+    },
     async submitReason (item) {
       let note = ''
-      console.log(this.deleteDishReason, 'this.deleteDishReason')
-      note = this.deleteDishReason
-      console.log(item, 'ite,m')
-      if (item !== '' && item !== -1) {
+      if (item !== '') {
         this.deleteDishReason = item
-        note = this.deleteDishReason
-      }
-      if (item === -1) {
-        this.deleteDishReason = this.reasons[0]
         note = this.deleteDishReason
       }
       await this.storageChange(note)
@@ -1341,7 +1346,7 @@ export default {
         case 'Enter':
           this.insDecode(this.keyboardInput)
           this.resetInputAndBuffer()
-          this.submitReason()
+          this.saveReason()
           e.preventDefault()
           break
         default:
