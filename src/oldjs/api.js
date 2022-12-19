@@ -73,6 +73,7 @@ export async function deleteDishes (id, items) {
     const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopReturnDishInfo'), 'text', 'Complex.php?op=deleteDishes', 'reason', {
       tableId: id, dishes: JSON.stringify(items)
     }, 'POST', true, null, GlobalConfig.defaultCancelReason)
+    console.log(res, 'res')
     if (res) {
       GlobalConfig.updateSettings('defaultCancelReason', res.originalData)
       loadingComplete()
