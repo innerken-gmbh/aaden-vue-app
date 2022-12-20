@@ -636,10 +636,10 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
 
       <v-dialog v-model="deleteDishReasonDialog" max-width="600px">
         <v-card class="pa-4">
-          <div class="text-h5 font-weight-bold">请输入退菜理由:</div>
+          <div class="text-h5 font-weight-bold">{{$t('RevocationDishReason')}}</div>
           <v-text-field
           v-model="deleteDishReason"
-          :placeholder="reasons.length > 0 ? reasons[0] :  '请输入'"
+          :placeholder="reasons.length > 0 ? reasons[0] :  $t('RevocationDishReason')"
           append-icon="mdi-lead-pencil"
           autofocus
           class="mt-4"
@@ -659,9 +659,9 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
             <v-spacer></v-spacer>
             <v-btn
               class="primary  mt-4 lighten-2" elevation="0" style="border-radius: 36px"
-              width="100%" @click="saveReason()"
+              width="100%" @click="submitReason()"
             >
-              确定
+              {{$t('Confirm')}}
             </v-btn>
           </div>
         </v-card>
@@ -745,7 +745,9 @@ function saveReason (reason) {
   if (currentReasonList.includes(reason)) {
     currentReasonList = uniqBy(currentReasonList)
   }
-
+  if (currentReasonList.length > 12) {
+    currentReasonList.pop()
+  }
   localStorage.setItem(key, JSON.stringify(currentReasonList))
   return getReason()
 }
@@ -860,36 +862,28 @@ export default {
     }
   },
   methods: {
-    async storageChange (note) {
+    async deleteAndSaveReason (note) {
       if (note) {
         saveReason(note)
       }
       await deleteDish(this.id, this.splitOrderListModel.list, note)
     },
     showDeleteDishDialog () {
-      this.reasons = getReason().slice(0, 12)
+      this.reasons = getReason()
       this.deleteDishReason = ''
       this.deleteDishReasonDialog = true
     },
-    async saveReason () {
+    async submitReason (item) {
       let note = ''
-      if (this.deleteDishReason) {
+      if (item !== '' && item !== undefined) {
+        this.deleteDishReason = item
+        note = this.deleteDishReason
+      } else if (this.deleteDishReason) {
         note = this.deleteDishReason
       } else {
         note = this.reasons[0]
       }
-      await this.storageChange(note)
-      showSuccessMessage()
-      this.deleteDishReasonDialog = false
-      await this.initialUI()
-    },
-    async submitReason (item) {
-      let note = ''
-      if (item !== '') {
-        this.deleteDishReason = item
-        note = this.deleteDishReason
-      }
-      await this.storageChange(note)
+      await this.deleteAndSaveReason(note)
       showSuccessMessage()
       this.deleteDishReasonDialog = false
       await this.initialUI()
@@ -1346,7 +1340,6 @@ export default {
         case 'Enter':
           this.insDecode(this.keyboardInput)
           this.resetInputAndBuffer()
-          this.saveReason()
           e.preventDefault()
           break
         default:
@@ -1384,6 +1377,9 @@ export default {
     },
     //* findInsDecode*/
     async insDecode (t) {
+      if (this.deleteDishReasonDialog) {
+        await this.submitReason()
+      }
       if (isBlocking()) {
         return
       }
