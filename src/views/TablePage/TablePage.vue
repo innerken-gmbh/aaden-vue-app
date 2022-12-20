@@ -871,6 +871,7 @@ export default {
       await deleteDish(this.id, this.splitOrderListModel.list, note)
     },
     async showDeleteDishDialog () {
+      await optionalAuthorizeAsync('boss', !GlobalConfig.returnDishWithoutPassword)
       this.reasons = getReason()
       this.deleteDishReason = ''
       this.deleteDishReasonDialog = true
