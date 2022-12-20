@@ -23,14 +23,14 @@
             </v-card>
             <keep-alive>
               <dish-card-list
-                  v-if="cartListModel.list.length===0"
-                  :click-callback="addToSplit"
-                  :default-expand="cartListModel.list.length===0"
-                  :discount-ratio="discountRatio"
-                  :dish-list-model="orderListModel"
-                  :source-marks="sourceMarks"
-                  :title="$t('DishesOrdered')"
-                  @discount-clear="discountClear"
+                v-if="cartListModel.list.length===0"
+                :click-callback="addToSplit"
+                :default-expand="cartListModel.list.length===0"
+                :discount-ratio="discountRatio"
+                :dish-list-model="orderListModel"
+                :source-marks="sourceMarks"
+                :title="$t('DishesOrdered')"
+                @discount-clear="discountClear"
               >
                 <template #action>
                   <v-btn :loading="isSendingRequest" color="warning" elevation="0" @click="discountShow">
@@ -52,18 +52,18 @@
               </dish-card-list>
             </keep-alive>
             <dish-card-list
-                v-if="cartListModel.list.length>0"
-                ref="cartList"
-                :click-callback="removeDish"
-                :default-expand="true"
-                :dish-list-model="cartListModel"
-                :reset-current-expand-index="true"
-                :reverse="true"
-                :show-edit="true"
-                :show-number="true"
-                :title="$t('New')"
-                color="primary"
-                @current-dish-change="cartCurrentDish=$event">
+              v-if="cartListModel.list.length>0"
+              ref="cartList"
+              :click-callback="removeDish"
+              :default-expand="true"
+              :dish-list-model="cartListModel"
+              :reset-current-expand-index="true"
+              :reverse="true"
+              :show-edit="true"
+              :show-number="true"
+              :title="$t('New')"
+              color="primary"
+              @current-dish-change="cartCurrentDish=$event">
               <template #action>
                 <v-btn color="error" elevation="0" @click="cartListModel.clear()">
                   <v-icon left>
@@ -107,13 +107,13 @@
               <v-icon class="ml-8" size="20">mdi-account-box</v-icon>
               <h3 class="ml-2 font-weight-regular text-truncate">{{ tableDetailInfo.servant }}</h3>
               <address-display
-                  :consume-type-status-id="consumeTypeStatusId"
-                  :raw-address-info="realAddressInfo"
-                  :should-open-menu.sync="addressFormOpen"
-                  class="ml-8"
-                  @accept="acceptOrderWithTime"
-                  @reject="rejectOrder"
-                  @address-change="submitRawAddressInfo"/>
+                :consume-type-status-id="consumeTypeStatusId"
+                :raw-address-info="realAddressInfo"
+                :should-open-menu.sync="addressFormOpen"
+                class="ml-8"
+                @accept="acceptOrderWithTime"
+                @reject="rejectOrder"
+                @address-change="submitRawAddressInfo"/>
               <v-spacer></v-spacer>
               <div class="d-flex align-center flex-grow-0 mr-n2" style="max-width: 40%">
                 <v-btn class="mr-4" disabled elevation="0" icon>
@@ -138,9 +138,9 @@
             <v-divider class="mb-2"></v-divider>
             <template v-if="!keyboardMode">
               <v-card
-                  class="d-flex"
-                  color="transparent"
-                  elevation="0"
+                class="d-flex"
+                color="transparent"
+                elevation="0"
               >
                 <template>
                   <v-item-group v-model="activeDCT" v-dragscroll
@@ -182,7 +182,7 @@
                       elevation="0" style=";position: relative">
                 <div v-if="!activeCategoryId">
                   <v-item-group
-                      class="dishCardList">
+                    class="dishCardList">
                     <template v-for="category of filteredC">
                       <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
                         <v-card class="d-flex align-center justify-center text-center pa-2" elevation="0"
@@ -226,19 +226,19 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
                       </v-card>
                       <template v-for="dish of filteredDish">
                         <dish-block
-                            :key="'dish'+dish.code"
-                            v-ripple
-                            :code="dish.code"
-                            :count="dish.count"
-                            :dish-name="dish.dishName"
-                            :display-color="dish.displayColor"
-                            :font-size="Config.dishBlockFontSize"
-                            :foreground="dish.foreground"
-                            :have-mod="dish.haveMod"
-                            :is-free="dish.isFree"
-                            :price="dish.price"
-                            @click="orderOneDish(dish.code)"
-                            @click-tune="showModification(dish,1)"/>
+                          :key="'dish'+dish.code"
+                          v-ripple
+                          :code="dish.code"
+                          :count="dish.count"
+                          :dish-name="dish.dishName"
+                          :display-color="dish.displayColor"
+                          :font-size="Config.dishBlockFontSize"
+                          :foreground="dish.foreground"
+                          :have-mod="dish.haveMod"
+                          :is-free="dish.isFree"
+                          :price="dish.price"
+                          @click="orderOneDish(dish.code)"
+                          @click-tune="showModification(dish,1)"/>
                       </template>
                     </div>
                   </div>
@@ -246,7 +246,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
                        style="width: 108px;height: calc(100vh - 192px);overflow: hidden;position: fixed;right: 12px;top: 132px">
                     <v-item-group
 
-                        style="display: grid;grid-auto-columns: 108px;grid-auto-rows: 48px;grid-auto-flow: row;grid-gap: 4px">
+                      style="display: grid;grid-auto-columns: 108px;grid-auto-rows: 48px;grid-auto-flow: row;grid-gap: 4px">
                       <template v-for="category of filteredC">
                         <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
                           <v-card :color="activeCategoryId===category.id?'primary':'white'"
@@ -292,7 +292,8 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
                   <!--                  需要监听键盘的地方-->
                   <template v-for="(dish,index) in searchDish">
                     <v-card :key="dish.id" :class="index === indexActive ? 'first' : ''"
-                            :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" class="d-flex  px-1 py-1 align-start"
+                            :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}"
+                            class="d-flex  px-1 py-1 align-start"
                             elevation="0"
                             style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large" tile
                             @click="searchDishClick(dish.code)"
@@ -344,15 +345,15 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
                 <v-spacer></v-spacer>
                 <div class="pa-2 flex-shrink-0" @click.stop>
                   <v-text-field
-                      ref="ins"
-                      v-model="keyboardInput"
-                      :placeholder="Config.numberFirst?$t('quantity_x_dishNumber'):$t('DishNumberQuantity')"
-                      class="my-2"
-                      height="96px"
-                      hide-details
-                      readonly
-                      solo-inverted
-                      style="font-size: 32px"
+                    ref="ins"
+                    v-model="keyboardInput"
+                    :placeholder="Config.numberFirst?$t('quantity_x_dishNumber'):$t('DishNumberQuantity')"
+                    class="my-2"
+                    height="96px"
+                    hide-details
+                    readonly
+                    solo-inverted
+                    style="font-size: 32px"
                   />
                   <keyboard-layout :keys="keyboardLayout"
                                    @input="numberInput"></keyboard-layout>
@@ -366,10 +367,10 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
             <keep-alive>
               <template>
                 <buffet-status-card
-                    v-if="consumeTypeId!==1&&consumeTypeId!==2&&consumeTypeId!==5"
-                    :buffet-setting-info="realAddressInfo"
-                    :current-round="tableDetailInfo.tableBasicInfo.buffetRound"
-                    class="mt-1 mx-2"></buffet-status-card>
+                  v-if="consumeTypeId!==1&&consumeTypeId!==2&&consumeTypeId!==5"
+                  :buffet-setting-info="realAddressInfo"
+                  :current-round="tableDetailInfo.tableBasicInfo.buffetRound"
+                  class="mt-1 mx-2"></buffet-status-card>
               </template>
             </keep-alive>
 
@@ -377,10 +378,10 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
 
           </template>
           <v-card
-              class="d-flex align-center"
-              elevation="4"
-              height="60px"
-              style="position: fixed;
+            class="d-flex align-center"
+            elevation="4"
+            height="60px"
+            style="position: fixed;
                   z-index:3;
                   bottom: 0;
                   right: 0;
@@ -391,63 +392,63 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
             grid-auto-columns: min-content;
             grid-gap: 6px;grid-auto-flow: column">
               <grid-button
-                  v-if="!Config.simpleVersion"
-                  :loading="isSendingRequest"
-                  :text="$t('reprint')"
-                  color="warning"
-                  icon="mdi-printer"
-                  @click="reprintOrder"
+                v-if="!Config.simpleVersion"
+                :loading="isSendingRequest"
+                :text="$t('reprint')"
+                color="warning"
+                icon="mdi-printer"
+                @click="reprintOrder"
               />
               <grid-button
-                  :loading="isSendingRequest"
-                  :text="$t('TemporaryBill')"
-                  color="#24b646"
-                  icon="mdi-printer-pos"
-                  @click="zwitchenBon"
+                :loading="isSendingRequest"
+                :text="$t('TemporaryBill')"
+                color="#24b646"
+                icon="mdi-printer-pos"
+                @click="zwitchenBon"
               />
               <grid-button
-                  v-if="consumeTypeId!==2"
-                  :loading="isSendingRequest"
-                  :text=" $t('tableChange') "
-                  color="#ff8c50"
-                  icon="mdi-swap-horizontal"
-                  @click="changeTable"
+                v-if="consumeTypeId!==2"
+                :loading="isSendingRequest"
+                :text=" $t('tableChange') "
+                color="#ff8c50"
+                icon="mdi-swap-horizontal"
+                @click="changeTable"
               />
               <grid-button
-                  v-if="consumeTypeId!==2"
-                  :loading="isSendingRequest"
-                  :text="$t('tableMerge')"
-                  color="#ff4141"
-                  icon="mdi-merge"
-                  @click="mergeTable"
+                v-if="consumeTypeId!==2"
+                :loading="isSendingRequest"
+                :text="$t('tableMerge')"
+                color="#ff4141"
+                icon="mdi-merge"
+                @click="mergeTable"
               />
               <grid-button
-                  :loading="isSendingRequest"
-                  :text="$t('WaiterTransfer')"
-                  color="#ffb13b"
-                  icon="mdi-account"
-                  @click="changeServant"
+                :loading="isSendingRequest"
+                :text="$t('WaiterTransfer')"
+                color="#ffb13b"
+                icon="mdi-account"
+                @click="changeServant"
               />
               <grid-button
-                  :loading="isSendingRequest"
-                  :text="$t('CustomerAddress')"
-                  color="indigo"
-                  icon="mdi-map"
-                  @click="addressFormOpen=true"
+                :loading="isSendingRequest"
+                :text="$t('CustomerAddress')"
+                color="indigo"
+                icon="mdi-map"
+                @click="addressFormOpen=true"
               />
               <template v-if="consumeTypeId===2">
 
                 <template v-if="consumeTypeStatusId<2">
                   <template
-                      v-for="(time) in [0,15,20,30,60]"
+                    v-for="(time) in [0,15,20,30,60]"
                   >
                     <grid-button
-                        :key="time"
-                        :text="time"
+                      :key="time"
+                      :text="time"
 
-                        color="success"
-                        icon="mdi-plus"
-                        @click="acceptOrderWithTime(time)"/>
+                      color="success"
+                      icon="mdi-plus"
+                      @click="acceptOrderWithTime(time)"/>
 
                   </template>
                   <grid-button :text="$t('Reject')" color="error" icon="mdi-minus" @click="rejectOrder"/>
@@ -455,27 +456,27 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
               </template>
               <template v-else-if="consumeTypeStatusId<2">
                 <grid-button
-                    :loading="isSendingRequest"
-                    :text="$t('Accept')"
-                    color="success"
-                    icon="mdi-check"
-                    @click="acceptOrder"
+                  :loading="isSendingRequest"
+                  :text="$t('Accept')"
+                  color="success"
+                  icon="mdi-check"
+                  @click="acceptOrder"
                 />
                 <grid-button
-                    :loading="isSendingRequest"
-                    :text="$t('Reject')"
-                    color="error"
-                    icon="mdi-close"
-                    @click="rejectOrder"
+                  :loading="isSendingRequest"
+                  :text="$t('Reject')"
+                  color="error"
+                  icon="mdi-close"
+                  @click="rejectOrder"
                 />
               </template>
               <grid-button
-                  v-if="consumeTypeId===1||consumeTypeId===5"
-                  :loading="isSendingRequest"
-                  :text="$t('ChangeToBuffet')"
-                  color="#ff7961"
-                  icon="mdi-silverware"
-                  @click="buffetDialogShow=true"
+                v-if="consumeTypeId===1||consumeTypeId===5"
+                :loading="isSendingRequest"
+                :text="$t('ChangeToBuffet')"
+                color="#ff7961"
+                icon="mdi-silverware"
+                @click="buffetDialogShow=true"
               />
 
             </div>
@@ -524,13 +525,13 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
               </v-btn>
             </div>
             <dish-card-list
-                :click-callback="removeFromSplitOrder"
-                :default-expand="true"
-                :discount-ratio="discountRatio"
-                :dish-list-model="splitOrderListModel"
-                :title="$t('operation')"
-                class="flex-grow-1"
-                extra-height="48px"/>
+              :click-callback="removeFromSplitOrder"
+              :default-expand="true"
+              :discount-ratio="discountRatio"
+              :dish-list-model="splitOrderListModel"
+              :title="$t('operation')"
+              class="flex-grow-1"
+              extra-height="48px"/>
           </div>
         </div>
       </template>
@@ -554,7 +555,8 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
                    style="overflow: hidden">
                 <template v-for="(dish,index) in searchDish">
                   <v-card :key="dish.id" :class="index===indexActive?'first':''"
-                          :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" class="d-flex  px-1 py-1 align-start"
+                          :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}"
+                          class="d-flex  px-1 py-1 align-start"
                           elevation="0"
                           style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large" tile
                           @click="searchDishClick(dish.code)">
@@ -596,55 +598,55 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
       </v-dialog>
 
       <discount-dialog
-          :id="id"
-          ref="discount"
-          :discount-model-show="discountModelShow"
-          :dishesItems="splitOrderListModel.list"
-          :initial-u-i="initialUI"
-          :orderId="tableDetailInfo.order.id"
-          :total-price="tableDetailInfo.order.totalPrice"
-          :useDishesDiscount="useDishesDiscount"
-          @visibility-changed="(val)=>this.discountModelShow=val"
+        :id="id"
+        ref="discount"
+        :discount-model-show="discountModelShow"
+        :dishesItems="splitOrderListModel.list"
+        :initial-u-i="initialUI"
+        :orderId="tableDetailInfo.order.id"
+        :total-price="tableDetailInfo.order.totalPrice"
+        :useDishesDiscount="useDishesDiscount"
+        @visibility-changed="(val)=>this.discountModelShow=val"
       />
 
       <modification-drawer
-          ref="modification"
-          :dish="dish"
-          :mod="submitModification"
-          :modification-show="modificationShow"
-          :old-mod="oldMod"
-          :password="password"
-          @visibility-changed="changeModification"
+        ref="modification"
+        :dish="dish"
+        :mod="submitModification"
+        :modification-show="modificationShow"
+        :old-mod="oldMod"
+        :password="password"
+        @visibility-changed="changeModification"
       />
 
       <check-out-drawer
-          :id="tableDetailInfo.order.id"
-          :check-out-type="checkOutType"
-          :discount-ratio="discountRatio"
-          :discount-str="discountStr"
-          :order="checkOutModel"
-          :password="password"
-          :table-id="id"
-          :visible="checkoutShow"
-          @visibility-changed="changeCheckOut"/>
+        :id="tableDetailInfo.order.id"
+        :check-out-type="checkOutType"
+        :discount-ratio="discountRatio"
+        :discount-str="discountStr"
+        :order="checkOutModel"
+        :password="password"
+        :table-id="id"
+        :visible="checkoutShow"
+        @visibility-changed="changeCheckOut"/>
 
       <buffet-start-dialog
-          :id="tableDetailInfo.order.id"
-          :buffet-dialog-show="buffetDialogShow"
-          :initial-u-i="initialUI"
-          @visibility-changed="(val)=>this.buffetDialogShow=val"></buffet-start-dialog>
+        :id="tableDetailInfo.order.id"
+        :buffet-dialog-show="buffetDialogShow"
+        :initial-u-i="initialUI"
+        @visibility-changed="(val)=>this.buffetDialogShow=val"></buffet-start-dialog>
 
       <v-dialog v-model="deleteDishReasonDialog" max-width="600px">
         <v-card class="pa-4">
-          <div class="text-h5 font-weight-bold">{{$t('RevocationDishReason')}}</div>
+          <div class="text-h5 font-weight-bold">{{ $t('RevocationDishReason') }}</div>
           <v-text-field
-          v-model="deleteDishReason"
-          :placeholder="reasons.length > 0 ? reasons[0] :  $t('RevocationDishReason')"
-          append-icon="mdi-lead-pencil"
-          autofocus
-          class="mt-4"
-          hide-details
-          outlined
+            v-model="deleteDishReason"
+            :placeholder="reasons.length > 0 ? reasons[0] :  $t('RevocationDishReason')"
+            append-icon="mdi-lead-pencil"
+            autofocus
+            class="mt-4"
+            hide-details
+            outlined
           />
           <div class="mt-2"
                style="display: grid;grid-template-columns: repeat(4,minmax(0,1fr));grid-gap: 4px">
@@ -661,7 +663,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
               class="primary  mt-4 lighten-2" elevation="0" style="border-radius: 36px"
               width="100%" @click="submitReason()"
             >
-              {{$t('Confirm')}}
+              {{ $t('Confirm') }}
             </v-btn>
           </div>
         </v-card>
@@ -759,12 +761,12 @@ function getReason () {
 
 const keyboardLayout =
 
-    [
-      '7', '8', '9', 'C',
-      '4', '5', '6', 'A',
-      '1', '2', '3', 'M',
-      '.', '0', 'mdi-close', 'OK'
-    ]
+  [
+    '7', '8', '9', 'C',
+    '4', '5', '6', 'A',
+    '1', '2', '3', 'M',
+    '.', '0', 'mdi-close', 'OK'
+  ]
 
 // endregion
 export default {
@@ -868,21 +870,19 @@ export default {
       }
       await deleteDish(this.id, this.splitOrderListModel.list, note)
     },
-    showDeleteDishDialog () {
+    async showDeleteDishDialog () {
       this.reasons = getReason()
       this.deleteDishReason = ''
       this.deleteDishReasonDialog = true
     },
     async submitReason (item) {
-      let note = ''
-      if (item !== '' && item !== undefined) {
-        this.deleteDishReason = item
-        note = this.deleteDishReason
-      } else if (this.deleteDishReason) {
-        note = this.deleteDishReason
-      } else {
-        note = this.reasons[0]
+      const note = item ?? (this.deleteDishReason || this.reasons[0])
+
+      if (!note) {
+        IKUtils.showError('')
+        return
       }
+
       await this.deleteAndSaveReason(note)
       showSuccessMessage()
       this.deleteDishReasonDialog = false
@@ -1277,8 +1277,8 @@ export default {
     },
     anyMenuOpen () {
       return this.modificationShow || this.checkoutShow ||
-          this.discountModelShow || this.extraDishShow ||
-          this.systemDialogShow || Swal.isVisible()
+        this.discountModelShow || this.extraDishShow ||
+        this.systemDialogShow || Swal.isVisible()
     },
 
     async getTableDetail () {
