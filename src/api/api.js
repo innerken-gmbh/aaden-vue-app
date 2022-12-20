@@ -297,3 +297,15 @@ export async function reprintOrder (orderId, type = 0) {
     })
   })
 }
+
+export async function deleteDish (id, items, reason) {
+  return (await hillo.post('Complex.php?op=deleteDishes', {
+    tableId: id,
+    dishes: JSON.stringify(items),
+    reason: reason
+  }))
+}
+
+export function showSuccessMessage (title) {
+  IKUtils.toast(title, 'success')
+}
