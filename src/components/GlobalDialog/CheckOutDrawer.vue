@@ -17,6 +17,7 @@ import { toast } from '@/oldjs/common'
 import { goHome } from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import { round } from 'lodash-es'
 
 export default {
   name: 'CheckOutDrawer',
@@ -56,7 +57,7 @@ export default {
   },
   computed: {
     totalPrice () {
-      return this.order.total * (1 - this.discountRatio)
+      return round(this.order.total * (1 - this.discountRatio), 2)
     },
     realShow: {
       get: function () {

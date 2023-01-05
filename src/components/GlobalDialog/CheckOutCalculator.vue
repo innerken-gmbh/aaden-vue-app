@@ -49,7 +49,7 @@
           <v-card elevation="0" color="#f6f6f6" class="pa-2" style="height: 96px" @click="input(item)"
                   v-for="(item, index) in realExtraPaymentMethodName"
                   :key="index">
-            {{ item==='coupon'?$t('Coupon'):item }}
+            {{ item === 'coupon' ? $t('Coupon') : item }}
           </v-card>
         </div>
       </div>
@@ -150,6 +150,7 @@ import { dragscroll } from 'vue-dragscroll'
 import { fastSweetAlertRequest } from '@/oldjs/common'
 import hillo from 'hillo'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
+import { round } from 'lodash-es'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
 const fixedNames = {
@@ -228,6 +229,7 @@ export default {
       return this.total - logTotal
     },
     readyToCheckOut: function () {
+      console.log(this.remainTotal)
       return this.equals(this.remainTotal, 0) && this.paymentLog.length !== 0
     }
   },
@@ -268,9 +270,9 @@ export default {
     },
     readBuffer (clear = true) {
       if (this.inputBuffer === '') {
-        return this.remainTotal
+        return round(this.remainTotal, 2)
       }
-      const read = parseFloat(this.inputBuffer.trim())
+      const read = round(parseFloat(this.inputBuffer.trim()), 2)
       if (clear) {
         this.clearBuffer()
       }

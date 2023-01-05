@@ -18,6 +18,7 @@ import IKUtils from 'innerken-js-utils'
 import dayjs from 'dayjs'
 import { onlyTimeFormat } from '@/api/dateUtils'
 import { Remember } from '@/api/remember'
+import _ from 'lodash'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
@@ -34,7 +35,7 @@ Vue.filter('priceDisplay', function (price) {
   if (price.includes && price.includes(',') && price?.includes('.')) {
     d = price.replace('.', '').replace(',', '.')
   }
-  return parseFloat(d).toFixed(2).replace('.', ',') + ' €'
+  return _.round(parseFloat(d), 2).toFixed(2).replace('.', ',') + ' €'
 })
 
 Vue.filter('shorterName', function (longName) {
