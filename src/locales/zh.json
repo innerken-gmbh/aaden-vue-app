@@ -371,5 +371,8 @@
   "yesIAm" : "是的，我确定",
   "yesterday" : "昨天",
   "zbonList" : "Zbon列表",
-  "zoom" : "缩放"
+  "zoom" : "缩放",
+  "are_you_sure": "你确定吗？",
+  "cancelSuccess": "cancelSuccess",
+  "Zurück": "取消"
 }

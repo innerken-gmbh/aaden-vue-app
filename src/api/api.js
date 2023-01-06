@@ -6,6 +6,7 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
 import { resetTableStatus } from '@/oldjs/common'
 import { Remember } from '@/api/remember'
+import i18n from '@/i18n'
 
 export async function previewZBon (startDate, endDate) {
   return (await hillo.get('ZBon.php?op=previewBySpan', {
@@ -308,4 +309,13 @@ export async function deleteDish (id, items, reason) {
 
 export function showSuccessMessage (title) {
   IKUtils.toast(title, 'success')
+}
+
+export async function sureTo (action, content = '', title = i18n.t('are_you_sure')) {
+  const res = await IKUtils.showConfirmAsyn(i18n.t(content), i18n.t(title))
+  if (res.isConfirmed) {
+    await action()
+  } else {
+    IKUtils.toast(i18n.t('cancelSuccess'), 'info')
+  }
 }

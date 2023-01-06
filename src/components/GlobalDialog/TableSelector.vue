@@ -1,5 +1,5 @@
 <template>
-  <v-dialog max-width="90%" v-model="realShow">
+  <v-dialog v-model="realShow" max-width="90%">
     <v-card style="position: relative">
       <div
           style="
@@ -11,15 +11,16 @@
         <table-blue-print
             v-if="realShow"
             :additional-filter="tableFilter"
-            :out-side-table-list="tableList"
             :editing="false"
+            :out-side-table-list="tableList"
             :return-table-key="requiredTableKey"
+            :show-change-button="hideButton"
             @need-refresh="initial"
             @table-clicked="tableSelected"
         />
         <v-card
-            class="pa-2 px-4" elevation="0"
-            color="rgba(0,0,0,0.2)"
+            class="pa-2 px-4" color="rgba(0,0,0,0.2)"
+            elevation="0"
             style="position: absolute;top: 24px;z-index: 15;right: 0;left: 0;margin: auto;width: fit-content">
           <h2>
             {{ $t('SelectTable') }}</h2>
@@ -45,6 +46,7 @@ export default {
   },
   data: function () {
     return {
+      hideButton: -1,
       Config: GlobalConfig,
       tableList: [],
       currentSectionIndex: 0,
