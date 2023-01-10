@@ -515,6 +515,8 @@ export default {
         this.userId)
       if (!res) {
         this.reservationStep = 2
+      } else if (res === '请设置该人数的规则') {
+        IKUtils.showError(this.$t('checkPersonRules') + '!')
       } else {
         this.otherTime = res
         this.reservationStep = 1
@@ -554,10 +556,15 @@ export default {
         userId: this.userId
       })
       console.log(res)
-      this.reservationAddDialog = false
-      this.clearForm()
-      await this.loadData()
-      IKUtils.toast()
+      if (res.message === '已预定') {
+        IKUtils.showError(this.$t('emailAlreadyOrder') + '!')
+        this.email = ''
+      } else {
+        this.reservationAddDialog = false
+        this.clearForm()
+        await this.loadData()
+        IKUtils.toast()
+      }
     },
     clearForm () {
       this.reservationStep = 0
@@ -596,7 +603,7 @@ export default {
       this.setting = await loadReserveSettings()
       this.timeGap = await getTimeSlotForDate(this.reservationDate, this.setting)
       if (parseInt(GlobalConfig.DeviceId) === -1) {
-        IKUtils.showError('请检查配置项DeviceID')
+        IKUtils.showError(this.$t('checkDeviceId') + '!')
       }
       this.userId = parseInt(GlobalConfig.DeviceId)
     },

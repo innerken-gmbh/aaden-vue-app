@@ -374,5 +374,9 @@
   "zoom" : "缩放",
   "are_you_sure": "你确定吗？",
   "cancelSuccess": "cancelSuccess",
-  "Zurück": "取消"
+  "Zurück": "取消",
+  "first_name": "名",
+  "checkPersonRules": "请先设置该人数的规则",
+  "emailAlreadyOrder": "该邮箱已预定",
+  "checkDeviceId": "请检查配置项DeviceID"
 }

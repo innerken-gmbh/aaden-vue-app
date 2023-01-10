@@ -106,12 +106,18 @@ export async function getTimeSlotForDate (date, setting) {
 }
 
 export async function checkTableTimeAvailable (date, time, personCount, id) {
-  const res = (await hillo.jsonPost(host + 'reservableTable/getTableTime', {
+  const getTableTime = (await hillo.jsonPost(host + 'reservableTable/getTableTime', {
     reserveTime: time, reserveDate: date, peopleCount: personCount, userId: id
-  })).data
-  if (res.check === true) {
-    return false
+  }))
+  const res = getTableTime.data
+  console.log(getTableTime, 'getTableTime')
+  if (getTableTime.message === '请设置该人数的规则') {
+    return '请设置该人数的规则'
   } else {
-    return res.data
+    if (res.check === true) {
+      return false
+    } else {
+      return res.data
+    }
   }
 }
