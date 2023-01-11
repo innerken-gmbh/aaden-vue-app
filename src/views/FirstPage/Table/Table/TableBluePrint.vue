@@ -1,53 +1,53 @@
 <template>
   <div class="mr-16">
-    <div class="flex-grow-1 pa-2"
-         ref="blueprintContainer"
+    <div ref="blueprintContainer"
+         :style="{
+          transform:'scale('+scale+')'
+       }"
+         class="flex-grow-1 pa-2"
          style="
          height:calc(100vh - 64px);
          width: 100%;
        transform-origin: left top;
-       background: #e8e8e8;"
-         :style="{
-          transform:'scale('+scale+')'
-       }">
+       background: #e8e8e8;">
       <template v-if="Config.showTableList">
         <div style="display: grid;grid-template-columns: repeat(auto-fill,minmax(0,100px));grid-auto-rows: 140px">
           <table-card
-              :key="i.id"
               v-for="i in tableWithInfo"
-              @click="selectTable(i)"
+              :key="i.id"
               :table-background-color-func="tableBackgroundColorFunc"
               :table-color-is-dark="tableColorIsDark"
               :table-info="i"
+              @click="selectTable(i)"
               @reservation-clicked="showReservation"
           ></table-card>
         </div>
 
       </template>
-      <template v-else v-for="i in tableWithInfo">
+      <template v-for="i in tableWithInfo" v-else>
         <vue-draggable-resizable
-            class-name-dragging="dragging"
-            :min-height="60"
-            :min-width="60"
+            :key="i.id"
+            :draggable="editing"
+            :grid="[10,10]"
+            :h="i.h"
             :max-height="180"
             :max-width="200"
+            :min-height="60"
+            :min-width="60"
+            :parent="true"
             :prevent-deactivation="false"
-            :scaleRation="scale"
-            :draggable="editing"
             :resizable="editing"
-            :grid="[10,10]"
-            :key="i.id"
-            :h="i.h" :w="i.w"
-            :x="i.x" :y="i.y"
+            :scaleRation="scale" :snap="true"
+            :w="i.w" :x="i.x"
+            :y="i.y"
+            class-name-dragging="dragging"
             @dragstop="(...args)=>onDrag(i,...args)"
-            @resizestop="(...args)=>onResize(i,...args)"
-            :snap="true"
-            :parent="true">
+            @resizestop="(...args)=>onResize(i,...args)">
           <table-card
-              @click="selectTable(i)"
               :table-background-color-func="tableBackgroundColorFunc"
               :table-color-is-dark="tableColorIsDark"
               :table-info="i"
+              @click="selectTable(i)"
               @reservation-clicked="showReservation"
           ></table-card>
         </vue-draggable-resizable>
@@ -56,13 +56,13 @@
 
     <!--    工具栏-->
     <div style="position: absolute;left:24px;bottom: 36px">
-      <v-card v-if="editing&&showTableEditInfoCard" style="z-index: 100; margin-left: 2px" flat class="pa-3 mb-1">
+      <v-card v-if="editing&&showTableEditInfoCard" class="pa-3 mb-1" flat style="z-index: 100; margin-left: 2px">
         <h2>{{ $t('EditDisplayCardInfo') }}</h2>
-        <v-select :items="allKeys" return-object v-model="key1"></v-select>
-        <v-select :items="allKeys" return-object v-model="key2"></v-select>
+        <v-select v-model="key1" :items="allKeys" return-object></v-select>
+        <v-select v-model="key2" :items="allKeys" return-object></v-select>
       </v-card>
       <div class="d-flex">
-        <v-btn-toggle dense class="mr-2">
+        <v-btn-toggle class="mr-2" dense>
           <v-btn v-if="editing" @click="scale-=0.05">
             <v-icon>mdi-minus</v-icon>
           </v-btn>
@@ -86,15 +86,15 @@
           </v-btn>
         </v-btn-toggle>
         <div v-if="editing" class="d-flex align-center" style="width: 96px">0.3x
-          <v-slider hide-details :min="0.3" :step="0.01" :max="1" v-model="scale"></v-slider>
+          <v-slider v-model="scale" :max="1" :min="0.3" :step="0.01" hide-details></v-slider>
           1x
         </div>
       </div>
 
     </div>
     <v-card
-        color="white"
         class="d-flex"
+        color="white"
         style="position: absolute;bottom: 36px;
               box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.08);
                 right: 0;
@@ -110,25 +110,25 @@
                           grid-gap: 8px;
                           grid-auto-flow: column;overflow-x: scroll">
         <v-item v-slot="{active,toggle}">
-          <v-card elevation="0" style="border-radius: 8px"
-                  v-if="Config.showAllTableButton"
-                  :color="active?'primary':''"
-                  class="px-6 py-2 text-body-1" @click="activeSectionId=-1;toggle()"
-                  :dark="active">{{ $t('All') }}
+          <v-card v-if="Config.showAllTableButton" :color="active?'primary':''"
+                  :dark="active"
+                  class="px-6 py-2 text-body-1"
+                  elevation="0" style="border-radius: 8px"
+                  @click="activeSectionId=-1;toggle()">{{ $t('All') }}
           </v-card>
         </v-item>
         <v-item v-for="section of notTakeawaySection" :key="section.id+'categorytypes'"
                 v-slot="{active,toggle}">
-          <v-card :elevation="active?4:0"
-                  style="border-radius: 8px"
-                  :color="active?'primary':''"
-                  class="px-6 py-2 text-body-1" @click="activeSectionId=section.id;toggle()"
-                  :dark="active">{{ section.name }}
+          <v-card :color="active?'primary':''"
+                  :dark="active"
+                  :elevation="active?4:0"
+                  class="px-6 py-2 text-body-1" style="border-radius: 8px"
+                  @click="activeSectionId=section.id;toggle()">{{ section.name }}
           </v-card>
         </v-item>
       </v-item-group>
     </v-card>
-    <v-dialog max-width="400px" v-model="reservationDialog">
+    <v-dialog v-model="reservationDialog" max-width="400px">
       <v-card color="#f6f6f6">
         <v-card-title>{{ $t('FollowingTableReservation') }}</v-card-title>
         <v-card-text>
@@ -137,11 +137,11 @@
         grid-auto-flow: row;
                     max-height: calc(100vh - 150px)">
               <v-card
-                  v-for="re in activeTable.reservations" :key="re.remoteId" elevation="0"
-                  height="100%"
-                  class="pa-3 d-flex flex-column">
+                  v-for="re in activeTable.reservations" :key="re.remoteId" class="pa-3 d-flex flex-column"
+                  elevation="0"
+                  height="100%">
                 <div class="d-flex align-center text-body-1 mt-1">
-                  <span style="max-width: 200px" class="text-truncate text-no-wrap">
+                  <span class="text-truncate text-no-wrap" style="max-width: 200px">
                     {{ re.title }}
                     {{ re.firstName }}
                     {{ re.lastName }}
@@ -156,25 +156,25 @@
                 <div class="d-flex">
                   <div>
                     <div class="d-flex align-center mt-2">
-                      <v-icon small class="mr-3">mdi-phone</v-icon>
+                      <v-icon class="mr-3" small>mdi-phone</v-icon>
                       <div> {{ re.tel }}</div>
                     </div>
                     <div class="d-flex align-center mt-2">
-                      <v-icon small class="mr-3">mdi-human-male-female</v-icon>
+                      <v-icon class="mr-3" small>mdi-human-male-female</v-icon>
                       <div> {{ re.personCount }}</div>
-                      <v-icon small class="mr-3 ml-4">mdi-human-child</v-icon>
+                      <v-icon class="mr-3 ml-4" small>mdi-human-child</v-icon>
                       <div>{{ re.childCount }}</div>
                     </div>
                   </div>
                   <v-spacer/>
                   <div class="d-flex align-end flex-column">
                     <div class="mt-1">
-                      <v-btn @click="cancelReservation(re.id)" small color="error" elevation="0">
+                      <v-btn color="error" elevation="0" small @click="cancelReservation(re.id)">
                         {{ $t('CancelReservation') }}
                       </v-btn>
                     </div>
-                    <div class="mt-1">
-                      <v-btn @click="moveReservation(re.id)" small color="warning" elevation="0">
+                    <div v-if="showChangeButton === 1" class="mt-1">
+                      <v-btn color="warning" elevation="0" small @click="moveReservation(re.id)">
                         {{ $t('ChangePosition') }}
                       </v-btn>
                     </div>
@@ -259,6 +259,7 @@ export default {
     dragscroll
   },
   props: {
+    showChangeButton: { default: 1 },
     outSideTableList: Array,
     tableBackgroundColorFunc: Function,
     tableColorIsDark: Function,
@@ -398,7 +399,7 @@ export default {
 }
 </script>
 
-<style scoped lang="sass">
+<style lang="sass" scoped>
 .vdr
   border: none
 
