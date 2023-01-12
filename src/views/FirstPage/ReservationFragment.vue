@@ -77,7 +77,7 @@
         <template #item.action="{item}">
           <div style="display: grid;grid-gap: 4px;grid-auto-flow: column">
 
-            <v-btn v-if="item.fromDate === todayDate"
+            <v-btn
                    :color="item.completed==='1'?'success':''" :disabled="item.completed==='1'"
                    elevation="0"
                    small
@@ -214,7 +214,7 @@
           </div>
 
           <div class="mt-8" style="display: grid;grid-gap: 8px;">
-            <v-btn v-if="activeReservation.fromDate === todayDate" block color="warning" elevation="0" @click="moveReservation(activeReservation.id)">{{
+            <v-btn block color="warning" elevation="0" @click="moveReservation(activeReservation.id)">{{
                 $t('ReplaceTable')
               }}
             </v-btn>
@@ -435,7 +435,6 @@ import IKUtils from 'innerken-js-utils'
 import { onlyTimeFormat, todayDate } from '@/api/dateUtils'
 import { loadReservationTableInfo } from '@/api/tableService'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import dayjs from 'dayjs'
 import { showSuccessMessage, sureTo } from '@/api/api'
 
 export default {
@@ -615,10 +614,7 @@ export default {
       await this.getTables()
     },
     async loadReservations () {
-      this.reservations = (await getReservation(this.reservationDate)).map(it => {
-        it.fromDate = dayjs(it.fromDateTime).format('YYYY-MM-DD')
-        return it
-      })
+      this.reservations = (await getReservation(this.reservationDate))
     }
   },
   async mounted () {
