@@ -15,7 +15,7 @@
       </v-tabs>
       <v-spacer></v-spacer>
 
-      <v-btn elevation="0" x-large color="primary" @click="showDatePicker=true" text>
+      <v-btn color="primary" elevation="0" text x-large @click="showDatePicker=true">
         <v-icon left>mdi-calendar</v-icon>
         {{ getNiceLabel(singleZBonDate) }}/{{ $t('ChangeDate') }}
       </v-btn>
@@ -29,14 +29,14 @@
               <template v-if="isBoss">
                 <template>
                   <v-tab-item>
-                    <calendar :single-z-bon-date="singleZBonDate"/>
+                    <calendar :is-boss="isBoss" :single-z-bon-date="singleZBonDate"/>
                   </v-tab-item>
                 </template>
                 <v-tab-item>
                   <v-card>
                     <div class="d-flex pa-1">
                       <div class="pa-2 flex-grow-1">
-                        <v-simple-table height="calc(100vh - 108px)" fixed-header>
+                        <v-simple-table fixed-header height="calc(100vh - 108px)">
                           <template v-slot:default>
                             <thead>
                             <tr>
@@ -86,10 +86,10 @@
                             </v-list-item-content>
                           </v-list-item>
                           <v-btn
-                              x-large
                               block
-                              @click="showNumberKeyboard=true"
-                              color="warning">
+                              color="warning"
+                              x-large
+                              @click="showNumberKeyboard=true">
                             <div
                                 class="hideMore"
                                 style="max-width: 200px"
@@ -124,10 +124,10 @@
                 <v-card>
                   <div class="d-flex pa-1">
                     <div class="pa-2 flex-grow-1">
-                      <bill-table :orders="displayData.orders"></bill-table>
+                      <bill-table :is-boss="isBoss" :orders="displayData.orders"></bill-table>
                     </div>
                     <div class="pa-2" style="width: 240px">
-                      <v-list subheader dense>
+                      <v-list dense subheader>
                         <v-subheader>{{ $t('Waiter') }} : {{ displayData.servant.name }} ({{ $t('WithoutTip') }})
                         </v-subheader>
                         <v-list-item>
@@ -172,7 +172,7 @@
                         </v-list-item>
                         <v-divider></v-divider>
                       </v-list>
-                      <v-btn block @click="printSummaryBon" color="primary" class="mt-4">
+                      <v-btn block class="mt-4" color="primary" @click="printSummaryBon">
                         {{ $t('WaiterBon') }}
                       </v-btn>
                     </div>
@@ -185,24 +185,24 @@
       </div>
     </div>
     <v-dialog v-model="showDatePicker" max-width="400px">
-      <v-card color="#f6f6f6" elevation="0" tile class="pa-1 pb-4"
+      <v-card class="pa-1 pb-4" color="#f6f6f6" elevation="0" tile
       >
         <date-range-picker v-model="dateInput"></date-range-picker>
         <div class="px-2 mt-2">
-          <v-btn elevation="0" block @click="dateSubmit" color="primary" large>{{ $t('submit') }}</v-btn>
-          <v-btn large block color="error" @click="showDatePicker=false" outlined class="mt-2">{{
+          <v-btn block color="primary" elevation="0" large @click="dateSubmit">{{ $t('submit') }}</v-btn>
+          <v-btn block class="mt-2" color="error" large outlined @click="showDatePicker=false">{{
               $t('Cancel')
             }}
           </v-btn>
         </div>
       </v-card>
     </v-dialog>
-    <dialog-with-keyboard @close="showNumberKeyboard=false" :show="showNumberKeyboard"
-                          @submit="addCashRecord"
+    <dialog-with-keyboard :keys="keyboardNumber" :show="showNumberKeyboard"
                           :title=" $t('PleaseEnterAamountOfExpensesIfEnternumberNegative')"
-                          :keys="keyboardNumber">
-      <v-text-field :placeholder=" $t('IfNecessaryPlsClickHereToEnterANoteUsingTheKeyboard')"
-                    v-model="cashNote"></v-text-field>
+                          @close="showNumberKeyboard=false"
+                          @submit="addCashRecord">
+      <v-text-field v-model="cashNote"
+                    :placeholder=" $t('IfNecessaryPlsClickHereToEnterANoteUsingTheKeyboard')"></v-text-field>
     </dialog-with-keyboard>
   </div>
 
