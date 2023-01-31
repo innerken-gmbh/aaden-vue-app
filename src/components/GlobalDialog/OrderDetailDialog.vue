@@ -8,7 +8,7 @@
       </v-btn>
     </v-subheader>
     <div style="width: 100%;display: grid;grid-template-columns: repeat(2,1fr);grid-gap: 4px">
-      <v-list flat class="mx-2">
+      <v-list class="mx-2" flat>
         <v-list-item-group>
           <v-list-item>
             <span>{{ $t('WaiterInfo') }}</span>
@@ -37,7 +37,7 @@
           <v-list-item>
             <span>{{ $t('OrderStatus') }}</span>
             <v-spacer></v-spacer>
-            <v-chip label small :color="isPaid?'success':'error'">
+            <v-chip :color="isPaid?'success':'error'" label small>
               {{ isPaid ? $t('Paid') : $t('PaidNot') }}
             </v-chip>
           </v-list-item>
@@ -51,17 +51,18 @@
           <v-list-item v-if="isPaid">
             <span>{{ $t('PaymentMethod') }}</span>
             <v-spacer></v-spacer>
-            <v-chip color="primary" small label>
+            <v-chip color="primary" label small>
               {{ order.billPaymentInfo[0].name }}
             </v-chip>
           </v-list-item>
           <v-divider></v-divider>
-          <v-btn small
+          <v-btn v-if="isBoss"
                  :disabled="isReturned"
                  block
                  class="mt-2"
-                 elevation="0"
                  color="error"
+                 elevation="0"
+                 small
                  @click="$emit('return-order', orderInfo.id)">
             <v-icon>mdi-file-cancel-outline</v-icon>
             {{ isReturned ? $t('Refunded') : $t('CancelOrder') + orderInfo.id }}
@@ -83,8 +84,8 @@
                   <strong>{{ op }}</strong>
                   <div class="mt-1">
                     <v-card v-for="d in displayDetailInfo[t][op]" :key="d.id"
-                            elevation="0"
-                            class="pa-1  ml-0 ma-1 text-body-2">
+                            class="pa-1  ml-0 ma-1 text-body-2"
+                            elevation="0">
                       <div>
                         <div class="d-flex">
                           <span>{{ Math.abs(d.count) }}&times; </span>
@@ -127,6 +128,7 @@ import { groupBy } from 'lodash-es'
 export default {
   name: 'OrderDetailDialog',
   props: {
+    isBoss: {},
     order: {}
   },
   data: () => {

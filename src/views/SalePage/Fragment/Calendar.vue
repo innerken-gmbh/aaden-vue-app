@@ -1,10 +1,10 @@
 <template>
-  <v-card elevation="0" style="position: relative" color="#f6f6f6">
+  <v-card color="#f6f6f6" elevation="0" style="position: relative">
     <div class="d-flex">
       <div class="flex-grow-1">
-        <bill-table @need-refresh="loadData" :orders="displayOrder" :show-operation="true"/>
+        <bill-table :is-boss="isBoss" :orders="displayOrder" :show-operation="true" @need-refresh="loadData"/>
       </div>
-      <v-card elevation="0" class="pa-4" width="300" style="overflow-y: scroll">
+      <v-card class="pa-4" elevation="0" style="overflow-y: scroll" width="300">
         <v-sheet class="text-body-1">
           <h4>{{ $t('Statistic') }}</h4>
           <div class="mt-4">
@@ -13,7 +13,7 @@
                    style="max-width: 150px">
                 <div style="font-size: 24px">{{ $t('All') }} {{ $t('Sales') }}</div>
               </div>
-              <div style="font-size: 24px" class="font-weight-bold">{{ billContent.total | priceDisplay }}</div>
+              <div class="font-weight-bold" style="font-size: 24px">{{ billContent.total | priceDisplay }}</div>
             </div>
             <div class="d-flex justify-space-between mt-1">
               <div>{{ $t('NetWorth') }}/ {{ $t('Taxes') }}</div>
@@ -35,7 +35,7 @@
             </div>
           </template>
           <v-sheet>
-            <div class="d-flex" v-for="p in paidInfoList" :key="p.id">
+            <div v-for="p in paidInfoList" :key="p.id" class="d-flex">
               <div>
                 {{p.paidName}}
               </div>
@@ -46,9 +46,9 @@
             </div>
           </v-sheet>
           <v-divider class="my-4"></v-divider>
-          <v-card color="error lighten-2" dark @click="returnDishDialog=true"
+          <v-card class="d-flex align-center pa-2" color="error lighten-2" dark
                   elevation="0"
-                  class="d-flex align-center pa-2">
+                  @click="returnDishDialog=true">
             <div
                 class="hideMore"
                 style="max-width: 90px"
@@ -60,8 +60,8 @@
               <v-icon class="mt-n1" size="18px">mdi-chevron-right</v-icon>
             </h3>
           </v-card>
-          <v-card color="warning lighten-2" elevation="0" dark @click="discountDialog=true"
-                  class="d-flex align-center pa-2 mt-2">
+          <v-card class="d-flex align-center pa-2 mt-2" color="warning lighten-2" dark elevation="0"
+                  @click="discountDialog=true">
             <h3>{{ $t('Discount') }}</h3>
             <v-spacer></v-spacer>
             <h3>{{ totalDiscount | priceDisplay }}({{ discountList.length }})
@@ -74,22 +74,22 @@
         <v-card elevation="0">
 
           <v-btn
+              block
               class="mt-4"
+              color="warning"
               elevation="0"
               x-large
-              block
-              @click="printXBon"
-              color="warning">
+              @click="printXBon">
             {{ $t('PrintXBon') }}
           </v-btn>
           <v-btn
-              class="mt-2"
-              elevation="0"
-              block
               v-if="shouldShowZBon"
+              block
+              class="mt-2"
+              color="primary"
+              elevation="0"
               x-large
-              @click="printZBon"
-              color="primary">
+              @click="printZBon">
             {{ $t('PrintZBon') }}
           </v-btn>
         </v-card>
@@ -98,31 +98,31 @@
 
     </div>
     <div style="position: fixed;bottom: 0;left: 56px;width: calc(100vw - 356px)">
-      <v-card elevation="1" class="d-flex px-4 pt-2" color="white" tile>
+      <v-card class="d-flex px-4 pt-2" color="white" elevation="1" tile>
         <div style="display: grid;grid-auto-flow: column;grid-gap: 8px;">
           <v-text-field
-              prepend-inner-icon="mdi-magnify"
+              v-model="search"
               :placeholder="$t('SearchOrderTable')"
-              v-model="search">
+              prepend-inner-icon="mdi-magnify">
           </v-text-field>
           <v-select
-              :label="$t('PaymentMethod')"
-              :items="payMethodList"
               v-model="appliedFilter.payment"
-              @change="updateFilter"
               :item-text="item => item.langPayMethodName"
+              :items="payMethodList"
+              :label="$t('PaymentMethod')"
               multiple
+              @change="updateFilter"
           >
           </v-select>
           <v-select
-              :label="$t('WaiterInfo')"
-              :items="servantList"
               v-model="appliedFilter.servant"
-              @change="updateFilter"
               :item-text="item => item.name"
+              :items="servantList"
+              :label="$t('WaiterInfo')"
+              @change="updateFilter"
           >
           </v-select>
-          <v-btn v-if="showClearButton" @click="clearFilter" class="mt-2">
+          <v-btn v-if="showClearButton" class="mt-2" @click="clearFilter">
             <v-icon>mdi-close-circle</v-icon>
             {{ $t('Clear') }}
           </v-btn>
@@ -132,9 +132,9 @@
       </v-card>
     </div>
     <v-dialog v-model="returnDishDialog" width="fit-content">
-      <v-simple-table v-if="returnDishDialog" height="calc(100vh - 144px)"
-                      style="width: 650px"
-                      fixed-header>
+      <v-simple-table v-if="returnDishDialog" fixed-header
+                      height="calc(100vh - 144px)"
+                      style="width: 650px">
         <template v-slot:default>
           <thead>
           <tr>
@@ -170,7 +170,7 @@
       </v-simple-table>
     </v-dialog>
     <v-dialog v-model="discountDialog" width="fit-content">
-      <v-simple-table v-if="discountDialog" height="calc(100vh - 144px)" style="width: 650px" fixed-header>
+      <v-simple-table v-if="discountDialog" fixed-header height="calc(100vh - 144px)" style="width: 650px">
         <template v-slot:default>
           <thead>
           <tr>
@@ -246,6 +246,7 @@ export default {
     }
   },
   props: {
+    isBoss: {},
     tabIndex: {},
     singleZBonDate: {}
   },

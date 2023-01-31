@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-simple-table height="calc(100vh - 136px)" fixed-header class="transparent">
+    <v-simple-table class="transparent" fixed-header height="calc(100vh - 136px)">
       <template v-slot:default>
         <thead class="transparent">
         <tr>
@@ -27,29 +27,29 @@
             </td>
             <td>
               <v-btn
-                  text
                   :disabled="order.isReturned==='1'"
-                  @click="reprintOrder(order.orderId)"
+                  color="primary"
                   small
-                  color="primary">
+                  text
+                  @click="reprintOrder(order.orderId)">
                 <v-icon left>
                   mdi-printer-settings
                 </v-icon>
                 {{ $tc('reprint',1) }}
               </v-btn>
               <template v-if="showOperation">
-                <v-btn small
-                       text
-                       :disabled="order.isReturned==='1'"
-                       color="warning"
+                <v-btn :disabled="order.isReturned==='1'"
                        class="ml-2"
+                       color="warning"
+                       small
+                       text
                        @click="startChangePaymentMethodForOrder(order)">
                   <v-icon left>mdi-cash-refund</v-icon>
                   {{ $t('replace') }}
                 </v-btn>
               </template>
-              <v-btn small
-                     class="ml-2"
+              <v-btn class="ml-2"
+                     small
                      text
                      @click="checkOrderDetail(order)">
                 <v-icon left>mdi-arrow-right-drop-circle-outline</v-icon>
@@ -65,11 +65,11 @@
       <v-card>
         <v-card-title>{{ $t('tableCheckOutBillTypeLabel') }}</v-card-title>
         <v-card-text>
-          <v-btn block large elevation="0" @click="realReprintOrder">{{
+          <v-btn block elevation="0" large @click="realReprintOrder">{{
               $t('tableCheckOutBillTypeOptionCompany')
             }}
           </v-btn>
-          <v-btn block large class="mt-4" elevation="0" @click="realReprintOrder(0)">
+          <v-btn block class="mt-4" elevation="0" large @click="realReprintOrder(0)">
             {{ $t('tableCheckOutBillTypeOptionNormal') }}
           </v-btn>
         </v-card-text>
@@ -78,16 +78,16 @@
     <v-dialog v-model="checkOutDialog" fullscreen>
       <v-card width="100%">
         <check-out-calculator
+            :total="changeOrderTotal"
             style="height: 564px"
             @payment-cancel="checkOutDialog=false"
             @payment-submit="changePaymentMethod"
-            :total="changeOrderTotal"
         ></check-out-calculator>
       </v-card>
     </v-dialog>
-    <v-dialog max-width="600px" v-model="orderDetailDialog">
-      <v-card width="100%" style="">
-        <order-detail-dialog :order="selectedOrder" @close-detail="orderDetailDialog = false"
+    <v-dialog v-model="orderDetailDialog" max-width="600px">
+      <v-card style="" width="100%">
+        <order-detail-dialog :is-boss="isBoss" :order="selectedOrder" @close-detail="orderDetailDialog = false"
                              @return-order="returnOrder"></order-detail-dialog>
       </v-card>
     </v-dialog>
@@ -120,6 +120,7 @@ export default {
   },
   props: {
     orders: {},
+    isBoss: {},
     showOperation: { default: false }
   },
   methods: {
