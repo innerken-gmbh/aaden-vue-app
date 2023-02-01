@@ -65,7 +65,7 @@
       <v-card>
         <v-card-title>{{ $t('tableCheckOutBillTypeLabel') }}</v-card-title>
         <v-card-text>
-          <v-btn block elevation="0" large @click="realReprintOrder">{{
+          <v-btn block elevation="0" large @click="reprintDialog = false, checkCompanyInfo = true">{{
               $t('tableCheckOutBillTypeOptionCompany')
             }}
           </v-btn>
@@ -73,6 +73,68 @@
             {{ $t('tableCheckOutBillTypeOptionNormal') }}
           </v-btn>
         </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="checkCompanyInfo" max-width="600px">
+      <v-card class="pa-4">
+        <div class="d-flex">
+          <div class="text-h5 font-weight-bold">
+            {{ $t('reprintCompanyBill') }}
+          </div>
+          <v-spacer/>
+          <div>
+            <v-btn
+              icon
+              @click="checkCompanyInfo = false"
+            >
+              <v-icon large>
+                mdi-close
+              </v-icon>
+            </v-btn>
+          </div>
+        </div>
+        <v-form
+          ref="form"
+          v-model="valid"
+          class="mt-2"
+          lazy-validation>
+          <div>{{ $t('reason') }}:</div>
+          <v-text-field
+            v-model="reasonOfVisit"
+            dense
+            outlined
+            required
+          />
+          <div>{{ $t('companyName') }}:</div>
+          <v-text-field
+            v-model="companyOrPersonName"
+            dense
+            outlined
+            required
+          />
+          <div>{{ $t('Date') }}:</div>
+          <v-text-field
+            v-model="locationAndDate"
+            dense
+            outlined
+            required
+          />
+        </v-form>
+        <div class="d-flex">
+          <v-spacer></v-spacer>
+          <v-btn
+            class="mt-4"
+            color="#25A18E"
+            dark
+            elevation="0"
+            large
+            style="border-radius: 35px"
+            width="100%"
+            @click="submitCompanyInfo"
+          >
+            {{ $t('Confirm') }}
+          </v-btn>
+        </div>
       </v-card>
     </v-dialog>
     <v-dialog v-model="checkOutDialog" fullscreen>
@@ -97,7 +159,15 @@
 
 <script>
 import IKUtils from 'innerken-js-utils'
-import { changePayMethodForOrder, loadDetailOrder, reprintOrder, returnOrder } from '@/api/api'
+import {
+  changePayMethodForOrder,
+  loadDetailOrder,
+  reprintOrder,
+  returnOrder,
+  showSuccessMessage,
+  sureTo,
+  writeCompanyInfo
+} from '@/api/api'
 import CheckOutCalculator from '@/components/GlobalDialog/CheckOutCalculator'
 import OrderDetailDialog from '@/components/GlobalDialog/OrderDetailDialog'
 
@@ -109,6 +179,11 @@ export default {
   },
   data: function () {
     return {
+      valid: true,
+      reasonOfVisit: '',
+      companyOrPersonName: '',
+      locationAndDate: '',
+      checkCompanyInfo: false,
       orderDetailDialog: false,
       checkOutDialog: null,
       changeOrderTotal: 0,
@@ -123,7 +198,30 @@ export default {
     isBoss: {},
     showOperation: { default: false }
   },
+  watch: {
+    checkCompanyInfo (val) {
+      if (!val) {
+        this.reasonOfVisit = ''
+        this.companyOrPersonName = ''
+        this.locationAndDate = ''
+      }
+    }
+  },
   methods: {
+    async submitCompanyInfo () {
+      await sureTo(
+        async () => {
+          await writeCompanyInfo({
+            orderId: this.reprintOrderId,
+            reasonOfVisit: this.reasonOfVisit,
+            companyOrPersonName: this.companyOrPersonName,
+            locationAndDate: this.locationAndDate
+          })
+          await this.realReprintOrder()
+          this.checkCompanyInfo = false
+          showSuccessMessage(this.$t('print_success'))
+        })
+    },
     async changePaymentMethod (paymentLog = []) {
       if (paymentLog?.length === 0) {
         paymentLog = [{

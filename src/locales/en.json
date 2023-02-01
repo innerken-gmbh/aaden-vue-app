@@ -371,5 +371,9 @@
   "yesIAm" : "yes, I&#39;m sure",
   "yesterday" : "Ayer",
   "zbonList" : "Zbon List",
-  "zoom" : "zoom"
+  "zoom" : "zoom",
+  "reprintCompanyBill": "补打公司账单",
+  "reason" : "原因",
+  "companyName" : "公司名称",
+  "print_success": "打印成功"
 }
