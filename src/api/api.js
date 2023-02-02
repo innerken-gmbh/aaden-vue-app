@@ -7,6 +7,7 @@ import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
 import { resetTableStatus } from '@/oldjs/common'
 import { Remember } from '@/api/remember'
 import i18n from '@/i18n'
+import { updateFireBaseOrders } from '@/api/fireStore'
 
 export async function previewZBon (startDate, endDate) {
   return (await hillo.get('ZBon.php?op=previewBySpan', {
@@ -80,6 +81,12 @@ export async function ZBonList () {
 export async function acceptOrder (reason, id) {
   resetTableStatus(id)
   IKUtils.showLoading(true)
+  const externalId = await hillo.post('Orders.php?op=getExternalIdByAcceptOrder', {
+    tableId: id
+  })
+  if (Number(externalId) !== 0) {
+    updateFireBaseOrders(Number(externalId), false, true)
+  }
   await hillo.post('Orders.php?op=acceptTakeawayOrder', {
     tableId: id,
     reason: reason
@@ -93,6 +100,12 @@ export async function readyToPick (id) {
     orderId: id,
     status: 1
   })
+  const externalId = await hillo.post('Orders.php?op=getExternalId', {
+    orderId: id
+  })
+  if (Number(externalId) !== 0) {
+    updateFireBaseOrders(Number(externalId), true)
+  }
   IKUtils.toast('ok')
 }
 
@@ -262,6 +275,12 @@ export async function changePayMethodForOrder (orderId, paymentLogs) {
   return (await hillo.post('Complex.php?op=changePayMethodForOrder', {
     orderId: orderId,
     paymentLog: JSON.stringify(paymentLogs)
+  }))
+}
+
+export async function sendFireStoreOrder (orders) {
+  return (await hillo.post('AccessLog.php?op=getFireStoreOrders', {
+    orders: JSON.stringify(orders)
   }))
 }
 

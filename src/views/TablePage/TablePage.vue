@@ -728,6 +728,7 @@ import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
 import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import uniqBy from 'lodash-es/uniqBy'
+import { updateFireBaseOrders } from '@/api/fireStore'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -1314,10 +1315,16 @@ export default {
       await this.acceptOrder(timeReal.format('DD.MM.YYYY HH:mm'))
     },
     async rejectOrder () {
+      const externalId = await hillo.post('Orders.php?op=getExternalIdByRejectOrder', {
+        tableId: this.id
+      })
       const res = await fastSweetAlertRequest(i18n.t('RevocationDishReason'), 'text',
         'Orders.php?op=rejectTakeAwayOrder', 'reason',
         { tableId: this.id })
       if (res) {
+        if (Number(externalId) !== 0) {
+          updateFireBaseOrders(Number(externalId), false, false, false)
+        }
         this.goHome()
       }
     },

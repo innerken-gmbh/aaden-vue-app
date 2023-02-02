@@ -18,6 +18,7 @@ import { goHome } from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { round } from 'lodash-es'
+import { updateFireBaseOrders } from '@/api/fireStore'
 
 export default {
   name: 'CheckOutDrawer',
@@ -105,6 +106,12 @@ export default {
       delete checkOutData.discountStr
       const res = await hillo.post('Complex.php?op=' + this.checkOutType, checkOutData)
       if (res) {
+        const externalId = await hillo.post('Orders.php?op=getExternalIdByCheckOut', {
+          tableId: checkOutData.tableId
+        })
+        if (Number(externalId) !== 0) {
+          updateFireBaseOrders(Number(externalId), true, true, true, true)
+        }
         toast(this.$t('JSTableCheckOutSuccess'))
         this.cancel()
         if (this.checkOutType === 'checkOut') {

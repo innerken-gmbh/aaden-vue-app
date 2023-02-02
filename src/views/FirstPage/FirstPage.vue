@@ -530,6 +530,8 @@ import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
 import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
 import i18n, { loadTransLangs } from '@/i18n'
 import PickUpItem from '@/views/FirstPage/Table/Table/Item/PickUpItem.vue'
+import { fireStoreOrders, updateFireBaseOrders } from '@/api/fireStore'
+import hillo from 'hillo'
 
 const keyboardLayout =
   [
@@ -661,10 +663,16 @@ export default {
       await this.refreshTables()
     },
     async rejectOrder (id) {
+      const externalId = await hillo.post('Orders.php?op=getExternalIdByRejectOrder', {
+        tableId: id
+      })
       const res = await fastSweetAlertRequest(i18n.t('RevocationDishReason'), 'text',
         'Orders.php?op=rejectTakeAwayOrder', 'reason',
         { tableId: id })
       if (res) {
+        if (Number(externalId) !== 0) {
+          updateFireBaseOrders(Number(externalId), false, false, false)
+        }
         await this.refreshTables()
       }
     },
@@ -806,6 +814,8 @@ export default {
 
   },
   mounted: async function () {
+    const res = fireStoreOrders()
+    console.log(res, 'res')
     this.initPage()
     this.servantList = await getServantList()
 
