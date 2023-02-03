@@ -1053,9 +1053,29 @@ export default {
           return
         }
         if (dish.code.toLowerCase().includes('ea')) {
-          this.showExtraDish(dish)
-          blockReady()
-          return
+          if (dish.name.includes('-')) {
+            try {
+              const [name, priceInfo] = dish.name.split('-')
+              const [unitPrice, unit] = priceInfo.split('/')
+              const [unitBase, unitName] = unit.split('/')
+              const unitCount = await IKUtils.showInput('请输入以' + unitName + '计量的产品数量')
+              const realPrice = unitCount / unitBase * unitPrice
+
+              dish.currentPrice = realPrice
+              dish.currentName = `${name} ${unitPrice}/${unit} | ${unitCount}${unitName}`
+
+              dish.originPrice = dish.currentPrice.toString().replace(',', '.')
+              dish.price = dish.originPrice
+              dish.forceFormat = true
+              dish.name = dish.currentName
+            } catch (e) {
+
+            }
+          } else {
+            this.showExtraDish(dish)
+            blockReady()
+            return
+          }
         }
         this.feedback = '✅' + dish.code + '.' + dish.dishName + '*' + count + this.$t('AddedToCart')
         this.addDish(dish, parseInt(count))
