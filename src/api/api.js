@@ -84,8 +84,8 @@ export async function acceptOrder (reason, id) {
   const externalId = await hillo.post('Orders.php?op=getExternalIdByAcceptOrder', {
     tableId: id
   })
-  if (Number(externalId) !== 0) {
-    updateFireBaseOrders(Number(externalId), false, true)
+  if (parseInt(externalId) !== 0) {
+    updateFireBaseOrders(parseInt(externalId), null, true)
   }
   await hillo.post('Orders.php?op=acceptTakeawayOrder', {
     tableId: id,
@@ -103,10 +103,16 @@ export async function readyToPick (id) {
   const externalId = await hillo.post('Orders.php?op=getExternalId', {
     orderId: id
   })
-  if (Number(externalId) !== 0) {
-    updateFireBaseOrders(Number(externalId), true)
+  if (parseInt(externalId) !== 0) {
+    updateFireBaseOrders(parseInt(externalId), true)
   }
   IKUtils.toast('ok')
+}
+
+export async function getExternalIdByRejectOrder (tableId) {
+  return await hillo.post('Orders.php?op=getExternalIdByRejectOrder', {
+    tableId: tableId
+  })
 }
 
 export async function previewServantSummary (pw, start, end) {

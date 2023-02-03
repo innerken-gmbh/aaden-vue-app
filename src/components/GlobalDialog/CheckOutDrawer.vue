@@ -109,8 +109,8 @@ export default {
         const externalId = await hillo.post('Orders.php?op=getExternalIdByCheckOut', {
           tableId: checkOutData.tableId
         })
-        if (Number(externalId) !== 0) {
-          updateFireBaseOrders(Number(externalId), true, true, true, true)
+        if (parseInt(externalId) !== 0) {
+          updateFireBaseOrders(parseInt(externalId), null, null, true, true)
         }
         toast(this.$t('JSTableCheckOutSuccess'))
         this.cancel()

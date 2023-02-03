@@ -10,61 +10,50 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig)
 const db = firebase.firestore(app)
 
-export function fireStoreOrders () {
-  const res = []
+export function listenFireStoreOrders () {
+  const cachedCloudIds = {}
   db.collection('order')
     .onSnapshot(async (querySnapshot) => {
-      querySnapshot.forEach((doc) => {
+      const toSend = []
+      querySnapshot.forEach(doc => {
+        const order = doc.data()
+        if (cachedCloudIds[order.cloudId]) return
+        toSend.push(order)
+        cachedCloudIds[order.cloudId] = true
       })
-      await sendFireStoreOrder(res)
+      await sendFireStoreOrder(toSend)
     })
-  db.collection('order')
-    .get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-      // doc.data() is never undefined for query doc snapshots
-        res.push(doc.data())
-        console.log(doc.id, ' => ', res)
-      })
-    })
-  return res
 }
 
-export function updateFireBaseOrders (cloudId, canPickUp, confirmed, finished, paid) {
+export function updateFireBaseOrders (cloudId, canPickUp, confirmed, finished, paid, accepted) {
   db.collection('order')
     .where('cloudId', '==', cloudId)
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
+        const updateArr = []
+
+        const addToUpdateIf = function (key, value, predicate, destination) {
+          if (predicate(key, value)) {
+            destination.push(key)
+            destination.push(value)
+          }
+        }
+
+        const valueNotNull = (_, value) => value !== undefined && value !== null
+
+        addToUpdateIf('canPickUp', canPickUp, valueNotNull, updateArr)
+        addToUpdateIf('confirmed', confirmed, valueNotNull, updateArr)
+        addToUpdateIf('finished', finished, valueNotNull, updateArr)
+        addToUpdateIf('paid', paid, valueNotNull, updateArr)
+        addToUpdateIf('accepted', accepted, valueNotNull, updateArr)
+
         // doc.data() is never undefined for query doc snapshots
-        if (canPickUp != null) {
-          db.collection('order').doc(doc.id).update(
-            'canPickUp', canPickUp
-          ).then(() => {
+        db.collection('order').doc(doc.id)
+          .update(...updateArr)
+          .then(() => {
             console.log('Document successfully updated!')
           })
-        }
-        if (confirmed != null) {
-          db.collection('order').doc(doc.id).update(
-            'confirmed', confirmed
-          ).then(() => {
-            console.log('Document successfully updated!')
-          })
-        }
-        if (finished != null) {
-          db.collection('order').doc(doc.id).update(
-            'finished', finished
-          ).then(() => {
-            console.log('Document successfully updated!')
-          })
-        }
-        if (paid != null) {
-          db.collection('order').doc(doc.id).update(
-            'paid', paid
-          ).then(() => {
-            console.log('Document successfully updated!')
-          })
-        }
       })
     })
   return 1

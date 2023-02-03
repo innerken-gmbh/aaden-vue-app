@@ -709,7 +709,14 @@ import { debounce } from 'lodash-es'
 
 import IKUtils from 'innerken-js-utils'
 
-import { acceptOrder, deleteDish, reprintOrder, safeRequest, showSuccessMessage } from '@/api/api'
+import {
+  acceptOrder,
+  deleteDish,
+  getExternalIdByRejectOrder,
+  reprintOrder,
+  safeRequest,
+  showSuccessMessage
+} from '@/api/api'
 
 import { mapGetters } from 'vuex'
 
@@ -1315,15 +1322,13 @@ export default {
       await this.acceptOrder(timeReal.format('DD.MM.YYYY HH:mm'))
     },
     async rejectOrder () {
-      const externalId = await hillo.post('Orders.php?op=getExternalIdByRejectOrder', {
-        tableId: this.id
-      })
+      const externalId = await getExternalIdByRejectOrder(this.id)
       const res = await fastSweetAlertRequest(i18n.t('RevocationDishReason'), 'text',
         'Orders.php?op=rejectTakeAwayOrder', 'reason',
         { tableId: this.id })
       if (res) {
-        if (Number(externalId) !== 0) {
-          updateFireBaseOrders(Number(externalId), false, false, false)
+        if (parseInt(externalId) !== 0) {
+          updateFireBaseOrders(parseInt(externalId), null, null, null, null, false)
         }
         this.goHome()
       }
