@@ -1057,7 +1057,7 @@ export default {
             try {
               const [name, priceInfo] = dish.name.split('-')
               const [unitPrice, unit] = priceInfo.split('/')
-              const [unitBase, unitName] = unit.split('/')
+              const [unitBase, unitName] = unit.split(' ')
               const unitCount = await IKUtils.showInput('请输入以' + unitName + '计量的产品数量')
               const realPrice = unitCount / unitBase * unitPrice
 
