@@ -1,6 +1,7 @@
 import firebase from 'firebase/app'
 import 'firebase/firestore'
 import { sendFireStoreOrder } from '@/api/api'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDwY4rJNrLXdrLI-ukxzCAGan97lOx84cM',
@@ -18,6 +19,7 @@ export function listenFireStoreOrders () {
       querySnapshot.forEach(doc => {
         const order = doc.data()
         if (cachedCloudIds[order.cloudId]) return
+        if (order.deviceId !== GlobalConfig.DeviceId.toString()) return
         toSend.push(order)
         cachedCloudIds[order.cloudId] = true
       })
