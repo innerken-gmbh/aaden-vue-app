@@ -371,5 +371,10 @@
   "yesIAm" : "Ja, ich bin mir sicher",
   "yesterday" : "gestern",
   "zbonList" : "Zbon-Liste",
-  "zoom" : "Zoomen"
+  "zoom" : "Zoomen",
+  "reprintCompanyBill": "Reprint company bill",
+  "reason" : "Grund",
+  "companyName" : "Firmenname",
+  "print_success": "Drucken erfolgreich",
+  "writeCompanyInfo": "Firmeninformationen ausfüllen"
 }

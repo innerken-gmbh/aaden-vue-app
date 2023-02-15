@@ -1,13 +1,13 @@
 <template>
   <div class="d-flex fill-height">
-    <v-card elevation="1" style="width: 480px;height: 100vh"
-            class="calculator pa-2 d-flex flex-column">
-      <v-card elevation="0" style="width: 100%;" class="pa-4 d-flex
-                 justify-space-between align-end">
+    <v-card class="calculator pa-2 d-flex flex-column" elevation="1"
+            style="width: 480px;height: 100vh">
+      <v-card class="pa-4 d-flex
+                 justify-space-between align-end" elevation="0" style="width: 100%;">
         <div>
           <div class="totalBlock">
             <div>
-              <v-chip dark label color="primary" small>
+              <v-chip color="primary" dark label small>
                 {{ $t('TotalPayable') }}
               </v-chip>
             </div>
@@ -17,7 +17,7 @@
           </div>
           <div class="totalBlock">
             <div>
-              <v-chip dark label class="font-weight-bold" color="error" small>
+              <v-chip class="font-weight-bold" color="error" dark label small>
                 {{ $t('PaymentStillRequired') }}
               </v-chip>
             </div>
@@ -28,15 +28,15 @@
         </div>
         <div class="totalBlock">
           <div>
-            <v-chip dark label color="success">
+            <v-chip color="success" dark label>
               {{ $t('PayWillHaveTo') }}
             </v-chip>
           </div>
           <div style="width:240px;height: 64px">
-            <v-text-field height="64px" reverse
+            <v-text-field v-model="inputBuffer" :placeholder="''+remainTotal.toFixed(2)"
                           class="payingNumber py-1 text-right"
-                          v-model="inputBuffer"
-                          :placeholder="''+remainTotal.toFixed(2)"/>
+                          height="64px"
+                          reverse/>
           </div>
         </div>
       </v-card>
@@ -46,9 +46,9 @@
             class="pa-1 mt-1"
             style="display: grid;grid-auto-columns: 96px;grid-gap: 8px;
            overflow-x: scroll;grid-auto-flow: column">
-          <v-card elevation="0" color="#f6f6f6" class="pa-2" style="height: 96px" @click="input(item)"
-                  v-for="(item, index) in realExtraPaymentMethodName"
-                  :key="index">
+          <v-card v-for="(item, index) in realExtraPaymentMethodName" :key="index" class="pa-2" color="#f6f6f6" elevation="0"
+                  style="height: 96px"
+                  @click="input(item)">
             {{ item === 'coupon' ? $t('Coupon') : item }}
           </v-card>
         </div>
@@ -58,21 +58,21 @@
       </div>
 
     </v-card>
-    <div style="width: 480px;max-width: calc(100vw - 480px)" class="paymentLog pa-2">
+    <div class="paymentLog pa-2" style="width: 480px;max-width: calc(100vw - 480px)">
       <div class="my-3 d-flex align-center" style="width: 100%">
         <h3>{{ $t('BillLog') }}</h3>
       </div>
       <v-divider></v-divider>
-      <div class="my-3" v-dragscroll style="max-height: calc(100vh - 560px);overflow:hidden">
+      <div v-dragscroll class="my-3" style="max-height: calc(100vh - 560px);overflow:hidden">
         <template v-for="(paymentInfo,index) in paymentLog">
           <v-sheet :key="'price'+paymentInfo.hash" :elevation="0"
-                   style="width: 100%" class="d-flex justify-space-between pa-2 my-1">
+                   class="d-flex justify-space-between pa-2 my-1" style="width: 100%">
             <h2 class="font-weight-bold"
                 style="font-size: 24px">
               {{ paymentInfo.price|priceDisplay }}
             </h2>
             <div>
-              <v-btn text color="success">
+              <v-btn color="success" text>
                 <template v-if="paymentInfo.icon.startsWith('mdi')">
                   <v-icon large>{{ paymentInfo.icon }}</v-icon>
                 </template>
@@ -81,7 +81,7 @@
                 </template>
 
               </v-btn>
-              <v-btn @click="withdrawPayment(index)" icon color="error">
+              <v-btn color="error" icon @click="withdrawPayment(index)">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
@@ -97,15 +97,15 @@
           <v-sheet class="my-2" style="background: transparent">
             <v-chip-group
                 v-model="billType"
-                mandatory column
-                active-class="primary--text">
-              <v-chip x-large label>
+                active-class="primary--text" column
+                mandatory>
+              <v-chip label x-large>
                 {{ $t('tableCheckOutBillTypeOptionNormal') }}
               </v-chip>
-              <v-chip x-large label>
+              <v-chip label x-large @click="checkCompanyInfo = true">
                 {{ $t('tableCheckOutBillTypeOptionCompany') }}
               </v-chip>
-              <v-chip x-large label>
+              <v-chip label x-large @click="checkCompanyInfo = true">
                 {{ $t('tableCheckOutBillTypeOption3') }}
               </v-chip>
             </v-chip-group>
@@ -113,34 +113,96 @@
         </v-sheet>
         <v-divider class="my-3"></v-divider>
 
-        <v-btn color="success"
-               @click="checkOut()"
+        <v-btn :disabled="!readyToCheckOut"
+               block
+               color="success"
                elevation="0"
-               :disabled="!readyToCheckOut"
-               block x-large> {{ $t('tableCheckOutConfirm') }}
+               x-large @click="checkOut()"> {{ $t('tableCheckOutConfirm') }}
         </v-btn>
 
       </div>
       <div v-else>
         <h4>{{ $t('FastCheckoutWithoutTips') }}</h4>
 
-        <v-btn color="primary" class="mt-2"
-               x-large
-               @click="checkOut(true)"
+        <v-btn :disabled="paymentLog.length!==0" block
+               class="mt-2"
+               color="primary"
                elevation="0"
-               :disabled="paymentLog.length!==0" block> {{ $t('QuickBill') }}
+               x-large @click="checkOut(true)"> {{ $t('QuickBill') }}
         </v-btn>
 
       </div>
-      <v-btn outlined
+      <v-btn block
              class="mt-2"
-             x-large
-             @click="cancel"
-             color="error" block>
+             color="error"
+             outlined
+             x-large @click="cancel">
         {{ $t('Cancel') }}
       </v-btn>
 
     </div>
+    <v-dialog v-model="checkCompanyInfo" max-width="600px">
+      <v-card class="pa-4">
+        <div class="d-flex">
+          <div class="text-h5 font-weight-bold">
+            {{ $t('writeCompanyInfo') }}
+          </div>
+          <v-spacer/>
+          <div>
+            <v-btn
+              icon
+              @click="checkCompanyInfo = false"
+            >
+              <v-icon large>
+                mdi-close
+              </v-icon>
+            </v-btn>
+          </div>
+        </div>
+        <v-form
+          ref="form"
+          v-model="valid"
+          class="mt-2"
+          lazy-validation>
+          <div>{{ $t('reason') }}:</div>
+          <v-text-field
+            v-model="reasonOfVisit"
+            dense
+            outlined
+            required
+          />
+          <div>{{ $t('companyName') }}:</div>
+          <v-text-field
+            v-model="companyOrPersonName"
+            dense
+            outlined
+            required
+          />
+          <div>{{ $t('Date') }}:</div>
+          <v-text-field
+            v-model="locationAndDate"
+            dense
+            outlined
+            required
+          />
+        </v-form>
+        <div class="d-flex">
+          <v-spacer></v-spacer>
+          <v-btn
+            class="mt-4"
+            color="#25A18E"
+            dark
+            elevation="0"
+            large
+            style="border-radius: 35px"
+            width="100%"
+            @click="checkCompanyInfo = false"
+          >
+            {{ $t('Confirm') }}
+          </v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -151,6 +213,7 @@ import { fastSweetAlertRequest } from '@/oldjs/common'
 import hillo from 'hillo'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import { round } from 'lodash-es'
+import { writeCompanyInfo } from '@/api/api'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
 const fixedNames = {
@@ -178,6 +241,7 @@ export default {
   name: 'CheckOutCalculator',
   components: { KeyboardLayout },
   props: {
+    id: {},
     total: {
       default: 0
     }
@@ -187,6 +251,11 @@ export default {
   },
   data: function () {
     return {
+      valid: true,
+      reasonOfVisit: '',
+      companyOrPersonName: '',
+      locationAndDate: '',
+      checkCompanyInfo: false,
       billType: 0,
       paymentMethods: [],
       realName: defaultRealName,
@@ -252,13 +321,25 @@ export default {
     equals (a, b) {
       return Math.abs(a - b) < 0.001
     },
-    checkOut (fastCheckout = false) {
+    async checkOut (fastCheckout = false) {
       if (fastCheckout) {
         this.billType = 0
       }
+      await writeCompanyInfo({
+        orderId: this.id,
+        reasonOfVisit: this.reasonOfVisit,
+        companyOrPersonName: this.companyOrPersonName,
+        locationAndDate: this.locationAndDate
+      })
       this.$emit('payment-submit', this.paymentLog, this.billType)
       this.clearBuffer()
+      this.emptyCompanyInfoDialog()
       this.paymentLog = []
+    },
+    emptyCompanyInfoDialog () {
+      this.reasonOfVisit = ''
+      this.companyOrPersonName = ''
+      this.locationAndDate = ''
     },
     cancel () {
       this.clearBuffer()

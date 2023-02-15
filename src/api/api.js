@@ -319,3 +319,7 @@ export async function sureTo (action, content = '', title = i18n.t('are_you_sure
     IKUtils.toast(i18n.t('cancelSuccess'), 'info')
   }
 }
+
+export async function writeCompanyInfo (item) {
+  return (await hillo.post('Orders.php?op=writeCompanyInfo', { ...item }))
+}
