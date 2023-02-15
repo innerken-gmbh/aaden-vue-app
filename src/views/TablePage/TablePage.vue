@@ -1053,9 +1053,30 @@ export default {
           return
         }
         if (dish.code.toLowerCase().includes('ea')) {
-          this.showExtraDish(dish)
-          blockReady()
-          return
+          if (dish.name.includes('-')) {
+            console.log(dish.name)
+            try {
+              const [name, priceInfo] = dish.name.split('-')
+              const [unitPrice, unit] = priceInfo.split('/')
+              const [unitBase, unitName] = unit.split(' ')
+              const unitCount = await IKUtils.showInput('请输入以' + unitName + '计量的产品数量')
+              const realPrice = unitCount / unitBase * unitPrice
+              console.log(realPrice)
+              dish.currentPrice = realPrice
+              dish.currentName = `${name} ${unitPrice}/${unit} | ${unitCount}${unitName}`
+
+              dish.originPrice = dish.currentPrice.toString().replace(',', '.')
+              dish.price = dish.originPrice
+              dish.forceFormat = true
+              dish.name = dish.currentName
+            } catch (e) {
+              console.error(e)
+            }
+          } else {
+            this.showExtraDish(dish)
+            blockReady()
+            return
+          }
         }
         this.feedback = '✅' + dish.code + '.' + dish.dishName + '*' + count + this.$t('AddedToCart')
         this.addDish(dish, parseInt(count))
@@ -1688,166 +1709,166 @@ export default {
 <style scoped>
 
 ::-webkit-scrollbar {
-  height: 80%;
-  margin-top: 20%;
-  width: 6px;
+    height: 80%;
+    margin-top: 20%;
+    width: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: url("/Resource/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
-  width: 6px;
-  cursor: pointer;
-  height: 56px;
+    background: url("/Resource/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
+    width: 6px;
+    cursor: pointer;
+    height: 56px;
 
 }
 
 ::-webkit-scrollbar-track {
-  width: 10px;
+    width: 10px;
 }
 
 .collapse .areaC {
-  flex-grow: 1;
-  width: 100%;
-  height: 100%;
-  padding: 12px 0;
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    padding: 12px 0;
 }
 
 .spaceBetween {
-  display: flex;
-  justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
 }
 
 th {
-  font-weight: 600;
-  font-size: 16px;
+    font-weight: 600;
+    font-size: 16px;
 }
 
 td {
-  color: #4b4b4b;
-  font-size: 18px;
+    color: #4b4b4b;
+    font-size: 18px;
 }
 
 td, th {
-  padding: 8px 4px;
+    padding: 8px 4px;
 }
 
 tr:hover {
-  background: #f8f8f8;
+    background: #f8f8f8;
 }
 
 .smallTableBody > tr {
-  border-bottom-width: 0.2px;
+    border-bottom-width: 0.2px;
 }
 
 .smallTableBody > tr > td {
-  padding: 0 6px;
+    padding: 0 6px;
 }
 
 .input-field > label {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 .dishCardList {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  grid-gap: 12px;
-  margin-bottom: 120px;
-  width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-gap: 12px;
+    margin-bottom: 120px;
+    width: 100%;
 }
 
 .dragscroll {
-  overflow-x: hidden;
+    overflow-x: hidden;
 }
 
 .dishCardListContainer {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 .bottomCart {
-  position: fixed;
-  width: calc(100vw - 354px);
-  height: 100vh;
+    position: fixed;
+    width: calc(100vw - 354px);
+    height: 100vh;
 }
 
 .bigTableName {
-  white-space: nowrap;
-  font-size: 36px;
-  font-weight: bold;
+    white-space: nowrap;
+    font-size: 36px;
+    font-weight: bold;
 }
 
 .icon-line {
-  display: flex;
-  align-items: center;
-  font-size: 18px;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
 }
 
 .v-list-item-group .v-list-item--active {
-  color: #367aeb;
-  font-weight: bold;
-  border-right: 3px solid #367aeb;
+    color: #367aeb;
+    font-weight: bold;
+    border-right: 3px solid #367aeb;
 }
 
 .menu-item {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
-  width: calc(25% - 4px);
-  height: 72px;
-  padding: 8px;
-  margin: 2px;
-  text-transform: capitalize;
-  font-size: 20px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    width: calc(25% - 4px);
+    height: 72px;
+    padding: 8px;
+    margin: 2px;
+    text-transform: capitalize;
+    font-size: 20px;
 }
 
 .menu-item.active {
-  border: none;
-  background: #367aeb !important;
-  color: white !important;
-  font-weight: bold;
+    border: none;
+    background: #367aeb !important;
+    color: white !important;
+    font-weight: bold;
 }
 
 .menu-always {
-  width: fit-content;
-  margin: 2px;
-  font-size: 18px;
-  padding: 4px 8px;
+    width: fit-content;
+    margin: 2px;
+    font-size: 18px;
+    padding: 4px 8px;
 }
 
 .menu-always.active {
-  border: none;
-  background: #367aeb !important;
-  color: white !important;
-  font-weight: bold;
+    border: none;
+    background: #367aeb !important;
+    color: white !important;
+    font-weight: bold;
 }
 
 .consumeTypeItem {
-  border-radius: 8px;
-  width: max-content;
-  padding: 8px 12px;
-  background: white;
-  white-space: nowrap;
-  text-transform: capitalize;
-  font-size: 20px;
+    border-radius: 8px;
+    width: max-content;
+    padding: 8px 12px;
+    background: white;
+    white-space: nowrap;
+    text-transform: capitalize;
+    font-size: 20px;
 }
 
 .consumeTypeItem.active {
-  font-weight: bold;
-  text-transform: capitalize;
-  background: #367aeb !important;
-  color: #ffffff;
-  border-bottom: 2px solid #367aeb;
+    font-weight: bold;
+    text-transform: capitalize;
+    background: #367aeb !important;
+    color: #ffffff;
+    border-bottom: 2px solid #367aeb;
 }
 
 .first {
-  padding: 8px !important;
-  font-size: large;
-  color: black;
-  background: #BBDEFB !important;
-  border-bottom: 2px solid #367aeb !important;
+    padding: 8px !important;
+    font-size: large;
+    color: black;
+    background: #BBDEFB !important;
+    border-bottom: 2px solid #367aeb !important;
 }
 
 </style>
