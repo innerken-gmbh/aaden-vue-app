@@ -371,5 +371,10 @@
   "yesIAm": "Vâng tôi chắc chắn",
   "yesterday": "hôm qua",
   "zbonList": "Danh sách Zbon",
-  "zoom": "phóng"
+  "zoom": "phóng",
+  "reprintCompanyBill": "In lại hóa đơn công ty",
+  "reason" : "Nguyên nhân",
+  "companyName" : "Tên công ty",
+  "print_success": "In thành công",
+  "writeCompanyInfo": "Điền thông tin công ty"
 }

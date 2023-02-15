@@ -372,8 +372,9 @@
   "yesterday" : "Ayer",
   "zbonList" : "Zbon List",
   "zoom" : "zoom",
-  "reprintCompanyBill": "补打公司账单",
-  "reason" : "原因",
-  "companyName" : "公司名称",
-  "print_success": "打印成功"
+  "reprintCompanyBill": "Reprint company bill",
+  "reason" : "reason",
+  "companyName" : "Company Name",
+  "print_success": "print success",
+  "writeCompanyInfo": "Fill in company information"
 }
