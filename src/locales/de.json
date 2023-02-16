@@ -376,5 +376,6 @@
   "reason" : "Grund",
   "companyName" : "Firmenname",
   "print_success": "Drucken erfolgreich",
-  "writeCompanyInfo": "Firmeninformationen ausfüllen"
+  "writeCompanyInfo": "Firmeninformationen ausfüllen",
+  "infoDetail": "Informationen"
 }

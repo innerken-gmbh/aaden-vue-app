@@ -376,5 +376,6 @@
   "reason" : "reden",
   "companyName" : "bedrijfsnaam",
   "print_success": "Afdrukken is gelukt",
-  "writeCompanyInfo": "Bedrijfsinformatie invullen"
+  "writeCompanyInfo": "Bedrijfsinformatie invullen",
+  "infoDetail": "Informatie details"
 }

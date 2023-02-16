@@ -376,5 +376,6 @@
   "reason" : "Nguyên nhân",
   "companyName" : "Tên công ty",
   "print_success": "In thành công",
-  "writeCompanyInfo": "Điền thông tin công ty"
+  "writeCompanyInfo": "Điền thông tin công ty",
+  "infoDetail": "Thông tin chi tiết"
 }

@@ -102,10 +102,10 @@
               <v-chip label x-large @click="normalBill">
                 {{ $t('tableCheckOutBillTypeOptionNormal') }}
               </v-chip>
-              <v-chip label x-large @click="checkCompanyInfo = true">
+              <v-chip label x-large @click="checkCompanyInfo = true; showInfoCard = 1">
                 {{ $t('tableCheckOutBillTypeOptionCompany') }}
               </v-chip>
-              <v-chip label x-large @click="checkCompanyInfo = true">
+              <v-chip label x-large @click="checkCompanyInfo = true; showInfoCard = 1">
                 {{ $t('tableCheckOutBillTypeOption3') }}
               </v-chip>
             </v-chip-group>
@@ -117,25 +117,25 @@
 
         <v-card class="pa-2" elevation="0" outlined style="border-color: #999999" width="100%" @click="checkCompanyInfo = true">
           <div class="d-flex">
-            <span class="font-weight-bold">信息详情</span>
+            <span class="font-weight-bold">{{ $t('infoDetail') }}</span>
             <v-spacer></v-spacer>
             <v-icon>mdi-lead-pencil</v-icon>
           </div>
           <v-divider style="border-color: black"></v-divider>
           <div class="mt-2 d-flex justify-center align-center">
-            <span>公司名称:</span>
+            <span>{{ $t('companyName') }}:</span>
             <v-spacer></v-spacer>
             <span>{{companyOrPersonName}}</span>
           </div>
           <v-divider style="border-color: black"></v-divider>
           <div class="d-flex mt-2">
-            <span>原因:</span>
+            <span>{{ $t('reason') }}:</span>
             <v-spacer></v-spacer>
             <span>{{reasonOfVisit}}</span>
           </div>
           <v-divider style="border-color: black"></v-divider>
           <div class="d-flex mt-2">
-            <span>日期:</span>
+            <span>{{ $t('Date') }}:</span>
             <v-spacer></v-spacer>
             <span>{{locationAndDate}}</span>
           </div>

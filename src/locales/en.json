@@ -376,5 +376,6 @@
   "reason" : "reason",
   "companyName" : "Company Name",
   "print_success": "print success",
-  "writeCompanyInfo": "Fill in company information"
+  "writeCompanyInfo": "Fill in company information",
+  "infoDetail": "Information details"
 }
