@@ -98,16 +98,16 @@
           v-model="valid"
           class="mt-2"
           lazy-validation>
-          <div>{{ $t('reason') }}:</div>
+          <div>{{ $t('companyName') }}:</div>
           <v-text-field
-            v-model="reasonOfVisit"
+            v-model="companyOrPersonName"
             dense
             outlined
             required
           />
-          <div>{{ $t('companyName') }}:</div>
+          <div>{{ $t('reason') }}:</div>
           <v-text-field
-            v-model="companyOrPersonName"
+            v-model="reasonOfVisit"
             dense
             outlined
             required

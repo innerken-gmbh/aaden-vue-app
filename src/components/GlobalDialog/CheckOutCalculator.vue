@@ -99,7 +99,7 @@
                 v-model="billType"
                 active-class="primary--text" column
                 mandatory>
-              <v-chip label x-large>
+              <v-chip label x-large @click="normalBill">
                 {{ $t('tableCheckOutBillTypeOptionNormal') }}
               </v-chip>
               <v-chip label x-large @click="checkCompanyInfo = true">
@@ -112,6 +112,39 @@
           </v-sheet>
         </v-sheet>
         <v-divider class="my-3"></v-divider>
+
+        <template v-if="showInfoCard === 1">
+
+        <v-card class="pa-2" elevation="0" outlined style="border-color: #999999" width="100%" @click="checkCompanyInfo = true">
+          <div class="d-flex">
+            <span class="font-weight-bold">信息详情</span>
+            <v-spacer></v-spacer>
+            <v-icon>mdi-lead-pencil</v-icon>
+          </div>
+          <v-divider style="border-color: black"></v-divider>
+          <div class="mt-2 d-flex justify-center align-center">
+            <span>公司名称:</span>
+            <v-spacer></v-spacer>
+            <span>{{companyOrPersonName}}</span>
+          </div>
+          <v-divider style="border-color: black"></v-divider>
+          <div class="d-flex mt-2">
+            <span>原因:</span>
+            <v-spacer></v-spacer>
+            <span>{{reasonOfVisit}}</span>
+          </div>
+          <v-divider style="border-color: black"></v-divider>
+          <div class="d-flex mt-2">
+            <span>日期:</span>
+            <v-spacer></v-spacer>
+            <span>{{locationAndDate}}</span>
+          </div>
+          <v-divider style="border-color: black"></v-divider>
+        </v-card>
+
+        <v-divider class="my-3"></v-divider>
+
+        </template>
 
         <v-btn :disabled="!readyToCheckOut"
                block
@@ -164,16 +197,16 @@
           v-model="valid"
           class="mt-2"
           lazy-validation>
-          <div>{{ $t('reason') }}:</div>
+          <div>{{ $t('companyName') }}:</div>
           <v-text-field
-            v-model="reasonOfVisit"
+            v-model="companyOrPersonName"
             dense
             outlined
             required
           />
-          <div>{{ $t('companyName') }}:</div>
+          <div>{{ $t('reason') }}:</div>
           <v-text-field
-            v-model="companyOrPersonName"
+            v-model="reasonOfVisit"
             dense
             outlined
             required
@@ -196,7 +229,7 @@
             large
             style="border-radius: 35px"
             width="100%"
-            @click="checkCompanyInfo = false"
+            @click="saveCompanyInfo"
           >
             {{ $t('Confirm') }}
           </v-btn>
@@ -251,6 +284,7 @@ export default {
   },
   data: function () {
     return {
+      showInfoCard: 0,
       valid: true,
       reasonOfVisit: '',
       companyOrPersonName: '',
@@ -306,6 +340,13 @@ export default {
     this.loadPaymentMethods()
   },
   methods: {
+    normalBill () {
+      this.showInfoCard = 0
+    },
+    saveCompanyInfo () {
+      this.checkCompanyInfo = false
+      this.showInfoCard = 1
+    },
     async loadPaymentMethods () {
       this.paymentMethods = (await hillo.get('PayMethod.php'))
         .content.filter(p => !includedPaymentMethods.includes(parseInt(p.id)))
@@ -337,6 +378,7 @@ export default {
       this.paymentLog = []
     },
     emptyCompanyInfoDialog () {
+      this.showInfoCard = 0
       this.reasonOfVisit = ''
       this.companyOrPersonName = ''
       this.locationAndDate = ''
