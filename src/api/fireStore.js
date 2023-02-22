@@ -27,7 +27,7 @@ export function listenFireStoreOrders () {
     })
 }
 
-export function updateFireBaseOrders (cloudId, canPickUp, confirmed, finished, paid, accepted) {
+export function updateFireBaseOrders (cloudId, canPickUp, confirmed, finished, paid, accepted, deliveryTime, tableName) {
   db.collection('order')
     .where('cloudId', '==', cloudId)
     .get()
@@ -49,6 +49,8 @@ export function updateFireBaseOrders (cloudId, canPickUp, confirmed, finished, p
         addToUpdateIf('finished', finished, valueNotNull, updateArr)
         addToUpdateIf('paid', paid, valueNotNull, updateArr)
         addToUpdateIf('accepted', accepted, valueNotNull, updateArr)
+        addToUpdateIf('deliveryTime', deliveryTime, valueNotNull, updateArr)
+        addToUpdateIf('tableName', tableName, valueNotNull, updateArr)
 
         // doc.data() is never undefined for query doc snapshots
         db.collection('order').doc(doc.id)
