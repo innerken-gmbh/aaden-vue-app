@@ -63,8 +63,9 @@
 import { getColorLightness } from '@/oldjs/api'
 import { beautifulTable, getRestaurantInfo } from '@/api/restaurantInfoService'
 import dayjs from 'dayjs'
-import {updateFireBaseOrders} from "@/api/fireStore";
-import hillo from "hillo";
+import { updateFireBaseOrders } from '@/api/fireStore'
+import hillo from 'hillo'
+import firebase from 'firebase/app'
 
 export default {
   name: 'TakeawayOrderItem',
@@ -100,7 +101,7 @@ export default {
         tableId: this.tableInfo.tableId
       })
       if (parseInt(externalId) !== 0) {
-        updateFireBaseOrders(parseInt(externalId), null, null, null, null, null, time, this.tableInfo.tableId)
+        updateFireBaseOrders(parseInt(externalId), null, null, null, null, null, firebase.firestore.Timestamp.fromDate(timeReal.toDate()), this.tableInfo.tableId)
       }
       this.$emit('accept', timeReal.format('DD.MM.YYYY HH:mm'), this.tableInfo.tableId)
     }
