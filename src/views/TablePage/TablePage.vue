@@ -362,21 +362,6 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
 
             </div>
           </v-card>
-          <template v-if="false">
-
-            <keep-alive>
-              <template>
-                <buffet-status-card
-                  v-if="consumeTypeId!==1&&consumeTypeId!==2&&consumeTypeId!==5"
-                  :buffet-setting-info="realAddressInfo"
-                  :current-round="tableDetailInfo.tableBasicInfo.buffetRound"
-                  class="mt-1 mx-2"></buffet-status-card>
-              </template>
-            </keep-alive>
-
-            <v-spacer></v-spacer>
-
-          </template>
           <v-card
             class="d-flex align-center"
             elevation="4"
@@ -700,7 +685,13 @@ import { dragscroll } from 'vue-dragscroll'
 
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 
-import { findDish, getCategoryListWithCache, goHome, processDishList } from '@/oldjs/StaticModel'
+import {
+  findDish,
+  getCategoryListWithCache,
+  goHome,
+  processDishList,
+  setDefaultValueForApply
+} from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
@@ -717,7 +708,6 @@ import i18n from '../../i18n'
 import dayjs from 'dayjs'
 import { TableFilter } from '@/api/tableService'
 import { Remember } from '@/api/remember'
-import BuffetStatusCard from '@/views/TablePage/Dialog/BuffetStatusCard'
 import BuffetStartDialog from '@/views/TablePage/Dialog/BuffetStartDialog'
 import GridButton from '@/components/Base/GridButton'
 import AddressDisplay from '@/views/TablePage/Address/AddressDisplay'
@@ -775,7 +765,6 @@ export default {
     dragscroll
   },
   components: {
-    BuffetStatusCard,
     BuffetStartDialog,
     GridButton,
     AddressDisplay,
@@ -1048,7 +1037,9 @@ export default {
         dish.name = dish.name.length > 28
           ? dish.name.substring(0, 28) + '...' : dish.name
         if (dish.haveMod > 0) {
-          this.submitModification(null, dish, count)
+          console.log(dish)
+          const apply = setDefaultValueForApply(dish.modInfo, [])
+          this.submitModification(apply, dish, count)
           blockReady()
           return
         }
@@ -1205,6 +1196,7 @@ export default {
       if (this.count !== 1) {
         count = this.count
       }
+      console.log(_mod)
       dish.apply = _mod// here we add a apply
       dish.forceFormat = true
 
