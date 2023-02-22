@@ -65,7 +65,7 @@
               color="primary"
               @current-dish-change="cartCurrentDish=$event">
               <template #action>
-                <v-btn color="error" elevation="0" @click="cartListModel.clear()">
+                <v-btn color="error" elevation="0" @click="cartListModelClear">
                   <v-icon left>
                     mdi-trash-can
                   </v-icon>
@@ -718,6 +718,7 @@ import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
 import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import uniqBy from 'lodash-es/uniqBy'
+import { setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFirebase } from '@/firebase.js'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -849,8 +850,12 @@ export default {
 
       /* new input */
       keyboardInput: '',
-      currentCodeBuffer: ''
+      currentCodeBuffer: '',
+      deviceId: -1
     }
+  },
+  created () {
+    this.deviceId = GlobalConfig.DeviceId
   },
   methods: {
     async deleteAndSaveReason (note) {
@@ -1008,9 +1013,29 @@ export default {
             discountRatio = Math.abs(parseFloat(discount.price)) / this.orderListModel.total()
           }
           this.discountRatio = discountRatio
+          await this.setOrderListByTableNameInFirebase(this.orderListModel.list)
         }
       } catch (e) {
       }
+    },
+    async setOrderListByTableNameInFirebase (orderListModelList) {
+      // upload orderList to Firebase
+      const constData = {}
+      let number = 1
+      if (orderListModelList.length > 0) {
+        orderListModelList.forEach(orderItem => {
+          const result = {}
+          Object.keys(orderItem).filter(key => {
+            return key !== 'change' && key !== 'displayApply'
+          }).forEach(key => {
+            result[key] = orderItem[key]
+          })
+          const dishKey = 'dish_' + orderItem.dishesId + number
+          number++
+          constData[dishKey] = result
+        })
+      }
+      await setOrderListInFirebase(constData, this.deviceId)
     },
     async discountShow () {
       await optionalAuthorizeAsync('', !GlobalConfig.discountWithoutPassword)
@@ -1239,13 +1264,21 @@ export default {
       } else if (this.modificationShow) {
         this.cancel()
       } else if (this.checkoutShow) {
+        // clear the data in firestore
+        setOrderListInFirebase({}, this.deviceId)
+        setCartListInFirebase({}, this.deviceId)
         this.checkoutShow = false
         this.initialUI()
       } else if (this.splitOrderListModel.list.length > 0) {
         this.removeAllFromSplitOrder()
       } else if (this.cartListModel.list.length > 0) {
+        // clear the data in firestore
+        setCartListInFirebase({}, this.deviceId)
         this.cartListModel.clear()
       } else {
+        // clear the data in firestore
+        setOrderListInFirebase({}, this.deviceId)
+        setCartListInFirebase({}, this.deviceId)
         this.goHome()
       }
       blockReady()
@@ -1486,6 +1519,9 @@ export default {
         this.isSendingRequest = false
       }
       blockReady()
+      // setShowDisplayStatusInFirebase(false)
+      setOrderListInFirebase({}, this.deviceId)
+      setCartListInFirebase({}, this.deviceId)
     },
     jumpToPayment () {
       const realCheckOut = async (pw) => {
@@ -1601,6 +1637,49 @@ export default {
       }
 
       return list
+    },
+    async cartListModelClear () {
+      this.cartListModel.clear()
+      await setCartListInFirebase({}, this.deviceId)
+    },
+    async setCartListByTableNameInFirebase (dishList) {
+      const constData = {}
+      let number = 1
+      if (dishList.length > 0) {
+        dishList.forEach(dish => {
+          const result = {}
+          Object.keys(dish).filter(key => {
+            return (key !== 'change' && key !== 'edit' &&
+              key !== 'apply' &&
+              key !== 'langs' && key !== 'langsDesc' &&
+              key !== 'modInfo' && key !== 'options')
+          }).forEach(key => {
+            result[key] = dish[key]
+          })
+
+          result.hasAppend = false
+
+          if (result.displayApply.length > 0) {
+            const aNameArr = []
+            const priceInfoArr = []
+            result.displayApply.forEach(i => {
+              aNameArr.push((i.groupName + ':' + i.value))
+              priceInfoArr.push(i.priceInfo)
+            })
+
+            result.aNameArr = aNameArr
+            result.priceInfoArr = priceInfoArr
+            result.hasAppend = true
+          }
+
+          const dishKey = 'cart_' + dish.code + number
+          number++
+
+          constData[dishKey] = result
+        })
+      }
+
+      await setCartListInFirebase(constData, this.deviceId)
     }
   },
   computed: {
@@ -1647,9 +1726,28 @@ export default {
       return this.categories.filter((item) => {
         return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
       })
+    },
+    orderListModelList () {
+      return this.orderListModel.list
+    },
+    cartListModelList () {
+      return this.cartListModel.list
     }
+
   },
   watch: {
+
+    checkoutShow (val) {
+      setCheckOutStatusInFirebase(val, this.deviceId)
+    },
+    orderListModelList (val) {
+      this.setOrderListByTableNameInFirebase(val)
+    },
+
+    cartListModelList (val) {
+      this.setCartListByTableNameInFirebase(val)
+    },
+
     activeDCT: function (val) {
       this.keyboardInput = ''
       this.activeCategoryId = null
@@ -1701,166 +1799,166 @@ export default {
 <style scoped>
 
 ::-webkit-scrollbar {
-    height: 80%;
-    margin-top: 20%;
-    width: 6px;
+  height: 80%;
+  margin-top: 20%;
+  width: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: url("/Resource/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
-    width: 6px;
-    cursor: pointer;
-    height: 56px;
+  background: url("/Resource/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
+  width: 6px;
+  cursor: pointer;
+  height: 56px;
 
 }
 
 ::-webkit-scrollbar-track {
-    width: 10px;
+  width: 10px;
 }
 
 .collapse .areaC {
-    flex-grow: 1;
-    width: 100%;
-    height: 100%;
-    padding: 12px 0;
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  padding: 12px 0;
 }
 
 .spaceBetween {
-    display: flex;
-    justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 }
 
 th {
-    font-weight: 600;
-    font-size: 16px;
+  font-weight: 600;
+  font-size: 16px;
 }
 
 td {
-    color: #4b4b4b;
-    font-size: 18px;
+  color: #4b4b4b;
+  font-size: 18px;
 }
 
 td, th {
-    padding: 8px 4px;
+  padding: 8px 4px;
 }
 
 tr:hover {
-    background: #f8f8f8;
+  background: #f8f8f8;
 }
 
 .smallTableBody > tr {
-    border-bottom-width: 0.2px;
+  border-bottom-width: 0.2px;
 }
 
 .smallTableBody > tr > td {
-    padding: 0 6px;
+  padding: 0 6px;
 }
 
 .input-field > label {
-    font-size: 14px;
+  font-size: 14px;
 }
 
 .dishCardList {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    grid-gap: 12px;
-    margin-bottom: 120px;
-    width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-gap: 12px;
+  margin-bottom: 120px;
+  width: 100%;
 }
 
 .dragscroll {
-    overflow-x: hidden;
+  overflow-x: hidden;
 }
 
 .dishCardListContainer {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .bottomCart {
-    position: fixed;
-    width: calc(100vw - 354px);
-    height: 100vh;
+  position: fixed;
+  width: calc(100vw - 354px);
+  height: 100vh;
 }
 
 .bigTableName {
-    white-space: nowrap;
-    font-size: 36px;
-    font-weight: bold;
+  white-space: nowrap;
+  font-size: 36px;
+  font-weight: bold;
 }
 
 .icon-line {
-    display: flex;
-    align-items: center;
-    font-size: 18px;
+  display: flex;
+  align-items: center;
+  font-size: 18px;
 }
 
 .v-list-item-group .v-list-item--active {
-    color: #367aeb;
-    font-weight: bold;
-    border-right: 3px solid #367aeb;
+  color: #367aeb;
+  font-weight: bold;
+  border-right: 3px solid #367aeb;
 }
 
 .menu-item {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-align: center;
-    width: calc(25% - 4px);
-    height: 72px;
-    padding: 8px;
-    margin: 2px;
-    text-transform: capitalize;
-    font-size: 20px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  width: calc(25% - 4px);
+  height: 72px;
+  padding: 8px;
+  margin: 2px;
+  text-transform: capitalize;
+  font-size: 20px;
 }
 
 .menu-item.active {
-    border: none;
-    background: #367aeb !important;
-    color: white !important;
-    font-weight: bold;
+  border: none;
+  background: #367aeb !important;
+  color: white !important;
+  font-weight: bold;
 }
 
 .menu-always {
-    width: fit-content;
-    margin: 2px;
-    font-size: 18px;
-    padding: 4px 8px;
+  width: fit-content;
+  margin: 2px;
+  font-size: 18px;
+  padding: 4px 8px;
 }
 
 .menu-always.active {
-    border: none;
-    background: #367aeb !important;
-    color: white !important;
-    font-weight: bold;
+  border: none;
+  background: #367aeb !important;
+  color: white !important;
+  font-weight: bold;
 }
 
 .consumeTypeItem {
-    border-radius: 8px;
-    width: max-content;
-    padding: 8px 12px;
-    background: white;
-    white-space: nowrap;
-    text-transform: capitalize;
-    font-size: 20px;
+  border-radius: 8px;
+  width: max-content;
+  padding: 8px 12px;
+  background: white;
+  white-space: nowrap;
+  text-transform: capitalize;
+  font-size: 20px;
 }
 
 .consumeTypeItem.active {
-    font-weight: bold;
-    text-transform: capitalize;
-    background: #367aeb !important;
-    color: #ffffff;
-    border-bottom: 2px solid #367aeb;
+  font-weight: bold;
+  text-transform: capitalize;
+  background: #367aeb !important;
+  color: #ffffff;
+  border-bottom: 2px solid #367aeb;
 }
 
 .first {
-    padding: 8px !important;
-    font-size: large;
-    color: black;
-    background: #BBDEFB !important;
-    border-bottom: 2px solid #367aeb !important;
+  padding: 8px !important;
+  font-size: large;
+  color: black;
+  background: #BBDEFB !important;
+  border-bottom: 2px solid #367aeb !important;
 }
 
 </style>

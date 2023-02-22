@@ -43,8 +43,8 @@
       <div class="pa-4">
         <h4>{{ $t('OtherPaymentMethods') }}</h4>
         <div
-            class="pa-1 mt-1"
-            style="display: grid;grid-auto-columns: 96px;grid-gap: 8px;
+          class="pa-1 mt-1"
+          style="display: grid;grid-auto-columns: 96px;grid-gap: 8px;
            overflow-x: scroll;grid-auto-flow: column">
           <v-card v-for="(item, index) in realExtraPaymentMethodName" :key="index" class="pa-2" color="#f6f6f6" elevation="0"
                   style="height: 96px"
@@ -247,6 +247,8 @@ import hillo from 'hillo'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import { round } from 'lodash-es'
 import { writeCompanyInfo } from '@/api/api'
+import { setOrderListInFirebase } from '@/firebase.js'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
 const fixedNames = {
@@ -298,7 +300,8 @@ export default {
         'mdi-card-account-details',
         'mdi-cards'],
       extraPaymentMethodName: [fixedNames.vip],
-      paymentLog: []
+      paymentLog: [],
+      deviceId: -1
     }
   },
   computed: {
@@ -338,6 +341,7 @@ export default {
   },
   created () {
     this.loadPaymentMethods()
+    this.deviceId = GlobalConfig.DeviceId
   },
   methods: {
     normalBill () {
@@ -376,6 +380,8 @@ export default {
       this.clearBuffer()
       this.emptyCompanyInfoDialog()
       this.paymentLog = []
+      await setOrderListInFirebase({}, this.deviceId)
+      // await setShowDisplayStatusInFirebase(false)
     },
     emptyCompanyInfoDialog () {
       this.showInfoCard = 0
