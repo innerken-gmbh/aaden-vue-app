@@ -46,7 +46,8 @@
           class="pa-1 mt-1"
           style="display: grid;grid-auto-columns: 96px;grid-gap: 8px;
            overflow-x: scroll;grid-auto-flow: column">
-          <v-card v-for="(item, index) in realExtraPaymentMethodName" :key="index" class="pa-2" color="#f6f6f6" elevation="0"
+          <v-card v-for="(item, index) in realExtraPaymentMethodName" :key="index" class="pa-2" color="#f6f6f6"
+                  elevation="0"
                   style="height: 96px"
                   @click="input(item)">
             {{ item === 'coupon' ? $t('Coupon') : item }}
@@ -96,9 +97,9 @@
           </h4>
           <v-sheet class="my-2" style="background: transparent">
             <v-chip-group
-                v-model="billType"
-                active-class="primary--text" column
-                mandatory>
+              v-model="billType"
+              active-class="primary--text" column
+              mandatory>
               <v-chip label x-large @click="normalBill">
                 {{ $t('tableCheckOutBillTypeOptionNormal') }}
               </v-chip>
@@ -115,34 +116,35 @@
 
         <template v-if="showInfoCard === 1">
 
-        <v-card class="pa-2" elevation="0" outlined style="border-color: #999999" width="100%" @click="checkCompanyInfo = true">
-          <div class="d-flex">
-            <span class="font-weight-bold">{{ $t('infoDetail') }}</span>
-            <v-spacer></v-spacer>
-            <v-icon>mdi-lead-pencil</v-icon>
-          </div>
-          <v-divider style="border-color: black"></v-divider>
-          <div class="mt-2 d-flex justify-center align-center">
-            <span>{{ $t('companyName') }}:</span>
-            <v-spacer></v-spacer>
-            <span>{{companyOrPersonName}}</span>
-          </div>
-          <v-divider style="border-color: black"></v-divider>
-          <div class="d-flex mt-2">
-            <span>{{ $t('reason') }}:</span>
-            <v-spacer></v-spacer>
-            <span>{{reasonOfVisit}}</span>
-          </div>
-          <v-divider style="border-color: black"></v-divider>
-          <div class="d-flex mt-2">
-            <span>{{ $t('Date') }}:</span>
-            <v-spacer></v-spacer>
-            <span>{{locationAndDate}}</span>
-          </div>
-          <v-divider style="border-color: black"></v-divider>
-        </v-card>
+          <v-card class="pa-2" elevation="0" outlined style="border-color: #999999" width="100%"
+                  @click="checkCompanyInfo = true">
+            <div class="d-flex">
+              <span class="font-weight-bold">{{ $t('infoDetail') }}</span>
+              <v-spacer></v-spacer>
+              <v-icon>mdi-lead-pencil</v-icon>
+            </div>
+            <v-divider style="border-color: black"></v-divider>
+            <div class="mt-2 d-flex justify-center align-center">
+              <span>{{ $t('companyName') }}:</span>
+              <v-spacer></v-spacer>
+              <span>{{ companyOrPersonName }}</span>
+            </div>
+            <v-divider style="border-color: black"></v-divider>
+            <div class="d-flex mt-2">
+              <span>{{ $t('reason') }}:</span>
+              <v-spacer></v-spacer>
+              <span>{{ reasonOfVisit }}</span>
+            </div>
+            <v-divider style="border-color: black"></v-divider>
+            <div class="d-flex mt-2">
+              <span>{{ $t('Date') }}:</span>
+              <v-spacer></v-spacer>
+              <span>{{ locationAndDate }}</span>
+            </div>
+            <v-divider style="border-color: black"></v-divider>
+          </v-card>
 
-        <v-divider class="my-3"></v-divider>
+          <v-divider class="my-3"></v-divider>
 
         </template>
 
@@ -370,17 +372,25 @@ export default {
       if (fastCheckout) {
         this.billType = 0
       }
-      await writeCompanyInfo({
-        orderId: this.id,
-        reasonOfVisit: this.reasonOfVisit,
-        companyOrPersonName: this.companyOrPersonName,
-        locationAndDate: this.locationAndDate
-      })
-      this.$emit('payment-submit', this.paymentLog, this.billType)
-      this.clearBuffer()
-      this.emptyCompanyInfoDialog()
       this.paymentLog = []
-      await setOrderListInFirebase({}, this.deviceId)
+      try {
+        await setOrderListInFirebase({}, this.deviceId)
+        if (this.id) {
+          await writeCompanyInfo({
+            orderId: this.id,
+            reasonOfVisit: this.reasonOfVisit,
+            companyOrPersonName: this.companyOrPersonName,
+            locationAndDate: this.locationAndDate
+          })
+        }
+
+        this.$emit('payment-submit', this.paymentLog, this.billType)
+        this.clearBuffer()
+        this.emptyCompanyInfoDialog()
+      } catch (e) {
+        console.log(e)
+      }
+
       // await setShowDisplayStatusInFirebase(false)
     },
     emptyCompanyInfoDialog () {
