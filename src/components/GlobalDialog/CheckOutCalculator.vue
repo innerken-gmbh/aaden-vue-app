@@ -249,8 +249,8 @@ import hillo from 'hillo'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import { round } from 'lodash-es'
 import { writeCompanyInfo } from '@/api/api'
-import { setOrderListInFirebase } from '@/firebase.js'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import { setOrderListInFirebase } from '@/firebase'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
 const fixedNames = {
@@ -372,19 +372,29 @@ export default {
       if (fastCheckout) {
         this.billType = 0
       }
-      this.paymentLog = []
       try {
-        await setOrderListInFirebase({}, this.deviceId)
-        if (this.id) {
-          await writeCompanyInfo({
-            orderId: this.id,
-            reasonOfVisit: this.reasonOfVisit,
-            companyOrPersonName: this.companyOrPersonName,
-            locationAndDate: this.locationAndDate
-          })
+        try {
+          setTimeout(() => {
+            setOrderListInFirebase({}, this.deviceId)
+          }, 10)
+        } catch (x) {
+          console.log(x)
+        }
+        try {
+          if (this.id) {
+            await writeCompanyInfo({
+              orderId: this.id,
+              reasonOfVisit: this.reasonOfVisit,
+              companyOrPersonName: this.companyOrPersonName,
+              locationAndDate: this.locationAndDate
+            })
+          }
+        } catch (y) {
+          console.log(y)
         }
 
         this.$emit('payment-submit', this.paymentLog, this.billType)
+        this.paymentLog = []
         this.clearBuffer()
         this.emptyCompanyInfoDialog()
       } catch (e) {
