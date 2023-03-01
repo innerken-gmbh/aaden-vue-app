@@ -377,5 +377,6 @@
   "companyName" : "Firmenname",
   "print_success": "Drucken erfolgreich",
   "writeCompanyInfo": "Firmeninformationen ausfüllen",
-  "infoDetail": "Informationen"
+  "infoDetail": "Informationen",
+  "printDeliveryList" : "Lieferungsliste Drucken"
 }

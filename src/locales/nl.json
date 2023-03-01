@@ -377,5 +377,6 @@
   "companyName" : "bedrijfsnaam",
   "print_success": "Afdrukken is gelukt",
   "writeCompanyInfo": "Bedrijfsinformatie invullen",
-  "infoDetail": "Informatie details"
+  "infoDetail": "Informatie details",
+  "printDeliveryList" : "Distributielijst afdrukken"
 }

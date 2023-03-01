@@ -323,3 +323,11 @@ export async function sureTo (action, content = '', title = i18n.t('are_you_sure
 export async function writeCompanyInfo (item) {
   return (await hillo.post('Orders.php?op=writeCompanyInfo', { ...item }))
 }
+
+export const printDeliveryBon = async function (timeSpan) {
+  const [timeStart, timeEnd] = timeSpan
+  return await hillo.post('Orders.php?op=printDeliveryBon', {
+    fromTime: timeStart,
+    toTime: timeEnd
+  })
+}

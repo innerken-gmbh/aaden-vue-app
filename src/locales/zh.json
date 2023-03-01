@@ -384,5 +384,6 @@
   "companyName" : "公司名称",
   "print_success": "打印成功",
   "writeCompanyInfo": "填写公司信息",
-  "infoDetail": "信息详情"
+  "infoDetail": "信息详情",
+  "printDeliveryList" : "打印配送列表"
 }

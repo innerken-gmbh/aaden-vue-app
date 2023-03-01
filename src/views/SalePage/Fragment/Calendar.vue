@@ -4,7 +4,7 @@
       <div class="flex-grow-1">
         <bill-table :is-boss="isBoss" :orders="displayOrder" :show-operation="true" @need-refresh="loadData"/>
       </div>
-      <v-card v-dragscroll height="calc(100vh - 64px)" class="pa-4" elevation="0" style="overflow-y: scroll"
+      <v-card v-dragscroll class="pa-4" elevation="0" height="calc(100vh - 64px)" style="overflow-y: scroll"
               width="300">
         <v-sheet class="text-body-1">
           <h4>{{ $t('Statistic') }}</h4>
@@ -73,7 +73,16 @@
         <v-divider></v-divider>
 
         <v-card elevation="0">
-
+          <v-btn
+            block
+            class="mt-4"
+            color="#f66235"
+            dark
+            elevation="0"
+            x-large
+            @click="printDelivery">
+            {{ $t('printDeliveryList') }}
+          </v-btn>
           <v-btn
             block
             class="mt-4"
@@ -208,6 +217,7 @@ import {
   loadAllServants,
   loadPaymentMethods,
   previewZBon,
+  printDeliveryBon,
   printXBon,
   printZBonUseDate
 } from '@/api/api'
@@ -310,6 +320,14 @@ export default {
     }
   },
   methods: {
+    async printDelivery () {
+      IKUtils.showLoading()
+      const fromTime = this.singleZBonDate[0] + ' 04:00:00'
+      const toTime = dayjs(this.singleZBonDate[1]).add(1, 'day').format('YYYY-MM-DD') + ' 03:59:59'
+      const detailTime = [fromTime, toTime]
+      await printDeliveryBon(detailTime)
+      IKUtils.toast('OK')
+    },
     clearFilter () {
       this.search = ''
       this.appliedFilter = {

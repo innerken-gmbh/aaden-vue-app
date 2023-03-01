@@ -377,5 +377,6 @@
   "companyName" : "Company Name",
   "print_success": "print success",
   "writeCompanyInfo": "Fill in company information",
-  "infoDetail": "Information details"
+  "infoDetail": "Information details",
+  "printDeliveryList" : "Print Delivery List"
 }

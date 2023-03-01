@@ -377,5 +377,6 @@
   "companyName" : "Tên công ty",
   "print_success": "In thành công",
   "writeCompanyInfo": "Điền thông tin công ty",
-  "infoDetail": "Thông tin chi tiết"
+  "infoDetail": "Thông tin chi tiết",
+  "printDeliveryList" : "Danh sách giao hàng in"
 }
