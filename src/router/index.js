@@ -7,6 +7,7 @@ import IndexPage from '@/views/IndexPage'
 import FirstPage from '@/views/FirstPage/FirstPage'
 import SalesPage from '@/views/SalePage/SalesPage'
 import TablePage from '@/views/TablePage/TablePage'
+import ReservationPage from '@/views/ReservationPage/ReservationPage.vue'
 
 Vue.use(VueRouter)
 
@@ -27,6 +28,12 @@ const routes = [
         path: '',
         name: 'order',
         component: FirstPage,
+        props: true
+      },
+      {
+        path: '',
+        name: 'reservation',
+        component: ReservationPage,
         props: true
       },
       {

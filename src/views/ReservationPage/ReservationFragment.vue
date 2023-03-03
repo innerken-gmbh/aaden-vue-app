@@ -1,5 +1,5 @@
 <template>
-  <div class="pa-4" style="height: calc(100vh - 64px);width: 100%;
+  <div class="pa-4" style="height: calc(100vh);width: 100%;
         background: #e8e8e8;display: grid;
         grid-template-columns:1fr 3fr;
         grid-gap: 16px;
@@ -34,13 +34,7 @@
           {{ $t('ReservedTableSetting') }}
         </v-btn>
       </v-card>
-      <v-card
-        class="mt-4 flex-grow-1"
-        color="grey lighten-2"
-        elevation="0"
-        style="border-radius: 12px"
-      >
-      </v-card>
+
     </div>
     <v-card elevation="0" style="border-radius: 12px">
       <v-card-title style="background: #f6f6f6">
@@ -78,10 +72,10 @@
           <div style="display: grid;grid-gap: 4px;grid-auto-flow: column">
 
             <v-btn
-                   :color="item.completed==='1'?'success':''" :disabled="item.completed==='1'"
-                   elevation="0"
-                   small
-                   @click.stop="confirmReservation(item.id)">
+              :color="item.completed==='1'?'success':''" :disabled="item.completed==='1'"
+              elevation="0"
+              small
+              @click.stop="confirmReservation(item.id)">
               <v-icon left>mdi-check</v-icon>
               {{ $t('Arrival') }}
             </v-btn>
@@ -402,7 +396,8 @@
             <v-card v-for="t in tableList" :key="t.id"
                     :color="t.reservable?'primary':''"
                     :dark="t.reservable"
-                    class="pa-4 d-flex align-center justify-center flex-column" elevation="0" @click="setTableReservable(t.tableId,!t.reservable)">
+                    class="pa-4 d-flex align-center justify-center flex-column" elevation="0"
+                    @click="setTableReservable(t.tableId,!t.reservable)">
               <h2>
                 {{ t.tableName }}
               </h2>

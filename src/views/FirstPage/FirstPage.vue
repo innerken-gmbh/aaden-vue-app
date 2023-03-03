@@ -43,16 +43,6 @@
               <span style="padding: 2px 4px">{{ $t('ServerOrder') }}</span>
             </div>
           </v-item>
-          <v-item v-if="Config.activeReservation" #default="{active,toggle}">
-            <div
-              @click="toggle"
-              class="navigationPillItem"
-              :class="active?' active':' text--disabled'"
-            >
-              <v-icon left>mdi-calendar</v-icon>
-              {{ $t('Reservation') }}
-            </div>
-          </v-item>
         </div>
       </v-item-group>
 
@@ -191,64 +181,6 @@
             </v-card>
 
           </div>
-
-        </div>
-        <div v-if="false" class="d-flex flex-column" style="
-           position: absolute;
-           right: 8px;
-           top:8px;
-           width: 240px;
-           max-height: calc(100% - 16px);
-           z-index: 3">
-          <template>
-            <div class="d-flex flex-column" style="height: 100%">
-              <v-card elevation="0"
-                      @click="togoClick"
-                      class="head d-flex align-center pa-2">
-                <h4>
-                  <v-icon left>mdi-truck-fast</v-icon>
-                  {{ $t('ToGo') }}
-                </h4>
-                <v-spacer/>
-                <template v-if="takeawayList.length>0">
-                  <trailing-number>{{ takeawayList.length }}</trailing-number>
-                  <toggle-up-down-button :expand="showOtherOrder"/>
-                </template>
-                <template v-else>
-                  <v-btn @click.stop="takeawayClicked" elevation="0" color="success">
-                    <v-icon left>mdi-plus</v-icon>
-                    {{ $t('New') }}
-                  </v-btn>
-                </template>
-              </v-card>
-              <div
-                v-if="showOtherOrder"
-                v-dragscroll
-                class="flex-shrink-0 mt-2 pb-2"
-                style="
-                     display: grid;
-                     max-height: calc(100vh - 120px);
-                     grid-auto-columns: auto;
-                     overflow-y: scroll;
-                     grid-gap: 8px;
-                     width: 100%;
-                ">
-                <v-card v-if="takeawayList.length>0" @click="takeawayClicked" height="72px" elevation="0"
-                        color="grey lighten-4"
-                        class="pa-2 d-flex align-center">
-                  <v-icon left>mdi-plus</v-icon>
-                  <h4>{{ $t('New') }}</h4>
-                </v-card>
-                <table-grid-item
-                  v-for="table in takeawayList"
-                  @click="openOrEnterTable(table.tableName)"
-                  :key="table.id" :table-info="table"
-                >
-                </table-grid-item>
-              </div>
-            </div>
-
-          </template>
 
         </div>
       </v-tab-item>
@@ -450,9 +382,6 @@
         </v-card>
       </v-tab-item>
       <!--        预定-->
-      <v-tab-item>
-        <reservation/>
-      </v-tab-item>
 
     </v-tabs-items>
     <v-card v-if="buffer"
@@ -474,15 +403,6 @@
       </div>
 
     </v-card>
-    <template v-if="false">
-      <div style="position: fixed;right: 0;top:64px">
-        <div class="d-flex pa-2  pt-4 align-center caption">
-          <time-display/>
-        </div>
-      </div>
-
-    </template>
-
   </div>
 
 </template>
@@ -518,10 +438,8 @@ import { getRestaurantInfo } from '@/api/restaurantInfoService'
 
 import { acceptOrder, loadRestaurantInfo, readyToPick, syncTakeawaySettingToCloud } from '@/api/api'
 import { Remember } from '@/api/remember'
-import Reservation from '@/views/FirstPage/ReservationFragment'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import TrailingNumber from '@/views/FirstPage/widget/TrailingNumber'
-import ToggleUpDownButton from '@/views/FirstPage/widget/ToggleUpDownButton'
 import Navgation from '@/views/FirstPage/Navgation'
 import TableBluePrint from '@/views/FirstPage/Table/Table/TableBluePrint'
 import TimeDisplay from '@/components/Base/TimeDisplay'
@@ -548,9 +466,7 @@ export default {
     PickUpItem,
     KeyboardLayout,
     TakeawayOrderItem,
-    Reservation,
     TrailingNumber,
-    ToggleUpDownButton,
     Navgation,
     TableGridItem,
     TableListItem,
@@ -653,7 +569,10 @@ export default {
     loadTransLangs,
     openDrawer,
     async showConfig () {
-      await popAuthorize('boss', true)
+      if (GlobalConfig.DeviceId !== -1) {
+        await popAuthorize('boss', true)
+      }
+
       this.menu = true
     },
     async acceptOrder (reason = 'ok', id) {

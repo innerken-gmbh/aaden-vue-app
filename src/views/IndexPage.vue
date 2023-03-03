@@ -2,45 +2,48 @@
   <div>
 
     <v-navigation-drawer
-        mini-variant
-        permanent stateless
-        style="z-index: 100" app>
+      dark
+      mini-variant
+      mini-variant-width="72"
+      permanent stateless
+      style="z-index: 100" app>
       <v-card color="transparent" elevation="0"
-              class="d-flex flex-column"
+              class="d-flex flex-column py-2"
               style="height: 100vh">
-        <div class="flex-shrink-0 pa-4 py-4">
-          <div style="width: 100%">
-            <v-img
-                :src="require('@/assets/logo.png')"/>
-          </div>
-        </div>
         <div style="display: grid;grid-auto-flow: row;;grid-gap: 12px">
-
           <v-card
-              style="width: 100%"
-              v-for="m in menuList"
-              :key="m.icon"
-              elevation="0"
-              @click="goto(m)"
-              class="d-flex flex-column align-center py-2">
-            <div>
-              <v-icon :color="color(m.path)">{{ m.icon }}</v-icon>
-            </div>
-            <div class="hideMore"
-                 style="max-width: 56px">
-            <div :class="color(m.path)+'--text'" class="mt-1 text-caption text-no-wrap
-             text-truncate overflow-hidden"
-                 style="font-size: small">
-              {{ $t(m.text) }}
-            </div>
-            </div>
+            v-for="m in menuList"
+            :key="m.icon"
+            color="transparent"
+            elevation="0"
+            @click="goto(m)"
+          >
+            <v-responsive :aspect-ratio="1">
+              <div class="d-flex flex-column justify-center align-center" style="height: 100%">
+                <div>
+                  <v-icon :color="color(m.path)">{{ m.icon }}</v-icon>
+                </div>
+                <div class="hideMore"
+                     style="max-width: 56px">
+                  <div class="mt-1 text-caption text-no-wrap
+                  text-body-1 font-weight-black
+             text-truncate overflow-hidden text-capitalize"
+                  >
+                    {{ $t(m.text) }}
+                  </div>
+                </div>
+              </div>
+            </v-responsive>
           </v-card>
         </div>
         <v-spacer/>
-        <div class="text-center"><b>A</b>aden</div>
-        <div class="text-no-wrap text-caption text-center2 ml-2">
-          {{ version }}
+        <div class="d-flex align-center flex-column justify-center">
+          <logo-display/>
+          <div class="text-no-wrap text-caption text-center mt-n1">
+            v{{ version }}
+          </div>
         </div>
+
       </v-card>
 
     </v-navigation-drawer>
@@ -57,11 +60,13 @@ import { printZBon, ZBonList } from '@/api/api'
 import dayjs from 'dayjs'
 import IKUtils from 'innerken-js-utils'
 import { resetCache } from '@/oldjs/StaticModel'
+import LogoDisplay from '@/components/LogoDisplay.vue'
 
 const version = require('../../package.json').version
 
 export default {
   name: 'IndexPage',
+  components: { LogoDisplay },
   data: function () {
     return {
       version,
@@ -88,6 +93,19 @@ export default {
             }
           },
           path: 'sales'
+        },
+        {
+          icon: 'mdi-calendar',
+          text: ('Reservation'),
+          beforeEnter: async () => {
+            const pw = await popAuthorize('', true)
+            const servant = this.findServant(pw)
+            return {
+              isBoss: parseInt(servant.permission) === 1,
+              password: pw
+            }
+          },
+          path: 'reservation'
         },
         {
           icon: 'mdi-home-analytics',
@@ -218,7 +236,8 @@ export default {
 .navItem {
 
 }
-.hideMore{
+
+.hideMore {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
