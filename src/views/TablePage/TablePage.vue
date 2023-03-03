@@ -3,7 +3,7 @@
     <template v-cloak>
       <v-main>
         <div style="display: grid;
-        grid-template-columns: 350px calc(100vw - 350px);
+        grid-template-columns: 348px calc(100vw - 348px);
         background: #f6f6f6;">
           <v-card class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height" elevation="4" rounded
                   style="height: 100vh">
@@ -39,7 +39,7 @@
                   </v-btn>
                 </template>
                 <v-card class="d-flex align-center">
-                  <v-btn :disabled="this.tableDetailInfo.order.consumeTypeStatusId<=1" block color="success"
+                  <v-btn :disabled="this.tableDetailInfo.order.consumeTypeStatusId<=1" block color="success darken-3"
                          elevation="0"
                          height="60px"
                          x-large
@@ -377,7 +377,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
             grid-auto-columns: min-content;
             grid-gap: 6px;grid-auto-flow: column">
               <grid-button
-                v-if="!Config.simpleVersion"
+                v-hide-simple
                 :loading="isSendingRequest"
                 :text="$t('reprint')"
                 color="warning"
@@ -685,13 +685,7 @@ import { dragscroll } from 'vue-dragscroll'
 
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 
-import {
-  findDish,
-  getCategoryListWithCache,
-  goHome,
-  processDishList,
-  setDefaultValueForApply
-} from '@/oldjs/StaticModel'
+import { findDish, getCategoryListWithCache, goHome, processDishList, setDefaultValueForApply } from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'

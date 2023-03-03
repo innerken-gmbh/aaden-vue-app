@@ -98,12 +98,7 @@ export default {
           icon: 'mdi-calendar',
           text: ('Reservation'),
           beforeEnter: async () => {
-            const pw = await popAuthorize('', true)
-            const servant = this.findServant(pw)
-            return {
-              isBoss: parseInt(servant.permission) === 1,
-              password: pw
-            }
+            return true
           },
           path: 'reservation'
         },

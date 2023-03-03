@@ -156,7 +156,7 @@ export default {
 }
 
 .dishCount {
-  color: #367aeb;
+  color: var(--v-primary-base);
   width: 36px;
   font-weight: 900;
   text-align: left;
@@ -173,7 +173,7 @@ export default {
 }
 
 .codeRow {
-  font-weight: 900;
+  font-weight: 700;
   flex-shrink: 0;
   white-space: nowrap;
 }

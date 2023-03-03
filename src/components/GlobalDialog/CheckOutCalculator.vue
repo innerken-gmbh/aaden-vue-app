@@ -2,43 +2,26 @@
   <div class="d-flex fill-height">
     <v-card class="calculator pa-2 d-flex flex-column" elevation="1"
             style="width: 480px;height: 100vh">
-      <v-card class="pa-4 d-flex
-                 justify-space-between align-end" elevation="0" style="width: 100%;">
-        <div>
-          <div class="totalBlock">
-            <div>
-              <v-chip color="primary" dark label small>
-                {{ $t('TotalPayable') }}
-              </v-chip>
-            </div>
-            <span class="totalNumber">
-                           {{ total|priceDisplay }}
-                        </span>
-          </div>
-          <div class="totalBlock">
-            <div>
-              <v-chip class="font-weight-bold" color="error" dark label small>
-                {{ $t('PaymentStillRequired') }}
-              </v-chip>
-            </div>
-            <span class="totalNumber">
-                           {{ remainTotal|priceDisplay }}
-                        </span>
-          </div>
+      <v-card class="pa-4 mt-1 d-flex align-center" color="#f6f6f6" elevation="0">
+        <div class="text-body-1">
+          {{ $t('TotalPayable') }}
         </div>
-        <div class="totalBlock">
-          <div>
-            <v-chip color="success" dark label>
-              {{ $t('PayWillHaveTo') }}
-            </v-chip>
-          </div>
-          <div style="width:240px;height: 64px">
-            <v-text-field v-model="inputBuffer" :placeholder="''+remainTotal.toFixed(2)"
-                          class="payingNumber py-1 text-right"
-                          height="64px"
-                          reverse/>
-          </div>
+        <v-spacer></v-spacer>
+        <span class="totalNumber">{{ total|priceDisplay }}</span>
+      </v-card>
+      <v-card v-if="remainTotal!=total" class="pa-4 mt-1 d-flex align-center" color="#f6f6f6" elevation="0">
+        <div class="text-body-1">
+          {{ $t('PaymentStillRequired') }}
         </div>
+        <v-spacer></v-spacer>
+        <span class="totalNumber">{{ remainTotal|priceDisplay }}</span>
+      </v-card>
+      <v-card v-if="inputBuffer" class="pa-4 mt-1 d-flex align-center" color="primary lighten-5" elevation="0">
+        <div class="text-body-1">
+          {{ $t('PayWillHaveTo') }}
+        </div>
+        <v-spacer></v-spacer>
+        <span class="totalNumber font-weight-black">{{ inputBuffer || remainTotal | priceDisplay }}</span>
       </v-card>
       <div class="pa-4">
         <h4>{{ $t('OtherPaymentMethods') }}</h4>
@@ -60,9 +43,7 @@
 
     </v-card>
     <div class="paymentLog pa-2" style="width: 480px;max-width: calc(100vw - 480px)">
-      <div class="my-3 d-flex align-center" style="width: 100%">
-        <h3>{{ $t('BillLog') }}</h3>
-      </div>
+
       <v-divider></v-divider>
       <div v-dragscroll class="my-3" style="max-height: calc(100vh - 560px);overflow:hidden">
         <template v-for="(paymentInfo,index) in paymentLog">
@@ -90,7 +71,7 @@
           <v-divider :key="'d'+paymentInfo.hash"></v-divider>
         </template>
       </div>
-      <div v-if="readyToCheckOut">
+      <div>
         <v-sheet class="my-6">
           <h4>
             {{ $t('tableCheckOutBillTypeLabel') }}
@@ -156,7 +137,7 @@
         </v-btn>
 
       </div>
-      <div v-else>
+      <div>
         <h4>{{ $t('FastCheckoutWithoutTips') }}</h4>
 
         <v-btn :disabled="paymentLog.length!==0" block
