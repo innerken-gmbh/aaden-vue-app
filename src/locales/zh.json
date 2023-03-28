@@ -378,5 +378,12 @@
   "first_name": "名",
   "checkPersonRules": "请先设置该人数的规则",
   "emailAlreadyOrder": "该邮箱已预定",
-  "checkDeviceId": "请检查配置项DeviceID"
+  "checkDeviceId": "请检查配置项DeviceID",
+  "reprintCompanyBill": "补打公司账单",
+  "reason" : "原因",
+  "companyName" : "公司名称",
+  "print_success": "打印成功",
+  "writeCompanyInfo": "填写公司信息",
+  "infoDetail": "信息详情",
+  "printDeliveryList" : "打印配送列表"
 }

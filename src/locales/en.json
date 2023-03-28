@@ -371,5 +371,12 @@
   "yesIAm" : "yes, I&#39;m sure",
   "yesterday" : "Ayer",
   "zbonList" : "Zbon List",
-  "zoom" : "zoom"
+  "zoom" : "zoom",
+  "reprintCompanyBill": "Reprint company bill",
+  "reason" : "reason",
+  "companyName" : "Company Name",
+  "print_success": "print success",
+  "writeCompanyInfo": "Fill in company information",
+  "infoDetail": "Information details",
+  "printDeliveryList" : "Print Delivery List"
 }

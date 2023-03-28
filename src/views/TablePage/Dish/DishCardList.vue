@@ -39,18 +39,18 @@
       <template v-for="(order,index) in dishList">
         <div @click="checkIfOpen(index)" :key="'order'+title+order.identity" style="font-size: larger">
           <dish-card
-              :expand="index===expandIndex"
-              :show-number="showNumber"
-              :click-callback="()=>_clickCallBack(index,order)"
-              :show-edit="showEdit"
-              :dish="order"/>
+            :expand="index===expandIndex"
+            :show-number="showNumber"
+            :click-callback="()=>_clickCallBack(index,order)"
+            :show-edit="showEdit"
+            :dish="order"/>
         </div>
       </template>
       <template v-if="discountDish!=null">
         <dish-card
-            :show-number="showNumber"
-            :show-edit="showEdit"
-            :dish="discountDish"/>
+          :show-number="showNumber"
+          :show-edit="showEdit"
+          :dish="discountDish"/>
       </template>
     </div>
     <v-spacer></v-spacer>
@@ -183,11 +183,11 @@ export default {
       const list = [...this.dishListModel.list].filter(it => {
         return (this.activeSourceMark === '' || it.sourceMark === this.activeSourceMark) && (!this.onlyPaid || it.realPrice !== 0)
       })
-      console.log(this.dishListModel.list)
+      // console.log(this.dishListModel.list)
       if (this.reverse) {
         list.reverse()
       }
-      console.log(this.activeSourceMark, 'source mark')
+      // console.log(this.activeSourceMark, 'source mark')
       return list
     },
     originTotal: function () {

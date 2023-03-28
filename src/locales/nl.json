@@ -371,5 +371,12 @@
   "yesIAm": "Ja, ik weet het zeker",
   "yesterday": "gisteren",
   "zbonList": "ZbON-lijst",
-  "zoom": "zoomt"
+  "zoom": "zoomt",
+  "reprintCompanyBill": "Herdruk bedrijfswetsvoorstel",
+  "reason" : "reden",
+  "companyName" : "bedrijfsnaam",
+  "print_success": "Afdrukken is gelukt",
+  "writeCompanyInfo": "Bedrijfsinformatie invullen",
+  "infoDetail": "Informatie details",
+  "printDeliveryList" : "Distributielijst afdrukken"
 }

@@ -65,7 +65,7 @@
               color="primary"
               @current-dish-change="cartCurrentDish=$event">
               <template #action>
-                <v-btn color="error" elevation="0" @click="cartListModel.clear()">
+                <v-btn color="error" elevation="0" @click="cartListModelClear">
                   <v-icon left>
                     mdi-trash-can
                   </v-icon>
@@ -362,21 +362,6 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
 
             </div>
           </v-card>
-          <template v-if="false">
-
-            <keep-alive>
-              <template>
-                <buffet-status-card
-                  v-if="consumeTypeId!==1&&consumeTypeId!==2&&consumeTypeId!==5"
-                  :buffet-setting-info="realAddressInfo"
-                  :current-round="tableDetailInfo.tableBasicInfo.buffetRound"
-                  class="mt-1 mx-2"></buffet-status-card>
-              </template>
-            </keep-alive>
-
-            <v-spacer></v-spacer>
-
-          </template>
           <v-card
             class="d-flex align-center"
             elevation="4"
@@ -700,7 +685,13 @@ import { dragscroll } from 'vue-dragscroll'
 
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 
-import { findDish, getCategoryListWithCache, goHome, processDishList } from '@/oldjs/StaticModel'
+import {
+  findDish,
+  getCategoryListWithCache,
+  goHome,
+  processDishList,
+  setDefaultValueForApply
+} from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
@@ -724,7 +715,6 @@ import i18n from '../../i18n'
 import dayjs from 'dayjs'
 import { TableFilter } from '@/api/tableService'
 import { Remember } from '@/api/remember'
-import BuffetStatusCard from '@/views/TablePage/Dialog/BuffetStatusCard'
 import BuffetStartDialog from '@/views/TablePage/Dialog/BuffetStartDialog'
 import GridButton from '@/components/Base/GridButton'
 import AddressDisplay from '@/views/TablePage/Address/AddressDisplay'
@@ -735,7 +725,11 @@ import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
 import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import uniqBy from 'lodash-es/uniqBy'
+
 import { updateFireBaseOrders } from '@/api/fireStore'
+
+import { setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFirebase } from '@/firebase.js'
+
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -783,7 +777,6 @@ export default {
     dragscroll
   },
   components: {
-    BuffetStatusCard,
     BuffetStartDialog,
     GridButton,
     AddressDisplay,
@@ -868,8 +861,12 @@ export default {
 
       /* new input */
       keyboardInput: '',
-      currentCodeBuffer: ''
+      currentCodeBuffer: '',
+      deviceId: -1
     }
+  },
+  created () {
+    this.deviceId = GlobalConfig.DeviceId
   },
   methods: {
     async deleteAndSaveReason (note) {
@@ -1027,9 +1024,29 @@ export default {
             discountRatio = Math.abs(parseFloat(discount.price)) / this.orderListModel.total()
           }
           this.discountRatio = discountRatio
+          await this.setOrderListByTableNameInFirebase(this.orderListModel.list)
         }
       } catch (e) {
       }
+    },
+    async setOrderListByTableNameInFirebase (orderListModelList) {
+      // upload orderList to Firebase
+      const constData = {}
+      let number = 1
+      if (orderListModelList.length > 0) {
+        orderListModelList.forEach(orderItem => {
+          const result = {}
+          Object.keys(orderItem).filter(key => {
+            return key !== 'change' && key !== 'displayApply'
+          }).forEach(key => {
+            result[key] = orderItem[key]
+          })
+          const dishKey = 'dish_' + orderItem.dishesId + number
+          number++
+          constData[dishKey] = result
+        })
+      }
+      await setOrderListInFirebase(constData, this.deviceId)
     },
     async discountShow () {
       await optionalAuthorizeAsync('', !GlobalConfig.discountWithoutPassword)
@@ -1056,14 +1073,37 @@ export default {
         dish.name = dish.name.length > 28
           ? dish.name.substring(0, 28) + '...' : dish.name
         if (dish.haveMod > 0) {
-          this.submitModification(null, dish, count)
+          console.log(dish)
+          const apply = setDefaultValueForApply(dish.modInfo, [])
+          this.submitModification(apply, dish, count)
           blockReady()
           return
         }
         if (dish.code.toLowerCase().includes('ea')) {
-          this.showExtraDish(dish)
-          blockReady()
-          return
+          if (dish.name.includes('-')) {
+            console.log(dish.name)
+            try {
+              const [name, priceInfo] = dish.name.split('-')
+              const [unitPrice, unit] = priceInfo.split('/')
+              const [unitBase, unitName] = unit.split(' ')
+              const unitCount = await IKUtils.showInput('请输入以' + unitName + '计量的产品数量')
+              const realPrice = unitCount / unitBase * unitPrice
+              console.log(realPrice)
+              dish.currentPrice = realPrice
+              dish.currentName = `${name} ${unitPrice}/${unit} | ${unitCount}${unitName}`
+
+              dish.originPrice = dish.currentPrice.toString().replace(',', '.')
+              dish.price = dish.originPrice
+              dish.forceFormat = true
+              dish.name = dish.currentName
+            } catch (e) {
+              console.error(e)
+            }
+          } else {
+            this.showExtraDish(dish)
+            blockReady()
+            return
+          }
         }
         this.feedback = '✅' + dish.code + '.' + dish.dishName + '*' + count + this.$t('AddedToCart')
         this.addDish(dish, parseInt(count))
@@ -1192,6 +1232,7 @@ export default {
       if (this.count !== 1) {
         count = this.count
       }
+      console.log(_mod)
       dish.apply = _mod// here we add a apply
       dish.forceFormat = true
 
@@ -1234,13 +1275,21 @@ export default {
       } else if (this.modificationShow) {
         this.cancel()
       } else if (this.checkoutShow) {
+        // clear the data in firestore
+        setOrderListInFirebase({}, this.deviceId)
+        setCartListInFirebase({}, this.deviceId)
         this.checkoutShow = false
         this.initialUI()
       } else if (this.splitOrderListModel.list.length > 0) {
         this.removeAllFromSplitOrder()
       } else if (this.cartListModel.list.length > 0) {
+        // clear the data in firestore
+        setCartListInFirebase({}, this.deviceId)
         this.cartListModel.clear()
       } else {
+        // clear the data in firestore
+        setOrderListInFirebase({}, this.deviceId)
+        setCartListInFirebase({}, this.deviceId)
         this.goHome()
       }
       blockReady()
@@ -1485,6 +1534,9 @@ export default {
         this.isSendingRequest = false
       }
       blockReady()
+      // setShowDisplayStatusInFirebase(false)
+      setOrderListInFirebase({}, this.deviceId)
+      setCartListInFirebase({}, this.deviceId)
     },
     jumpToPayment () {
       const realCheckOut = async (pw) => {
@@ -1600,6 +1652,49 @@ export default {
       }
 
       return list
+    },
+    async cartListModelClear () {
+      this.cartListModel.clear()
+      await setCartListInFirebase({}, this.deviceId)
+    },
+    async setCartListByTableNameInFirebase (dishList) {
+      const constData = {}
+      let number = 1
+      if (dishList.length > 0) {
+        dishList.forEach(dish => {
+          const result = {}
+          Object.keys(dish).filter(key => {
+            return (key !== 'change' && key !== 'edit' &&
+              key !== 'apply' &&
+              key !== 'langs' && key !== 'langsDesc' &&
+              key !== 'modInfo' && key !== 'options')
+          }).forEach(key => {
+            result[key] = dish[key]
+          })
+
+          result.hasAppend = false
+
+          if (result.displayApply.length > 0) {
+            const aNameArr = []
+            const priceInfoArr = []
+            result.displayApply.forEach(i => {
+              aNameArr.push((i.groupName + ':' + i.value))
+              priceInfoArr.push(i.priceInfo)
+            })
+
+            result.aNameArr = aNameArr
+            result.priceInfoArr = priceInfoArr
+            result.hasAppend = true
+          }
+
+          const dishKey = 'cart_' + dish.code + number
+          number++
+
+          constData[dishKey] = result
+        })
+      }
+
+      await setCartListInFirebase(constData, this.deviceId)
     }
   },
   computed: {
@@ -1646,9 +1741,28 @@ export default {
       return this.categories.filter((item) => {
         return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
       })
+    },
+    orderListModelList () {
+      return this.orderListModel.list
+    },
+    cartListModelList () {
+      return this.cartListModel.list
     }
+
   },
   watch: {
+
+    checkoutShow (val) {
+      setCheckOutStatusInFirebase(val, this.deviceId)
+    },
+    orderListModelList (val) {
+      this.setOrderListByTableNameInFirebase(val)
+    },
+
+    cartListModelList (val) {
+      this.setCartListByTableNameInFirebase(val)
+    },
+
     activeDCT: function (val) {
       this.keyboardInput = ''
       this.activeCategoryId = null

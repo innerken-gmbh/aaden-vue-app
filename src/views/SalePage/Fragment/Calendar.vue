@@ -4,7 +4,8 @@
       <div class="flex-grow-1">
         <bill-table :is-boss="isBoss" :orders="displayOrder" :show-operation="true" @need-refresh="loadData"/>
       </div>
-      <v-card class="pa-4" elevation="0" style="overflow-y: scroll" width="300">
+      <v-card v-dragscroll class="pa-4" elevation="0" height="calc(100vh - 64px)" style="overflow-y: scroll"
+              width="300">
         <v-sheet class="text-body-1">
           <h4>{{ $t('Statistic') }}</h4>
           <div class="mt-4">
@@ -37,11 +38,11 @@
           <v-sheet>
             <div v-for="p in paidInfoList" :key="p.id" class="d-flex">
               <div>
-                {{p.paidName}}
+                {{ p.paidName }}
               </div>
               <v-spacer></v-spacer>
               <div class="font-weight-bold">
-                {{p.paidTotal | priceDisplay}}
+                {{ p.paidTotal | priceDisplay }}
               </div>
             </div>
           </v-sheet>
@@ -50,8 +51,8 @@
                   elevation="0"
                   @click="returnDishDialog=true">
             <div
-                class="hideMore"
-                style="max-width: 90px"
+              class="hideMore"
+              style="max-width: 90px"
             >
               <h3>{{ $t('CancelOrder') }}</h3>
             </div>
@@ -72,24 +73,33 @@
         <v-divider></v-divider>
 
         <v-card elevation="0">
-
           <v-btn
-              block
-              class="mt-4"
-              color="warning"
-              elevation="0"
-              x-large
-              @click="printXBon">
+            block
+            class="mt-4"
+            color="#f66235"
+            dark
+            elevation="0"
+            x-large
+            @click="printDelivery">
+            {{ $t('printDeliveryList') }}
+          </v-btn>
+          <v-btn
+            block
+            class="mt-4"
+            color="warning"
+            elevation="0"
+            x-large
+            @click="printXBon">
             {{ $t('PrintXBon') }}
           </v-btn>
           <v-btn
-              v-if="shouldShowZBon"
-              block
-              class="mt-2"
-              color="primary"
-              elevation="0"
-              x-large
-              @click="printZBon">
+            v-if="shouldShowZBon"
+            block
+            class="mt-2"
+            color="primary"
+            elevation="0"
+            x-large
+            @click="printZBon">
             {{ $t('PrintZBon') }}
           </v-btn>
         </v-card>
@@ -101,25 +111,25 @@
       <v-card class="d-flex px-4 pt-2" color="white" elevation="1" tile>
         <div style="display: grid;grid-auto-flow: column;grid-gap: 8px;">
           <v-text-field
-              v-model="search"
-              :placeholder="$t('SearchOrderTable')"
-              prepend-inner-icon="mdi-magnify">
+            v-model="search"
+            :placeholder="$t('SearchOrderTable')"
+            prepend-inner-icon="mdi-magnify">
           </v-text-field>
           <v-select
-              v-model="appliedFilter.payment"
-              :item-text="item => item.langPayMethodName"
-              :items="payMethodList"
-              :label="$t('PaymentMethod')"
-              multiple
-              @change="updateFilter"
+            v-model="appliedFilter.payment"
+            :item-text="item => item.langPayMethodName"
+            :items="payMethodList"
+            :label="$t('PaymentMethod')"
+            multiple
+            @change="updateFilter"
           >
           </v-select>
           <v-select
-              v-model="appliedFilter.servant"
-              :item-text="item => item.name"
-              :items="servantList"
-              :label="$t('WaiterInfo')"
-              @change="updateFilter"
+            v-model="appliedFilter.servant"
+            :item-text="item => item.name"
+            :items="servantList"
+            :label="$t('WaiterInfo')"
+            @change="updateFilter"
           >
           </v-select>
           <v-btn v-if="showClearButton" class="mt-2" @click="clearFilter">
@@ -207,12 +217,14 @@ import {
   loadAllServants,
   loadPaymentMethods,
   previewZBon,
+  printDeliveryBon,
   printXBon,
   printZBonUseDate
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 import BillTable from '@/views/SalePage/BillTable'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import { dragscroll } from 'vue-dragscroll/src/main'
 
 const defaultRealFilter = {
   servant: '',
@@ -222,6 +234,9 @@ const defaultRealFilter = {
 export default {
   name: 'Calendar',
   components: { BillTable },
+  directives: {
+    dragscroll
+  },
   data: function () {
     return {
       showAllPayment: false,
@@ -305,6 +320,14 @@ export default {
     }
   },
   methods: {
+    async printDelivery () {
+      IKUtils.showLoading()
+      const fromTime = this.singleZBonDate[0] + ' 04:00:00'
+      const toTime = dayjs(this.singleZBonDate[1]).add(1, 'day').format('YYYY-MM-DD') + ' 03:59:59'
+      const detailTime = [fromTime, toTime]
+      await printDeliveryBon(detailTime)
+      IKUtils.toast('OK')
+    },
     clearFilter () {
       this.search = ''
       this.appliedFilter = {
