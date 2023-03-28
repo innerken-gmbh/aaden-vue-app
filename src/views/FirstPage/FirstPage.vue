@@ -516,7 +516,13 @@ import { TableFixedSectionId } from '@/api/tableService'
 
 import { getRestaurantInfo } from '@/api/restaurantInfoService'
 
-import { acceptOrder, loadRestaurantInfo, readyToPick, syncTakeawaySettingToCloud } from '@/api/api'
+import {
+  acceptOrder,
+  getExternalIdByRejectOrder,
+  loadRestaurantInfo,
+  readyToPick,
+  syncTakeawaySettingToCloud
+} from '@/api/api'
 import { Remember } from '@/api/remember'
 import Reservation from '@/views/FirstPage/ReservationFragment'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
@@ -530,6 +536,7 @@ import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
 import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
 import i18n, { loadTransLangs } from '@/i18n'
 import PickUpItem from '@/views/FirstPage/Table/Table/Item/PickUpItem.vue'
+import { listenFireStoreOrders, updateFireBaseOrders } from '@/api/fireStore'
 
 const keyboardLayout =
   [
@@ -607,6 +614,9 @@ export default {
       await syncTakeawaySettingToCloud(info)
       await this.loadRestaurantInfo()
       this.loading = false
+      if (info.currentlyOpening === 1) {
+        listenFireStoreOrders()
+      }
     }
   },
   computed: {
@@ -661,10 +671,14 @@ export default {
       await this.refreshTables()
     },
     async rejectOrder (id) {
+      const externalId = await getExternalIdByRejectOrder(id)
       const res = await fastSweetAlertRequest(i18n.t('RevocationDishReason'), 'text',
         'Orders.php?op=rejectTakeAwayOrder', 'reason',
         { tableId: id })
       if (res) {
+        if (parseInt(externalId) !== 0) {
+          updateFireBaseOrders(parseInt(externalId), null, null, null, null, false)
+        }
         await this.refreshTables()
       }
     },
