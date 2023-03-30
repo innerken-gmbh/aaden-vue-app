@@ -685,8 +685,9 @@ import {dragscroll} from 'vue-dragscroll'
 
 import {StandardDishesListFactory} from 'aaden-base-model/lib/Models/AadenBase'
 
-import {findDish, getCategoryListWithCache, goHome, processDishList, setDefaultValueForApply} from '@/oldjs/StaticModel'
-import {printNow} from '@/oldjs/Timer'
+import { findDish, getCategoryListWithCache, goHome, processDishList, setDefaultValueForApply } from '@/oldjs/StaticModel'
+import { printNow } from '@/oldjs/Timer'
+
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
 
@@ -1509,11 +1510,10 @@ export default {
         order.forEach(o => {
           o.guestNumber = 1
         })
-        await hillo.post('Complex.php?op=addDishesToTable', {
+        await hillo.post('Complex.php?op=addDishesToTable&_servantPw=' + GlobalConfig.defaultPassword, {
           params: JSON.stringify(order),
           tableId: this.id,
-          printingKitchenBon: print ? 1 : 0,
-          _servantPw: GlobalConfig.defaultPassword
+          printingKitchenBon: print ? 1 : 0
         })
         this.cartListModel.clear()
         this.initialUI()
