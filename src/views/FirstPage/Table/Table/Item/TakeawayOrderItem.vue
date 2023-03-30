@@ -1,12 +1,12 @@
 <template>
   <v-card
-      color="white"
-      elevation="0"
-      @click='$emit("click",table.tableName)'
-      class="pa-3"
-      :width="bigCard?'100%':'240px'"
-      style="border-radius: 12px;position: relative;"
-      :key="table.id">
+    color="white"
+    elevation="0"
+    @click='$emit("click",table.tableName)'
+    class="pa-3"
+    :width="bigCard?'100%':'240px'"
+    style="border-radius: 12px;position: relative;"
+    :key="table.id">
 
     <div class="d-flex align-center">
 
@@ -40,15 +40,15 @@
       </v-chip>
       <div>
         <template
-            v-for="(time) in [0,10,15,20,30,40,50,60]"
+          v-for="(time) in [0,10,15,20,30,40,50,60]"
         >
           <v-chip
-              label
-              class="ma-1"
-              :key="time"
-              outlined
-              color="success"
-              @click.stop="acceptOrderWithTime(time)"
+            label
+            class="ma-1"
+            :key="time"
+            outlined
+            color="success"
+            @click.stop="acceptOrderWithTime(time)"
           >
             + {{ time }}
           </v-chip>
@@ -60,35 +60,32 @@
 </template>
 
 <script>
-import { getColorLightness } from '@/oldjs/api'
-import { beautifulTable, getRestaurantInfo } from '@/api/restaurantInfoService'
+import {getColorLightness} from '@/oldjs/api'
+import {beautifulTable, getRestaurantInfo} from '@/api/restaurantInfoService'
 import dayjs from 'dayjs'
-import { updateFireBaseOrders } from '@/api/fireStore'
-import hillo from 'hillo'
-import firebase from 'firebase/app'
 
 export default {
   name: 'TakeawayOrderItem',
   props: {
     tableInfo: {},
-    bigCard: { default: false }
+    bigCard: {default: false}
   },
   computed: {
-    table () {
+    table() {
       return beautifulTable(this.tableInfo)
     }
   },
   methods: {
-    async tableBackgroundColor (table) {
+    async tableBackgroundColor(table) {
       return table.inCall ? getRestaurantInfo().callColor : this.$vuetify.theme.currentTheme.primary
     },
-    tableColorIsDark (table) {
+    tableColorIsDark(table) {
       return this.colorIsDark(this.tableBackgroundColor(table))
     },
-    colorIsDark (color) {
+    colorIsDark(color) {
       return getColorLightness(color) < 128
     },
-    async acceptOrderWithTime (time) {
+    async acceptOrderWithTime(time) {
       const addressInfo = this.table.addressInfo
       let timeReal = dayjs()
       if (addressInfo) {
@@ -97,12 +94,7 @@ export default {
         }
       }
       timeReal = timeReal.add(time, 'm')
-      const externalId = await hillo.post('Orders.php?op=getExternalIdByAcceptOrder', {
-        tableId: this.tableInfo.tableId
-      })
-      if (parseInt(externalId) !== 0) {
-        updateFireBaseOrders(parseInt(externalId), null, null, null, null, null, firebase.firestore.Timestamp.fromDate(timeReal.toDate()), this.tableInfo.tableId)
-      }
+
       this.$emit('accept', timeReal.format('DD.MM.YYYY HH:mm'), this.tableInfo.tableId)
     }
   }
