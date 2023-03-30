@@ -60,32 +60,32 @@
 </template>
 
 <script>
-import {getColorLightness} from '@/oldjs/api'
-import {beautifulTable, getRestaurantInfo} from '@/api/restaurantInfoService'
+import { getColorLightness } from '@/oldjs/api'
+import { beautifulTable, getRestaurantInfo } from '@/api/restaurantInfoService'
 import dayjs from 'dayjs'
 
 export default {
   name: 'TakeawayOrderItem',
   props: {
     tableInfo: {},
-    bigCard: {default: false}
+    bigCard: { default: false }
   },
   computed: {
-    table() {
+    table () {
       return beautifulTable(this.tableInfo)
     }
   },
   methods: {
-    async tableBackgroundColor(table) {
+    async tableBackgroundColor (table) {
       return table.inCall ? getRestaurantInfo().callColor : this.$vuetify.theme.currentTheme.primary
     },
-    tableColorIsDark(table) {
+    tableColorIsDark (table) {
       return this.colorIsDark(this.tableBackgroundColor(table))
     },
-    colorIsDark(color) {
+    colorIsDark (color) {
       return getColorLightness(color) < 128
     },
-    async acceptOrderWithTime(time) {
+    async acceptOrderWithTime (time) {
       const addressInfo = this.table.addressInfo
       let timeReal = dayjs()
       if (addressInfo) {

@@ -677,21 +677,20 @@ import {
   showTimedAlert,
   toast
 } from '@/oldjs/common'
-import {getOrderInfo} from 'aaden-base-model/lib/Models/AadenApi'
+import { getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
 import Swal from 'sweetalert2'
 import hillo from 'hillo'
-import {checkOut, optionalAuthorizeAsync, printZwichenBon} from '@/oldjs/api'
-import {dragscroll} from 'vue-dragscroll'
+import { checkOut, optionalAuthorizeAsync, printZwichenBon } from '@/oldjs/api'
+import { dragscroll } from 'vue-dragscroll'
 
-import {StandardDishesListFactory} from 'aaden-base-model/lib/Models/AadenBase'
+import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 
 import { findDish, getCategoryListWithCache, goHome, processDishList, setDefaultValueForApply } from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
-
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
 
-import {debounce} from 'lodash-es'
+import { debounce } from 'lodash-es'
 
 import IKUtils from 'innerken-js-utils'
 
@@ -704,12 +703,12 @@ import {
   showSuccessMessage
 } from '@/api/api'
 
-import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
 
 import i18n from '../../i18n'
 import dayjs from 'dayjs'
-import {TableFilter} from '@/api/tableService'
-import {Remember} from '@/api/remember'
+import { TableFilter } from '@/api/tableService'
+import { Remember } from '@/api/remember'
 import BuffetStartDialog from '@/views/TablePage/Dialog/BuffetStartDialog'
 import GridButton from '@/components/Base/GridButton'
 import AddressDisplay from '@/views/TablePage/Address/AddressDisplay'
@@ -721,9 +720,9 @@ import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import uniqBy from 'lodash-es/uniqBy'
 
-import {updateFirebaseOrder} from '@/api/fireStore'
+import { updateFirebaseOrder } from '@/api/fireStore'
 
-import {setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFirebase} from '@/firebase.js'
+import { setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFirebase } from '@/firebase.js'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -736,7 +735,7 @@ const defaultCurrentDish = {
 
 const key = 'reason'
 
-function saveReason(reason) {
+function saveReason (reason) {
   let currentReasonList = getReason()
   currentReasonList.unshift(reason)
 
@@ -750,7 +749,7 @@ function saveReason(reason) {
   return getReason()
 }
 
-function getReason() {
+function getReason () {
   const str = localStorage.getItem(key) ?? '[]'
   return JSON.parse(str) ?? []
 }
@@ -847,7 +846,7 @@ export default {
           id: -1,
           rawAddressInfo: ''
         },
-        tableBasicInfo: {name: ''}
+        tableBasicInfo: { name: '' }
       },
       currentDish: defaultCurrentDish,
       cartCurrentDish: null,
@@ -859,23 +858,23 @@ export default {
       deviceId: -1
     }
   },
-  created() {
+  created () {
     this.deviceId = GlobalConfig.DeviceId
   },
   methods: {
-    async deleteAndSaveReason(note) {
+    async deleteAndSaveReason (note) {
       if (note) {
         saveReason(note)
       }
       await deleteDish(this.id, this.splitOrderListModel.list, note)
     },
-    async showDeleteDishDialog() {
+    async showDeleteDishDialog () {
       await optionalAuthorizeAsync('boss', !GlobalConfig.returnDishWithoutPassword)
       this.reasons = getReason()
       this.deleteDishReason = ''
       this.deleteDishReasonDialog = true
     },
-    async submitReason(item) {
+    async submitReason (item) {
       const note = item ?? (this.deleteDishReason || this.reasons[0])
 
       if (!note) {
@@ -888,7 +887,7 @@ export default {
       this.deleteDishReasonDialog = false
       await this.initialUI()
     },
-    async mergeTable() {
+    async mergeTable () {
       const password = await popAuthorize(GlobalConfig.mergeTableUseBossPassword ? 'boss' : '')
       if (password) {
         const tableName = await showTableSelector(TableFilter.activeFilter)
@@ -904,7 +903,7 @@ export default {
         })
       }
     },
-    async changeTable() {
+    async changeTable () {
       const password = await popAuthorize(GlobalConfig.changeTableUseBossPassword ? 'boss' : '')
       if (password) {
         const tableName = await showTableSelector(TableFilter.notActiveFilter)
@@ -934,10 +933,10 @@ export default {
       }
     },
 
-    findConsumeTypeById(id) {
+    findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
     },
-    async editNote() {
+    async editNote () {
       const note = await Swal.fire({
         title: this.$t('note'),
         input: 'text',
@@ -945,7 +944,7 @@ export default {
       })
       this.$set(this.cartCurrentDish, 'note', note.value)
     },
-    async submitRawAddressInfo(addressInfo) {
+    async submitRawAddressInfo (addressInfo) {
       await hillo.post('Orders.php?op=updateRawAddressInfo', {
         orderId: this.tableDetailInfo.order.id,
         rawAddressInfo: JSON.stringify(addressInfo)
@@ -953,7 +952,7 @@ export default {
       await this.getTableDetail()
       toast()
     },
-    numberInput(key) {
+    numberInput (key) {
       if (this.keyboardInput == null) {
         this.keyboardInput = ''
       }
@@ -974,23 +973,23 @@ export default {
       }
     },
 
-    changeCategory(id, toggle) {
+    changeCategory (id, toggle) {
       this.activeCategoryId = id
       if (toggle) {
         toggle()
       }
     },
 
-    async changeServant() {
+    async changeServant () {
       const res = await fastSweetAlertRequest(this.$t('WaiterPagePasswordPrompt'),
         'password',
         'Orders.php?op=changeServantForTable', 'pw',
-        {tableId: this.id}, 'POST')
+        { tableId: this.id }, 'POST')
       if (res) {
         goHome()
       }
     },
-    goHome() {
+    goHome () {
       goHome()
     },
     changeModification: function (val) {
@@ -1000,7 +999,7 @@ export default {
       this.checkoutShow = val
       this.initialUI()
     },
-    async getOrderedDish() {
+    async getOrderedDish () {
       try {
         if (this.splitOrderListModel.count() === 0 && this.cartListModel.count() === 0) {
           let discountRatio = 0
@@ -1023,7 +1022,7 @@ export default {
       } catch (e) {
       }
     },
-    async setOrderListByTableNameInFirebase(orderListModelList) {
+    async setOrderListByTableNameInFirebase (orderListModelList) {
       // upload orderList to Firebase
       const constData = {}
       let number = 1
@@ -1042,12 +1041,12 @@ export default {
       }
       await setOrderListInFirebase(constData, this.deviceId)
     },
-    async discountShow() {
+    async discountShow () {
       await optionalAuthorizeAsync('', !GlobalConfig.discountWithoutPassword)
       this.discountModelShow = true
       this.useDishesDiscount = false
     },
-    async findAndOrderDish(code, count = 1) {
+    async findAndOrderDish (code, count = 1) {
       if (count < 1) {
         this.feedback = '❌' + this.$t('CanNotAddNegativeDishes')
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
@@ -1058,7 +1057,7 @@ export default {
 
       if (dish) {
         if (parseInt(GlobalConfig.oneStepOrderNumber) !== -1 && count > GlobalConfig.oneStepOrderNumber) {
-          const res = await showConfirmAsyn(this.$t('AreYouSure'), this.$tc('AreYouSureToOrderDish', 1, {n: count}))
+          const res = await showConfirmAsyn(this.$t('AreYouSure'), this.$tc('AreYouSureToOrderDish', 1, { n: count }))
           if (!res?.value) {
             showTimedAlert('warning', 'abrechen')
           }
@@ -1102,16 +1101,16 @@ export default {
         this.feedback = '✅' + dish.code + '.' + dish.dishName + '*' + count + this.$t('AddedToCart')
         this.addDish(dish, parseInt(count))
       } else {
-        this.feedback = '❌' + this.$t('DishNumberNotFound', {n: code})
+        this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
       }
 
       blockReady()
     },
-    showExtraDish(dish) {
+    showExtraDish (dish) {
       this.currentDish = Object.assign({}, defaultCurrentDish, dish)
       this.extraDishShow = true
     },
-    showModification(dish, count, mod = null) {
+    showModification (dish, count, mod = null) {
       this.dish = dish
       this.count = count
       if (this.$refs.ins) {
@@ -1124,7 +1123,7 @@ export default {
       }
       this.modificationShow = true
     },
-    async getDCT() {
+    async getDCT () {
       if (this.dct.length === 0) {
         this.dct = (await CategoryType.getList()).map(i => {
           if (!i.isActive) {
@@ -1142,7 +1141,7 @@ export default {
         }).filter(i => typeof i.childCount === 'undefined' || i.childCount > 0)
       }
     },
-    async getCategory(consumeTypeId = 1, force = false) {
+    async getCategory (consumeTypeId = 1, force = false) {
       if (this.categories.length === 0 || force) {
         console.log('reloadDishUseConsumeTypeId', consumeTypeId)
         this.categories = await getCategoryListWithCache(consumeTypeId)
@@ -1187,7 +1186,7 @@ export default {
       this.splitOrderListModel.add(item, 1)
     },
 
-    addExtraDish() {
+    addExtraDish () {
       const dish = IKUtils.deepCopy(this.currentDish)
       if (dish.currentPrice === '') {
         dish.currentPrice = 0
@@ -1240,7 +1239,7 @@ export default {
       this.modificationShow = false
       blockReady()
     },
-    async initialUI(forceReload = false) {
+    async initialUI (forceReload = false) {
       this.feedback = ''
       this.resetInputAndBuffer()
       this.discountModelShow = false
@@ -1254,12 +1253,12 @@ export default {
       setGlobalTableId(this.id)
       blockReady()
     },
-    async reloadDish(consumeTypeId, force = false) {
+    async reloadDish (consumeTypeId, force = false) {
       await this.getCategory(consumeTypeId, force)
       this.activeCategoryId = null
       this.updateActiveDCT(0)
     },
-    back() {
+    back () {
       if (this.keyboardInput || this.currentCodeBuffer) {
         this.resetInputAndBuffer()
       } else if (this.discountModelShow) {
@@ -1288,28 +1287,28 @@ export default {
       }
       blockReady()
     },
-    async searchDishClick(code) {
+    async searchDishClick (code) {
       this.currentCodeBuffer = code
       await this.findAndOrderDish(code)
       this.keyboardInput = ''
     },
-    resetInputAndBuffer() {
+    resetInputAndBuffer () {
       this.currentCodeBuffer = ''
       this.keyboardInput = ''
       this.indexActive = -1
       this.updateSearchDish()
     },
 
-    discountClear() {
+    discountClear () {
       this.submitDiscount('')
     },
-    async submitDiscount(discountStr = null) {
+    async submitDiscount (discountStr = null) {
       if (this.$refs.discount) {
         await this.$refs.discount.submitDiscount(discountStr)
       }
     },
 
-    checkOut(pw, print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
+    checkOut (pw, print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
       if (!memberCardId) {
         memberCardId = null
       }
@@ -1327,18 +1326,18 @@ export default {
       }
       this.checkOutType = 'splitOrder'
     },
-    anyMenuOpen() {
+    anyMenuOpen () {
       return this.modificationShow || this.checkoutShow ||
         this.discountModelShow || this.extraDishShow ||
         this.systemDialogShow || Swal.isVisible()
     },
 
-    async getTableDetail() {
+    async getTableDetail () {
       try {
         const res = await hillo.silentGet('Tables.php', {
           op: 'currentInfo',
           id: this.id
-        }, {noDebug: true})
+        }, { noDebug: true })
         this.tableDetailInfo = res.content
         this.tableDetailInfo.consumeTypeName = findConsumeTypeById(this.tableDetailInfo.consumeTypeId).name
         if (this.tableDetailInfo.order.discountStr) {
@@ -1349,11 +1348,11 @@ export default {
         console.log(e)
       }
     },
-    async acceptOrder(reason = 'ok') {
+    async acceptOrder (reason = 'ok') {
       await acceptOrder(reason, this.id)
       this.initialUI()
     },
-    async acceptOrderWithTime(time) {
+    async acceptOrderWithTime (time) {
       const addressInfo = JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
       let timeReal = dayjs()
       if (addressInfo) {
@@ -1364,11 +1363,11 @@ export default {
       timeReal = timeReal.add(time, 'm')
       await this.acceptOrder(timeReal.format('DD.MM.YYYY HH:mm'))
     },
-    async rejectOrder() {
+    async rejectOrder () {
       const externalId = await getExternalIdByRejectOrder(this.id)
       const res = await fastSweetAlertRequest(i18n.t('RevocationDishReason'), 'text',
         'Orders.php?op=rejectTakeAwayOrder', 'reason',
-        {tableId: this.id})
+        { tableId: this.id })
       if (res) {
         if (parseInt(externalId) !== 0) {
           updateFirebaseOrder(parseInt(externalId), null, null, null, null, false)
@@ -1376,7 +1375,7 @@ export default {
         this.goHome()
       }
     },
-    listenKeyDown(e) {
+    listenKeyDown (e) {
       if (Swal.isVisible()) {
         return
       }
@@ -1405,7 +1404,7 @@ export default {
       }
     },
 
-    async reprintOrder() {
+    async reprintOrder () {
       this.isSendingRequest = true
       try {
         await hillo.post('Printer.php?op=questReprintOrder', {
@@ -1419,7 +1418,7 @@ export default {
         this.isSendingRequest = false
       }
     },
-    async zwitchenBon() {
+    async zwitchenBon () {
       this.isSendingRequest = true
       try {
         await reprintOrder(this.tableDetailInfo.order.id, 0)
@@ -1432,7 +1431,7 @@ export default {
       }
     },
     //* findInsDecode*/
-    async insDecode(t) {
+    async insDecode (t) {
       if (this.deleteDishReasonDialog) {
         await this.submitReason()
       }
@@ -1472,7 +1471,7 @@ export default {
         } else if (!this.checkoutShow && !this.modificationShow) {
           if (this.cartListModel.list.length > 0) {
             setTimeout(async () => {
-              let res = {value: 1}
+              let res = { value: 1 }
               if (!GlobalConfig.skipCartConfirm) {
                 res = await showConfirmAsyn('Warenkorb ---> Bestellen?')
               }
@@ -1504,7 +1503,7 @@ export default {
       }
       blocking()
     },
-    async orderDish(order = this.cartListModel.list, print = true) {
+    async orderDish (order = this.cartListModel.list, print = true) {
       try {
         this.isSendingRequest = true
         order.forEach(o => {
@@ -1531,7 +1530,7 @@ export default {
       setOrderListInFirebase({}, this.deviceId)
       setCartListInFirebase({}, this.deviceId)
     },
-    jumpToPayment() {
+    jumpToPayment () {
       const realCheckOut = async (pw) => {
         this.checkoutShow = true
         checkoutFactory.clear()
@@ -1554,15 +1553,15 @@ export default {
         await realCheckOut(pw)
       }, 20)
     },
-    async realInitial() {
+    async realInitial () {
       window.onkeydown = this.listenKeyDown
       await this.initialUI(true)
     },
-    updateActiveDCT(index) {
+    updateActiveDCT (index) {
       this.activeDCT = null
       this.activeDCT = index
     },
-    updateFilteredDish() {
+    updateFilteredDish () {
       if (this.activeCategoryId) {
         console.log('should update Filtered Dish')
         this.filteredDish = this.filterDish()
@@ -1570,8 +1569,8 @@ export default {
     },
     debounce: debounce((f) => {
       f()
-    }, 200, {trailing: true}),
-    getCodeAndCountFromInput(string = '') {
+    }, 200, { trailing: true }),
+    getCodeAndCountFromInput (string = '') {
       let [code, count] = ['', 1]
       if (string.includes('*')) {
         [code, count] = string.split('*')
@@ -1584,7 +1583,7 @@ export default {
       }
       return [code, count]
     },
-    updateSearchDish() {
+    updateSearchDish () {
       if (this.keyboardInput || this.currentCodeBuffer) {
         this.searchDish = this.searchDishes()
       } else {
@@ -1592,7 +1591,7 @@ export default {
       }
       this.indexActive = 0
     },
-    searchDishes() {
+    searchDishes () {
       const list = this.dishes
       const searchWord = this.currentCodeBuffer || this.keyboardInput
       const codeOnly = !!this.currentCodeBuffer
@@ -1632,7 +1631,7 @@ export default {
       }
       return []
     },
-    filterDish() {
+    filterDish () {
       let list = this.dishes
       if (!this.keyboardInput) {
         const dct = this.dct[this.activeDCT]
@@ -1646,11 +1645,11 @@ export default {
 
       return list
     },
-    async cartListModelClear() {
+    async cartListModelClear () {
       this.cartListModel.clear()
       await setCartListInFirebase({}, this.deviceId)
     },
-    async setCartListByTableNameInFirebase(dishList) {
+    async setCartListByTableNameInFirebase (dishList) {
       const constData = {}
       let number = 1
       if (dishList.length > 0) {
@@ -1699,7 +1698,7 @@ export default {
     totalPrice: function () {
       return this.tableDetailInfo.order?.totalPrice ?? 0
     },
-    realAddressInfo() {
+    realAddressInfo () {
       if (this.tableDetailInfo.order.rawAddressInfo?.length > 0) {
         try {
           const res = JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
@@ -1713,20 +1712,20 @@ export default {
         return null
       }
     },
-    consumeTypeId() {
+    consumeTypeId () {
       return parseInt(this.tableDetailInfo.order.consumeTypeId ?? 1)
     },
-    overrideConsumeTypeId() {
+    overrideConsumeTypeId () {
       if ((this.overrideConsumeTypeIndex || this.overrideConsumeTypeIndex === 0) && this.consumeTypeList?.length > this.overrideConsumeTypeIndex) {
         return parseInt(this.consumeTypeList[this.overrideConsumeTypeIndex].id)
       } else {
         return null
       }
     },
-    realConsumeTypeId() {
+    realConsumeTypeId () {
       return this.overrideConsumeTypeId && this.overrideConsumeTypeId !== this.consumeTypeId ? this.overrideConsumeTypeId : this.consumeTypeId ?? 1
     },
-    consumeTypeStatusId() {
+    consumeTypeStatusId () {
       return parseInt(this.tableDetailInfo.order.consumeTypeStatusId ?? 2)
     },
     filteredC: function () {
@@ -1735,24 +1734,24 @@ export default {
         return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
       })
     },
-    orderListModelList() {
+    orderListModelList () {
       return this.orderListModel.list
     },
-    cartListModelList() {
+    cartListModelList () {
       return this.cartListModel.list
     }
 
   },
   watch: {
 
-    checkoutShow(val) {
+    checkoutShow (val) {
       setCheckOutStatusInFirebase(val, this.deviceId)
     },
-    orderListModelList(val) {
+    orderListModelList (val) {
       this.setOrderListByTableNameInFirebase(val)
     },
 
-    cartListModelList(val) {
+    cartListModelList (val) {
       this.setCartListByTableNameInFirebase(val)
     },
 
@@ -1782,12 +1781,12 @@ export default {
     keyboardMode: function (val) {
       Remember.keyboardMode = val
     },
-    realConsumeTypeId(val) {
+    realConsumeTypeId (val) {
       console.log('I change')
       this.reloadDish(val, true)
     }
   },
-  async mounted() {
+  async mounted () {
     await getConsumeTypeList()
     await this.getDCT()
     const selectableId = GlobalConfig.selectableConsumeTypeId?.split(',')

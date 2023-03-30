@@ -488,7 +488,7 @@
 </template>
 
 <script>
-import {version} from '../../../package.json'
+import { version } from '../../../package.json'
 import {
   blockReady,
   findConsumeTypeById,
@@ -499,24 +499,24 @@ import {
   requestOutTable
 } from '@/oldjs/common'
 import Swal from 'sweetalert2'
-import {dragscroll} from 'vue-dragscroll'
+import { dragscroll } from 'vue-dragscroll'
 import GlobalConfig, {
   forceChangeLanguage,
   hardReload,
   NeededKeys,
   useCurrentConfig
 } from '../../oldjs/LocalGlobalSettings'
-import {addToTimerList, clearAllTimer} from '@/oldjs/Timer'
+import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
 
-import {getServantList, getTableListWithCells, openDrawer} from '@/oldjs/api'
+import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
 
-import {mapGetters, mapMutations} from 'vuex'
-import {TableFixedSectionId} from '@/api/tableService'
+import { mapGetters, mapMutations } from 'vuex'
+import { TableFixedSectionId } from '@/api/tableService'
 
-import {getRestaurantInfo} from '@/api/restaurantInfoService'
+import { getRestaurantInfo } from '@/api/restaurantInfoService'
 
-import {acceptOrder, loadRestaurantInfo, readyToPick, rejectOrder, syncTakeawaySettingToCloud} from '@/api/api'
-import {Remember} from '@/api/remember'
+import { acceptOrder, loadRestaurantInfo, readyToPick, rejectOrder, syncTakeawaySettingToCloud } from '@/api/api'
+import { Remember } from '@/api/remember'
 import Reservation from '@/views/FirstPage/ReservationFragment'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import TrailingNumber from '@/views/FirstPage/widget/TrailingNumber'
@@ -527,9 +527,9 @@ import TimeDisplay from '@/components/Base/TimeDisplay'
 import TakeawayOrderItem from '@/views/FirstPage/Table/Table/Item/TakeawayOrderItem'
 import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
 import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
-import {loadTransLangs} from '@/i18n'
+import { loadTransLangs } from '@/i18n'
 import PickUpItem from '@/views/FirstPage/Table/Table/Item/PickUpItem.vue'
-import {listenFireStoreOrders} from '@/api/fireStore'
+import { listenFireStoreOrders } from '@/api/fireStore'
 
 const keyboardLayout =
   [
@@ -589,7 +589,7 @@ export default {
   },
   watch: {
 
-    currentView(val) {
+    currentView (val) {
       Remember.currentView = val
     },
 
@@ -614,10 +614,10 @@ export default {
   },
   computed: {
     ...mapGetters(['systemDialogShow']),
-    activeTables() {
+    activeTables () {
       return this.tableList.filter(t => t.usageStatus === '1')
     },
-    servantWithTable() {
+    servantWithTable () {
       return this.servantList.map(s => {
         s.tables = this.activeTables.filter(t => t.servantId === s.id)
         return s
@@ -643,32 +643,31 @@ export default {
     notAccepted: function () {
       return this.takeawayList.filter(it => it.consumeTypeStatusId < 2)
     },
-    transLangs() {
+    transLangs () {
       return this.loadTransLangs()
     }
 
   },
   methods: {
-    async updateStatus(orderId) {
+    async updateStatus (orderId) {
       await readyToPick(orderId)
       await this.refreshTables()
     },
     loadTransLangs,
     openDrawer,
-    async showConfig() {
+    async showConfig () {
       await popAuthorize('boss', true)
       this.menu = true
     },
-    async acceptOrder(reason = 'ok', id) {
+    async acceptOrder (reason = 'ok', id) {
       await acceptOrder(reason, id)
       await this.refreshTables()
     },
-    async rejectOrder(id) {
+    async rejectOrder (id) {
       await rejectOrder(id)
       await this.refreshTables()
-
     },
-    togoClick() {
+    togoClick () {
       if (this.takeawayList.length > 0) {
         this.showOtherOrder = !this.showOtherOrder
       } else {
@@ -678,11 +677,11 @@ export default {
 
     changeLanguage: forceChangeLanguage,
 
-    showEditTableDialog(tableInfo) {
+    showEditTableDialog (tableInfo) {
       console.log(tableInfo)
     },
 
-    numberInput(key) {
+    numberInput (key) {
       if (!this.buffer) {
         this.buffer = ''
       }
@@ -704,7 +703,7 @@ export default {
       this.input = this.buffer
     },
 
-    async takeawayClicked() {
+    async takeawayClicked () {
       const res = await popAuthorize() ?? GlobalConfig.defaultPassword
       try {
         if (res) {
@@ -713,10 +712,10 @@ export default {
       } catch (e) {
       }
     },
-    findConsumeTypeColorById(id) {
+    findConsumeTypeColorById (id) {
       return findConsumeTypeById(id)?.color ?? this.$vuetify.theme.currentTheme.primary
     },
-    findConsumeTypeById(id) {
+    findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
     },
 
@@ -724,7 +723,7 @@ export default {
     hardReload,
     openOrEnterTable: openOrEnterTable,
     ...mapMutations(['HIDE_AUTHORIZE_DIALOG']),
-    initialUI() {
+    initialUI () {
       if (this.$refs.ins) {
         this.$refs.ins.focus()
       }
@@ -733,11 +732,11 @@ export default {
       this.HIDE_AUTHORIZE_DIALOG()
       blockReady()
     },
-    async refreshTables() {
+    async refreshTables () {
       this.tableList = await getTableListWithCells()
     },
 
-    listenKeyDown(e) {
+    listenKeyDown (e) {
       if (Swal.isVisible()) {
         Swal.clickConfirm()
         return
@@ -759,7 +758,7 @@ export default {
           }
       }
     },
-    back() {
+    back () {
       this.initialUI()
     },
     readBuffer: function (clear = true) {
@@ -769,7 +768,7 @@ export default {
       }
       return ins
     },
-    async insDecode(t) {
+    async insDecode (t) {
       if (this.anyMenuOpen()) {
         return
       }
@@ -782,16 +781,16 @@ export default {
         }
       }
     },
-    anyMenuOpen() {
+    anyMenuOpen () {
       return Swal.isVisible() || this.menu || this.systemDialogShow
     },
 
-    async loadRestaurantInfo() {
+    async loadRestaurantInfo () {
       this.restaurantInfo = await loadRestaurantInfo()
       this.restaurantInfo.displayName = (this.restaurantInfo?.name ?? '').replace('<BR>', '')
       this.takeawayEnabled = this.restaurantInfo.currentlyOpening === '1'
     },
-    async initPage() {
+    async initPage () {
       window.onkeydown = this.listenKeyDown
 
       await getAllDishes()
@@ -813,7 +812,7 @@ export default {
 
     this.loadRestaurantInfo()
   },
-  beforeDestroy() {
+  beforeDestroy () {
     clearAllTimer()
   }
 
