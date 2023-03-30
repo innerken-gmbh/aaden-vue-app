@@ -694,7 +694,14 @@ import { debounce } from 'lodash-es'
 
 import IKUtils from 'innerken-js-utils'
 
-import { acceptOrder, deleteDish, reprintOrder, safeRequest, showSuccessMessage } from '@/api/api'
+import {
+  acceptOrder,
+  deleteDish,
+  getExternalIdByRejectOrder,
+  reprintOrder,
+  safeRequest,
+  showSuccessMessage
+} from '@/api/api'
 
 import { mapGetters } from 'vuex'
 
@@ -712,7 +719,11 @@ import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
 import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import uniqBy from 'lodash-es/uniqBy'
+
+import { updateFireBaseOrders } from '@/api/fireStore'
+
 import { setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFirebase } from '@/firebase.js'
+
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -1354,10 +1365,14 @@ export default {
       await this.acceptOrder(timeReal.format('DD.MM.YYYY HH:mm'))
     },
     async rejectOrder () {
+      const externalId = await getExternalIdByRejectOrder(this.id)
       const res = await fastSweetAlertRequest(i18n.t('RevocationDishReason'), 'text',
         'Orders.php?op=rejectTakeAwayOrder', 'reason',
         { tableId: this.id })
       if (res) {
+        if (parseInt(externalId) !== 0) {
+          updateFireBaseOrders(parseInt(externalId), null, null, null, null, false)
+        }
         this.goHome()
       }
     },
