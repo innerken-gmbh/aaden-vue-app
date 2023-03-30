@@ -529,7 +529,6 @@ import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
 import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
 import { loadTransLangs } from '@/i18n'
 import PickUpItem from '@/views/FirstPage/Table/Table/Item/PickUpItem.vue'
-import { listenFireStoreOrders } from '@/api/fireStore'
 
 const keyboardLayout =
   [
@@ -607,9 +606,6 @@ export default {
       await syncTakeawaySettingToCloud(info)
       await this.loadRestaurantInfo()
       this.loading = false
-      if (info.currentlyOpening === 1) {
-        listenFireStoreOrders()
-      }
     }
   },
   computed: {

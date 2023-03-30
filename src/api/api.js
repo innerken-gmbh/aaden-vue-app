@@ -266,7 +266,7 @@ export async function changePayMethodForOrder (orderId, paymentLogs) {
 export async function sendFireStoreOrder (orders) {
   return (await hillo.post('AccessLog.php?op=getFireStoreOrders', {
     orders: JSON.stringify(orders)
-  })).content.response
+  })).response
 }
 
 export const updateRestaurantInfo = function (item) {

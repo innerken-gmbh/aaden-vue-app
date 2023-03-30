@@ -720,7 +720,7 @@ import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import uniqBy from 'lodash-es/uniqBy'
 
-import { updateFirebaseOrder } from '@/api/fireStore'
+import { acceptFireBaseOrder } from '@/api/fireStore'
 
 import { setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFirebase } from '@/firebase.js'
 
@@ -1370,7 +1370,7 @@ export default {
         { tableId: this.id })
       if (res) {
         if (parseInt(externalId) !== 0) {
-          updateFirebaseOrder(parseInt(externalId), null, null, null, null, false)
+          await acceptFireBaseOrder(externalId, false)
         }
         this.goHome()
       }
