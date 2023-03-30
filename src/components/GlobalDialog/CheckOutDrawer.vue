@@ -18,7 +18,7 @@ import { goHome } from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { round } from 'lodash-es'
-import { changeFireBaseOrderToPaid } from '@/api/fireStore'
+import { changeFireBaseOrderToFinished } from '@/api/fireStore'
 
 export default {
   name: 'CheckOutDrawer',
@@ -110,7 +110,7 @@ export default {
           tableId: checkOutData.tableId
         })
         if (parseInt(externalId) !== 0) {
-          await changeFireBaseOrderToPaid(externalId)
+          await changeFireBaseOrderToFinished(externalId)
         }
         toast(this.$t('JSTableCheckOutSuccess'))
         this.cancel()

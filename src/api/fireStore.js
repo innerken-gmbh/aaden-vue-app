@@ -57,14 +57,15 @@ export async function acceptFireBaseOrder (cloudId, accepted = true) {
 }
 
 export async function changeFireBaseOrderToReadyToPick (cloudId) {
+  console.log(cloudId, 'ready to pick')
   return await updateDoc(doc(db, 'order', cloudId), {
     canPickUp: true
   })
 }
 
-export async function changeFireBaseOrderToPaid (cloudId) {
+export async function changeFireBaseOrderToFinished (cloudId) {
   return await updateDoc(doc(db, 'order', cloudId), {
-    paid: true
+    finished: true
   })
 }
 
