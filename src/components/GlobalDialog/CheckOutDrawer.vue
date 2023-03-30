@@ -2,10 +2,10 @@
   <v-navigation-drawer width="fit-content" left fixed temporary v-model="realShow" touchless stateless>
     <v-card class="fill-height">
       <check-out-calculator
-          :id="id"
-          @payment-cancel="realShow=false"
-          @payment-submit="checkOut"
-          :total="totalPrice"/>
+        :id="id"
+        @payment-cancel="realShow=false"
+        @payment-submit="checkOut"
+        :total="totalPrice"/>
     </v-card>
   </v-navigation-drawer>
 </template>
@@ -13,16 +13,16 @@
 <script>
 import CheckOutCalculator from './CheckOutCalculator'
 import hillo from 'hillo'
-import { toast } from '@/oldjs/common'
-import { goHome } from '@/oldjs/StaticModel'
-import { printNow } from '@/oldjs/Timer'
+import {toast} from '@/oldjs/common'
+import {goHome} from '@/oldjs/StaticModel'
+import {printNow} from '@/oldjs/Timer'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import { round } from 'lodash-es'
-import { updateFireBaseOrders } from '@/api/fireStore'
+import {round} from 'lodash-es'
+import {changeFireBaseOrderToPaid} from '@/api/fireStore'
 
 export default {
   name: 'CheckOutDrawer',
-  components: { CheckOutCalculator },
+  components: {CheckOutCalculator},
   props: {
     id: {
       default: null
@@ -57,7 +57,7 @@ export default {
     }
   },
   computed: {
-    totalPrice () {
+    totalPrice() {
       return round(this.order.total * (1 - this.discountRatio), 2)
     },
     realShow: {
@@ -70,10 +70,10 @@ export default {
     }
   },
   methods: {
-    cancel () {
+    cancel() {
       this.realShow = false
     },
-    async checkOut (paymentLog = [], billType) {
+    async checkOut(paymentLog = [], billType) {
       const print = parseInt(billType)
       let withTitle = 0
       let printCount = 1
@@ -100,7 +100,7 @@ export default {
       if (this.discountRatio !== 0) {
         checkOutData.discountStr = (this.discountStr ?? '')
           .indexOf('p') !== -1 ? this.discountStr : (this.order.total * this.discountRatio)
-            .toFixed(2)
+          .toFixed(2)
       }
 
       delete checkOutData.discountStr
@@ -110,12 +110,12 @@ export default {
           tableId: checkOutData.tableId
         })
         if (parseInt(externalId) !== 0) {
-          updateFireBaseOrders(parseInt(externalId), null, null, true, true)
+          await changeFireBaseOrderToPaid(externalId)
         }
         toast(this.$t('JSTableCheckOutSuccess'))
         this.cancel()
         if (this.checkOutType === 'checkOut') {
-          goHome()
+          await goHome()
         }
       }
       printNow()
