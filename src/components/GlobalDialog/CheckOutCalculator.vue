@@ -337,7 +337,6 @@ export default {
       return this.total - logTotal
     },
     readyToCheckOut: function () {
-      console.log(this.remainTotal)
       return this.equals(this.remainTotal, 0) && this.paymentLog.length !== 0
     }
   },
