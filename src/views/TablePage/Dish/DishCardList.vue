@@ -2,13 +2,15 @@
   <v-card shaped elevation="0" class="d-flex flex-column flex-grow-1 "
           style="max-height:calc(100% - 60px)">
     <div class="d-flex align-center pt-2 px-2">
-      <h2 class="pa-2"> {{ title }}</h2>
+      <div class="pa-2 text-h6"> {{ title }}</div>
       <v-spacer></v-spacer>
-      <v-btn icon :color="onlyPaid?'success':'warning'"
-             class="mr-2"
-             @click="onlyPaid=!onlyPaid"
+      <v-btn
+        text
+        :color="onlyPaid?'success':'warning'"
+        @click="onlyPaid=!onlyPaid"
       >
         <v-icon>mdi-cash</v-icon>
+        只看付费
       </v-btn>
       <slot name="action">
         <v-btn v-if="discountDish" @click="$emit('discount-clear')"

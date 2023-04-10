@@ -1,13 +1,15 @@
 <template>
   <div class="dishCard mx-1" style="position: relative">
-    <div class="px-1 py-2 pr-0">
+    <div class="px-1 py-1 pr-0">
       <div class="flex-grow-1 d-flex">
-        <span class="dishCount flex-shrink-0">{{ dish.count }}&times;</span>
-        <div class='dishName flex-grow-1 mr-4'>
+        <span class="text-body-1 font-weight-bold flex-shrink-0 dishCount">
+          {{ dish.count }}&times;
+        </span>
+        <div class='text-body-1 font-weight-bold flex-grow-1 mr-4'>
           <span v-code-hide class='codeRow'>{{ dish.code }}.</span><span>{{ dish.name }}</span>
         </div>
         <v-spacer/>
-        <div class="flex-shrink-0">
+        <div class="flex-shrink-0 text-body-1">
           <template>
             <v-chip small label v-if="dish.overrideConsumeTypeId" class="mr-1" color="primary">
               {{ findConsumeTypeById(dish.overrideConsumeTypeId) }}
@@ -31,16 +33,8 @@
 
     </div>
     <div>
-      <div v-show="dish.displayApply.length>0" class="dishMod">
-        <div class="d-flex subtitle-2 justify-space-between grey--text text--darken-2"
-             v-bind:key="'mod_order-i'+i+'value'+ap.value" v-for="(ap,i) in dish.displayApply">
-          <div>{{ ap.groupName }}:{{ ap.value }}</div>
-          <div>
-            <template v-if="ap.priceInfo&&ap.priceInfo>0">
-              {{ ap.priceInfo | priceDisplay }}
-            </template>
-          </div>
-        </div>
+      <div v-show="dish.displayApply.length>0" class="dishMod text-body-2 text--secondary px-1">
+        {{ dishModString }}
       </div>
       <v-chip label v-if="dish.note">
         <v-icon left small class="mr-1">mdi-pencil</v-icon>
@@ -116,6 +110,14 @@ export default {
     },
     expand: { default: false }
   },
+  computed: {
+    dishModString () {
+      return this.dish.displayApply.map(it => {
+        const price = it.priceInfo > 0 ? ' (' + it.priceInfo + ')' : ''
+        return it.value + price
+      }).join(', ')
+    }
+  },
   methods: {
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
@@ -152,13 +154,11 @@ export default {
 
 .dishCard {
   margin-top: 4px;
-  background: white;
 }
 
 .dishCount {
   color: var(--v-primary-base);
   width: 36px;
-  font-weight: 900;
   text-align: left;
 }
 
@@ -185,15 +185,6 @@ export default {
   margin-bottom: 4px;
   white-space: nowrap;
   padding: 2px 4px;
-}
-
-.dishMod {
-  max-width: calc(100% - 24px);
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  padding: 2px 4px;
-  padding-right: 0;
 }
 
 </style>

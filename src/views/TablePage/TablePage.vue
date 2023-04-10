@@ -5,7 +5,10 @@
         <div style="display: grid;
         grid-template-columns: 348px calc(100vw - 348px);
         background: #f6f6f6;">
-          <v-card class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height" elevation="4" rounded
+          <v-card class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height"
+                  elevation="4"
+                  color="white"
+                  rounded
                   style="height: 100vh">
             <v-card class="d-flex align-center pa-2" color="primary" elevation="0"
                     @click="back">
@@ -33,21 +36,27 @@
                 @discount-clear="discountClear"
               >
                 <template #action>
-                  <v-btn :loading="isSendingRequest" color="warning" elevation="0" @click="discountShow">
-                    <v-icon>mdi-sale</v-icon>
+                  <v-btn :loading="isSendingRequest"
+                         color="warning"
+                         text
+                         elevation="0"
+                         @click="discountShow">
+                    <v-icon left>mdi-sale</v-icon>
                     {{ $t('Discount') }}
                   </v-btn>
                 </template>
-                <v-card class="d-flex align-center">
-                  <v-btn :disabled="this.tableDetailInfo.order.consumeTypeStatusId<=1" block color="success darken-3"
-                         elevation="0"
-                         height="60px"
-                         x-large
-                         @click="jumpToPayment()">
+                <div>
+                  <v-btn
+                    :disabled="this.tableDetailInfo.order.consumeTypeStatusId<=1"
+                    block color="success darken-3"
+                    elevation="0"
+                    style="border-radius: 12px"
+                    height="72px"
+                    @click="jumpToPayment()">
                     <v-icon left size="28">mdi-calculator-variant</v-icon>
                     <span class="text-h6">{{ $t('payBill') }}</span>
                   </v-btn>
-                </v-card>
+                </div>
 
               </dish-card-list>
             </keep-alive>
@@ -133,7 +142,6 @@
                   </template>
                 </v-item-group>
               </div>
-
             </div>
             <v-divider class="mb-2"></v-divider>
             <template v-if="!keyboardMode">
