@@ -1,12 +1,12 @@
 <template>
   <v-card
-      color="white"
-      elevation="0"
-      @click='$emit("click",table.tableName)'
-      class="pa-3"
-      :width="bigCard?'100%':'240px'"
-      style="border-radius: 12px;position: relative;"
-      :key="table.id">
+    color="white"
+    elevation="0"
+    @click='$emit("click",table.tableName)'
+    class="pa-3"
+    :width="bigCard?'100%':'240px'"
+    style="border-radius: 12px;position: relative;"
+    :key="table.id">
 
     <div class="d-flex align-center">
 
@@ -40,15 +40,15 @@
       </v-chip>
       <div>
         <template
-            v-for="(time) in [0,10,15,20,30,40,50,60]"
+          v-for="(time) in [0,10,15,20,30,40,50,60]"
         >
           <v-chip
-              label
-              class="ma-1"
-              :key="time"
-              outlined
-              color="success"
-              @click.stop="acceptOrderWithTime(time)"
+            label
+            class="ma-1"
+            :key="time"
+            outlined
+            color="success"
+            @click.stop="acceptOrderWithTime(time)"
           >
             + {{ time }}
           </v-chip>
@@ -63,6 +63,8 @@
 import { getColorLightness } from '@/oldjs/api'
 import { beautifulTable, getRestaurantInfo } from '@/api/restaurantInfoService'
 import dayjs from 'dayjs'
+import { changeFireBaseOrderDeliveryTime } from '@/api/fireStore'
+import { Timestamp } from 'firebase/firestore'
 
 export default {
   name: 'TakeawayOrderItem',
@@ -72,6 +74,7 @@ export default {
   },
   computed: {
     table () {
+      console.log(this.tableInfo, '桌子')
       return beautifulTable(this.tableInfo)
     }
   },
@@ -94,7 +97,11 @@ export default {
         }
       }
       timeReal = timeReal.add(time, 'm')
+      console.log(this.table)
+
       this.$emit('accept', timeReal.format('DD.MM.YYYY HH:mm'), this.tableInfo.tableId)
+      await changeFireBaseOrderDeliveryTime(this.table.externalId,
+        Timestamp.fromDate(timeReal.toDate()))
     }
   }
 }

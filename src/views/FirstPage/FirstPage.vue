@@ -411,7 +411,6 @@
 import { version } from '../../../package.json'
 import {
   blockReady,
-  fastSweetAlertRequest,
   findConsumeTypeById,
   getAllDishes,
   getConsumeTypeList,
@@ -436,7 +435,7 @@ import { TableFixedSectionId } from '@/api/tableService'
 
 import { getRestaurantInfo } from '@/api/restaurantInfoService'
 
-import { acceptOrder, loadRestaurantInfo, readyToPick, syncTakeawaySettingToCloud } from '@/api/api'
+import { acceptOrder, loadRestaurantInfo, readyToPick, rejectOrder, syncTakeawaySettingToCloud } from '@/api/api'
 import { Remember } from '@/api/remember'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import TrailingNumber from '@/views/FirstPage/widget/TrailingNumber'
@@ -446,7 +445,7 @@ import TimeDisplay from '@/components/Base/TimeDisplay'
 import TakeawayOrderItem from '@/views/FirstPage/Table/Table/Item/TakeawayOrderItem'
 import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
 import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
-import i18n, { loadTransLangs } from '@/i18n'
+import { loadTransLangs } from '@/i18n'
 import PickUpItem from '@/views/FirstPage/Table/Table/Item/PickUpItem.vue'
 
 const keyboardLayout =
@@ -580,12 +579,8 @@ export default {
       await this.refreshTables()
     },
     async rejectOrder (id) {
-      const res = await fastSweetAlertRequest(i18n.t('RevocationDishReason'), 'text',
-        'Orders.php?op=rejectTakeAwayOrder', 'reason',
-        { tableId: id })
-      if (res) {
-        await this.refreshTables()
-      }
+      await rejectOrder(id)
+      await this.refreshTables()
     },
     togoClick () {
       if (this.takeawayList.length > 0) {
