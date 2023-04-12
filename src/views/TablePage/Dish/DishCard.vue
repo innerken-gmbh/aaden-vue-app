@@ -1,10 +1,17 @@
 <template>
-  <div class="dishCard mx-1" style="position: relative">
+  <v-card color="grey lighten-4"
+          flat
+          class="dishCard pa-1 px-2 mb-2"
+          style="position: relative">
     <div class="px-1 py-1 pr-0">
       <div class="flex-grow-1 d-flex">
-        <span class="text-body-1 font-weight-bold flex-shrink-0 dishCount">
-          {{ dish.count }}&times;
-        </span>
+        <v-card
+          color="primary white--text"
+          style="border-radius: 24px"
+          elevation="0"
+          class="px-2 mr-2 text-body-1 font-weight-bold flex-shrink-0">
+          {{ dish.count }}
+        </v-card>
         <div class='text-body-1 font-weight-bold flex-grow-1 mr-4'>
           <span v-code-hide class='codeRow'>{{ dish.code }}.</span><span>{{ dish.name }}</span>
         </div>
@@ -84,7 +91,7 @@
         </template>
       </div>
     </div>
-  </div>
+  </v-card>
 </template>
 
 <script>

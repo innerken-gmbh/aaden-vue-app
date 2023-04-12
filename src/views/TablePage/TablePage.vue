@@ -10,18 +10,16 @@
                   color="white"
                   rounded
                   style="height: 100vh">
-            <v-card class="d-flex align-center pa-2" color="primary" elevation="0"
+            <v-card class="d-flex align-center pa-2" elevation="0"
                     @click="back">
-              <v-btn :loading="isSendingRequest" color="primary"
-                     elevation="0"
-                     height="48px"
-                     x-large>
-                <v-icon>mdi-arrow-left</v-icon>
-                {{ $t('Home') }}
-              </v-btn>
-              <v-spacer></v-spacer>
-              <div class="text-h4 text-capitalize white--text mr-4">
-                {{ tableDetailInfo.tableBasicInfo.name }}
+              <v-icon class="mr-4" large>mdi-chevron-left</v-icon>
+              <div>
+                <div class="text-h6 text-capitalize mr-4">
+                  Table: {{ tableDetailInfo.tableBasicInfo.name }}
+                </div>
+                <div class="text-body-2 text--secondary mt-n1">
+                  {{ tableDetailInfo.servant }}
+                </div>
               </div>
             </v-card>
             <keep-alive>
