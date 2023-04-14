@@ -70,7 +70,7 @@
                    class="d-flex justify-space-between pa-2 my-1" style="width: 100%">
             <h2 class="font-weight-bold"
                 style="font-size: 24px">
-              {{ paymentInfo.price|priceDisplay }}
+              {{ paymentInfo.price | priceDisplay }}
             </h2>
             <div>
               <v-btn color="success" text>
