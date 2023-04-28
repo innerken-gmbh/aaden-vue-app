@@ -43,5 +43,6 @@
   "showAllTableButton": true,
   "showTableList": false,
   "showConfigButton": false,
-  "showDrawerButton": false
+  "showDrawerButton": false,
+  "servantShowHistoryBill": true
 }

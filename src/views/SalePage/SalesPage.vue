@@ -15,7 +15,8 @@
       </v-tabs>
       <v-spacer></v-spacer>
 
-      <v-btn color="primary" elevation="0" text x-large @click="showDatePicker=true">
+      <v-btn v-if="isBoss||Config.servantShowHistoryBill" color="primary" elevation="0" text x-large
+             @click="showDatePicker=true">
         <v-icon left>mdi-calendar</v-icon>
         {{ getNiceLabel(singleZBonDate) }}/{{ $t('ChangeDate') }}
       </v-btn>
@@ -86,13 +87,13 @@
                             </v-list-item-content>
                           </v-list-item>
                           <v-btn
-                              block
-                              color="warning"
-                              x-large
-                              @click="showNumberKeyboard=true">
+                            block
+                            color="warning"
+                            x-large
+                            @click="showNumberKeyboard=true">
                             <div
-                                class="hideMore"
-                                style="max-width: 200px"
+                              class="hideMore"
+                              style="max-width: 200px"
                             >
                               {{ $t('CreateNewRecord') }}
                             </div>
