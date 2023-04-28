@@ -1,9 +1,17 @@
 <template>
-  <v-btn large rounded elevation="0" dark :loading="loading" @click="!loading?$emit('click'):''" :disabled="disabled"
-         :color="color">
-    <v-icon>{{ icon }}</v-icon>
+  <v-btn
+    rounded
+    elevation="0"
+    large
+    :loading="loading"
+    @click="!loading ? $emit('click') : ''"
+    :disabled="disabled"
+    :color="color"
+    class="black--text lighten-4"
+  >
+    <v-icon left >{{ icon }}</v-icon>
     <div class="hideMore" style="max-width: 100px">
-    {{ text }}
+      {{ text }}
     </div>
   </v-btn>
 </template>
@@ -32,9 +40,9 @@ export default {
   display: flex;
   width: 100%;
   justify-content: center;
-
 }
-.hideMore{
+
+.hideMore {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

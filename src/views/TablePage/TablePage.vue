@@ -1,32 +1,26 @@
 <template>
-  <div @click="keyboardInput=''">
+  <div @click="keyboardInput = ''">
     <template v-cloak>
       <v-main>
-        <div style="display: grid;
-        grid-template-columns: 348px calc(100vw - 348px);
-        background: #f6f6f6;">
-          <v-card class=" d-flex justify-space-between flex-shrink-0 flex-column fill-height"
-                  elevation="4"
-                  color="white"
-                  rounded
-                  style="height: 100vh">
-            <v-card class="d-flex align-center pa-2" elevation="0"
-                    @click="back">
-              <v-icon class="mr-4" large>mdi-chevron-left</v-icon>
-              <div>
-                <div class="text-h6 text-capitalize mr-4">
-                  Table: {{ tableDetailInfo.tableBasicInfo.name }}
-                </div>
-                <div class="text-body-2 text--secondary mt-n1">
-                  {{ tableDetailInfo.servant }}
-                </div>
-              </div>
+        <div style="display: grid; grid-template-columns: 348px calc(100vw - 348px); background: #f6f6f6">
+          <v-card
+            class="d-flex justify-space-between flex-shrink-0 flex-column fill-height"
+            elevation="0"
+            dark
+            tile
+            style="height: 100vh"
+          >
+            <v-card color="transparent" class="d-flex align-center pa-2 py-3" elevation="0" @click="back">
+              <v-icon class="mr-2" large>mdi-chevron-left</v-icon>
+              <div class="text-body-2">返回</div>
+              <v-spacer></v-spacer>
             </v-card>
+            <div class="pa-2"></div>
             <keep-alive>
               <dish-card-list
-                v-if="cartListModel.list.length===0"
+                v-if="cartListModel.list.length === 0"
                 :click-callback="addToSplit"
-                :default-expand="cartListModel.list.length===0"
+                :default-expand="cartListModel.list.length === 0"
                 :discount-ratio="discountRatio"
                 :dish-list-model="orderListModel"
                 :source-marks="sourceMarks"
@@ -34,32 +28,31 @@
                 @discount-clear="discountClear"
               >
                 <template #action>
-                  <v-btn :loading="isSendingRequest"
-                         color="warning"
-                         text
-                         elevation="0"
-                         @click="discountShow">
+                  <v-btn :loading="isSendingRequest" color="warning" text elevation="0" @click="discountShow">
                     <v-icon left>mdi-sale</v-icon>
-                    {{ $t('Discount') }}
+                    {{ $t("Discount") }}
                   </v-btn>
                 </template>
-                <div>
-                  <v-btn
-                    :disabled="this.tableDetailInfo.order.consumeTypeStatusId<=1"
-                    block color="success darken-3"
-                    elevation="0"
-                    style="border-radius: 12px"
-                    height="72px"
-                    @click="jumpToPayment()">
-                    <v-icon left size="28">mdi-calculator-variant</v-icon>
-                    <span class="text-h6">{{ $t('payBill') }}</span>
-                  </v-btn>
-                </div>
-
+                <template v-slot:default="{ total }">
+                  <div class="pa-2">
+                    <v-btn
+                      :disabled="tableDetailInfo.order.consumeTypeStatusId <= 1"
+                      block
+                      color="green lighten-4 black--text"
+                      elevation="0"
+                      rounded
+                      height="64"
+                      @click="jumpToPayment()"
+                    >
+                      <v-icon left class="mr-6" size="28">mdi-calculator-variant</v-icon>
+                      <span class="text-h5">{{ total | priceDisplay }}</span>
+                    </v-btn>
+                  </div>
+                </template>
               </dish-card-list>
             </keep-alive>
             <dish-card-list
-              v-if="cartListModel.list.length>0"
+              v-if="cartListModel.list.length > 0"
               ref="cartList"
               :click-callback="removeDish"
               :default-expand="true"
@@ -70,169 +63,179 @@
               :show-number="true"
               :title="$t('New')"
               color="primary"
-              @current-dish-change="cartCurrentDish=$event">
+              @current-dish-change="cartCurrentDish = $event"
+            >
               <template #action>
-                <v-btn color="error" elevation="0" @click="cartListModelClear">
-                  <v-icon left>
-                    mdi-trash-can
-                  </v-icon>
-                  {{ $t('EmptyShoppingCart') }}
+                <v-btn text color="error" elevation="0" @click="cartListModelClear">
+                  <v-icon left> mdi-trash-can</v-icon>
+                  {{ $t("EmptyShoppingCart") }}
                 </v-btn>
               </template>
-              <template>
-                <v-card class="d-flex align-center" color="primary">
-                  <v-btn :loading="isSendingRequest" class="mr-1 ml-2"
-                         color="primary"
-                         elevation="0"
-                         large @click="orderDish(cartListModel.list,false)">
-                    <v-icon>mdi-printer-off</v-icon>
+              <template v-slot:default="{ total }">
+                <div class="pa-2">
+                  <v-btn
+                    :loading="isSendingRequest"
+                    block
+                    color="primary lighten-4 black--text"
+                    elevation="0"
+                    rounded
+                    height="64"
+                    @click="orderDish(cartListModel.list)"
+                  >
+                    <v-icon left class="mr-6" size="28">mdi-printer</v-icon>
+                    <span class="text-h5">{{ total | priceDisplay }}</span>
                   </v-btn>
-                  <v-btn :loading="isSendingRequest"
-                         class="flex-grow-1"
-                         color="primary"
-                         dark
-                         elevation="0"
-                         height="60px" large
-                         style="border-radius: 12px"
-                         x-large @click="orderDish(cartListModel.list)">
-                    <v-icon left size="28">mdi-printer</v-icon>
-                    <span class="text-h6">  {{ $t('PlaceAnOrder') }}</span>
-                  </v-btn>
-                </v-card>
+                </div>
               </template>
             </dish-card-list>
           </v-card>
-          <v-card v-cloak class="flex-grow-1 pa-2 px-4 flex-column" color="transparent"
-                  elevation="0"
-                  style="height: 100vh;">
-            <div class="d-flex pl-2 align-baseline" style="height: 52px">
+          <v-card v-cloak class="flex-grow-1 flex-column" color="transparent" elevation="0" style="height: 100vh">
+            <v-card elevation="0" color="grey lighten-2" tile class="d-flex pa-3 px-4 align-center">
+              <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
+              <div class="text-h6 text-capitalize mr-6">{{ tableDetailInfo.tableBasicInfo.name }}</div>
               <template v-if="$vuetify.breakpoint.lgAndUp">
-                <v-icon size="20">mdi-office-building-marker</v-icon>
-                <h3 class="ml-2 font-weight-regular text-truncate">{{ findConsumeTypeById(consumeTypeId) }}</h3>
-
+                <v-icon>mdi-office-building-marker</v-icon>
+                <div class="ml-2 text-h6 text-truncate">{{ findConsumeTypeById(consumeTypeId) }}</div>
               </template>
-              <v-icon class="ml-8" size="20">mdi-account-box</v-icon>
-              <h3 class="ml-2 font-weight-regular text-truncate">{{ tableDetailInfo.servant }}</h3>
+
+              <v-icon class="mr-2 ml-6">mdi-account-circle</v-icon>
+              <div class="text-h6">
+                {{ tableDetailInfo.servant }}
+              </div>
+
+              <v-spacer></v-spacer>
               <address-display
                 :consume-type-status-id="consumeTypeStatusId"
                 :raw-address-info="realAddressInfo"
                 :should-open-menu.sync="addressFormOpen"
-                class="ml-8"
+                class="mr-2"
                 @accept="acceptOrderWithTime"
                 @reject="rejectOrder"
-                @address-change="submitRawAddressInfo"/>
-              <v-spacer></v-spacer>
-              <div class="d-flex align-center flex-grow-0 mr-n2" style="max-width: 40%">
-                <v-btn class="mr-4" disabled elevation="0" icon>
-                  <v-icon>mdi-swap-horizontal</v-icon>
-                </v-btn>
+                @address-change="submitRawAddressInfo"
+              />
+              <v-menu offset-y>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn
+                    rounded
+                    class="mr-4"
+                    color="indigo lighten-4 black--text"
+                    elevation="0"
+                    v-bind="attrs"
+                    v-on="on"
+                  >
+                    <v-icon left>mdi-swap-horizontal</v-icon>
+                    切换菜单
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item
+                    @click="overrideConsumeTypeId = ct.id"
+                    v-for="ct of consumeTypeList"
+                    :key="ct.id + 'consumeType'"
+                  >
+                    <v-list-item-title>
+                      {{ ct.name }}
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+              <v-btn rounded color="primary lighten-4 black--text" elevation="0" @click="keyboardMode = !keyboardMode">
+                <template v-if="!keyboardMode">
+                  <v-icon left>mdi-keyboard</v-icon>
+                  {{ $t("KeyboardAndDishNumber") }}
+                </template>
+                <template v-else>
+                  <v-icon left>mdi-menu</v-icon>
+                  {{ $t("ViewCategoryMenu") }}
+                </template>
+              </v-btn>
+            </v-card>
 
-                <v-item-group v-model="overrideConsumeTypeIndex" class="d-flex"
-                              dark
-                              style="overflow-x: scroll">
-                  <template v-for="ct of consumeTypeList">
-                    <v-item v-bind:key="ct.id+'consumeType'" v-slot="{active,toggle}">
-                      <div :class="active?'active':''"
-                           class="consumeTypeItem mr-1"
-                           @click="toggle">{{ ct.name }}
-                      </div>
-                    </v-item>
-                  </template>
-                </v-item-group>
-              </div>
-            </div>
-            <v-divider class="mb-2"></v-divider>
             <template v-if="!keyboardMode">
-              <v-card
-                class="d-flex"
-                color="transparent"
-                elevation="0"
-              >
+              <v-card class="d-flex py-2 px-4" color="grey lighten-3" elevation="0">
                 <template>
-                  <v-item-group v-model="activeDCT" v-dragscroll
-                                mandatory
-                                style="display: grid;
-                          grid-gap: 8px;
-                          grid-auto-columns: 120px;
-                          grid-auto-flow: column;
-                          overflow-x: scroll">
-
-                    <v-item v-for="ct of dct" v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
-                      <v-card :color="active?'primary':''"
-                              :dark="active"
-                              :elevation="active?4:0"
-                              class="d-flex justify-center align-center"
-                              height="48"
-                              style="border-radius: 12px;font-size: 18px"
-                              @click="toggle">{{ ct.name }}
+                  <v-item-group
+                    v-model="activeDCT"
+                    v-dragscroll
+                    mandatory
+                    style="
+                      display: grid;
+                      grid-gap: 8px;
+                      grid-auto-columns: 120px;
+                      grid-auto-flow: column;
+                      overflow-x: scroll;
+                    "
+                  >
+                    <v-item v-for="ct of dct" v-bind:key="ct.id + 'categorytypes'" v-slot="{ active, toggle }">
+                      <v-card
+                        :color="active ? 'primary' : ''"
+                        :dark="active"
+                        :elevation="active ? 4 : 0"
+                        class="d-flex justify-center align-center"
+                        height="48"
+                        style="border-radius: 12px; font-size: 18px"
+                        @click="toggle"
+                        >{{ ct.name }}
                       </v-card>
                     </v-item>
                   </v-item-group>
                   <v-spacer></v-spacer>
                 </template>
-
-                <v-card class="d-flex justify-center align-center px-4"
-                        elevation="0"
-                        height="48"
-                        style="border-radius: 12px;font-size: 18px"
-                        @click="keyboardMode=true">
-
-                  <v-icon left>mdi-keyboard</v-icon>
-                  {{ $t('KeyboardAndDishNumber') }}
-
-                </v-card>
-
               </v-card>
-              <v-divider class="my-2"></v-divider>
-              <v-card v-dragscroll class="dragscroll dishCardListContainer flex-grow-1" color="transparent"
-                      elevation="0" style=";position: relative">
-                <div v-if="!activeCategoryId">
-                  <v-item-group
-                    class="dishCardList">
+              <v-card
+                v-dragscroll
+                class="dragscroll dishCardListContainer flex-grow-1 px-4"
+                color="transparent"
+                elevation="0"
+                style="position: relative"
+              >
+                <div class="mt-2" v-if="!activeCategoryId">
+                  <v-item-group class="dishCardList">
                     <template v-for="category of filteredC">
-                      <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
-                        <v-card class="d-flex align-center justify-center text-center pa-2" elevation="0"
-                                style="
-                      position: relative;
-                      width: 100%;
-                      height: 124px;
-                      font-size: 18px;
-                      font-weight: 500;
-                        display: -webkit-box;
-                        word-break: break-all;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  border-radius: 12px;
-  overflow: hidden;
-  text-overflow: ellipsis;"
-                                @click="changeCategory(category.id,toggle)">
+                      <v-item v-bind:key="'categorytypes' + category.id" v-slot="{ active, toggle }">
+                        <v-card
+                          class="d-flex text-h6 align-center justify-center text-center pa-2"
+                          elevation="0"
+                          :color="category.color ? category.color : 'white'"
+                          style="
+                            position: relative;
+                            width: 100%;
+                            height: 124px;
+
+                            display: -webkit-box;
+                            word-break: break-all;
+                            -webkit-line-clamp: 3;
+                            -webkit-box-orient: vertical;
+                            border-radius: 12px;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                          "
+                          @click="changeCategory(category.id, toggle)"
+                        >
                           {{ category.name }}
-                          <div :style="{background:category.color}"
-                               style="position: absolute;width: 40%;top: 12px;
-left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
                         </v-card>
                       </v-item>
                     </template>
                   </v-item-group>
                 </div>
                 <template v-if="activeCategoryId">
-                  <div style="display: grid;grid-template-columns: 1fr 108px;grid-gap: 24px">
-
+                  <div style="display: grid; grid-template-columns: 1fr 108px; grid-gap: 24px">
                     <div class="dishCardList">
-                      <v-card v-if="activeCategoryId" class="d-flex align-center"
-                              elevation="0"
-                              style="width: 100%;height: 124px;
-                        color: #ff8c50;
-                        border-radius: 12px" @click="activeCategoryId=null"
+                      <v-card
+                        v-if="activeCategoryId"
+                        class="d-flex align-center"
+                        elevation="0"
+                        style="width: 100%; color: var(--v-primary-base); height: 124px; border-radius: 12px"
+                        @click="activeCategoryId = null"
                       >
-                        <div class="d-flex flex-column justify-center align-center flex-wrap" style="width: 100%">
-                          <v-icon color="#ff8c50" large>mdi-menu-open</v-icon>
-                          <div>{{ $t('return') }}</div>
+                        <div class="d-flex flex-column justify-center align-center" style="width: 100%">
+                          <v-icon color="primary" large>mdi-arrow-left</v-icon>
+                          <div class="mt-1 text-body-2">{{ $t("return") }}</div>
                         </div>
                       </v-card>
                       <template v-for="dish of filteredDish">
                         <dish-block
-                          :key="'dish'+dish.code"
+                          :key="'dish' + dish.code"
                           v-ripple
                           :code="dish.code"
                           :count="dish.count"
@@ -244,73 +247,108 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
                           :is-free="dish.isFree"
                           :price="dish.price"
                           @click="orderOneDish(dish.code)"
-                          @click-tune="showModification(dish,1)"/>
+                          @click-tune="showModification(dish, 1)"
+                        />
                       </template>
                     </div>
                   </div>
-                  <div v-dragscroll
-                       style="width: 108px;height: calc(100vh - 192px);overflow: hidden;position: fixed;right: 12px;top: 132px">
+                  <div
+                    v-dragscroll
+                    style="
+                      width: 108px;
+                      height: calc(100vh - 192px);
+                      overflow: hidden;
+                      position: fixed;
+                      right: 12px;
+                      top: 132px;
+                    "
+                  >
                     <v-item-group
-
-                      style="display: grid;grid-auto-columns: 108px;grid-auto-rows: 48px;grid-auto-flow: row;grid-gap: 4px">
+                      style="
+                        display: grid;
+                        grid-auto-columns: 108px;
+                        grid-auto-rows: 48px;
+                        grid-auto-flow: row;
+                        grid-gap: 4px;
+                      "
+                    >
                       <template v-for="category of filteredC">
-                        <v-item v-bind:key="'categorytypes'+category.id" v-slot="{active,toggle}">
-                          <v-card :color="activeCategoryId===category.id?'primary':'white'"
-                                  :dark="activeCategoryId===category.id"
-                                  class="d-flex align-center justify-center text-center pa-2"
-                                  elevation="0"
-                                  style="
-                      position: relative;
-                      width: 100%;
-                      height: 48px;
-                      font-size: 16px;
-                        white-space: nowrap;
-  border-radius: 12px;
-  overflow: hidden;
-  text-overflow: ellipsis;"
-                                  @click="changeCategory(category.id,toggle)">
-                            <div style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis">
+                        <v-item v-bind:key="'categorytypes' + category.id" v-slot="{ active, toggle }">
+                          <v-card
+                            :color="activeCategoryId === category.id ? 'primary' : 'white'"
+                            :dark="activeCategoryId === category.id"
+                            class="d-flex align-center justify-center text-center pa-2"
+                            elevation="0"
+                            style="
+                              position: relative;
+                              width: 100%;
+                              height: 48px;
+                              font-size: 16px;
+                              white-space: nowrap;
+                              border-radius: 12px;
+                              overflow: hidden;
+                              text-overflow: ellipsis;
+                            "
+                            @click="changeCategory(category.id, toggle)"
+                          >
+                            <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
                               {{ category.name }}
                             </div>
 
-                            <div :style="{background:category.color}"
-                                 style="position: absolute;width: 40%;bottom: 0;
-left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
+                            <div
+                              :style="{ background: category.color }"
+                              style="
+                                position: absolute;
+                                width: 40%;
+                                bottom: 0;
+                                left: 0;
+                                right: 0;
+                                margin: auto;
+                                height: 6px;
+                                border-radius: 3px;
+                              "
+                            ></div>
                           </v-card>
                         </v-item>
                       </template>
                     </v-item-group>
                   </div>
                 </template>
-                <div style="width: 100%;height: 160px"></div>
+                <div style="width: 100%; height: 160px"></div>
               </v-card>
             </template>
-            <div v-else
-                 class="flex-grow-1"
-                 style="display: grid;grid-template-columns: 1fr 360px;height: calc(100vh - 130px);grid-gap: 16px">
-              <v-card class="l-result-display" elevation="0">
-
-                <div v-if="searchDish.length>0" class="flex-shrink-1 blue lighten-5"
-                     style="overflow: hidden">
-                  <v-card class="px-2 py-3" elevation="0">
-                    {{ $t('SearchResult') }}
+            <div
+              v-else
+              class="flex-grow-1"
+              style="display: grid; grid-template-columns: 1fr 360px; height: calc(100vh - 130px); grid-gap: 0px"
+            >
+              <v-card color="transparent" class="l-result-display" elevation="0">
+                <div v-if="searchDish.length > 0" class="flex-shrink-1" style="overflow: hidden">
+                  <v-card tile color="grey lighten-4" class="px-4 py-3" elevation="0">
+                    {{ $t("SearchResult") }}
                   </v-card>
                   <!--                  需要监听键盘的地方-->
-                  <template v-for="(dish,index) in searchDish">
-                    <v-card :key="dish.id" :class="index === indexActive ? 'first' : ''"
-                            :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}"
-                            class="d-flex  px-1 py-1 align-start"
-                            elevation="0"
-                            style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large" tile
-                            @click="searchDishClick(dish.code)"
+                  <template v-for="(dish, index) in searchDish">
+                    <v-card
+                      :key="dish.id"
+                      :class="index === indexActive ? 'first' : ''"
+                      :style="{ backgroundColor: '' + dish.displayColor, color: '' + dish.foreground }"
+                      class="d-flex px-4 py-1 align-start"
+                      elevation="0"
+                      style="width: 100%; border-bottom: 2px dashed #e2e3e5; font-size: x-large"
+                      tile
+                      @click="searchDishClick(dish.code)"
                     >
-                      <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
+                      <div class="name mr-2">
+                        <span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
                       </div>
                       <v-spacer></v-spacer>
-                      <div v-if="dish.isFree==='1'"
-                           class="price d-flex align-center green lighten-3 white--text"
-                           style="padding:2px 4px;border-radius: 4px;">
-                        {{ $t('Frei') }}
+                      <div
+                        v-if="dish.isFree === '1'"
+                        class="price d-flex align-center green lighten-3 white--text"
+                        style="padding: 2px 4px; border-radius: 4px"
+                      >
+                        {{ $t("Frei") }}
                       </div>
                       <div v-else class="price d-flex align-center text-no-wrap text-truncate">
                         {{ dish.price | priceDisplay }}
@@ -318,31 +356,20 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
                     </v-card>
                   </template>
                 </div>
-                <div v-else class="d-flex align-center justify-center" style="height: 100%;width: 100%">
+                <div v-else class="d-flex align-center justify-center" style="height: 100%; width: 100%">
                   <div class="d-flex flex-column align-center">
                     <div>
                       <v-icon color="grey lighten-1" x-large>mdi-keyboard</v-icon>
                     </div>
-                    <div class="text--disabled">{{ $t('PleaseUseKeyboardOrType') }}</div>
+                    <div class="text--disabled">{{ $t("PleaseUseKeyboardOrType") }}</div>
                   </div>
                 </div>
-
               </v-card>
               <v-card class="d-flex flex-column" elevation="0">
-                <v-card class="d-flex align-center px-4"
-                        color="grey lighten-2"
-                        elevation="0"
-                        height="48"
-                        style="font-size: 18px"
-                        @click="keyboardMode=false">
-
-                  <v-icon left>mdi-menu</v-icon>
-                  {{ $t('ViewCategoryMenu') }}
-                </v-card>
                 <div class="pa-2 text-h6" style="min-height: 96px">
                   <template v-if="keyboardInput">
-                    {{ Config.numberFirst ? $t('QuantityDishNumber') : $t('DishNumberQuantity') }}<br>
-                    {{ $t('Input') }}
+                    {{ Config.numberFirst ? $t("QuantityDishNumber") : $t("DishNumberQuantity") }}<br />
+                    {{ $t("Input") }}
                   </template>
                   <template v-else>
                     {{ feedback }}
@@ -350,102 +377,88 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
                 </div>
                 <v-spacer></v-spacer>
                 <div class="pa-2 flex-shrink-0" @click.stop>
-                  <v-text-field
-                    ref="ins"
-                    v-model="keyboardInput"
-                    :placeholder="Config.numberFirst?$t('quantity_x_dishNumber'):$t('DishNumberQuantity')"
-                    class="my-2"
-                    height="96px"
-                    hide-details
-                    readonly
-                    solo-inverted
-                    style="font-size: 32px"
-                  />
-                  <keyboard-layout :keys="keyboardLayout"
-                                   @input="numberInput"></keyboard-layout>
+                  <v-card
+                    color="grey lighten-3"
+                    elevation="0"
+                    class="text-h4 pa-3 py-6  mb-2 d-flex align-center"
+                    :class="keyboardInput ? '' : 'text--secondary'"
+                  >
+                    {{
+                      keyboardInput
+                        ? keyboardInput
+                        : Config.numberFirst
+                        ? $t("quantity_x_dishNumber")
+                        : $t("DishNumberQuantity")
+                    }}
+                  </v-card>
+                  <keyboard-layout :keys="keyboardLayout" @input="numberInput"></keyboard-layout>
                 </div>
               </v-card>
-
             </div>
           </v-card>
           <v-card
             class="d-flex align-center"
-            elevation="4"
+            elevation="0"
             height="60px"
-            style="position: fixed;
-                  z-index:3;
-                  bottom: 0;
-                  right: 0;
-                  overflow-x: scroll;
-                  width: calc(100vw - 350px);
-               ">
-            <div class="ml-2" style="display: grid;
-            grid-auto-columns: min-content;
-            grid-gap: 6px;grid-auto-flow: column">
+            style="position: fixed; z-index: 3; bottom: 0; right: 0; overflow-x: scroll; width: calc(100vw - 350px)"
+          >
+            <div
+              class="ml-2"
+              style="display: grid; grid-auto-columns: min-content; grid-gap: 6px; grid-auto-flow: column"
+            >
               <grid-button
                 v-hide-simple
                 :loading="isSendingRequest"
                 :text="$t('reprint')"
-                color="warning"
+                color="red"
                 icon="mdi-printer"
                 @click="reprintOrder"
               />
               <grid-button
                 :loading="isSendingRequest"
                 :text="$t('TemporaryBill')"
-                color="#24b646"
+                color="amber"
                 icon="mdi-printer-pos"
                 @click="zwitchenBon"
               />
               <grid-button
-                v-if="consumeTypeId!==2"
+                v-if="consumeTypeId !== 2"
                 :loading="isSendingRequest"
-                :text=" $t('tableChange') "
-                color="#ff8c50"
+                :text="$t('tableChange')"
+                color="indigo"
                 icon="mdi-swap-horizontal"
                 @click="changeTable"
               />
               <grid-button
-                v-if="consumeTypeId!==2"
+                v-if="consumeTypeId !== 2"
                 :loading="isSendingRequest"
                 :text="$t('tableMerge')"
-                color="#ff4141"
+                color="green"
                 icon="mdi-merge"
                 @click="mergeTable"
               />
               <grid-button
                 :loading="isSendingRequest"
                 :text="$t('WaiterTransfer')"
-                color="#ffb13b"
+                color="deep-orange"
                 icon="mdi-account"
                 @click="changeServant"
               />
-              <grid-button
-                :loading="isSendingRequest"
-                :text="$t('CustomerAddress')"
-                color="indigo"
-                icon="mdi-map"
-                @click="addressFormOpen=true"
-              />
-              <template v-if="consumeTypeId===2">
-
-                <template v-if="consumeTypeStatusId<2">
-                  <template
-                    v-for="(time) in [0,15,20,30,60]"
-                  >
+              <template v-if="consumeTypeId === 2">
+                <template v-if="consumeTypeStatusId < 2">
+                  <template v-for="time in [0, 15, 20, 30, 60]">
                     <grid-button
                       :key="time"
                       :text="time"
-
                       color="success"
                       icon="mdi-plus"
-                      @click="acceptOrderWithTime(time)"/>
-
+                      @click="acceptOrderWithTime(time)"
+                    />
                   </template>
-                  <grid-button :text="$t('Reject')" color="error" icon="mdi-minus" @click="rejectOrder"/>
+                  <grid-button :text="$t('Reject')" color="error" icon="mdi-minus" @click="rejectOrder" />
                 </template>
               </template>
-              <template v-else-if="consumeTypeStatusId<2">
+              <template v-else-if="consumeTypeStatusId < 2">
                 <grid-button
                   :loading="isSendingRequest"
                   :text="$t('Accept')"
@@ -462,57 +475,51 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
                 />
               </template>
               <grid-button
-                v-if="consumeTypeId===1||consumeTypeId===5"
+                v-if="consumeTypeId === 1 || consumeTypeId === 5"
                 :loading="isSendingRequest"
                 :text="$t('ChangeToBuffet')"
-                color="#ff7961"
+                color="pink"
                 icon="mdi-silverware"
-                @click="buffetDialogShow=true"
+                @click="buffetDialogShow = true"
               />
-
             </div>
-
           </v-card>
         </div>
       </v-main>
       <!--      right panel-->
-      <template v-if="splitOrderListModel.list.length>0">
-        <div v-cloak
-             id="splitOrderContainer"
-             class="bottomCart surface d-flex justify-end"
-             style="background: rgba(0,0,0,0.4);  top: 0;
-                    z-index: 50;
-                    left: 350px"
-             @click="removeAllFromSplitOrder">
-          <div class="d-flex" style="max-width: 600px;width: 50vw" @click.stop>
+      <template v-if="splitOrderListModel.list.length > 0">
+        <div
+          v-cloak
+          id="splitOrderContainer"
+          class="bottomCart surface d-flex justify-end"
+          style="background: rgba(0, 0, 0, 0.4); top: 0; z-index: 50; left: 350px"
+          @click="removeAllFromSplitOrder"
+        >
+          <div class="d-flex" style="max-width: 600px; width: 50vw" @click.stop>
             <div class="pa-1 d-flex flex-column">
-              <v-btn class=" mt-1 " color="error" x-large @click="removeAllFromSplitOrder()">
+              <v-btn class="mt-1" color="error" x-large @click="removeAllFromSplitOrder()">
                 <v-icon left>mdi-close-circle</v-icon>
-                {{ $t('Cancel') }}
+                {{ $t("Cancel") }}
               </v-btn>
-              <v-btn class=" mt-1 " x-large @click="needSplitOrder()">
+              <v-btn class="mt-1" x-large @click="needSplitOrder()">
                 <v-icon left>mdi-set-split</v-icon>
-                {{ $t('BillSplit') }}
+                {{ $t("BillSplit") }}
               </v-btn>
-              <v-btn class=" mt-1 " x-large
-                     v-on:click="showDeleteDishDialog">
+              <v-btn class="mt-1" x-large v-on:click="showDeleteDishDialog">
                 <v-icon left>mdi-calendar-remove</v-icon>
-                {{ $t('DishCancel') }}
+                {{ $t("DishCancel") }}
               </v-btn>
-              <v-btn class=" mt-1 " x-large
-                     v-on:click="dishesSetDiscount()">
+              <v-btn class="mt-1" x-large v-on:click="dishesSetDiscount()">
                 <v-icon left>mdi-sale</v-icon>
-                {{ $t('GiveDishADiscount') }}
+                {{ $t("GiveDishADiscount") }}
               </v-btn>
-              <v-btn class="  mt-1" x-large
-                     v-on:click="dishesChangeTable">
+              <v-btn class="mt-1" x-large v-on:click="dishesChangeTable">
                 <v-icon left>mdi-inbox-arrow-up</v-icon>
-                {{ $t('tableChange') }}
+                {{ $t("tableChange") }}
               </v-btn>
-              <v-btn class="  mt-1" x-large
-                     v-on:click="printZwichenBon()">
+              <v-btn class="mt-1" x-large v-on:click="printZwichenBon()">
                 <v-icon left>mdi-bandcamp</v-icon>
-                {{ $t('TemporaryBill') }}
+                {{ $t("TemporaryBill") }}
               </v-btn>
             </div>
             <dish-card-list
@@ -522,7 +529,8 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
               :dish-list-model="splitOrderListModel"
               :title="$t('operation')"
               class="flex-grow-1"
-              extra-height="48px"/>
+              extra-height="48px"
+            />
           </div>
         </div>
       </template>
@@ -530,34 +538,49 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
       <template v-if="!keyboardMode">
         <keep-alive>
           <v-fade-transition>
-            <v-card v-if="keyboardInput||currentCodeBuffer"
-                    class="pa-4"
-                    style="position:fixed;top: 0;right: 0;
-            margin: auto;
-            box-shadow: 0 3px 16px var(--v-primary-lighten4);
-            left: 0;bottom: 0;
-            min-width: 300px;
-            max-width:calc(100vw - 200px);
-            z-index: 15;width: fit-content;height: fit-content">
+            <v-card
+              v-if="keyboardInput || currentCodeBuffer"
+              class="pa-4"
+              style="
+                position: fixed;
+                top: 0;
+                right: 0;
+                margin: auto;
+                box-shadow: 0 3px 16px var(--v-primary-lighten4);
+                left: 0;
+                bottom: 0;
+                min-width: 300px;
+                max-width: calc(100vw - 200px);
+                z-index: 15;
+                width: fit-content;
+                height: fit-content;
+              "
+            >
               <div>
                 <h1>{{ keyboardInput }}</h1>
               </div>
-              <div v-if="searchDish.length>0" class="flex-shrink-1 blue lighten-5"
-                   style="overflow: hidden">
-                <template v-for="(dish,index) in searchDish">
-                  <v-card :key="dish.id" :class="index===indexActive?'first':''"
-                          :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}"
-                          class="d-flex  px-1 py-1 align-start"
-                          elevation="0"
-                          style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large" tile
-                          @click="searchDishClick(dish.code)">
-                    <div class="name mr-2"><span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
+              <div v-if="searchDish.length > 0" class="flex-shrink-1 blue lighten-5" style="overflow: hidden">
+                <template v-for="(dish, index) in searchDish">
+                  <v-card
+                    :key="dish.id"
+                    :class="index === indexActive ? 'first' : ''"
+                    :style="{ backgroundColor: '' + dish.displayColor, color: '' + dish.foreground }"
+                    class="d-flex px-1 py-1 align-start"
+                    elevation="0"
+                    style="width: 100%; border-bottom: 2px dashed #e2e3e5; font-size: x-large"
+                    tile
+                    @click="searchDishClick(dish.code)"
+                  >
+                    <div class="name mr-2">
+                      <span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
                     </div>
                     <v-spacer></v-spacer>
-                    <div v-if="dish.isFree==='1'"
-                         class="price d-flex align-center green lighten-3 white--text"
-                         style="padding:2px 4px;border-radius: 4px;">
-                      {{ $t('Frei') }}
+                    <div
+                      v-if="dish.isFree === '1'"
+                      class="price d-flex align-center green lighten-3 white--text"
+                      style="padding: 2px 4px; border-radius: 4px"
+                    >
+                      {{ $t("Frei") }}
                     </div>
                     <div v-else class="price d-flex align-center text-no-wrap text-truncate">
                       {{ dish.price | priceDisplay }}
@@ -565,9 +588,9 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
                   </v-card>
                 </template>
               </div>
-              <div class="text-caption text--secondary" style="font-size: 14px !important;">
-                {{ $t('PressESCToEnterWindow') }}<br>
-                {{ $t('PressESCToCloseWindow') }}
+              <div class="text-caption text--secondary" style="font-size: 14px !important">
+                {{ $t("PressESCToEnterWindow") }}<br />
+                {{ $t("PressESCToCloseWindow") }}
               </div>
             </v-card>
           </v-fade-transition>
@@ -578,12 +601,12 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
         <v-card width="550">
           <v-card-title class="font-weight-bold"> {{ currentDish.name }}</v-card-title>
           <v-card-text>
-            <v-text-field v-model="currentDish.currentPrice" :label="$t('Amount')" autofocus/>
-            <v-text-field v-model="currentDish.currentName" :label="$t('name')"/>
+            <v-text-field v-model="currentDish.currentPrice" :label="$t('Amount')" autofocus />
+            <v-text-field v-model="currentDish.currentName" :label="$t('name')" />
           </v-card-text>
           <v-card-actions>
-            <v-spacer/>
-            <v-btn class="primary" @click="addExtraDish">{{ $t('submit') }}</v-btn>
+            <v-spacer />
+            <v-btn class="primary" @click="addExtraDish">{{ $t("submit") }}</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -597,7 +620,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
         :orderId="tableDetailInfo.order.id"
         :total-price="tableDetailInfo.order.totalPrice"
         :useDishesDiscount="useDishesDiscount"
-        @visibility-changed="(val)=>this.discountModelShow=val"
+        @visibility-changed="(val) => (this.discountModelShow = val)"
       />
 
       <modification-drawer
@@ -619,42 +642,51 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
         :password="password"
         :table-id="id"
         :visible="checkoutShow"
-        @visibility-changed="changeCheckOut"/>
+        @visibility-changed="changeCheckOut"
+      />
 
       <buffet-start-dialog
         :id="tableDetailInfo.order.id"
         :buffet-dialog-show="buffetDialogShow"
         :initial-u-i="initialUI"
-        @visibility-changed="(val)=>this.buffetDialogShow=val"></buffet-start-dialog>
+        @visibility-changed="(val) => (this.buffetDialogShow = val)"
+      ></buffet-start-dialog>
 
       <v-dialog v-model="deleteDishReasonDialog" max-width="600px">
         <v-card class="pa-4">
-          <div class="text-h5 font-weight-bold">{{ $t('RevocationDishReason') }}</div>
+          <div class="text-h5 font-weight-bold">{{ $t("RevocationDishReason") }}</div>
           <v-text-field
             v-model="deleteDishReason"
-            :placeholder="reasons.length > 0 ? reasons[0] :  $t('RevocationDishReason')"
+            :placeholder="reasons.length > 0 ? reasons[0] : $t('RevocationDishReason')"
             append-icon="mdi-lead-pencil"
             autofocus
             class="mt-4"
             hide-details
             outlined
           />
-          <div class="mt-2"
-               style="display: grid;grid-template-columns: repeat(4,minmax(0,1fr));grid-gap: 4px">
-            <v-card v-for=" r in reasons" :key="r" class="d-flex align-center justify-center" color="#f6f6f6"
-                    elevation="0"
-                    style="height: 48px"
-                    @click="submitReason(r)">
+          <div class="mt-2" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-gap: 4px">
+            <v-card
+              v-for="r in reasons"
+              :key="r"
+              class="d-flex align-center justify-center"
+              color="#f6f6f6"
+              elevation="0"
+              style="height: 48px"
+              @click="submitReason(r)"
+            >
               {{ r }}
             </v-card>
           </div>
           <div class="d-flex">
             <v-spacer></v-spacer>
             <v-btn
-              class="primary  mt-4 lighten-2" elevation="0" style="border-radius: 36px"
-              width="100%" @click="submitReason()"
+              class="primary mt-4 lighten-2"
+              elevation="0"
+              style="border-radius: 36px"
+              width="100%"
+              @click="submitReason()"
             >
-              {{ $t('Confirm') }}
+              {{ $t("Confirm") }}
             </v-btn>
           </div>
         </v-card>
@@ -664,7 +696,6 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
 </template>
 
 <script>
-
 import {
   blocking,
   blockReady,
@@ -691,7 +722,13 @@ import { dragscroll } from 'vue-dragscroll'
 
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 
-import { findDish, getCategoryListWithCache, goHome, processDishList, setDefaultValueForApply } from '@/oldjs/StaticModel'
+import {
+  findDish,
+  getCategoryListWithCache,
+  goHome,
+  processDishList,
+  setDefaultValueForApply
+} from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
@@ -729,6 +766,7 @@ import uniqBy from 'lodash-es/uniqBy'
 import { acceptFireBaseOrder } from '@/api/fireStore'
 
 import { setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFirebase } from '@/firebase.js'
+import priceDisplay from '../SalePage/Fragment/PriceDisplay.vue'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -760,14 +798,7 @@ function getReason () {
   return JSON.parse(str) ?? []
 }
 
-const keyboardLayout =
-
-  [
-    '7', '8', '9', 'C',
-    '4', '5', '6', 'A',
-    '1', '2', '3', 'M',
-    '.', '0', 'mdi-close', 'OK'
-  ]
+const keyboardLayout = ['7', '8', '9', 'C', '4', '5', '6', 'A', '1', '2', '3', 'M', '.', '0', 'mdi-close', 'OK']
 
 // endregion
 export default {
@@ -829,7 +860,7 @@ export default {
       /**/
       discountRatio: 1,
       discountStr: null,
-      overrideConsumeTypeIndex: null,
+      overrideConsumeTypeId: null,
       dish: {},
       count: 1,
       activeCategoryId: null,
@@ -926,12 +957,11 @@ export default {
       const password = await popAuthorize(GlobalConfig.changeTableUseBossPassword ? 'boss' : '')
       if (password) {
         const tableName = await showTableSelector()
-        const res = await hillo.post('Complex.php?op=dishesChangeTable',
-          {
-            oldTableName: this.tableDetailInfo.tableBasicInfo.name,
-            newTableName: tableName,
-            dishes: JSON.stringify(this.splitOrderListModel.list)
-          })
+        const res = await hillo.post('Complex.php?op=dishesChangeTable', {
+          oldTableName: this.tableDetailInfo.tableBasicInfo.name,
+          newTableName: tableName,
+          dishes: JSON.stringify(this.splitOrderListModel.list)
+        })
         if (res) {
           loadingComplete()
           await this.initialUI()
@@ -987,10 +1017,14 @@ export default {
     },
 
     async changeServant () {
-      const res = await fastSweetAlertRequest(this.$t('WaiterPagePasswordPrompt'),
+      const res = await fastSweetAlertRequest(
+        this.$t('WaiterPagePasswordPrompt'),
         'password',
-        'Orders.php?op=changeServantForTable', 'pw',
-        { tableId: this.id }, 'POST')
+        'Orders.php?op=changeServantForTable',
+        'pw',
+        { tableId: this.id },
+        'POST'
+      )
       if (res) {
         goHome()
       }
@@ -1010,13 +1044,15 @@ export default {
         if (this.splitOrderListModel.count() === 0 && this.cartListModel.count() === 0) {
           let discountRatio = 0
           const result = await getOrderInfo(this.id, GlobalConfig.usePrintModAsName)
-          result.filter(d => d.code === 'lk').map(d => {
-            d.originPrice = d.price
-            return d
-          })
+          result
+            .filter((d) => d.code === 'lk')
+            .map((d) => {
+              d.originPrice = d.price
+              return d
+            })
           //* mark by ju
-          const discountInfo = result.filter(r => r.code === '-1')
-          const noDiscount = result.filter(r => r.code !== '-1')
+          const discountInfo = result.filter((r) => r.code === '-1')
+          const noDiscount = result.filter((r) => r.code !== '-1')
           this.orderListModel.loadTTDishList(noDiscount)
           if (discountInfo.length > 0) {
             const [discount] = discountInfo
@@ -1025,21 +1061,22 @@ export default {
           this.discountRatio = discountRatio
           await this.setOrderListByTableNameInFirebase(this.orderListModel.list)
         }
-      } catch (e) {
-      }
+      } catch (e) {}
     },
     async setOrderListByTableNameInFirebase (orderListModelList) {
       // upload orderList to Firebase
       const constData = {}
       let number = 1
       if (orderListModelList.length > 0) {
-        orderListModelList.forEach(orderItem => {
+        orderListModelList.forEach((orderItem) => {
           const result = {}
-          Object.keys(orderItem).filter(key => {
-            return key !== 'change' && key !== 'displayApply'
-          }).forEach(key => {
-            result[key] = orderItem[key]
-          })
+          Object.keys(orderItem)
+            .filter((key) => {
+              return key !== 'change' && key !== 'displayApply'
+            })
+            .forEach((key) => {
+              result[key] = orderItem[key]
+            })
           const dishKey = 'dish_' + orderItem.dishesId + number
           number++
           constData[dishKey] = result
@@ -1069,8 +1106,7 @@ export default {
           }
         }
         dish.name = dish.dishName
-        dish.name = dish.name.length > 28
-          ? dish.name.substring(0, 28) + '...' : dish.name
+        dish.name = dish.name.length > 28 ? dish.name.substring(0, 28) + '...' : dish.name
         if (dish.haveMod > 0) {
           console.log(dish)
           const apply = setDefaultValueForApply(dish.modInfo, [])
@@ -1086,7 +1122,7 @@ export default {
               const [unitPrice, unit] = priceInfo.split('/')
               const [unitBase, unitName] = unit.split(' ')
               const unitCount = await IKUtils.showInput('请输入以' + unitName + '计量的产品数量')
-              const realPrice = unitCount / unitBase * unitPrice
+              const realPrice = (unitCount / unitBase) * unitPrice
               console.log(realPrice)
               dish.currentPrice = realPrice
               dish.currentName = `${name} ${unitPrice}/${unit} | ${unitCount}${unitName}`
@@ -1119,9 +1155,6 @@ export default {
     showModification (dish, count, mod = null) {
       this.dish = dish
       this.count = count
-      if (this.$refs.ins) {
-        this.$refs.ins.blur()
-      }
       if (mod) {
         this.oldMod = mod
       } else {
@@ -1131,30 +1164,35 @@ export default {
     },
     async getDCT () {
       if (this.dct.length === 0) {
-        this.dct = (await CategoryType.getList()).map(i => {
-          if (!i.isActive) {
-            i.isActive = false
-          }
-          return i
-        }).sort((a, b) => {
-          const rank = GlobalConfig.defaultSort.split(',')
-          const idToRank = (id) => {
-            const index = rank.indexOf(id.toString())
-            return 10 - (index === -1 ? 10 : index)
-          }
-          const [ra, rb] = [a.id, b.id].map(idToRank)
-          return ra > rb ? -1 : 1
-        }).filter(i => typeof i.childCount === 'undefined' || i.childCount > 0)
+        this.dct = (await CategoryType.getList())
+          .map((i) => {
+            if (!i.isActive) {
+              i.isActive = false
+            }
+            return i
+          })
+          .sort((a, b) => {
+            const rank = GlobalConfig.defaultSort.split(',')
+            const idToRank = (id) => {
+              const index = rank.indexOf(id.toString())
+              return 10 - (index === -1 ? 10 : index)
+            }
+            const [ra, rb] = [a.id, b.id].map(idToRank)
+            return ra > rb ? -1 : 1
+          })
+          .filter((i) => typeof i.childCount === 'undefined' || i.childCount > 0)
       }
     },
     async getCategory (consumeTypeId = 1, force = false) {
       if (this.categories.length === 0 || force) {
         console.log('reloadDishUseConsumeTypeId', consumeTypeId)
         this.categories = await getCategoryListWithCache(consumeTypeId)
-        this.dishes = processDishList(this.categories.reduce((arr, i) => {
-          arr.push(...i.dishes)
-          return arr
-        }, []))
+        this.dishes = processDishList(
+          this.categories.reduce((arr, i) => {
+            arr.push(...i.dishes)
+            return arr
+          }, [])
+        )
         this.cartListModel.setDishList(this.dishes)
       }
     },
@@ -1232,7 +1270,7 @@ export default {
         count = this.count
       }
       console.log(_mod)
-      dish.apply = _mod// here we add a apply
+      dish.apply = _mod // here we add a apply
       dish.forceFormat = true
 
       this.addDish(dish, count ?? parseInt(this.count))
@@ -1250,7 +1288,7 @@ export default {
       this.resetInputAndBuffer()
       this.discountModelShow = false
       this.buffetDialogShow = false
-      this.overrideConsumeTypeIndex = null
+      this.overrideConsumeTypeId = null
       this.activeCategoryId = null
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
@@ -1333,17 +1371,26 @@ export default {
       this.checkOutType = 'splitOrder'
     },
     anyMenuOpen () {
-      return this.modificationShow || this.checkoutShow ||
-        this.discountModelShow || this.extraDishShow ||
-        this.systemDialogShow || Swal.isVisible()
+      return (
+        this.modificationShow ||
+        this.checkoutShow ||
+        this.discountModelShow ||
+        this.extraDishShow ||
+        this.systemDialogShow ||
+        Swal.isVisible()
+      )
     },
 
     async getTableDetail () {
       try {
-        const res = await hillo.silentGet('Tables.php', {
-          op: 'currentInfo',
-          id: this.id
-        }, { noDebug: true })
+        const res = await hillo.silentGet(
+          'Tables.php',
+          {
+            op: 'currentInfo',
+            id: this.id
+          },
+          { noDebug: true }
+        )
         this.tableDetailInfo = res.content
         this.tableDetailInfo.consumeTypeName = findConsumeTypeById(this.tableDetailInfo.consumeTypeId).name
         if (this.tableDetailInfo.order.discountStr) {
@@ -1371,9 +1418,13 @@ export default {
     },
     async rejectOrder () {
       const externalId = await getExternalIdByRejectOrder(this.id)
-      const res = await fastSweetAlertRequest(i18n.t('RevocationDishReason'), 'text',
-        'Orders.php?op=rejectTakeAwayOrder', 'reason',
-        { tableId: this.id })
+      const res = await fastSweetAlertRequest(
+        i18n.t('RevocationDishReason'),
+        'text',
+        'Orders.php?op=rejectTakeAwayOrder',
+        'reason',
+        { tableId: this.id }
+      )
       if (res) {
         if (parseInt(externalId) !== 0) {
           await acceptFireBaseOrder(externalId, false)
@@ -1419,7 +1470,6 @@ export default {
         toast()
         blockReady()
       } catch (e) {
-
       } finally {
         this.isSendingRequest = false
       }
@@ -1431,7 +1481,6 @@ export default {
         toast()
         blockReady()
       } catch (e) {
-
       } finally {
         this.isSendingRequest = false
       }
@@ -1492,9 +1541,7 @@ export default {
               setTimeout(async () => {
                 const res = await showConfirmAsyn(this.$t('PaidWithoutTip'))
                 if (res.value) {
-                  const pw = await optionalAuthorizeAsync('',
-                    GlobalConfig.checkOutUsePassword,
-                    null, true, this.id)
+                  const pw = await optionalAuthorizeAsync('', GlobalConfig.checkOutUsePassword, null, true, this.id)
                   this.checkOut(pw)
                 }
                 blockReady()
@@ -1512,7 +1559,7 @@ export default {
     async orderDish (order = this.cartListModel.list, print = true) {
       try {
         this.isSendingRequest = true
-        order.forEach(o => {
+        order.forEach((o) => {
           o.guestNumber = 1
         })
         await hillo.post('Complex.php?op=addDishesToTable&_servantPw=' + GlobalConfig.defaultPassword, {
@@ -1551,10 +1598,7 @@ export default {
         this.password = pw
       }
       setTimeout(async () => {
-        const pw = await optionalAuthorizeAsync('',
-          GlobalConfig.checkOutUsePassword,
-          '', true,
-          this.id)
+        const pw = await optionalAuthorizeAsync('', GlobalConfig.checkOutUsePassword, '', true, this.id)
 
         await realCheckOut(pw)
       }, 20)
@@ -1573,9 +1617,13 @@ export default {
         this.filteredDish = this.filterDish()
       }
     },
-    debounce: debounce((f) => {
-      f()
-    }, 200, { trailing: true }),
+    debounce: debounce(
+      (f) => {
+        f()
+      },
+      200,
+      { trailing: true }
+    ),
     getCodeAndCountFromInput (string = '') {
       let [code, count] = ['', 1]
       if (string.includes('*')) {
@@ -1659,24 +1707,31 @@ export default {
       const constData = {}
       let number = 1
       if (dishList.length > 0) {
-        dishList.forEach(dish => {
+        dishList.forEach((dish) => {
           const result = {}
-          Object.keys(dish).filter(key => {
-            return (key !== 'change' && key !== 'edit' &&
-              key !== 'apply' &&
-              key !== 'langs' && key !== 'langsDesc' &&
-              key !== 'modInfo' && key !== 'options')
-          }).forEach(key => {
-            result[key] = dish[key]
-          })
+          Object.keys(dish)
+            .filter((key) => {
+              return (
+                key !== 'change' &&
+                key !== 'edit' &&
+                key !== 'apply' &&
+                key !== 'langs' &&
+                key !== 'langsDesc' &&
+                key !== 'modInfo' &&
+                key !== 'options'
+              )
+            })
+            .forEach((key) => {
+              result[key] = dish[key]
+            })
 
           result.hasAppend = false
 
           if (result.displayApply.length > 0) {
             const aNameArr = []
             const priceInfoArr = []
-            result.displayApply.forEach(i => {
-              aNameArr.push((i.groupName + ':' + i.value))
+            result.displayApply.forEach((i) => {
+              aNameArr.push(i.groupName + ':' + i.value)
               priceInfoArr.push(i.priceInfo)
             })
 
@@ -1696,6 +1751,9 @@ export default {
     }
   },
   computed: {
+    priceDisplay () {
+      return priceDisplay
+    },
     ...mapGetters(['systemDialogShow']),
     sourceMarks: function () {
       return this.tableDetailInfo?.sourceMarks ?? []
@@ -1721,15 +1779,10 @@ export default {
     consumeTypeId () {
       return parseInt(this.tableDetailInfo.order.consumeTypeId ?? 1)
     },
-    overrideConsumeTypeId () {
-      if ((this.overrideConsumeTypeIndex || this.overrideConsumeTypeIndex === 0) && this.consumeTypeList?.length > this.overrideConsumeTypeIndex) {
-        return parseInt(this.consumeTypeList[this.overrideConsumeTypeIndex].id)
-      } else {
-        return null
-      }
-    },
     realConsumeTypeId () {
-      return this.overrideConsumeTypeId && this.overrideConsumeTypeId !== this.consumeTypeId ? this.overrideConsumeTypeId : this.consumeTypeId ?? 1
+      return this.overrideConsumeTypeId && this.overrideConsumeTypeId !== this.consumeTypeId
+        ? this.overrideConsumeTypeId
+        : this.consumeTypeId ?? 1
     },
     consumeTypeStatusId () {
       return parseInt(this.tableDetailInfo.order.consumeTypeStatusId ?? 2)
@@ -1746,10 +1799,8 @@ export default {
     cartListModelList () {
       return this.cartListModel.list
     }
-
   },
   watch: {
-
     checkoutShow (val) {
       setCheckOutStatusInFirebase(val, this.deviceId)
     },
@@ -1777,9 +1828,7 @@ export default {
         this.currentCodeBuffer = ''
         this.indexActive = ''
       }
-      this.debounce(
-        this.updateSearchDish
-      )
+      this.debounce(this.updateSearchDish)
     },
     refresh: function () {
       this.realInitial()
@@ -1795,12 +1844,9 @@ export default {
   async mounted () {
     await getConsumeTypeList()
     await this.getDCT()
-    const selectableId = GlobalConfig.selectableConsumeTypeId?.split(',')
-      .map(d => parseInt(d))
+    const selectableId = GlobalConfig.selectableConsumeTypeId?.split(',').map((d) => parseInt(d))
     if (selectableId?.length > 0) {
-      this.consumeTypeList = consumeTypeList.filter(
-        c => selectableId.includes(parseInt(c.id))
-      )
+      this.consumeTypeList = consumeTypeList.filter((c) => selectableId.includes(parseInt(c.id)))
     } else {
       this.consumeTypeList = consumeTypeList
     }
@@ -1810,7 +1856,6 @@ export default {
 </script>
 
 <style scoped>
-
 ::-webkit-scrollbar {
   height: 80%;
   margin-top: 20%;
@@ -1822,7 +1867,6 @@ export default {
   width: 6px;
   cursor: pointer;
   height: 56px;
-
 }
 
 ::-webkit-scrollbar-track {
@@ -1851,7 +1895,8 @@ td {
   font-size: 18px;
 }
 
-td, th {
+td,
+th {
   padding: 8px 4px;
 }
 
@@ -1970,8 +2015,7 @@ tr:hover {
   padding: 8px !important;
   font-size: large;
   color: black;
-  background: #BBDEFB !important;
+  background: #bbdefb !important;
   border-bottom: 2px solid #367aeb !important;
 }
-
 </style>

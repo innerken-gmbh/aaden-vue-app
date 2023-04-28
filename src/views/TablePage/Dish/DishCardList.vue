@@ -1,77 +1,60 @@
 <template>
-  <v-card shaped elevation="0" class="d-flex flex-column flex-grow-1 "
-          style="max-height:calc(100% - 60px)">
-    <div class="d-flex align-center pt-2 px-2">
-      <div class="pa-2 text-h6"> {{ title }}</div>
-      <v-spacer></v-spacer>
-      <v-btn
-        text
-        :color="onlyPaid?'success':'warning'"
-        @click="onlyPaid=!onlyPaid"
-      >
-        <v-icon>mdi-cash</v-icon>
-        只看付费
-      </v-btn>
-      <slot name="action">
-        <v-btn v-if="discountDish" @click="$emit('discount-clear')"
-               elevation="0" color="warning">
-          <v-icon left>
-            mdi-sale
-          </v-icon>
-          {{ discountDish.realPrice | priceDisplay }}
-        </v-btn>
-      </slot>
-    </div>
-    <v-divider></v-divider>
+  <v-card
+    color="transparent"
+    elevation="0"
+    class="d-flex flex-column flex-grow-1"
+    style="max-height: calc(100% - 76px)"
+  >
     <div v-if="shouldDisplaySourceMarks">
-      <div class="pa-2 d-flex" style="max-width: 100%;">
+      <div class="pa-2 d-flex" style="max-width: 100%">
         <v-chip-group v-model="currentSourceMark" active-class="primary--text">
           <v-chip v-for="mark in sourceMarks" :key="mark">
-            {{ mark == null ? 'Other' : mark }}
+            {{ mark == null ? "Other" : mark }}
           </v-chip>
         </v-chip-group>
       </div>
       <v-divider></v-divider>
     </div>
 
-    <div v-dragscroll v-show="expand"
-         class="px-2"
-         style="overflow-y: scroll"
-    >
-      <template v-for="(order,index) in dishList">
-        <div @click="checkIfOpen(index)" :key="'order'+title+order.identity" style="font-size: larger">
-          <dish-card
-            :expand="index===expandIndex"
-            :show-number="showNumber"
-            :click-callback="()=>_clickCallBack(index,order)"
-            :show-edit="showEdit"
-            :dish="order"/>
-        </div>
-      </template>
-      <template v-if="discountDish!=null">
-        <dish-card
-          :show-number="showNumber"
-          :show-edit="showEdit"
-          :dish="discountDish"/>
-      </template>
-    </div>
-    <v-spacer></v-spacer>
-    <v-card elevation="0">
-      <v-divider></v-divider>
-      <div class="d-flex pa-2 px-4 align-baseline">
+    <template v-if="dishList.length > 0">
+      <div v-dragscroll v-show="expand" class="px-2" style="overflow-y: scroll">
+        <template v-for="(order, index) in dishList">
+          <div @click="checkIfOpen(index)" :key="'order' + title + order.identity" style="font-size: larger">
+            <dish-card
+              :expand="index === expandIndex"
+              :show-number="showNumber"
+              :click-callback="() => _clickCallBack(index, order)"
+              :show-edit="showEdit"
+              :dish="order"
+            />
+          </div>
+        </template>
+        <template v-if="discountDish != null">
+          <dish-card :show-number="showNumber" :show-edit="showEdit" :dish="discountDish" />
+        </template>
+      </div>
+      <v-spacer></v-spacer>
+    </template>
+    <template v-else>
+      <div class="flex-grow-1 d-flex flex-column justify-center align-center">
+        <v-icon large>mdi-format-list-bulleted</v-icon>
+        <div class="mt-4">此列表中暂时没有商品</div>
+      </div>
+    </template>
 
-        <v-icon size="28" class="mr-2">mdi-food</v-icon>
-        <span class="ml-1 text-h4  grey--text text--darken-2">{{ count }}</span>
+    <div>
+      <div class="d-flex align-center pt-2 px-2">
         <v-spacer></v-spacer>
-        <v-icon class="mr-2" size="28">mdi-cash-usd</v-icon>
-        <span class="ml-1 text-h4 grey--text text--darken-2 font-weight-bold">{{ total | priceDisplay }}</span>
-      </div>
-      <div>
-        <slot></slot>
+
+        <slot name="action"></slot>
+        <v-btn small text :color="onlyPaid ? 'primary' : ''" @click="onlyPaid = !onlyPaid">
+          <v-icon left>{{ onlyPaid ? "mdi-checkbox-outline" : "mdi-checkbox-blank-outline" }}</v-icon>
+          只看付费
+        </v-btn>
       </div>
 
-    </v-card>
-
+      <slot v-bind:total="total"></slot>
+    </div>
   </v-card>
 </template>
 
@@ -176,14 +159,19 @@ export default {
   },
   computed: {
     activeSourceMark () {
-      return (this.currentSourceMark === null || typeof this.currentSourceMark === 'undefined') ? '' : this.sourceMarks[this.currentSourceMark]
+      return this.currentSourceMark === null || typeof this.currentSourceMark === 'undefined'
+        ? ''
+        : this.sourceMarks[this.currentSourceMark]
     },
     shouldDisplaySourceMarks: function () {
       return this.sourceMarks.length > 1
     },
     dishList: function () {
-      const list = [...this.dishListModel.list].filter(it => {
-        return (this.activeSourceMark === '' || it.sourceMark === this.activeSourceMark) && (!this.onlyPaid || it.realPrice !== 0)
+      const list = [...this.dishListModel.list].filter((it) => {
+        return (
+          (this.activeSourceMark === '' || it.sourceMark === this.activeSourceMark) &&
+          (!this.onlyPaid || it.realPrice !== 0)
+        )
       })
       // console.log(this.dishListModel.list)
       if (this.reverse) {
@@ -234,7 +222,6 @@ export default {
   width: 6px;
   cursor: pointer;
   height: 56px;
-
 }
 
 ::-webkit-scrollbar-track {

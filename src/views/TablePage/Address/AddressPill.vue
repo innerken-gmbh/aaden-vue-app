@@ -1,15 +1,9 @@
 <template>
-  <v-card color="warning" dark elevation="0" class="d-flex align-center px-2 py-1">
-    <v-icon size="20" left>mdi-truck-fast</v-icon>
-    <h3 class="ml-2 font-weight-regular ">
-      {{ $t(address.deliveryMethod) }} @
-      <span>{{ address.time }}</span>
-    </h3>
-    <slot>
-
-    </slot>
-
-  </v-card>
+  <v-btn rounded color="green lighten-4 black--text" elevation="0">
+    {{ $t(address.deliveryMethod) }}@<span>{{ address.time }}</span>
+    <v-icon right>mdi-pencil-circle</v-icon>
+    <slot></slot>
+  </v-btn>
 </template>
 
 <script>
@@ -21,6 +15,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
