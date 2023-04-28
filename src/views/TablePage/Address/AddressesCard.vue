@@ -1,10 +1,10 @@
 <template>
-  <div>
-    <v-subheader>{{ $t('CurrentAddress') }}</v-subheader>
-    <v-card-subtitle>
-      <h2>
-        {{ address.deliveryMethod }}
-      </h2>
+  <div class="pa-4">
+    <div class="text-subtitle-2">{{ $t('CurrentAddress') }}</div>
+    <div class="mt-4">
+      <div class="text-h6 font-weight-black">
+        {{ $t(address.deliveryMethod) }}
+      </div>
       <span v-if="address.date">{{ $t('ExpectedTime') }}:</span>
       <template v-if="address.oldTime">
         <span>{{ address.oldTime }}</span>
@@ -12,8 +12,8 @@
       <template v-else>
         {{ address.time }}
       </template>
-    </v-card-subtitle>
-    <v-card-text>
+    </div>
+    <div>
       <b>{{ address.firstName }}</b> <b>{{ address.lastName }}</b>
       <filter-empty-string-displayer :data="address.addressLine1">
         <b>{{ address.addressLine1 }}</b>
@@ -30,7 +30,7 @@
       <filter-empty-string-displayer :data="address.tel">
         {{ address.tel }}
       </filter-empty-string-displayer>
-    </v-card-text>
+    </div>
     <v-card-actions>
       <slot></slot>
     </v-card-actions>

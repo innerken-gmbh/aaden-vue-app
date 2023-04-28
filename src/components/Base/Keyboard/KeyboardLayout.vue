@@ -1,6 +1,18 @@
 <template>
-  <div style="width: 100%;display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 4px">
-    <key :key-name="key" v-for="(key,index) in keys" :key="key+index" @click="$emit('input',key)">
+  <div
+    style="
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 4px;
+    "
+  >
+    <key
+      :key-name="key"
+      v-for="(key, index) in keys"
+      :key="key + index"
+      @click="$emit('input', key)"
+    >
     </key>
   </div>
 </template>
@@ -17,6 +29,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -1,11 +1,20 @@
 <template>
-  <v-navigation-drawer width="fit-content" right fixed temporary v-model="realShow" touchless stateless>
+  <v-navigation-drawer
+    width="fit-content"
+    right
+    fixed
+    temporary
+    v-model="realShow"
+    touchless
+    stateless
+  >
     <v-card tile class="fill-height">
       <check-out-calculator
         :id="id"
-        @payment-cancel="realShow=false"
+        @payment-cancel="realShow = false"
         @payment-submit="checkOut"
-        :total="totalPrice"/>
+        :total="totalPrice"
+      />
     </v-card>
   </v-navigation-drawer>
 </template>
@@ -98,17 +107,24 @@ export default {
       }
 
       if (this.discountRatio !== 0) {
-        checkOutData.discountStr = (this.discountStr ?? '')
-          .indexOf('p') !== -1 ? this.discountStr : (this.order.total * this.discountRatio)
-            .toFixed(2)
+        checkOutData.discountStr =
+          (this.discountStr ?? '').indexOf('p') !== -1
+            ? this.discountStr
+            : (this.order.total * this.discountRatio).toFixed(2)
       }
 
       delete checkOutData.discountStr
-      const res = await hillo.post('Complex.php?op=' + this.checkOutType, checkOutData)
+      const res = await hillo.post(
+        'Complex.php?op=' + this.checkOutType,
+        checkOutData
+      )
       if (res) {
-        const externalId = await hillo.post('Orders.php?op=getExternalIdByCheckOut', {
-          tableId: checkOutData.tableId
-        })
+        const externalId = await hillo.post(
+          'Orders.php?op=getExternalIdByCheckOut',
+          {
+            tableId: checkOutData.tableId
+          }
+        )
         if (parseInt(externalId) !== 0) {
           await changeFireBaseOrderToFinished(externalId)
         }
@@ -124,6 +140,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -7,7 +7,7 @@
         <v-icon>mdi-close</v-icon>
       </v-btn>
     </v-card>
-    <div class="flex-grow-1" style="width: 400px">
+    <div class="flex-grow-1 d-flex flex-column" style="width: 400px">
       <div class="d-flex grey lighten-4 text-body-1 pa-2">
         <div>总价</div>
         <v-spacer></v-spacer>
@@ -15,9 +15,8 @@
           {{ total | priceDisplay }}
         </div>
       </div>
-      <div v-if="readyToCheckOut" class="paymentLog">
-
-        <div class="pa-2">
+      <div  v-if="readyToCheckOut" class="paymentLog flex-grow-1">
+        <div style="height: 100%" class="pa-2 d-flex flex-column">
           <div class="text-body-2">支付方式</div>
           <template v-for="paymentInfo in paymentLog">
             <div :key="'price' + paymentInfo.hash" class="d-flex py-2 mb-1" style="width: 100%">
@@ -75,6 +74,7 @@
               </v-form>
             </div>
           </template>
+          <v-spacer></v-spacer>
           <div class="d-flex">
             <v-btn large class="mr-2" elevation="0" @click="paymentLog = []">
               <v-icon left>mdi-arrow-left</v-icon>

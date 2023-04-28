@@ -9,7 +9,11 @@
         添加地址
       </v-btn>
     </template>
-    <address-form :current-address="address" @address-submit="submit" :menu-show.sync="showMenu">
+    <address-form
+      :current-address="address"
+      @address-submit="submit"
+      :menu-show.sync="showMenu"
+    >
       <v-btn @click="deleteAddress" v-if="rawAddressInfo">
         <v-icon left>mdi-trash-can</v-icon>
         {{ $t("DeleteAddress") }}
