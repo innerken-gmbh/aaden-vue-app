@@ -142,6 +142,7 @@ export const DefaultAddressInfo = {
   email: '',
   oldTime: '',
   date: '',
+  note: '',
   time: 'ASAP',
   deliveryMethod: 'inShop',
   edit: false

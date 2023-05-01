@@ -2,7 +2,13 @@
   <div @click="keyboardInput = ''">
     <template v-cloak>
       <v-main>
-        <div style="display: grid; grid-template-columns: 348px calc(100vw - 348px); background: #f6f6f6">
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 348px calc(100vw - 348px);
+            background: #f6f6f6;
+          "
+        >
           <v-card
             class="d-flex justify-space-between flex-shrink-0 flex-column fill-height"
             elevation="0"
@@ -10,8 +16,17 @@
             tile
             style="height: 100vh"
           >
-            <v-card color="transparent" class="d-flex align-center pa-2 py-3" elevation="0" @click="back">
-              <v-icon class="mr-2" large>mdi-chevron-left</v-icon>
+            <v-card
+              color="transparent"
+              class="d-flex align-center pa-2 py-3"
+              elevation="0"
+              @click="back"
+            >
+              <v-icon
+                class="mr-2"
+                large
+              >mdi-chevron-left
+              </v-icon>
               <div class="text-body-2">返回</div>
               <v-spacer></v-spacer>
             </v-card>
@@ -28,9 +43,25 @@
                 @discount-clear="discountClear"
               >
                 <template #action>
-                  <v-btn :loading="isSendingRequest" color="warning" text elevation="0" @click="discountShow">
+                  <v-btn
+                    :loading="isSendingRequest"
+                    color="info"
+                    text
+                    elevation="0"
+                    @click="checkOut(Config.defaultPassword)"
+                  >
+                    <v-icon left>mdi-cash-fast</v-icon>
+                    {{ $t('QuickBill') }}
+                  </v-btn>
+                  <v-btn
+                    :loading="isSendingRequest"
+                    color="warning"
+                    text
+                    elevation="0"
+                    @click="discountShow"
+                  >
                     <v-icon left>mdi-sale</v-icon>
-                    {{ $t("Discount") }}
+                    {{ $t('Discount') }}
                   </v-btn>
                 </template>
                 <template v-slot:default="{ total }">
@@ -44,7 +75,12 @@
                       height="64"
                       @click="jumpToPayment()"
                     >
-                      <v-icon left class="mr-6" size="28">mdi-calculator-variant</v-icon>
+                      <v-icon
+                        left
+                        class="mr-6"
+                        size="28"
+                      >mdi-calculator-variant
+                      </v-icon>
                       <span class="text-h5">{{ total | priceDisplay }}</span>
                     </v-btn>
                   </div>
@@ -66,9 +102,14 @@
               @current-dish-change="cartCurrentDish = $event"
             >
               <template #action>
-                <v-btn text color="error" elevation="0" @click="cartListModelClear">
+                <v-btn
+                  text
+                  color="error"
+                  elevation="0"
+                  @click="cartListModelClear"
+                >
                   <v-icon left> mdi-trash-can</v-icon>
-                  {{ $t("EmptyShoppingCart") }}
+                  {{ $t('EmptyShoppingCart') }}
                 </v-btn>
               </template>
               <template v-slot:default="{ total }">
@@ -82,20 +123,40 @@
                     height="64"
                     @click="orderDish(cartListModel.list)"
                   >
-                    <v-icon left class="mr-6" size="28">mdi-printer</v-icon>
+                    <v-icon
+                      left
+                      class="mr-6"
+                      size="28"
+                    >mdi-printer
+                    </v-icon>
                     <span class="text-h5">{{ total | priceDisplay }}</span>
                   </v-btn>
                 </div>
               </template>
             </dish-card-list>
           </v-card>
-          <v-card v-cloak class="flex-grow-1 flex-column" color="transparent" elevation="0" style="height: 100vh">
-            <v-card elevation="0" color="grey lighten-2" tile class="d-flex pa-3 px-4 align-center">
+          <v-card
+            v-cloak
+            class="flex-grow-1 flex-column"
+            color="transparent"
+            elevation="0"
+            style="height: 100vh"
+          >
+            <v-card
+              elevation="0"
+              color="grey lighten-2"
+              tile
+              class="d-flex pa-3 px-4 align-center"
+            >
               <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
-              <div class="text-h6 text-capitalize mr-6">{{ tableDetailInfo.tableBasicInfo.name }}</div>
+              <div class="text-h6 text-capitalize mr-6">
+                {{ tableDetailInfo.tableBasicInfo.name }}
+              </div>
               <template v-if="$vuetify.breakpoint.lgAndUp">
                 <v-icon>mdi-office-building-marker</v-icon>
-                <div class="ml-2 text-h6 text-truncate">{{ findConsumeTypeById(consumeTypeId) }}</div>
+                <div class="ml-2 text-h6 text-truncate">
+                  {{ findConsumeTypeById(consumeTypeId) }}
+                </div>
               </template>
 
               <v-icon class="mr-2 ml-6">mdi-account-circle</v-icon>
@@ -105,6 +166,7 @@
 
               <v-spacer></v-spacer>
               <address-display
+                v-if="consumeTypeId===2"
                 :consume-type-status-id="consumeTypeStatusId"
                 :raw-address-info="realAddressInfo"
                 :should-open-menu.sync="addressFormOpen"
@@ -139,20 +201,29 @@
                   </v-list-item>
                 </v-list>
               </v-menu>
-              <v-btn rounded color="primary lighten-4 black--text" elevation="0" @click="keyboardMode = !keyboardMode">
+              <v-btn
+                rounded
+                color="primary lighten-4 black--text"
+                elevation="0"
+                @click="keyboardMode = !keyboardMode"
+              >
                 <template v-if="!keyboardMode">
                   <v-icon left>mdi-keyboard</v-icon>
-                  {{ $t("KeyboardAndDishNumber") }}
+                  {{ $t('KeyboardAndDishNumber') }}
                 </template>
                 <template v-else>
                   <v-icon left>mdi-menu</v-icon>
-                  {{ $t("ViewCategoryMenu") }}
+                  {{ $t('ViewCategoryMenu') }}
                 </template>
               </v-btn>
             </v-card>
 
             <template v-if="!keyboardMode">
-              <v-card class="d-flex py-2 px-4" color="grey lighten-3" elevation="0">
+              <v-card
+                class="d-flex py-2 px-4"
+                color="grey lighten-3"
+                elevation="0"
+              >
                 <template>
                   <v-item-group
                     v-model="activeDCT"
@@ -166,7 +237,11 @@
                       overflow-x: scroll;
                     "
                   >
-                    <v-item v-for="ct of dct" v-bind:key="ct.id + 'categorytypes'" v-slot="{ active, toggle }">
+                    <v-item
+                      v-for="ct of dct"
+                      v-bind:key="ct.id + 'categorytypes'"
+                      v-slot="{ active, toggle }"
+                    >
                       <v-card
                         :color="active ? 'primary' : ''"
                         :dark="active"
@@ -175,7 +250,7 @@
                         height="48"
                         style="border-radius: 12px; font-size: 18px"
                         @click="toggle"
-                        >{{ ct.name }}
+                      >{{ ct.name }}
                       </v-card>
                     </v-item>
                   </v-item-group>
@@ -189,10 +264,16 @@
                 elevation="0"
                 style="position: relative"
               >
-                <div class="mt-2" v-if="!activeCategoryId">
+                <div
+                  class="mt-2"
+                  v-if="!activeCategoryId"
+                >
                   <v-item-group class="dishCardList">
                     <template v-for="category of filteredC">
-                      <v-item v-bind:key="'categorytypes' + category.id" v-slot="{ active, toggle }">
+                      <v-item
+                        v-bind:key="'categorytypes' + category.id"
+                        v-slot="{ active, toggle }"
+                      >
                         <v-card
                           class="d-flex text-h6 align-center justify-center text-center pa-2"
                           elevation="0"
@@ -219,18 +300,36 @@
                   </v-item-group>
                 </div>
                 <template v-if="activeCategoryId">
-                  <div style="display: grid; grid-template-columns: 1fr 108px; grid-gap: 24px">
+                  <div
+                    style="
+                      display: grid;
+                      grid-template-columns: 1fr 108px;
+                      grid-gap: 24px;
+                    "
+                  >
                     <div class="dishCardList">
                       <v-card
                         v-if="activeCategoryId"
                         class="d-flex align-center"
                         elevation="0"
-                        style="width: 100%; color: var(--v-primary-base); height: 124px; border-radius: 12px"
+                        style="
+                          width: 100%;
+                          color: var(--v-primary-base);
+                          height: 124px;
+                          border-radius: 12px;
+                        "
                         @click="activeCategoryId = null"
                       >
-                        <div class="d-flex flex-column justify-center align-center" style="width: 100%">
-                          <v-icon color="primary" large>mdi-arrow-left</v-icon>
-                          <div class="mt-1 text-body-2">{{ $t("return") }}</div>
+                        <div
+                          class="d-flex flex-column justify-center align-center"
+                          style="width: 100%"
+                        >
+                          <v-icon
+                            color="primary"
+                            large
+                          >mdi-arrow-left
+                          </v-icon>
+                          <div class="mt-1 text-body-2">{{ $t('return') }}</div>
                         </div>
                       </v-card>
                       <template v-for="dish of filteredDish">
@@ -273,9 +372,16 @@
                       "
                     >
                       <template v-for="category of filteredC">
-                        <v-item v-bind:key="'categorytypes' + category.id" v-slot="{ active, toggle }">
+                        <v-item
+                          v-bind:key="'categorytypes' + category.id"
+                          v-slot="{ active, toggle }"
+                        >
                           <v-card
-                            :color="activeCategoryId === category.id ? 'primary' : 'white'"
+                            :color="
+                              activeCategoryId === category.id
+                                ? 'primary'
+                                : 'white'
+                            "
                             :dark="activeCategoryId === category.id"
                             class="d-flex align-center justify-center text-center pa-2"
                             elevation="0"
@@ -291,7 +397,13 @@
                             "
                             @click="changeCategory(category.id, toggle)"
                           >
-                            <div style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">
+                            <div
+                              style="
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                              "
+                            >
                               {{ category.name }}
                             </div>
 
@@ -320,27 +432,53 @@
             <div
               v-else
               class="flex-grow-1"
-              style="display: grid; grid-template-columns: 1fr 360px; height: calc(100vh - 130px); grid-gap: 0px"
+              style="
+                display: grid;
+                grid-template-columns: 1fr 360px;
+                height: calc(100vh - 130px);
+                grid-gap: 0px;
+              "
             >
-              <v-card color="transparent" class="l-result-display" elevation="0">
-                <div v-if="searchDish.length > 0" class="flex-shrink-1" style="overflow: hidden">
-                  <v-card tile color="grey lighten-4" class="px-4 py-3" elevation="0">
-                    {{ $t("SearchResult") }}
+              <v-card
+                color="transparent"
+                class="l-result-display"
+                elevation="0"
+              >
+                <div
+                  v-if="searchDish.length > 0"
+                  class="flex-shrink-1"
+                  style="overflow: hidden"
+                >
+                  <v-card
+                    tile
+                    color="grey lighten-4"
+                    class="px-4 py-3"
+                    elevation="0"
+                  >
+                    {{ $t('SearchResult') }}
                   </v-card>
                   <!--                  需要监听键盘的地方-->
                   <template v-for="(dish, index) in searchDish">
                     <v-card
                       :key="dish.id"
                       :class="index === indexActive ? 'first' : ''"
-                      :style="{ backgroundColor: '' + dish.displayColor, color: '' + dish.foreground }"
+                      :style="{
+                        backgroundColor: '' + dish.displayColor,
+                        color: '' + dish.foreground,
+                      }"
                       class="d-flex px-4 py-1 align-start"
                       elevation="0"
-                      style="width: 100%; border-bottom: 2px dashed #e2e3e5; font-size: x-large"
+                      style="
+                        width: 100%;
+                        border-bottom: 2px dashed #e2e3e5;
+                        font-size: x-large;
+                      "
                       tile
                       @click="searchDishClick(dish.code)"
                     >
                       <div class="name mr-2">
-                        <span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
+                        <span v-code-hide>{{ dish.code }}.</span
+                        >{{ dish.dishName }}
                       </div>
                       <v-spacer></v-spacer>
                       <div
@@ -348,50 +486,79 @@
                         class="price d-flex align-center green lighten-3 white--text"
                         style="padding: 2px 4px; border-radius: 4px"
                       >
-                        {{ $t("Frei") }}
+                        {{ $t('Frei') }}
                       </div>
-                      <div v-else class="price d-flex align-center text-no-wrap text-truncate">
+                      <div
+                        v-else
+                        class="price d-flex align-center text-no-wrap text-truncate"
+                      >
                         {{ dish.price | priceDisplay }}
                       </div>
                     </v-card>
                   </template>
                 </div>
-                <div v-else class="d-flex align-center justify-center" style="height: 100%; width: 100%">
+                <div
+                  v-else
+                  class="d-flex align-center justify-center"
+                  style="height: 100%; width: 100%"
+                >
                   <div class="d-flex flex-column align-center">
                     <div>
-                      <v-icon color="grey lighten-1" x-large>mdi-keyboard</v-icon>
+                      <v-icon
+                        color="grey lighten-1"
+                        x-large
+                      >mdi-keyboard
+                      </v-icon>
                     </div>
-                    <div class="text--disabled">{{ $t("PleaseUseKeyboardOrType") }}</div>
+                    <div class="text--disabled">
+                      {{ $t('PleaseUseKeyboardOrType') }}
+                    </div>
                   </div>
                 </div>
               </v-card>
-              <v-card class="d-flex flex-column" elevation="0">
-                <div class="pa-2 text-h6" style="min-height: 96px">
+              <v-card
+                class="d-flex flex-column"
+                elevation="0"
+              >
+                <div
+                  class="pa-2 text-h6"
+                  style="min-height: 96px"
+                >
                   <template v-if="keyboardInput">
-                    {{ Config.numberFirst ? $t("QuantityDishNumber") : $t("DishNumberQuantity") }}<br />
-                    {{ $t("Input") }}
+                    {{
+                      Config.numberFirst
+                          ? $t('QuantityDishNumber')
+                          : $t('DishNumberQuantity')
+                    }}<br/>
+                    {{ $t('Input') }}
                   </template>
                   <template v-else>
                     {{ feedback }}
                   </template>
                 </div>
                 <v-spacer></v-spacer>
-                <div class="pa-2 flex-shrink-0" @click.stop>
+                <div
+                  class="pa-2 flex-shrink-0"
+                  @click.stop
+                >
                   <v-card
                     color="grey lighten-3"
                     elevation="0"
-                    class="text-h4 pa-3 py-6  mb-2 d-flex align-center"
+                    class="text-h4 pa-3 py-6 mb-2 d-flex align-center"
                     :class="keyboardInput ? '' : 'text--secondary'"
                   >
                     {{
                       keyboardInput
-                        ? keyboardInput
-                        : Config.numberFirst
-                        ? $t("quantity_x_dishNumber")
-                        : $t("DishNumberQuantity")
+                          ? keyboardInput
+                          : Config.numberFirst
+                              ? $t('quantity_x_dishNumber')
+                              : $t('DishNumberQuantity')
                     }}
                   </v-card>
-                  <keyboard-layout :keys="keyboardLayout" @input="numberInput"></keyboard-layout>
+                  <keyboard-layout
+                    :keys="keyboardLayout"
+                    @input="numberInput"
+                  ></keyboard-layout>
                 </div>
               </v-card>
             </div>
@@ -400,11 +567,23 @@
             class="d-flex align-center"
             elevation="0"
             height="60px"
-            style="position: fixed; z-index: 3; bottom: 0; right: 0; overflow-x: scroll; width: calc(100vw - 350px)"
+            style="
+              position: fixed;
+              z-index: 3;
+              bottom: 0;
+              right: 0;
+              overflow-x: scroll;
+              width: calc(100vw - 350px);
+            "
           >
             <div
               class="ml-2"
-              style="display: grid; grid-auto-columns: min-content; grid-gap: 6px; grid-auto-flow: column"
+              style="
+                display: grid;
+                grid-auto-columns: min-content;
+                grid-gap: 6px;
+                grid-auto-flow: column;
+              "
             >
               <grid-button
                 v-hide-simple
@@ -455,7 +634,12 @@
                       @click="acceptOrderWithTime(time)"
                     />
                   </template>
-                  <grid-button :text="$t('Reject')" color="error" icon="mdi-minus" @click="rejectOrder" />
+                  <grid-button
+                    :text="$t('Reject')"
+                    color="error"
+                    icon="mdi-minus"
+                    @click="rejectOrder"
+                  />
                 </template>
               </template>
               <template v-else-if="consumeTypeStatusId < 2">
@@ -492,45 +676,100 @@
           v-cloak
           id="splitOrderContainer"
           class="bottomCart surface d-flex justify-end"
-          style="background: rgba(0, 0, 0, 0.4); top: 0; z-index: 50; left: 350px"
+          style="
+            background: rgba(0, 0, 0, 0.4);
+            top: 0;
+            z-index: 50;
+            left: 348px;
+          "
           @click="removeAllFromSplitOrder"
         >
-          <div class="d-flex" style="max-width: 600px; width: 50vw" @click.stop>
+          <div
+            class="d-flex"
+            style="max-width: 600px; width: 50vw"
+            @click.stop
+          >
             <div class="pa-1 d-flex flex-column">
-              <v-btn class="mt-1" color="error" x-large @click="removeAllFromSplitOrder()">
+              <v-btn
+                class="mt-1"
+                color="error  lighten-4 black--text"
+                x-large
+                @click="removeAllFromSplitOrder()"
+              >
                 <v-icon left>mdi-close-circle</v-icon>
-                {{ $t("Cancel") }}
+                {{ $t('Cancel') }}
               </v-btn>
-              <v-btn class="mt-1" x-large @click="needSplitOrder()">
+              <v-btn
+                color="success  lighten-4 black--text"
+                class="mt-1"
+                x-large
+                @click="needSplitOrder()"
+              >
                 <v-icon left>mdi-set-split</v-icon>
-                {{ $t("BillSplit") }}
+                {{ $t('BillSplit') }}
               </v-btn>
-              <v-btn class="mt-1" x-large v-on:click="showDeleteDishDialog">
+              <v-btn
+                color="warning lighten-4 black--text"
+                class="mt-1"
+                x-large
+                v-on:click="showDeleteDishDialog"
+              >
                 <v-icon left>mdi-calendar-remove</v-icon>
-                {{ $t("DishCancel") }}
+                {{ $t('DishCancel') }}
               </v-btn>
-              <v-btn class="mt-1" x-large v-on:click="dishesSetDiscount()">
+              <v-btn
+                color="pink lighten-4 black--text"
+                class="mt-1"
+                x-large
+                v-on:click="dishesSetDiscount()"
+              >
                 <v-icon left>mdi-sale</v-icon>
-                {{ $t("GiveDishADiscount") }}
+                {{ $t('GiveDishADiscount') }}
               </v-btn>
-              <v-btn class="mt-1" x-large v-on:click="dishesChangeTable">
+              <v-btn
+                color="indigo  lighten-4 black--text"
+                class="mt-1"
+                x-large
+                v-on:click="dishesChangeTable"
+              >
                 <v-icon left>mdi-inbox-arrow-up</v-icon>
-                {{ $t("tableChange") }}
+                {{ $t('tableChange') }}
               </v-btn>
-              <v-btn class="mt-1" x-large v-on:click="printZwichenBon()">
-                <v-icon left>mdi-bandcamp</v-icon>
-                {{ $t("TemporaryBill") }}
+              <v-btn
+                color="blue  lighten-4 black--text"
+                class="mt-1"
+                x-large
+                v-on:click="printZwichenBon()"
+              >
+                <v-icon left>mdi-receipt-text-arrow-left</v-icon>
+                {{ $t('TemporaryBill') }}
               </v-btn>
             </div>
-            <dish-card-list
-              :click-callback="removeFromSplitOrder"
-              :default-expand="true"
-              :discount-ratio="discountRatio"
-              :dish-list-model="splitOrderListModel"
-              :title="$t('operation')"
-              class="flex-grow-1"
-              extra-height="48px"
-            />
+            <v-card
+              dark
+              tile
+              width="100%"
+            >
+              <div class="grey darken-3 pa-3 d-flex align-center">
+                <div class="text-body-1">选中的商品</div>
+                <v-spacer/>
+                <div>
+                  <v-icon class="mr-2">mdi-calculator-variant</v-icon>
+                </div>
+                <div class="text-body-1 font-weight-black">
+                  {{ splitOrderListModel.total() | priceDisplay }} ({{ splitOrderListModel.count() }})
+                </div>
+              </div>
+              <dish-card-list
+                :click-callback="removeFromSplitOrder"
+                :default-expand="true"
+                :discount-ratio="discountRatio"
+                :dish-list-model="splitOrderListModel"
+                :title="$t('operation')"
+                class="flex-grow-1"
+                extra-height="48px"
+              />
+            </v-card>
           </div>
         </div>
       </template>
@@ -559,20 +798,32 @@
               <div>
                 <h1>{{ keyboardInput }}</h1>
               </div>
-              <div v-if="searchDish.length > 0" class="flex-shrink-1 blue lighten-5" style="overflow: hidden">
+              <div
+                v-if="searchDish.length > 0"
+                class="flex-shrink-1 blue lighten-5"
+                style="overflow: hidden"
+              >
                 <template v-for="(dish, index) in searchDish">
                   <v-card
                     :key="dish.id"
                     :class="index === indexActive ? 'first' : ''"
-                    :style="{ backgroundColor: '' + dish.displayColor, color: '' + dish.foreground }"
+                    :style="{
+                      backgroundColor: '' + dish.displayColor,
+                      color: '' + dish.foreground,
+                    }"
                     class="d-flex px-1 py-1 align-start"
                     elevation="0"
-                    style="width: 100%; border-bottom: 2px dashed #e2e3e5; font-size: x-large"
+                    style="
+                      width: 100%;
+                      border-bottom: 2px dashed #e2e3e5;
+                      font-size: x-large;
+                    "
                     tile
                     @click="searchDishClick(dish.code)"
                   >
                     <div class="name mr-2">
-                      <span v-code-hide>{{ dish.code }}.</span>{{ dish.dishName }}
+                      <span v-code-hide>{{ dish.code }}.</span
+                      >{{ dish.dishName }}
                     </div>
                     <v-spacer></v-spacer>
                     <div
@@ -580,33 +831,55 @@
                       class="price d-flex align-center green lighten-3 white--text"
                       style="padding: 2px 4px; border-radius: 4px"
                     >
-                      {{ $t("Frei") }}
+                      {{ $t('Frei') }}
                     </div>
-                    <div v-else class="price d-flex align-center text-no-wrap text-truncate">
+                    <div
+                      v-else
+                      class="price d-flex align-center text-no-wrap text-truncate"
+                    >
                       {{ dish.price | priceDisplay }}
                     </div>
                   </v-card>
                 </template>
               </div>
-              <div class="text-caption text--secondary" style="font-size: 14px !important">
-                {{ $t("PressESCToEnterWindow") }}<br />
-                {{ $t("PressESCToCloseWindow") }}
+              <div
+                class="text-caption text--secondary"
+                style="font-size: 14px !important"
+              >
+                {{ $t('PressESCToEnterWindow') }}<br/>
+                {{ $t('PressESCToCloseWindow') }}
               </div>
             </v-card>
           </v-fade-transition>
         </keep-alive>
       </template>
 
-      <v-dialog v-model="extraDishShow" max-width="300">
+      <v-dialog
+        v-model="extraDishShow"
+        max-width="300"
+      >
         <v-card width="550">
-          <v-card-title class="font-weight-bold"> {{ currentDish.name }}</v-card-title>
+          <v-card-title class="font-weight-bold">
+            {{ currentDish.name }}
+          </v-card-title>
           <v-card-text>
-            <v-text-field v-model="currentDish.currentPrice" :label="$t('Amount')" autofocus />
-            <v-text-field v-model="currentDish.currentName" :label="$t('name')" />
+            <v-text-field
+              v-model="currentDish.currentPrice"
+              :label="$t('Amount')"
+              autofocus
+            />
+            <v-text-field
+              v-model="currentDish.currentName"
+              :label="$t('name')"
+            />
           </v-card-text>
           <v-card-actions>
-            <v-spacer />
-            <v-btn class="primary" @click="addExtraDish">{{ $t("submit") }}</v-btn>
+            <v-spacer/>
+            <v-btn
+              class="primary"
+              @click="addExtraDish"
+            >{{ $t('submit') }}
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -652,19 +925,32 @@
         @visibility-changed="(val) => (this.buffetDialogShow = val)"
       ></buffet-start-dialog>
 
-      <v-dialog v-model="deleteDishReasonDialog" max-width="600px">
+      <v-dialog
+        v-model="deleteDishReasonDialog"
+        max-width="600px"
+      >
         <v-card class="pa-4">
-          <div class="text-h5 font-weight-bold">{{ $t("RevocationDishReason") }}</div>
+          <div class="text-body-1 font-weight-bold">
+            {{ $t('RevocationDishReason') }}
+          </div>
           <v-text-field
             v-model="deleteDishReason"
-            :placeholder="reasons.length > 0 ? reasons[0] : $t('RevocationDishReason')"
-            append-icon="mdi-lead-pencil"
+            :placeholder="
+              reasons.length > 0 ? reasons[0] : $t('RevocationDishReason')
+            "
             autofocus
             class="mt-4"
             hide-details
             outlined
           />
-          <div class="mt-2" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-gap: 4px">
+          <div
+            class="mt-2"
+            style="
+              display: grid;
+              grid-template-columns: repeat(4, minmax(0, 1fr));
+              grid-gap: 4px;
+            "
+          >
             <v-card
               v-for="r in reasons"
               :key="r"
@@ -680,13 +966,14 @@
           <div class="d-flex">
             <v-spacer></v-spacer>
             <v-btn
-              class="primary mt-4 lighten-2"
+              large
+              class="primary mt-4 lighten-4 black--text"
               elevation="0"
-              style="border-radius: 36px"
-              width="100%"
+              rounded
+              block
               @click="submitReason()"
             >
-              {{ $t("Confirm") }}
+              {{ $t('Confirm') }}
             </v-btn>
           </div>
         </v-card>
@@ -798,7 +1085,24 @@ function getReason () {
   return JSON.parse(str) ?? []
 }
 
-const keyboardLayout = ['7', '8', '9', 'C', '4', '5', '6', 'A', '1', '2', '3', 'M', '.', '0', 'mdi-close', 'OK']
+const keyboardLayout = [
+  '7',
+  '8',
+  '9',
+  'C',
+  '4',
+  '5',
+  '6',
+  'A',
+  '1',
+  '2',
+  '3',
+  'M',
+  '.',
+  '0',
+  'mdi-close',
+  'OK'
+]
 
 // endregion
 export default {
@@ -839,7 +1143,9 @@ export default {
       addressFormOpen: false,
       consumeTypeList: [],
 
-      keyboardLayout: GlobalConfig.topKeyboardKey.split(',').concat(keyboardLayout),
+      keyboardLayout: GlobalConfig.topKeyboardKey
+        .split(',')
+        .concat(keyboardLayout),
       feedback: '',
       checkoutShow: false,
       extraDishShow: false,
@@ -906,7 +1212,10 @@ export default {
       await deleteDish(this.id, this.splitOrderListModel.list, note)
     },
     async showDeleteDishDialog () {
-      await optionalAuthorizeAsync('boss', !GlobalConfig.returnDishWithoutPassword)
+      await optionalAuthorizeAsync(
+        'boss',
+        !GlobalConfig.returnDishWithoutPassword
+      )
       this.reasons = getReason()
       this.deleteDishReason = ''
       this.deleteDishReasonDialog = true
@@ -925,7 +1234,9 @@ export default {
       await this.initialUI()
     },
     async mergeTable () {
-      const password = await popAuthorize(GlobalConfig.mergeTableUseBossPassword ? 'boss' : '')
+      const password = await popAuthorize(
+        GlobalConfig.mergeTableUseBossPassword ? 'boss' : ''
+      )
       if (password) {
         const tableName = await showTableSelector(TableFilter.activeFilter)
         await safeRequest(async () => {
@@ -941,7 +1252,9 @@ export default {
       }
     },
     async changeTable () {
-      const password = await popAuthorize(GlobalConfig.changeTableUseBossPassword ? 'boss' : '')
+      const password = await popAuthorize(
+        GlobalConfig.changeTableUseBossPassword ? 'boss' : ''
+      )
       if (password) {
         const tableName = await showTableSelector(TableFilter.notActiveFilter)
         const res = await hillo.post('Tables.php?op=change', {
@@ -954,7 +1267,9 @@ export default {
       }
     },
     dishesChangeTable: async function () {
-      const password = await popAuthorize(GlobalConfig.changeTableUseBossPassword ? 'boss' : '')
+      const password = await popAuthorize(
+        GlobalConfig.changeTableUseBossPassword ? 'boss' : ''
+      )
       if (password) {
         const tableName = await showTableSelector()
         const res = await hillo.post('Complex.php?op=dishesChangeTable', {
@@ -1041,9 +1356,15 @@ export default {
     },
     async getOrderedDish () {
       try {
-        if (this.splitOrderListModel.count() === 0 && this.cartListModel.count() === 0) {
+        if (
+          this.splitOrderListModel.count() === 0 &&
+          this.cartListModel.count() === 0
+        ) {
           let discountRatio = 0
-          const result = await getOrderInfo(this.id, GlobalConfig.usePrintModAsName)
+          const result = await getOrderInfo(
+            this.id,
+            GlobalConfig.usePrintModAsName
+          )
           result
             .filter((d) => d.code === 'lk')
             .map((d) => {
@@ -1056,12 +1377,17 @@ export default {
           this.orderListModel.loadTTDishList(noDiscount)
           if (discountInfo.length > 0) {
             const [discount] = discountInfo
-            discountRatio = Math.abs(parseFloat(discount.price)) / this.orderListModel.total()
+            discountRatio =
+              Math.abs(parseFloat(discount.price)) /
+              this.orderListModel.total()
           }
           this.discountRatio = discountRatio
-          await this.setOrderListByTableNameInFirebase(this.orderListModel.list)
+          await this.setOrderListByTableNameInFirebase(
+            this.orderListModel.list
+          )
         }
-      } catch (e) {}
+      } catch (e) {
+      }
     },
     async setOrderListByTableNameInFirebase (orderListModelList) {
       // upload orderList to Firebase
@@ -1099,16 +1425,24 @@ export default {
       const dish = findDish(code)
 
       if (dish) {
-        if (parseInt(GlobalConfig.oneStepOrderNumber) !== -1 && count > GlobalConfig.oneStepOrderNumber) {
-          const res = await showConfirmAsyn(this.$t('AreYouSure'), this.$tc('AreYouSureToOrderDish', 1, { n: count }))
+        if (
+          parseInt(GlobalConfig.oneStepOrderNumber) !== -1 &&
+          count > GlobalConfig.oneStepOrderNumber
+        ) {
+          const res = await showConfirmAsyn(
+            this.$t('AreYouSure'),
+            this.$tc('AreYouSureToOrderDish', 1, { n: count })
+          )
           if (!res?.value) {
             showTimedAlert('warning', 'abrechen')
           }
         }
         dish.name = dish.dishName
-        dish.name = dish.name.length > 28 ? dish.name.substring(0, 28) + '...' : dish.name
+        dish.name =
+          dish.name.length > 28
+            ? dish.name.substring(0, 28) + '...'
+            : dish.name
         if (dish.haveMod > 0) {
-          console.log(dish)
           const apply = setDefaultValueForApply(dish.modInfo, [])
           this.submitModification(apply, dish, count)
           blockReady()
@@ -1116,15 +1450,14 @@ export default {
         }
         if (dish.code.toLowerCase().includes('ea')) {
           if (dish.name.includes('-')) {
-            console.log(dish.name)
             try {
               const [name, priceInfo] = dish.name.split('-')
               const [unitPrice, unit] = priceInfo.split('/')
               const [unitBase, unitName] = unit.split(' ')
-              const unitCount = await IKUtils.showInput('请输入以' + unitName + '计量的产品数量')
-              const realPrice = (unitCount / unitBase) * unitPrice
-              console.log(realPrice)
-              dish.currentPrice = realPrice
+              const unitCount = await IKUtils.showInput(
+                '请输入以' + unitName + '计量的产品数量'
+              )
+              dish.currentPrice = (unitCount / unitBase) * unitPrice
               dish.currentName = `${name} ${unitPrice}/${unit} | ${unitCount}${unitName}`
 
               dish.originPrice = dish.currentPrice.toString().replace(',', '.')
@@ -1140,7 +1473,14 @@ export default {
             return
           }
         }
-        this.feedback = '✅' + dish.code + '.' + dish.dishName + '*' + count + this.$t('AddedToCart')
+        this.feedback =
+          '✅' +
+          dish.code +
+          '.' +
+          dish.dishName +
+          '*' +
+          count +
+          this.$t('AddedToCart')
         this.addDish(dish, parseInt(count))
       } else {
         this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
@@ -1180,12 +1520,13 @@ export default {
             const [ra, rb] = [a.id, b.id].map(idToRank)
             return ra > rb ? -1 : 1
           })
-          .filter((i) => typeof i.childCount === 'undefined' || i.childCount > 0)
+          .filter(
+            (i) => typeof i.childCount === 'undefined' || i.childCount > 0
+          )
       }
     },
     async getCategory (consumeTypeId = 1, force = false) {
       if (this.categories.length === 0 || force) {
-        console.log('reloadDishUseConsumeTypeId', consumeTypeId)
         this.categories = await getCategoryListWithCache(consumeTypeId)
         this.dishes = processDishList(
           this.categories.reduce((arr, i) => {
@@ -1269,7 +1610,6 @@ export default {
       if (this.count !== 1) {
         count = this.count
       }
-      console.log(_mod)
       dish.apply = _mod // here we add a apply
       dish.forceFormat = true
 
@@ -1359,7 +1699,13 @@ export default {
       checkOut(pw, this.id, print, payMethod, tipIncome, memberCardId)
     },
     needSplitOrder: async function () {
-      this.password = await optionalAuthorizeAsync('', GlobalConfig.checkOutUsePassword, '', true, this.id)
+      this.password = await optionalAuthorizeAsync(
+        '',
+        GlobalConfig.checkOutUsePassword,
+        '',
+        true,
+        this.id
+      )
       this.checkoutShow = true
       checkoutFactory.clear()
       checkoutFactory.loadTTDishList(this.splitOrderListModel.list)
@@ -1392,7 +1738,9 @@ export default {
           { noDebug: true }
         )
         this.tableDetailInfo = res.content
-        this.tableDetailInfo.consumeTypeName = findConsumeTypeById(this.tableDetailInfo.consumeTypeId).name
+        this.tableDetailInfo.consumeTypeName = findConsumeTypeById(
+          this.tableDetailInfo.consumeTypeId
+        ).name
         if (this.tableDetailInfo.order.discountStr) {
           this.discountStr = this.tableDetailInfo.order.discountStr
         }
@@ -1403,14 +1751,17 @@ export default {
     },
     async acceptOrder (reason = 'ok') {
       await acceptOrder(reason, this.id)
-      this.initialUI()
+      await this.initialUI()
     },
     async acceptOrderWithTime (time) {
       const addressInfo = JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
       let timeReal = dayjs()
       if (addressInfo) {
         if (addressInfo.date && addressInfo.time) {
-          timeReal = dayjs(addressInfo.date + ' ' + addressInfo.time, 'YYYY-MM-DD HH:mm')
+          timeReal = dayjs(
+            addressInfo.date + ' ' + addressInfo.time,
+            'YYYY-MM-DD HH:mm'
+          )
         }
       }
       timeReal = timeReal.add(time, 'm')
@@ -1541,7 +1892,13 @@ export default {
               setTimeout(async () => {
                 const res = await showConfirmAsyn(this.$t('PaidWithoutTip'))
                 if (res.value) {
-                  const pw = await optionalAuthorizeAsync('', GlobalConfig.checkOutUsePassword, null, true, this.id)
+                  const pw = await optionalAuthorizeAsync(
+                    '',
+                    GlobalConfig.checkOutUsePassword,
+                    null,
+                    true,
+                    this.id
+                  )
                   this.checkOut(pw)
                 }
                 blockReady()
@@ -1562,11 +1919,15 @@ export default {
         order.forEach((o) => {
           o.guestNumber = 1
         })
-        await hillo.post('Complex.php?op=addDishesToTable&_servantPw=' + GlobalConfig.defaultPassword, {
-          params: JSON.stringify(order),
-          tableId: this.id,
-          printingKitchenBon: print ? 1 : 0
-        })
+        await hillo.post(
+          'Complex.php?op=addDishesToTable&_servantPw=' +
+          GlobalConfig.defaultPassword,
+          {
+            params: JSON.stringify(order),
+            tableId: this.id,
+            printingKitchenBon: print ? 1 : 0
+          }
+        )
         this.cartListModel.clear()
         this.initialUI()
         printNow()
@@ -1598,7 +1959,13 @@ export default {
         this.password = pw
       }
       setTimeout(async () => {
-        const pw = await optionalAuthorizeAsync('', GlobalConfig.checkOutUsePassword, '', true, this.id)
+        const pw = await optionalAuthorizeAsync(
+          '',
+          GlobalConfig.checkOutUsePassword,
+          '',
+          true,
+          this.id
+        )
 
         await realCheckOut(pw)
       }, 20)
@@ -1613,7 +1980,6 @@ export default {
     },
     updateFilteredDish () {
       if (this.activeCategoryId) {
-        console.log('should update Filtered Dish')
         this.filteredDish = this.filterDish()
       }
     },
@@ -1660,10 +2026,15 @@ export default {
           }
           if (!codeOnly) {
             for (const d of list) {
-              if (d.code.toLowerCase().startsWith(code.toLowerCase()) && d.code !== code) {
+              if (
+                d.code.toLowerCase().startsWith(code.toLowerCase()) &&
+                d.code !== code
+              ) {
                 d.rank = 999 + d.code.length
                 result.push(d)
-              } else if (d.dishName.toLowerCase().startsWith(code.toLowerCase())) {
+              } else if (
+                d.dishName.toLowerCase().startsWith(code.toLowerCase())
+              ) {
                 d.rank = d.dishName.length
                 result.push(d)
               }
@@ -1766,8 +2137,6 @@ export default {
       if (this.tableDetailInfo.order.rawAddressInfo?.length > 0) {
         try {
           const res = JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
-
-          console.log('realAddressInfo res', res)
           return res
         } catch (e) {
           return null
@@ -1780,7 +2149,8 @@ export default {
       return parseInt(this.tableDetailInfo.order.consumeTypeId ?? 1)
     },
     realConsumeTypeId () {
-      return this.overrideConsumeTypeId && this.overrideConsumeTypeId !== this.consumeTypeId
+      return this.overrideConsumeTypeId &&
+      this.overrideConsumeTypeId !== this.consumeTypeId
         ? this.overrideConsumeTypeId
         : this.consumeTypeId ?? 1
     },
@@ -1837,16 +2207,19 @@ export default {
       Remember.keyboardMode = val
     },
     realConsumeTypeId (val) {
-      console.log('I change')
       this.reloadDish(val, true)
     }
   },
   async mounted () {
     await getConsumeTypeList()
     await this.getDCT()
-    const selectableId = GlobalConfig.selectableConsumeTypeId?.split(',').map((d) => parseInt(d))
+    const selectableId = GlobalConfig.selectableConsumeTypeId
+      ?.split(',')
+      .map((d) => parseInt(d))
     if (selectableId?.length > 0) {
-      this.consumeTypeList = consumeTypeList.filter((c) => selectableId.includes(parseInt(c.id)))
+      this.consumeTypeList = consumeTypeList.filter((c) =>
+        selectableId.includes(parseInt(c.id))
+      )
     } else {
       this.consumeTypeList = consumeTypeList
     }
@@ -1857,165 +2230,165 @@ export default {
 
 <style scoped>
 ::-webkit-scrollbar {
-  height: 80%;
-  margin-top: 20%;
-  width: 6px;
+    height: 80%;
+    margin-top: 20%;
+    width: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: url("/Resource/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
-  width: 6px;
-  cursor: pointer;
-  height: 56px;
+    background: url("/Resource/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
+    width: 6px;
+    cursor: pointer;
+    height: 56px;
 }
 
 ::-webkit-scrollbar-track {
-  width: 10px;
+    width: 10px;
 }
 
 .collapse .areaC {
-  flex-grow: 1;
-  width: 100%;
-  height: 100%;
-  padding: 12px 0;
+    flex-grow: 1;
+    width: 100%;
+    height: 100%;
+    padding: 12px 0;
 }
 
 .spaceBetween {
-  display: flex;
-  justify-content: space-between;
+    display: flex;
+    justify-content: space-between;
 }
 
 th {
-  font-weight: 600;
-  font-size: 16px;
+    font-weight: 600;
+    font-size: 16px;
 }
 
 td {
-  color: #4b4b4b;
-  font-size: 18px;
+    color: #4b4b4b;
+    font-size: 18px;
 }
 
 td,
 th {
-  padding: 8px 4px;
+    padding: 8px 4px;
 }
 
 tr:hover {
-  background: #f8f8f8;
+    background: #f8f8f8;
 }
 
 .smallTableBody > tr {
-  border-bottom-width: 0.2px;
+    border-bottom-width: 0.2px;
 }
 
 .smallTableBody > tr > td {
-  padding: 0 6px;
+    padding: 0 6px;
 }
 
 .input-field > label {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 .dishCardList {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  grid-gap: 12px;
-  margin-bottom: 120px;
-  width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    grid-gap: 12px;
+    margin-bottom: 120px;
+    width: 100%;
 }
 
 .dragscroll {
-  overflow-x: hidden;
+    overflow-x: hidden;
 }
 
 .dishCardListContainer {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    height: 100%;
 }
 
 .bottomCart {
-  position: fixed;
-  width: calc(100vw - 354px);
-  height: 100vh;
+    position: fixed;
+    width: calc(100vw - 354px);
+    height: 100vh;
 }
 
 .bigTableName {
-  white-space: nowrap;
-  font-size: 36px;
-  font-weight: bold;
+    white-space: nowrap;
+    font-size: 36px;
+    font-weight: bold;
 }
 
 .icon-line {
-  display: flex;
-  align-items: center;
-  font-size: 18px;
+    display: flex;
+    align-items: center;
+    font-size: 18px;
 }
 
 .v-list-item-group .v-list-item--active {
-  color: #367aeb;
-  font-weight: bold;
-  border-right: 3px solid #367aeb;
+    color: #367aeb;
+    font-weight: bold;
+    border-right: 3px solid #367aeb;
 }
 
 .menu-item {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
-  width: calc(25% - 4px);
-  height: 72px;
-  padding: 8px;
-  margin: 2px;
-  text-transform: capitalize;
-  font-size: 20px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+    width: calc(25% - 4px);
+    height: 72px;
+    padding: 8px;
+    margin: 2px;
+    text-transform: capitalize;
+    font-size: 20px;
 }
 
 .menu-item.active {
-  border: none;
-  background: #367aeb !important;
-  color: white !important;
-  font-weight: bold;
+    border: none;
+    background: #367aeb !important;
+    color: white !important;
+    font-weight: bold;
 }
 
 .menu-always {
-  width: fit-content;
-  margin: 2px;
-  font-size: 18px;
-  padding: 4px 8px;
+    width: fit-content;
+    margin: 2px;
+    font-size: 18px;
+    padding: 4px 8px;
 }
 
 .menu-always.active {
-  border: none;
-  background: #367aeb !important;
-  color: white !important;
-  font-weight: bold;
+    border: none;
+    background: #367aeb !important;
+    color: white !important;
+    font-weight: bold;
 }
 
 .consumeTypeItem {
-  border-radius: 8px;
-  width: max-content;
-  padding: 8px 12px;
-  background: white;
-  white-space: nowrap;
-  text-transform: capitalize;
-  font-size: 20px;
+    border-radius: 8px;
+    width: max-content;
+    padding: 8px 12px;
+    background: white;
+    white-space: nowrap;
+    text-transform: capitalize;
+    font-size: 20px;
 }
 
 .consumeTypeItem.active {
-  font-weight: bold;
-  text-transform: capitalize;
-  background: #367aeb !important;
-  color: #ffffff;
-  border-bottom: 2px solid #367aeb;
+    font-weight: bold;
+    text-transform: capitalize;
+    background: #367aeb !important;
+    color: #ffffff;
+    border-bottom: 2px solid #367aeb;
 }
 
 .first {
-  padding: 8px !important;
-  font-size: large;
-  color: black;
-  background: #bbdefb !important;
-  border-bottom: 2px solid #367aeb !important;
+    padding: 8px !important;
+    font-size: large;
+    color: black;
+    background: #bbdefb !important;
+    border-bottom: 2px solid #367aeb !important;
 }
 </style>

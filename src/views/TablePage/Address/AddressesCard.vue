@@ -1,20 +1,14 @@
 <template>
-  <div class="pa-4">
+  <v-card
+    class="pa-4 d-flex flex-column justify-center align-start"
+    color="grey lighten-4"
+    elevation="0"
+  >
     <div class="text-subtitle-2">{{ $t('CurrentAddress') }}</div>
-    <div class="mt-4">
-      <div class="text-h6 font-weight-black">
-        {{ $t(address.deliveryMethod) }}
+    <div class="text-body-1 mt-2">
+      <div class="text-h6 font-weight-bold text-capitalize">
+        {{ address.firstName }} {{ address.lastName }}
       </div>
-      <span v-if="address.date">{{ $t('ExpectedTime') }}:</span>
-      <template v-if="address.oldTime">
-        <span>{{ address.oldTime }}</span>
-      </template>
-      <template v-else>
-        {{ address.time }}
-      </template>
-    </div>
-    <div>
-      <b>{{ address.firstName }}</b> <b>{{ address.lastName }}</b>
       <filter-empty-string-displayer :data="address.addressLine1">
         <b>{{ address.addressLine1 }}</b>
       </filter-empty-string-displayer>
@@ -30,12 +24,21 @@
       <filter-empty-string-displayer :data="address.tel">
         {{ address.tel }}
       </filter-empty-string-displayer>
+      <div class="text-body-1 ">
+        {{ address.date }}
+      </div>
     </div>
-    <v-card-actions>
-      <slot></slot>
-    </v-card-actions>
+    <v-btn
+      @click="$emit('change')"
+      color="grey lighten-2"
+      elevation="0"
+      class="mt-4"
+    >
+      <v-icon left>mdi-swap-horizontal</v-icon>
+      更换地址
+    </v-btn>
 
-  </div>
+  </v-card>
 </template>
 
 <script>

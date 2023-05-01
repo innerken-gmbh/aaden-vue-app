@@ -8,7 +8,7 @@
       </v-btn>
     </v-card>
     <div class="flex-grow-1 d-flex flex-column" style="width: 400px">
-      <div class="d-flex grey lighten-4 text-body-1 pa-2">
+      <div class="d-flex grey lighten-4 text-body-1 pa-2 px-3">
         <div>总价</div>
         <v-spacer></v-spacer>
         <div class="mt-1 font-weight-regular">
@@ -16,7 +16,7 @@
         </div>
       </div>
       <div  v-if="readyToCheckOut" class="paymentLog flex-grow-1">
-        <div style="height: 100%" class="pa-2 d-flex flex-column">
+        <div style="height: 100%" class="pa-2 px-3 d-flex flex-column">
           <div class="text-body-2">支付方式</div>
           <template v-for="paymentInfo in paymentLog">
             <div :key="'price' + paymentInfo.hash" class="d-flex py-2 mb-1" style="width: 100%">
@@ -94,7 +94,7 @@
           </div>
         </div>
       </div>
-      <v-card v-else tile class="calculator pa-2 d-flex flex-column" elevation="1" style="width: 100%; height: 100%">
+      <v-card v-else tile class="calculator pa-2 px-3 d-flex flex-column" elevation="1" style="width: 100%; height: 100%">
         <v-card
           v-if="Math.abs(remainTotal - total) > 0.001 && remainTotal !== 0"
           class="pa-4 mt-1 d-flex align-center"

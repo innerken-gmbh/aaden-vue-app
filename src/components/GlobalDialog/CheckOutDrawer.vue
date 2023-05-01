@@ -4,9 +4,8 @@
     right
     fixed
     temporary
-    v-model="realShow"
     touchless
-    stateless
+    v-model="realShow"
   >
     <v-card tile class="fill-height">
       <check-out-calculator
