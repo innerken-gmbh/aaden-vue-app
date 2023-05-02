@@ -77,17 +77,6 @@ function getComputedOption (dish) {
         realModInfo.push(item)
       }
     })
-    if (GlobalConfig.useAttributeSort) {
-      realModInfo.sort((a, b) => {
-        if (a.required === '1') {
-          return -1
-        } else if (a.select.length === 1) {
-          return -1
-        } else {
-          return 1
-        }
-      })
-    }
   }
   return realModInfo
 }

@@ -1,55 +1,55 @@
 <template>
-  <div>
-    <v-navigation-drawer
-        dark
-        mini-variant
-        mini-variant-width="72"
-        permanent stateless
-        style="z-index: 100" app>
-      <v-card color="transparent" elevation="0"
-              class="d-flex flex-column py-2"
-              style="height: 100vh">
-        <div style="display: grid;grid-auto-flow: row;;grid-gap: 12px">
-          <v-card
-              v-for="m in menuList"
-              :key="m.icon"
-              color="transparent"
-              elevation="0"
-              @click="goto(m)"
-          >
-            <v-responsive :aspect-ratio="1">
-              <div class="d-flex flex-column justify-center align-center" style="height: 100%">
-                <div>
-                  <v-icon :color="color(m.path)">{{ m.icon }}</v-icon>
-                </div>
-                <div class="hideMore"
-                     style="max-width: 56px">
-                  <div class="mt-1 text-caption text-no-wrap
+    <div>
+        <v-navigation-drawer
+                dark
+                mini-variant
+                mini-variant-width="72"
+                permanent stateless
+                style="z-index: 100" app>
+            <v-card color="transparent" elevation="0"
+                    class="d-flex flex-column py-2"
+                    style="height: 100vh">
+                <div style="display: grid;grid-auto-flow: row;;grid-gap: 12px">
+                    <v-card
+                            v-for="m in menuList"
+                            :key="m.icon"
+                            color="transparent"
+                            elevation="0"
+                            @click="goto(m)"
+                    >
+                        <v-responsive :aspect-ratio="1">
+                            <div class="d-flex flex-column justify-center align-center" style="height: 100%">
+                                <div>
+                                    <v-icon :color="color(m.path)">{{ m.icon }}</v-icon>
+                                </div>
+                                <div class="hideMore"
+                                     style="max-width: 56px">
+                                    <div class="mt-1 text-caption text-no-wrap
                   text-body-1 font-weight-black
              text-truncate overflow-hidden text-capitalize"
-                  >
-                    {{ $t(m.text) }}
-                  </div>
+                                    >
+                                        {{ $t(m.text) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </v-responsive>
+                    </v-card>
                 </div>
-              </div>
-            </v-responsive>
-          </v-card>
-        </div>
-        <v-spacer/>
-        <div class="d-flex align-center flex-column justify-center">
-          <logo-display/>
-          <div class="text-no-wrap text-caption text-center mt-n1">
-            v{{ version }}
-          </div>
-        </div>
+                <v-spacer/>
+                <div class="d-flex align-center flex-column justify-center">
+                    <logo-display/>
+                    <div class="text-no-wrap text-caption text-center mt-n1">
+                        v{{ version }}
+                    </div>
+                </div>
 
-      </v-card>
+            </v-card>
 
-    </v-navigation-drawer>
-    <v-main app>
-      <router-view></router-view>
-    </v-main>
-  </div>
+        </v-navigation-drawer>
+        <v-main app>
+            <router-view></router-view>
+        </v-main>
+    </div>
 </template>
 <script>
 import { jumpTo, popAuthorize } from '@/oldjs/common'
@@ -80,7 +80,7 @@ export default {
 
         {
           icon: 'mdi-cash',
-          text: ('Sales'),
+          text: ('账单'),
           beforeEnter: async () => {
             const pw = await popAuthorize('', true)
             const servant = this.findServant(pw)

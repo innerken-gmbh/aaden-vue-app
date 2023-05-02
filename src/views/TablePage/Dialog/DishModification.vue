@@ -1,38 +1,38 @@
 <template>
-  <v-card elevation="0"
-          color="#f8f8f8"
-          style="min-height: 100%;min-width: 100%;
+    <v-card elevation="0"
+            color="#f8f8f8"
+            style="min-height: 100%;min-width: 100%;
             margin: 0 !important;padding: 0!important;">
-    <v-toolbar dark>
-      <v-app-bar-nav-icon @click="cancel">
-        <v-icon>mdi-close</v-icon>
-      </v-app-bar-nav-icon>
-      <v-toolbar-title class="flex-grow-1">
-        <slot v-bind:price="addPrice" name="before"></slot>
-      </v-toolbar-title>
-      <v-toolbar-items>
-        <v-btn icon @click="count>0?count--:null">
-          <v-icon>mdi-minus</v-icon>
-        </v-btn>
-        <v-btn style="font-size: 24px" x-large light>{{ count }}</v-btn>
-        <v-btn icon @click="count++">
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-        <v-btn
-            color="primary"
-            ref="submit"
-            x-large
-            @click="submitModification"
-        >
-          <v-icon left>mdi-check</v-icon>
-          {{ $t('Confirm') }}
-        </v-btn>
-      </v-toolbar-items>
-    </v-toolbar>
-    <div
-        class="pa-2"
-        ref="containerCard"
-        style="
+        <v-toolbar dark>
+            <v-app-bar-nav-icon @click="cancel">
+                <v-icon>mdi-close</v-icon>
+            </v-app-bar-nav-icon>
+            <v-toolbar-title class="flex-grow-1">
+                <slot v-bind:price="addPrice" name="before"></slot>
+            </v-toolbar-title>
+            <v-toolbar-items>
+                <v-btn icon @click="count>0?count--:null">
+                    <v-icon>mdi-minus</v-icon>
+                </v-btn>
+                <v-btn style="font-size: 24px" x-large light>{{ count }}</v-btn>
+                <v-btn icon @click="count++">
+                    <v-icon>mdi-plus</v-icon>
+                </v-btn>
+                <v-btn
+                        color="primary"
+                        ref="submit"
+                        x-large
+                        @click="submitModification"
+                >
+                    <v-icon left>mdi-check</v-icon>
+                    {{ $t('Confirm') }}
+                </v-btn>
+            </v-toolbar-items>
+        </v-toolbar>
+        <div
+                class="pa-2"
+                ref="containerCard"
+                style="
         height: calc(100vh - 64px);
         display: flex;
         flex-direction: column;
@@ -41,52 +41,51 @@
         max-width: 100vw;
         overflow-x: scroll;
         ">
-      <template v-for="item in computedOption">
-        <div :key="'mod2'+item.id" :style="{maxWidth:item.select.length>10?'400px':'270px'}">
-          <h4 :key="'mod2head'+item.id">
-            {{ `${item.name}${item.required === '1' ? `:${item.select[0].text}` : ``}` }}
-          </h4>
-          <v-item-group
-              v-model="mod[item.id]"
-              :mandatory="item.required==='1'"
-              :multiple="item.multiSelect==='1'"
-              active-class="active"
-          >
-            <div style="display: flex;flex-wrap: wrap">
-              <template v-for="(s,index) in item.select">
-                <v-item :key="'mod111'+index" #default="{active,toggle}">
-                  <v-card :ripple="false"
-                          tile
-                          class="d-flex flex-column ma-1"
-                          width="124px"
-                          :color="active?'warning':''"
-                          @click="activeCallback(active,toggle,item,index)">
-                    <div class="ma-2 flex-grow-1" style="font-size: 18px">
-                      {{ s.text }}{{ s.priceInfo }}
-                    </div>
-                    <template v-if="active&&item.required!=='1'">
-                      <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn @click.stop="addCount(item.id,index)" right>
+            <template v-for="item in computedOption">
+                <div :key="'mod2'+item.id" :style="{maxWidth:item.select.length>10?'400px':'270px'}">
+                    <h4 :key="'mod2head'+item.id">
+                        {{ `${item.name}${item.required === '1' ? `:${item.select[0].text}` : ``}` }}
+                    </h4>
+                    <v-item-group
+                            v-model="mod[item.id]"
+                            :mandatory="item.required==='1'"
+                            :multiple="item.multiSelect==='1'"
+                            active-class="active"
+                    >
+                        <div style="display: flex;flex-wrap: wrap">
+                            <template v-for="(s,index) in item.select">
+                                <v-item :key="'mod111'+index" #default="{active,toggle}">
+                                    <v-card :ripple="false"
+                                            tile
+                                            class="d-flex flex-column ma-1"
+                                            width="124px"
+                                            :color="active?'warning':''"
+                                            @click="activeCallback(active,toggle,item,index)">
+                                        <div class="ma-2 flex-grow-1" style="font-size: 18px">
+                                            {{ s.text }}{{ s.priceInfo }}
+                                        </div>
+                                        <template v-if="active&&item.required!=='1'">
+                                            <v-card-actions>
+                                                <v-spacer></v-spacer>
+                                                <v-btn @click.stop="addCount(item.id,index)" right>
                            <span style="font-size: 18px" class="font-weight-bold">
                              &times;{{ selectCount[item.id][index] }}
                            </span>
-                        </v-btn>
-                      </v-card-actions>
-                    </template>
-                  </v-card>
-                </v-item>
-              </template>
-            </div>
-          </v-item-group>
+                                                </v-btn>
+                                            </v-card-actions>
+                                        </template>
+                                    </v-card>
+                                </v-item>
+                            </template>
+                        </div>
+                    </v-item-group>
+                </div>
+            </template>
         </div>
-      </template>
-    </div>
-  </v-card>
+    </v-card>
 </template>
 
 <script>
-import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { setDefaultValueForApply } from '@/oldjs/StaticModel'
 
 export default {
@@ -145,17 +144,6 @@ export default {
           realModInfo.push(item)
         }
       })
-      if (GlobalConfig.useAttributeSort) {
-        realModInfo.sort((a, b) => {
-          if (a.required === '1') {
-            return -1
-          } else if (a.select.length === 1) {
-            return -1
-          } else {
-            return 1
-          }
-        })
-      }
 
       return realModInfo
     },
@@ -241,17 +229,17 @@ export default {
 
 <style scoped>
 .hideWhenNoteActiveChip {
-  display: none;
+    display: none;
 }
 
 .active {
-  background: #367aeb;
-  color: white;
+    background: #367aeb;
+    color: white;
 }
 
 .v-chip-group--column .v-slide-group__content {
-  display: grid;
-  grid-template-columns: repeat(3, 100px);
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
 }
 
 </style>

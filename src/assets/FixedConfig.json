@@ -17,7 +17,6 @@
   "milePayPort": 8181,
   "minTileSize": 80,
   "showAllTableButton": true,
-  "frontEndLang": "de",
   "maxEatMinute": 150,
   "oneStepOrderNumber": 10,
   "VIPCardCode": "eag"

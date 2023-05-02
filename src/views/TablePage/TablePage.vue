@@ -1356,7 +1356,7 @@ export default {
           let discountRatio = 0
           const result = await getOrderInfo(
             this.id,
-            GlobalConfig.usePrintModAsName
+            false
           )
           result
             .filter((d) => d.code === 'lk')
