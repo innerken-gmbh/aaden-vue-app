@@ -1,144 +1,160 @@
 <template>
-  <div style="height: 100vh" class="d-flex flex-column">
-    <v-card tile color="grey lighten-3" elevation="0" class="pa-3 d-flex align-center" style="width: 100%">
-      <div class="text-h6">结账</div>
-      <v-spacer></v-spacer>
-      <v-btn @click="cancel" icon>
-        <v-icon>mdi-close</v-icon>
-      </v-btn>
-    </v-card>
-    <div class="flex-grow-1 d-flex flex-column" style="width: 400px">
-      <div class="d-flex grey lighten-4 text-body-1 pa-2 px-3">
-        <div>总价</div>
-        <v-spacer></v-spacer>
-        <div class="mt-1 font-weight-regular">
-          {{ total | priceDisplay }}
-        </div>
-      </div>
-      <div  v-if="readyToCheckOut" class="paymentLog flex-grow-1">
-        <div style="height: 100%" class="pa-2 px-3 d-flex flex-column">
-          <div class="text-body-2">支付方式</div>
-          <template v-for="paymentInfo in paymentLog">
-            <div :key="'price' + paymentInfo.hash" class="d-flex py-2 mb-1" style="width: 100%">
-              <v-card color="grey lighten-4 black--text" class="pa-1 px-2 text-capitalize text-body-1" elevation="0">
-                <template v-if="paymentInfo.icon.startsWith('mdi')">
-                  <v-icon large>{{ paymentInfo.icon }}</v-icon>
-                </template>
-                <template v-else>
-                  {{ paymentInfo.icon }}
-                </template>
-              </v-card>
-              <v-spacer></v-spacer>
-              <div class="font-weight-bold text-body-1">
-                {{ paymentInfo.price | priceDisplay }}
-              </div>
-            </div>
-          </template>
-
-          <div>
-            <div class="text-body-2">账单类型</div>
-            <div class="my-2" style="background: transparent">
-              <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))">
-                <v-card
-                  @click="billType = 0"
-                  :color="billType === 0 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
-                  tile
-                  elevation="0"
-                  class="pa-3 justify-center d-flex align-center"
-                >
-                  <v-icon class="mr-2">mdi-receipt-text-outline</v-icon>
-                  {{ $t("tableCheckOutBillTypeOptionNormal") }}
-                </v-card>
-                <v-card
-                  @click="billType = 1"
-                  :color="billType === 1 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
-                  tile
-                  elevation="0"
-                  class="pa-3 justify-center d-flex align-center"
-                >
-                  <v-icon class="mr-2">mdi-script-text-outline</v-icon>
-                  {{ $t("tableCheckOutBillTypeOptionCompany") }}
-                </v-card>
-              </div>
-            </div>
-          </div>
-          <template v-if="billType === 1">
-            <div class="mt-2">
-              <div class="d-flex">
-                <span class="font-weight-bold text-body-2">{{ $t("公司账单信息") }}</span>
-              </div>
-              <v-form ref="form" v-model="valid" class="mt-2" lazy-validation>
-                <v-text-field :label="$t('companyName')" v-model="companyOrPersonName" filled required />
-                <v-text-field :label="$t('reason')" v-model="reasonOfVisit" filled required />
-                <v-text-field :label="$t('Date')" v-model="locationAndDate" filled required />
-              </v-form>
-            </div>
-          </template>
-          <v-spacer></v-spacer>
-          <div class="d-flex">
-            <v-btn large class="mr-2" elevation="0" @click="paymentLog = []">
-              <v-icon left>mdi-arrow-left</v-icon>
-              {{ $t("上一步") }}
+    <div style="height: 100vh" class="d-flex flex-column">
+        <v-card tile color="grey lighten-3" elevation="0" class="pa-3 d-flex align-center" style="width: 100%">
+            <div class="text-h6">结账</div>
+            <v-spacer></v-spacer>
+            <v-btn @click="cancel" icon>
+                <v-icon>mdi-close</v-icon>
             </v-btn>
-            <v-btn
-              large
-              class="flex-grow-1"
-              :disabled="!readyToCheckOut"
-              color="success lighten-4 black--text"
-              elevation="0"
-              @click="checkOut()"
-            >
-              {{ $t("确认结账") }}
-              <v-icon right>mdi-check</v-icon>
-            </v-btn>
-          </div>
-        </div>
-      </div>
-      <v-card v-else tile class="calculator pa-2 px-3 d-flex flex-column" elevation="1" style="width: 100%; height: 100%">
-        <v-card
-          v-if="Math.abs(remainTotal - total) > 0.001 && remainTotal !== 0"
-          class="pa-4 mt-1 d-flex align-center"
-          color="#f6f6f6"
-          elevation="0"
-        >
-          <div class="text-body-1">
-            {{ $t("PaymentStillRequired") }}
-          </div>
-          <v-spacer></v-spacer>
-          <span class="totalNumber">{{ remainTotal | priceDisplay }}</span>
         </v-card>
-        <v-card v-if="remainTotal !== 0" class="pa-4 mt-1 d-flex align-center" color="primary lighten-4" elevation="0">
-          <div class="text-body-1">
-            {{ $t("PayWillHaveTo") }}
-          </div>
-          <v-spacer></v-spacer>
-          <span :class="inputBuffer ? ' ' : 'grey--text'" class="totalNumber font-weight-black">{{
-            inputBuffer || remainTotal | priceDisplay
-          }}</span>
-        </v-card>
+        <div class="flex-grow-1 d-flex flex-column" style="width: 400px">
+            <div class="d-flex grey lighten-4 text-body-1 pa-2 px-3">
+                <div>总价</div>
+                <v-spacer></v-spacer>
+                <div class="mt-1 font-weight-regular">
+                    {{ total | priceDisplay }}
+                </div>
+            </div>
+            <div v-if="readyToCheckOut" class="paymentLog flex-grow-1">
+                <div style="height: 100%" class="pa-2 px-3 d-flex flex-column">
+                    <div class="text-body-2">支付方式</div>
+                    <template v-for="paymentInfo in paymentLog">
+                        <div :key="'price' + paymentInfo.hash" class="d-flex py-2 mb-1" style="width: 100%">
+                            <v-card color="grey lighten-4 black--text" class="pa-1 px-2 text-capitalize text-body-1"
+                                    elevation="0">
+                                <template v-if="paymentInfo.icon.startsWith('mdi')">
+                                    <v-icon large>{{ paymentInfo.icon }}</v-icon>
+                                </template>
+                                <template v-else>
+                                    {{ paymentInfo.icon }}
+                                </template>
+                            </v-card>
+                            <v-spacer></v-spacer>
+                            <div class="font-weight-bold text-body-1">
+                                {{ paymentInfo.price | priceDisplay }}
+                            </div>
+                        </div>
+                    </template>
 
-        <div class="mt-3">
-          <keyboard-layout :keys="keyArr" @input="input" />
-        </div>
-        <v-divider class="my-4" />
-        <div>
-          <div class="pa-1" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-gap: 8px">
-            <v-card
-              v-for="(item, index) in realExtraPaymentMethodName"
-              :key="index"
-              class="pa-2 text-body-2"
-              color="grey lighten-4"
-              elevation="0"
-              style="height: 48px"
-              @click="input(item)"
-            >
-              {{ item === "coupon" ? $t("Coupon") : item }}
+                    <div>
+                        <div class="text-body-2">账单类型</div>
+                        <div class="my-2" style="background: transparent">
+                            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))">
+                                <v-card
+                                        @click="billType = 0"
+                                        :color="billType === 0 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
+                                        tile
+                                        elevation="0"
+                                        class="pa-3 justify-center d-flex align-center"
+                                >
+                                    <v-icon class="mr-2">mdi-receipt-text-outline</v-icon>
+                                    {{ $t("tableCheckOutBillTypeOptionNormal") }}
+                                </v-card>
+                                <v-card
+                                        @click="billType = 1"
+                                        :color="billType === 1 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
+                                        tile
+                                        elevation="0"
+                                        class="pa-3 justify-center d-flex align-center"
+                                >
+                                    <v-icon class="mr-2">mdi-script-text-outline</v-icon>
+                                    {{ $t("tableCheckOutBillTypeOptionCompany") }}
+                                </v-card>
+                            </div>
+                        </div>
+                    </div>
+                    <template v-if="billType === 1">
+                        <div class="mt-2">
+                            <div class="d-flex">
+                                <span class="font-weight-bold text-body-2">{{ $t("公司账单信息") }}</span>
+                            </div>
+                            <v-form ref="form" v-model="valid" class="mt-2" lazy-validation>
+                                <v-text-field :label="$t('companyName')" v-model="companyOrPersonName" filled required/>
+                                <v-text-field :label="$t('reason')" v-model="reasonOfVisit" filled required/>
+                                <v-text-field :label="$t('Date')" v-model="locationAndDate" filled required/>
+                            </v-form>
+                        </div>
+                    </template>
+                    <v-spacer></v-spacer>
+                    <div>
+                        <v-btn
+                                rounded
+                                class="mb-2"
+                                elevation="0"
+                                @click="paymentLog = []"
+                        >
+                            <v-icon left>mdi-arrow-left</v-icon>
+                            {{ $t("上一步") }}
+                        </v-btn>
+
+                    </div>
+                    <div>
+                        <v-btn
+                                height="56"
+                                block
+                                x-large
+                                rounded
+                                class="flex-grow-1"
+                                :disabled="!readyToCheckOut"
+                                color="success lighten-4 black--text"
+                                elevation="0"
+                                @click="checkOut()"
+                        >
+                            {{ $t("确认结账") }}
+                            <v-icon right>mdi-check</v-icon>
+                        </v-btn>
+                    </div>
+
+                </div>
+            </div>
+            <v-card v-else tile class="calculator pa-2 px-3 d-flex flex-column" elevation="1"
+                    style="width: 100%; height: 100%">
+                <v-card
+                        v-if="Math.abs(remainTotal - total) > 0.001 && remainTotal !== 0"
+                        class="pa-4 mt-1 d-flex align-center"
+                        color="#f6f6f6"
+                        elevation="0"
+                >
+                    <div class="text-body-1">
+                        {{ $t("PaymentStillRequired") }}
+                    </div>
+                    <v-spacer></v-spacer>
+                    <span class="totalNumber">{{ remainTotal | priceDisplay }}</span>
+                </v-card>
+                <v-card v-if="remainTotal !== 0" class="pa-4 mt-1 d-flex align-center" color="primary lighten-4"
+                        elevation="0">
+                    <div class="text-body-1">
+                        {{ $t("PayWillHaveTo") }}
+                    </div>
+                    <v-spacer></v-spacer>
+                    <span :class="inputBuffer ? ' ' : 'grey--text'" class="totalNumber font-weight-black">{{
+                        inputBuffer || remainTotal | priceDisplay
+                        }}</span>
+                </v-card>
+
+                <div class="mt-3">
+                    <keyboard-layout :keys="keyArr" @input="input"/>
+                </div>
+                <v-divider class="my-4"/>
+                <div>
+                    <div class="pa-1"
+                         style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-gap: 8px">
+                        <v-card
+                                v-for="(item, index) in realExtraPaymentMethodName"
+                                :key="index"
+                                class="pa-2 text-body-2"
+                                color="grey lighten-4"
+                                elevation="0"
+                                style="height: 48px"
+                                @click="input(item)"
+                        >
+                            {{ item === "coupon" ? $t("Coupon") : item }}
+                        </v-card>
+                    </div>
+                </div>
             </v-card>
-          </div>
         </div>
-      </v-card>
     </div>
-  </div>
 </template>
 
 <script>
@@ -416,27 +432,27 @@ export default {
 
 <style scoped>
 .totalNumber {
-  width: fit-content;
-  font-size: 24px;
+    width: fit-content;
+    font-size: 24px;
 }
 
 .payingNumber {
-  width: fit-content;
-  font-size: 42px;
+    width: fit-content;
+    font-size: 42px;
 }
 
 .keyboard {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: 4px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 4px;
 }
 
 .key {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 48px;
-  height: auto;
-  border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 48px;
+    height: auto;
+    border-radius: 5px;
 }
 </style>
