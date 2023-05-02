@@ -1,32 +1,34 @@
 <template>
   <div style="max-height: calc(100vh - 112px); overflow-y: scroll">
-    <div class="d-flex">
+    <div style="display: grid;grid-template-columns: 1fr 300px">
       <div
-          class="mt-2 mx-4 flex-grow-1">
+        class="mt-2 mx-4 flex-grow-1"
+      >
         <div
-            style="display: grid; grid-template-columns: repeat(3,1fr); grid-gap: 20px; grid-auto-rows: 315px;min-height: calc(90vh - 120px)">
+          style="display: grid; grid-template-columns: repeat(3,1fr); grid-gap: 20px; grid-auto-rows: 315px;min-height: calc(90vh - 120px)"
+        >
           <div
-              v-for="s in displayServantInfo"
-              :key="s.servant.id"
-              style="background: #f0f0f0;overflow: visible; border-radius: 16px;"
-              :style="activeId===s.servant.id ? {zIndex: 100}:{}"
-              @click="changeActiveId(s.servant.id)"
+            v-for="s in displayServantInfo"
+            :key="s.servant.id"
+            style="background: #f0f0f0;overflow: visible; border-radius: 16px;"
+            :style="activeId===s.servant.id ? {zIndex: 100}:{}"
+            @click="changeActiveId(s.servant.id)"
           >
             <div>
               <div
-                  style="background: #f0f0f0;border-radius: 16px;border: 5px solid black"
-                  class="pa-2"
+                style="background: #f0f0f0;border-radius: 16px;border: 5px solid black"
+                class="pa-2"
               >
                 <div class="d-flex justify-space-between align-center py-2">
                   <div class="display-1">
                     {{ s.servant.name }}
                   </div>
                   <v-btn
-                      class="mr-0"
-                      small
-                      elevation="0"
-                      color="warning"
-                      @click="singleZBon(s.servant.password)"
+                    class="mr-0"
+                    small
+                    elevation="0"
+                    color="primary"
+                    @click="singleZBon(s.servant.password)"
                   >
                     {{ $t('PrintDailySummaryBon') }}
                   </v-btn>
@@ -35,9 +37,9 @@
                 <div>
                   <div class="py-2">
                     <div
-                        v-for="pay in fillPayMethodTotal(s.payMethodTotal,activeId!==s.servant.id)"
-                        :key="pay.id"
-                        class="d-flex justify-space-between pt-1"
+                      v-for="pay in fillPayMethodTotal(s.payMethodTotal,activeId!==s.servant.id)"
+                      :key="pay.id"
+                      class="d-flex justify-space-between pt-1"
                     >
                       <div class="label">
                         {{ pay.name }}
@@ -47,17 +49,17 @@
                       </div>
                     </div>
                     <div
-                        class="d-flex justify-start py-1"
+                      class="d-flex justify-start py-1"
                     >
                       <div
-                          v-if="activeId!==s.servant.id"
-                          style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
+                        v-if="activeId!==s.servant.id"
+                        style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
                       >
                         {{ $t('ExpandMore') }}
                       </div>
                       <div
-                          v-else
-                          style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
+                        v-else
+                        style="border-bottom: 1px solid #4D8AED;color: #4D8AED"
                       >
                         {{ $t('shrink') }}
                       </div>
@@ -65,7 +67,7 @@
                   </div>
                   <v-divider></v-divider>
                   <div
-                      class="d-flex justify-space-between pt-1"
+                    class="d-flex justify-space-between pt-1"
                   >
                     <div class="label">
                       {{ $t('tip2') }}
@@ -75,7 +77,7 @@
                     </div>
                   </div>
                   <div
-                      class="d-flex justify-space-between pt-1 "
+                    class="d-flex justify-space-between pt-1 "
                   >
                     <div class="label">
                       {{ $t('TodayTotalIncludingTips') }}
@@ -85,7 +87,7 @@
                     </div>
                   </div>
                   <div
-                      class="d-flex justify-space-between pt-1 "
+                    class="d-flex justify-space-between pt-1 "
                   >
                     <div class="label">
                       {{ $t('Cash') }} - {{ $t('tip') }}
@@ -101,13 +103,23 @@
         </div>
       </div>
 
-      <v-card elevation="0">
-        <v-btn right x-large dark class="orange mb-6 mt-2" block @click="allZBon(...singleZBonDate)">
-          <div style="width: 160px" class="hideMore">
+      <div class="pa-2">
+        <v-btn
+          x-large
+          dark
+          elevation="0"
+          class="primary lighten-4 black--text"
+          block
+          @click="allZBon(...singleZBonDate)"
+        >
+          <div
+            style="width: 160px"
+            class="hideMore"
+          >
             {{ $t('PrintAllSummaryBon') }}
           </div>
         </v-btn>
-      </v-card>
+      </div>
     </div>
   </div>
 </template>
@@ -226,15 +238,15 @@ export default {
 <style scoped>
 
 .servantName {
-  font-size: 1.5rem;
-  font-weight: 500;
-  line-height: 2rem;
-  letter-spacing: .0125em;
-  text-transform: none;
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 2rem;
+    letter-spacing: .0125em;
+    text-transform: none;
 }
 
 .servantSaleCard {
-  width: 200px;
-  padding: 1rem;
+    width: 200px;
+    padding: 1rem;
 }
 </style>

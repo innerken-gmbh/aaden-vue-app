@@ -4,10 +4,7 @@
       <v-tabs v-model="tabIndex">
         <template v-if="isBoss">
           <v-tab>{{ $t('BillList') }}</v-tab>
-          <v-tab>{{ $t('CashBook') }}</v-tab>
-          <v-tab>{{ $t('DishStatistics') }}</v-tab>
           <v-tab>{{ $t('WaiterShow') }}</v-tab>
-          <v-tab>{{ $t('BindTheBossApp') }}</v-tab>
         </template>
         <template v-else>
           <v-tab>{{ $t('SalesDetails') }}</v-tab>
@@ -15,14 +12,23 @@
       </v-tabs>
       <v-spacer></v-spacer>
 
-      <v-btn v-if="isBoss||Config.servantShowHistoryBill" color="primary" elevation="0" text x-large
-             @click="showDatePicker=true">
+      <v-btn
+        v-if="isBoss||Config.servantShowHistoryBill"
+        color="primary"
+        elevation="0"
+        text
+        x-large
+        @click="showDatePicker=true"
+      >
         <v-icon left>mdi-calendar</v-icon>
         {{ getNiceLabel(singleZBonDate) }}/{{ $t('ChangeDate') }}
       </v-btn>
 
     </v-toolbar>
-    <div class="d-flex" style="height: calc(100vh - 64px)">
+    <div
+      class="d-flex"
+      style="height: calc(100vh - 64px)"
+    >
       <div class="flex-grow-1">
         <v-card-text class="d-flex pa-0">
           <div class="flex-grow-1">
@@ -30,105 +36,35 @@
               <template v-if="isBoss">
                 <template>
                   <v-tab-item>
-                    <calendar :is-boss="isBoss" :single-z-bon-date="singleZBonDate"/>
+                    <calendar
+                      :is-boss="isBoss"
+                      :single-z-bon-date="singleZBonDate"
+                    />
                   </v-tab-item>
                 </template>
-                <v-tab-item>
-                  <v-card>
-                    <div class="d-flex pa-1">
-                      <div class="pa-2 flex-grow-1">
-                        <v-simple-table fixed-header height="calc(100vh - 108px)">
-                          <template v-slot:default>
-                            <thead>
-                            <tr>
-                              <th class="text-left">{{ $t('SerialNumber') }}/{{ $t('time') }}</th>
-                              <th class="text-left">{{ $t('note') }}</th>
-                              <th class="text-left">{{ $t('AmountOfConsumption') }}</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <template v-for="record in cashChangeRecords">
-                              <tr v-bind:key="record.orderId">
-                                <td>
-                                  {{ record.orderId }}/ {{ record.updateTimestamp.split(' ')[1] }}
-                                </td>
-                                <td>
-                                  {{ record.cashAccountNote }}
-                                </td>
-                                <td :style="{color:record.payLogAmount>0?'green':'red'}">
-                                  {{ record.payLogAmount }}
-                                </td>
-                              </tr>
-                            </template>
-                            </tbody>
-                          </template>
-                        </v-simple-table>
-                      </div>
-                      <div class="pa-2" style="width: 272px">
-                        <v-list subheader two-line>
-                          <v-subheader>{{ $t('TotalCash') }}</v-subheader>
-                          <v-list-item>
-                            <v-list-item-content>
-                              <v-list-item-title>
-                            <span style="font-size: larger">
-                                   {{ todayCashStand | priceDisplay }}
-                            </span>
-                              </v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                          <v-subheader>{{ $t('DailyChangeAmount') }}</v-subheader>
-                          <v-list-item>
-                            <v-list-item-content>
-                              <v-list-item-title>
-                            <span style="font-size: larger">
-                                   {{ todayChange | priceDisplay }}
-                            </span>
-                              </v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                          <v-btn
-                            block
-                            color="warning"
-                            x-large
-                            @click="showNumberKeyboard=true">
-                            <div
-                              class="hideMore"
-                              style="max-width: 200px"
-                            >
-                              {{ $t('CreateNewRecord') }}
-                            </div>
-                          </v-btn>
-                        </v-list>
-                      </div>
-                    </div>
-                  </v-card>
-                </v-tab-item>
-                <v-tab-item>
-                  <v-card>
-                    <div class="d-flex pa-1">
-                      <div class="pa-2 flex-grow-1">
-                        <dish-statistic :single-z-bon-date="singleZBonDate"></dish-statistic>
-                      </div>
-                    </div>
-                  </v-card>
-                </v-tab-item>
                 <v-tab-item>
                   <v-card elevation="0">
                     <servant-list :single-z-bon-date="singleZBonDate"></servant-list>
                   </v-card>
-                </v-tab-item>
-                <v-tab-item>
-                  <price-display></price-display>
                 </v-tab-item>
               </template>
               <v-tab-item>
                 <v-card>
                   <div class="d-flex pa-1">
                     <div class="pa-2 flex-grow-1">
-                      <bill-table :is-boss="isBoss" :orders="displayData.orders"></bill-table>
+                      <bill-table
+                        :is-boss="isBoss"
+                        :orders="displayData.orders"
+                      ></bill-table>
                     </div>
-                    <div class="pa-2" style="width: 240px">
-                      <v-list dense subheader>
+                    <div
+                      class="pa-2"
+                      style="width: 240px"
+                    >
+                      <v-list
+                        dense
+                        subheader
+                      >
                         <v-subheader>{{ $t('Waiter') }} : {{ displayData.servant.name }} ({{ $t('WithoutTip') }})
                         </v-subheader>
                         <v-list-item>
@@ -173,7 +109,12 @@
                         </v-list-item>
                         <v-divider></v-divider>
                       </v-list>
-                      <v-btn block class="mt-4" color="primary" @click="printSummaryBon">
+                      <v-btn
+                        block
+                        class="mt-4"
+                        color="primary"
+                        @click="printSummaryBon"
+                      >
                         {{ $t('WaiterBon') }}
                       </v-btn>
                     </div>
@@ -185,25 +126,51 @@
         </v-card-text>
       </div>
     </div>
-    <v-dialog v-model="showDatePicker" max-width="400px">
-      <v-card class="pa-1 pb-4" color="#f6f6f6" elevation="0" tile
+    <v-dialog
+      v-model="showDatePicker"
+      max-width="400px"
+    >
+      <v-card
+        class="pa-1 pb-4"
+        color="#f6f6f6"
+        elevation="0"
+        tile
       >
         <date-range-picker v-model="dateInput"></date-range-picker>
         <div class="px-2 mt-2">
-          <v-btn block color="primary" elevation="0" large @click="dateSubmit">{{ $t('submit') }}</v-btn>
-          <v-btn block class="mt-2" color="error" large outlined @click="showDatePicker=false">{{
+          <v-btn
+            block
+            color="primary"
+            elevation="0"
+            large
+            @click="dateSubmit"
+          >{{ $t('submit') }}
+          </v-btn>
+          <v-btn
+            block
+            class="mt-2"
+            color="error"
+            large
+            outlined
+            @click="showDatePicker=false"
+          >{{
               $t('Cancel')
             }}
           </v-btn>
         </div>
       </v-card>
     </v-dialog>
-    <dialog-with-keyboard :keys="keyboardNumber" :show="showNumberKeyboard"
-                          :title=" $t('PleaseEnterAamountOfExpensesIfEnternumberNegative')"
-                          @close="showNumberKeyboard=false"
-                          @submit="addCashRecord">
-      <v-text-field v-model="cashNote"
-                    :placeholder=" $t('IfNecessaryPlsClickHereToEnterANoteUsingTheKeyboard')"></v-text-field>
+    <dialog-with-keyboard
+      :keys="keyboardNumber"
+      :show="showNumberKeyboard"
+      :title=" $t('PleaseEnterAamountOfExpensesIfEnternumberNegative')"
+      @close="showNumberKeyboard=false"
+      @submit="addCashRecord"
+    >
+      <v-text-field
+        v-model="cashNote"
+        :placeholder=" $t('IfNecessaryPlsClickHereToEnterANoteUsingTheKeyboard')"
+      ></v-text-field>
     </dialog-with-keyboard>
   </div>
 
@@ -228,9 +195,7 @@ import { numberKeyLayout } from '@/components/Base/Keyboard/keyModel'
 import BillTable from '@/views/SalePage/BillTable'
 import { getNiceLabel, getToday, today } from '@/api/Repository/DateRepository'
 import DateRangePicker from '@/components/GlobalDialog/DateRangePicker'
-import DishStatistic from '@/views/SalePage/Fragment/DishStatistic'
 import ServantList from '@/views/SalePage/Fragment/ServantList'
-import PriceDisplay from '@/views/SalePage/Fragment/PriceDisplay'
 
 const defaultDisplayData = {
   orders: [],
@@ -245,9 +210,7 @@ const defaultDisplayData = {
 export default {
   name: 'SalePage',
   components: {
-    PriceDisplay,
     ServantList,
-    DishStatistic,
     DateRangePicker,
     BillTable,
     DialogWithKeyboard,
