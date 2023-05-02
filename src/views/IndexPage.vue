@@ -1,22 +1,21 @@
 <template>
   <div>
-
     <v-navigation-drawer
-      dark
-      mini-variant
-      mini-variant-width="72"
-      permanent stateless
-      style="z-index: 100" app>
+        dark
+        mini-variant
+        mini-variant-width="72"
+        permanent stateless
+        style="z-index: 100" app>
       <v-card color="transparent" elevation="0"
               class="d-flex flex-column py-2"
               style="height: 100vh">
         <div style="display: grid;grid-auto-flow: row;;grid-gap: 12px">
           <v-card
-            v-for="m in menuList"
-            :key="m.icon"
-            color="transparent"
-            elevation="0"
-            @click="goto(m)"
+              v-for="m in menuList"
+              :key="m.icon"
+              color="transparent"
+              elevation="0"
+              @click="goto(m)"
           >
             <v-responsive :aspect-ratio="1">
               <div class="d-flex flex-column justify-center align-center" style="height: 100%">
@@ -56,9 +55,6 @@
 import { jumpTo, popAuthorize } from '@/oldjs/common'
 import { getServantList } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import { printZBon, ZBonList } from '@/api/api'
-import dayjs from 'dayjs'
-import IKUtils from 'innerken-js-utils'
 import { resetCache } from '@/oldjs/StaticModel'
 import LogoDisplay from '@/components/LogoDisplay.vue'
 
@@ -81,6 +77,7 @@ export default {
           },
           path: 'order'
         },
+
         {
           icon: 'mdi-cash',
           text: ('Sales'),
@@ -109,6 +106,14 @@ export default {
             return await popAuthorize('boss')
           },
           path: 'boss'
+        },
+        {
+          icon: 'mdi-cog',
+          text: 'setting',
+          beforeEnter () {
+            return true
+          },
+          path: 'setting'
         }
       ]
     }
@@ -136,22 +141,14 @@ export default {
     }
   },
   async mounted () {
-    this.servantList = await getServantList()
-    if (!this.servantList.find(s => s.password === GlobalConfig.defaultPassword)) {
-      GlobalConfig.updateSettings('defaultPassword', this.servantList[0].password)
-      GlobalConfig.defaultPassword = this.servantList[0].password
-    }
-    if (GlobalConfig.usePrintZBonAlert) {
-      const lastZBonPrintDate = dayjs((await ZBonList())?.[0]?.createTimeStamp ?? '1970-01-01 00:00:00')
-      const hoursBefore = dayjs().subtract(32, 'hour')
-      if (lastZBonPrintDate.isBefore(hoursBefore) && GlobalConfig.printZBonAlert) {
-        const res = await IKUtils.showConfirmAsyn(this.$t('NotePrintZBon'),
-          this.$t('PrintNow'))
-        console.log(res)
-        if (res.isConfirmed) {
-          await printZBon()
-        }
+    try {
+      this.servantList = await getServantList()
+      if (!this.servantList.find(s => s.password === GlobalConfig.defaultPassword)) {
+        GlobalConfig.updateSettings('defaultPassword', this.servantList[0].password)
+        GlobalConfig.defaultPassword = this.servantList[0].password
       }
+    } catch (e) {
+
     }
   }
 }
@@ -159,73 +156,73 @@ export default {
 
 <style scoped>
 .tableDisplay {
-  height: calc(100vh - 48px);
-  overflow: scroll;
+    height: calc(100vh - 48px);
+    overflow: scroll;
 }
 
 .tableDisplay::-webkit-scrollbar {
-  width: 0 !important
+    width: 0 !important
 }
 
 .areaTableContainer {
-  max-height: calc(100vh - 112px);
-  margin-top: 18px;
-  display: grid;
-  grid-auto-flow: column;
-  grid-gap: 10px;
-  margin-bottom: 12px;
+    max-height: calc(100vh - 112px);
+    margin-top: 18px;
+    display: grid;
+    grid-auto-flow: column;
+    grid-gap: 10px;
+    margin-bottom: 12px;
 
 }
 
 .areaTitle {
-  font-size: 16px;
-  font-weight: 600;
+    font-size: 16px;
+    font-weight: 600;
 }
 
 .select-wrapper > ul {
-  z-index: 0;
-  top: -48px;
-  width: 152px;
-  background: rgba(255, 255, 255, 1);
-  box-shadow: 0px 3px 6px rgba(0, 86, 255, 0.08);
-  opacity: 1;
-  border-radius: 0px 0px 5px 5px;
+    z-index: 0;
+    top: -48px;
+    width: 152px;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0px 3px 6px rgba(0, 86, 255, 0.08);
+    opacity: 1;
+    border-radius: 0px 0px 5px 5px;
 }
 
 .select-wrapper > ul > li {
-  border-bottom: 0.3px solid rgba(112, 112, 112, 0.38);;
+    border-bottom: 0.3px solid rgba(112, 112, 112, 0.38);;
 }
 
 .select-dropdown.dropdown-content li.selected {
-  background: rgba(255, 255, 255, 1);
+    background: rgba(255, 255, 255, 1);
 }
 
 .dropdown-content li > a, .dropdown-content li > span {
-  padding: 13px 16px;
-  color: #4b4b4b;
-  font-weight: 200;
-  font-size: inherit;
-  line-height: inherit;
+    padding: 13px 16px;
+    color: #4b4b4b;
+    font-weight: 200;
+    font-size: inherit;
+    line-height: inherit;
 }
 
 .dropdown-content li {
-  height: 45px;
-  min-height: unset;
+    height: 45px;
+    min-height: unset;
 }
 
 .areaC {
-  margin-left: 12px;
-  display: flex;
-  width: max-content;
+    margin-left: 12px;
+    display: flex;
+    width: max-content;
 }
 
 .area {
-  max-height: calc(100vh - 72px);
-  margin-right: 14px;
+    max-height: calc(100vh - 72px);
+    margin-right: 14px;
 }
 
 .alert {
-  background: red;
+    background: red;
 }
 
 .navItem {
@@ -233,8 +230,8 @@ export default {
 }
 
 .hideMore {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 </style>

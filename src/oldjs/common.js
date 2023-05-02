@@ -26,8 +26,6 @@ export async function getAllDishes () {
   return Dishes
 }
 
-// const ipcRenderer = require('electron').ipcRenderer
-
 export function tryToReport () {
   getData(Config.Protocol + Config.Base + '/PHP/AccessLog.php?op=reportStatus')
     .then(res => {
@@ -176,10 +174,6 @@ async function informOpenTable (password = '', tableId, personCount = 1, childCo
     console.log(e)
     logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + e?.data?.info)
   }
-}
-
-export function openTableCallback (tableId, pw, guestCount = 1, childCount = 0) {
-  informOpenTable(pw, tableId, guestCount, childCount)
 }
 
 export async function requestOutTable (pw = null) {

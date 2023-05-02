@@ -8,6 +8,7 @@ import FirstPage from '@/views/FirstPage/FirstPage'
 import SalesPage from '@/views/SalePage/SalesPage'
 import TablePage from '@/views/TablePage/TablePage'
 import ReservationPage from '@/views/ReservationPage/ReservationPage.vue'
+import SettingPage from '@/views/SettingPage.vue'
 
 Vue.use(VueRouter)
 
@@ -40,6 +41,12 @@ const routes = [
         path: 'sales/:password',
         name: 'sales',
         component: SalesPage,
+        props: true
+      },
+      {
+        path: 'setting',
+        name: 'setting',
+        component: SettingPage,
         props: true
       }
     ]

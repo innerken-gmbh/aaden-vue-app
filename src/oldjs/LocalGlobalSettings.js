@@ -15,9 +15,7 @@ export async function loadConfig () {
     GlobalConfig.getMilepayUrl = function () {
       return GlobalConfig.Protocol + GlobalConfig.Base + ':' + GlobalConfig.milePayPort + '/milePay/'
     }
-    GlobalConfig.getReservationUrl = function () {
-      return GlobalConfig.Protocol + GlobalConfig.reservationCloudServerBase + '/'
-    }
+
     GlobalConfig.startUpTimestamp = dayjs().utcOffset()
     refreshGetter()
     window.Config = GlobalConfig
