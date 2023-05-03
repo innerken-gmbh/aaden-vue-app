@@ -6,7 +6,7 @@
         </div>
 
         <div style="position: fixed;bottom: 0;left: 64px;width: calc(100vw - 364px)">
-            <v-card class="d-flex px-4 py-2 pb-4" color="white" elevation="1" tile>
+            <v-card class="d-flex px-4 py-2 pb-4" color="white" elevation="0" tile>
                 <div style="display: grid;grid-auto-flow: column;grid-gap: 8px;">
                     <v-text-field
                             hide-details
