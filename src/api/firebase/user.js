@@ -19,12 +19,13 @@ export async function login (id, displayName) {
   }, { merge: true })
   const res = await getAllStoreIdForUser()
   const userId = await getCurrentUserId()
-  console.log(res, 'res')
-  console.log(userId, 'id')
   if (res.length === 1) {
-    console.log('1')
     await setUserStoreLoginStatus(userId, res[0])
     await router.push({ name: 'order' })
+  } else if (res.length === 0) {
+    await router.push({ name: 'ErrorPage' })
+  } else if (res.length > 1) {
+    await router.push({ name: 'StorePage' })
   }
   console.log(res, 'res')
 }

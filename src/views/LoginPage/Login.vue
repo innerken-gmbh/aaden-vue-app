@@ -293,13 +293,11 @@ export default {
   },
   methods: {
     checkLogin () {
-      console.log(getCurrentUserId(), 'getCurrentUserId()1')
       if (!getCurrentUserId()) {
         this.isLogin = true
       }
     },
     async submit () {
-      console.log('1')
       if (this.$refs.form.validate()) {
         this.isLoading = true
         this.isSignInDisabled = true
@@ -322,9 +320,7 @@ export default {
     },
     async signIn (email, password) {
       try {
-        console.log('2')
         await loginWithEmailAndPassword(email, password)
-        console.log('1')
       } catch (e) {
         if (e.code === 'auth/user-not-found') {
           try {
@@ -341,7 +337,6 @@ export default {
       }
     },
     async signInProvider (id) {
-      console.log(id, 'id')
       try {
         if (id === 'google') {
           await loginWithGoogle()

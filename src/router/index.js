@@ -59,6 +59,16 @@ const routes = [
       name: 'LoginPage',
       path: '/login',
       component: () => import('@/views/LoginPage/Login')
+    },
+    {
+      name: 'ErrorPage',
+      path: '/error',
+      component: () => import('@/views/LoginPage/ErrorPage')
+    },
+    {
+      name: 'StorePage',
+      path: '/store',
+      component: () => import('@/views/LoginPage/StorePage')
     }]
   },
   {
