@@ -4,7 +4,7 @@
 
 import { FireBaseAuth, FireBaseStore } from '@/api/firebase/google-fire-base'
 import { docContentOf, resultOf } from '@/api/firebase/queryUtils'
-import { collection, doc, getDoc, query, setDoc, where } from 'firebase/firestore'
+import { collection, doc, query, setDoc, where } from 'firebase/firestore'
 import router from '@/router'
 
 const userDBPath = 'userInfo'
@@ -54,13 +54,12 @@ export function getCurrentUserId () {
   return FireBaseAuth.currentUser?.uid
 }
 
-export async function getUserStoreLoginStatus (userId, storeId) {
-  return (await getDoc(doc(userStoreLoginPath, userId, storeId))).data()
+export async function setUserStoreLoginStatus (userId, storeId) {
+  const data = {}
+  data[storeId] = { loggedIn: true }
+  return await setDoc(doc(FireBaseStore, userStoreLoginPath, userId), data, { merge: true })
 }
 
-export async function setUserStoreLoginStatus (userId, storeId) {
-  return await setDoc(doc(FireBaseStore, userStoreLoginPath, userId, storeId), { loggedIn: true })
-}
 export async function getAllStoreIdForUser () {
   const res = query(collection(FireBaseStore, userAndStoreRelation),
     where('userId', '==', getCurrentUserId()))
