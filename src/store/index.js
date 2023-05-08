@@ -15,6 +15,7 @@ const basePayloadParam = {
 
 export default new Vuex.Store({
   state: {
+    loginStateReady: false,
     pinDialogShow: false,
     isAuthorizeTypeSuper: false,
     tableId: null,
@@ -23,6 +24,9 @@ export default new Vuex.Store({
     requiredTableKey: 'tableName'
   },
   mutations: {
+    loginStateReady (state) {
+      state.loginStateReady = true
+    },
     START_TABLE_PICK (state, payload) {
       state.tableFilter = payload.tableFilter
       state.requiredTableKey = payload.requiredTableKey
