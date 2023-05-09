@@ -1,6 +1,6 @@
 <template>
   <v-card
-    color="grey lighten-1"
+    color="grey lighten-2"
     elevation="0"
     style="position: relative;flex-shrink: 0;"
     width="190"

@@ -4,24 +4,42 @@
     class="d-flex  align-center justify-center flex-column"
     style="height: 100%;position: relative"
   >
-    <div class="text-h5 font-weight-bold">请选择进入的门店</div>
-  <div
-    v-dragscroll
-    class="my-3"
-    style="width:100%;max-width: 600px;overflow-x: scroll"
-  >
-    <div style="display: grid;grid-auto-flow: column;grid-gap: 16px;grid-auto-columns: min-content">
-      <div style="width: 4px"/>
+    <templete v-if="loading">
+      <v-card class="py-4 d-flex justify-center align-center flex-column" elevation="0" outlined>
+        <div class="text-h5 font-weight-bold my-2">请选择进入的门店</div>
+        <div
+          v-dragscroll
+          class="my-3"
+          style="width:100%;max-width: 600px;overflow-x: scroll"
+        >
+          <div style="display: grid;grid-auto-flow: column;grid-gap: 16px;grid-auto-columns: min-content">
+            <div style="width: 4px"/>
 
-      <restaurant-info-block
-        v-for="i in restaurantInfos"
-        :key="i.deviceId"
-        :color="'grey lighten-1'"
-        :info="i"
-        @click="useDeviceId(i.deviceId)"
-      />
-    </div>
-  </div>
+            <restaurant-info-block
+              v-for="i in restaurantInfos"
+              :key="i.deviceId"
+              :info="i"
+              @click="useDeviceId(i.deviceId)"
+            />
+          </div>
+        </div>
+      </v-card>
+    </templete>
+    <template v-else>
+      <div
+        class="d-flex align-center justify-center flex-column"
+        style="height: 300px"
+      >
+        <div class="mb-2 text-h5">
+          正在加载您的所有门店
+        </div>
+        <div class="mb-8 text-body-2 text--secondary">请稍等片刻</div>
+        <v-progress-circular
+          indeterminate
+          size="64"
+        />
+      </div>
+    </template>
   </div>
 </template>
 
@@ -40,6 +58,7 @@ export default {
   },
   data: function () {
     return {
+      loading: false,
       storeListOfId: [],
       restaurantInfos: []
     }
@@ -62,6 +81,7 @@ export default {
       }, 3000)
     },
     async reload () {
+      this.loading = false
       this.storeListOfId = (await getAllStoreIdForUser(getCurrentUserId()))
       this.restaurantInfos = await Promise.all(this.storeListOfId.map(async (id) => {
         return {
@@ -69,6 +89,7 @@ export default {
           deviceId: id
         }
       }))
+      this.loading = true
     },
     async getInfoForDeviceId (deviceId) {
       const { url } = await this.getBaseAndUrlForDeviceId(deviceId)
