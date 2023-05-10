@@ -53,7 +53,7 @@
                         <time-display></time-display>
                     </div>
                   <v-btn v-if="storeListOfId.length > 1" icon @click="changeStore">
-                    <v-icon>mdi-autorenew</v-icon>
+                    <v-icon>mdi-store</v-icon>
                   </v-btn>
                     <v-btn icon @click="openDrawer">
                         <v-icon>mdi-lock-open</v-icon>
