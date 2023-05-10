@@ -31,7 +31,7 @@
         style="height: 300px"
       >
         <div class="mb-2 text-h5">
-          正在加载您的所有门店
+          {{ selectedStore  ? '正在进入所选门店' : '正在加载您的所有门店'}}
         </div>
         <div class="mb-8 text-body-2 text--secondary">请稍等片刻</div>
         <v-progress-circular
@@ -58,6 +58,7 @@ export default {
   },
   data: function () {
     return {
+      selectedStore: false,
       loading: false,
       storeListOfId: [],
       restaurantInfos: []
@@ -71,6 +72,8 @@ export default {
   },
   methods: {
     async useDeviceId (deviceId) {
+      this.loading = false
+      this.selectedStore = true
       const userId = await getCurrentUserId()
       await setUserStoreLoginStatus(userId, deviceId)
       const { url } = await this.getBaseAndUrlForDeviceId(deviceId)
@@ -78,6 +81,7 @@ export default {
       await hillo.initial(url + '/PHP/')
       setTimeout(async () => {
         await this.$router.push({ name: 'order' })
+        this.loading = true
       }, 3000)
     },
     async reload () {

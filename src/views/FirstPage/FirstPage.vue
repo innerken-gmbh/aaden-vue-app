@@ -1,17 +1,17 @@
 <template>
     <div>
         <navgation>
-            <div style="min-width: 200px" class="d-flex">
+            <div class="d-flex" style="min-width: 200px">
                 <div v-if="restaurantInfo" class="text-h6 font-weight-bold">{{ restaurantInfo.displayName }}</div>
             </div>
             <v-spacer></v-spacer>
-            <v-item-group mandatory v-model="currentView" style="width: max-content" class="align-self-center">
+            <v-item-group v-model="currentView" class="align-self-center" mandatory style="width: max-content">
                 <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
                     <v-item #default="{active,toggle}">
                         <div
-                                @click="toggle"
-                                class="navigationPillItem"
                                 :class="active?' active':' text--disabled'"
+                                class="navigationPillItem"
+                                @click="toggle"
                         >
                             <v-icon left>mdi-silverware</v-icon>
                             {{ $t('DineIn') }}
@@ -22,9 +22,9 @@
                     </v-item>
                     <v-item #default="{active,toggle}">
                         <div
-                                @click="toggle"
-                                class="navigationPillItem"
                                 :class="active?' active':' text--disabled'"
+                                class="navigationPillItem"
+                                @click="toggle"
                         >
                             <v-icon left>mdi-truck-fast</v-icon>
                             {{ $t('togo') }}
@@ -35,9 +35,9 @@
                     </v-item>
                     <v-item #default="{active,toggle}">
                         <div
-                                @click="toggle"
-                                class="navigationPillItem"
                                 :class="active?' active':' text--disabled'"
+                                class="navigationPillItem"
+                                @click="toggle"
                         >
                             <v-icon left>mdi-account</v-icon>
                             <span style="padding: 2px 4px">{{ $t('ServerOrder') }}</span>
@@ -48,20 +48,23 @@
 
             <template #right>
 
-                <div style="min-width: 200px" class="d-flex align-center justify-end">
+                <div class="d-flex align-center justify-end" style="min-width: 200px">
                     <div>
                         <time-display></time-display>
                     </div>
-                    <v-btn @click="openDrawer" icon>
+                  <v-btn v-if="storeListOfId.length > 1" icon @click="changeStore">
+                    <v-icon>mdi-autorenew</v-icon>
+                  </v-btn>
+                    <v-btn icon @click="openDrawer">
                         <v-icon>mdi-lock-open</v-icon>
                     </v-btn>
                     <v-menu
-                            left
                             bottom
+                            left
                     >
                         <template v-slot:activator="{ on, attrs }">
-                            <v-btn tile
-                                   icon
+                            <v-btn icon
+                                   tile
                                    v-bind="attrs"
                                    v-on="on"
                             >
@@ -82,7 +85,7 @@
             </template>
 
         </navgation>
-        <v-tabs-items touchless v-model="currentView">
+        <v-tabs-items v-model="currentView" touchless>
 
             <!--        堂食-->
             <v-tab-item style="position: relative">
@@ -93,19 +96,19 @@
           overflow: scroll
 ">
                     <table-blue-print
-                            @need-refresh="refreshTables"
                             :out-side-table-list="tableList"
+                            @need-refresh="refreshTables"
                             @edit-table-clicked="showEditTableDialog"
                             @table-clicked="openOrEnterTable"
                     />
                 </div>
                 <div style="position: absolute;right: 0;top: 8px;max-height: calc(100%);z-index: 3;">
                     <div
-                            style="display: grid;grid-template-rows: auto;grid-gap: 4px;overflow-y: hidden;max-height: calc(100vh - 72px)"
-                            v-dragscroll>
-                        <v-card style="writing-mode: vertical-lr;text-align: center" elevation="0"
-                                @click="togoClick"
-                                class="head pa-2 d-flex align-center">
+                            v-dragscroll
+                            style="display: grid;grid-template-rows: auto;grid-gap: 4px;overflow-y: hidden;max-height: calc(100vh - 72px)">
+                        <v-card class="head pa-2 d-flex align-center" elevation="0"
+                                style="writing-mode: vertical-lr;text-align: center"
+                                @click="togoClick">
 
                             <v-icon style="transform: rotate(90deg)">mdi-truck-fast</v-icon>
                             <span class="mt-4">{{ $t('ToGo') }}</span>
@@ -115,17 +118,17 @@
                                 }}</span>
 
                         </v-card>
-                        <v-card style="writing-mode: vertical-lr;text-align: center" elevation="0"
-                                @click="takeawayClicked"
-                                class="head pa-2 py-4 d-flex align-center">
+                        <v-card class="head pa-2 py-4 d-flex align-center" elevation="0"
+                                style="writing-mode: vertical-lr;text-align: center"
+                                @click="takeawayClicked">
                             <v-icon>mdi-plus-circle</v-icon>
                             <span class="mt-4">{{ $t('New') }}</span>
                         </v-card>
                         <v-card v-for="table in takeawayList"
-                                color="primary" dark
-                                :key="table.id" style="writing-mode: vertical-lr;text-align: center" elevation="0"
-                                @click="openOrEnterTable(table.tableName)"
-                                class="head pa-2 py-4 d-flex align-center">
+                                :key="table.id" class="head pa-2 py-4 d-flex align-center"
+                                color="primary" dark elevation="0"
+                                style="writing-mode: vertical-lr;text-align: center"
+                                @click="openOrEnterTable(table.tableName)">
                             <span>   {{ table.tableName }}</span>
                         </v-card>
 
@@ -135,79 +138,79 @@
             </v-tab-item>
             <!--      外卖-->
             <v-tab-item>
-                <div style="display: grid;grid-template-columns: repeat(4,calc(25% - 12px));
-        height: 100%;grid-gap: 16px;" class="pa-4 grey lighten-4">
-                    <v-card color="grey lighten-3"
+                <div class="pa-4 grey lighten-4" style="display: grid;grid-template-columns: repeat(4,calc(25% - 12px));
+        height: 100%;grid-gap: 16px;">
+                    <v-card class="pa-4 d-flex flex-column"
+                            color="grey lighten-3"
                             elevation="0"
-                            class="pa-4 d-flex flex-column"
+                            height="calc(100vh - 96px)"
                             style="border-radius: 12px"
-                            width="100%"
-                            height="calc(100vh - 96px)">
+                            width="100%">
                         <div class="text-subtitle-2">{{ $t('NotReceivedOrders') }}
                             <trailing-number>
                                 {{ notAccepted.length }}
                             </trailing-number>
                         </div>
-                        <div style="display: grid;grid-gap: 12px;overflow-y: scroll;max-height:calc(100vh - 150px) ;"
-                             class="mt-4">
+                        <div class="mt-4"
+                             style="display: grid;grid-gap: 12px;overflow-y: scroll;max-height:calc(100vh - 150px) ;">
                             <takeaway-order-item
-                                    @reject="rejectOrder"
-                                    @accept="acceptOrder"
-                                    :big-card="true"
                                     v-for="t in notAccepted"
                                     :key="t.tableName"
+                                    :big-card="true"
+                                    :table-info="t"
+                                    @accept="acceptOrder"
                                     @click="openOrEnterTable(t.tableName)"
-                                    :table-info="t"/>
+                                    @reject="rejectOrder"/>
                         </div>
 
                     </v-card>
-                    <v-card color="grey lighten-3"
+                    <v-card class="pa-4 d-flex flex-column"
+                            color="grey lighten-3"
                             elevation="0"
-                            class="pa-4 d-flex flex-column"
-                            style="border-radius: 12px"
-                            height="calc(100vh - 96px)">
+                            height="calc(100vh - 96px)"
+                            style="border-radius: 12px">
                         <div class="text-subtitle-2">{{ $t('ReceivedOrders') }}
                             <trailing-number>
                                 {{ accepted.length }}
                             </trailing-number>
                         </div>
-                        <div style="display: grid;grid-gap: 12px;overflow-y: scroll;" class="mt-4">
+                        <div class="mt-4" style="display: grid;grid-gap: 12px;overflow-y: scroll;">
                             <table-grid-item
-                                    :big-card="true"
                                     v-for="t in accepted"
                                     :key="t.tableName"
+                                    :big-card="true"
+                                    :table-info="t"
                                     @click="openOrEnterTable(t.tableName)"
-                                    @click-ok="updateStatus(t.id)"
-                                    :table-info="t"/>
+                                    @click-ok="updateStatus(t.id)"/>
                         </div>
 
                     </v-card>
-                    <v-card color="grey lighten-3"
+                    <v-card class="pa-4"
+                            color="grey lighten-3"
                             elevation="0"
-                            class="pa-4"
-                            style="border-radius: 12px"
-                            height="calc(100vh - 96px)">
+                            height="calc(100vh - 96px)"
+                            style="border-radius: 12px">
                         <div class="text-subtitle-2">{{ $t('CanBePickedUp') }}
                             <trailing-number>{{ picked.length }}</trailing-number>
                         </div>
-                        <div style="display: grid;grid-gap: 12px;overflow-y: scroll;" class="mt-4">
+                        <div class="mt-4" style="display: grid;grid-gap: 12px;overflow-y: scroll;">
                             <pick-up-item
-                                    :big-card="true"
                                     v-for="t in picked"
                                     :key="t.tableName"
-                                    @click="openOrEnterTable(t.tableName)"
+                                    :big-card="true"
                                     :table-info="t"
+                                    @click="openOrEnterTable(t.tableName)"
 
                             />
                         </div>
 
                     </v-card>
-                    <div style="height: calc(100vh - 96px)" class="d-flex flex-column">
-                        <v-card color="success" dark
-                                @click="takeawayClicked"
+                    <div class="d-flex flex-column" style="height: calc(100vh - 96px)">
+                        <v-card class="pa-4" color="success"
+                                dark
                                 elevation="0"
                                 style="border-radius: 12px"
-                                class="pa-4">
+                                @click="takeawayClicked">
                             <div class="text-subtitle-2 d-flex align-center">
                                 <v-icon class="mr-2">mdi-truck-fast</v-icon>
                                 {{ $t('AddTakeawayOrders') }}
@@ -217,18 +220,18 @@
 
                         </v-card>
 
-                        <v-card color="white"
+                        <v-card class="pa-4 mt-4"
+                                color="white"
                                 elevation="0"
-                                style="border-radius: 12px"
-                                class="pa-4 mt-4">
+                                style="border-radius: 12px">
                             <div class="text-subtitle-2 d-flex">{{ $t('TakeawayWebsiteSetting') }}
                                 <v-spacer></v-spacer>
                                 <template v-if="loading">
                                     <v-progress-circular indeterminate></v-progress-circular>
                                 </template>
                                 <template v-else>
-                                    <v-chip label color="white" small class="ml-2 d-flex align-center">
-                                        <v-icon left color="success">mdi-checkbox-marked-circle</v-icon>
+                                    <v-chip class="ml-2 d-flex align-center" color="white" label small>
+                                        <v-icon color="success" left>mdi-checkbox-marked-circle</v-icon>
                                         <span>
                   {{ $t('Synchronized') }}
                              </span>
@@ -245,7 +248,7 @@
                                     </div>
 
                                     <v-spacer></v-spacer>
-                                    <v-switch hide-details v-model="takeawayEnabled" class="mt-0"></v-switch>
+                                    <v-switch v-model="takeawayEnabled" class="mt-0" hide-details></v-switch>
                                 </div>
                                 <!--                <div class="py-2 d-flex align-center">-->
                                 <!--                  自动接单-->
@@ -261,10 +264,10 @@
 
                         </v-card>
 
-                        <v-card color="grey lighten-3"
+                        <v-card class="pa-4 flex-grow-1 mt-4"
+                                color="grey lighten-3"
                                 elevation="0"
-                                style="border-radius: 12px"
-                                class="pa-4 flex-grow-1 mt-4">
+                                style="border-radius: 12px">
                             <div class="text-subtitle-2">{{ $t('NonTodayOrders') }}
                                 <trailing-number>
                                     0
@@ -280,15 +283,15 @@
             <!--      跑堂-->
             <v-tab-item>
                 <v-card v-dragscroll
-                        color="#f5f6fa"
                         class="flex-grow-1 d-flex"
-                        style="overflow: scroll"
-                        height="calc(100vh - 64px)">
+                        color="#f5f6fa"
+                        height="calc(100vh - 64px)"
+                        style="overflow: scroll">
                     <template v-for="servant in servantWithTable">
-                        <v-card elevation="0" height="calc(100vh - 64px);" color="transparent"
-                                :key="servant.id">
-                            <v-toolbar elevation="0" color="blue lighten--4" dark
-                                       dense class="flex-grow-0 ml-1 mb-1 mt-1" style="width: 196px;">
+                        <v-card :key="servant.id" color="transparent" elevation="0"
+                                height="calc(100vh - 64px);">
+                            <v-toolbar class="flex-grow-0 ml-1 mb-1 mt-1" color="blue lighten--4" dark
+                                       dense elevation="0" style="width: 196px;">
                                 <v-toolbar-title class="d-flex align-center" style="width: 100%">
                                     <div>{{ servant.name }}</div>
                                     <v-spacer></v-spacer>
@@ -318,22 +321,23 @@
                 <v-card class="pa-2"
                         style="position: fixed;right: 0;bottom:0;width: 320px;z-index: 15">
                     <v-text-field
-                            :placeholder=" $t('EnterTableNumber')"
-                            @click:append="showKeyboard=!showKeyboard"
+                            v-model="buffer"
                             :append-icon="showKeyboard?'mdi-keyboard-close':'mdi-keyboard'"
+                            :autofocus="Config.getFocus"
+                            :placeholder=" $t('EnterTableNumber')"
                             class="ma-2 pt-1"
                             hide-details
                             style="font-size: 24px"
-                            v-model="buffer"
-                            :autofocus="Config.getFocus"
+                            @click:append="showKeyboard=!showKeyboard"
                     />
-                    <keyboard-layout v-if="showKeyboard" @input="numberInput" :keys="keyboardLayout"/>
+                    <keyboard-layout v-if="showKeyboard" :keys="keyboardLayout" @input="numberInput"/>
                 </v-card>
             </v-tab-item>
             <!--        预定-->
 
         </v-tabs-items>
         <v-card v-if="buffer"
+                class="pa-4"
                 style="position:fixed;top: 0;right: 0;
             margin: auto;
             left: 0;bottom: 0;
@@ -341,8 +345,7 @@
             max-width:calc(100vw - 200px);
             text-align: center;
             border-radius: 12px;
-            z-index: 15;width: fit-content;height: fit-content"
-                class="pa-4">
+            z-index: 15;width: fit-content;height: fit-content">
             <div>
                 <h1>{{ buffer }}</h1>
             </div>
@@ -391,6 +394,7 @@ import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
 import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
 import { loadTransLangs } from '@/i18n'
 import PickUpItem from '@/views/FirstPage/Table/Table/Item/PickUpItem.vue'
+import { getAllStoreIdForUser, getCurrentUserId } from '@/api/firebase/user'
 
 const keyboardLayout =
     [
@@ -423,6 +427,7 @@ export default {
   },
   data: function () {
     return {
+      storeListOfId: [],
       showKeyboard: false,
       keyboardLayout: keyboardLayout,
 
@@ -447,6 +452,11 @@ export default {
     }
   },
   watch: {
+    '$route.name' (to, from) {
+      if (from === 'StorePage') {
+        this.initPage()
+      }
+    },
 
     currentView (val) {
       Remember.currentView = val
@@ -505,6 +515,9 @@ export default {
 
   },
   methods: {
+    changeStore () {
+      this.$router.push({ name: 'StorePage' })
+    },
     async updateStatus (orderId) {
       await readyToPick(orderId)
       await this.refreshTables()
@@ -643,6 +656,8 @@ export default {
     async initPage () {
       window.onkeydown = this.listenKeyDown
 
+      this.storeListOfId = (await getAllStoreIdForUser(getCurrentUserId()))
+
       await getAllDishes()
       await getConsumeTypeList()
       await this.refreshTables()
@@ -655,12 +670,12 @@ export default {
 
   },
   mounted: async function () {
-    this.initPage()
+    await this.initPage()
     this.servantList = await getServantList()
 
     getRestaurantInfo()
 
-    this.loadRestaurantInfo()
+    await this.loadRestaurantInfo()
   },
   beforeDestroy () {
     clearAllTimer()
