@@ -19,7 +19,7 @@
               v-for="i in restaurantInfos"
               :key="i.deviceId"
               :info="i"
-              @click="useDeviceId(i.deviceId)"
+              @click="useDeviceId(i)"
             />
           </div>
         </div>
@@ -31,7 +31,7 @@
         style="height: 300px"
       >
         <div class="mb-2 text-h5">
-          {{ selectedStore  ? '正在进入所选门店' : '正在加载您的所有门店'}}
+          {{ selectedStore  ? '正在进入 ' + selectedStoreName : '正在加载您的所有门店'}}
         </div>
         <div class="mb-8 text-body-2 text--secondary">请稍等片刻</div>
         <v-progress-circular
@@ -58,6 +58,7 @@ export default {
   },
   data: function () {
     return {
+      selectedStoreName: '',
       selectedStore: false,
       loading: false,
       storeListOfId: [],
@@ -71,12 +72,13 @@ export default {
     this.reload()
   },
   methods: {
-    async useDeviceId (deviceId) {
+    async useDeviceId (item) {
       this.loading = false
       this.selectedStore = true
+      this.selectedStoreName = item.name
       const userId = await getCurrentUserId()
-      await setUserStoreLoginStatus(userId, deviceId)
-      const { url } = await this.getBaseAndUrlForDeviceId(deviceId)
+      await setUserStoreLoginStatus(userId, item.deviceId)
+      const { url } = await this.getBaseAndUrlForDeviceId(item.deviceId)
       GlobalConfig.Base = url.split('//')[1]
       await hillo.initial(url + '/PHP/')
       setTimeout(async () => {
