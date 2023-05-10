@@ -6,28 +6,35 @@ import { FireBaseAuth, FireBaseStore } from '@/api/firebase/google-fire-base'
 import { docContentOf, resultOf } from '@/api/firebase/queryUtils'
 import { collection, doc, query, setDoc, where } from 'firebase/firestore'
 import router from '@/router'
+import { resetBaseUrl } from '@/api/firebase/baseUrlSetting'
 
 const userDBPath = 'userInfo'
 const userPrimaryStorePath = 'userPrimaryStore'
 const userAndStoreRelation = 'userStore'
 const userStoreLoginPath = 'userStoreLoginPath'
+const userLastLoginStore = 'userLastLoginStore'
 
 export async function login (id, displayName) {
   await setDoc(doc(FireBaseStore, userDBPath, id), {
     id,
     displayName
   }, { merge: true })
-  const res = await getAllStoreIdForUser()
+  const allUserStoreId = await getAllStoreIdForUser()
   const userId = await getCurrentUserId()
-  if (res.length === 1) {
-    await setUserStoreLoginStatus(userId, res[0])
-    await router.push({ name: 'order' })
-  } else if (res.length === 0) {
-    await router.push({ name: 'ErrorPage' })
-  } else if (res.length > 1) {
-    await router.push({ name: 'StorePage' })
+  const lastTimeLoginStore = await getUserLastTimeLoginStore()
+  if (lastTimeLoginStore) {
+    await resetBaseUrl(lastTimeLoginStore.deviceId)
+  } else {
+    if (allUserStoreId.length === 1) {
+      await setUserLastTimeLoginStore(allUserStoreId[0])
+      await setUserStoreLoginStatus(userId, allUserStoreId[0])
+      await resetBaseUrl(allUserStoreId[0])
+    } else if (allUserStoreId.length === 0) {
+      await router.push({ name: 'ErrorPage' })
+    } else if (allUserStoreId.length > 1) {
+      await router.push({ name: 'StorePage' })
+    }
   }
-  console.log(res, 'res')
 }
 
 /**
@@ -59,6 +66,14 @@ export async function setUserStoreLoginStatus (userId, storeId) {
   const data = {}
   data[storeId] = { loggedIn: true }
   return await setDoc(doc(FireBaseStore, userStoreLoginPath, userId), data, { merge: true })
+}
+
+export async function setUserLastTimeLoginStore (deviceId) {
+  return await setDoc(doc(FireBaseStore, userLastLoginStore, getCurrentUserId()), { deviceId: deviceId })
+}
+
+export async function getUserLastTimeLoginStore () {
+  return (await docContentOf(doc(FireBaseStore, userLastLoginStore, getCurrentUserId())))
 }
 
 export async function getAllStoreIdForUser () {
