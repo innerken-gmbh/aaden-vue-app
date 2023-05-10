@@ -452,12 +452,6 @@ export default {
     }
   },
   watch: {
-    '$route.name' (to, from) {
-      if (from === 'StorePage') {
-        this.initPage()
-      }
-    },
-
     currentView (val) {
       Remember.currentView = val
     },
@@ -656,7 +650,11 @@ export default {
     async initPage () {
       window.onkeydown = this.listenKeyDown
 
+      await this.loadRestaurantInfo()
       this.storeListOfId = (await getAllStoreIdForUser(getCurrentUserId()))
+      this.servantList = await getServantList()
+
+      getRestaurantInfo()
 
       await getAllDishes()
       await getConsumeTypeList()
@@ -671,11 +669,6 @@ export default {
   },
   mounted: async function () {
     await this.initPage()
-    this.servantList = await getServantList()
-
-    getRestaurantInfo()
-
-    await this.loadRestaurantInfo()
   },
   beforeDestroy () {
     clearAllTimer()
