@@ -9,6 +9,7 @@ import SalesPage from '@/views/SalePage/SalesPage'
 import TablePage from '@/views/TablePage/TablePage'
 import ReservationPage from '@/views/ReservationPage/ReservationPage.vue'
 import SettingPage from '@/views/SettingPage.vue'
+import { getCurrentUserId } from '@/api/firebase/user'
 
 Vue.use(VueRouter)
 
@@ -52,6 +53,25 @@ const routes = [
     ]
   },
   {
+    path: '/',
+    component: () => import('@/views/LoginPage/Index'),
+    children: [{
+      name: 'LoginPage',
+      path: '/login',
+      component: () => import('@/views/LoginPage/Login')
+    },
+    {
+      name: 'ErrorPage',
+      path: '/error',
+      component: () => import('@/views/LoginPage/ErrorPage')
+    },
+    {
+      name: 'StorePage',
+      path: '/store',
+      component: () => import('@/views/LoginPage/StorePage')
+    }]
+  },
+  {
     path: '/table/:id',
     name: 'table',
     props: true,
@@ -71,6 +91,14 @@ router.beforeEach(async (to, from, next) => {
   if (!to.params.refresh) {
     Object.assign(to.params, { refresh: count })
   }
-  next()
+  if (to.name !== 'LoginPage') {
+    if (!getCurrentUserId()) {
+      next({ name: 'LoginPage' })
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
 })
 export default router
