@@ -17,13 +17,13 @@ import {
 import store from '@/store'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyATTtRB1PlOC-At0-ndKqap4RABwwCc6ew',
-  authDomain: 'aaden-boss-test.firebaseapp.com',
-  projectId: 'aaden-boss-test',
-  storageBucket: 'aaden-boss-test.appspot.com',
-  messagingSenderId: '604566804841',
-  appId: '1:604566804841:web:a82cb7788517358ceb45f8',
-  measurementId: 'G-CST41XTVMJ'
+  apiKey: 'AIzaSyCtvQ3d-HAtHTUg_-505c-qXRnlz8RlZeg',
+  authDomain: 'aaden-saas.firebaseapp.com',
+  projectId: 'aaden-saas',
+  storageBucket: 'aaden-saas.appspot.com',
+  messagingSenderId: '169167876904',
+  appId: '1:169167876904:web:b83934e5a34d1cbfcc161d',
+  measurementId: 'G-QRPH7NLDZS'
 }
 
 export const FireBaseApp = firebase.initializeApp(firebaseConfig)
@@ -55,7 +55,7 @@ export async function resetPasswordEmail (email) {
 export const FireBaseStore = firebase.firestore()
 
 export const StripePayment = getStripePayments(FireBaseApp, {
-  customersCollection: 'user',
+  customersCollection: 'customers',
   productsCollection: 'products'
 })
 
