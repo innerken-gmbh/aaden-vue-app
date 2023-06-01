@@ -11,10 +11,10 @@
         class="d-flex flex-column justify-center pa-2 align-center text-center"
         style="height: 100%"
       >
-        <div class="text-h4 mt-2 font-weight-bold">
+        <div class="text-body-1 mt-2 font-weight-bold">
           {{ info.name }}
         </div>
-        <div class="text-body-1 mt-2">
+        <div class="text-body-2 mt-2">
           <template v-if="info.adress2">
             {{ info.adress2 }}<br>
           </template>

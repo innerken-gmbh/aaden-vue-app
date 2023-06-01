@@ -5,7 +5,7 @@
     style="height: 100%;position: relative"
   >
     <templete v-if="loading">
-      <v-card class="py-4 d-flex justify-center align-center flex-column" elevation="0" outlined>
+      <div class="py-4 d-flex justify-center align-center flex-column" elevation="0" outlined>
         <div class="text-h5 font-weight-bold my-2">请选择进入的门店</div>
         <div
           v-dragscroll
@@ -23,7 +23,7 @@
             />
           </div>
         </div>
-      </v-card>
+      </div>
     </templete>
     <template v-else>
       <div

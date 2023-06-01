@@ -4,7 +4,7 @@
         grid-template-columns:1fr 3fr;
         grid-gap: 16px;
 ">
-        <div v-if="!notActive">
+        <template v-if="!notActive">
             <div class="d-flex flex-column">
                 <v-date-picker v-model="reservationDate"
                                :locale="$i18n.locale"
@@ -128,7 +128,7 @@
                     </template>
                 </v-data-table>
             </v-card>
-        </div>
+        </template>
         <div v-else style="height: 100%;width: 100%;grid-column: span 2"
              class="d-flex flex-column justify-center align-center">
             <div class="d-flex flex-column justify-center text-center" style="max-width: 300px">
