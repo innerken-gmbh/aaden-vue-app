@@ -46,12 +46,7 @@
 <script>
 import { dragscroll } from 'vue-dragscroll/src/main'
 import RestaurantInfoBlock from '@/views/LoginPage/RestaurantInfoBlock'
-import {
-  getAllStoreIdForUser,
-  getCurrentUserId,
-  setUserLastTimeLoginStore,
-  setUserStoreLoginStatus
-} from '@/api/firebase/user'
+import { getCurrentUserId, setUserStoreLoginStatus, usefulStoreId } from '@/api/firebase/user'
 import { getInfoForDeviceId, resetBaseUrl } from '@/api/firebase/baseUrlSetting'
 
 export default {
@@ -61,6 +56,7 @@ export default {
   },
   data: function () {
     return {
+      usefulStoreId,
       selectedStoreName: '',
       selectedStore: false,
       loading: false,
@@ -80,13 +76,12 @@ export default {
       this.selectedStoreName = item.name
       const userId = await getCurrentUserId()
       await setUserStoreLoginStatus(userId, item.deviceId)
-      await setUserLastTimeLoginStore(item.deviceId)
+      localStorage.setItem('lastTimeLoginStore', item.deviceId)
       await resetBaseUrl(item.deviceId)
     },
     async reload () {
       this.loading = false
-      const storeListOfId = (await getAllStoreIdForUser(getCurrentUserId()))
-      this.restaurantInfos = await Promise.all(storeListOfId.map(async (id) => {
+      this.restaurantInfos = await Promise.all(usefulStoreId.map(async (id) => {
         return {
           ...await getInfoForDeviceId(id),
           deviceId: id
