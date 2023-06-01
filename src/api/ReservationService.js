@@ -121,3 +121,7 @@ export async function checkTableTimeAvailable (date, time, personCount, id) {
     }
   }
 }
+
+export async function getReservationUserList () {
+  return (await hillo.post(host + 'user/getList', {})).data
+}

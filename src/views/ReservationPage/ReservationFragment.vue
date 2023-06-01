@@ -129,8 +129,8 @@
                 </v-data-table>
             </v-card>
         </template>
-        <div v-else style="height: 100%;width: 100%;grid-column: span 2"
-             class="d-flex flex-column justify-center align-center">
+        <div v-else class="d-flex flex-column justify-center align-center"
+             style="height: 100%;width: 100%;grid-column: span 2">
             <div class="d-flex flex-column justify-center text-center" style="max-width: 300px">
                 <v-icon size="64">mdi-calendar-lock</v-icon>
                 <div class="text-body-1 mt-4">
@@ -439,6 +439,7 @@ import {
   checkTableTimeAvailable,
   confirmReservation,
   getReservation,
+  getReservationUserList,
   getTimeSlotForDate,
   loadReserveSettings,
   moveReservation,
@@ -611,7 +612,8 @@ export default {
       await this.loadData()
     },
     async loadData () {
-      if (parseInt(GlobalConfig.DeviceId) === -1) {
+      const activeReservationStoreList = (await getReservationUserList()).map(it => it.id)
+      if (!activeReservationStoreList.includes(parseInt(GlobalConfig.DeviceId))) {
         this.notActive = true
       } else {
         this.notActive = false
