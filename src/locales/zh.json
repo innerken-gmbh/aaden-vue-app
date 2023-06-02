@@ -437,5 +437,11 @@
   "Return" : "返回",
   "SelectedProduct" : "选中的商品",
   "PleaseEnter" : "请输入以",
-  "AmountOfProductMeasured" : "Zu messende Produktmenge"
+  "AmountOfProductMeasured" : "Zu messende Produktmenge",
+  "BillPlease" : "结账",
+  "Payingmethod" : "支付方式",
+  "BillType" : "账单类型",
+  "OwnerBillData" : "公司账单信息",
+  "Previous" : "上一步",
+  "ConfirmTheOrder" : "确认结账"
 }

@@ -212,6 +212,8 @@
   "TotalPrice": "Gesamtpreis",
   "UpdateUserInfo": "aktualisieren",
   "UseBossPassword": "Boss-Passwort verwenden",
+  "BillType" : "Rechnungstyp",
+  "Payingmethod" : "Bezahlverfahren",
   "VI": "Vietnam",
   "VIPCard": "Mitgliedskarte",
   "VIPCardCode": "Die entsprechende Tellernummer des Tellers der VIP-Karte",
@@ -432,5 +434,9 @@
   "Return" : "zurückkehren",
   "SelectedProduct" : "ausgewähltes Produkt",
   "PleaseEnter" : "Bitte eingeben",
-  "AmountOfProductMeasured" : "Zu messende Produktmenge"
+  "AmountOfProductMeasured" : "Zu messende Produktmenge",
+  "BillPlease" : "Die Rechnung, bitte",
+  "OwnerBillData" : "Rechnungsinformationen des Unternehmens",
+  "Previous" : "Vorherige",
+  "ConfirmTheOrder" : "Bestätigen Sie den Kauf"
 }

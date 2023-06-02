@@ -1,7 +1,7 @@
 <template>
     <div style="height: 100vh" class="d-flex flex-column">
         <v-card tile color="grey lighten-3" elevation="0" class="pa-3 d-flex align-center" style="width: 100%">
-            <div class="text-h6">结账</div>
+            <div class="text-h6">{{ $t('BillPlease') }}</div>
             <v-spacer></v-spacer>
             <v-btn @click="cancel" icon>
                 <v-icon>mdi-close</v-icon>
@@ -9,7 +9,7 @@
         </v-card>
         <div class="flex-grow-1 d-flex flex-column" style="width: 400px">
             <div class="d-flex grey lighten-4 text-body-1 pa-2 px-3">
-                <div>总价</div>
+                <div>{{ $t('TotalPrice') }}</div>
                 <v-spacer></v-spacer>
                 <div class="mt-1 font-weight-regular">
                     {{ total | priceDisplay }}
@@ -17,7 +17,7 @@
             </div>
             <div v-if="readyToCheckOut" class="paymentLog flex-grow-1">
                 <div style="height: 100%" class="pa-2 px-3 d-flex flex-column">
-                    <div class="text-body-2">支付方式</div>
+                    <div class="text-body-2">{{ $t('Payingmethod') }}</div>
                     <template v-for="paymentInfo in paymentLog">
                         <div :key="'price' + paymentInfo.hash" class="d-flex py-2 mb-1" style="width: 100%">
                             <v-card color="grey lighten-4 black--text" class="pa-1 px-2 text-capitalize text-body-1"
@@ -37,7 +37,7 @@
                     </template>
 
                     <div>
-                        <div class="text-body-2">账单类型</div>
+                        <div class="text-body-2">{{ $t('BillType') }}</div>
                         <div class="my-2" style="background: transparent">
                             <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))">
                                 <v-card
@@ -66,7 +66,7 @@
                     <template v-if="billType === 1">
                         <div class="mt-2">
                             <div class="d-flex">
-                                <span class="font-weight-bold text-body-2">{{ $t("公司账单信息") }}</span>
+                                <span class="font-weight-bold text-body-2">{{ $t('OwnerBillData') }}</span>
                             </div>
                             <v-form ref="form" v-model="valid" class="mt-2" lazy-validation>
                                 <v-text-field :label="$t('companyName')" v-model="companyOrPersonName" filled required/>
@@ -84,7 +84,7 @@
                                 @click="paymentLog = []"
                         >
                             <v-icon left>mdi-arrow-left</v-icon>
-                            {{ $t("上一步") }}
+                            {{ $t('Previous') }}
                         </v-btn>
 
                     </div>
@@ -100,7 +100,7 @@
                                 elevation="0"
                                 @click="checkOut()"
                         >
-                            {{ $t("确认结账") }}
+                            {{ $t('ConfirmTheOrder') }}
                             <v-icon right>mdi-check</v-icon>
                         </v-btn>
                     </div>
