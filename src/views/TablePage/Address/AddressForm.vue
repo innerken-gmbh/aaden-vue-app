@@ -19,19 +19,19 @@
                 filled
                 :menu-props="{offsetY:true}"
                 v-model="rawAddressInfo.deliveryMethod"
-                label="配送方式"
+                :label="$t('DeliveryMethod')"
               ></v-select>
               <v-select
                 v-model="rawAddressInfo.time"
                 filled
                 :menu-props="{offsetY:true}"
                 :items="timeOption"
-                label="时间"
+                :label="$t('time')"
               ></v-select>
               <v-text-field
                 v-model="rawAddressInfo.note"
                 filled
-                label="订单备注"
+                :label="$t('OrderHint')"
               ></v-text-field>
               <v-btn
                 elevation="0"

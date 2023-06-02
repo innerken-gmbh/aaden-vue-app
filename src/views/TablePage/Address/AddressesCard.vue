@@ -35,7 +35,7 @@
       class="mt-4"
     >
       <v-icon left>mdi-swap-horizontal</v-icon>
-      更换地址
+      {{ $t('ChangeAdress') }}
     </v-btn>
 
   </v-card>

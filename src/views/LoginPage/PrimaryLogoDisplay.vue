@@ -21,7 +21,7 @@
       </div>
     </div>
     <div class="text-h5 mt-1">
-      欧洲最靠谱的POS系统，帮您<span class="gradientText">化繁为简</span>
+      {{ $t('AadenTheMostReliablePOSystemEurope') }}<span class="gradientText ml-1">{{ $t('Simplify') }}</span>
     </div>
   </div>
 </template>

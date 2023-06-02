@@ -6,7 +6,7 @@
     <template v-else>
       <v-btn color="purple lighten-4 black--text" elevation="0" rounded>
         <v-icon left>mdi-book-marker</v-icon>
-        添加地址
+        {{ $t('AddAdress') }}
       </v-btn>
     </template>
     <address-form

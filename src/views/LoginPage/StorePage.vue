@@ -6,7 +6,7 @@
   >
     <templete v-if="loading">
       <div class="py-4 d-flex justify-center align-center flex-column" elevation="0" outlined>
-        <div class="text-h5 font-weight-bold my-2">请选择进入的门店</div>
+        <div class="text-h5 font-weight-bold my-2">{{ $t('SelectStoreWouldLikeEnter') }}</div>
         <div
           v-dragscroll
           class="my-3"
@@ -31,9 +31,9 @@
         style="height: 300px"
       >
         <div class="mb-2 text-h5">
-          {{ selectedStore  ? '正在进入 ' + selectedStoreName : '正在加载您的所有门店'}}
+          {{ selectedStore  ? $t('Enter') + ' ' + selectedStoreName : $t('AllShopsWillLoad')}}
         </div>
-        <div class="mb-8 text-body-2 text--secondary">请稍等片刻</div>
+        <div class="mb-8 text-body-2 text--secondary">{{ $t('waitAMoment') }}</div>
         <v-progress-circular
           indeterminate
           size="64"
