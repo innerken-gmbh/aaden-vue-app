@@ -7,6 +7,32 @@
     </transition>
     <pin-dialog></pin-dialog>
     <table-selector></table-selector>
+    <v-dialog
+      v-model="showErrorDialog"
+      max-width="600"
+    >
+      <v-card class="pa-6 d-flex align-center justify-center flex-column">
+        <v-icon
+          color="error lighten-2"
+          size="64"
+        >
+          mdi-alert-box
+        </v-icon>
+        <div class="text-h4 mt-6">
+          {{ errorDialogTitle }}
+        </div>
+        <div class="text-body-2 mt-2">
+          {{ errorDialogMessage }}
+        </div>
+        <v-btn
+          class="primary lighten-4 black--text mt-4"
+          elevation="0"
+          @click="showErrorDialog=false"
+        >
+          {{ $t('confirm') }}
+        </v-btn>
+      </v-card>
+    </v-dialog>
   </v-app>
 
 </template>
@@ -15,12 +41,27 @@
 import { tryToReport } from './oldjs/common'
 import TableSelector from '@/components/GlobalDialog/TableSelector'
 import PinDialog from '@/components/GlobalDialog/PinDialog'
+import { mapState } from 'vuex'
 
 export default {
   name: 'App',
   components: { TableSelector, PinDialog },
   props: {},
   data: () => ({}),
+  computed: {
+    ...mapState(
+      ['errorDialogTitle', 'errorDialogMessage']),
+    showErrorDialog: {
+      get () {
+        return this.$store.state.showErrorDialog
+      },
+      set (val) {
+        if (!val) {
+          this.closeErrorDialog()
+        }
+      }
+    }
+  },
   mounted () {
     tryToReport()
   }

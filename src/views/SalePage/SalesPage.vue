@@ -1,9 +1,9 @@
 <template>
   <div style="width: 100%">
     <v-app-bar
-      height="56"
-      flat
       app
+      flat
+      height="56"
     >
       <v-tabs v-model="tabIndex">
         <template v-if="isBoss">
@@ -16,21 +16,21 @@
       </v-tabs>
     </v-app-bar>
     <v-navigation-drawer
-      right
       :value="true"
-      permanent
-      touchless
-      stateless
       app
+      permanent
+      right
+      stateless
+      touchless
       width="300"
     >
       <div>
         <v-card
-          tile
-          class="pa-4 d-flex"
           v-if="isBoss||Config.servantShowHistoryBill"
+          class="pa-4 d-flex"
           color="primary"
           elevation="0"
+          tile
           @click="showDatePicker=true"
         >
           <v-icon left>mdi-calendar</v-icon>
@@ -104,9 +104,9 @@
             </div>
             <v-spacer></v-spacer>
             <v-card
-              elevation="0"
               class="pa-2"
               color="error lighten-4 black--text"
+              elevation="0"
             >{{
                 totalReturn | priceDisplay
               }}({{ returnList.length }})
@@ -125,54 +125,22 @@
             <div>{{ $t('Discount') }}</div>
             <v-spacer></v-spacer>
             <v-card
-              elevation="0"
               class="pa-2"
               color="orange lighten-4 black--text"
+              elevation="0"
             >{{
                 totalDiscount | priceDisplay
               }}({{ discountList.length }})
               <v-icon
-                color="black"
                 class="mt-n1"
+                color="black"
                 size="18px"
               >mdi-chevron-right
               </v-icon>
             </v-card>
           </div>
-          <div>
-            <v-btn
-              block
-              class="mt-2"
-              color="grey lighten-3"
-              light
-              elevation="0"
-              large
-              @click="printDelivery"
-            >
-              {{ $t('printDeliveryList') }}
-            </v-btn>
-            <v-btn
-              block
-              class="mt-2"
-              color="grey lighten-3 black--text"
-              elevation="0"
-              large
-              @click="printXBon"
-            >
-              {{ $t('PrintXBon') }}
-            </v-btn>
-            <v-btn
-              v-if="shouldShowZBon"
-              block
-              class="mt-2"
-              color="primary lighten-4 black--text"
-              elevation="0"
-              large
-              @click="printZBon"
-            >
-              {{ $t('PrintZBon') }}
-            </v-btn>
-          </div>
+          <v-divider class="my-4"></v-divider>
+          <v-btn class="primary" width="100%" @click="billsPrintDialog = true">打印日结单</v-btn>
         </div>
 
       </div>
@@ -399,6 +367,13 @@
         </div>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="billsPrintDialog" max-width="600px">
+      <bills-printer-page
+        :dialog-status="billsPrintDialog"
+        :real-date="dateInput"
+        @closeDialog="billsPrintDialog = false"
+      />
+    </v-dialog>
   </div>
 
 </template>
@@ -421,6 +396,7 @@ import BillTable from '@/views/SalePage/BillTable'
 import { getNiceLabel, getToday, today } from '@/api/Repository/DateRepository'
 import DateRangePicker from '@/components/GlobalDialog/DateRangePicker'
 import ServantList from '@/views/SalePage/Fragment/ServantList'
+import BillsPrinterPage from '@/views/SalePage/Fragment/BillsPrinterPage'
 
 const defaultDisplayData = {
   orders: [],
@@ -435,6 +411,7 @@ const defaultDisplayData = {
 export default {
   name: 'SalePage',
   components: {
+    BillsPrinterPage,
     ServantList,
     DateRangePicker,
     BillTable,
@@ -448,6 +425,7 @@ export default {
   },
   data: function () {
     return {
+      billsPrintDialog: false,
       showDatePicker: false,
       Config: GlobalConfig,
       tabIndex: 0,

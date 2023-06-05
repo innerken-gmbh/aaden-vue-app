@@ -33,8 +33,9 @@ export async function login (id, displayName) {
     }
   }
   const lastTimeLoginStore = localStorage.getItem('lastTimeLoginStore')
+  console.log(lastTimeLoginStore, 'last')
   if (lastTimeLoginStore) {
-    await resetBaseUrl(lastTimeLoginStore.deviceId)
+    await resetBaseUrl(lastTimeLoginStore)
   } else {
     if (usefulStoreId.length === 1) {
       await setUserLastTimeLoginStore(usefulStoreId[0])

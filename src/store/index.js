@@ -21,9 +21,21 @@ export default new Vuex.Store({
     tableId: null,
     tableSelectDialogShow: false,
     tableFilter: false,
-    requiredTableKey: 'tableName'
+    requiredTableKey: 'tableName',
+
+    showErrorDialog: false,
+    errorDialogTitle: '',
+    errorDialogMessage: ''
   },
   mutations: {
+    showErrorDialog (state, title, message = '') {
+      state.showErrorDialog = true
+      state.errorDialogMessage = message
+      state.errorDialogTitle = title
+    },
+    closeErrorDialog (state) {
+      state.showErrorDialog = false
+    },
     loginStateReady (state) {
       state.loginStateReady = true
     },
