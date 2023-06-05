@@ -139,40 +139,7 @@
               </v-icon>
             </v-card>
           </div>
-          <div>
-            <v-btn
-              block
-              class="mt-2"
-              color="grey lighten-3"
-              elevation="0"
-              large
-              light
-              @click="printDelivery"
-            >
-              {{ $t('printDeliveryList') }}
-            </v-btn>
-            <v-btn
-              block
-              class="mt-2"
-              color="grey lighten-3 black--text"
-              elevation="0"
-              large
-              @click="printXBon"
-            >
-              {{ $t('PrintXBon') }}
-            </v-btn>
-            <v-btn
-              v-if="shouldShowZBon"
-              block
-              class="mt-2"
-              color="primary lighten-4 black--text"
-              elevation="0"
-              large
-              @click="printZBon"
-            >
-              {{ $t('PrintZBon') }}
-            </v-btn>
-          </div>
+          <v-divider class="my-4"></v-divider>
           <v-btn class="primary" width="100%" @click="billsPrintDialog = true">打印日结单</v-btn>
         </div>
 

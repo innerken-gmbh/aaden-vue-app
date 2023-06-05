@@ -27,8 +27,7 @@
       </v-responsive>
     </v-card>
     <div
-      class="mt-1 text-caption text-truncate"
-      style="max-width: 50px;"
+      class="mt-1 text-body-1 text-truncate"
     >
       {{ name }}
     </div>
