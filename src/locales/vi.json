@@ -411,5 +411,6 @@
   "CurrentlyOpenTables": "Bàn chưa thanh toán",
   "DailyPrintTableHint": "Sau khi in bảng tổng quan hàng ngày, tất cả các bàn chưa thanh toán được đánh dấu là tạm thời chưa thanh toán",
   "need30secondcheckJunk": "Vui lòng chờ một chút vì có thể mất 30 giây để thư/máy in gửi/in phần còn lại. Nếu bạn không nhận được nội dung, hãy nhớ kiểm tra hộp thư rác hoặc kiểm tra kết nối máy in.",
-  "PreviewSheet": "Bảng xem thử"
+  "PreviewSheet": "Bảng xem thử",
+  "DailyStatement": "Trích xuất hàng ngày"
 }

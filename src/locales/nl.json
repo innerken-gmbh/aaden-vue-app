@@ -411,5 +411,6 @@
   "CurrentlyOpenTables": "Ongecheckte tabel",
   "DailyPrintTableHint": "Na het afdrukken van de dagelijkse overzichtstabel worden alle onbetaalde tabellen gemarkeerd als tijdelijk onbetaald.",
   "need30secondcheckJunk": "Wacht even, want de e-mail/printer kan 30 seconden duren voordat de resterende inhoud wordt verzonden/afgedrukt. Als u de inhoud niet hebt ontvangen, vergeet dan niet om de spambak te controleren of de printerverbinding te controleren.",
-  "PreviewSheet": "Voorbeeldformulier"
+  "PreviewSheet": "Voorbeeldformulier",
+  "DailyStatement": "Dagelijkse samenvatting"
 }

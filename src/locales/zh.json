@@ -417,5 +417,6 @@
   "CurrentlyOpenTables": "尚未结账的桌子",
   "DailyPrintTableHint": "打印出每日概览表后，所有未付费桌子都被标记为暂时未付款。",
   "need30secondcheckJunk": "请稍等，因为邮件/打印机可能需要 30 秒钟才能发送/打印其余内容。如果您没有收到内容，请记得检查垃圾邮件箱或检查打印机连接。",
-  "PreviewSheet": "预览单"
+  "PreviewSheet": "预览单",
+  "DailyStatement": "每日总结"
 }

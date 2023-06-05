@@ -248,6 +248,7 @@ import {
 } from '@/oldjs/zbonPrint'
 import { printDeliveryBon, showSuccessMessage } from '@/api/api'
 import TabButton from '@/components/Base/TabButton'
+import { today } from '@/api/Repository/DateRepository'
 
 export default {
   name: 'BillsPrinterPage',
@@ -308,7 +309,7 @@ export default {
           printMessage += i18n.t('DailyStatement') + '(ZBon)' + ' ' + this.billsCount + ' ' + i18n.t('Pice') + '<br>'
         }
         if (this.activeXBon) {
-          printMessage += this.$t('PreviewSheet') + '(XBon)' + ' ' + this.billsCount + ' ' + i18n.t('Pice') + '<br>'
+          printMessage += i18n.t('PreviewSheet') + '(XBon)' + ' ' + this.billsCount + ' ' + i18n.t('Pice') + '<br>'
         }
         if (this.deliveryList) {
           printMessage += i18n.t('DeliveryList') + ' ' + this.billsCount + ' ' + i18n.t('Pice') + '<br>'
@@ -321,7 +322,7 @@ export default {
         }
       } else {
         if (this.activeXBon) {
-          printMessage += this.$t('PreviewSheet') + '(XBon)' + ' ' + 1 + ' ' + i18n.t('Pice') + '<br>'
+          printMessage += i18n.t('PreviewSheet') + '(XBon)' + ' ' + 1 + ' ' + i18n.t('Pice') + '<br>'
         }
         if (this.deliveryList) {
           printMessage += i18n.t('DeliveryList') + ' ' + '1' + ' ' + i18n.t('Pice') + '<br>'
@@ -572,6 +573,9 @@ export default {
       const toTime = dayjs(this.realDate[1]).add(1, 'day').format('YYYY-MM-DD') + ' 03:59:59'
       this.detailTime = [fromTime, toTime]
       const ZbonPrintTime = [ZbonFromTime, toTime]
+      if (this.realDate[0] === today) {
+        this.mergeBills = false
+      }
       this.ZBonList = (await newGetZBon(ZbonPrintTime)).map(it => it.zbonNumber)
       if (this.ZBonList.length !== 0) {
         this.activeZBon = false
