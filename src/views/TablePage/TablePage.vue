@@ -27,7 +27,7 @@
                                     large
                             >mdi-chevron-left
                             </v-icon>
-                            <div class="text-body-2">返回</div>
+                            <div class="text-body-2">{{ $t('Return') }}</div>
                             <v-spacer></v-spacer>
                         </v-card>
                         <div class="pa-2"></div>
@@ -186,7 +186,7 @@
                                             v-on="on"
                                     >
                                         <v-icon left>mdi-swap-horizontal</v-icon>
-                                        切换菜单
+                                        {{ $t('SwitchMenu') }}
                                     </v-btn>
                                 </template>
                                 <v-list>
@@ -750,7 +750,7 @@
                                 width="100%"
                         >
                             <div class="grey darken-3 pa-3 d-flex align-center">
-                                <div class="text-body-1">选中的商品</div>
+                                <div class="text-body-1">{{ $t('SelectedProduct') }}</div>
                                 <v-spacer/>
                                 <div>
                                     <v-icon class="mr-2">mdi-calculator-variant</v-icon>
@@ -1448,7 +1448,7 @@ export default {
               const [unitPrice, unit] = priceInfo.split('/')
               const [unitBase, unitName] = unit.split(' ')
               const unitCount = await IKUtils.showInput(
-                '请输入以' + unitName + '计量的产品数量'
+                i18n.t('PleaseEnter') + ' ' + unitName + ' ' + i18n.t('AmountOfProductMeasured')
               )
               dish.currentPrice = (unitCount / unitBase) * unitPrice
               dish.currentName = `${name} ${unitPrice}/${unit} | ${unitCount}${unitName}`

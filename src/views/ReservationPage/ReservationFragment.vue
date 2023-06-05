@@ -134,10 +134,10 @@
             <div class="d-flex flex-column justify-center text-center" style="max-width: 300px">
                 <v-icon size="64">mdi-calendar-lock</v-icon>
                 <div class="text-body-1 mt-4">
-                    预定系统暂未开通
+                    {{ $t('ReservationSystemIsNotOpen') }}
                 </div>
                 <div class="text-body-2 text--secondary mt-1">
-                    开通预定系统即可查看在线预定，容纳更多客人，如果需要开通，请联系我们的销售。
+                    {{ $t('OpenReservationHint') }}
                 </div>
             </div>
 
@@ -450,6 +450,7 @@ import { onlyTimeFormat, todayDate } from '@/api/dateUtils'
 import { loadReservationTableInfo } from '@/api/tableService'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { showSuccessMessage, sureTo } from '@/api/api'
+import i18n from '@/i18n'
 
 export default {
   name: 'Reservation',
@@ -482,12 +483,12 @@ export default {
       startTime: '',
       otherTime: [],
       headers: [
-        { text: '姓名', value: 'user' },
-        { text: '留言', value: 'note' },
-        { text: '桌号', value: 'tableNameNull' },
-        { text: '人数', value: 'person' },
-        { text: '时间', value: 'time' },
-        { text: '操作', value: 'action' }
+        { text: i18n.t('name'), value: 'user' },
+        { text: i18n.t('Message'), value: 'note' },
+        { text: i18n.t('TableNumber'), value: 'tableNameNull' },
+        { text: i18n.t('NumberOfPeople'), value: 'person' },
+        { text: i18n.t('time'), value: 'time' },
+        { text: i18n.t('Confirm'), value: 'action' }
 
       ],
       setting: {

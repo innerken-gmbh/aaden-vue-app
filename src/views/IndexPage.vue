@@ -80,7 +80,7 @@ export default {
 
         {
           icon: 'mdi-cash',
-          text: ('账单'),
+          text: ('Bill'),
           beforeEnter: async () => {
             const pw = await popAuthorize('', true)
             const servant = this.findServant(pw)

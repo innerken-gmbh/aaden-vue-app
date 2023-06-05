@@ -38,7 +38,7 @@
     <template v-else>
       <div class="flex-grow-1 d-flex flex-column justify-center align-center">
         <v-icon large>mdi-format-list-bulleted</v-icon>
-        <div class="mt-4">此列表中暂时没有商品</div>
+        <div class="mt-4">{{ $t('NoProductsInList') }}</div>
       </div>
     </template>
 
@@ -49,7 +49,7 @@
         <slot name="action"></slot>
         <v-btn small text :color="onlyPaid ? 'primary' : ''" @click="onlyPaid = !onlyPaid">
           <v-icon left>{{ onlyPaid ? "mdi-checkbox-outline" : "mdi-checkbox-blank-outline" }}</v-icon>
-          只看付费
+          {{ $t('OnlyPay') }}
         </v-btn>
       </div>
 
