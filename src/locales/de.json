@@ -399,5 +399,16 @@
   "AadenTheMostReliablePOSystemEurope" : "Das beste Kassensystem in Europa, das Ihnen, Ihren Tag",
   "Simplify" : "vereinfacht",
   "notBindAnyStore": "Sie sind derzeit an keine Geschäfte gebunden！",
-  "gotoAadenBindStore": "Bitte gehen Sie zum Aaden Central Binding Store"
+  "gotoAadenBindStore": "Bitte gehen Sie zum Aaden Central Binding Store",
+  "CombinedDocuments"  : "Kombinierte Dokumente",
+  "TotalOf": "Insgesamt",
+  "SalesStatistics" : "Verkaufsstatistik",
+  "TotalPeriod" : "Gesamtzeitraum",
+  "DeliveryList" : "Lieferliste",
+  "OnlySentToMail" : "nur an E-Mail senden",
+  "IncomingPrint" : "Rechnungsdruck",
+  "SureTablesCleared" : "Bitte stellen Sie sicher, dass alle Tische abgeräumt sind!",
+  "CurrentlyOpenTables" : "Derzeit geöffnete Tische",
+  "DailyPrintTableHint" : "Nach dem Ausdruck des Tagesübersichtsblattes werden alle unbezahlten Tische vorübergehend unbezahlt gekennzeichnet.",
+  "need30secondcheckJunk": "Bitte warten Sie einen Moment, die Post/der Drucker kann 30 Sekunden brauchen, um den Rest des Inhalts zu senden/zu drucken. Wenn Sie den Inhalt nicht erhalten, denken Sie bitte daran, das Junk-Postfach zu überprüfen oder die Druckerverbindung zu überprüfen."
 }

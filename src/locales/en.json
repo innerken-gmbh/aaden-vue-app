@@ -399,5 +399,16 @@
   "AadenTheMostReliablePOSystemEurope": "The most reliable POS system in Europe, helping you",
   "Simplify": "simplify what is complicated",
   "notBindAnyStore": "You are currently not bound to any stores！",
-  "gotoAadenBindStore": "Please go to the Aaden Central Binding Store"
+  "gotoAadenBindStore": "Please go to the Aaden Central Binding Store",
+  "CombinedDocuments": "Combined documents",
+  "TotalOf": "Overall",
+  "SalesStatistics": "Sales statistics",
+  "TotalPeriod": "Total period",
+  "DeliveryList": "delivery list",
+  "OnlySentToMail": "Only send to email",
+  "IncomingPrint": "Invoice printing",
+  "SureTablesCleared": "Please make sure that all tables are clear!",
+  "CurrentlyOpenTables": "Tables currently open",
+  "DailyPrintTableHint": "After printing out the daily overview sheet, all unpaid tables are marked temporarily unpaid.",
+  "need30secondcheckJunk": "Please wait a moment, as the mail/printer may take 30 seconds to send/print the rest of the content. If you don't receive the content, please remember to check the junk mail box or check the printer connection."
 }

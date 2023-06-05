@@ -1,6 +1,7 @@
 import { loadBaseConfig } from 'aaden-base-model/lib/Models/GlobalSettings'
 
 import dayjs from 'dayjs'
+import { LocalSettingManager } from 'biewangle'
 
 const fix = require('@/assets/FixedConfig.json')
 const defaultConfig = require('@/assets/AadenConfig.json')
@@ -81,5 +82,15 @@ export function forceChangeLanguage (l) {
   changeLanguage(l)
   reload()
 }
+
+export const Remember = LocalSettingManager.config({
+  activeZBon: false,
+  activeXBon: false,
+  deliveryList: false,
+  sendEmail: false,
+  mergeBills: false,
+  totalTime: false,
+  totalSales: false
+})
 
 export default GlobalConfig
