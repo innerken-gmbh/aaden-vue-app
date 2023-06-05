@@ -146,19 +146,20 @@
           >
             mdi-alert-circle
           </v-icon>
-          <div class="text-h4 font-weight-bold mt-4">
+          <div class="text-h5 font-weight-bold mt-4">
             {{ $t('SureTablesCleared') }}
           </div>
-          <div class="text-h4 font-weight-bold">
+          <div class="text-h5 font-weight-bold">
             {{ $t('CurrentlyOpenTables') }}：{{ unCheckTableName }}
           </div>
-          <div class="text-caption">
+          <div class="text-body-1">
             {{ $t('DailyPrintTableHint') }}
           </div>
-          <div class="mt-4">
+          <div class="mt-4 d-flex align-center justify-center">
             <v-btn
-              color="grey"
+              color="grey lighten-2"
               elevation="0"
+              width="80%"
               @click="isPrint = false;showPrintWarn = false"
             >
               {{ $t('Cancel') }}
@@ -167,6 +168,7 @@
               class="ml-4"
               color="primary lighten-4 black--text"
               elevation="0"
+              width="80%"
               @click="realPrintZbon"
             >
               {{ $t('print') }}
@@ -181,7 +183,7 @@
           elevation="0"
           min-height="550px"
         >
-          <div class="mb-10 text-h3 font-weight-bold">
+          <div class="mb-10 text-h4 font-weight-bold">
             {{ $t('print') }}
           </div>
           <v-progress-circular
