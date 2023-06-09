@@ -1,116 +1,116 @@
 {
-  "name": "aaden-vue-app",
-  "version": "0.10.62",
-  "private": true,
-  "description": "全新构建的Aaden Vue版本，重新启航，更加牢靠！",
-  "author": "juhaodong@gmail.com",
-  "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "win:build": "vue-cli-service electron:build",
-    "electron:build": "vue-cli-service electron:build  --linux snap --publish always",
-    "electron:serve": "vue-cli-service electron:serve",
-    "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'",
-    "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps",
-    "release": "sudo snap install snapcraft --classic && export SNAPCRAFT_STORE_CREDENTIALS=$(cat log) && snapcraft login && npm run electron:build",
-    "update": "dotenv -e .env.local -- release-it --ci --no-npm-publish",
-    "upload-i18n": "localazy upload",
-    "update-i18n": "localazy download"
+  "name" : "aaden-vue-app",
+  "version" : "0.10.62",
+  "private" : true,
+  "description" : "全新构建的Aaden Vue版本，重新启航，更加牢靠！",
+  "author" : "juhaodong@gmail.com",
+  "scripts" : {
+    "serve" : "vue-cli-service serve",
+    "build" : "vue-cli-service build",
+    "lint" : "vue-cli-service lint",
+    "win:build" : "vue-cli-service electron:build",
+    "electron:build" : "vue-cli-service electron:build  --linux snap --publish always",
+    "electron:serve" : "vue-cli-service electron:serve",
+    "i18n:report" : "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'",
+    "postinstall" : "electron-builder install-app-deps",
+    "postuninstall" : "electron-builder install-app-deps",
+    "release" : "sudo snap install snapcraft --classic && export SNAPCRAFT_STORE_CREDENTIALS=$(cat log) && npm run electron:build",
+    "update" : "dotenv -e .env.local -- release-it --ci --no-npm-publish",
+    "upload-i18n" : "localazy upload",
+    "update-i18n" : "localazy download"
   },
-  "main": "background.js",
-  "dependencies": {
-    "aaden-base-model": "^0.1.117",
-    "biewangle": "^1.0.11",
-    "core-js": "^3.19.2",
-    "dayjs": "^1.10.7",
-    "electron-settings": "^4.0.2",
-    "firebase": "^9.17.1",
-    "hillo": "^1.1.23",
-    "i18n": "^0.14.2",
-    "innerken-js-utils": "^1.0.17",
-    "lodash": "^4.17.21",
-    "lodash-es": "^4.17.21",
-    "register-service-worker": "^1.7.2",
-    "sweetalert2": "^11.2.1",
-    "tone": "^14.7.77",
-    "vue": "^2.6.14",
-    "vue-draggable-resizable": "^2.3.0",
-    "vue-draggable-resizable-gorkys": "^2.4.8",
-    "vue-dragscroll": "^2.1.3",
-    "vue-i18n": "^8.24.4",
-    "vue-router": "^3.5.3",
-    "vuedraggable": "^2.24.3",
-    "vuetify": "^2.6.3",
-    "vuetify-google-autocomplete-extend": "^1.0.9",
-    "vuex": "^3.6.2"
+  "main" : "background.js",
+  "dependencies" : {
+    "aaden-base-model" : "^0.1.117",
+    "biewangle" : "^1.0.11",
+    "core-js" : "^3.19.2",
+    "dayjs" : "^1.10.7",
+    "electron-settings" : "^4.0.2",
+    "firebase" : "^9.17.1",
+    "hillo" : "^1.1.23",
+    "i18n" : "^0.14.2",
+    "innerken-js-utils" : "^1.0.17",
+    "lodash" : "^4.17.21",
+    "lodash-es" : "^4.17.21",
+    "register-service-worker" : "^1.7.2",
+    "sweetalert2" : "^11.2.1",
+    "tone" : "^14.7.77",
+    "vue" : "^2.6.14",
+    "vue-draggable-resizable" : "^2.3.0",
+    "vue-draggable-resizable-gorkys" : "^2.4.8",
+    "vue-dragscroll" : "^2.1.3",
+    "vue-i18n" : "^8.24.4",
+    "vue-router" : "^3.5.3",
+    "vuedraggable" : "^2.24.3",
+    "vuetify" : "^2.6.3",
+    "vuetify-google-autocomplete-extend" : "^1.0.9",
+    "vuex" : "^3.6.2"
   },
-  "devDependencies": {
-    "@intlify/vue-i18n-loader": "^1.1.0",
-    "@mdi/font": "^5.9.55",
-    "@vue/cli-plugin-babel": "^4.5.13",
-    "@vue/cli-plugin-eslint": "^4.5.13",
-    "@vue/cli-plugin-pwa": "^4.5.13",
-    "@vue/cli-plugin-router": "^4.5.13",
-    "@vue/cli-plugin-vuex": "^4.5.13",
-    "@vue/cli-service": "^4.5.13",
-    "@vue/eslint-config-standard": "^5.1.2",
-    "babel-eslint": "^10.1.0",
-    "dotenv-cli": "^3.2.0",
-    "electron": "^16.0.2",
-    "electron-builder": "^22.14.5",
-    "eslint": "^6.8.0",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.3.1",
-    "eslint-plugin-standard": "^4.1.0",
-    "eslint-plugin-vue": "^6.2.2",
-    "node-sass": "6.0.1",
-    "release-it": "^13.7.1",
-    "sass": "^1.43.5",
-    "sass-loader": "^10.2.1",
-    "vue-cli-plugin-electron-builder": "~2.0.0-beta.6",
-    "vue-cli-plugin-i18n": "~1.0.1",
-    "vue-cli-plugin-vuetify": "~2.4.4",
-    "vue-template-compiler": "^2.6.14",
-    "vuetify-loader": "^1.7.3",
-    "webpack": "^4.45.0"
+  "devDependencies" : {
+    "@intlify/vue-i18n-loader" : "^1.1.0",
+    "@mdi/font" : "^5.9.55",
+    "@vue/cli-plugin-babel" : "^4.5.13",
+    "@vue/cli-plugin-eslint" : "^4.5.13",
+    "@vue/cli-plugin-pwa" : "^4.5.13",
+    "@vue/cli-plugin-router" : "^4.5.13",
+    "@vue/cli-plugin-vuex" : "^4.5.13",
+    "@vue/cli-service" : "^4.5.13",
+    "@vue/eslint-config-standard" : "^5.1.2",
+    "babel-eslint" : "^10.1.0",
+    "dotenv-cli" : "^3.2.0",
+    "electron" : "^16.0.2",
+    "electron-builder" : "^22.14.5",
+    "eslint" : "^6.8.0",
+    "eslint-plugin-import" : "^2.22.1",
+    "eslint-plugin-node" : "^11.1.0",
+    "eslint-plugin-promise" : "^4.3.1",
+    "eslint-plugin-standard" : "^4.1.0",
+    "eslint-plugin-vue" : "^6.2.2",
+    "node-sass" : "6.0.1",
+    "release-it" : "^13.7.1",
+    "sass" : "^1.43.5",
+    "sass-loader" : "^10.2.1",
+    "vue-cli-plugin-electron-builder" : "~2.0.0-beta.6",
+    "vue-cli-plugin-i18n" : "~1.0.1",
+    "vue-cli-plugin-vuetify" : "~2.4.4",
+    "vue-template-compiler" : "^2.6.14",
+    "vuetify-loader" : "^1.7.3",
+    "webpack" : "^4.45.0"
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
+  "eslintConfig" : {
+    "root" : true,
+    "env" : {
+      "node" : true
     },
-    "extends": [
+    "extends" : [
       "plugin:vue/essential",
       "@vue/standard"
     ],
-    "parserOptions": {
-      "parser": "babel-eslint"
+    "parserOptions" : {
+      "parser" : "babel-eslint"
     },
-    "rules": {}
+    "rules" : {}
   },
-  "browserslist": [
+  "browserslist" : [
     "> 1%",
     "last 2 versions",
     "not dead"
   ],
-  "bugs": {
-    "url": "https://github.com/innerken-gmbh/aaden-vue-app/issues"
+  "bugs" : {
+    "url" : "https://github.com/innerken-gmbh/aaden-vue-app/issues"
   },
-  "homepage": "http://aaden.online",
-  "release-it": {
-    "git": {
-      "commitMessage": "[VersionChange]:: release v${version}",
-      "requireCleanWorkingDir": false
+  "homepage" : "http://aaden.online",
+  "release-it" : {
+    "git" : {
+      "commitMessage" : "[VersionChange]:: release v${version}",
+      "requireCleanWorkingDir" : false
     },
-    "github": {
-      "release": true
+    "github" : {
+      "release" : true
     }
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/innerken-gmbh/aaden-vue-app.git"
+  "repository" : {
+    "type" : "git",
+    "url" : "git+https://github.com/innerken-gmbh/aaden-vue-app.git"
   }
 }
