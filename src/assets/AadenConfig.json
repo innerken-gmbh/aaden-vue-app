@@ -45,5 +45,6 @@
   "showConfigButton" : false,
   "showDrawerButton" : false,
   "servantShowHistoryBill" : true,
-  "useCustomerDisplay" : false
+  "useCustomerDisplay" : false,
+  "cardTerminalIp" : ""
 }
