@@ -1,13 +1,13 @@
 <template>
     <div>
         <v-navigation-drawer
+                app
                 dark
                 mini-variant
-                mini-variant-width="72"
-                permanent stateless
-                style="z-index: 100" app>
-            <v-card color="transparent" elevation="0"
-                    class="d-flex flex-column py-2"
+                mini-variant-width="72" permanent
+                stateless style="z-index: 100">
+            <v-card class="d-flex flex-column py-2" color="transparent"
+                    elevation="0"
                     style="height: 100vh">
                 <div style="display: grid;grid-auto-flow: row;;grid-gap: 12px">
                     <v-card
@@ -99,14 +99,14 @@ export default {
           },
           path: 'reservation'
         },
-        {
-          icon: 'mdi-home-analytics',
-          text: 'Chef',
-          async beforeEnter () {
-            return await popAuthorize('boss')
-          },
-          path: 'boss'
-        },
+        // {
+        //   icon: 'mdi-home-analytics',
+        //   text: 'Chef',
+        //   async beforeEnter () {
+        //     return await popAuthorize('boss')
+        //   },
+        //   path: 'boss'
+        // },
         {
           icon: 'mdi-cog',
           text: 'setting',

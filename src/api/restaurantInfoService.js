@@ -1,6 +1,7 @@
 import { DefaultAddressInfo } from '@/oldjs/StaticModel'
 import dayjs from 'dayjs'
 import { loadRestaurantInfo } from '@/api/api'
+import hillo from 'hillo'
 
 const defaultRestaurantInfo = {
   tableColor: '#ffffff', callColor: '#f57f17'
@@ -45,4 +46,28 @@ export function beautifulTable (table) {
 
 export const defaultTable = {
   tableName: '1', usageStatus: '1', callService: '0', dishCount: 0, drinkCount: 0
+}
+
+export const cloudUrl = 'https://cloud5.api.aaden.io'
+
+export async function getBaseAndUrlForDeviceId (deviceId) {
+  const url = (await findDeviceByDeviceId(deviceId))
+    ?.baseUrl ?? getNgrokUrl(deviceId)
+  return {
+    deviceId,
+    url
+  }
+}
+
+export function getNgrokUrl (deviceId) {
+  return `${location.protocol}//ik${deviceId.padStart(4, '0')}.ngrok.aaden.io`
+}
+
+export async function findDeviceByDeviceId (deviceId) {
+  try {
+    return (await hillo.jsonPost(cloudUrl + '/virtualDevice/search', { deviceId: deviceId })).data?.[0]
+  } catch (e) {
+    console.log(e)
+    return null
+  }
 }

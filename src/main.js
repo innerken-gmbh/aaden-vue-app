@@ -19,6 +19,8 @@ import dayjs from 'dayjs'
 import { onlyTimeFormat } from '@/api/dateUtils'
 import { Remember } from '@/api/remember'
 import _ from 'lodash'
+import { getBaseAndUrlForDeviceId } from '@/api/restaurantInfoService'
+import hillo from 'hillo'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
@@ -78,6 +80,8 @@ addToQueue('tablePool', async () => {
 
 async function initial () {
   await loadConfig()
+  const realUrl = (await getBaseAndUrlForDeviceId(IKUtils.getQueryString('Base'))).url
+  hillo.initial(realUrl + '/PHP/')
   if (!Remember.uuid) {
     Remember.uuid = uuidv4()
   }

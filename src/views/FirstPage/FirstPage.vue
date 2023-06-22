@@ -52,9 +52,6 @@
                     <div>
                         <time-display></time-display>
                     </div>
-                  <v-btn v-if="storeListOfId.length > 1" icon @click="changeStore">
-                    <v-icon>mdi-store</v-icon>
-                  </v-btn>
                     <v-btn icon @click="openDrawer">
                         <v-icon>mdi-lock-open</v-icon>
                     </v-btn>
@@ -394,7 +391,6 @@ import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
 import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
 import { loadTransLangs } from '@/i18n'
 import PickUpItem from '@/views/FirstPage/Table/Table/Item/PickUpItem.vue'
-import { getAllStoreIdForUser, getCurrentUserId } from '@/api/firebase/user'
 
 const keyboardLayout =
     [
@@ -509,9 +505,6 @@ export default {
 
   },
   methods: {
-    changeStore () {
-      this.$router.push({ name: 'StorePage' })
-    },
     async updateStatus (orderId) {
       await readyToPick(orderId)
       await this.refreshTables()
@@ -651,7 +644,6 @@ export default {
       window.onkeydown = this.listenKeyDown
 
       await this.loadRestaurantInfo()
-      this.storeListOfId = (await getAllStoreIdForUser(getCurrentUserId()))
       this.servantList = await getServantList()
 
       getRestaurantInfo()
