@@ -1,18 +1,17 @@
 <template>
   <v-navigation-drawer
-    width="fit-content"
-    right
-    fixed
-    temporary
-    touchless
     v-model="realShow"
+    fixed
+    right
+    touchless
+    width="fit-content"
   >
-    <v-card tile class="fill-height">
+    <v-card class="fill-height" tile>
       <check-out-calculator
         :id="id"
+        :total="totalPrice"
         @payment-cancel="realShow = false"
         @payment-submit="checkOut"
-        :total="totalPrice"
       />
     </v-card>
   </v-navigation-drawer>
