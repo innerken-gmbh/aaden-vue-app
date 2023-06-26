@@ -21,6 +21,7 @@ import { Remember } from '@/api/remember'
 import _ from 'lodash'
 import { getBaseAndUrlForDeviceId } from '@/api/restaurantInfoService'
 import hillo from 'hillo'
+import ParseInt from 'lodash-es/parseInt'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
@@ -78,9 +79,12 @@ addToQueue('tablePool', async () => {
   }
 })
 
+export const realDeviceId = IKUtils.getQueryString('Base')
+
 async function initial () {
   await loadConfig()
-  const realUrl = (await getBaseAndUrlForDeviceId(IKUtils.getQueryString('Base'))).url
+  const realUrl = (await getBaseAndUrlForDeviceId(realDeviceId)).url
+  GlobalConfig.DeviceId = ParseInt(realDeviceId)
   hillo.initial(realUrl + '/PHP/')
   if (!Remember.uuid) {
     Remember.uuid = uuidv4()
