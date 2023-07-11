@@ -11,14 +11,14 @@
                 >
                     <v-card
                             class="d-flex justify-space-between flex-shrink-0 flex-column fill-height"
-                            elevation="0"
                             dark
-                            tile
+                            elevation="0"
                             style="height: 100vh"
+                            tile
                     >
                         <v-card
-                                color="transparent"
                                 class="d-flex align-center pa-2 py-3"
+                                color="transparent"
                                 elevation="0"
                                 @click="back"
                         >
@@ -46,8 +46,8 @@
                                     <v-btn
                                             :loading="isSendingRequest"
                                             color="info"
-                                            text
                                             elevation="0"
+                                            text
                                             @click="checkOut(Config.defaultPassword)"
                                     >
                                         <v-icon left>mdi-cash-fast</v-icon>
@@ -56,8 +56,8 @@
                                     <v-btn
                                             :loading="isSendingRequest"
                                             color="warning"
-                                            text
                                             elevation="0"
+                                            text
                                             @click="discountShow"
                                     >
                                         <v-icon left>mdi-sale</v-icon>
@@ -71,13 +71,13 @@
                                                 block
                                                 color="green lighten-4 black--text"
                                                 elevation="0"
-                                                rounded
                                                 height="64"
+                                                rounded
                                                 @click="jumpToPayment()"
                                         >
                                             <v-icon
-                                                    left
                                                     class="mr-6"
+                                                    left
                                                     size="28"
                                             >mdi-calculator-variant
                                             </v-icon>
@@ -103,9 +103,9 @@
                         >
                             <template #action>
                                 <v-btn
-                                        text
                                         color="error"
                                         elevation="0"
+                                        text
                                         @click="cartListModelClear"
                                 >
                                     <v-icon left> mdi-trash-can</v-icon>
@@ -119,13 +119,13 @@
                                             block
                                             color="primary lighten-4 black--text"
                                             elevation="0"
-                                            rounded
                                             height="64"
+                                            rounded
                                             @click="orderDish(cartListModel.list)"
                                     >
                                         <v-icon
-                                                left
                                                 class="mr-6"
+                                                left
                                                 size="28"
                                         >mdi-printer
                                         </v-icon>
@@ -143,10 +143,10 @@
                             style="height: 100vh"
                     >
                         <v-card
-                                elevation="0"
-                                color="grey lighten-2"
-                                tile
                                 class="d-flex pa-3 px-4 align-center"
+                                color="grey lighten-2"
+                                elevation="0"
+                                tile
                         >
                             <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
                             <div class="text-h6 text-capitalize mr-6">
@@ -178,10 +178,10 @@
                             <v-menu offset-y>
                                 <template v-slot:activator="{ on, attrs }">
                                     <v-btn
-                                            rounded
                                             class="mr-4"
                                             color="indigo lighten-4 black--text"
                                             elevation="0"
+                                            rounded
                                             v-bind="attrs"
                                             v-on="on"
                                     >
@@ -191,9 +191,9 @@
                                 </template>
                                 <v-list>
                                     <v-list-item
-                                            @click="overrideConsumeTypeId = ct.id"
                                             v-for="ct of consumeTypeList"
                                             :key="ct.id + 'consumeType'"
+                                            @click="overrideConsumeTypeId = ct.id"
                                     >
                                         <v-list-item-title>
                                             {{ ct.name }}
@@ -202,9 +202,9 @@
                                 </v-list>
                             </v-menu>
                             <v-btn
-                                    rounded
                                     color="primary lighten-4 black--text"
                                     elevation="0"
+                                    rounded
                                     @click="keyboardMode = !keyboardMode"
                             >
                                 <template v-if="!keyboardMode">
@@ -265,8 +265,8 @@
                                     style="position: relative"
                             >
                                 <div
-                                        class="mt-2"
                                         v-if="!activeCategoryId"
+                                        class="mt-2"
                                 >
                                     <v-item-group class="dishCardList">
                                         <template v-for="category of filteredC">
@@ -275,9 +275,9 @@
                                                     v-slot="{ active, toggle }"
                                             >
                                                 <v-card
+                                                        :color="category.color ? category.color : 'white'"
                                                         class="d-flex text-h6 align-center justify-center text-center pa-2"
                                                         elevation="0"
-                                                        :color="category.color ? category.color : 'white'"
                                                         style="
                             position: relative;
                             width: 100%;
@@ -440,8 +440,8 @@
               "
                         >
                             <v-card
-                                    color="transparent"
                                     class="l-result-display"
+                                    color="transparent"
                                     elevation="0"
                             >
                                 <div
@@ -450,10 +450,10 @@
                                         style="overflow: hidden"
                                 >
                                     <v-card
-                                            tile
-                                            color="grey lighten-4"
                                             class="px-4 py-3"
+                                            color="grey lighten-4"
                                             elevation="0"
+                                            tile
                                     >
                                         {{ $t('SearchResult') }}
                                     </v-card>
@@ -542,10 +542,10 @@
                                         @click.stop
                                 >
                                     <v-card
+                                            :class="keyboardInput ? '' : 'text--secondary'"
+                                            class="text-h4 pa-3 py-6 mb-2 d-flex align-center"
                                             color="grey lighten-3"
                                             elevation="0"
-                                            class="text-h4 pa-3 py-6 mb-2 d-flex align-center"
-                                            :class="keyboardInput ? '' : 'text--secondary'"
                                     >
                                         {{
                                         keyboardInput
@@ -699,8 +699,8 @@
                                 {{ $t('Cancel') }}
                             </v-btn>
                             <v-btn
-                                    color="success  lighten-4 black--text"
                                     class="mt-1"
+                                    color="success  lighten-4 black--text"
                                     x-large
                                     @click="needSplitOrder()"
                             >
@@ -708,8 +708,8 @@
                                 {{ $t('BillSplit') }}
                             </v-btn>
                             <v-btn
-                                    color="warning lighten-4 black--text"
                                     class="mt-1"
+                                    color="warning lighten-4 black--text"
                                     x-large
                                     v-on:click="showDeleteDishDialog"
                             >
@@ -717,8 +717,8 @@
                                 {{ $t('DishCancel') }}
                             </v-btn>
                             <v-btn
-                                    color="pink lighten-4 black--text"
                                     class="mt-1"
+                                    color="pink lighten-4 black--text"
                                     x-large
                                     v-on:click="dishesSetDiscount()"
                             >
@@ -726,8 +726,8 @@
                                 {{ $t('GiveDishADiscount') }}
                             </v-btn>
                             <v-btn
-                                    color="indigo  lighten-4 black--text"
                                     class="mt-1"
+                                    color="indigo  lighten-4 black--text"
                                     x-large
                                     v-on:click="dishesChangeTable"
                             >
@@ -735,8 +735,8 @@
                                 {{ $t('tableChange') }}
                             </v-btn>
                             <v-btn
-                                    color="blue  lighten-4 black--text"
                                     class="mt-1"
+                                    color="blue  lighten-4 black--text"
                                     x-large
                                     v-on:click="printZwichenBon()"
                             >
@@ -965,11 +965,11 @@
                     <div class="d-flex">
                         <v-spacer></v-spacer>
                         <v-btn
-                                large
+                                block
                                 class="primary mt-4 lighten-4 black--text"
                                 elevation="0"
+                                large
                                 rounded
-                                block
                                 @click="submitReason()"
                         >
                             {{ $t('Confirm') }}
@@ -1563,6 +1563,28 @@ export default {
       this.orderListModel.add(item, -1)
       this.splitOrderListModel.add(item, 1)
     },
+    getRandomName () {
+      const arr = []
+      for (let i = 0; i < 10; i++) {
+        arr[i] = String(i)
+      }
+      let len = arr.length
+      for (let i = 0; i < 26; i++) {
+        arr[i + len] = String.fromCharCode(i + 65)
+      }
+      len = arr.length
+      for (let i = 0; i < 26; i++) {
+        arr[i + len] = String.fromCharCode(i + 97)
+      }
+      const newString = arr.join('')
+      let randomNumber
+      const realRandomName = []
+      for (let j = 0; j < 16; j++) {
+        randomNumber = Math.floor(Math.random() * newString.length)
+        realRandomName[j] = newString.charAt(randomNumber)
+      }
+      return realRandomName.join('')
+    },
 
     addExtraDish () {
       const dish = IKUtils.deepCopy(this.currentDish)
@@ -1570,7 +1592,7 @@ export default {
         dish.currentPrice = 0
       }
       if (dish.currentName === '') {
-        dish.currentName = dish.name
+        dish.currentName = this.getRandomName()
       }
       dish.originPrice = dish.currentPrice.toString().replace(',', '.')
       dish.price = dish.originPrice
