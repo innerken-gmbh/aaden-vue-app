@@ -150,7 +150,16 @@
                           grid-auto-columns: 120px;
                           grid-auto-flow: column;
                           overflow-x: scroll">
-
+                    <v-item v-slot="{active,toggle}">
+                      <v-card :color="active?'primary':''"
+                              :dark="active"
+                              :elevation="active?4:0"
+                              class="d-flex justify-center align-center"
+                              height="48"
+                              style="border-radius: 12px;font-size: 18px"
+                              @click="getCommonUsed(toggle)">常用
+                      </v-card>
+                    </v-item>
                     <v-item v-for="ct of dct" v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
                       <v-card :color="active?'primary':''"
                               :dark="active"
@@ -175,7 +184,6 @@
                   {{ $t('KeyboardAndDishNumber') }}
 
                 </v-card>
-
               </v-card>
               <v-divider class="my-2"></v-divider>
               <v-card v-dragscroll class="dragscroll dishCardListContainer flex-grow-1" color="transparent"
@@ -213,7 +221,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
                   <div style="display: grid;grid-template-columns: 1fr 108px;grid-gap: 24px">
 
                     <div class="dishCardList">
-                      <v-card v-if="activeCategoryId" class="d-flex align-center"
+                      <v-card v-if="activeCategoryId && activeCategoryId !== -10" class="d-flex align-center"
                               elevation="0"
                               style="width: 100%;height: 124px;
                         color: #ff8c50;
@@ -972,7 +980,15 @@ export default {
           break
       }
     },
-
+    getCommonUsed (toggle) {
+      console.log('1')
+      this.activeCategoryId = null
+      this.activeCategoryId = -10
+      console.log(this.activeCategoryId, 'id')
+      if (toggle) {
+        toggle()
+      }
+    },
     changeCategory (id, toggle) {
       this.activeCategoryId = id
       if (toggle) {
@@ -1139,6 +1155,8 @@ export default {
           const [ra, rb] = [a.id, b.id].map(idToRank)
           return ra > rb ? -1 : 1
         }).filter(i => typeof i.childCount === 'undefined' || i.childCount > 0)
+        console.log(this.dct, 'dct')
+        console.log((await CategoryType.getList()), '(await CategoryType.getList())')
       }
     },
     async getCategory (consumeTypeId = 1, force = false) {
@@ -1633,16 +1651,19 @@ export default {
     },
     filterDish () {
       let list = this.dishes
-      if (!this.keyboardInput) {
-        const dct = this.dct[this.activeDCT]
-        list = list.filter((item) => {
-          return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
-        })
-        list = list.filter((item) => {
-          return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
-        })
+      if (this.activeCategoryId === -10) {
+        list = list.filter(item => item.isFavorite === '1')
+      } else {
+        if (!this.keyboardInput) {
+          const dct = this.dct[this.activeDCT]
+          list = list.filter((item) => {
+            return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
+          })
+          list = list.filter((item) => {
+            return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
+          })
+        }
       }
-
       return list
     },
     async cartListModelClear () {
