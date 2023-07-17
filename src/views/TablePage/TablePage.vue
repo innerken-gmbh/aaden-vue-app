@@ -157,7 +157,7 @@
                               class="d-flex justify-center align-center"
                               height="48"
                               style="border-radius: 12px;font-size: 18px"
-                              @click="getCommonUsed(toggle)">常用
+                              @click="toggle">常用
                       </v-card>
                     </v-item>
                     <v-item v-for="ct of dct" v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
@@ -839,7 +839,7 @@ export default {
       dct: [],
       dishes: [],
       categories: [],
-      activeDCT: 0,
+      activeDCT: null,
       filteredDish: [],
       searchDish: [],
       indexActive: 0,
@@ -981,13 +981,13 @@ export default {
       }
     },
     getCommonUsed (toggle) {
+      if (toggle) {
+        toggle()
+      }
       console.log('1')
       this.activeCategoryId = null
       this.activeCategoryId = -10
       console.log(this.activeCategoryId, 'id')
-      if (toggle) {
-        toggle()
-      }
     },
     changeCategory (id, toggle) {
       this.activeCategoryId = id
@@ -1274,6 +1274,7 @@ export default {
     async reloadDish (consumeTypeId, force = false) {
       await this.getCategory(consumeTypeId, force)
       this.activeCategoryId = null
+      this.activeDCT = 1
       this.updateActiveDCT(0)
     },
     back () {
@@ -1777,8 +1778,14 @@ export default {
     },
 
     activeDCT: function (val) {
-      this.keyboardInput = ''
-      this.activeCategoryId = null
+      console.log(val, 'change')
+      if (val === 0) {
+        this.activeCategoryId = -10
+      } else {
+        this.keyboardInput = ''
+        this.activeCategoryId = null
+      }
+
       this.updateFilteredDish()
     },
     dishes: function () {
