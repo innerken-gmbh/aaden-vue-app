@@ -150,7 +150,7 @@
                           grid-auto-columns: 120px;
                           grid-auto-flow: column;
                           overflow-x: scroll">
-                    <v-item v-slot="{active,toggle}">
+                    <v-item v-if="favoriteList.length > 0" v-slot="{active,toggle}">
                       <v-card :color="active?'primary':''"
                               :dark="active"
                               :elevation="active?4:0"
@@ -801,6 +801,7 @@ export default {
   },
   data: function () {
     return {
+      favoriteList: [],
       reasons: getReason(),
       deleteDishReason: '',
       deleteDishReasonDialog: false,
@@ -980,15 +981,6 @@ export default {
           break
       }
     },
-    getCommonUsed (toggle) {
-      if (toggle) {
-        toggle()
-      }
-      console.log('1')
-      this.activeCategoryId = null
-      this.activeCategoryId = -10
-      console.log(this.activeCategoryId, 'id')
-    },
     changeCategory (id, toggle) {
       this.activeCategoryId = id
       if (toggle) {
@@ -1155,8 +1147,6 @@ export default {
           const [ra, rb] = [a.id, b.id].map(idToRank)
           return ra > rb ? -1 : 1
         }).filter(i => typeof i.childCount === 'undefined' || i.childCount > 0)
-        console.log(this.dct, 'dct')
-        console.log((await CategoryType.getList()), '(await CategoryType.getList())')
       }
     },
     async getCategory (consumeTypeId = 1, force = false) {
@@ -1167,6 +1157,7 @@ export default {
           arr.push(...i.dishes)
           return arr
         }, []))
+        this.favoriteList = this.dishes.filter(item => item.isFavorite === '1')
         this.cartListModel.setDishList(this.dishes)
       }
     },
@@ -1274,7 +1265,11 @@ export default {
     async reloadDish (consumeTypeId, force = false) {
       await this.getCategory(consumeTypeId, force)
       this.activeCategoryId = null
-      this.updateActiveDCT(0)
+      console.log(this.favoriteList, '123')
+      const res = this.favoriteList.length > 0 ? this.dct.length : 0
+      console.log(res, 'res')
+      console.log(this.dct, 'dct')
+      this.updateActiveDCT(res)
     },
     back () {
       if (this.keyboardInput || this.currentCodeBuffer) {
@@ -1577,6 +1572,7 @@ export default {
     },
     updateActiveDCT (index) {
       this.activeDCT = null
+      console.log(index, 'index')
       this.$nextTick(() => {
         this.activeDCT = index
       })
@@ -1779,7 +1775,8 @@ export default {
     },
 
     activeDCT: function (val) {
-      if (val === 0) {
+      console.log(val, 'val')
+      if (val === 4 && this.favoriteList.length > 0) {
         this.activeCategoryId = -10
       } else {
         this.keyboardInput = ''
