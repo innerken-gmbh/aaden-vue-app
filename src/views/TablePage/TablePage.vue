@@ -143,14 +143,14 @@
                 elevation="0"
               >
                 <template>
-                  <v-item-group v-model="activeDCT" v-dragscroll
+                  <v-item-group v-if="favoriteList" v-model="activeDCT" v-dragscroll
                                 mandatory
                                 style="display: grid;
                           grid-gap: 8px;
                           grid-auto-columns: 120px;
                           grid-auto-flow: column;
                           overflow-x: scroll">
-                    <v-item v-if="favoriteList.length > 0" v-slot="{active,toggle}">
+                    <v-item v-if="haveFavoriteItem" v-slot="{active,toggle}">
                       <v-card :color="active?'primary':''"
                               :dark="active"
                               :elevation="active?4:0"
@@ -801,7 +801,7 @@ export default {
   },
   data: function () {
     return {
-      favoriteList: [],
+      favoriteList: null,
       reasons: getReason(),
       deleteDishReason: '',
       deleteDishReasonDialog: false,
@@ -1265,11 +1265,7 @@ export default {
     async reloadDish (consumeTypeId, force = false) {
       await this.getCategory(consumeTypeId, force)
       this.activeCategoryId = null
-      console.log(this.favoriteList, '123')
-      const res = this.favoriteList.length > 0 ? this.dct.length : 0
-      console.log(res, 'res')
-      console.log(this.dct, 'dct')
-      this.updateActiveDCT(res)
+      this.updateActiveDCT(0)
     },
     back () {
       if (this.keyboardInput || this.currentCodeBuffer) {
@@ -1710,6 +1706,9 @@ export default {
   },
   computed: {
     ...mapGetters(['systemDialogShow']),
+    haveFavoriteItem () {
+      return this.favoriteList?.length > 0
+    },
     sourceMarks: function () {
       return this.tableDetailInfo?.sourceMarks ?? []
     },
@@ -1775,8 +1774,7 @@ export default {
     },
 
     activeDCT: function (val) {
-      console.log(val, 'val')
-      if (val === 4 && this.favoriteList.length > 0) {
+      if (val === 0 && this.haveFavoriteItem) {
         this.activeCategoryId = -10
       } else {
         this.keyboardInput = ''
