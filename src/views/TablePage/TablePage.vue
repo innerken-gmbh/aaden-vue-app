@@ -839,7 +839,7 @@ export default {
       dct: [],
       dishes: [],
       categories: [],
-      activeDCT: null,
+      activeDCT: 0,
       filteredDish: [],
       searchDish: [],
       indexActive: 0,
@@ -1274,7 +1274,6 @@ export default {
     async reloadDish (consumeTypeId, force = false) {
       await this.getCategory(consumeTypeId, force)
       this.activeCategoryId = null
-      this.activeDCT = 1
       this.updateActiveDCT(0)
     },
     back () {
@@ -1578,7 +1577,9 @@ export default {
     },
     updateActiveDCT (index) {
       this.activeDCT = null
-      this.activeDCT = index
+      this.$nextTick(() => {
+        this.activeDCT = index
+      })
     },
     updateFilteredDish () {
       if (this.activeCategoryId) {
@@ -1753,7 +1754,7 @@ export default {
     filteredC: function () {
       const dct = this.dct[this.activeDCT]
       return this.categories.filter((item) => {
-        return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
+        return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
       })
     },
     orderListModelList () {
