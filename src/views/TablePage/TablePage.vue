@@ -143,14 +143,23 @@
                 elevation="0"
               >
                 <template>
-                  <v-item-group v-model="activeDCT" v-dragscroll
+                  <v-item-group v-if="favoriteList" v-model="activeDCT" v-dragscroll
                                 mandatory
                                 style="display: grid;
                           grid-gap: 8px;
                           grid-auto-columns: 120px;
                           grid-auto-flow: column;
                           overflow-x: scroll">
-
+                    <v-item v-if="haveFavoriteItem" v-slot="{active,toggle}">
+                      <v-card :color="active?'primary':''"
+                              :dark="active"
+                              :elevation="active?4:0"
+                              class="d-flex justify-center align-center"
+                              height="48"
+                              style="border-radius: 12px;font-size: 18px"
+                              @click="toggle">常用
+                      </v-card>
+                    </v-item>
                     <v-item v-for="ct of dct" v-bind:key="ct.id+'categorytypes'" v-slot="{active,toggle}">
                       <v-card :color="active?'primary':''"
                               :dark="active"
@@ -175,7 +184,6 @@
                   {{ $t('KeyboardAndDishNumber') }}
 
                 </v-card>
-
               </v-card>
               <v-divider class="my-2"></v-divider>
               <v-card v-dragscroll class="dragscroll dishCardListContainer flex-grow-1" color="transparent"
@@ -213,7 +221,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
                   <div style="display: grid;grid-template-columns: 1fr 108px;grid-gap: 24px">
 
                     <div class="dishCardList">
-                      <v-card v-if="activeCategoryId" class="d-flex align-center"
+                      <v-card v-if="activeCategoryId && activeCategoryId !== -10" class="d-flex align-center"
                               elevation="0"
                               style="width: 100%;height: 124px;
                         color: #ff8c50;
@@ -793,6 +801,7 @@ export default {
   },
   data: function () {
     return {
+      favoriteList: null,
       reasons: getReason(),
       deleteDishReason: '',
       deleteDishReasonDialog: false,
@@ -972,7 +981,6 @@ export default {
           break
       }
     },
-
     changeCategory (id, toggle) {
       this.activeCategoryId = id
       if (toggle) {
@@ -1149,6 +1157,7 @@ export default {
           arr.push(...i.dishes)
           return arr
         }, []))
+        this.favoriteList = this.dishes.filter(item => item.isFavorite === '1')
         this.cartListModel.setDishList(this.dishes)
       }
     },
@@ -1559,7 +1568,9 @@ export default {
     },
     updateActiveDCT (index) {
       this.activeDCT = null
-      this.activeDCT = index
+      this.$nextTick(() => {
+        this.activeDCT = index
+      })
     },
     updateFilteredDish () {
       if (this.activeCategoryId) {
@@ -1633,16 +1644,19 @@ export default {
     },
     filterDish () {
       let list = this.dishes
-      if (!this.keyboardInput) {
-        const dct = this.dct[this.activeDCT]
-        list = list.filter((item) => {
-          return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
-        })
-        list = list.filter((item) => {
-          return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
-        })
+      if (this.activeCategoryId === -10) {
+        list = list.filter(item => item.isFavorite === '1')
+      } else {
+        if (!this.keyboardInput) {
+          const dct = this.dct[this.activeDCT]
+          list = list.filter((item) => {
+            return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
+          })
+          list = list.filter((item) => {
+            return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
+          })
+        }
       }
-
       return list
     },
     async cartListModelClear () {
@@ -1691,6 +1705,9 @@ export default {
   },
   computed: {
     ...mapGetters(['systemDialogShow']),
+    haveFavoriteItem () {
+      return this.favoriteList?.length > 0
+    },
     sourceMarks: function () {
       return this.tableDetailInfo?.sourceMarks ?? []
     },
@@ -1731,7 +1748,7 @@ export default {
     filteredC: function () {
       const dct = this.dct[this.activeDCT]
       return this.categories.filter((item) => {
-        return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
+        return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
       })
     },
     orderListModelList () {
@@ -1756,8 +1773,13 @@ export default {
     },
 
     activeDCT: function (val) {
-      this.keyboardInput = ''
-      this.activeCategoryId = null
+      if (val === 0 && this.haveFavoriteItem) {
+        this.activeCategoryId = -10
+      } else {
+        this.keyboardInput = ''
+        this.activeCategoryId = null
+      }
+
       this.updateFilteredDish()
     },
     dishes: function () {
