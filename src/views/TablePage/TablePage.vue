@@ -1779,7 +1779,6 @@ export default {
     },
 
     activeDCT: function (val) {
-      console.log(val, 'change')
       if (val === 0) {
         this.activeCategoryId = -10
       } else {
