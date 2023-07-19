@@ -412,5 +412,15 @@
   "DailyPrintTableHint": "After printing out the daily overview sheet, all unpaid tables are marked temporarily unpaid.",
   "need30secondcheckJunk": "Please wait a moment, as the mail/printer may take 30 seconds to send/print the rest of the content. If you don't receive the content, please remember to check the junk mail box or check the printer connection.",
   "PreviewSheet": "preview sheet",
-  "DailyStatement": "Day extract"
+  "DailyStatement": "Day extract",
+  "AR" : "Arabic",
+  "CS" : "Czech",
+  "ES" : "Spanish",
+  "FA" : "Persian",
+  "FR" : "French",
+  "IT" : "Italian",
+  "PL" : "Polish",
+  "PT" : "Portuguese",
+  "RU" : "Russian",
+  "TR" : "Turkish"
 }
