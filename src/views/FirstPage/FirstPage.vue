@@ -668,7 +668,7 @@ export default {
 }
 
 .navigationPillItem.active {
-  background: #f0f0f0;
+  background: #fafafa;
   font-weight: bold;
 }
 
