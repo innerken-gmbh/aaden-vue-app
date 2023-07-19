@@ -316,15 +316,18 @@
                 </div>
                 <template v-if="activeCategoryId">
                   <div
+                      :style="{
+                    gridTemplateColumns:activeCategoryId!==-10?'1fr 108px':'1fr'
+                      }"
                       style="
                       display: grid;
                       grid-template-columns: 1fr 108px;
                       grid-gap: 24px;
                     "
                   >
-                    <div class="dishCardList">
+                    <div class="dishCardList mt-2">
                       <v-card
-                          v-if="activeCategoryId&&activeCategoryId!==-10"
+                          v-if="activeCategoryId!==-10"
                           class="d-flex align-center"
                           elevation="0"
                           style="
@@ -367,6 +370,7 @@
                     </div>
                   </div>
                   <div
+                      v-if="activeCategoryId!==-10"
                       v-dragscroll
                       style="
                       width: 108px;
@@ -1112,7 +1116,7 @@ const keyboardLayout = [
   'OK'
 ]
 
-let filterCache = {}
+const filterCache = {}
 
 // endregion
 export default {
@@ -1539,10 +1543,10 @@ export default {
         this.categories = await getCategoryListWithCache(consumeTypeId)
 
         this.dishes = processDishList(this.categories.reduce((arr, i) => {
+          filterCache[i.id] = i.dishes
           arr.push(...i.dishes)
           return arr
         }, []))
-        filterCache = {}
         this.favoriteList = this.dishes.filter(item => item.isFavorite === '1')
         this.cartListModel.setDishList(this.dishes)
       }
