@@ -1961,7 +1961,9 @@ export default {
         this.initialUI()
         printNow()
         if (GlobalConfig.jumpToHomeWhenOrder) {
-          this.goHome()
+          this.$nextTick(() => {
+            this.goHome()
+          })
         }
       } catch (res) {
         logError(this.$t('JSTableOrderFailed') + res.data.info)
