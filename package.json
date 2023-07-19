@@ -1,8 +1,8 @@
 {
   "name": "aaden-vue-app",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
-  "description": "全新构建的Aaden Vue版本，重新启航，更加牢靠！",
+  "description": "科学管店，化繁为简",
   "author": "juhaodong@gmail.com",
   "scripts": {
     "serve": "vue-cli-service serve",
