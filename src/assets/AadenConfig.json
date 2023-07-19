@@ -1,5 +1,6 @@
 {
   "Base": "127.0.0.1",
+  "lang": "DE",
   "DeviceId": -1,
   "usePassword": false,
   "UseBossPassword": true,
