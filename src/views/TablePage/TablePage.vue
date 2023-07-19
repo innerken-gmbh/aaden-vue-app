@@ -1476,7 +1476,10 @@ export default {
               dish.forceFormat = true
               dish.name = dish.currentName
             } catch (e) {
-              console.error(e)
+              console.warn(e)
+              this.showExtraDish(dish)
+              blockReady()
+              return
             }
           } else {
             this.showExtraDish(dish)
