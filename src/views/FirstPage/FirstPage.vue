@@ -59,23 +59,12 @@
               bottom
               left
           >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn icon
-                     tile
-                     v-bind="attrs"
-                     v-on="on"
-              >
-                <v-icon>mdi-web</v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-
-              <v-list-item v-for="(lang,index) in transLangs"
-                           :key="'translang'+index"
-                           @click="changeLanguage(lang)">
-                <v-list-item-title>{{ $t(lang) }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
+            <language-switcher
+              :active="changeLanguage"
+              :current-locale-code="currentLocaleCode"
+              :locales="$i18n.messages"
+              @language-change="changeLanguage"
+            />
           </v-menu>
         </div>
 
@@ -351,7 +340,10 @@ import {
 } from '@/oldjs/common'
 import Swal from 'sweetalert2'
 import { dragscroll } from 'vue-dragscroll'
-import GlobalConfig, { forceChangeLanguage } from '../../oldjs/LocalGlobalSettings'
+
+import GlobalConfig, { changeLanguage } from '../../oldjs/LocalGlobalSettings'
+import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
+import LanguageSwitcher from '@/views/Widget/LanguageSwitcher'
 
 import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
 
@@ -398,7 +390,8 @@ export default {
     TableGridItem,
     TableListItem,
     TableBluePrint,
-    TimeDisplay
+    TimeDisplay,
+    LanguageSwitcher
   },
   props: {
     refresh: {
@@ -464,7 +457,9 @@ export default {
         return s
       }).filter(s => s.tables.length > 0)
     },
-
+    currentLocaleCode () {
+      return this.$i18n.locale
+    },
     activeList: function () {
       return this.tableList.filter(TableFixedSectionId.notTogoFilter)
         .filter(t => t.usageStatus === '1')
@@ -505,7 +500,12 @@ export default {
       await this.refreshTables()
     },
 
-    changeLanguage: forceChangeLanguage,
+    changeLanguage (locale) {
+      Remember.locale = locale
+      this.$i18n.locale = Remember.locale
+      changeLanguage(locale)
+      location.reload()
+    },
 
     showEditTableDialog (tableInfo) {
       console.log(tableInfo)

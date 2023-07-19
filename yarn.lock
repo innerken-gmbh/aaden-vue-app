@@ -6417,6 +6417,11 @@
     "@firebase/storage-compat" "0.3.1"
     "@firebase/util" "1.9.2"
 
+"flag-icons@^6.7.0":
+  "integrity" "sha512-+KXrrrXN2jiETFxisFl+3f83Bq7tj5nuIWnbv9fX59k05lvldEXRCOffybb5hAIjMWt4nmG0E8OfKt7Flm99Eg=="
+  "resolved" "https://registry.npmjs.org/flag-icons/-/flag-icons-6.7.0.tgz"
+  "version" "6.7.0"
+
 "flat-cache@^2.0.1":
   "integrity" "sha512-LoQe6yDuUMDzQAEH8sgmh4Md6oZnc/7PjtwjNFSzveXqSHt6ka9fPBuso7IGf9Rz4uqnSnWiFH2B/zj24a5ReA=="
   "resolved" "https://registry.npmjs.org/flat-cache/-/flat-cache-2.0.1.tgz"
@@ -11314,6 +11319,11 @@
     "window-size" "1.1.1"
     "yaml" "1.10.2"
     "yargs-parser" "19.0.4"
+
+"remember@^1.0.1":
+  "integrity" "sha512-7fyBJ5EK2XDUZwlyEIqX3qRQsdKAerizQAfwts4Gs2SI+blW/HIOvuHJrpbjxsgXeeKX9qACgT+gFCpXAwI9uA=="
+  "resolved" "https://registry.npmjs.org/remember/-/remember-1.0.1.tgz"
+  "version" "1.0.1"
 
 "remove-trailing-separator@^1.0.1":
   "integrity" "sha512-/hS+Y0u3aOfIETiaiirUFwDBDzmXPvO+jAfKTitUngIPzdKc6Z0LoFjM/CK5PL4C+eKwHohlHAb6H0VFfmmUsw=="
