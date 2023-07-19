@@ -238,9 +238,9 @@
                       overflow-x: scroll;
                     "
                   >
-                    <v-item v-slot="{active,toggle}">
+
+                    <v-item v-slot="{active,toggle}" v-if="haveFavoriteItem">
                       <v-card
-                          v-if="haveFavoriteItem"
                           :color="active?'primary':''"
                           :dark="active"
                           :elevation="active?4:0"
