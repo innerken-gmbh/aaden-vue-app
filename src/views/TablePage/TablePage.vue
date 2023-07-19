@@ -233,7 +233,7 @@
                       style="
                       display: grid;
                       grid-gap: 8px;
-                      grid-auto-columns: 120px;
+                      grid-auto-columns: max-content;
                       grid-auto-flow: column;
                       overflow-x: scroll;
                     "
@@ -258,10 +258,10 @@
                         v-slot="{ active, toggle }"
                     >
                       <v-card
-                          :color="active ? 'primary' : ''"
+                          :color="active ? 'primary' : 'grey lighten-4'"
                           :dark="active"
                           :elevation="active ? 4 : 0"
-                          class="d-flex justify-center align-center"
+                          class="d-flex justify-center align-center px-6"
                           height="48"
                           style="border-radius: 12px; font-size: 18px"
                           @click="toggle"
