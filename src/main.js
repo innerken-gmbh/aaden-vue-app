@@ -79,13 +79,14 @@ addToQueue('tablePool', async () => {
   }
 })
 
-export const realDeviceId = IKUtils.getQueryString('Base') || '-1'
+export const realDeviceId = IKUtils.getQueryString('BaseId') || '-1'
 
 async function initial () {
   await loadConfig()
   if (realDeviceId !== '-1') {
     const realUrl = (await getBaseAndUrlForDeviceId(realDeviceId)).url
     GlobalConfig.DeviceId = ParseInt(realDeviceId)
+    GlobalConfig.Base = realUrl.split('//')[1]
     hillo.initial(realUrl + '/PHP/')
   }
   if (!Remember.uuid) {

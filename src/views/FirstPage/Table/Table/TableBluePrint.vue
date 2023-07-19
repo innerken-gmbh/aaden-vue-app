@@ -10,48 +10,56 @@
          width: 100%;
        transform-origin: left top;
        background: #e8e8e8;">
-      <template v-if="Config.showTableList">
-        <div style="display: grid;grid-template-columns: repeat(auto-fill,minmax(0,100px));grid-auto-rows: 140px">
-          <table-card
-              v-for="i in tableWithInfo"
-              :key="i.id"
-              :table-background-color-func="tableBackgroundColorFunc"
-              :table-color-is-dark="tableColorIsDark"
-              :table-info="i"
-              @click="selectTable(i)"
-              @reservation-clicked="showReservation"
-          ></table-card>
+      <template v-if="tableWithInfo.length===0">
+        <div style="height: calc(100vh - 72px);width: 100%" class="d-flex align-center justify-center">
+          <v-progress-circular indeterminate></v-progress-circular>
         </div>
+      </template>
+      <template v-else>
+        <template v-if="Config.showTableList">
+          <div style="display: grid;grid-template-columns: repeat(auto-fill,minmax(0,100px));grid-auto-rows: 140px">
+            <table-card
+                v-for="i in tableWithInfo"
+                :key="i.id"
+                :table-background-color-func="tableBackgroundColorFunc"
+                :table-color-is-dark="tableColorIsDark"
+                :table-info="i"
+                @click="selectTable(i)"
+                @reservation-clicked="showReservation"
+            ></table-card>
+          </div>
 
+        </template>
+        <template v-for="i in tableWithInfo" v-else>
+          <vue-draggable-resizable
+              :key="i.id"
+              :draggable="editing"
+              :grid="[10,10]"
+              :h="i.h"
+              :max-height="180"
+              :max-width="200"
+              :min-height="60"
+              :min-width="60"
+              :parent="true"
+              :prevent-deactivation="false"
+              :resizable="editing"
+              :scaleRation="scale" :snap="true"
+              :w="i.w" :x="i.x"
+              :y="i.y"
+              class-name-dragging="dragging"
+              @dragstop="(...args)=>onDrag(i,...args)"
+              @resizestop="(...args)=>onResize(i,...args)">
+            <table-card
+                :table-background-color-func="tableBackgroundColorFunc"
+                :table-color-is-dark="tableColorIsDark"
+                :table-info="i"
+                @click="selectTable(i)"
+                @reservation-clicked="showReservation"
+            ></table-card>
+          </vue-draggable-resizable>
+        </template>
       </template>
-      <template v-for="i in tableWithInfo" v-else>
-        <vue-draggable-resizable
-            :key="i.id"
-            :draggable="editing"
-            :grid="[10,10]"
-            :h="i.h"
-            :max-height="180"
-            :max-width="200"
-            :min-height="60"
-            :min-width="60"
-            :parent="true"
-            :prevent-deactivation="false"
-            :resizable="editing"
-            :scaleRation="scale" :snap="true"
-            :w="i.w" :x="i.x"
-            :y="i.y"
-            class-name-dragging="dragging"
-            @dragstop="(...args)=>onDrag(i,...args)"
-            @resizestop="(...args)=>onResize(i,...args)">
-          <table-card
-              :table-background-color-func="tableBackgroundColorFunc"
-              :table-color-is-dark="tableColorIsDark"
-              :table-info="i"
-              @click="selectTable(i)"
-              @reservation-clicked="showReservation"
-          ></table-card>
-        </vue-draggable-resizable>
-      </template>
+
     </div>
 
     <!--    工具栏-->
