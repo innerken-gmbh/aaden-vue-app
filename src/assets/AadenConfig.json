@@ -29,5 +29,6 @@
   "defaultTileWidth": 100,
   "showTableList": false,
   "servantShowHistoryBill": true,
-  "frontEndLang": "de"
+  "frontEndLang": "de",
+  "cardTerminalIp": ""
 }

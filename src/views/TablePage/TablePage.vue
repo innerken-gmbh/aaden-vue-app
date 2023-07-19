@@ -238,14 +238,18 @@
                       overflow-x: scroll;
                     "
                   >
-                    <v-item v-if="haveFavoriteItem" v-slot="{active,toggle}">
-                      <v-card :color="active?'primary':''"
-                              :dark="active"
-                              :elevation="active?4:0"
-                              class="d-flex justify-center align-center"
-                              height="48"
-                              style="border-radius: 12px;font-size: 18px"
-                              @click="toggle">常用
+                    <v-item v-slot="{active,toggle}">
+                      <v-card
+                          v-if="haveFavoriteItem"
+                          :color="active?'primary':''"
+                          :dark="active"
+                          :elevation="active?4:0"
+                          class="d-flex justify-center align-center"
+                          height="48"
+                          style="border-radius: 12px;font-size: 18px"
+                          @click="toggle">
+                        <v-icon :color="active?'white':'primary'" left>mdi-heart-circle</v-icon>
+                        Favorite
                       </v-card>
                     </v-item>
                     <v-item
