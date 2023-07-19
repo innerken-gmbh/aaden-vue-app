@@ -869,31 +869,34 @@
 
       <v-dialog
           v-model="extraDishShow"
-          max-width="300"
+          max-width="400"
       >
-        <v-card width="550">
+        <v-card>
           <v-card-title class="font-weight-bold">
             {{ currentDish.name }}
           </v-card-title>
-          <v-card-text>
+          <v-card-text class="mt-4">
             <v-text-field
+                outlined
                 v-model="currentDish.currentPrice"
                 :label="$t('Amount')"
                 autofocus
             />
             <v-text-field
+                outlined
                 v-model="currentDish.currentName"
                 :label="$t('name')"
             />
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer/>
             <v-btn
-                class="primary"
+                large
+                block
+                elevation="0"
+                class="primary lighten-4 black--text"
                 @click="addExtraDish"
             >{{ $t('submit') }}
             </v-btn>
-          </v-card-actions>
+          </v-card-text>
+
         </v-card>
       </v-dialog>
 
@@ -1608,7 +1611,7 @@ export default {
         dish.currentPrice = 0
       }
       if (dish.currentName === '') {
-        dish.currentName = this.getRandomName()
+        dish.currentName = dish.name
       }
       dish.originPrice = dish.currentPrice.toString().replace(',', '.')
       dish.price = dish.originPrice
