@@ -1,55 +1,55 @@
 <template>
-    <div>
-        <v-navigation-drawer
-                app
-                dark
-                mini-variant
-                mini-variant-width="72" permanent
-                stateless style="z-index: 100">
-            <v-card class="d-flex flex-column py-2" color="transparent"
-                    elevation="0"
-                    style="height: 100vh">
-                <div style="display: grid;grid-auto-flow: row;;grid-gap: 12px">
-                    <v-card
-                            v-for="m in menuList"
-                            :key="m.icon"
-                            color="transparent"
-                            elevation="0"
-                            @click="goto(m)"
-                    >
-                        <v-responsive :aspect-ratio="1">
-                            <div class="d-flex flex-column justify-center align-center" style="height: 100%">
-                                <div>
-                                    <v-icon :color="color(m.path)">{{ m.icon }}</v-icon>
-                                </div>
-                                <div class="hideMore"
-                                     style="max-width: 56px">
-                                    <div class="mt-1 text-caption text-no-wrap
+  <div>
+    <v-navigation-drawer
+        app
+        dark
+        mini-variant
+        mini-variant-width="72" permanent
+        stateless style="z-index: 100">
+      <v-card class="d-flex flex-column py-2" color="transparent"
+              elevation="0"
+              style="height: 100vh">
+        <div style="display: grid;grid-auto-flow: row;;grid-gap: 12px">
+          <v-card
+              v-for="m in menuList"
+              :key="m.icon"
+              color="transparent"
+              elevation="0"
+              @click="goto(m)"
+          >
+            <v-responsive :aspect-ratio="1">
+              <div class="d-flex flex-column justify-center align-center" style="height: 100%">
+                <div>
+                  <v-icon :color="color(m.path)">{{ m.icon }}</v-icon>
+                </div>
+                <div class="hideMore"
+                     style="max-width: 56px">
+                  <div class="mt-1 text-caption text-no-wrap
                   text-body-1 font-weight-black
              text-truncate overflow-hidden text-capitalize"
-                                    >
-                                        {{ $t(m.text) }}
-                                    </div>
-                                </div>
-                            </div>
-                        </v-responsive>
-                    </v-card>
+                  >
+                    {{ $t(m.text) }}
+                  </div>
                 </div>
-                <v-spacer/>
-                <div class="d-flex align-center flex-column justify-center">
-                    <logo-display/>
-                    <div class="text-no-wrap text-caption text-center mt-n1">
-                        v{{ version }}
-                    </div>
-                </div>
+              </div>
+            </v-responsive>
+          </v-card>
+        </div>
+        <v-spacer/>
+        <div class="d-flex align-center flex-column justify-center">
+          <logo-display/>
+          <div class="text-no-wrap text-caption text-center mt-n1">
+            v{{ version }}
+          </div>
+        </div>
 
-            </v-card>
+      </v-card>
 
-        </v-navigation-drawer>
-        <v-main app>
-            <router-view></router-view>
-        </v-main>
-    </div>
+    </v-navigation-drawer>
+    <v-main app>
+      <router-view></router-view>
+    </v-main>
+  </div>
 </template>
 <script>
 import { jumpTo, popAuthorize } from '@/oldjs/common'
@@ -99,14 +99,14 @@ export default {
           },
           path: 'reservation'
         },
-        // {
-        //   icon: 'mdi-home-analytics',
-        //   text: 'Chef',
-        //   async beforeEnter () {
-        //     return await popAuthorize('boss')
-        //   },
-        //   path: 'boss'
-        // },
+        {
+          icon: 'mdi-home-analytics',
+          text: 'Chef',
+          async beforeEnter () {
+            return await popAuthorize('boss')
+          },
+          path: 'boss'
+        },
         {
           icon: 'mdi-cog',
           text: 'setting',
@@ -156,73 +156,73 @@ export default {
 
 <style scoped>
 .tableDisplay {
-    height: calc(100vh - 48px);
-    overflow: scroll;
+  height: calc(100vh - 48px);
+  overflow: scroll;
 }
 
 .tableDisplay::-webkit-scrollbar {
-    width: 0 !important
+  width: 0 !important
 }
 
 .areaTableContainer {
-    max-height: calc(100vh - 112px);
-    margin-top: 18px;
-    display: grid;
-    grid-auto-flow: column;
-    grid-gap: 10px;
-    margin-bottom: 12px;
+  max-height: calc(100vh - 112px);
+  margin-top: 18px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 10px;
+  margin-bottom: 12px;
 
 }
 
 .areaTitle {
-    font-size: 16px;
-    font-weight: 600;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .select-wrapper > ul {
-    z-index: 0;
-    top: -48px;
-    width: 152px;
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0px 3px 6px rgba(0, 86, 255, 0.08);
-    opacity: 1;
-    border-radius: 0px 0px 5px 5px;
+  z-index: 0;
+  top: -48px;
+  width: 152px;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0px 3px 6px rgba(0, 86, 255, 0.08);
+  opacity: 1;
+  border-radius: 0px 0px 5px 5px;
 }
 
 .select-wrapper > ul > li {
-    border-bottom: 0.3px solid rgba(112, 112, 112, 0.38);;
+  border-bottom: 0.3px solid rgba(112, 112, 112, 0.38);;
 }
 
 .select-dropdown.dropdown-content li.selected {
-    background: rgba(255, 255, 255, 1);
+  background: rgba(255, 255, 255, 1);
 }
 
 .dropdown-content li > a, .dropdown-content li > span {
-    padding: 13px 16px;
-    color: #4b4b4b;
-    font-weight: 200;
-    font-size: inherit;
-    line-height: inherit;
+  padding: 13px 16px;
+  color: #4b4b4b;
+  font-weight: 200;
+  font-size: inherit;
+  line-height: inherit;
 }
 
 .dropdown-content li {
-    height: 45px;
-    min-height: unset;
+  height: 45px;
+  min-height: unset;
 }
 
 .areaC {
-    margin-left: 12px;
-    display: flex;
-    width: max-content;
+  margin-left: 12px;
+  display: flex;
+  width: max-content;
 }
 
 .area {
-    max-height: calc(100vh - 72px);
-    margin-right: 14px;
+  max-height: calc(100vh - 72px);
+  margin-right: 14px;
 }
 
 .alert {
-    background: red;
+  background: red;
 }
 
 .navItem {
@@ -230,8 +230,8 @@ export default {
 }
 
 .hideMore {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>
