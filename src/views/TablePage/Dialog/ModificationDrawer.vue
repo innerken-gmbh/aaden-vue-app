@@ -1,5 +1,5 @@
 <template>
-  <v-bottom-sheet fullscreen v-model="realShow">
+  <v-dialog fullscreen v-model="realShow">
     <dish-modification
         ref="modification"
         :showing="realShow"
@@ -7,11 +7,14 @@
         @modification-submit="submit(...$event,dish)"
         @modification-cancel="realShow=false"
         :options="dish.modInfo">
+      <template #name>
+        {{ dish.name }}
+      </template>
       <template v-slot:before="{price}">
-        <span class="font-weight-black"> {{ dish.name }} €{{ parseFloat(dish.price) + price | priceDisplay }}</span>
+        <span>€{{ parseFloat(dish.price) + price | priceDisplay }}</span>
       </template>
     </dish-modification>
-  </v-bottom-sheet>
+  </v-dialog>
 </template>
 
 <script>

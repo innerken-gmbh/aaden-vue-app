@@ -316,9 +316,6 @@
                 </div>
                 <template v-if="activeCategoryId">
                   <div
-                      :style="{
-                    gridTemplateColumns:activeCategoryId!==-10?'1fr 108px':'1fr'
-                      }"
                       style="
                       display: grid;
                       grid-template-columns: 1fr 108px;
@@ -327,7 +324,6 @@
                   >
                     <div class="dishCardList mt-2">
                       <v-card
-                          v-if="activeCategoryId!==-10"
                           class="d-flex align-center"
                           elevation="0"
                           style="
@@ -370,7 +366,6 @@
                     </div>
                   </div>
                   <div
-                      v-if="activeCategoryId!==-10"
                       v-dragscroll
                       style="
                       width: 108px;
@@ -1032,7 +1027,7 @@ import { printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
 
-import { debounce } from 'lodash-es'
+import { debounce, groupBy } from 'lodash-es'
 
 import IKUtils from 'innerken-js-utils'
 
@@ -1116,7 +1111,7 @@ const keyboardLayout = [
   'OK'
 ]
 
-const filterCache = {}
+let filterCache = {}
 
 // endregion
 export default {
@@ -1543,10 +1538,10 @@ export default {
         this.categories = await getCategoryListWithCache(consumeTypeId)
 
         this.dishes = processDishList(this.categories.reduce((arr, i) => {
-          filterCache[i.id] = i.dishes
           arr.push(...i.dishes)
           return arr
         }, []))
+        filterCache = groupBy(this.dishes, 'dishesCategoryId')
         this.favoriteList = this.dishes.filter(item => item.isFavorite === '1')
         this.cartListModel.setDishList(this.dishes)
       }
@@ -2098,17 +2093,17 @@ export default {
     },
     filterDish () {
       const list = this.dishes
-      if (this.activeCategoryId === -10 && this.haveFavoriteItem) {
-        return list.filter(item => item.isFavorite === '1')
-      } else {
-        if (!this.keyboardInput) {
-          if (!filterCache[this.activeCategoryId]) {
-            filterCache[this.activeCategoryId] = list.filter((item) => {
-              return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
-            })
-          }
-          return filterCache[this.activeCategoryId]
+
+      if (!this.keyboardInput) {
+        if (!filterCache[this.activeCategoryId]) {
+          filterCache[this.activeCategoryId] = list.filter((item) => {
+            return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
+          })
         }
+        if (this.haveFavoriteItem && this.activeDCT === 0) {
+          return filterCache[this.activeCategoryId].filter(item => item.isFavorite === '1')
+        }
+        return filterCache[this.activeCategoryId]
       }
     },
     async cartListModelClear () {
@@ -2202,9 +2197,13 @@ export default {
       return parseInt(this.tableDetailInfo.order.consumeTypeStatusId ?? 2)
     },
     filteredC: function () {
-      const dct = this.dct?.[this.haveFavoriteItem ? (this.activeDCT - 1) : this.activeDCT]
       return this.categories.filter((item) => {
-        return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
+        if (this.haveFavoriteItem && this.activeDCT === 0) {
+          return item.dishes.some(it => it.isFavorite === '1')
+        } else {
+          const dct = this.dct?.[this.haveFavoriteItem ? (this.activeDCT - 1) : this.activeDCT]
+          return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
+        }
       })
     },
     orderListModelList () {
@@ -2227,12 +2226,8 @@ export default {
     },
 
     activeDCT: function (val) {
-      if (val === 0 && this.haveFavoriteItem) {
-        this.activeCategoryId = -10
-      } else {
-        this.keyboardInput = ''
-        this.activeCategoryId = null
-      }
+      this.keyboardInput = ''
+      this.activeCategoryId = null
 
       this.updateFilteredDish()
     },
