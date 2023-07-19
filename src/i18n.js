@@ -6,6 +6,17 @@ import en from 'vuetify/lib/locale/en'
 import zhHans from 'vuetify/es5/locale/zh-Hans'
 import nl from 'vuetify/lib/locale/nl'
 import vi from 'vuetify/lib/locale/vi'
+import cs from 'vuetify/lib/locale/cs'
+import ar from 'vuetify/lib/locale/ar'
+import fa from 'vuetify/lib/locale/fa'
+import fr from 'vuetify/lib/locale/fr'
+import es from 'vuetify/lib/locale/es'
+import it from 'vuetify/lib/locale/it'
+import pl from 'vuetify/lib/locale/pl'
+import pt from 'vuetify/lib/locale/pt'
+import ru from 'vuetify/lib/locale/ru'
+import tr from 'vuetify/lib/locale/tr'
+
 import dayjs from 'dayjs'
 
 Vue.use(VueI18n)
@@ -21,37 +32,107 @@ const messages = {
   en: {
     langCode: 'en',
     flag: 'us',
-    label: 'English',
+    label: 'EN',
     ...require('@/locales/en.json'),
     $vuetify: en
   },
   de: {
     langCode: 'de',
     flag: 'de',
-    label: 'Deutsch',
+    label: 'DE',
     ...require('@/locales/de.json'),
     $vuetify: de
   },
   zh: {
     langCode: 'zh',
     flag: 'cn',
-    label: '中文',
+    label: 'ZH',
     ...require('@/locales/zh.json'),
     $vuetify: zhHans
   },
   nl: {
     langCode: 'nl',
     flag: 'nl',
-    label: 'Netherlands',
+    label: 'NL',
     ...require('@/locales/nl.json'),
     $vuetify: nl
   },
   vi: {
     langCode: 'vi',
     flag: 'vi',
-    label: 'Tiếng Việt',
+    label: 'VI',
     ...require('@/locales/vi.json'),
     $vuetify: vi
+  },
+  cs: {
+    langCode: 'cs',
+    flag: 'cz',
+    label: 'CS',
+    ...require('@/locales/cs.json'),
+    $vuetify: cs
+  },
+  ar: {
+    langCode: 'ar',
+    flag: 'ar',
+    label: 'AR',
+    ...require('@/locales/ar.json'),
+    $vuetify: ar
+  },
+  es: {
+    langCode: 'es',
+    flag: 'es',
+    label: 'ES',
+    ...require('@/locales/es.json'),
+    $vuetify: es
+  },
+  fa: {
+    langCode: 'fa',
+    flag: 'ir',
+    label: 'FA',
+    ...require('@/locales/fa.json'),
+    $vuetify: fa
+  },
+  fr: {
+    langCode: 'fr',
+    flag: 'fr',
+    label: 'FR',
+    ...require('@/locales/fr.json'),
+    $vuetify: fr
+  },
+  it: {
+    langCode: 'it',
+    flag: 'it',
+    label: 'IT',
+    ...require('@/locales/it.json'),
+    $vuetify: it
+  },
+  pl: {
+    langCode: 'pl',
+    flag: 'pl',
+    label: 'PL',
+    ...require('@/locales/pl.json'),
+    $vuetify: pl
+  },
+  pt: {
+    langCode: 'pt',
+    flag: 'pt',
+    label: 'PT',
+    ...require('@/locales/pt.json'),
+    $vuetify: pt
+  },
+  ru: {
+    langCode: 'ru',
+    flag: 'ru',
+    label: 'RU',
+    ...require('@/locales/ru.json'),
+    $vuetify: ru
+  },
+  tr: {
+    langCode: 'tr',
+    flag: 'tr',
+    label: 'TR',
+    ...require('@/locales/tr.json'),
+    $vuetify: tr
   }
 }
 
@@ -69,10 +150,21 @@ function loadNumberFormats () {
 
 const numberFormats = loadNumberFormats()
 
+require('dayjs/locale/ar')
+require('dayjs/locale/cs')
 require('dayjs/locale/de')
-require('dayjs/locale/zh')
 require('dayjs/locale/en')
+require('dayjs/locale/es')
+require('dayjs/locale/fa')
+require('dayjs/locale/fr')
+require('dayjs/locale/it')
 require('dayjs/locale/nl')
+require('dayjs/locale/pl')
+require('dayjs/locale/pt')
+require('dayjs/locale/ru')
+require('dayjs/locale/tr')
+require('dayjs/locale/vi')
+require('dayjs/locale/zh')
 
 dayjs.locale(localStorage.getItem('frontEndLang')?.toLowerCase())
 

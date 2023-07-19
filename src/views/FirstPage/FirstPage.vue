@@ -55,17 +55,12 @@
           <v-btn icon @click="openDrawer">
             <v-icon>mdi-lock-open</v-icon>
           </v-btn>
-          <v-menu
-              bottom
-              left
-          >
-            <language-switcher
-              :active="changeLanguage"
-              :current-locale-code="currentLocaleCode"
-              :locales="$i18n.messages"
-              @language-change="changeLanguage"
-            />
-          </v-menu>
+          <language-switcher
+            :active="changeLanguage"
+            :current-locale-code="currentLocaleCode"
+            :locales="$i18n.messages"
+            @language-change="changeLanguage"
+          />
         </div>
 
       </template>
@@ -342,7 +337,6 @@ import Swal from 'sweetalert2'
 import { dragscroll } from 'vue-dragscroll'
 
 import GlobalConfig, { changeLanguage } from '../../oldjs/LocalGlobalSettings'
-import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
 import LanguageSwitcher from '@/views/Widget/LanguageSwitcher'
 
 import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
@@ -362,7 +356,6 @@ import TimeDisplay from '@/components/Base/TimeDisplay'
 import TakeawayOrderItem from '@/views/FirstPage/Table/Table/Item/TakeawayOrderItem'
 import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
 import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
-import { loadTransLangs } from '@/i18n'
 import PickUpItem from '@/views/FirstPage/Table/Table/Item/PickUpItem.vue'
 import NoContentDisplay from '@/views/FirstPage/widget/NoContentDisplay.vue'
 import { addToQueue } from '@/oldjs/poolJobs'
@@ -478,18 +471,13 @@ export default {
     },
     notAccepted: function () {
       return this.takeawayList.filter(it => it.consumeTypeStatusId < 2)
-    },
-    transLangs () {
-      return this.loadTransLangs()
     }
-
   },
   methods: {
     async updateStatus (orderId) {
       await readyToPick(orderId)
       await this.refreshTables()
     },
-    loadTransLangs,
     openDrawer,
     async acceptOrder (reason = 'ok', id) {
       await acceptOrder(reason, id)
@@ -500,7 +488,7 @@ export default {
       await this.refreshTables()
     },
 
-    changeLanguage (locale) {
+    async changeLanguage (locale) {
       Remember.locale = locale
       this.$i18n.locale = Remember.locale
       changeLanguage(locale)

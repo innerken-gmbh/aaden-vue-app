@@ -4,33 +4,22 @@
 
 <template>
   <div>
-    <template v-if="!$vuetify.breakpoint.mobile">
-      <navigation-item
-        :title="$t('ChangeLanguage')"
-        icon="mdi-translate"
-        @click="dialog=true"
-      />
-    </template>
-    <template v-else>
-      <v-btn
-        class="align-center"
-        absolute
-        bottom
-        elevation="0"
-        color="transparent"
-        @click="dialog=true"
+    <v-btn
+      class="align-center"
+      elevation="0"
+      color="transparent"
+      @click="dialog=true"
+    >
+      <v-icon color="black">
+        mdi-translate
+      </v-icon>
+      <div
+        style="font-variant: unset; font-size: 11px"
+        class="ml-1 black--text"
       >
-        <v-icon color="black">
-          mdi-translate
-        </v-icon>
-        <div
-          style="font-variant: unset; font-size: 11px"
-          class="ml-1 black--text"
-        >
-          {{ $t('ChangeLanguage') }}
-        </div>
-      </v-btn>
-    </template>
+        {{ $t('ChangeLanguage') }}
+      </div>
+    </v-btn>
     <v-dialog
       v-model="dialog"
       max-width="300px"
@@ -55,7 +44,7 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title>
-                <span class="text-body-2">{{ item.label }}</span>
+                <span class="text-body-2">{{ $t(item.label) }}</span>
               </v-list-item-title>
             </v-list-item-content>
             <v-list-item-action>
@@ -76,12 +65,10 @@
 
 <script>
 import FlagIcon from '@/views/Widget/FlagIcon'
-import NavigationItem from '@/views/Widget/NavigationItem'
 
 export default {
   name: 'LanguageSwitcher',
   components: {
-    NavigationItem,
     FlagIcon
   },
   props: {

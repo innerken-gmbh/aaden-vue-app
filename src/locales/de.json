@@ -448,5 +448,6 @@
   "PL" : "Polnisch",
   "PT" : "Portugiesisch",
   "RU" : "Russisch",
-  "TR" : "Türkisch"
+  "TR" : "Türkisch",
+  "ChangeLanguage" : "Sprache wechseln"
 }

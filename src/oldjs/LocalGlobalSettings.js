@@ -78,11 +78,6 @@ export function changeLanguage (lang) {
   i18n.locale = l
 }
 
-export function forceChangeLanguage (l) {
-  changeLanguage(l)
-  reload()
-}
-
 export const Remember = LocalSettingManager.config({
   activeZBon: false,
   activeXBon: false,
@@ -90,7 +85,9 @@ export const Remember = LocalSettingManager.config({
   sendEmail: false,
   mergeBills: false,
   totalTime: false,
-  totalSales: false
+  totalSales: false,
+  locale: 'zh',
+  lang: 'zh'
 })
 
 export default GlobalConfig
