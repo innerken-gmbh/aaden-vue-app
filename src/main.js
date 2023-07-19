@@ -79,7 +79,7 @@ addToQueue('tablePool', async () => {
   }
 })
 
-export const realDeviceId = IKUtils.getQueryString('Base')
+export const realDeviceId = IKUtils.getQueryString('Base') || '-1'
 
 async function initial () {
   await loadConfig()
