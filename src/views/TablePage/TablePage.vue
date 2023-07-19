@@ -241,10 +241,10 @@
 
                     <v-item v-slot="{active,toggle}" v-if="haveFavoriteItem">
                       <v-card
-                          :color="active?'primary':''"
+                          :color="active?'primary':'grey lighten-4'"
                           :dark="active"
                           :elevation="active?4:0"
-                          class="d-flex justify-center align-center"
+                          class="d-flex justify-center align-center px-6"
                           height="48"
                           style="border-radius: 12px;font-size: 18px"
                           @click="toggle">
@@ -1203,7 +1203,6 @@ export default {
       currentDish: defaultCurrentDish,
       cartCurrentDish: null,
       password: '',
-
       /* new input */
       keyboardInput: '',
       currentCodeBuffer: '',
@@ -2197,7 +2196,7 @@ export default {
       return parseInt(this.tableDetailInfo.order.consumeTypeStatusId ?? 2)
     },
     filteredC: function () {
-      const dct = this.dct[this.activeDCT]
+      const dct = this.dct?.[this.haveFavoriteItem ? (this.activeDCT - 1) : this.activeDCT]
       return this.categories.filter((item) => {
         return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
       })
