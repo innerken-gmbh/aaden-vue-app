@@ -1,17 +1,18 @@
 <template>
   <v-navigation-drawer
-    v-model="realShow"
-    fixed
-    right
-    touchless
-    width="fit-content"
+      v-model="realShow"
+      fixed
+      temporary
+      right
+      touchless
+      width="fit-content"
   >
     <v-card class="fill-height" tile>
       <check-out-calculator
-        :id="id"
-        :total="totalPrice"
-        @payment-cancel="realShow = false"
-        @payment-submit="checkOut"
+          :id="id"
+          :total="totalPrice"
+          @payment-cancel="realShow = false"
+          @payment-submit="checkOut"
       />
     </v-card>
   </v-navigation-drawer>
@@ -121,9 +122,9 @@ export default {
 
       if (this.discountRatio !== 0) {
         checkOutData.discountStr =
-          (this.discountStr ?? '').indexOf('p') !== -1
-            ? this.discountStr
-            : (this.order.total * this.discountRatio).toFixed(2)
+            (this.discountStr ?? '').indexOf('p') !== -1
+              ? this.discountStr
+              : (this.order.total * this.discountRatio).toFixed(2)
       }
 
       delete checkOutData.discountStr
