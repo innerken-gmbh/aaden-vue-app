@@ -83,9 +83,11 @@ export const realDeviceId = IKUtils.getQueryString('Base') || '-1'
 
 async function initial () {
   await loadConfig()
-  const realUrl = (await getBaseAndUrlForDeviceId(realDeviceId)).url
-  GlobalConfig.DeviceId = ParseInt(realDeviceId)
-  hillo.initial(realUrl + '/PHP/')
+  if (realDeviceId !== '-1') {
+    const realUrl = (await getBaseAndUrlForDeviceId(realDeviceId)).url
+    GlobalConfig.DeviceId = ParseInt(realDeviceId)
+    hillo.initial(realUrl + '/PHP/')
+  }
   if (!Remember.uuid) {
     Remember.uuid = uuidv4()
   }

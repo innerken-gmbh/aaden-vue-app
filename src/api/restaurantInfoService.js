@@ -53,6 +53,7 @@ export const cloudUrl = 'https://cloud5.api.aaden.io'
 export async function getBaseAndUrlForDeviceId (deviceId) {
   const url = (await findDeviceByDeviceId(deviceId))
     ?.baseUrl ?? getNgrokUrl(deviceId)
+
   return {
     deviceId,
     url
