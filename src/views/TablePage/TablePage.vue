@@ -1112,6 +1112,8 @@ const keyboardLayout = [
   'OK'
 ]
 
+let filterCache = {}
+
 // endregion
 export default {
   name: 'TablePage',
@@ -1535,10 +1537,12 @@ export default {
     async getCategory (consumeTypeId = 1, force = false) {
       if (this.categories.length === 0 || force) {
         this.categories = await getCategoryListWithCache(consumeTypeId)
+
         this.dishes = processDishList(this.categories.reduce((arr, i) => {
           arr.push(...i.dishes)
           return arr
         }, []))
+        filterCache = {}
         this.favoriteList = this.dishes.filter(item => item.isFavorite === '1')
         this.cartListModel.setDishList(this.dishes)
       }
@@ -2089,21 +2093,19 @@ export default {
       return []
     },
     filterDish () {
-      let list = this.dishes
-      if (this.activeCategoryId === -10) {
-        list = list.filter(item => item.isFavorite === '1')
+      const list = this.dishes
+      if (this.activeCategoryId === -10 && this.haveFavoriteItem) {
+        return list.filter(item => item.isFavorite === '1')
       } else {
         if (!this.keyboardInput) {
-          const dct = this.dct[this.activeDCT]
-          list = list.filter((item) => {
-            return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
-          })
-          list = list.filter((item) => {
-            return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
-          })
+          if (!filterCache[this.activeCategoryId]) {
+            filterCache[this.activeCategoryId] = list.filter((item) => {
+              return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
+            })
+          }
+          return filterCache[this.activeCategoryId]
         }
       }
-      return list
     },
     async cartListModelClear () {
       this.cartListModel.clear()

@@ -19,11 +19,11 @@
       {{ dishName }}
     </span>
     <v-card
-        :dark="haveMod > 0"
         @click.stop="haveMod > 0 ? $emit('click-tune') : $emit('click')"
         elevation="0"
-        :color="haveMod > 0 ? 'warning' : 'transparent'"
+        :color="haveMod > 0 ? 'grey lighten-4 black--text' : 'transparent'"
         class="mt-1 px-1"
+        :class="haveMod>0?'py-1':''"
         style="align-items: center; border-radius: 4px !important; flex-wrap: wrap"
     >
       <div v-if="isFree === '1'" class="price d-flex align-center green lighten-3 white--text px-1 rounded">
@@ -40,16 +40,10 @@
 </template>
 
 <script>
-import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 export default {
   name: 'DishBlock',
   props: ['displayColor', 'code', 'count', 'isFree', 'price', 'dishName', 'foreground', 'haveMod', 'fontSize'],
-  data: function () {
-    return {
-      Config: GlobalConfig
-    }
-  },
   computed: {
     autoFontSize () {
       const length = this.dishName?.length ?? 0
