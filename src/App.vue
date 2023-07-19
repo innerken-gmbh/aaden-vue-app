@@ -1,20 +1,20 @@
 <template>
   <v-app>
-    <transition>
-      <keep-alive>
-        <router-view/>
-      </keep-alive>
-    </transition>
+
+    <keep-alive>
+      <router-view/>
+    </keep-alive>
+
     <pin-dialog></pin-dialog>
     <table-selector></table-selector>
     <v-dialog
-      v-model="showErrorDialog"
-      max-width="600"
+        v-model="showErrorDialog"
+        max-width="600"
     >
       <v-card class="pa-6 d-flex align-center justify-center flex-column">
         <v-icon
-          color="error lighten-2"
-          size="64"
+            color="error lighten-2"
+            size="64"
         >
           mdi-alert-box
         </v-icon>
@@ -25,9 +25,9 @@
           {{ errorDialogMessage }}
         </div>
         <v-btn
-          class="primary lighten-4 black--text mt-4"
-          elevation="0"
-          @click="showErrorDialog=false"
+            class="primary lighten-4 black--text mt-4"
+            elevation="0"
+            @click="showErrorDialog=false"
         >
           {{ $t('confirm') }}
         </v-btn>

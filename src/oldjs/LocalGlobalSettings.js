@@ -2,6 +2,7 @@ import { loadBaseConfig } from 'aaden-base-model/lib/Models/GlobalSettings'
 
 import dayjs from 'dayjs'
 import { LocalSettingManager } from 'biewangle'
+import { goHome } from '@/oldjs/StaticModel'
 
 const fix = require('@/assets/FixedConfig.json')
 const defaultConfig = require('@/assets/AadenConfig.json')
@@ -50,7 +51,8 @@ export function reload () {
   }
 }
 
-export function useCurrentConfig () {
+export async function useCurrentConfig () {
+  await goHome()
   GlobalConfig.useCurrentConfig(GlobalConfig)
 }
 
