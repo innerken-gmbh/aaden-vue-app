@@ -15,16 +15,7 @@ export let TableId = null
 let blocked = false
 const TOASTTIME = 700
 
-let Dishes = []
 export const consumeTypeList = []
-
-export async function getAllDishes () {
-  const res = await hillo.get('Dishes.php', { lang: i18n.locale.toUpperCase() })
-  if (res.content.length > 0) {
-    Dishes = res.content
-  }
-  return Dishes
-}
 
 export function tryToReport () {
   getData(Config.Protocol + Config.Base + '/PHP/AccessLog.php?op=reportStatus')

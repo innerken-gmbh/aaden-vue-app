@@ -327,7 +327,7 @@
               title="无法连接到本地或远程服务器"
               desc="请检查网络连接或联系我们的客服团队来帮您解决网络问题"
           >
-            <v-btn @click="location.reload()" elevation="0" class="mt-4">
+            <v-btn @click="reload" elevation="0" class="mt-4">
               <v-icon left>mdi-refresh</v-icon>
               {{ $t('reload') }}
             </v-btn>
@@ -344,7 +344,6 @@ import { version } from '../../../package.json'
 import {
   blockReady,
   findConsumeTypeById,
-  getAllDishes,
   getConsumeTypeList,
   openOrEnterTable,
   popAuthorize,
@@ -353,7 +352,6 @@ import {
 import Swal from 'sweetalert2'
 import { dragscroll } from 'vue-dragscroll'
 import GlobalConfig, { forceChangeLanguage } from '../../oldjs/LocalGlobalSettings'
-import { addToTimerList, clearAllTimer } from '@/oldjs/Timer'
 
 import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
 
@@ -375,6 +373,7 @@ import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
 import { loadTransLangs } from '@/i18n'
 import PickUpItem from '@/views/FirstPage/Table/Table/Item/PickUpItem.vue'
 import NoContentDisplay from '@/views/FirstPage/widget/NoContentDisplay.vue'
+import { addToQueue } from '@/oldjs/poolJobs'
 
 const keyboardLayout =
     [
@@ -505,13 +504,6 @@ export default {
       await rejectOrder(id)
       await this.refreshTables()
     },
-    togoClick () {
-      if (this.takeawayList.length > 0) {
-        this.showOtherOrder = !this.showOtherOrder
-      } else {
-        this.takeawayClicked()
-      }
-    },
 
     changeLanguage: forceChangeLanguage,
 
@@ -631,31 +623,22 @@ export default {
       try {
         await this.loadRestaurantInfo()
         this.servantList = await getServantList()
-
         getRestaurantInfo()
-
-        await getAllDishes()
         await getConsumeTypeList()
         await this.refreshTables()
-
-        const list = [
-          setInterval(this.refreshTables, 5000)
-        ]
-        list.map(addToTimerList)
+        addToQueue('firstPageTables', this.refreshTables)
       } catch (e) {
         this.noNetwork = true
-        console.log(e)
       }
+    },
+    reload () {
+      location.reload()
     }
 
   },
   mounted: async function () {
     await this.initPage()
-  },
-  beforeDestroy () {
-    clearAllTimer()
   }
-
 }
 </script>
 
