@@ -1127,6 +1127,7 @@ export default {
   },
   data: function () {
     return {
+      favoriteList: null,
       reasons: getReason(),
       deleteDishReason: '',
       deleteDishReasonDialog: false,
@@ -1316,7 +1317,6 @@ export default {
           break
       }
     },
-
     changeCategory (id, toggle) {
       this.activeCategoryId = id
       if (toggle) {
@@ -1521,12 +1521,11 @@ export default {
     async getCategory (consumeTypeId = 1, force = false) {
       if (this.categories.length === 0 || force) {
         this.categories = await getCategoryListWithCache(consumeTypeId)
-        this.dishes = processDishList(
-          this.categories.reduce((arr, i) => {
-            arr.push(...i.dishes)
-            return arr
-          }, [])
-        )
+        this.dishes = processDishList(this.categories.reduce((arr, i) => {
+          arr.push(...i.dishes)
+          return arr
+        }, []))
+        this.favoriteList = this.dishes.filter(item => item.isFavorite === '1')
         this.cartListModel.setDishList(this.dishes)
       }
     },
@@ -1991,7 +1990,9 @@ export default {
     },
     updateActiveDCT (index) {
       this.activeDCT = null
-      this.activeDCT = index
+      this.$nextTick(() => {
+        this.activeDCT = index
+      })
     },
     updateFilteredDish () {
       if (this.activeCategoryId) {
@@ -2073,16 +2074,19 @@ export default {
     },
     filterDish () {
       let list = this.dishes
-      if (!this.keyboardInput) {
-        const dct = this.dct[this.activeDCT]
-        list = list.filter((item) => {
-          return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
-        })
-        list = list.filter((item) => {
-          return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
-        })
+      if (this.activeCategoryId === -10) {
+        list = list.filter(item => item.isFavorite === '1')
+      } else {
+        if (!this.keyboardInput) {
+          const dct = this.dct[this.activeDCT]
+          list = list.filter((item) => {
+            return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
+          })
+          list = list.filter((item) => {
+            return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
+          })
+        }
       }
-
       return list
     },
     async cartListModelClear () {
@@ -2141,6 +2145,9 @@ export default {
       return priceDisplay
     },
     ...mapGetters(['systemDialogShow']),
+    haveFavoriteItem () {
+      return this.favoriteList?.length > 0
+    },
     sourceMarks: function () {
       return this.tableDetailInfo?.sourceMarks ?? []
     },
@@ -2175,7 +2182,7 @@ export default {
     filteredC: function () {
       const dct = this.dct[this.activeDCT]
       return this.categories.filter((item) => {
-        return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
+        return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
       })
     },
     orderListModelList () {
@@ -2198,8 +2205,13 @@ export default {
     },
 
     activeDCT: function (val) {
-      this.keyboardInput = ''
-      this.activeCategoryId = null
+      if (val === 0 && this.haveFavoriteItem) {
+        this.activeCategoryId = -10
+      } else {
+        this.keyboardInput = ''
+        this.activeCategoryId = null
+      }
+
       this.updateFilteredDish()
     },
     dishes: function () {

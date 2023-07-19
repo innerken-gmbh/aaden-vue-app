@@ -26,6 +26,8 @@ import { printNow } from '@/oldjs/Timer'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { round } from 'lodash-es'
 import { changeFireBaseOrderToFinished } from '@/api/fireStore'
+import IKUtils from 'innerken-js-utils'
+import { payWithCard } from '@/api/cardTerminal'
 
 export default {
   name: 'CheckOutDrawer',
@@ -99,9 +101,22 @@ export default {
         discountStr: '',
         pw: this.password
       }
-
+      let ecAmount = 0
+      console.log(paymentLog)
       if (paymentLog.length > 0) {
         checkOutData.paymentLog = JSON.stringify(paymentLog)
+        ecAmount = paymentLog.filter(it => parseInt(it.id) === 2).reduce((sum, i) => sum + parseFloat(i.price), 0).toFixed(2)
+      }
+      if (ecAmount > 0 && GlobalConfig.cardTerminalIp) {
+        IKUtils.showLoading(false)
+        console.log(ecAmount, 'payAmount')
+        const paymentResult = await payWithCard(GlobalConfig.cardTerminalIp, ecAmount)
+        if (paymentResult) {
+          IKUtils.toast('👌')
+        } else {
+          IKUtils.showError('Payment is failed')
+          return
+        }
       }
 
       if (this.discountRatio !== 0) {
