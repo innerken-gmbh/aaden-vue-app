@@ -220,11 +220,15 @@ async function refreshAllTablesPosition (listOfTable, containerHeight, container
   IKUtils.showLoading(true)
   const defaultWidth = GlobalConfig.defaultTileWidth
   const defaultHeight = GlobalConfig.defaultTileHeight
-  const rowCount = Math.floor(containerHeight / defaultHeight)
   const colCount = Math.floor((containerWidth - 48) / defaultWidth)
-  console.log(rowCount, colCount)
   let count = 0
-  for (const table of listOfTable) {
+  const tablesListSorted = listOfTable.sort((a, b) => {
+    return a.tableName.localeCompare(b.tableName, undefined, {
+      numeric: true,
+      sensitivity: 'base'
+    })
+  })
+  for (const table of tablesListSorted) {
     const currentRow = Math.floor(count / colCount)
     const currentCol = count % colCount
     await submitTable(table, currentCol * defaultWidth, currentRow * defaultHeight, defaultWidth - 12, defaultHeight - 12, sectionId)
@@ -360,7 +364,7 @@ export default {
       this.reservationDialog = true
     },
     async refreshTables () {
-      await refreshAllTablesPosition(this.tableList, this.height, this.width, this.currentSection.id)
+      await refreshAllTablesPosition(this.tableInCurrentSection, this.height, this.width, this.currentSection.id)
       this.$emit('need-refresh')
     },
     debounce,
