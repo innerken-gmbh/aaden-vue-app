@@ -1,13 +1,13 @@
 <template>
   <div v-if="!isPrint">
     <v-card
-      class="pa-4 d-flex flex-column"
-      color="white"
-      elevation="0"
-      min-height="550px"
+        class="pa-4 d-flex flex-column"
+        color="white"
+        elevation="0"
+        min-height="550px"
     >
       <div class="d-flex align-center justify-center">
-        <div class="pa-4 font-weight-bold">{{headerDateDisplay}}</div>
+        <div class="pa-4 font-weight-bold">{{ headerDateDisplay }}</div>
         <v-spacer></v-spacer>
         <div>
           <v-btn icon @click="$emit('closeDialog')">
@@ -18,42 +18,42 @@
         </div>
       </div>
       <v-card
-        class="mt-2 px-4 d-flex flex-column"
-        color="#f6f5f6"
-        elevation="0"
+          class="mt-2 px-4 d-flex flex-column"
+          color="#f6f5f6"
+          elevation="0"
       >
         <div
-          v-if="realDate[0] !== realDate[1]"
-          class="d-flex align-center justify-center"
+            v-if="realDate[0] !== realDate[1]"
+            class="d-flex align-center justify-center"
         >
           <div>{{ $t('CombinedDocuments') }}</div>
           <v-spacer/>
           <v-switch
-            v-model="mergeBills"
-            dense
-            style="margin-right: -10px"
+              v-model="mergeBills"
+              dense
+              style="margin-right: -10px"
           />
         </div>
       </v-card>
       <v-card
-        class="mt-2 px-4 d-flex flex-column"
-        color="#f6f5f6"
-        elevation="0"
+          class="mt-2 px-4 d-flex flex-column"
+          color="#f6f5f6"
+          elevation="0"
       >
         <div class="d-flex align-center justify-center">
           <div>{{ $t('PasswordResetToEmail') }}</div>
           <v-spacer/>
           <v-switch
-            v-model="sendEmail"
-            dense
-            style="margin-right: -10px"
-            @click="checkZBonEmail"
+              v-model="sendEmail"
+              dense
+              style="margin-right: -10px"
+              @click="checkZBonEmail"
           />
         </div>
       </v-card>
       <div
-        class="text-body-1 px-4 mt-2"
-        v-html="showDetailPrintMessage"
+          class="text-body-1 px-4 mt-2"
+          v-html="showDetailPrintMessage"
       />
       <div class="d-flex text-body-1 px-4">
         <v-spacer/>
@@ -62,52 +62,52 @@
       <v-spacer/>
       <div style="display: grid;grid-template-columns: repeat(6,minmax(0,1fr));grid-gap: 12px">
         <tab-button
-          :active="totalSales"
-          :color="totalSales ? '#F48FE2' : '#ffffff'"
-          :name="$t('SalesStatistics')"
-          icon="mdi-chart-line"
-          @click="totalSales = !totalSales"
+            :active="totalSales"
+            :color="totalSales ? '#F48FE2' : '#ffffff'"
+            :name="$t('SalesStatistics')"
+            icon="mdi-chart-line"
+            @click="totalSales = !totalSales"
         />
         <tab-button
-          :active="totalTime"
-          :color="totalTime ? '#F48FE2' : '#ffffff'"
-          :name="$t('TotalPeriod')"
-          icon="mdi-clock-time-eight-outline"
-          @click="totalTime = !totalTime"
+            :active="totalTime"
+            :color="totalTime ? '#F48FE2' : '#ffffff'"
+            :name="$t('TotalPeriod')"
+            icon="mdi-clock-time-eight-outline"
+            @click="totalTime = !totalTime"
         />
         <tab-button
-          :active="deliveryList"
-          :color="deliveryList ? '#F48FE2' : '#ffffff'"
-          :name="$t('DeliveryList')"
-          icon="mdi-truck"
-          @click="deliveryList = !deliveryList"
+            :active="deliveryList"
+            :color="deliveryList ? '#F48FE2' : '#ffffff'"
+            :name="$t('DeliveryList')"
+            icon="mdi-truck"
+            @click="deliveryList = !deliveryList"
         />
         <tab-button
-          :active="activeXBon"
-          :color="activeXBon ? '#F48FE2' : '#ffffff'"
-          icon="mdi-receipt-outline"
-          name="XBon"
-          @click="selectXBon"
+            :active="activeXBon"
+            :color="activeXBon ? '#F48FE2' : '#ffffff'"
+            icon="mdi-receipt-outline"
+            name="XBon"
+            @click="selectXBon"
         />
         <tab-button
-          :active="activeZBon"
-          :color="activeZBon ? '#F48FE2' : '#ffffff'"
-          :disabled="ZBonList.length !== 0"
-          icon="mdi-calendar-text-outline"
-          name="ZBon"
-          @click="selectZBon"
+            :active="activeZBon"
+            :color="activeZBon ? '#F48FE2' : '#ffffff'"
+            :disabled="ZBonList.length !== 0"
+            icon="mdi-calendar-text-outline"
+            name="ZBon"
+            @click="selectZBon"
         />
       </div>
       <div>
         <v-btn
-          v-if="sendEmail"
-          :disabled="!disableSendEmail"
-          block
-          class="mt-2"
-          color="blue lighten-4 black--text"
-          elevation="0"
-          large
-          @click="selectSendEmail"
+            v-if="sendEmail"
+            :disabled="!disableSendEmail"
+            block
+            class="mt-2"
+            color="blue lighten-4 black--text"
+            elevation="0"
+            large
+            @click="selectSendEmail"
         >
           <div>{{ $t('OnlySentToMail') }}</div>
           <v-icon right>
@@ -115,13 +115,13 @@
           </v-icon>
         </v-btn>
         <v-btn
-          :disabled="!disablePrint"
-          block
-          class="mt-2"
-          color="primary lighten-4 black--text"
-          elevation="0"
-          large
-          @click="selectPrintType"
+            :disabled="!disablePrint"
+            block
+            class="mt-2"
+            color="primary lighten-4 black--text"
+            elevation="0"
+            large
+            @click="selectPrintType"
         >
           <div>{{ $t('IncomingPrint') }}</div>
           <v-icon right>
@@ -135,14 +135,14 @@
     <template v-if="!printEnd">
       <template v-if="showPrintWarn">
         <v-card
-          class="d-flex align-center justify-center flex-column"
-          color="white"
-          elevation="0"
-          min-height="550px"
+            class="d-flex align-center justify-center flex-column text-center pa-8"
+            color="white"
+            elevation="0"
+            min-height="550px"
         >
           <v-icon
-            color="red"
-            size="64"
+              color="red"
+              size="64"
           >
             mdi-alert-circle
           </v-icon>
@@ -157,19 +157,19 @@
           </div>
           <div class="mt-4 d-flex align-center justify-center">
             <v-btn
-              color="grey lighten-2"
-              elevation="0"
-              width="80%"
-              @click="isPrint = false;showPrintWarn = false"
+                color="grey lighten-2"
+                elevation="0"
+                width="80%"
+                @click="isPrint = false;showPrintWarn = false"
             >
               {{ $t('Cancel') }}
             </v-btn>
             <v-btn
-              class="ml-4"
-              color="primary lighten-4 black--text"
-              elevation="0"
-              width="80%"
-              @click="realPrintZbon"
+                class="ml-4"
+                color="primary lighten-4 black--text"
+                elevation="0"
+                width="80%"
+                @click="realPrintZbon"
             >
               {{ $t('print') }}
             </v-btn>
@@ -178,34 +178,34 @@
       </template>
       <template v-else>
         <v-card
-          class="d-flex align-center justify-center flex-column"
-          color="white"
-          elevation="0"
-          min-height="550px"
+            class="d-flex align-center justify-center flex-column"
+            color="white"
+            elevation="0"
+            min-height="550px"
         >
           <div class="mb-10 text-h4 font-weight-bold">
             {{ $t('print') }}
           </div>
           <v-progress-circular
-            indeterminate
-            size="64"
+              indeterminate
+              size="64"
           />
         </v-card>
       </template>
     </template>
     <template v-else>
       <v-card
-        class="pa-4 d-flex align-center justify-center flex-column"
-        color="white"
-        elevation="0"
-        min-height="550px"
+          class="pa-4 d-flex align-center justify-center flex-column"
+          color="white"
+          elevation="0"
+          min-height="550px"
       >
         <div
-          class="d-flex align-center justify-center flex-column"
+            class="d-flex align-center justify-center flex-column"
         >
           <v-icon
-            color="green"
-            x-large
+              color="green"
+              x-large
           >
             mdi-check-circle-outline
           </v-icon>
@@ -216,12 +216,12 @@
             {{ $t('need30secondcheckJunk') }}
           </div>
           <v-btn
-            :loading="isLoading"
-            class="mt-6"
-            color="primary lighten-4 black--text"
-            elevation="0"
-            width="100%"
-            @click="backToSelectPrint"
+              :loading="isLoading"
+              class="mt-6"
+              color="primary lighten-4 black--text"
+              elevation="0"
+              width="100%"
+              @click="backToSelectPrint"
           >
             {{ $t('Zurück') }}
           </v-btn>
@@ -466,7 +466,7 @@ export default {
       this.printEnd = true
     },
     async printZBonWarn () {
-      this.unCheckTable = (await getTableList().filter(x => x.usageStatus === '1')).map(it => it.name)
+      this.unCheckTable = (await getTableList()).filter(x => x.usageStatus === '1').map(it => it.name)
       Remember.sendZmail = this.sendZmail
       Remember.sendXmail = this.sendXmail
       Remember.sendEmail = this.sendEmail

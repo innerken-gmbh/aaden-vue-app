@@ -1,9 +1,9 @@
 <template>
   <div style="width: 100%">
     <v-app-bar
-      app
-      flat
-      height="56"
+        app
+        flat
+        height="56"
     >
       <v-tabs v-model="tabIndex">
         <template v-if="isBoss">
@@ -16,22 +16,22 @@
       </v-tabs>
     </v-app-bar>
     <v-navigation-drawer
-      :value="true"
-      app
-      permanent
-      right
-      stateless
-      touchless
-      width="300"
+        :value="true"
+        app
+        permanent
+        right
+        stateless
+        touchless
+        width="300"
     >
       <div>
         <v-card
-          v-if="isBoss||Config.servantShowHistoryBill"
-          class="pa-4 d-flex"
-          color="primary"
-          elevation="0"
-          tile
-          @click="showDatePicker=true"
+            v-if="isBoss||Config.servantShowHistoryBill"
+            class="pa-4 d-flex"
+            elevation="0"
+            color="grey lighten-4"
+            tile
+            @click="showDatePicker=true"
         >
           <v-icon left>mdi-calendar</v-icon>
           {{ getNiceLabel(singleZBonDate) }}
@@ -40,18 +40,17 @@
           {{ $t('ChangeDate') }}
         </v-card>
         <div class="pa-4">
-          <div class="text-subtitle-2">{{ $t('Statistic') }}</div>
-          <div class="mt-4">
+          <div>
             <div class="d-flex justify-space-between align-center">
               <div
-                class="hideMore"
-                style="max-width: 150px"
+                  class="hideMore"
+                  style="max-width: 150px"
               >
-                <div style="font-size: 24px">{{ $t('All') }} {{ $t('Sales') }}</div>
+                <div>{{ $t('All') }} {{ $t('Sales') }}</div>
               </div>
               <div
-                class="font-weight-bold"
-                style="font-size: 24px"
+                  class="font-weight-bold"
+                  style="font-size: 24px"
               >{{
                   billContent.total | priceDisplay
                 }}
@@ -78,9 +77,9 @@
           </template>
 
           <div
-            v-for="p in paidInfoList"
-            :key="p.id"
-            class="d-flex"
+              v-for="p in paidInfoList"
+              :key="p.id"
+              class="d-flex"
           >
             <div>
               {{ p.paidName }}
@@ -93,61 +92,64 @@
 
           <v-divider class="my-4"></v-divider>
           <div
-            class="d-flex align-center"
-            @click="returnDishDialog=true"
+              class="d-flex align-center"
+              @click="returnDishDialog=true"
           >
             <div
-              class="hideMore"
-              style="max-width: 90px"
+                class="hideMore"
+                style="max-width: 90px"
             >
               <div>{{ $t('CancelOrder') }}</div>
             </div>
             <v-spacer></v-spacer>
             <v-card
-              class="pa-2"
-              color="error lighten-4 black--text"
-              elevation="0"
+                class="pa-2"
+                color="error lighten-4 black--text"
+                elevation="0"
             >{{
                 totalReturn | priceDisplay
               }}({{ returnList.length }})
               <v-icon
-                class="mt-n1"
-                color="black"
-                size="18px"
+                  class="mt-n1"
+                  color="black"
+                  size="18px"
               >mdi-chevron-right
               </v-icon>
             </v-card>
           </div>
           <div
-            class="d-flex align-center  mt-2"
-            @click="discountDialog=true"
+              class="d-flex align-center  mt-2"
+              @click="discountDialog=true"
           >
             <div>{{ $t('Discount') }}</div>
             <v-spacer></v-spacer>
             <v-card
-              class="pa-2"
-              color="orange lighten-4 black--text"
-              elevation="0"
+                class="pa-2"
+                color="orange lighten-4 black--text"
+                elevation="0"
             >{{
                 totalDiscount | priceDisplay
               }}({{ discountList.length }})
               <v-icon
-                class="mt-n1"
-                color="black"
-                size="18px"
+                  class="mt-n1"
+                  color="black"
+                  size="18px"
               >mdi-chevron-right
               </v-icon>
             </v-card>
           </div>
           <v-divider class="my-4"></v-divider>
-          <v-btn class="primary" width="100%" @click="billsPrintDialog = true">打印日结单</v-btn>
+          <v-btn x-large class="primary lighten-4 black--text" elevation="0" width="100%"
+                 @click="billsPrintDialog = true">{{
+              $t('PrintDailySummaryBon')
+            }}
+          </v-btn>
         </div>
-
       </div>
     </v-navigation-drawer>
     <div
-      class="d-flex"
-      style="height: calc(100vh - 64px)"
+        class="d-flex"
+        style="height: calc(100vh - 64px)"
     >
       <div class="flex-grow-1">
 
@@ -156,8 +158,8 @@
             <template>
               <v-tab-item>
                 <calendar
-                  :is-boss="isBoss"
-                  :single-z-bon-date="singleZBonDate"
+                    :is-boss="isBoss"
+                    :single-z-bon-date="singleZBonDate"
                 />
               </v-tab-item>
             </template>
@@ -172,17 +174,17 @@
               <div class="d-flex pa-1">
                 <div class="pa-2 flex-grow-1">
                   <bill-table
-                    :is-boss="isBoss"
-                    :orders="displayData.orders"
+                      :is-boss="isBoss"
+                      :orders="displayData.orders"
                   ></bill-table>
                 </div>
                 <div
-                  class="pa-2"
-                  style="width: 240px"
+                    class="pa-2"
+                    style="width: 240px"
                 >
                   <v-list
-                    dense
-                    subheader
+                      dense
+                      subheader
                   >
                     <v-subheader>{{ $t('Waiter') }} : {{ displayData.servant.name }}
                       ({{ $t('WithoutTip') }})
@@ -202,7 +204,7 @@
                     <v-divider></v-divider>
                     <v-subheader>{{ $t('payMethod') }}</v-subheader>
                     <template
-                      v-for="payment in displayData.payMethodTotal.filter(p=>p.payMethodId!=='9')"
+                        v-for="payment in displayData.payMethodTotal.filter(p=>p.payMethodId!=='9')"
                     >
                       <v-list-item v-bind:key="payment.payMethodId">
                         <v-list-item-content>
@@ -236,10 +238,10 @@
                     <v-divider></v-divider>
                   </v-list>
                   <v-btn
-                    block
-                    class="mt-4"
-                    color="primary"
-                    @click="printSummaryBon"
+                      block
+                      class="mt-4"
+                      color="primary"
+                      @click="printSummaryBon"
                   >
                     {{ $t('WaiterBon') }}
                   </v-btn>
@@ -252,14 +254,14 @@
       </div>
     </div>
     <v-dialog
-      v-model="returnDishDialog"
-      width="fit-content"
+        v-model="returnDishDialog"
+        width="fit-content"
     >
       <v-simple-table
-        v-if="returnDishDialog"
-        fixed-header
-        height="calc(100vh - 144px)"
-        style="width: 650px"
+          v-if="returnDishDialog"
+          fixed-header
+          height="calc(100vh - 144px)"
+          style="width: 650px"
       >
         <template v-slot:default>
           <thead>
@@ -296,14 +298,14 @@
       </v-simple-table>
     </v-dialog>
     <v-dialog
-      v-model="discountDialog"
-      width="fit-content"
+        v-model="discountDialog"
+        width="fit-content"
     >
       <v-simple-table
-        v-if="discountDialog"
-        fixed-header
-        height="calc(100vh - 144px)"
-        style="width: 650px"
+          v-if="discountDialog"
+          fixed-header
+          height="calc(100vh - 144px)"
+          style="width: 650px"
       >
         <template v-slot:default>
           <thead>
@@ -334,32 +336,32 @@
       </v-simple-table>
     </v-dialog>
     <v-dialog
-      v-model="showDatePicker"
-      max-width="400px"
+        v-model="showDatePicker"
+        max-width="400px"
     >
       <v-card
-        class="pa-1 pb-4"
-        color="#f6f6f6"
-        elevation="0"
-        tile
+          class="pa-1 pb-4"
+          color="#f6f6f6"
+          elevation="0"
+          tile
       >
         <date-range-picker v-model="dateInput"></date-range-picker>
         <div class="px-2 mt-2">
           <v-btn
-            block
-            color="primary"
-            elevation="0"
-            large
-            @click="dateSubmit"
+              block
+              color="primary"
+              elevation="0"
+              large
+              @click="dateSubmit"
           >{{ $t('submit') }}
           </v-btn>
           <v-btn
-            block
-            class="mt-2"
-            color="error"
-            large
-            outlined
-            @click="showDatePicker=false"
+              block
+              class="mt-2"
+              color="error"
+              large
+              outlined
+              @click="showDatePicker=false"
           >{{
               $t('Cancel')
             }}
@@ -369,9 +371,9 @@
     </v-dialog>
     <v-dialog v-model="billsPrintDialog" max-width="600px">
       <bills-printer-page
-        :dialog-status="billsPrintDialog"
-        :real-date="dateInput"
-        @closeDialog="billsPrintDialog = false"
+          :dialog-status="billsPrintDialog"
+          :real-date="dateInput"
+          @closeDialog="billsPrintDialog = false"
       />
     </v-dialog>
   </div>

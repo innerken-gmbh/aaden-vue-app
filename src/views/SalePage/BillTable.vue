@@ -13,7 +13,7 @@
         </thead>
         <tbody>
         <template v-for="order in orders">
-          <tr v-bind:key="order.orderId">
+          <tr v-bind:key="order.orderId" @click="checkOrderDetail(order)">
             <td>
               <span class="font-weight-bold">{{ order.tableName }}</span>
             </td>
@@ -22,11 +22,12 @@
               {{ order.updatedAt }}
             </td>
             <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
-              {{ order.paymentLabel}}<b v-if="order.discountStr">/
+              {{ order.paymentLabel }}<b v-if="order.discountStr">/
               {{ '-' + order.discountStr.replace('p', '%') }}</b>
             </td>
             <td>
               <v-btn
+                  v-if="order.paymentLabel"
                   :disabled="order.isReturned==='1'"
                   color="primary"
                   small
@@ -35,10 +36,11 @@
                 <v-icon left>
                   mdi-printer-settings
                 </v-icon>
-                {{ $tc('reprint',1) }}
+                {{ $tc('reprint', 1) }}
               </v-btn>
               <template v-if="showOperation">
                 <v-btn :disabled="order.isReturned==='1'"
+                       v-if="order.paymentLabel"
                        class="ml-2"
                        color="warning"
                        small
@@ -48,13 +50,6 @@
                   {{ $t('replace') }}
                 </v-btn>
               </template>
-              <v-btn class="ml-2"
-                     small
-                     text
-                     @click="checkOrderDetail(order)">
-                <v-icon left>mdi-arrow-right-drop-circle-outline</v-icon>
-                {{ $t('Details') }}
-              </v-btn>
             </td>
           </tr>
         </template>
@@ -84,8 +79,8 @@
           <v-spacer/>
           <div>
             <v-btn
-              icon
-              @click="checkCompanyInfo = false"
+                icon
+                @click="checkCompanyInfo = false"
             >
               <v-icon large>
                 mdi-close
@@ -94,50 +89,50 @@
           </div>
         </div>
         <v-form
-          ref="form"
-          v-model="valid"
-          class="mt-2"
-          lazy-validation>
+            ref="form"
+            v-model="valid"
+            class="mt-2"
+            lazy-validation>
           <div>{{ $t('companyName') }}:</div>
           <v-text-field
-            v-model="companyOrPersonName"
-            dense
-            outlined
-            required
+              v-model="companyOrPersonName"
+              dense
+              outlined
+              required
           />
           <div>{{ $t('reason') }}:</div>
           <v-text-field
-            v-model="reasonOfVisit"
-            dense
-            outlined
-            required
+              v-model="reasonOfVisit"
+              dense
+              outlined
+              required
           />
           <div>{{ $t('Date') }}:</div>
           <v-text-field
-            v-model="locationAndDate"
-            dense
-            outlined
-            required
+              v-model="locationAndDate"
+              dense
+              outlined
+              required
           />
         </v-form>
         <div class="d-flex">
           <v-spacer></v-spacer>
           <v-btn
-            class="mt-4"
-            color="#25A18E"
-            dark
-            elevation="0"
-            large
-            style="border-radius: 35px"
-            width="100%"
-            @click="submitCompanyInfo"
+              class="mt-4"
+              color="#25A18E"
+              dark
+              elevation="0"
+              large
+              style="border-radius: 35px"
+              width="100%"
+              @click="submitCompanyInfo"
           >
             {{ $t('Confirm') }}
           </v-btn>
         </div>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="checkOutDialog" fullscreen>
+    <v-navigation-drawer width="400" right app temporary v-model="checkOutDialog">
       <v-card width="100%">
         <check-out-calculator
             :total="changeOrderTotal"
@@ -146,11 +141,15 @@
             @payment-submit="changePaymentMethod"
         ></check-out-calculator>
       </v-card>
-    </v-dialog>
+    </v-navigation-drawer>
     <v-dialog v-model="orderDetailDialog" max-width="600px">
       <v-card style="" width="100%">
-        <order-detail-dialog :is-boss="isBoss" :order="selectedOrder" @close-detail="orderDetailDialog = false"
-                             @return-order="returnOrder"></order-detail-dialog>
+        <order-detail-dialog
+            :is-boss="isBoss"
+            :order="selectedOrder"
+            @close-detail="orderDetailDialog = false"
+            @return-order="returnOrder"
+        ></order-detail-dialog>
       </v-card>
     </v-dialog>
   </div>

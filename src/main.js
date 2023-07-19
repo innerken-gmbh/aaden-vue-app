@@ -42,7 +42,7 @@ Vue.filter('priceDisplay', function (price) {
 })
 
 Vue.filter('shorterName', function (longName) {
-  return longName.replace('Japanisches', 'JP')
+  return longName?.replace('Japanisches', 'JP') ?? longName
 })
 
 Vue.filter('onlyTime', function (str) {
