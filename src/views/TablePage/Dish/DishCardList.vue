@@ -1,9 +1,9 @@
 <template>
   <v-card
-    color="transparent"
-    elevation="0"
-    class="d-flex flex-column flex-grow-1"
-    style="max-height: calc(100% - 76px)"
+      color="transparent"
+      elevation="0"
+      class="d-flex flex-column flex-grow-1"
+      style="max-height: calc(100% - 76px)"
   >
     <div v-if="shouldDisplaySourceMarks">
       <div class="pa-2 d-flex" style="max-width: 100%">
@@ -21,29 +21,29 @@
         <template v-for="(order, index) in dishList">
           <div @click="checkIfOpen(index)" :key="'order' + title + order.identity" style="font-size: larger">
             <dish-card
-              :expand="index === expandIndex"
-              :show-number="showNumber"
-              :click-callback="() => _clickCallBack(index, order)"
-              :show-edit="showEdit"
-              :dish="order"
+                :expand="index === expandIndex"
+                :show-number="showNumber"
+                :click-callback="() => _clickCallBack(index, order)"
+                :show-edit="showEdit"
+                :dish="order"
             />
           </div>
         </template>
         <template v-if="discountDish != null">
-          <dish-card :show-number="showNumber" :show-edit="showEdit" :dish="discountDish" />
+          <dish-card :show-number="showNumber" :show-edit="showEdit" :dish="discountDish"/>
         </template>
       </div>
       <v-spacer></v-spacer>
     </template>
     <template v-else>
-      <div class="flex-grow-1 d-flex flex-column justify-center align-center">
+      <div class="flex-grow-1 d-flex flex-column justify-center align-center text-center pa-8">
         <v-icon large>mdi-format-list-bulleted</v-icon>
         <div class="mt-4">{{ $t('NoProductsInList') }}</div>
       </div>
     </template>
 
     <div>
-      <div class="d-flex align-center pt-2 px-2">
+      <div class="d-flex align-center pt-2 px-2" style="overflow-x: scroll" v-dragscroll>
         <v-spacer></v-spacer>
 
         <slot name="action"></slot>
@@ -170,7 +170,7 @@ export default {
       const list = [...this.dishListModel.list].filter((it) => {
         return (
           (this.activeSourceMark === '' || it.sourceMark === this.activeSourceMark) &&
-          (!this.onlyPaid || it.realPrice !== 0)
+            (!this.onlyPaid || it.realPrice !== 0)
         )
       })
       // console.log(this.dishListModel.list)
