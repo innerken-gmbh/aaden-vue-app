@@ -55,28 +55,12 @@
           <v-btn icon @click="openDrawer">
             <v-icon>mdi-lock-open</v-icon>
           </v-btn>
-          <v-menu
-              bottom
-              left
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn icon
-                     tile
-                     v-bind="attrs"
-                     v-on="on"
-              >
-                <v-icon>mdi-web</v-icon>
-              </v-btn>
-            </template>
-            <v-list>
-
-              <v-list-item v-for="(lang,index) in transLangs"
-                           :key="'translang'+index"
-                           @click="changeLanguage(lang)">
-                <v-list-item-title>{{ $t(lang) }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
+          <language-switcher
+            :active="changeLanguage"
+            :current-locale-code="currentLocaleCode"
+            :locales="$i18n.messages"
+            @language-change="changeLanguage"
+          />
         </div>
 
       </template>
@@ -324,8 +308,8 @@
         <v-card class="pa-4" height="100vh" width="100vw">
           <no-content-display
               icon="mdi-wifi-sync"
-              title="无法连接到本地或远程服务器"
-              desc="请检查网络连接或联系我们的客服团队来帮您解决网络问题"
+              :title="$t('NoConnectionLocalOrRemote')"
+              :desc="$t('CheckNetworkOrCallCustomerService')"
           >
             <v-btn @click="reload" elevation="0" class="mt-4">
               <v-icon left>mdi-refresh</v-icon>
@@ -351,7 +335,9 @@ import {
 } from '@/oldjs/common'
 import Swal from 'sweetalert2'
 import { dragscroll } from 'vue-dragscroll'
-import GlobalConfig, { forceChangeLanguage } from '../../oldjs/LocalGlobalSettings'
+
+import GlobalConfig, { changeLanguage } from '../../oldjs/LocalGlobalSettings'
+import LanguageSwitcher from '@/views/Widget/LanguageSwitcher'
 
 import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
 
@@ -370,7 +356,6 @@ import TimeDisplay from '@/components/Base/TimeDisplay'
 import TakeawayOrderItem from '@/views/FirstPage/Table/Table/Item/TakeawayOrderItem'
 import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
 import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
-import { loadTransLangs } from '@/i18n'
 import PickUpItem from '@/views/FirstPage/Table/Table/Item/PickUpItem.vue'
 import NoContentDisplay from '@/views/FirstPage/widget/NoContentDisplay.vue'
 import { addToQueue } from '@/oldjs/poolJobs'
@@ -398,7 +383,8 @@ export default {
     TableGridItem,
     TableListItem,
     TableBluePrint,
-    TimeDisplay
+    TimeDisplay,
+    LanguageSwitcher
   },
   props: {
     refresh: {
@@ -464,7 +450,9 @@ export default {
         return s
       }).filter(s => s.tables.length > 0)
     },
-
+    currentLocaleCode () {
+      return this.$i18n.locale
+    },
     activeList: function () {
       return this.tableList.filter(TableFixedSectionId.notTogoFilter)
         .filter(t => t.usageStatus === '1')
@@ -483,18 +471,13 @@ export default {
     },
     notAccepted: function () {
       return this.takeawayList.filter(it => it.consumeTypeStatusId < 2)
-    },
-    transLangs () {
-      return this.loadTransLangs()
     }
-
   },
   methods: {
     async updateStatus (orderId) {
       await readyToPick(orderId)
       await this.refreshTables()
     },
-    loadTransLangs,
     openDrawer,
     async acceptOrder (reason = 'ok', id) {
       await acceptOrder(reason, id)
@@ -505,7 +488,12 @@ export default {
       await this.refreshTables()
     },
 
-    changeLanguage: forceChangeLanguage,
+    async changeLanguage (locale) {
+      Remember.locale = locale
+      this.$i18n.locale = Remember.locale
+      changeLanguage(locale)
+      location.reload()
+    },
 
     showEditTableDialog (tableInfo) {
       console.log(tableInfo)

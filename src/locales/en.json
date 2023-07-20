@@ -422,5 +422,8 @@
   "PL" : "Polish",
   "PT" : "Portuguese",
   "RU" : "Russian",
-  "TR" : "Turkish"
+  "TR" : "Turkish",
+  "CheckNetworkOrCallCustomerService": "Please check your network connection or contact our customer service to help you solve network problems.",
+  "NoConnectionLocalOrRemote" : "Unfortunately, a connection to a local network or remote server could not be established",
+  "ChangeLanguage" : "change language"
 }

@@ -1,4 +1,5 @@
 import { loadBaseConfig } from 'aaden-base-model/lib/Models/GlobalSettings'
+import i18n from '@/i18n'
 
 import dayjs from 'dayjs'
 import { LocalSettingManager } from 'biewangle'
@@ -67,22 +68,14 @@ export function setDeviceId (id) {
 
 export function changeLanguage (lang) {
   const l = lang.toLowerCase()
-  GlobalConfig.updateSettings('frontEndLang', l)
-  localStorage.setItem('frontEndLang', l)
-
   const backServerLang = ['de', 'zh', 'en']
+  localStorage.setItem('frontEndLang', l)
   if (backServerLang.includes(l)) {
     GlobalConfig.updateSettings('lang', l)
   } else {
     GlobalConfig.updateSettings('lang', 'de')
   }
-  // i18n.locale = l
-  // reload()
-}
-
-export function forceChangeLanguage (l) {
-  changeLanguage(l)
-  reload()
+  i18n.locale = l
 }
 
 export const Remember = LocalSettingManager.config({
@@ -92,7 +85,9 @@ export const Remember = LocalSettingManager.config({
   sendEmail: false,
   mergeBills: false,
   totalTime: false,
-  totalSales: false
+  totalSales: false,
+  locale: 'zh',
+  lang: 'zh'
 })
 
 export default GlobalConfig

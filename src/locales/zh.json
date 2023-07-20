@@ -1,4 +1,7 @@
 {
+  "ChangeLanguage" : "改变语言",
+  "CheckNetworkOrCallCustomerService" : "请检查网络连接或联系我们的客服团队来帮您解决网络问题",
+  "NoConnectionLocalOrRemote" : "无法连接到本地或远程服务器",
   "AR" : "阿拉伯语",
   "CS" : "捷克语",
   "ES" : "西班牙语",

@@ -1,4 +1,7 @@
 {
+  "ChangeLanguage" : "changer de langue",
+  "CheckNetworkOrCallCustomerService": "Veuillez vérifier votre connexion réseau ou contacter notre service client pour vous aider à résoudre les problèmes de réseau.",
+  "NoConnectionLocalOrRemote" : "Malheureusement, une connexion à un réseau local ou à un serveur distant n'a pas pu être établie",
   "AR" : "Arabe",
   "CS" : "Tchèque",
   "ES" : "Espagnol",
