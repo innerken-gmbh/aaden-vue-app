@@ -158,10 +158,9 @@ export default {
 
 .tableCard
   text-align: center
-  box-shadow: 0 0px 12px var(--v-primary-lighten3) !important
   width: 100%
   height: 100%
-  border-radius: 12px
+  border-radius: 8px
   cursor: pointer
 
 .notUsed .tableCard

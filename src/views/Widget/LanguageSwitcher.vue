@@ -16,9 +16,9 @@
     </v-btn>
     <v-dialog
         v-model="dialog"
-        max-width="300px"
+        max-width="360"
     >
-      <div v-dragscroll>
+      <div v-dragscroll style="overflow: hidden;max-height: 600px">
         <v-card
 
             :dark="isDarkMode"
