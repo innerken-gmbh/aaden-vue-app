@@ -1,4 +1,5 @@
 {
+  "ChangeLanguage" : "změnit jazyk",
   "CheckNetworkOrCallCustomerService": "Zkontrolujte prosím připojení k síti nebo se obraťte na náš zákaznický servis, který vám pomůže vyřešit problémy se sítí.",
   "NoConnectionLocalOrRemote" : "Bohužel se nepodařilo navázat připojení k místní síti nebo vzdálenému serveru",
   "AR" : "arabština",
