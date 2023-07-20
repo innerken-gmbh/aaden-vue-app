@@ -90,7 +90,6 @@ export default {
       return Object.values(this.locales).find(it => it.langCode === this.currentLocaleCode)
     },
     allLocales () {
-      console.log(Object.values(this.locales).filter(el => el.langCode !== this.currentLocale), 'ALL LOCALES')
       return Object.values(this.locales).filter(el => el.langCode !== this.currentLocale)
     }
   },
