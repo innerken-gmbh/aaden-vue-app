@@ -21,10 +21,6 @@ export async function printXBon (startDate, endDate) {
   })).content
 }
 
-export async function printZBon () {
-  return (await hillo.post('ZBon.php?op=printZbon')).content
-}
-
 export async function printZBonUseDate (startDate, endDate, printByDay = 1, resetTable = 0) {
   return (await hillo.post('ZBon.php?op=printZbonBySpan', {
     startDate, endDate, printByDay, resetTable
@@ -66,10 +62,6 @@ export async function returnOrder (id) {
   return (await hillo.post('Complex.php?op=returnOrder', {
     orderId: id
   }))
-}
-
-export async function ZBonList () {
-  return (await hillo.get('ZBon.php')).content
 }
 
 export async function acceptOrder (reason, tableId) {
@@ -119,12 +111,6 @@ export async function getExternalIdByRejectOrder (tableId) {
   })
 }
 
-export async function previewServantSummary (pw, start, end) {
-  return (await hillo.get('Servant.php?op=previewSummary', {
-    pw, start, end
-  })).content
-}
-
 export async function printServantSummary (pw, start, end) {
   return (await hillo.get('Servant.php?op=printSummaryBonByPassword', {
     pw, start, end
@@ -139,12 +125,6 @@ export async function checkOneMemberCard (longId) {
   return (await hillo.get('MemberCard.php?op=check', {
     id: longId, amount: 0
   })).content
-}
-
-export async function renameMemberCard (oldName, newName) {
-  return (await hillo.get('MemberCard.php?op=renameMemberCard', {
-    old: oldName, new: newName
-  }))
 }
 
 export async function loadPaymentMethods () {
@@ -162,15 +142,6 @@ export async function printServantSummaryByDate (pw, startDate, endDate) {
 
 export async function printAllServantSummaryByDate (servantList, startDate, endDate) {
   servantList.forEach(s => printServantSummaryByDate(s.servant.password, startDate, endDate))
-}
-
-export async function loadZbonRecordList (fromDateTime, toDateTime) {
-  return (await hillo.get('ZBon.php?op=searchZbonCombinedRecord')).content
-}
-
-export async function loadLastZBonInfo () {
-  const list = await loadZbonRecordList()
-  return list[0]
 }
 
 export async function getBillListForServant (pw = null, date, endDate = null) {
@@ -214,59 +185,11 @@ export async function reportDeviceInfo () {
   }))
 }
 
-export async function checkTse () {
-  try {
-    return (await hillo.get('AccessLog.php?op=checkTSE'))
-  } catch (e) {
-    console.log(e)
-  }
-}
-
-export async function showTodayTempDiscountedDishes (startTime, endTime) {
-  return (await hillo.get('Complex.php?op=showTempDiscountedDishes', {
-    fromDateTime: startTime, toDateTime: endTime, lang: GlobalConfig.lang
-  })).content
-}
-
-export async function showReturnedDishes (startTime, endTime) {
-  return (await hillo.get('Complex.php?op=showReturnedDishes', {
-    fromDateTime: startTime, toDateTime: endTime, lang: GlobalConfig.lang
-  })).content
-}
-
-export async function getCashInOutDetail (startDate, endDate) {
-  return (await hillo.get('Complex.php?op=getCashInOutDetail', {
-    fromDate: startDate, toDate: endDate
-  })).content
-}
-
-export async function todayCashStand () {
-  return (await hillo.get('Complex.php?op=getCurrentCashAmount'))?.content?.currentCashAmount ?? 0
-}
-
-export async function manageCashAccount (amount, note = '') {
-  return (await hillo.post('Complex.php?op=manageCashAccount', {
-    amount, note
-  }))
-}
-
-export async function billDetailInfo (id) {
-  return (await hillo.get('BackendData.php?op=billDetail', {
-    id, lang: GlobalConfig.lang
-  })).content
-}
-
 export async function changePayMethodForOrder (orderId, paymentLogs) {
   console.log(orderId, paymentLogs)
   return (await hillo.post('Complex.php?op=changePayMethodForOrder', {
     orderId: orderId, paymentLog: JSON.stringify(paymentLogs)
   }))
-}
-
-export async function sendFireStoreOrder (orders) {
-  return (await hillo.post('AccessLog.php?op=getFireStoreOrders', {
-    orders: JSON.stringify(orders)
-  })).response
 }
 
 export const updateRestaurantInfo = function (item) {
@@ -329,4 +252,8 @@ export const printDeliveryBon = async function (timeSpan) {
   return await hillo.post('Orders.php?op=printDeliveryBon', {
     fromTime: timeStart, toTime: timeEnd
   })
+}
+
+export async function restoreOrder (orderId) {
+  return await hillo.post('Complex.php?op=makeOrderAgain', { orderId })
 }

@@ -8,7 +8,7 @@
           <th>{{ $t('SerialNumber') }}</th>
           <th class="text-left">{{ $t('time') }}</th>
           <th class="text-left">{{ $t('AmountOfConsumption') }}</th>
-          <th class="text-left" style="width: 300px">{{ $t('operation') }}</th>
+          <th class="text-left" style="width: max-content">{{ $t('operation') }}</th>
         </tr>
         </thead>
         <tbody>
@@ -26,30 +26,40 @@
               {{ '-' + order.discountStr.replace('p', '%') }}</b>
             </td>
             <td>
-              <v-btn
-                  v-if="order.paymentLabel"
-                  :disabled="order.isReturned==='1'"
-                  color="primary"
-                  small
-                  text
-                  @click="reprintOrder(order.orderId)">
-                <v-icon left>
-                  mdi-printer-settings
-                </v-icon>
-                {{ $tc('reprint', 1) }}
-              </v-btn>
-              <template v-if="showOperation">
-                <v-btn :disabled="order.isReturned==='1'"
-                       v-if="order.paymentLabel"
-                       class="ml-2"
-                       color="warning"
-                       small
-                       text
-                       @click="startChangePaymentMethodForOrder(order)">
-                  <v-icon left>mdi-cash-refund</v-icon>
-                  {{ $t('replace') }}
+              <template v-if="order.paymentLabel">
+                <v-btn
+                    :disabled="order.isReturned==='1'"
+                    color="primary lighten-4 black--text"
+                    small
+                    elevation="0"
+                    @click.stop="reprintOrder(order.orderId)">
+                  <v-icon left>
+                    mdi-printer-settings
+                  </v-icon>
+                  {{ $tc('reprint', 1) }}
                 </v-btn>
+                <template v-if="showOperation">
+                  <v-btn :disabled="order.isReturned==='1'"
+                         class="ml-2"
+                         color="grey lighten-3 black--text"
+                         small
+                         elevation="0"
+                         @click.stop="startChangePaymentMethodForOrder(order)">
+                    <v-icon left>mdi-cash-refund</v-icon>
+                    {{ $t('replace') }}
+                  </v-btn>
+                  <v-btn :disabled="order.isReturned==='1'"
+                         class="ml-2"
+                         color="indigo lighten-4 black--text"
+                         small
+                         elevation="0"
+                         @click.stop="restoreOrder(order.orderId)">
+                    <v-icon left>mdi-history</v-icon>
+                    {{ $t('restore') }}
+                  </v-btn>
+                </template>
               </template>
+
             </td>
           </tr>
         </template>
@@ -162,6 +172,7 @@ import {
   changePayMethodForOrder,
   loadDetailOrder,
   reprintOrder,
+  restoreOrder,
   returnOrder,
   showSuccessMessage,
   sureTo,
@@ -263,6 +274,14 @@ export default {
       this.selectedOrder = await loadDetailOrder(order.orderId)
       this.selectedOrder.isReturned = order.isReturned
       this.orderDetailDialog = true
+    },
+    async restoreOrder (orderId) {
+      IKUtils.showConfirm(this.$t('AreYouSure'), this.$t('Möchten Sie Umsatz Bon stoniren?'), async () => {
+        IKUtils.showLoading()
+        await restoreOrder(orderId)
+        IKUtils.toast()
+        this.$emit('need-refresh')
+      })
     }
   }
 }
