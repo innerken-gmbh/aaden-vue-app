@@ -18,7 +18,6 @@ import ru from 'vuetify/lib/locale/ru'
 import tr from 'vuetify/lib/locale/tr'
 
 import dayjs from 'dayjs'
-
 Vue.use(VueI18n)
 
 export function loadTransLangs () {
@@ -32,105 +31,105 @@ const messages = {
   en: {
     langCode: 'en',
     flag: 'us',
-    label: 'EN',
+    langLabel: 'EN',
     ...require('@/locales/en.json'),
     $vuetify: en
   },
   de: {
     langCode: 'de',
     flag: 'de',
-    label: 'DE',
+    langLabel: 'DE',
     ...require('@/locales/de.json'),
     $vuetify: de
   },
   zh: {
     langCode: 'zh',
     flag: 'cn',
-    label: 'ZH',
+    langLabel: 'ZH',
     ...require('@/locales/zh.json'),
     $vuetify: zhHans
   },
   nl: {
     langCode: 'nl',
     flag: 'nl',
-    label: 'NL',
+    langLabel: 'NL',
     ...require('@/locales/nl.json'),
     $vuetify: nl
   },
   vi: {
     langCode: 'vi',
     flag: 'vi',
-    label: 'VI',
+    langLabel: 'VI',
     ...require('@/locales/vi.json'),
     $vuetify: vi
   },
   cs: {
     langCode: 'cs',
     flag: 'cz',
-    label: 'CS',
+    langLabel: 'CS',
     ...require('@/locales/cs.json'),
     $vuetify: cs
   },
   ar: {
     langCode: 'ar',
     flag: 'ar',
-    label: 'AR',
+    langLabel: 'AR',
     ...require('@/locales/ar.json'),
     $vuetify: ar
   },
   es: {
     langCode: 'es',
     flag: 'es',
-    label: 'ES',
+    langLabel: 'ES',
     ...require('@/locales/es.json'),
     $vuetify: es
   },
   fa: {
     langCode: 'fa',
     flag: 'ir',
-    label: 'FA',
+    langLabel: 'FA',
     ...require('@/locales/fa.json'),
     $vuetify: fa
   },
   fr: {
     langCode: 'fr',
     flag: 'fr',
-    label: 'FR',
+    langLabel: 'FR',
     ...require('@/locales/fr.json'),
     $vuetify: fr
   },
   it: {
     langCode: 'it',
     flag: 'it',
-    label: 'IT',
+    langLabel: 'IT',
     ...require('@/locales/it.json'),
     $vuetify: it
   },
   pl: {
     langCode: 'pl',
     flag: 'pl',
-    label: 'PL',
+    langLabel: 'PL',
     ...require('@/locales/pl.json'),
     $vuetify: pl
   },
   pt: {
     langCode: 'pt',
     flag: 'pt',
-    label: 'PT',
+    langLabel: 'PT',
     ...require('@/locales/pt.json'),
     $vuetify: pt
   },
   ru: {
     langCode: 'ru',
     flag: 'ru',
-    label: 'RU',
+    langLabel: 'RU',
     ...require('@/locales/ru.json'),
     $vuetify: ru
   },
   tr: {
     langCode: 'tr',
     flag: 'tr',
-    label: 'TR',
+    langLabel: 'TR',
     ...require('@/locales/tr.json'),
     $vuetify: tr
   }

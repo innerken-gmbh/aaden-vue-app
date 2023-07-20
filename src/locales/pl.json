@@ -1,4 +1,6 @@
 {
+  "CheckNetworkOrCallCustomerService": "Sprawdź połączenie sieciowe lub skontaktuj się z naszym działem obsługi klienta, aby pomóc Ci rozwiązać problemy z siecią.",
+  "NoConnectionLocalOrRemote" : "Niestety nie udało się nawiązać połączenia z siecią lokalną lub serwerem zdalnym",
   "AR" : "arabski",
   "CS" : "czeski",
   "ES" : "hiszpański",

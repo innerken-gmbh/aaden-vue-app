@@ -1,4 +1,6 @@
 {
+  "CheckNetworkOrCallCustomerService": "Lütfen ağ bağlantınızı kontrol edin veya ağ sorunlarını çözmenize yardımcı olması için müşteri hizmetlerimizle iletişime geçin.",
+  "NoConnectionLocalOrRemote" : "Ne yazık ki, bir yerel ağ veya uzak sunucuyla bağlantı kurulamadı",
   "AR" : "Arapça",
   "CS" : "Çek",
   "ES" : "İspanyolca",
@@ -8,6 +10,7 @@
   "PL" : "Lehçe",
   "PT" : "Portekizce",
   "RU" : "Rus",
+  "TR" : "Türkçe",
   "AadenSupport": "Lütfen Aaden müşteri hizmetleri ile iletişime geçin ve güncelleyin",
   "AadenTheMostReliablePOSystemEurope": "Size yardımcı olmak için Avrupa'nın en güvenilir POS sistemi",
   "Abholung": "Kendi başınıza toplayın",

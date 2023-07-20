@@ -308,8 +308,8 @@
         <v-card class="pa-4" height="100vh" width="100vw">
           <no-content-display
               icon="mdi-wifi-sync"
-              title="无法连接到本地或远程服务器"
-              desc="请检查网络连接或联系我们的客服团队来帮您解决网络问题"
+              :title="$t('NoConnectionLocalOrRemote')"
+              :desc="$t('CheckNetworkOrCallCustomerService')"
           >
             <v-btn @click="reload" elevation="0" class="mt-4">
               <v-icon left>mdi-refresh</v-icon>

@@ -1,4 +1,6 @@
 {
+  "CheckNetworkOrCallCustomerService": "Bitte überprüfen Sie Ihre Netzwerkverbindung oder wenden Sie sich an unseren Kundenservice, um Ihnen bei der Lösung von Netzwerkproblemen behilflich zu sein.",
+  "NoConnectionLocalOrRemote" : "Leider konnte keine Verbindung zu einem Lokalen-Netzwerk oder Remote-Server hergestellt werden",
   "AadenSupport": "Bitte wenden Sie sich an den Aaden-Kundendienst und aktualisieren Sie",
   "Abholung": "Abholung",
   "Accept": "Akzeptieren",

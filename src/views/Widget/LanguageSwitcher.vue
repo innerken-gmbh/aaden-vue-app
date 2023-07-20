@@ -44,7 +44,7 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title>
-                <span class="text-body-2">{{ $t(item.label) }}</span>
+                <span class="text-body-2">{{ $t(item.langLabel) }}</span>
               </v-list-item-title>
             </v-list-item-content>
             <v-list-item-action>
@@ -90,6 +90,7 @@ export default {
       return Object.values(this.locales).find(it => it.langCode === this.currentLocaleCode)
     },
     allLocales () {
+      console.log(Object.values(this.locales).filter(el => el.langCode !== this.currentLocale), 'ALL LOCALES')
       return Object.values(this.locales).filter(el => el.langCode !== this.currentLocale)
     }
   },
