@@ -3,8 +3,7 @@ import { loadAllReservable } from '@/api/ReservationService'
 import { timeFromNowInMinute } from '@/api/dateUtils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
-const ServantColorArray = ['pink  darken-4', 'green  darken-4', 'blue  darken-4',
-  'red  darken-4', 'purple  darken-4', 'yellow darken-4', 'orange darken-4', 'indigo darken-2']
+const ServantColorArray = ['pink  ', 'green ', 'blue ', 'purple ', 'indigo']
 
 const TableInfoMetaDataSetting = {
   createTimestamp: {
@@ -12,7 +11,7 @@ const TableInfoMetaDataSetting = {
     classFunc: (v) => {
       const [hour, minute] = v.split(':')
       const diff = timeFromNowInMinute(hour, minute)
-      return diff > GlobalConfig.maxEatMinute ? 'error font-weight-bold' : ''
+      return diff > GlobalConfig.maxEatMinute ? 'error lighten-4 font-weight-bold' : ''
     }
   },
   servantName: {
@@ -22,7 +21,7 @@ const TableInfoMetaDataSetting = {
       for (let i = 0; i < v.length; i++) {
         sum += v[i].charCodeAt(0)
       }
-      return ServantColorArray[sum % (ServantColorArray.length - 1)]
+      return ServantColorArray[sum % (ServantColorArray.length - 1)] + ' lighten-4'
     }
   },
   dishCount: {

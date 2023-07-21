@@ -21,7 +21,7 @@
 
       </div>
 
-      <div class="text-caption" v-if="table.inUse">
+      <div class="text-caption" v-if="table.inUse&&table?.h>100">
         {{ findConsumeTypeById(table.consumeType) }}
       </div>
       <template v-if="table.inUse">
@@ -41,7 +41,7 @@
               {{ table.reservations.length }}
             </v-chip>
           </template>
-          <div v-else class="mt-0 d-flex">
+          <div v-else class="mt-0" style="display: grid;grid-auto-flow: column;grid-gap: 4px">
             <div v-for="info in table.infos" :key="info">
               <table-info-display :info-key="info" :table="table"/>
             </div>
