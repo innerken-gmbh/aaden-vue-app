@@ -5,18 +5,24 @@
        position: relative"
        class="pa-1">
     <v-card
-        dark
         height="100%"
         elevation="0"
-        class="tableCard d-flex flex-column align-center justify-center"
+        class="tableCard d-flex flex-column align-center justify-center lighten-4"
         :color="tableColor"
         @click='$emit("click",table.tableName)'>
+      <div class="d-flex align-center">
+        <div class="tableCardName d-flex align-center justify-center" :class="table.inUse?'mt-3':''">
+          <template v-if="table.inCall">
+            <v-icon class="mr-1" size="18">mdi-bell</v-icon>
+          </template>
+          {{ table.tableName }}
 
-      <div class="tableCardName d-flex align-center justify-center" :class="table.inUse?'mt-1':''">
-        <template v-if="table.inCall">
-          <v-icon class="mr-1" size="18">mdi-bell</v-icon>
-        </template>
-        {{ table.tableName }}
+        </div>
+
+      </div>
+
+      <div class="text-caption" v-if="table.inUse">
+        {{ findConsumeTypeById(table.consumeType) }}
       </div>
       <template v-if="table.inUse">
         <div class="personDot" style="position: absolute">
@@ -27,57 +33,41 @@
             <div :key="i+table.tableName+'child'" class="dot child"></div>
           </template>
         </div>
-        <div :style="{
-             background:findConsumeTypeColorById(table.consumeType)}"
-             style="
-           position: absolute;
-           right: 0px;
-           top: 0px;
-           padding: 1px 2px;
-           color: white;
-            font-size: 10px;
-           z-index:0;
-                border-radius: 4px;">
-          {{ findConsumeTypeById(table.consumeType) }}
-        </div>
-        <div class="d-flex flex-column align-center"
-             style="z-index: 2"
-        >
-          <div class="mt-1" style="display: grid;grid-template-columns: repeat(2,1fr);grid-gap: 2px">
+
+        <div class="d-flex align-center">
+          <template v-if="table.reservations.length>0">
+            <v-chip small color="transparent" label @click.stop="showReservationDialog" >
+              <v-icon x-small class="mr-1">mdi-calendar</v-icon>
+              {{ table.reservations.length }}
+            </v-chip>
+          </template>
+          <div v-else class="mt-0 d-flex">
             <div v-for="info in table.infos" :key="info">
               <table-info-display :info-key="info" :table="table"/>
             </div>
           </div>
         </div>
       </template>
-
       <template v-if="!table.inUse&&table.reservations.length>0">
-        <v-btn color="primary lighten-2"
+        <v-btn color="grey"
                x-small
                text
                style="font-size: 10px"
                @click.stop="showReservationDialog"
-               class="py-1 pa-0"
+               class="py-1 pa-0 text-caption"
                elevation="0"
         >
           <v-icon small class="mr-1">mdi-calendar</v-icon>
-          <template v-if="table.reservations.length>1">
+          <span class="font-weight-bold">
+              <template v-if="table.reservations.length>1">
             {{ table.reservations.length }} |
           </template>
+          </span>
+
           <template>{{ table.reservations[0].fromDateTime|onlyTime }}</template>
         </v-btn>
 
       </template>
-      <div style="position:absolute;right: -4px;top: -4px">
-
-        <template v-if="table.reservations.length>0&&table.inUse">
-          <v-chip @click.stop="showReservationDialog" class="px-2 py-1" small height="min-content" color="warning"
-                  elevation="0">
-            <v-icon small class="mr-1">mdi-calendar</v-icon>
-            {{ table.reservations.length }}
-          </v-chip>
-        </template>
-      </div>
     </v-card>
   </div>
 </template>
@@ -127,7 +117,7 @@ export default {
       return '20px'
     },
     tableColor () {
-      return this.table.inCall ? 'warning' : this.table.inUse ? 'primary' : '#f6f6f6'
+      return this.table.inCall ? 'error' : this.table.inUse ? 'primary' : '#f6f6f6'
     },
     tableChipList () {
       let allowCount = 1
@@ -145,7 +135,10 @@ export default {
       res.inCall = res.callService === '1'
       res.childCount = res.childCount ?? 0
       res.seatCount = res.seatCount ?? 0
-      const maxKeyCount = 2
+      let maxKeyCount = 1
+      if (res.w > 120) {
+        maxKeyCount = 2
+      }
       res.infos = this.getKeys().filter((k, index) => index < maxKeyCount)
       return res
     }
@@ -176,7 +169,7 @@ export default {
   font-weight: 600
 
 .tableCardName
-  font-size: 26px
+  font-size: 24px
   text-align: center
   width: 100%
   z-index: 1
@@ -237,7 +230,7 @@ export default {
 .personDot
   top: 8px
   left: 8px
-  right: 36px
+  right: 12px
   display: grid
   grid-template-columns: repeat(auto-fit, 6px)
   grid-gap: 4px
@@ -245,13 +238,13 @@ export default {
   position: absolute
 
 .dot
-  background: #689F38
+  background: #000
   height: 6px
   width: 6px
   border-radius: 3px
 
 .dot.child
-  background: #FFA726
+  background: #fff
 
 .dragging .tableCard
   box-shadow: 1px 3px 12px rgba(0, 0, 0, 0.11) !important

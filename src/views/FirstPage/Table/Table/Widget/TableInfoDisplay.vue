@@ -1,15 +1,14 @@
 <template>
   <div
       :class="metaData.classFunc ? metaData.classFunc(table[infoKey]) :''"
-      class="d-flex flex-column align-center"
+      class="d-flex align-center"
       style="width:fit-content;margin:auto;overflow: hidden;padding: 2px;border-radius: 4px"
   >
     <template v-if="metaData.icon">
-      <v-icon small>{{ metaData.icon }}</v-icon>
+      <v-icon x-small left>{{ metaData.icon }}</v-icon>
     </template>
     <div
-        style="line-height: 10px;font-size: 10px;border-radius: 2px;width: fit-content;padding: 2px;margin-top: 2px"
-        class="text-no-wrap">{{ info.length > 5 ? info.slice(0, 5) : info }}
+        class="text-no-wrap text-caption text-truncate">{{ info.length > 5 ? info.slice(0, 5) : info }}
     </div>
   </div>
 </template>
