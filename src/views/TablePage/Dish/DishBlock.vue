@@ -27,7 +27,7 @@
         style="align-items: center; border-radius: 4px !important; flex-wrap: wrap"
     >
       <div v-if="isFree === '1'" class="price d-flex align-center green lighten-3 white--text px-1 rounded">
-        {{ $t("Frei") }}
+        {{ $t("Free") }}
       </div>
       <div v-else class="text-body-2 d-flex align-center">
         {{ price | priceDisplay }}

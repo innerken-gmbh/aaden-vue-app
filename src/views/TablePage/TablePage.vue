@@ -500,7 +500,7 @@
                           class="price d-flex align-center green lighten-3 white--text"
                           style="padding: 2px 4px; border-radius: 4px"
                       >
-                        {{ $t('Frei') }}
+                        {{ $t('Free') }}
                       </div>
                       <div
                           v-else
@@ -844,7 +844,7 @@
                         class="price d-flex align-center green lighten-3 white--text"
                         style="padding: 2px 4px; border-radius: 4px"
                     >
-                      {{ $t('Frei') }}
+                      {{ $t('Free') }}
                     </div>
                     <div
                         v-else
@@ -1445,7 +1445,7 @@ export default {
             this.$tc('AreYouSureToOrderDish', 1, { n: count })
           )
           if (!res?.value) {
-            showTimedAlert('warning', 'abrechen')
+            showTimedAlert('warning', i18n.t('Cancel'))
           }
         }
         dish.name = dish.dishName
@@ -1916,7 +1916,7 @@ export default {
             setTimeout(async () => {
               let res = { value: 1 }
               if (!GlobalConfig.skipCartConfirm) {
-                res = await showConfirmAsyn('Warenkorb ---> Bestellen?')
+                res = await showConfirmAsyn(i18n.t('BasketOrder'))
               }
               if (res.value) {
                 this.orderDish(this.cartListModel.list)

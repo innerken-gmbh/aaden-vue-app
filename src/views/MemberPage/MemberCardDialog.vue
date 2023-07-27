@@ -39,7 +39,7 @@
             </v-card-subtitle>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn text @click="renameMemberCard(selectedCard.longId)">Karte ändern</v-btn>
+              <v-btn text @click="renameMemberCard(selectedCard.longId)">{{ $t('ChangeCard') }}</v-btn>
             </v-card-actions>
           </v-card>
           <v-list subheader v-if="selectedCard&&selectedCard.record&&selectedCard&&selectedCard.record.length>0">
@@ -74,6 +74,7 @@
 <script>
 import { checkOneMemberCard, loadMemberCard } from '@/api/api'
 import { fastSweetAlertRequest } from '@/oldjs/common'
+import i18n from '@/i18n'
 
 export default {
   name: 'MemberCardDialog',
@@ -109,7 +110,7 @@ export default {
     },
     async renameMemberCard (oldName) {
       this.realShow = false
-      await fastSweetAlertRequest('Bitte Neue Karte Scanen', 'password',
+      await fastSweetAlertRequest(i18n.t('ScanNewCard'), 'password',
         'MemberCard.php?op=renameMemberCard', 'new',
         { old: oldName }, 'POST')
       this.realShow = true

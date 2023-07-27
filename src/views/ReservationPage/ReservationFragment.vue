@@ -604,7 +604,7 @@ export default {
 
     async moveReservation (id) {
       await moveReservation(id)
-      showSuccessMessage('success')
+      showSuccessMessage(i18n.t('Success'))
       await this.loadData()
     },
     async loadData () {
