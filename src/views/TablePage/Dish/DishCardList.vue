@@ -62,7 +62,7 @@
 import { dragscroll } from 'vue-dragscroll'
 import DishCard from './DishCard'
 import { Remember } from '@/api/remember'
-import i18n from "@/i18n";
+import i18n from '@/i18n'
 
 export default {
   name: 'DishCardList',

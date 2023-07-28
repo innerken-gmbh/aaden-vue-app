@@ -115,7 +115,7 @@ export default {
         if (paymentResult) {
           IKUtils.toast('👌')
         } else {
-          IKUtils.showError('Payment is failed')
+          IKUtils.showError(this.$t('PaymentFailed'))
           return
         }
       }

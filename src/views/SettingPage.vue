@@ -4,7 +4,7 @@
       <v-card elevation="0" color="white" class="mb-16 pa-4" width="500">
         <v-list dense subheader>
           <v-subheader>
-            Config
+            {{ $t('Config') }}
           </v-subheader>
           <template v-for="key in NeededKeys">
             <v-list-item dense :key="'config'+key">

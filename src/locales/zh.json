@@ -1,4 +1,8 @@
 {
+  "Pice": "个",
+  "Config" : "想法",
+  "EnterVoucherId" : "请输入优惠券ID",
+  "PaymentFailed" : "支付失败",
   "Other" : "其他",
   "BasketOrder" : "购物车 ---> 订购？",
   "Free" : "自由的",
