@@ -459,7 +459,7 @@ export default {
         } catch (e) {
           this.isPrint = false
           this.printEnd = false
-          this.showErrorDialog('打印失败', e?.message)
+          this.showErrorDialog(this.$t('PrintFailed'), e?.message)
         }
       }
       showSuccessMessage(i18n.t('print_success'))
@@ -500,7 +500,7 @@ export default {
           }
           this.printEnd = true
         } catch (e) {
-          this.showErrorDialog('发送失败', e?.message)
+          this.showErrorDialog(this.$t('SentFailed'), e?.message)
           this.isPrint = false
           this.printEnd = false
         }
@@ -519,7 +519,7 @@ export default {
           }
           this.printEnd = true
         } catch (e) {
-          this.showErrorDialog('发送失败', e?.message)
+          this.showErrorDialog(this.$t('SentFailed'), e?.message)
           this.isPrint = false
           this.printEnd = false
         }
@@ -556,7 +556,7 @@ export default {
     checkZBonEmail () {
       setTimeout(() => {
         if (!this.emailOk) {
-          this.showErrorDialog('请先设置ZBon邮箱！')
+          this.showErrorDialog(this.$t('PleaseSetupZbonEmail') + '！')
           this.sendEmail = false
         }
       }, 300)

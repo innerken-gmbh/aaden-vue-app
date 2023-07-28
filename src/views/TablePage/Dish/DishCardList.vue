@@ -9,7 +9,7 @@
       <div class="pa-2 d-flex" style="max-width: 100%">
         <v-chip-group v-model="currentSourceMark" active-class="primary--text">
           <v-chip v-for="mark in sourceMarks" :key="mark">
-            {{ mark == null ? "Other" : mark }}
+            {{ mark == null ? $t('Other') : mark }}
           </v-chip>
         </v-chip-group>
       </div>
@@ -62,6 +62,7 @@
 import { dragscroll } from 'vue-dragscroll'
 import DishCard from './DishCard'
 import { Remember } from '@/api/remember'
+import i18n from '@/i18n'
 
 export default {
   name: 'DishCardList',
@@ -192,7 +193,7 @@ export default {
     discountDish: function () {
       if (this.discountRatio !== 0) {
         return {
-          name: 'Rabbat:' + this.discountRatio.toFixed(2),
+          name: i18n.t('Discount') + ': ' + this.discountRatio.toFixed(2),
           code: '-1',
           realPrice: -(this.originTotal * this.discountRatio),
           count: 1,

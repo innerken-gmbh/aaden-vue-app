@@ -121,7 +121,7 @@
               elevation="0"
           >
             <div class="text-body-1">
-              {{ $t("PaymentStillRequired") }}
+              {{ $t('PaymentStillRequired') }}
             </div>
             <v-spacer></v-spacer>
             <span class="totalNumber">{{ remainTotal | priceDisplay }}</span>
@@ -129,7 +129,7 @@
           <v-card v-if="remainTotal !== 0" class="pa-4 mt-1 d-flex align-center" color="primary lighten-4"
                   elevation="0">
             <div class="text-body-1">
-              {{ $t("PayWillHaveTo") }}
+              {{ $t('PayWillHaveTo') }}
             </div>
             <v-spacer></v-spacer>
             <span :class="inputBuffer ? ' ' : 'grey--text'" class="totalNumber font-weight-black">{{
@@ -153,7 +153,7 @@
                   style="height: 48px"
                   @click="input(item)"
               >
-                {{ item === "coupon" ? $t("Coupon") : item }}
+                {{ item === "coupon" ? $t('Coupon') : item }}
               </v-card>
             </div>
           </div>
@@ -387,7 +387,7 @@ export default {
 
       if (parseInt(type) === 4) {
         const res = await fastSweetAlertRequest(
-          'Bitte Gutschein Id Gaben.',
+          this.$t('EnterVoucherId'),
           'text',
           'MemberCard.php?op=check',
           'id',

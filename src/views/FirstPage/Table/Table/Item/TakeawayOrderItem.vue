@@ -18,7 +18,7 @@
       <v-spacer></v-spacer>
       <v-chip color="error" elevation="0" v-if="table.inCall" small label class="mr-2">
         <v-icon x-small>mdi-bell</v-icon>
-        New
+        {{ $t('New') }}
       </v-chip>
 
     </div>
@@ -65,6 +65,7 @@ import { beautifulTable, getRestaurantInfo } from '@/api/restaurantInfoService'
 import dayjs from 'dayjs'
 import { changeFireBaseOrderDeliveryTime } from '@/api/fireStore'
 import { Timestamp } from 'firebase/firestore'
+import i18n from '@/i18n'
 
 export default {
   name: 'TakeawayOrderItem',
@@ -74,7 +75,7 @@ export default {
   },
   computed: {
     table () {
-      console.log(this.tableInfo, '桌子')
+      console.log(this.tableInfo, i18n.t('Table'))
       return beautifulTable(this.tableInfo)
     }
   },

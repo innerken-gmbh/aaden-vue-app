@@ -155,7 +155,7 @@ export default {
             const select = {
               text: `${name}`,
               value: item.selectValue[index],
-              priceInfo: parseFloat(item.priceInfo[index]) === 0 ? '' : ` €${parseFloat(item.priceInfo[index]).toFixed(2)}`,
+              priceInfo: parseFloat(item.priceInfo[index]) === 0 ? '' : `${parseFloat(item.priceInfo[index]).toFixed(2)} €`,
               count: 0,
               price: parseFloat(item.priceInfo[index] ?? 0)
             }

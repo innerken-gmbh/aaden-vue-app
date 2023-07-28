@@ -107,19 +107,19 @@
               v-if="editing"
               @click="largeView"
           >
-            {{ $t('大') }}
+            {{ $t('SizeBig') }}
           </v-btn>
           <v-btn
               v-if="editing"
               @click="refreshTables"
           >
-            {{ $t('中') }}
+            {{ $t('SizeMedium') }}
           </v-btn>
           <v-btn
               v-if="editing"
               @click="smallView"
           >
-            {{ $t('小') }}
+            {{ $t('SizeSmall') }}
           </v-btn>
 
           <v-btn
