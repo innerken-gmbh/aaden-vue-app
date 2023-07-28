@@ -1,4 +1,7 @@
 {
+  "PleaseSetupZbonEmail" : "请先设置ZBon邮箱",
+  "SentFailed" : "发送失败",
+  "PrintFailed" : "打印失败",
   "Pice": "个",
   "Config" : "想法",
   "EnterVoucherId" : "请输入优惠券ID",

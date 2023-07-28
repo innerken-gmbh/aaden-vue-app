@@ -1,8 +1,11 @@
 {
+  "PleaseSetupZbonEmail" : "Bitte richten Sie zuerst das ZBon-Postfach ein",
+  "SentFailed" : "Senden fehlgeschlagen",
+  "PrintFailed" : "Drucken fehlgeschlagen",
   "Pice" : "Stk.",
   "Config" : "Einstellungen",
   "servantShowHistoryBill" : "Mitarbeiter Rechnungsverlauf",
-  "cardTerminalIp" : "EC Geräte-ID",
+  "cardTerminalIp" : "Terminalidentifikationsnummer (TID)",
   "EnterVoucherId" : "Bitte Gutschein ID eingeben",
   "PaymentFailed" : "Zahlung fehlgeschlagen",
   "Other" : "andere",
