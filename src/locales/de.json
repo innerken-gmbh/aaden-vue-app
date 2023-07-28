@@ -1,7 +1,7 @@
 {
   "Pice" : "Stk.",
   "Config" : "Einstellungen",
-  "servantShowHistoryBill" : "Mitarbeiter Rechnungs Verlauf",
+  "servantShowHistoryBill" : "Mitarbeiter Rechnungsverlauf",
   "cardTerminalIp" : "EC Geräte-ID",
   "EnterVoucherId" : "Bitte Gutschein ID eingeben",
   "PaymentFailed" : "Zahlung fehlgeschlagen",
