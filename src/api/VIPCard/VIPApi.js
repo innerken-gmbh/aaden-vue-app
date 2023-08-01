@@ -1,5 +1,6 @@
 import hillo from 'hillo'
 import { createCloudUser, generateUserInfo } from '@/api/VIPCard/VIPCloudApi'
+import { keyBy } from 'lodash-es'
 
 export function defaultVipCard () {
   return {
@@ -22,6 +23,10 @@ export async function editNfcCard (id, uid, birthday, name, email) {
 }
 
 export async function register (uid, birthday, name, email) {
+  const currentList = keyBy(await searchNfcCard(), 'uid')
+  if (currentList[uid]) {
+    throw Error('Uid is used')
+  }
   const userInfo = await generateUserInfo(uid, name, email, birthday)
   await createCloudUser(userInfo)
   return await hillo.post('NfcCard.php?op=add', {

@@ -408,6 +408,7 @@ export default {
           await register(uid, this.date, this.name, this.email)
           this.initPanel()
         } catch (e) {
+          IKUtils.showError(e?.message)
           this.showCardInfoDialog = true
         }
       }
