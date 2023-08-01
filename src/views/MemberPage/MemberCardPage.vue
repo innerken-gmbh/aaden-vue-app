@@ -152,7 +152,8 @@
                   <div class="text-h5 mt-6">操作</div>
                   <div style="display: grid;grid-auto-flow: column;grid-gap: 12px;grid-auto-columns: min-content"
                        class="mt-4">
-                    <v-card @click="startDeposit" color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
+                    <v-card @click="startDeposit" color="grey lighten-3" width="96"
+                            style="border-radius: 12px !important;" elevation="0">
                       <v-responsive :aspect-ratio="1">
                         <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
                           <v-icon>mdi-cash-refund</v-icon>
@@ -393,21 +394,20 @@ export default {
       }
     },
     async saveCard () {
-      try {
-        if (this.selectedCardId) {
-          const id = this.selectedCardId
+      if (this.selectedCardId) {
+        await this.reloadAndGoBack(async () => {
           await editNfcCard(this.selectedCardId, this.selectedCard.uid, this.date, this.name, this.email)
           this.showCardInfoDialog = false
-          await this.initPanel()
-          this.selectedCardId = id
-        } else {
+        })
+      } else {
+        try {
           this.showCardInfoDialog = false
           const uid = await IKUtils.showInput('请扫描或输入NFC卡ID.')
           await register(uid, this.date, this.name, this.email)
           this.initPanel()
+        } catch (e) {
+          this.showCardInfoDialog = true
         }
-      } catch (e) {
-        this.showCardInfoDialog = true
       }
     },
     async startDeposit () {
@@ -417,21 +417,30 @@ export default {
         this.checkOutDialog = true
       }
     },
-    async onDeposit (paymentLog = []) {
+    async reloadAndGoBack (action) {
       const id = this.selectedCardId
+      try {
+        await action()
+        this.initPanel()
+        this.selectedCardId = id
+      } catch (e) {
+
+      }
+    },
+    async changeCard () {
+
+    },
+    async onDeposit (paymentLog = []) {
       if (paymentLog?.length === 0) {
         paymentLog = [{
           id: 1,
           price: this.depositTotal
         }]
       }
-      try {
+      await this.reloadAndGoBack(async () => {
         await deposit(this.selectedCard.uid, this.depositTotal, GlobalConfig.defaultPassword, paymentLog)
         this.checkOutDialog = false
-        this.initPanel()
-        this.selectedCardId = id
-      } catch (e) {
-      }
+      })
     }
   },
   mounted () {
