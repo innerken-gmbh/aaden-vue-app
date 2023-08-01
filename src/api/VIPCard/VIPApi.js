@@ -45,16 +45,17 @@ export async function deposit (uid, amount, pw, paymentLog) {
   })
 }
 
-export async function searchNfcCard (uid, birthday, nameOrEmail) {
-  return await hillo.get('NfcCard.php?op=search', {
+export async function searchNfcCard (uid = '', birthday = '', nameOrEmail = '') {
+  return (await hillo.get('NfcCard.php?op=search', {
     uid,
     birthday,
     nameOrEmail
-  })
+  })).content
 }
 
 export async function getBonusRecord (uid) {
-  return await hillo.get('NfcCard.php?op=getBonusPointRecord', {
-    uid
-  })
+  return (await hillo.get('NfcCard.php?op=getBonusPointRecord',
+    {
+      uid
+    })).content
 }
