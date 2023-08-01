@@ -163,7 +163,7 @@
                         </div>
                       </v-responsive>
                     </v-card>
-                    <v-card color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
+                    <v-card @click="changeBonusPoint" color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
                       <v-responsive :aspect-ratio="1">
                         <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
                           <v-icon class="mt-1">mdi-plus-circle-multiple-outline</v-icon>
@@ -173,7 +173,8 @@
                         </div>
                       </v-responsive>
                     </v-card>
-                    <v-card @click="changeCard" color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
+                    <v-card @click="changeCard" color="grey lighten-3" width="96"
+                            style="border-radius: 12px !important;" elevation="0">
                       <v-responsive :aspect-ratio="1">
                         <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
                           <v-icon class="mt-1">mdi-briefcase-arrow-left-right</v-icon>
@@ -315,7 +316,7 @@
 
 <script>
 import LottieAnimation from 'lottie-web-vue'
-import { deposit, editNfcCard, getBonusRecord, register, searchNfcCard } from '@/api/VIPCard/VIPApi'
+import { addBonusPoint, deposit, editNfcCard, getBonusRecord, register, searchNfcCard } from '@/api/VIPCard/VIPApi'
 import IKUtils from 'innerken-js-utils'
 import CheckOutCalculator from '@/components/GlobalDialog/CheckOutCalculator.vue'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
@@ -409,6 +410,14 @@ export default {
           this.showCardInfoDialog = true
         }
       }
+    },
+    async changeBonusPoint () {
+      const newAmount = await IKUtils.showInput('请输入新的积分数量', 'number',
+        '当前积分数量为' + this.selectedCard.bonusPoint)
+      const modify = (parseFloat(newAmount) - parseFloat(this.selectedCard.bonusPoint)).toFixed(2)
+      await this.reloadAndGoBack(async () => {
+        await addBonusPoint(this.selectedCard.uid, modify)
+      })
     },
     async startDeposit () {
       const amount = await IKUtils.showInput('请输入要充值的金额')
