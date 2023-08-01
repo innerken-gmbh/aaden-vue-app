@@ -39,8 +39,8 @@ export async function generateUserInfo (uid = '', name = '', email = '', birthda
 export async function addBonusForUser (amount, id) {
   return await firebaseAction(async () => {
     return await addDoc(collection(doc(ref, id), bonusPath), {
-      amount: amount,
-      timestamp: dayjs().valueOf(),
+      bonusPointChange: amount,
+      createdAt: dayjs().valueOf(),
       note: '',
       operateDeviceId: await getCurrentDeviceId()
     })
@@ -50,19 +50,19 @@ export async function addBonusForUser (amount, id) {
 export async function listBonusForUser (id) {
   return await firebaseAction(async () => {
     return await executeQuery(collection(doc(ref, id), bonusPath))
-  })
+  }, [])
 }
 
 export async function listCloudUser () {
   return await firebaseAction(async () => {
     const deviceIds = await getMyGroup()
     return await executeQuery(query(ref, where('deviceId', 'in', deviceIds)))
-  })
+  }, [])
 }
 
 export async function editUser (id, userInfo) {
   return await firebaseAction(async () => {
-    return await setDoc(doc(ref, id), userInfo)
+    return await setDoc(doc(ref, id), userInfo, { merge: true })
   })
 }
 

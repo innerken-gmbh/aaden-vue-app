@@ -16,12 +16,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)
 
-export async function firebaseAction (action) {
+export async function firebaseAction (action, defaultValue = null) {
   try {
     return await action()
   } catch (e) {
+    console.log(e?.message)
     IKUtils.toast(e?.message ?? 'Firebase Error')
-    return null
+    return defaultValue
   }
 }
 

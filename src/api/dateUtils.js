@@ -9,6 +9,10 @@ export function onlyTimeFormat (str) {
   return dayjs(str).format(onlyTimeTemplate)
 }
 
+export function timeDisplay (str) {
+  return dayjs(str).format(timestampTemplate)
+}
+
 export function sliceTime (startTimeString, endTimeString, duration) {
   const [startTime, endTime] = dayjs(startTimeString, timestampTemplate)
     .isBefore(dayjs(endTimeString, timestampTemplate)) ? [dayjs(startTimeString, timestampTemplate), dayjs(endTimeString, timestampTemplate)]

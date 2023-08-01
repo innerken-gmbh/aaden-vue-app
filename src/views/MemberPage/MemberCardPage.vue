@@ -46,7 +46,7 @@
         </v-sheet>
         <div
             style="overflow-y: scroll"
-            class="flex-grow-1"
+            class="flex-grow-1 grey lighten-5"
         >
           <v-sheet
               class="pa-6"
@@ -57,11 +57,13 @@
               :key="member.id"
           >
             <div class="d-flex align-center text-body-1">
+              <v-icon left v-if="member.cloudId" small>mdi-cloud-check</v-icon>
               <div class="font-weight-bold">
                 {{ member.name }}
               </div>
               <v-spacer></v-spacer>
-              <div>{{ member.voucherTotal | priceDisplay }}</div>
+              <div v-if="member.local">{{ member.voucherTotal | priceDisplay }}</div>
+              <div v-else class="text-body-2">云端会员:{{member.deviceId}}</div>
             </div>
             <div class="text-body-2 text--secondary mt-2">
               {{ member.uid }}
@@ -106,7 +108,7 @@
               <v-tabs v-model="currentTab" color="indigo" class="font-weight-black mt-2">
                 <v-tab>🔥 总览</v-tab>
                 <v-tab>🗂️ 积分变动记录</v-tab>
-                <v-tab>🧾 消费记录</v-tab>
+                <v-tab :disabled="!selectedCard.local">🧾 消费记录</v-tab>
               </v-tabs>
 
             </v-sheet>
@@ -133,7 +135,7 @@
                         class="pa-6">
                       <div class="text-body-2">积分</div>
                       <div class="d-flex mt-6">
-                        <div class="text-h4">{{ selectedCard.bonusPoint }}
+                        <div class="text-h4">{{ totalBonus }}
                           <v-icon color="black" x-large>mdi-star-four-points-small</v-icon>
                         </div>
                       </div>
@@ -152,7 +154,9 @@
                   <div class="text-h5 mt-6">操作</div>
                   <div style="display: grid;grid-auto-flow: column;grid-gap: 12px;grid-auto-columns: min-content"
                        class="mt-4">
-                    <v-card @click="startDeposit" color="grey lighten-3" width="96"
+                    <v-card
+                        :disabled="!selectedCard.local"
+                        @click="startDeposit" color="grey lighten-3" width="96"
                             style="border-radius: 12px !important;" elevation="0">
                       <v-responsive :aspect-ratio="1">
                         <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
@@ -173,7 +177,9 @@
                         </div>
                       </v-responsive>
                     </v-card>
-                    <v-card @click="changeCard" color="grey lighten-3" width="96"
+                    <v-card
+                        :disabled="!selectedCard.local"
+                        @click="changeCard" color="grey lighten-3" width="96"
                             style="border-radius: 12px !important;" elevation="0">
                       <v-responsive :aspect-ratio="1">
                         <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
@@ -184,8 +190,13 @@
                         </div>
                       </v-responsive>
                     </v-card>
-                    <v-card @click="editCard" color="grey lighten-3" width="96" style="border-radius: 12px !important;"
-                            elevation="0">
+                    <v-card
+                        :disabled="!selectedCard.local"
+                        @click="editCard"
+                        color="grey lighten-3"
+                        width="96"
+                        style="border-radius: 12px !important;"
+                        elevation="0">
                       <v-responsive :aspect-ratio="1">
                         <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
                           <v-icon class="mt-1">mdi-folder-edit</v-icon>
@@ -215,7 +226,7 @@
                   <v-card v-for=" b in bonusList" :key="b.id" elevation="0" color="grey lighten-3"
                           class="d-flex my-2 pa-4">
                     <div class="text-h6">
-                      {{ b.createdAt }}
+                      {{ b.createdAt | timeDisplay }}
                     </div>
                     <v-spacer></v-spacer>
                     <div :class="b.bonusPointChange>0?'success--text':'error--text'" class="text-h6">
@@ -350,6 +361,9 @@ export default {
     totalUsage () {
       return this.usageInfo?.reduce((sum, i) => sum + parseFloat(i.sumPrice), 0) ?? 0
     },
+    totalBonus () {
+      return this.bonusList?.reduce((sum, i) => sum + parseInt(i.bonusPointChange), 0) ?? 0
+    },
     usageInfo () {
       return this.selectedCard?.usageInfos ?? []
     }
@@ -358,13 +372,13 @@ export default {
     async selectedCard () {
       if (this.selectedCard) {
         this.bonusList = await getBonusRecord(this.selectedCard.uid)
+        console.log(this.bonusList, 'bonus')
       }
     }
   },
   methods: {
     async loadMemberCardList () {
       this.memberCardList = await searchNfcCard()
-      console.log(this.memberCardList, 'list')
     },
     async initPanel () {
       console.log(await listCloudUser())
@@ -405,8 +419,12 @@ export default {
         try {
           this.showCardInfoDialog = false
           const uid = await IKUtils.showInput('请扫描或输入NFC卡ID.')
-          await register(uid, this.date, this.name, this.email)
-          this.initPanel()
+          if (uid) {
+            await register(uid, this.date, this.name, this.email)
+            this.initPanel()
+          } else {
+            this.showCardInfoDialog = true
+          }
         } catch (e) {
           IKUtils.showError(e?.message)
           this.showCardInfoDialog = true
@@ -415,11 +433,14 @@ export default {
     },
     async changeBonusPoint () {
       const newAmount = await IKUtils.showInput('请输入新的积分数量', 'number',
-        '当前积分数量为' + this.selectedCard.bonusPoint)
-      const modify = (parseFloat(newAmount) - parseFloat(this.selectedCard.bonusPoint)).toFixed(2)
-      await this.reloadAndGoBack(async () => {
-        await addBonusPoint(this.selectedCard.uid, modify)
-      })
+        '当前积分数量为' + this.totalBonus)
+      if (newAmount) {
+        const modify = (parseFloat(newAmount) - parseFloat(this.totalBonus)).toFixed(2)
+        await this.reloadAndGoBack(async () => {
+          await addBonusPoint(this.selectedCard.uid, modify)
+        })
+        console.log(this.selectedCardId)
+      }
     },
     async startDeposit () {
       const amount = await IKUtils.showInput('请输入要充值的金额')
@@ -432,7 +453,7 @@ export default {
       const id = this.selectedCardId
       try {
         await action()
-        this.initPanel()
+        await this.initPanel()
         this.selectedCardId = id
       } catch (e) {
 
@@ -441,7 +462,9 @@ export default {
     async changeCard () {
       await this.reloadAndGoBack(async () => {
         const newUid = await IKUtils.showInput('请扫描新的卡片')
-        await editNfcCard(this.selectedCardId, newUid, this.selectedCard.birthday, this.selectedCard.name, this.selectedCard.email)
+        if (newUid) {
+          await editNfcCard(this.selectedCardId, newUid, this.selectedCard.birthday, this.selectedCard.name, this.selectedCard.email)
+        }
       })
     },
     async onDeposit (paymentLog = []) {

@@ -16,7 +16,7 @@ import { addToQueue } from '@/oldjs/poolJobs'
 import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import IKUtils from 'innerken-js-utils'
 import dayjs from 'dayjs'
-import { onlyTimeFormat } from '@/api/dateUtils'
+import { onlyTimeFormat, timeDisplay } from '@/api/dateUtils'
 import { Remember } from '@/api/remember'
 import _ from 'lodash'
 import { getBaseAndUrlForDeviceId } from '@/api/restaurantInfoService'
@@ -47,6 +47,10 @@ Vue.filter('shorterName', function (longName) {
 
 Vue.filter('onlyTime', function (str) {
   return onlyTimeFormat(str)
+})
+
+Vue.filter('timeDisplay', function (str) {
+  return timeDisplay(str)
 })
 
 const relativeTime = require('dayjs/plugin/relativeTime')
