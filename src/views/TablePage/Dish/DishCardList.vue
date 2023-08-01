@@ -145,7 +145,6 @@ export default {
     },
     checkIfOpen (index) {
       const dish = this.dishList[index]
-      console.log(dish)
       if (this.showEdit || dish.count > 1) {
         if (this.expandIndex === index) {
           this.expandIndex = null
@@ -177,8 +176,6 @@ export default {
       if (this.reverse) {
         list.reverse()
       }
-      console.trace()
-      console.log(list)
       return list
     },
     originTotal: function () {

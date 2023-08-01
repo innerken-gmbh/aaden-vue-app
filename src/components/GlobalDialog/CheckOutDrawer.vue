@@ -11,6 +11,7 @@
       <check-out-calculator
           :id="id"
           :total="totalPrice"
+          :current-member-id="currentMemberId"
           @payment-cancel="realShow = false"
           @payment-submit="checkOut"
       />
@@ -59,7 +60,8 @@ export default {
     },
     password: {
       default: ''
-    }
+    },
+    currentMemberId: {}
   },
   data: function () {
     return {

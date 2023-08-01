@@ -165,6 +165,22 @@
               </div>
 
               <v-spacer></v-spacer>
+              <v-btn
+                  v-if="Config.activeVip"
+                  color="grey lighten-3 black--text"
+                  elevation="0"
+                  rounded
+                  @click="showMemberSelectionDialog=true"
+                  class="mr-4"
+              >
+                <template v-if="currentMemberId">
+                  <v-icon left>mdi-wallet-membership</v-icon>
+                  {{ currentMemberId }}
+                </template>
+                <template v-else>
+                  <v-icon>mdi-wallet-membership</v-icon>
+                </template>
+              </v-btn>
               <address-display
                   v-if="consumeTypeId===2"
                   :consume-type-status-id="consumeTypeStatusId"
@@ -179,14 +195,13 @@
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
                       class="mr-4"
-                      color="indigo lighten-4 black--text"
+                      color="grey lighten-3 black--text"
                       elevation="0"
                       rounded
                       v-bind="attrs"
                       v-on="on"
                   >
-                    <v-icon left>mdi-swap-horizontal</v-icon>
-                    {{ $t('SwitchMenu') }}
+                    <v-icon>mdi-swap-horizontal</v-icon>
                   </v-btn>
                 </template>
                 <v-list>
@@ -202,18 +217,16 @@
                 </v-list>
               </v-menu>
               <v-btn
-                  color="primary lighten-4 black--text"
+                  color="grey lighten-3 black--text"
                   elevation="0"
                   rounded
                   @click="keyboardMode = !keyboardMode"
               >
                 <template v-if="!keyboardMode">
-                  <v-icon left>mdi-keyboard</v-icon>
-                  {{ $t('KeyboardAndDishNumber') }}
+                  <v-icon>mdi-keyboard</v-icon>
                 </template>
                 <template v-else>
-                  <v-icon left>mdi-menu</v-icon>
-                  {{ $t('ViewCategoryMenu') }}
+                  <v-icon>mdi-menu</v-icon>
                 </template>
               </v-btn>
             </v-card>
@@ -931,6 +944,7 @@
           :password="password"
           :table-id="id"
           :visible="checkoutShow"
+          :current-member-id="currentMemberId"
           @visibility-changed="changeCheckOut"
       />
 
@@ -994,6 +1008,9 @@
           </div>
         </v-card>
       </v-dialog>
+
+      <member-selection-dialog :current-member-id="currentMemberId" @update="e=>currentMemberId=e"
+                               v-model="showMemberSelectionDialog"/>
     </template>
   </div>
 </template>
@@ -1059,6 +1076,7 @@ import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import uniqBy from 'lodash-es/uniqBy'
 import priceDisplay from '../SalePage/Fragment/PriceDisplay.vue'
+import MemberSelectionDialog from '@/views/TablePage/Dialog/MemberSelectionDialog.vue'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -1118,6 +1136,7 @@ export default {
     dragscroll
   },
   components: {
+    MemberSelectionDialog,
     BuffetStartDialog,
     GridButton,
     AddressDisplay,
@@ -1150,7 +1169,6 @@ export default {
       tab: null,
       addressFormOpen: false,
       consumeTypeList: [],
-
       keyboardLayout: GlobalConfig.topKeyboardKey
         .split(',')
         .concat(keyboardLayout),
@@ -1160,9 +1178,7 @@ export default {
       modificationShow: false,
       discountModelShow: null,
       buffetDialogShow: false,
-
       isSendingRequest: false,
-
       oldMod: null,
       checkOutType: 'checkOut',
       checkOutModel: {
@@ -1170,7 +1186,6 @@ export default {
         count: 0,
         list: []
       },
-
       /**/
       discountRatio: 1,
       discountStr: null,
@@ -1205,11 +1220,10 @@ export default {
       /* new input */
       keyboardInput: '',
       currentCodeBuffer: '',
-      deviceId: -1
+
+      currentMemberId: null,
+      showMemberSelectionDialog: null
     }
-  },
-  created () {
-    this.deviceId = GlobalConfig.DeviceId
   },
   methods: {
     async deleteAndSaveReason (note) {
@@ -1539,17 +1553,14 @@ export default {
         this.removeFromSplitOrder(this.splitOrderListModel.list[0])
       }
     },
-
     dishesSetDiscount: async function () {
       await optionalAuthorizeAsync('', !GlobalConfig.discountWithoutPassword)
       this.discountModelShow = true
       this.useDishesDiscount = true
     },
-
     printZwichenBon: function () {
       printZwichenBon(this.id, this.splitOrderListModel.list)
     },
-
     addToSplit: function (dish) {
       const item = IKUtils.deepCopy(dish)
       if (item.code === '-1') {
@@ -1559,29 +1570,6 @@ export default {
       this.orderListModel.add(item, -1)
       this.splitOrderListModel.add(item, 1)
     },
-    getRandomName () {
-      const arr = []
-      for (let i = 0; i < 10; i++) {
-        arr[i] = String(i)
-      }
-      let len = arr.length
-      for (let i = 0; i < 26; i++) {
-        arr[i + len] = String.fromCharCode(i + 65)
-      }
-      len = arr.length
-      for (let i = 0; i < 26; i++) {
-        arr[i + len] = String.fromCharCode(i + 97)
-      }
-      const newString = arr.join('')
-      let randomNumber
-      const realRandomName = []
-      for (let j = 0; j < 16; j++) {
-        randomNumber = Math.floor(Math.random() * newString.length)
-        realRandomName[j] = newString.charAt(randomNumber)
-      }
-      return realRandomName.join('')
-    },
-
     addExtraDish () {
       const dish = IKUtils.deepCopy(this.currentDish)
       if (dish.currentPrice === '') {
@@ -1616,7 +1604,6 @@ export default {
     removeDish: function (dish) {
       this.cartListModel.add(dish, -1)
     },
-
     submitModification: function (_mod, dish, count, saveInfo) {
       if (this.count !== 1) {
         count = this.count
@@ -1685,7 +1672,6 @@ export default {
       this.indexActive = -1
       this.updateSearchDish()
     },
-
     discountClear () {
       this.submitDiscount('')
     },
@@ -1694,7 +1680,6 @@ export default {
         await this.$refs.discount.submitDiscount(discountStr)
       }
     },
-
     checkOut (pw, print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
       if (!memberCardId) {
         memberCardId = null
@@ -1729,7 +1714,6 @@ export default {
           Swal.isVisible()
       )
     },
-
     async getTableDetail () {
       try {
         const res = await hillo.silentGet(
@@ -1810,7 +1794,6 @@ export default {
           }
       }
     },
-
     async reprintOrder () {
       this.isSendingRequest = true
       try {
@@ -1835,7 +1818,6 @@ export default {
         this.isSendingRequest = false
       }
     },
-    //* findInsDecode*/
     async insDecode (t) {
       if (this.deleteDishReasonDialog) {
         await this.submitReason()

@@ -53,7 +53,7 @@
                       class="pa-3 justify-center d-flex align-center"
                   >
                     <v-icon class="mr-2">mdi-receipt-text-outline</v-icon>
-                    {{ $t("tableCheckOutBillTypeOptionNormal") }}
+                    {{ $t('tableCheckOutBillTypeOptionNormal') }}
                   </v-card>
                   <v-card
                       @click="billType = 1"
@@ -63,7 +63,7 @@
                       class="pa-3 justify-center d-flex align-center"
                   >
                     <v-icon class="mr-2">mdi-script-text-outline</v-icon>
-                    {{ $t("tableCheckOutBillTypeOptionCompany") }}
+                    {{ $t('tableCheckOutBillTypeOptionCompany') }}
                   </v-card>
                 </div>
               </div>
@@ -153,7 +153,7 @@
                   style="height: 48px"
                   @click="input(item)"
               >
-                {{ item === "coupon" ? $t('Coupon') : item }}
+                {{ item === 'coupon' ? $t('Coupon') : item }}
               </v-card>
             </div>
           </div>
@@ -171,7 +171,6 @@ import hillo from 'hillo'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import { round } from 'lodash-es'
 import { writeCompanyInfo } from '@/api/api'
-import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
 const fixedNames = {
@@ -202,7 +201,8 @@ export default {
     id: {},
     total: {
       default: 0
-    }
+    },
+    currentMemberId: {}
   },
   directives: {
     dragscroll
@@ -220,7 +220,6 @@ export default {
       extraPaymentMethod: ['mdi-card-account-details', 'mdi-cards'],
       extraPaymentMethodName: [fixedNames.vip],
       paymentLog: [],
-      deviceId: -1,
       loading: false
     }
   },
@@ -267,7 +266,6 @@ export default {
   },
   created () {
     this.loadPaymentMethods()
-    this.deviceId = GlobalConfig.DeviceId
   },
   methods: {
     async loadPaymentMethods () {
@@ -313,8 +311,6 @@ export default {
       setTimeout(() => {
         this.loading = false
       }, 1000)
-
-      // await setShowDisplayStatusInFirebase(false)
     },
     emptyCompanyInfoDialog () {
       this.reasonOfVisit = ''
@@ -396,9 +392,6 @@ export default {
         }
       }
       this.addPaymentLogToList(obj.id, obj.price, obj.icon, obj.hash, obj.memberCardId)
-    },
-    withdrawPayment (index) {
-      this.paymentLog.splice(index, 1)
     },
     async input (input) {
       console.log(input)
