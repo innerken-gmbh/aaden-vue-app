@@ -8597,6 +8597,18 @@ long@^5.0.0:
   resolved "https://registry.npmjs.org/long/-/long-5.2.1.tgz"
   integrity sha512-GKSNGeNAtw8IryjjkhZxuKB3JzlcLTwjtiQCHKvqQet81I93kXslhDQruGI/QsddO83mcDToBVy7GqGS/zYf/A==
 
+lottie-web-vue@1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/lottie-web-vue/-/lottie-web-vue-1.2.1.tgz#21327e1d1814fb2f40e0b4ad4378339835119afe"
+  integrity sha512-JwHb8x5zOBBOL4zObVgBIVmVDMBALo1zMP6/OR+gbEWDpQTpRndixjhjwiVvjUWlrZPl7ScUwiHQGwrn6qlfEw==
+  dependencies:
+    lottie-web "^5.7.4"
+
+lottie-web@^5.7.4:
+  version "5.12.2"
+  resolved "https://registry.yarnpkg.com/lottie-web/-/lottie-web-5.12.2.tgz#579ca9fe6d3fd9e352571edd3c0be162492f68e5"
+  integrity sha512-uvhvYPC8kGPjXT3MyKMrL3JitEAmDMp30lVkuq/590Mw9ok6pWcFCwXJveo0t5uqYw1UREQHofD+jVpdjBv8wg==
+
 lower-case@^1.1.1:
   version "1.1.4"
   resolved "https://registry.npmjs.org/lower-case/-/lower-case-1.1.4.tgz"

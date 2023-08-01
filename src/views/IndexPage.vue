@@ -100,6 +100,14 @@ export default {
           path: 'reservation'
         },
         {
+          icon: 'mdi-wallet-membership',
+          text: 'VIP',
+          beforeEnter () {
+            return true
+          },
+          path: 'member'
+        },
+        {
           icon: 'mdi-home-analytics',
           text: 'Chef',
           async beforeEnter () {
@@ -115,6 +123,7 @@ export default {
           },
           path: 'setting'
         }
+
       ]
     }
   },

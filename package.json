@@ -36,6 +36,7 @@
     "innerken-js-utils": "^1.0.17",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
+    "lottie-web-vue": "1.2.1",
     "register-service-worker": "^1.7.2",
     "remember": "^1.0.1",
     "sweetalert2": "^11.2.1",
