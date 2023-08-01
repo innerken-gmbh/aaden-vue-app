@@ -1,6 +1,6 @@
 {
   "name": "aaden-vue-app",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "private": true,
   "description": "科学管店，化繁为简",
   "author": "juhaodong@gmail.com",
@@ -15,7 +15,7 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
     "release": "sudo snap install snapcraft --classic && export SNAPCRAFT_STORE_CREDENTIALS=$(cat log) && npm run electron:build",
-    "update": "dotenv -e .env.local -- release-it --ci --no-npm-publish",
+    "update": "release-it --ci --no-npm-publish",
     "upload-i18n": "localazy upload",
     "update-i18n": "localazy download"
   },
