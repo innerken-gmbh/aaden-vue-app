@@ -206,6 +206,16 @@
                         </div>
                       </v-responsive>
                     </v-card>
+                    <v-card @click="transferToCloud" v-if="selectedCard.local&&!selectedCard.cloudId" color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
+                      <v-responsive :aspect-ratio="1">
+                        <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
+                          <v-icon class="mt-1">mdi-cloud-arrow-up</v-icon>
+                          <div class="mt-3 text-body-2 text-no-wrap">
+                           转为云端
+                          </div>
+                        </div>
+                      </v-responsive>
+                    </v-card>
                     <v-card color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
                       <v-responsive :aspect-ratio="1">
                         <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
@@ -326,7 +336,15 @@
 
 <script>
 import LottieAnimation from 'lottie-web-vue'
-import { addBonusPoint, deposit, editNfcCard, getBonusRecord, register, searchNfcCard } from '@/api/VIPCard/VIPApi'
+import {
+  addBonusPoint,
+  deposit,
+  editNfcCard,
+  getBonusRecord,
+  register,
+  searchNfcCard,
+  transferToCloud
+} from '@/api/VIPCard/VIPApi'
 import IKUtils from 'innerken-js-utils'
 import CheckOutCalculator from '@/components/GlobalDialog/CheckOutCalculator.vue'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
@@ -477,6 +495,13 @@ export default {
       await this.reloadAndGoBack(async () => {
         await deposit(this.selectedCard.uid, this.depositTotal, GlobalConfig.defaultPassword, paymentLog)
         this.checkOutDialog = false
+      })
+    },
+    async transferToCloud () {
+      await this.reloadAndGoBack(async () => {
+        IKUtils.showLoading()
+        await transferToCloud(this.selectedCardId)
+        IKUtils.toast()
       })
     }
   },

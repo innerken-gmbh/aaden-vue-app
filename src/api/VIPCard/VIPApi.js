@@ -117,3 +117,9 @@ export async function getBonusRecord (uid) {
     })).content
   }
 }
+
+export async function transferToCloud (id) {
+  const currentUserInfo = await getUserById(id)
+  await createCloudUser(await generateUserInfo(currentUserInfo.uid, currentUserInfo.name, currentUserInfo.email, currentUserInfo.birthday))
+  await addBonusPoint(currentUserInfo.uid, currentUserInfo.bonusPoint)
+}
