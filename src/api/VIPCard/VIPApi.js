@@ -41,7 +41,7 @@ export async function deposit (uid, amount, pw, paymentLog) {
     uid,
     amount,
     pw,
-    paymentLog
+    paymentLog: JSON.stringify(paymentLog)
   })
 }
 

@@ -152,7 +152,7 @@
                   <div class="text-h5 mt-6">操作</div>
                   <div style="display: grid;grid-auto-flow: column;grid-gap: 12px;grid-auto-columns: min-content"
                        class="mt-4">
-                    <v-card color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
+                    <v-card @click="startDeposit" color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
                       <v-responsive :aspect-ratio="1">
                         <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
                           <v-icon>mdi-cash-refund</v-icon>
@@ -196,9 +196,9 @@
                     <v-card color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
                       <v-responsive :aspect-ratio="1">
                         <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
-                          <v-icon class="mt-1">mdi-delete-forever</v-icon>
+                          <v-icon class="mt-1">mdi-dots-horizontal</v-icon>
                           <div class="mt-3 text-body-2 text-no-wrap">
-                            停用会员
+                            敬请期待
                           </div>
                         </div>
                       </v-responsive>
@@ -299,22 +299,36 @@
 
       </v-card>
     </v-dialog>
-
+    <v-navigation-drawer width="400" right app temporary v-model="checkOutDialog">
+      <v-card width="100%">
+        <check-out-calculator
+            :total="depositTotal"
+            style="height: 564px"
+            @payment-cancel="checkOutDialog=false"
+            @payment-submit="onDeposit"
+        ></check-out-calculator>
+      </v-card>
+    </v-navigation-drawer>
   </div>
 </template>
 
 <script>
 import LottieAnimation from 'lottie-web-vue'
-import { editNfcCard, getBonusRecord, register, searchNfcCard } from '@/api/VIPCard/VIPApi'
+import { deposit, editNfcCard, getBonusRecord, register, searchNfcCard } from '@/api/VIPCard/VIPApi'
 import IKUtils from 'innerken-js-utils'
+import CheckOutCalculator from '@/components/GlobalDialog/CheckOutCalculator.vue'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 export default {
   name: 'MemberCardPage',
   components: {
+    CheckOutCalculator,
     LottieAnimation
   },
   data: function () {
     return {
+      checkOutDialog: null,
+      depositTotal: 0,
       showCardInfoDialog: null,
       memberCardList: [],
       bonusList: [],
@@ -394,6 +408,29 @@ export default {
         }
       } catch (e) {
         this.showCardInfoDialog = true
+      }
+    },
+    async startDeposit () {
+      const amount = await IKUtils.showInput('请输入要充值的金额')
+      if (!isNaN(amount)) {
+        this.depositTotal = amount
+        this.checkOutDialog = true
+      }
+    },
+    async onDeposit (paymentLog = []) {
+      const id = this.selectedCardId
+      if (paymentLog?.length === 0) {
+        paymentLog = [{
+          id: 1,
+          price: this.depositTotal
+        }]
+      }
+      try {
+        await deposit(this.selectedCard.uid, this.depositTotal, GlobalConfig.defaultPassword, paymentLog)
+        this.checkOutDialog = false
+        this.initPanel()
+        this.selectedCardId = id
+      } catch (e) {
       }
     }
   },
