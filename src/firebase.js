@@ -1,44 +1,25 @@
-import { doc, updateDoc } from 'firebase/firestore'
+import { initializeApp } from 'firebase/app'
+import { getFirestore } from 'firebase/firestore'
+import IKUtils from 'innerken-js-utils'
 
-import { db } from '@/api/fireStore'
-import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-
-const firebasePath = 'customerDisplay'
-
-export const FirestorageDB = db
-
-export async function setOrderListInFirebase (orderList, deviceIdPath) {
-  if (!GlobalConfig.useCustomerDisplay) {
-    return
-  }
-  const data = { order: orderList }
-  try {
-    await updateDoc(doc(FirestorageDB, firebasePath, deviceIdPath.toString()), data)
-  } catch (e) {
-    console.log(e)
-  }
+const firebaseConfig = {
+  apiKey: 'AIzaSyCtvQ3d-HAtHTUg_-505c-qXRnlz8RlZeg',
+  authDomain: 'aaden-saas.firebaseapp.com',
+  projectId: 'aaden-saas',
+  storageBucket: 'aaden-saas.appspot.com',
+  messagingSenderId: '169167876904',
+  appId: '1:169167876904:web:b83934e5a34d1cbfcc161d',
+  measurementId: 'G-QRPH7NLDZS'
 }
 
-export async function setCartListInFirebase (cartList, deviceIdPath) {
-  if (!GlobalConfig.useCustomerDisplay) {
-    return
-  }
-  const data = { cart: cartList }
-  try {
-    await updateDoc(doc(FirestorageDB, firebasePath, deviceIdPath.toString()), data)
-  } catch (e) {
-    console.log(e)
-  }
-}
+// Initialize Firebase
+const app = initializeApp(firebaseConfig)
+export const db = getFirestore(app)
 
-export async function setCheckOutStatusInFirebase (showBetrag, deviceIdPath) {
-  if (!GlobalConfig.useCustomerDisplay) {
-    return
-  }
-  const data = { showBetrag: showBetrag }
+export async function firebaseAction (action) {
   try {
-    await updateDoc(doc(FirestorageDB, firebasePath, deviceIdPath.toString()), data)
+    await action()
   } catch (e) {
-    console.log(e)
+    IKUtils.showError(e?.message ?? 'Firebase Error')
   }
 }

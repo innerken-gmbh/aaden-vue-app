@@ -302,10 +302,9 @@
       </v-card>
     </v-dialog>
     <v-navigation-drawer width="400" right app temporary v-model="checkOutDialog">
-      <v-card width="100%">
+      <v-card width="100%" height="100vh">
         <check-out-calculator
             :total="depositTotal"
-            style="height: 564px"
             @payment-cancel="checkOutDialog=false"
             @payment-submit="onDeposit"
         ></check-out-calculator>

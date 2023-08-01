@@ -1025,7 +1025,13 @@ import { dragscroll } from 'vue-dragscroll'
 
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 
-import { findDish, getCategoryListWithCache, goHome, processDishList, setDefaultValueForApply } from '@/oldjs/StaticModel'
+import {
+  findDish,
+  getCategoryListWithCache,
+  goHome,
+  processDishList,
+  setDefaultValueForApply
+} from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
@@ -1034,14 +1040,7 @@ import { debounce, groupBy } from 'lodash-es'
 
 import IKUtils from 'innerken-js-utils'
 
-import {
-  acceptOrder,
-  deleteDish,
-  getExternalIdByRejectOrder,
-  reprintOrder,
-  safeRequest,
-  showSuccessMessage
-} from '@/api/api'
+import { acceptOrder, deleteDish, reprintOrder, safeRequest, showSuccessMessage } from '@/api/api'
 
 import { mapGetters } from 'vuex'
 
@@ -1059,10 +1058,6 @@ import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
 import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import uniqBy from 'lodash-es/uniqBy'
-
-import { acceptFireBaseOrder } from '@/api/fireStore'
-
-import { setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFirebase } from '@/firebase.js'
 import priceDisplay from '../SalePage/Fragment/PriceDisplay.vue'
 
 const checkoutFactory = StandardDishesListFactory()
@@ -1400,27 +1395,6 @@ export default {
       } catch (e) {
       }
     },
-    async setOrderListByTableNameInFirebase (orderListModelList) {
-      // upload orderList to Firebase
-      const constData = {}
-      let number = 1
-      if (orderListModelList.length > 0) {
-        orderListModelList.forEach((orderItem) => {
-          const result = {}
-          Object.keys(orderItem)
-            .filter((key) => {
-              return key !== 'change' && key !== 'displayApply'
-            })
-            .forEach((key) => {
-              result[key] = orderItem[key]
-            })
-          const dishKey = 'dish_' + orderItem.dishesId + number
-          number++
-          constData[dishKey] = result
-        })
-      }
-      await setOrderListInFirebase(constData, this.deviceId)
-    },
     async discountShow () {
       await optionalAuthorizeAsync('', !GlobalConfig.discountWithoutPassword)
       this.discountModelShow = true
@@ -1689,21 +1663,13 @@ export default {
       } else if (this.modificationShow) {
         this.cancel()
       } else if (this.checkoutShow) {
-        // clear the data in firestore
-        setOrderListInFirebase({}, this.deviceId)
-        setCartListInFirebase({}, this.deviceId)
         this.checkoutShow = false
         this.initialUI()
       } else if (this.splitOrderListModel.list.length > 0) {
         this.removeAllFromSplitOrder()
       } else if (this.cartListModel.list.length > 0) {
-        // clear the data in firestore
-        setCartListInFirebase({}, this.deviceId)
         this.cartListModel.clear()
       } else {
-        // clear the data in firestore
-        setOrderListInFirebase({}, this.deviceId)
-        setCartListInFirebase({}, this.deviceId)
         this.goHome()
       }
       blockReady()
@@ -1805,7 +1771,6 @@ export default {
       await this.acceptOrder(timeReal.format('DD.MM.YYYY HH:mm'))
     },
     async rejectOrder () {
-      const externalId = await getExternalIdByRejectOrder(this.id)
       const res = await fastSweetAlertRequest(
         i18n.t('RevocationDishReason'),
         'text',
@@ -1814,9 +1779,6 @@ export default {
         { tableId: this.id }
       )
       if (res) {
-        if (parseInt(externalId) !== 0) {
-          await acceptFireBaseOrder(externalId, false)
-        }
         this.goHome()
       }
     },
@@ -1979,9 +1941,6 @@ export default {
         this.isSendingRequest = false
       }
       blockReady()
-      // setShowDisplayStatusInFirebase(false)
-      setOrderListInFirebase({}, this.deviceId)
-      setCartListInFirebase({}, this.deviceId)
     },
     jumpToPayment () {
       const realCheckOut = async (pw) => {
@@ -2114,54 +2073,8 @@ export default {
     },
     async cartListModelClear () {
       this.cartListModel.clear()
-      await setCartListInFirebase({}, this.deviceId)
-    },
-    async setCartListByTableNameInFirebase (dishList) {
-      const constData = {}
-      let number = 1
-      if (dishList.length > 0) {
-        dishList.forEach((dish) => {
-          const result = {}
-          Object.keys(dish)
-            .filter((key) => {
-              return (
-                key !== 'change' &&
-                    key !== 'edit' &&
-                    key !== 'apply' &&
-                    key !== 'langs' &&
-                    key !== 'langsDesc' &&
-                    key !== 'modInfo' &&
-                    key !== 'options'
-              )
-            })
-            .forEach((key) => {
-              result[key] = dish[key]
-            })
-
-          result.hasAppend = false
-
-          if (result.displayApply.length > 0) {
-            const aNameArr = []
-            const priceInfoArr = []
-            result.displayApply.forEach((i) => {
-              aNameArr.push(i.groupName + ':' + i.value)
-              priceInfoArr.push(i.priceInfo)
-            })
-
-            result.aNameArr = aNameArr
-            result.priceInfoArr = priceInfoArr
-            result.hasAppend = true
-          }
-
-          const dishKey = 'cart_' + dish.code + number
-          number++
-
-          constData[dishKey] = result
-        })
-      }
-
-      await setCartListInFirebase(constData, this.deviceId)
     }
+
   },
   computed: {
     priceDisplay () {
@@ -2220,16 +2133,6 @@ export default {
     }
   },
   watch: {
-    checkoutShow (val) {
-      setCheckOutStatusInFirebase(val, this.deviceId)
-    },
-    orderListModelList (val) {
-      this.setOrderListByTableNameInFirebase(val)
-    },
-
-    cartListModelList (val) {
-      this.setCartListByTableNameInFirebase(val)
-    },
 
     activeDCT: function (val) {
       this.keyboardInput = ''

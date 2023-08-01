@@ -172,7 +172,6 @@ import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import { round } from 'lodash-es'
 import { writeCompanyInfo } from '@/api/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import { setOrderListInFirebase } from '@/firebase'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
 const fixedNames = {
@@ -292,13 +291,6 @@ export default {
       }
       this.loading = true
       try {
-        try {
-          setTimeout(() => {
-            setOrderListInFirebase({}, this.deviceId)
-          }, 10)
-        } catch (x) {
-          console.log(x)
-        }
         try {
           if (this.id) {
             await writeCompanyInfo({
