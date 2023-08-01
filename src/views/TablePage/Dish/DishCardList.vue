@@ -48,7 +48,7 @@
 
         <slot name="action"></slot>
         <v-btn small text :color="onlyPaid ? 'primary' : ''" @click="onlyPaid = !onlyPaid">
-          <v-icon left>{{ onlyPaid ? "mdi-checkbox-outline" : "mdi-checkbox-blank-outline" }}</v-icon>
+          <v-icon left>{{ onlyPaid ? 'mdi-checkbox-outline' : 'mdi-checkbox-blank-outline' }}</v-icon>
           {{ $t('OnlyPay') }}
         </v-btn>
       </div>
@@ -110,7 +110,8 @@ export default {
     }
   },
   watch: {
-    dishList: function () {
+    'dishListModel.list': function () {
+      this.currentSourceMark = null
       this.resetExpandIndex()
     },
     expandIndex: {
@@ -134,7 +135,6 @@ export default {
   },
   methods: {
     resetExpandIndex () {
-      this.currentSourceMark = null
       this.expandIndex = this.resetCurrentExpandIndex ? (this.reverse ? 0 : this.dishList.length - 1) : null
     },
     _clickCallBack (index, dish) {
@@ -145,7 +145,6 @@ export default {
     },
     checkIfOpen (index) {
       const dish = this.dishList[index]
-      console.log(dish)
       if (this.showEdit || dish.count > 1) {
         if (this.expandIndex === index) {
           this.expandIndex = null
@@ -174,11 +173,9 @@ export default {
             (!this.onlyPaid || it.realPrice !== 0)
         )
       })
-      // console.log(this.dishListModel.list)
       if (this.reverse) {
         list.reverse()
       }
-      // console.log(this.activeSourceMark, 'source mark')
       return list
     },
     originTotal: function () {

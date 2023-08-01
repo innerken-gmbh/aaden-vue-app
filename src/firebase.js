@@ -1,44 +1,46 @@
-import { doc, updateDoc } from 'firebase/firestore'
+import { initializeApp } from 'firebase/app'
+import { getDoc, getDocs, getFirestore } from 'firebase/firestore'
+import IKUtils from 'innerken-js-utils'
 
-import { db } from '@/api/fireStore'
-import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+const firebaseConfig = {
+  apiKey: 'AIzaSyCtvQ3d-HAtHTUg_-505c-qXRnlz8RlZeg',
+  authDomain: 'aaden-saas.firebaseapp.com',
+  projectId: 'aaden-saas',
+  storageBucket: 'aaden-saas.appspot.com',
+  messagingSenderId: '169167876904',
+  appId: '1:169167876904:web:b83934e5a34d1cbfcc161d',
+  measurementId: 'G-QRPH7NLDZS'
+}
 
-const firebasePath = 'customerDisplay'
+// Initialize Firebase
+const app = initializeApp(firebaseConfig)
+export const db = getFirestore(app)
 
-export const FirestorageDB = db
-
-export async function setOrderListInFirebase (orderList, deviceIdPath) {
-  if (!GlobalConfig.useCustomerDisplay) {
-    return
-  }
-  const data = { order: orderList }
+export async function firebaseAction (action, defaultValue = null) {
   try {
-    await updateDoc(doc(FirestorageDB, firebasePath, deviceIdPath.toString()), data)
+    return await action()
   } catch (e) {
-    console.log(e)
+    console.log(e?.message)
+    IKUtils.toast(e?.message ?? 'Firebase Error')
+    return defaultValue
   }
 }
 
-export async function setCartListInFirebase (cartList, deviceIdPath) {
-  if (!GlobalConfig.useCustomerDisplay) {
-    return
-  }
-  const data = { cart: cartList }
-  try {
-    await updateDoc(doc(FirestorageDB, firebasePath, deviceIdPath.toString()), data)
-  } catch (e) {
-    console.log(e)
-  }
+export async function executeQuery (query) {
+  return getDocContentWithId(await getDocs(query))
 }
 
-export async function setCheckOutStatusInFirebase (showBetrag, deviceIdPath) {
-  if (!GlobalConfig.useCustomerDisplay) {
-    return
-  }
-  const data = { showBetrag: showBetrag }
-  try {
-    await updateDoc(doc(FirestorageDB, firebasePath, deviceIdPath.toString()), data)
-  } catch (e) {
-    console.log(e)
+function getDocContentWithId (docs) {
+  return docs.docs.map(docContent)
+}
+
+export async function getDocContent (docRef) {
+  return docContent(await getDoc(docRef))
+}
+
+export function docContent (doc) {
+  return {
+    id: doc.id,
+    ...doc.data()
   }
 }

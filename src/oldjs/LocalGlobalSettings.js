@@ -18,6 +18,9 @@ export async function loadConfig () {
     GlobalConfig.getMilepayUrl = function () {
       return GlobalConfig.Protocol + GlobalConfig.Base + ':' + GlobalConfig.milePayPort + '/milePay/'
     }
+    GlobalConfig.getBaseUrl = function () {
+      return location.protocol + '//' + GlobalConfig.Base + '/'
+    }
 
     GlobalConfig.startUpTimestamp = dayjs().utcOffset()
     refreshGetter()

@@ -21,21 +21,19 @@
   },
   "main": "background.js",
   "dependencies": {
-    "@firebase/util": "^1.9.0",
-    "@stripe/firestore-stripe-payments": "^0.0.6",
     "aaden-base-model": "^0.1.117",
     "biewangle": "^1.0.11",
     "core-js": "^3.19.2",
     "dayjs": "^1.10.7",
     "electron-settings": "^4.0.2",
-    "firebase": "^9.6.9",
-    "firebase-utils": "^1.1.3",
+    "firebase": "^10.1.0",
     "flag-icons": "^6.7.0",
     "hillo": "^1.1.23",
     "i18n": "^0.14.2",
     "innerken-js-utils": "^1.0.17",
     "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
+    "lottie-web-vue": "1.2.1",
     "register-service-worker": "^1.7.2",
     "remember": "^1.0.1",
     "sweetalert2": "^11.2.1",
@@ -103,7 +101,7 @@
   "bugs": {
     "url": "https://github.com/innerken-gmbh/aaden-vue-app/issues"
   },
-  "homepage": "http://aaden.online",
+  "homepage": "https://aaden.online",
   "release-it": {
     "git": {
       "commitMessage": "[VersionChange]:: release v${version}",

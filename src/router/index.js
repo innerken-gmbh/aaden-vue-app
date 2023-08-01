@@ -9,6 +9,7 @@ import SalesPage from '@/views/SalePage/SalesPage'
 import TablePage from '@/views/TablePage/TablePage'
 import ReservationPage from '@/views/ReservationPage/ReservationPage.vue'
 import SettingPage from '@/views/SettingPage.vue'
+import MemberCardPage from '@/views/MemberPage/MemberCardPage.vue'
 
 Vue.use(VueRouter)
 
@@ -35,6 +36,12 @@ const routes = [
         path: '',
         name: 'reservation',
         component: ReservationPage,
+        props: true
+      },
+      {
+        path: '',
+        name: 'member',
+        component: MemberCardPage,
         props: true
       },
       {
