@@ -173,7 +173,7 @@
                         </div>
                       </v-responsive>
                     </v-card>
-                    <v-card color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
+                    <v-card @click="changeCard" color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
                       <v-responsive :aspect-ratio="1">
                         <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
                           <v-icon class="mt-1">mdi-briefcase-arrow-left-right</v-icon>
@@ -428,7 +428,10 @@ export default {
       }
     },
     async changeCard () {
-
+      await this.reloadAndGoBack(async () => {
+        const newUid = await IKUtils.showInput('请扫描新的卡片')
+        await editNfcCard(this.selectedCardId, newUid, this.selectedCard.birthday, this.selectedCard.name, this.selectedCard.email)
+      })
     },
     async onDeposit (paymentLog = []) {
       if (paymentLog?.length === 0) {
