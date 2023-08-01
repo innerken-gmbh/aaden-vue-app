@@ -319,6 +319,7 @@ import { addBonusPoint, deposit, editNfcCard, getBonusRecord, register, searchNf
 import IKUtils from 'innerken-js-utils'
 import CheckOutCalculator from '@/components/GlobalDialog/CheckOutCalculator.vue'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import { listCloudUser } from '@/api/VIPCard/VIPCloudApi'
 
 export default {
   name: 'MemberCardPage',
@@ -365,8 +366,9 @@ export default {
       this.memberCardList = await searchNfcCard()
       console.log(this.memberCardList, 'list')
     },
-    initPanel () {
-      this.loadMemberCardList()
+    async initPanel () {
+      console.log(await listCloudUser())
+      await this.loadMemberCardList()
       this.selectedCardId = null
       this.cardSearch = null
     },

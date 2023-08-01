@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'
+import { getDoc, getDocs, getFirestore } from 'firebase/firestore'
 import IKUtils from 'innerken-js-utils'
 
 const firebaseConfig = {
@@ -18,8 +18,28 @@ export const db = getFirestore(app)
 
 export async function firebaseAction (action) {
   try {
-    await action()
+    return await action()
   } catch (e) {
-    IKUtils.showError(e?.message ?? 'Firebase Error')
+    IKUtils.toast(e?.message ?? 'Firebase Error')
+    return null
+  }
+}
+
+export async function executeQuery (query) {
+  return getDocContentWithId(await getDocs(query))
+}
+
+function getDocContentWithId (docs) {
+  return docs.docs.map(docContent)
+}
+
+export async function getDocContent (docRef) {
+  return docContent(await getDoc(docRef))
+}
+
+export function docContent (doc) {
+  return {
+    id: doc.id,
+    ...doc.data()
   }
 }
