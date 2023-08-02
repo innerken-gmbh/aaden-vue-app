@@ -40,7 +40,12 @@
                 </div>
               </div>
             </template>
-
+            <div class="my-4" v-if="GlobalConfig.activeVip&&currentMemberId">
+              <div class="text-body-2">当前的会员卡ID:{{currentMemberId}}</div>
+              <div class="text-body-1 mt-2 font-weight-black">
+                可以获得的积分总数: <span class="success--text">{{parseInt(total)}}</span>
+              </div>
+            </div>
             <div>
               <div class="text-body-2">{{ $t('BillType') }}</div>
               <div class="my-2" style="background: transparent">
@@ -171,6 +176,7 @@ import hillo from 'hillo'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import { round } from 'lodash-es'
 import { writeCompanyInfo } from '@/api/api'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
 const fixedNames = {
@@ -220,7 +226,8 @@ export default {
       extraPaymentMethod: ['mdi-card-account-details', 'mdi-cards'],
       extraPaymentMethodName: [fixedNames.vip],
       paymentLog: [],
-      loading: false
+      loading: false,
+      GlobalConfig
     }
   },
   computed: {
