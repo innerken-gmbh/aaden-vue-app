@@ -1,7 +1,10 @@
 <template>
-  <iframe width="100%"
-          :src="'http://'+Config.Base+'/'+endPoint+'?Base='+Config.Base+'&lang='+Config.lang+'&chaos='+Config.startUpTimestamp"
-          style="height: 100vh"></iframe>
+  <iframe
+      width="100%"
+      :src="'http://'+Config.Base+'/'+endPoint+'?Base='+Config.Base
+          +'&lang='+Config.lang+'&chaos='+Config.startUpTimestamp+'&pw='+password"
+      style="height: 100vh"
+  ></iframe>
 </template>
 
 <script>
@@ -14,6 +17,9 @@ export default {
       Config: GlobalConfig,
       endPoint: 'Admin-Edge'
     }
+  },
+  props: {
+    password: {}
   }
 }
 </script>

@@ -111,7 +111,10 @@ export default {
           icon: 'mdi-home-analytics',
           text: 'Chef',
           async beforeEnter () {
-            return await popAuthorize('boss')
+            const pw = await popAuthorize('boss')
+            return {
+              password: pw
+            }
           },
           path: 'boss'
         },

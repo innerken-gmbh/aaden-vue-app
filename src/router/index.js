@@ -22,9 +22,10 @@ const routes = [
     children: [
 
       {
-        path: 'boss',
+        path: 'boss/:password',
         name: 'boss',
-        component: BossPage
+        component: BossPage,
+        props: true
       },
       {
         path: '',
