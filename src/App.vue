@@ -1,10 +1,8 @@
 <template>
   <v-app>
-
     <keep-alive>
       <router-view/>
     </keep-alive>
-
     <pin-dialog></pin-dialog>
     <table-selector></table-selector>
     <v-dialog
@@ -34,7 +32,6 @@
       </v-card>
     </v-dialog>
   </v-app>
-
 </template>
 
 <script>
@@ -45,7 +42,10 @@ import { mapState } from 'vuex'
 
 export default {
   name: 'App',
-  components: { TableSelector, PinDialog },
+  components: {
+    TableSelector,
+    PinDialog
+  },
   props: {},
   data: () => ({}),
   computed: {

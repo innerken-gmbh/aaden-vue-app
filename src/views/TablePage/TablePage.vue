@@ -1,6 +1,6 @@
 <template>
   <div @click="keyboardInput = ''">
-    <template v-cloak>
+    <template v-if="!globalLoading">
       <v-main>
         <div
             style="
@@ -1012,6 +1012,7 @@
       <member-selection-dialog :current-member-id="currentMemberId" @update="e=>currentMemberId=e"
                                v-model="showMemberSelectionDialog"/>
     </template>
+    <template v-else></template>
   </div>
 </template>
 
@@ -1160,6 +1161,7 @@ export default {
   },
   data: function () {
     return {
+      globalLoading: true,
       favoriteList: null,
       reasons: getReason(),
       deleteDishReason: '',
@@ -1952,7 +1954,9 @@ export default {
     },
     async realInitial () {
       window.onkeydown = this.listenKeyDown
+      this.globalLoading = true
       await this.initialUI(true)
+      this.globalLoading = false
     },
     updateActiveDCT (index) {
       this.activeDCT = null
@@ -2135,15 +2139,15 @@ export default {
       }
       this.debounce(this.updateSearchDish)
     },
-    refresh: function () {
-      this.realInitial()
-    },
     keyboardMode: function (val) {
       Remember.keyboardMode = val
     },
     realConsumeTypeId (val) {
       this.reloadDish(val, true)
     }
+  },
+  async activated () {
+    await this.realInitial()
   },
   async mounted () {
     await getConsumeTypeList()

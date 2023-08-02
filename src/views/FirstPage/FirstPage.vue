@@ -1,289 +1,293 @@
 <template>
   <div>
-    <navgation>
-      <div class="d-flex" style="min-width: 200px">
-        <div v-if="restaurantInfo" class="text-h6 font-weight-bold">{{ restaurantInfo.displayName }}</div>
-      </div>
-      <v-spacer></v-spacer>
-      <v-item-group v-model="currentView" class="align-self-center" mandatory style="width: max-content">
-        <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
-          <v-item #default="{active,toggle}">
-            <div
-                :class="active?' active':' text--disabled'"
-                class="navigationPillItem"
-                @click="toggle"
-            >
-              <v-icon left>mdi-silverware</v-icon>
-              {{ $t('DineIn') }}
-              <trailing-number>
-                {{ activeList.length }}
-              </trailing-number>
-            </div>
-          </v-item>
-          <v-item #default="{active,toggle}">
-            <div
-                :class="active?' active':' text--disabled'"
-                class="navigationPillItem"
-                @click="toggle"
-            >
-              <v-icon left>mdi-truck-fast</v-icon>
-              {{ $t('togo') }}
-              <trailing-number>
-                {{ takeawayList.length }}
-              </trailing-number>
-            </div>
-          </v-item>
-          <v-item #default="{active,toggle}">
-            <div
-                :class="active?' active':' text--disabled'"
-                class="navigationPillItem"
-                @click="toggle"
-            >
-              <v-icon left>mdi-account</v-icon>
-              <span style="padding: 2px 4px">{{ $t('ServerOrder') }}</span>
-            </div>
-          </v-item>
+    <template v-if="!globalLoading">
+      <navgation>
+        <div class="d-flex" style="min-width: 200px">
+          <div v-if="restaurantInfo" class="text-h6 font-weight-bold">{{ restaurantInfo.displayName }}</div>
         </div>
-      </v-item-group>
-
-      <template #right>
-
-        <div class="d-flex align-center justify-end" style="min-width: 200px">
-          <div>
-            <time-display></time-display>
+        <v-spacer></v-spacer>
+        <v-item-group v-model="currentView" class="align-self-center" mandatory style="width: max-content">
+          <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
+            <v-item #default="{active,toggle}">
+              <div
+                  :class="active?' active':' text--disabled'"
+                  class="navigationPillItem"
+                  @click="toggle"
+              >
+                <v-icon left>mdi-silverware</v-icon>
+                {{ $t('DineIn') }}
+                <trailing-number>
+                  {{ activeList.length }}
+                </trailing-number>
+              </div>
+            </v-item>
+            <v-item #default="{active,toggle}">
+              <div
+                  :class="active?' active':' text--disabled'"
+                  class="navigationPillItem"
+                  @click="toggle"
+              >
+                <v-icon left>mdi-truck-fast</v-icon>
+                {{ $t('togo') }}
+                <trailing-number>
+                  {{ takeawayList.length }}
+                </trailing-number>
+              </div>
+            </v-item>
+            <v-item #default="{active,toggle}">
+              <div
+                  :class="active?' active':' text--disabled'"
+                  class="navigationPillItem"
+                  @click="toggle"
+              >
+                <v-icon left>mdi-account</v-icon>
+                <span style="padding: 2px 4px">{{ $t('ServerOrder') }}</span>
+              </div>
+            </v-item>
           </div>
-          <v-btn icon @click="openDrawer">
-            <v-icon>mdi-lock-open</v-icon>
-          </v-btn>
-          <language-switcher
-            :active="changeLanguage"
-            :current-locale-code="currentLocaleCode"
-            :locales="$i18n.messages"
-            @language-change="changeLanguage"
-          />
-        </div>
+        </v-item-group>
 
-      </template>
+        <template #right>
 
-    </navgation>
-    <v-tabs-items v-model="currentView" touchless>
+          <div class="d-flex align-center justify-end" style="min-width: 200px">
+            <div>
+              <time-display></time-display>
+            </div>
+            <v-btn icon @click="openDrawer">
+              <v-icon>mdi-lock-open</v-icon>
+            </v-btn>
+            <language-switcher
+                :active="changeLanguage"
+                :current-locale-code="currentLocaleCode"
+                :locales="$i18n.messages"
+                @language-change="changeLanguage"
+            />
+          </div>
 
-      <!--        堂食-->
-      <v-tab-item style="position: relative">
-        <div style="
+        </template>
+
+      </navgation>
+      <v-tabs-items v-model="currentView" touchless>
+
+        <!--        堂食-->
+        <v-tab-item style="position: relative">
+          <div style="
         background: #e8e8e8;
           height: calc(100vh - 64px);
           width: 100%;
           overflow: scroll
 ">
-          <table-blue-print
-              :out-side-table-list="tableList"
-              @need-refresh="refreshTables"
-              @edit-table-clicked="showEditTableDialog"
-              @table-clicked="openOrEnterTable"
-          />
-        </div>
-      </v-tab-item>
-      <!--      外卖-->
-      <v-tab-item>
-        <div class="pa-4 grey lighten-4" style="display: grid;grid-template-columns: repeat(4,calc(25% - 12px));
+            <table-blue-print
+                :out-side-table-list="tableList"
+                @need-refresh="refreshTables"
+                @edit-table-clicked="showEditTableDialog"
+                @table-clicked="openOrEnterTable"
+            />
+          </div>
+        </v-tab-item>
+        <!--      外卖-->
+        <v-tab-item>
+          <div class="pa-4 grey lighten-4" style="display: grid;grid-template-columns: repeat(4,calc(25% - 12px));
         height: 100%;grid-gap: 16px;">
-          <v-card class="pa-4 d-flex flex-column"
-                  color="grey lighten-3"
-                  elevation="0"
-                  height="calc(100vh - 96px)"
-                  style="border-radius: 12px"
-                  width="100%">
-            <div class="text-subtitle-2">{{ $t('NotReceivedOrders') }}
-              <trailing-number>
-                {{ notAccepted.length }}
-              </trailing-number>
-            </div>
-            <div class="mt-4"
-                 style="display: grid;grid-gap: 12px;overflow-y: scroll;max-height:calc(100vh - 150px) ;">
-              <takeaway-order-item
-                  v-for="t in notAccepted"
-                  :key="t.tableName"
-                  :big-card="true"
-                  :table-info="t"
-                  @accept="acceptOrder"
-                  @click="openOrEnterTable(t.tableName)"
-                  @reject="rejectOrder"/>
-            </div>
-
-          </v-card>
-          <v-card class="pa-4 d-flex flex-column"
-                  color="grey lighten-3"
-                  elevation="0"
-                  height="calc(100vh - 96px)"
-                  style="border-radius: 12px">
-            <div class="text-subtitle-2">{{ $t('ReceivedOrders') }}
-              <trailing-number>
-                {{ accepted.length }}
-              </trailing-number>
-            </div>
-            <div class="mt-4" style="display: grid;grid-gap: 12px;overflow-y: scroll;">
-              <table-grid-item
-                  v-for="t in accepted"
-                  :key="t.tableName"
-                  :big-card="true"
-                  :table-info="t"
-                  @click="openOrEnterTable(t.tableName)"
-                  @click-ok="updateStatus(t.id)"/>
-            </div>
-
-          </v-card>
-          <v-card class="pa-4"
-                  color="grey lighten-3"
-                  elevation="0"
-                  height="calc(100vh - 96px)"
-                  style="border-radius: 12px">
-            <div class="text-subtitle-2">{{ $t('CanBePickedUp') }}
-              <trailing-number>{{ picked.length }}</trailing-number>
-            </div>
-            <div class="mt-4" style="display: grid;grid-gap: 12px;overflow-y: scroll;">
-              <pick-up-item
-                  v-for="t in picked"
-                  :key="t.tableName"
-                  :big-card="true"
-                  :table-info="t"
-                  @click="openOrEnterTable(t.tableName)"
-
-              />
-            </div>
-
-          </v-card>
-          <div class="d-flex flex-column" style="height: calc(100vh - 96px)">
-            <v-card class="pa-4" color="success"
-                    dark
-                    elevation="0"
-                    style="border-radius: 12px"
-                    @click="takeawayClicked">
-              <div class="text-subtitle-2 d-flex align-center">
-                <v-icon class="mr-2">mdi-truck-fast</v-icon>
-                {{ $t('AddTakeawayOrders') }}
-                <v-spacer></v-spacer>
-                <v-icon>mdi-plus</v-icon>
-              </div>
-
-            </v-card>
-
-            <v-card class="pa-4 mt-4"
-                    color="white"
-                    elevation="0"
-                    style="border-radius: 12px">
-              <div class="text-subtitle-2 d-flex">{{ $t('TakeawayWebsiteSetting') }}
-                <v-spacer></v-spacer>
-                <template v-if="loading">
-                  <v-progress-circular indeterminate></v-progress-circular>
-                </template>
-                <template v-else>
-                  <v-chip class="ml-2 d-flex align-center" color="white" label small>
-                    <v-icon color="success" left>mdi-checkbox-marked-circle</v-icon>
-                    <span>
-                  {{ $t('Synchronized') }}
-                             </span>
-                  </v-chip>
-                </template>
-              </div>
-              <div class="text-body-1">
-                <div class="py-2 mt-4 d-flex align-center">
-                  <div>
-                    {{ $t('AcceptExternalOrders') }}
-                    <div class="caption">
-                      {{ $t('IfThisOptionIsTurnedOffTheTakeawaySiteWillBeTemporarilyClosed') }}
-                    </div>
-                  </div>
-
-                  <v-spacer></v-spacer>
-                  <v-switch v-model="takeawayEnabled" class="mt-0" hide-details></v-switch>
-                </div>
-                <!--                <div class="py-2 d-flex align-center">-->
-                <!--                  自动接单-->
-                <!--                  <v-spacer></v-spacer>-->
-                <!--                  <v-switch hide-details class="mt-0" color="warning"></v-switch>-->
-                <!--                </div>-->
-                <!--                <div class="py-2 d-flex align-center">-->
-                <!--                  接受配送订单-->
-                <!--                  <v-spacer></v-spacer>-->
-                <!--                  <v-switch hide-details class="mt-0" color="warning"></v-switch>-->
-                <!--                </div>-->
-              </div>
-
-            </v-card>
-
-            <v-card class="pa-4 flex-grow-1 mt-4"
+            <v-card class="pa-4 d-flex flex-column"
                     color="grey lighten-3"
                     elevation="0"
-                    style="border-radius: 12px">
-              <div class="text-subtitle-2">{{ $t('NonTodayOrders') }}
+                    height="calc(100vh - 96px)"
+                    style="border-radius: 12px"
+                    width="100%">
+              <div class="text-subtitle-2">{{ $t('NotReceivedOrders') }}
                 <trailing-number>
-                  0
+                  {{ notAccepted.length }}
                 </trailing-number>
               </div>
-
-            </v-card>
-          </div>
-
-        </div>
-
-      </v-tab-item>
-      <!--      跑堂-->
-      <v-tab-item>
-        <v-card v-dragscroll
-                class="flex-grow-1 d-flex"
-                color="#f5f6fa"
-                height="calc(100vh - 64px)"
-                style="overflow: scroll">
-          <template v-for="servant in servantWithTable">
-            <v-card :key="servant.id" color="transparent" elevation="0"
-                    height="calc(100vh - 64px);">
-              <v-toolbar class="flex-grow-0 ml-1 mb-1 mt-1" color="blue lighten--4" dark
-                         dense elevation="0" style="width: 196px;">
-                <v-toolbar-title class="d-flex align-center" style="width: 100%">
-                  <div>{{ servant.name }}</div>
-                  <v-spacer></v-spacer>
-                  <div class="d-flex align-center" style="font-size: small">
-                    <v-icon small>mdi-food</v-icon>
-                    /
-                    <v-icon small>mdi-cup-water</v-icon>
-                    /
-                    <v-icon small>mdi-cash-multiple</v-icon>
-                  </div>
-                </v-toolbar-title>
-              </v-toolbar>
-              <div v-dragscroll
-                   style="height: calc(100vh - 120px);overflow: scroll;display: grid;grid-auto-rows: 64px;
-                 grid-template-columns: 100%;grid-gap: 4px">
-                <template v-for="table in servant.tables">
-                  <table-list-item :key="table.id" :table-info="table"
-                                   @click="openOrEnterTable(table.tableName)">
-                  </table-list-item>
-                </template>
+              <div class="mt-4"
+                   style="display: grid;grid-gap: 12px;overflow-y: scroll;max-height:calc(100vh - 150px) ;">
+                <takeaway-order-item
+                    v-for="t in notAccepted"
+                    :key="t.tableName"
+                    :big-card="true"
+                    :table-info="t"
+                    @accept="acceptOrder"
+                    @click="openOrEnterTable(t.tableName)"
+                    @reject="rejectOrder"/>
               </div>
 
             </v-card>
+            <v-card class="pa-4 d-flex flex-column"
+                    color="grey lighten-3"
+                    elevation="0"
+                    height="calc(100vh - 96px)"
+                    style="border-radius: 12px">
+              <div class="text-subtitle-2">{{ $t('ReceivedOrders') }}
+                <trailing-number>
+                  {{ accepted.length }}
+                </trailing-number>
+              </div>
+              <div class="mt-4" style="display: grid;grid-gap: 12px;overflow-y: scroll;">
+                <table-grid-item
+                    v-for="t in accepted"
+                    :key="t.tableName"
+                    :big-card="true"
+                    :table-info="t"
+                    @click="openOrEnterTable(t.tableName)"
+                    @click-ok="updateStatus(t.id)"/>
+              </div>
 
-          </template>
-        </v-card>
-        <v-card class="pa-2"
-                style="position: fixed;right: 0;bottom:0;width: 320px;z-index: 15">
-          <v-text-field
-              v-model="buffer"
-              :append-icon="showKeyboard?'mdi-keyboard-close':'mdi-keyboard'"
-              :autofocus="Config.getFocus"
-              :placeholder=" $t('EnterTableNumber')"
-              class="ma-2 pt-1"
-              hide-details
-              style="font-size: 24px"
-              @click:append="showKeyboard=!showKeyboard"
-          />
-          <keyboard-layout v-if="showKeyboard" :keys="keyboardLayout" @input="numberInput"/>
-        </v-card>
-      </v-tab-item>
-      <!--        预定-->
+            </v-card>
+            <v-card class="pa-4"
+                    color="grey lighten-3"
+                    elevation="0"
+                    height="calc(100vh - 96px)"
+                    style="border-radius: 12px">
+              <div class="text-subtitle-2">{{ $t('CanBePickedUp') }}
+                <trailing-number>{{ picked.length }}</trailing-number>
+              </div>
+              <div class="mt-4" style="display: grid;grid-gap: 12px;overflow-y: scroll;">
+                <pick-up-item
+                    v-for="t in picked"
+                    :key="t.tableName"
+                    :big-card="true"
+                    :table-info="t"
+                    @click="openOrEnterTable(t.tableName)"
 
-    </v-tabs-items>
+                />
+              </div>
+
+            </v-card>
+            <div class="d-flex flex-column" style="height: calc(100vh - 96px)">
+              <v-card class="pa-4" color="success"
+                      dark
+                      elevation="0"
+                      style="border-radius: 12px"
+                      @click="takeawayClicked">
+                <div class="text-subtitle-2 d-flex align-center">
+                  <v-icon class="mr-2">mdi-truck-fast</v-icon>
+                  {{ $t('AddTakeawayOrders') }}
+                  <v-spacer></v-spacer>
+                  <v-icon>mdi-plus</v-icon>
+                </div>
+
+              </v-card>
+
+              <v-card class="pa-4 mt-4"
+                      color="white"
+                      elevation="0"
+                      style="border-radius: 12px">
+                <div class="text-subtitle-2 d-flex">{{ $t('TakeawayWebsiteSetting') }}
+                  <v-spacer></v-spacer>
+                  <template v-if="loading">
+                    <v-progress-circular indeterminate></v-progress-circular>
+                  </template>
+                  <template v-else>
+                    <v-chip class="ml-2 d-flex align-center" color="white" label small>
+                      <v-icon color="success" left>mdi-checkbox-marked-circle</v-icon>
+                      <span>
+                  {{ $t('Synchronized') }}
+                             </span>
+                    </v-chip>
+                  </template>
+                </div>
+                <div class="text-body-1">
+                  <div class="py-2 mt-4 d-flex align-center">
+                    <div>
+                      {{ $t('AcceptExternalOrders') }}
+                      <div class="caption">
+                        {{ $t('IfThisOptionIsTurnedOffTheTakeawaySiteWillBeTemporarilyClosed') }}
+                      </div>
+                    </div>
+
+                    <v-spacer></v-spacer>
+                    <v-switch v-model="takeawayEnabled" class="mt-0" hide-details></v-switch>
+                  </div>
+                  <!--                <div class="py-2 d-flex align-center">-->
+                  <!--                  自动接单-->
+                  <!--                  <v-spacer></v-spacer>-->
+                  <!--                  <v-switch hide-details class="mt-0" color="warning"></v-switch>-->
+                  <!--                </div>-->
+                  <!--                <div class="py-2 d-flex align-center">-->
+                  <!--                  接受配送订单-->
+                  <!--                  <v-spacer></v-spacer>-->
+                  <!--                  <v-switch hide-details class="mt-0" color="warning"></v-switch>-->
+                  <!--                </div>-->
+                </div>
+
+              </v-card>
+
+              <v-card class="pa-4 flex-grow-1 mt-4"
+                      color="grey lighten-3"
+                      elevation="0"
+                      style="border-radius: 12px">
+                <div class="text-subtitle-2">{{ $t('NonTodayOrders') }}
+                  <trailing-number>
+                    0
+                  </trailing-number>
+                </div>
+
+              </v-card>
+            </div>
+
+          </div>
+
+        </v-tab-item>
+        <!--      跑堂-->
+        <v-tab-item>
+          <v-card v-dragscroll
+                  class="flex-grow-1 d-flex"
+                  color="#f5f6fa"
+                  height="calc(100vh - 64px)"
+                  style="overflow: scroll">
+            <template v-for="servant in servantWithTable">
+              <v-card :key="servant.id" color="transparent" elevation="0"
+                      height="calc(100vh - 64px);">
+                <v-toolbar class="flex-grow-0 ml-1 mb-1 mt-1" color="blue lighten--4" dark
+                           dense elevation="0" style="width: 196px;">
+                  <v-toolbar-title class="d-flex align-center" style="width: 100%">
+                    <div>{{ servant.name }}</div>
+                    <v-spacer></v-spacer>
+                    <div class="d-flex align-center" style="font-size: small">
+                      <v-icon small>mdi-food</v-icon>
+                      /
+                      <v-icon small>mdi-cup-water</v-icon>
+                      /
+                      <v-icon small>mdi-cash-multiple</v-icon>
+                    </div>
+                  </v-toolbar-title>
+                </v-toolbar>
+                <div v-dragscroll
+                     style="height: calc(100vh - 120px);overflow: scroll;display: grid;grid-auto-rows: 64px;
+                 grid-template-columns: 100%;grid-gap: 4px">
+                  <template v-for="table in servant.tables">
+                    <table-list-item :key="table.id" :table-info="table"
+                                     @click="openOrEnterTable(table.tableName)">
+                    </table-list-item>
+                  </template>
+                </div>
+
+              </v-card>
+
+            </template>
+          </v-card>
+          <v-card class="pa-2"
+                  style="position: fixed;right: 0;bottom:0;width: 320px;z-index: 15">
+            <v-text-field
+                v-model="buffer"
+                :append-icon="showKeyboard?'mdi-keyboard-close':'mdi-keyboard'"
+                :autofocus="Config.getFocus"
+                :placeholder=" $t('EnterTableNumber')"
+                class="ma-2 pt-1"
+                hide-details
+                style="font-size: 24px"
+                @click:append="showKeyboard=!showKeyboard"
+            />
+            <keyboard-layout v-if="showKeyboard" :keys="keyboardLayout" @input="numberInput"/>
+          </v-card>
+        </v-tab-item>
+        <!--        预定-->
+
+      </v-tabs-items>
+    </template>
+    <template v-else></template>
+
     <v-card v-if="buffer"
             class="pa-4"
             style="position:fixed;top: 0;right: 0;
@@ -320,7 +324,6 @@
       </v-card>
     </v-dialog>
   </div>
-
 </template>
 
 <script>
@@ -414,7 +417,8 @@ export default {
       tableList: [],
       currentView: parseInt(Remember.currentView),
       showOtherOrder: Remember.showOtherOrder,
-      loading: false
+      loading: false,
+      globalLoading: true
 
     }
   },
@@ -422,13 +426,9 @@ export default {
     currentView (val) {
       Remember.currentView = val
     },
-
     showOtherOrder: function (val) {
       Remember.showOtherOrder = val
       this.refreshTables()
-    },
-    refresh: function () {
-      this.initPage()
     },
     takeawayEnabled: async function (val) {
       const info = Object.assign({}, this.restaurantInfo)
@@ -607,6 +607,7 @@ export default {
       this.takeawayEnabled = this.restaurantInfo.currentlyOpening === '1'
     },
     async initPage () {
+      this.globalLoading = true
       window.onkeydown = this.listenKeyDown
       try {
         await this.loadRestaurantInfo()
@@ -617,12 +618,17 @@ export default {
         addToQueue('firstPageTables', this.refreshTables)
       } catch (e) {
         this.noNetwork = true
+      } finally {
+        this.globalLoading = false
       }
     },
     reload () {
       location.reload()
     }
 
+  },
+  activated () {
+    this.initPage()
   },
   mounted: async function () {
     await this.initPage()
