@@ -110,10 +110,6 @@ export default {
     }
   },
   watch: {
-    'dishListModel.list': function () {
-      this.currentSourceMark = null
-      this.resetExpandIndex()
-    },
     expandIndex: {
       handler: function (val) {
         if (val == null) {
@@ -204,6 +200,10 @@ export default {
       this.$emit('current-dish-change', currentDish)
       return currentDish
     }
+  },
+  activated () {
+    this.currentSourceMark = null
+    this.resetExpandIndex()
   }
 }
 </script>
