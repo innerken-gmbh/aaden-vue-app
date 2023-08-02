@@ -2148,6 +2148,7 @@ export default {
   },
   async activated () {
     await this.realInitial()
+    this.currentMemberId = null
   },
   async mounted () {
     await getConsumeTypeList()

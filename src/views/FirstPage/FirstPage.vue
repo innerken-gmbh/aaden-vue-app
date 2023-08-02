@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-if="!globalLoading">
+
       <navgation>
         <div class="d-flex" style="min-width: 200px">
           <div v-if="restaurantInfo" class="text-h6 font-weight-bold">{{ restaurantInfo.displayName }}</div>
@@ -285,9 +285,8 @@
         <!--        预定-->
 
       </v-tabs-items>
-    </template>
-    <template v-else></template>
 
+    <v-dialog v-model="globalLoading" fullscreen></v-dialog>
     <v-card v-if="buffer"
             class="pa-4"
             style="position:fixed;top: 0;right: 0;

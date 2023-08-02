@@ -1,8 +1,7 @@
 <template>
   <iframe
       width="100%"
-      :src="'http://'+Config.Base+'/'+endPoint+'?BaseId='+deviceId
-          +'&lang='+Config.lang+'&chaos='+Config.startUpTimestamp+'&pw='+password"
+      :src="'http://'+Config.Base+'/'+endPoint+'?BaseId='+deviceId+'&chaos='+Config.startUpTimestamp+'&pw='+password"
       style="height: 100vh"
   ></iframe>
 </template>
@@ -24,6 +23,9 @@ export default {
     password: {}
   },
   async mounted () {
+    this.deviceId = await getCurrentDeviceId()
+  },
+  async activated () {
     this.deviceId = await getCurrentDeviceId()
   }
 }

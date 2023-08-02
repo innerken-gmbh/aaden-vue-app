@@ -30,6 +30,7 @@ import { round } from 'lodash-es'
 import { changeFireBaseOrderToFinished } from '@/api/fireStore'
 import IKUtils from 'innerken-js-utils'
 import { payWithCard } from '@/api/cardTerminal'
+import { addBonusForUser } from '@/api/VIPCard/VIPCloudApi'
 
 export default {
   name: 'CheckOutDrawer',
@@ -105,7 +106,6 @@ export default {
         pw: this.password
       }
       let ecAmount = 0
-      console.log(paymentLog)
       if (paymentLog.length > 0) {
         checkOutData.paymentLog = JSON.stringify(paymentLog)
         ecAmount = paymentLog.filter(it => parseInt(it.id) === 2).reduce((sum, i) => sum + parseFloat(i.price), 0).toFixed(2)
@@ -145,6 +145,9 @@ export default {
           await changeFireBaseOrderToFinished(externalId)
         }
         toast(this.$t('JSTableCheckOutSuccess'))
+        if (this.currentMemberId) {
+          await addBonusForUser(this.totalPrice, this.currentMemberId)
+        }
         this.cancel()
         if (this.checkOutType === 'checkOut') {
           await goHome()
