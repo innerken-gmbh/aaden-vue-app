@@ -1,4 +1,6 @@
 {
+  "MaxVipCollectAblePoints": "可以获得的积分总数",
+  "CurrentVipMemberId" : "当前的会员卡ID",
   "Recall" : "Stornieren",
   "Sure" : "Sicher",
   "SelectVipMemberReferToOrder" : "请选择本订单所关联的会员",

@@ -1,4 +1,6 @@
 {
+  "MaxVipCollectAblePoints": "Die Gesamtpunktzahl, die erreicht werden kann",
+  "CurrentVipMemberId" : "Aktuelle Mitgliedskarten-ID",
   "Sure" : "Sicher",
   "SelectVipMemberReferToOrder" : "Bitte wählen Sie das mit dieser Bestellung verknüpfte Mitglied aus",
   "EnterNewPointAmount" : "Bitte geben Sie eine neue Punktzahl ein",
