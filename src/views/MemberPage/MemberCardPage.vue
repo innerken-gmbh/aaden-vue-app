@@ -54,7 +54,7 @@
                 :elevation="selectedCardId===member.id?1:0"
                 @click="selectMemberCard(member.id)"
                 :color="(selectedCardId===member.id?'white':'grey lighten-5')"
-                v-for="member in memberCardList"
+                v-for="member in filteredList"
                 :key="member.id"
             >
               <div class="d-flex align-center text-body-1">
@@ -394,6 +394,16 @@ export default {
     },
     usageInfo () {
       return this.selectedCard?.usageInfos ?? []
+    },
+    filteredList () {
+      return this.memberCardList.filter(it => {
+        if (!this.cardSearch) {
+          return true
+        } else {
+          const str = [it.name, it.birthday, it.uid, it.email].join(',')
+          return str.includes(this.cardSearch)
+        }
+      }).slice(0, 10)
     }
   },
   watch: {
@@ -511,6 +521,9 @@ export default {
         IKUtils.toast()
       })
     }
+  },
+  activated () {
+    this.initPanel()
   },
   mounted () {
     this.initPanel()
