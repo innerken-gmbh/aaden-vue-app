@@ -64,8 +64,8 @@ export default {
     },
     async changeBonusPoint () {
       this.show = false
-      const newAmount = await IKUtils.showInput('请输入新的积分数量', 'number',
-        '当前积分数量为' + this.totalBonus)
+      const newAmount = await IKUtils.showInput(this.$t('EnterNewPointAmount'), 'number',
+        this.$t('ActuallyScore' + ': ') + this.totalBonus)
       if (newAmount) {
         const modify = (parseFloat(newAmount) -
             parseFloat(this.totalBonus)).toFixed(2)
@@ -104,7 +104,7 @@ export default {
     <v-card class="pa-6">
       <template v-if="!selectedMemberId">
         <div class="text-h5">
-          请选择本订单所关联的会员
+          {{ $t('SelectVipMemberReferToOrder') }}
         </div>
         <v-text-field
             @focus="searchText=''"
@@ -129,7 +129,7 @@ export default {
         <v-btn @click="selectedMemberId=null" elevation="0" color="grey lighten-4">
           <v-icon left
           >mdi-arrow-left</v-icon>
-          返回
+          {{ $t('Return') }}
         </v-btn>
         <div class="text-h5 mt-4">
           {{selectedMember.name}}
@@ -140,12 +140,12 @@ export default {
         <v-divider class="my-4"></v-divider>
         <div class="mt-2" style="display: grid;grid-template-columns: repeat(2,minmax(0,1fr))">
           <div >
-            <div class="text-body-2">余额</div>
+            <div class="text-body-2">{{ $t('Balance') }}</div>
             <div class="text-h5">{{ selectedMember.voucherTotal | priceDisplay }}</div>
           </div>
           <div @click="changeBonusPoint" class="d-flex align-center pr-4">
             <div>
-              <div class="text-body-2">积分</div>
+              <div class="text-body-2">{{ $t('Integral') }}</div>
               <div class="text-h5">{{ totalBonus }}</div>
             </div>
             <v-spacer></v-spacer>
@@ -157,10 +157,10 @@ export default {
         <v-divider class="my-4"></v-divider>
         <div class="d-flex mt-4">
           <v-btn @click="submitSelection" elevation="0" color="primary lighten-4 black--text">
-            确定
+            {{ $t('Sure') }}
           </v-btn>
           <v-btn @click="cancelSelection"  elevation="0" class="ml-4" color="grey lighten-4 black--text">
-            取消
+            {{ $t('Recall') }}
           </v-btn>
         </div>
 
