@@ -1,8 +1,8 @@
 <template>
   <iframe
-      width="100%"
-      :src="'http://'+Config.Base+'/'+endPoint+'?BaseId='+deviceId+'&chaos='+Config.startUpTimestamp+'&pw='+password"
+      :src="'http://'+Config.Base+'/'+endPoint+'?Base='+base+'&chaos='+Config.startUpTimestamp+'&pw='+password"
       style="height: 100vh"
+      width="100%"
   ></iframe>
 </template>
 
@@ -16,13 +16,15 @@ export default {
     return {
       Config: GlobalConfig,
       endPoint: 'Admin-Edge',
-      deviceId: null
+      deviceId: null,
+      base: null
     }
   },
   props: {
     password: {}
   },
   async mounted () {
+    this.base = GlobalConfig.Base
     this.deviceId = await getCurrentDeviceId()
   },
   async activated () {
