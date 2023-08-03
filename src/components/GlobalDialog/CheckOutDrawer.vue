@@ -7,7 +7,10 @@
       touchless
       width="fit-content"
   >
-    <v-card class="fill-height" tile>
+    <v-card
+        class="fill-height"
+        tile
+    >
       <check-out-calculator
           :id="id"
           :total="totalPrice"
@@ -30,7 +33,7 @@ import { round } from 'lodash-es'
 import { changeFireBaseOrderToFinished } from '@/api/fireStore'
 import IKUtils from 'innerken-js-utils'
 import { payWithCard } from '@/api/cardTerminal'
-import { addBonusForUser } from '@/api/VIPCard/VIPCloudApi'
+import { addBonusPoint, getUserById } from '@/api/VIPCard/VIPApi'
 
 export default {
   name: 'CheckOutDrawer',
@@ -146,7 +149,8 @@ export default {
         }
         toast(this.$t('JSTableCheckOutSuccess'))
         if (this.currentMemberId) {
-          await addBonusForUser(this.totalPrice, this.currentMemberId)
+          const user = await getUserById(this.currentMemberId)
+          await addBonusPoint(user.uid, this.totalPrice)
         }
         this.cancel()
         if (this.checkOutType === 'checkOut') {
