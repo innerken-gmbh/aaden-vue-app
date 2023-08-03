@@ -57,7 +57,9 @@ export function reload () {
 
 export async function useCurrentConfig () {
   await goHome()
-  GlobalConfig.useCurrentConfig(GlobalConfig)
+  setTimeout(() => {
+    GlobalConfig.useCurrentConfig(GlobalConfig)
+  }, 400)
 }
 
 export function hardReload () {
