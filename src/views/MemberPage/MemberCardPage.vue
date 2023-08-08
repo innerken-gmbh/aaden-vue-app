@@ -64,11 +64,10 @@
                 </div>
                 <v-spacer></v-spacer>
                 <div v-if="member.local">{{ member.voucherTotal | priceDisplay }}</div>
-                <div v-else class="text-body-2">{{ $t('CloudMember') }}:{{member.deviceId}}</div>
+                <div v-else class="text-body-2">{{ $t('CloudMember') }}: {{member.deviceId}}</div>
               </div>
-              <div class="text-body-2 text--secondary mt-2">
-                {{ member.uid }}
-                | @{{ member.createdAt | age }}
+              <div class="d-flex align-center text-no-wrap text-body-2 text--secondary mt-2">
+                {{ member.uid }} | @{{ member.createdAt | age }}
               </div>
             </v-sheet>
           </div>
@@ -104,7 +103,7 @@
                   {{ selectedCard.name }}
                 </div>
                 <div class="text-body-2 text--secondary mt-2">
-                  {{ selectedCard.uid }} | {{ selectedCard.createdAt | age }}| {{ selectedCard.birthday }}
+                  {{ selectedCard.uid }} | {{ selectedCard.createdAt | age }} | {{ selectedCard.birthday }}
                 </div>
                 <v-tabs v-model="currentTab" color="indigo" class="font-weight-black mt-2">
                   <v-tab>🔥 {{ $t('Overview') }}</v-tab>
@@ -155,78 +154,87 @@
                     <div class="text-h5 mt-6">{{ $t('Work') }}</div>
                     <div style="display: grid;grid-auto-flow: column;grid-gap: 12px;grid-auto-columns: min-content"
                          class="mt-4">
-                      <v-card
-                          :disabled="!selectedCard.local"
-                          @click="startDeposit" color="grey lighten-3" width="96"
-                          style="border-radius: 12px !important;" elevation="0">
-                        <v-responsive :aspect-ratio="1">
-                          <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
-                            <v-icon>mdi-cash-refund</v-icon>
-                            <div class="mt-3 text-body-2">
-                              {{ $t('LoadPrepaid') }}
+                      <div class="d-block overflow-hidden">
+                        <v-card :disabled="!selectedCard.local" @click="startDeposit" color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
+                          <v-responsive :aspect-ratio="1">
+                            <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-wrap">
+                              <v-icon>mdi-cash-refund</v-icon>
+                              <div class="text-body-2 text-truncate">
+                                {{ $t('LoadPrepaid') }}
+                              </div>
                             </div>
-                          </div>
-                        </v-responsive>
-                      </v-card>
-                      <v-card @click="changeBonusPoint" color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
-                        <v-responsive :aspect-ratio="1">
-                          <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
-                            <v-icon class="mt-1">mdi-plus-circle-multiple-outline</v-icon>
-                            <div class="mt-3 text-body-2 text-no-wrap">
-                              {{ $t('EditPoints') }}
+                          </v-responsive>
+                        </v-card>
+                      </div>
+                      <div class="d-block overflow-hidden">
+                        <v-card @click="changeBonusPoint" color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
+                          <v-responsive :aspect-ratio="1">
+                            <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-wrap">
+                              <v-icon>mdi-plus-circle-multiple-outline</v-icon>
+                              <div class="text-body-2 text-truncate">
+                                {{ $t('EditPoints') }}
+                              </div>
                             </div>
-                          </div>
-                        </v-responsive>
-                      </v-card>
-                      <v-card
+                          </v-responsive>
+                        </v-card>
+                      </div>
+                      <div class="d-block overflow-hidden">
+                        <v-card
                           :disabled="!selectedCard.local"
                           @click="changeCard" color="grey lighten-3" width="96"
                           style="border-radius: 12px !important;" elevation="0">
-                        <v-responsive :aspect-ratio="1">
-                          <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
-                            <v-icon class="mt-1">mdi-briefcase-arrow-left-right</v-icon>
-                            <div class="mt-3 text-body-2 text-no-wrap">
-                              {{ $t('ReportLoss') }}
+                          <v-responsive :aspect-ratio="1">
+                            <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-wrap">
+                              <v-icon>mdi-briefcase-arrow-left-right</v-icon>
+                              <div class="text-body-2 text-truncate">
+                                {{ $t('ReportLoss') }}
+                              </div>
                             </div>
-                          </div>
-                        </v-responsive>
-                      </v-card>
-                      <v-card
+                          </v-responsive>
+                        </v-card>
+                      </div>
+                      <div class="d-block overflow-hidden">
+                        <v-card
                           :disabled="!selectedCard.local"
                           @click="editCard"
                           color="grey lighten-3"
                           width="96"
                           style="border-radius: 12px !important;"
                           elevation="0">
-                        <v-responsive :aspect-ratio="1">
-                          <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
-                            <v-icon class="mt-1">mdi-folder-edit</v-icon>
-                            <div class="mt-3 text-body-2 text-no-wrap">
-                              {{ $t('EditInformation') }}
+                          <v-responsive :aspect-ratio="1">
+                            <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-wrap">
+                              <v-icon>mdi-folder-edit</v-icon>
+                              <div class="text-body-2 text-truncate">
+                                {{ $t('EditInformation') }}
+                              </div>
                             </div>
-                          </div>
-                        </v-responsive>
-                      </v-card>
-                      <v-card @click="transferToCloud" v-if="selectedCard.local&&!selectedCard.cloudId" color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
-                        <v-responsive :aspect-ratio="1">
-                          <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
-                            <v-icon class="mt-1">mdi-cloud-arrow-up</v-icon>
-                            <div class="mt-3 text-body-2 text-no-wrap">
-                              {{ $t('SwitchToCloud') }}
+                          </v-responsive>
+                        </v-card>
+                      </div>
+                      <div class="d-block overflow-hidden">
+                        <v-card @click="transferToCloud" v-if="selectedCard.local&&!selectedCard.cloudId" color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
+                          <v-responsive :aspect-ratio="1">
+                            <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-wrap">
+                              <v-icon>mdi-cloud-arrow-up</v-icon>
+                              <div class="text-body-2 text-truncate">
+                                {{ $t('SwitchToCloud') }}
+                              </div>
                             </div>
-                          </div>
-                        </v-responsive>
-                      </v-card>
-                      <v-card color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
-                        <v-responsive :aspect-ratio="1">
-                          <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-column">
-                            <v-icon class="mt-1">mdi-dots-horizontal</v-icon>
-                            <div class="mt-3 text-body-2 text-no-wrap">
-                              {{ $t('StayTurned') }}
+                          </v-responsive>
+                        </v-card>
+                      </div>
+                      <div class="d-block overflow-hidden">
+                        <v-card color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
+                          <v-responsive :aspect-ratio="1">
+                            <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-wrap">
+                              <v-icon>mdi-dots-horizontal</v-icon>
+                              <div class="text-body-2 text-truncate">
+                                {{ $t('StayTurned') }}
+                              </div>
                             </div>
-                          </div>
-                        </v-responsive>
-                      </v-card>
+                          </v-responsive>
+                        </v-card>
+                      </div>
 
                     </div>
                   </div>
@@ -241,7 +249,7 @@
                       </div>
                       <v-spacer></v-spacer>
                       <div :class="b.bonusPointChange>0?'success--text':'error--text'" class="text-h6">
-                        {{ b.bonusPointChange }}
+                        {{ b.bonusPointChange>0 ? '+' + b.bonusPointChange : b.bonusPointChange }}
                       </div>
                     </v-card>
                   </div>
@@ -469,7 +477,7 @@ export default {
     },
     async changeBonusPoint () {
       const newAmount = await IKUtils.showInput(this.$t('EnterNewScore'), 'number',
-        this.$t('ActuallyScore' + ': ') + this.totalBonus)
+        this.$t('ActuallyScore') + ': ' + this.totalBonus)
       if (newAmount) {
         const modify = (parseFloat(newAmount) - parseFloat(this.totalBonus)).toFixed(2)
         await this.reloadAndGoBack(async () => {

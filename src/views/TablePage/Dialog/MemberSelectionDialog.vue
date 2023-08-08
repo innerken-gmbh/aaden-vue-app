@@ -65,7 +65,7 @@ export default {
     async changeBonusPoint () {
       this.show = false
       const newAmount = await IKUtils.showInput(this.$t('EnterNewPointAmount'), 'number',
-        this.$t('ActuallyScore' + ': ') + this.totalBonus)
+        this.$t('ActuallyScore') + ': ' + this.totalBonus)
       if (newAmount) {
         const modify = (parseFloat(newAmount) -
             parseFloat(this.totalBonus)).toFixed(2)

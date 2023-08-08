@@ -46,7 +46,7 @@
                   class="hideMore"
                   style="max-width: 150px"
               >
-                <div>{{ $t('All') }} {{ $t('Sales') }}</div>
+                <div>{{ $t('Sales') }}</div>
               </div>
               <div
                   class="font-weight-bold"
