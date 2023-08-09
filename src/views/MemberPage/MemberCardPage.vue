@@ -269,7 +269,7 @@
 
                       <v-spacer></v-spacer>
                       <div :class="b.sumPrice>0?'success--text':'error--text'" class="text-h6">
-                        {{ b.sumPrice | priceDisplay }}
+                        <span v-if="b.sumPrice>0 ">+</span>{{ b.sumPrice | priceDisplay }}
                       </div>
                     </v-card>
                   </div>

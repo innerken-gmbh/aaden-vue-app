@@ -8,7 +8,7 @@
                         elevation="0"
                         class="px-2 mr-2 text-body-1 font-weight-bold flex-shrink-0"
                 >
-                    {{ dish.count }}
+                    {{ dish.count }}<span class="text-caption font-weight-bold">x</span>
                 </v-card>
                 <div class="text-body-1 font-weight-bold flex-grow-1 mr-4">
                     <span class="codeRow">{{ dish.code }}.</span><span>{{ dish.name }}</span>
