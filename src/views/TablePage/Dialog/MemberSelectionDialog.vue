@@ -65,7 +65,7 @@ export default {
     async changeBonusPoint () {
       this.show = false
       const newAmount = await IKUtils.showInput(this.$t('EnterNewPointAmount'), 'number',
-        this.$t('ActuallyScore' + ': ') + this.totalBonus)
+        this.$t('ActuallyScore') + ': ' + this.totalBonus)
       if (newAmount) {
         const modify = (parseFloat(newAmount) -
             parseFloat(this.totalBonus)).toFixed(2)
@@ -157,10 +157,10 @@ export default {
         <v-divider class="my-4"></v-divider>
         <div class="d-flex mt-4">
           <v-btn @click="submitSelection" elevation="0" color="primary lighten-4 black--text">
-            {{ $t('Sure') }}
+            {{ $t('Confirm') }}
           </v-btn>
           <v-btn @click="cancelSelection"  elevation="0" class="ml-4" color="grey lighten-4 black--text">
-            {{ $t('Recall') }}
+            {{ $t('Cancel') }}
           </v-btn>
         </div>
 

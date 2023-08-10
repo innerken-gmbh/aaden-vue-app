@@ -5,7 +5,7 @@
         <thead class="transparent">
         <tr>
           <th class="text-left">{{ $t('TableNumber') }}</th>
-          <th>{{ $t('SerialNumber') }}</th>
+          <th>{{ $t('OrderNumber') }}</th>
           <th class="text-left">{{ $t('time') }}</th>
           <th class="text-left">{{ $t('AmountOfConsumption') }}</th>
           <th class="text-left" style="width: max-content">{{ $t('operation') }}</th>

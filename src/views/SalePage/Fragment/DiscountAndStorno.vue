@@ -8,7 +8,7 @@
       <template v-slot:default>
         <thead>
         <tr>
-          <th class="text-left">{{ $t('TableNumber') }} / {{ $t('SerialNumber') }}</th>
+          <th class="text-left">{{ $t('TableNumber') }} / {{ $t('OrderNumber') }}</th>
           <th class="text-left">{{ $t('time') }}/{{ $t('Waiter') }}</th>
           <th class="text-left">{{ $t('Discount') }}</th>
         </tr>

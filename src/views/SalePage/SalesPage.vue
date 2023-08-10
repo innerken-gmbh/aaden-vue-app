@@ -46,7 +46,7 @@
                   class="hideMore"
                   style="max-width: 150px"
               >
-                <div>{{ $t('All') }} {{ $t('Sales') }}</div>
+                <div>{{ $t('Sales') }}</div>
               </div>
               <div
                   class="font-weight-bold"
@@ -108,7 +108,7 @@
                 elevation="0"
             >{{
                 totalReturn | priceDisplay
-              }}({{ returnList.length }})
+              }} ({{ returnList.length }})
               <v-icon
                   class="mt-n1"
                   color="black"
@@ -129,7 +129,7 @@
                 elevation="0"
             >{{
                 totalDiscount | priceDisplay
-              }}({{ discountList.length }})
+              }} ({{ discountList.length }})
               <v-icon
                   class="mt-n1"
                   color="black"
@@ -266,8 +266,8 @@
         <template v-slot:default>
           <thead>
           <tr>
-            <th class="text-left">{{ $t('TableNumber') }} / {{ $t('SerialNumber') }}</th>
-            <th class="text-left">{{ $t('time') }}</th>
+            <th class="text-left">{{ $t('DishOrOrderNumber') }}</th>
+            <th class="text-left">{{ $t('Timestamp') }}</th>
             <th class="text-left">{{ $t('WaiterInfo') }}</th>
             <th class="text-left">{{ $t('ReturnDishContent') }}</th>
             <th class="text-left">{{ $t('ReturnDishReason') }}</th>
@@ -286,7 +286,7 @@
                 {{ order.servantName }}
               </td>
               <td>
-                <b>{{ order.Dname }}</b> &times; {{ order.count }} = {{ order.fPrice }}
+                <b>{{ order.Dname }}</b> &times; {{ order.count }} = {{ order.fPrice  | priceDisplay }}
               </td>
               <td>
                 {{ order.returnReason }}
@@ -310,8 +310,8 @@
         <template v-slot:default>
           <thead>
           <tr>
-            <th class="text-left">{{ $t('TableNumber') }} / {{ $t('SerialNumber') }}</th>
-            <th class="text-left">{{ $t('time') }}</th>
+            <th class="text-left">{{ $t('DishOrOrderNumber') }}</th>
+            <th class="text-left">{{ $t('Timestamp') }}</th>
             <th class="text-left">{{ $t('WaiterInfo') }}</th>
             <th class="text-left">{{ $t('DiscountContent') }}</th>
           </tr>
@@ -327,7 +327,7 @@
               <td>{{ order.orderInfo.time }}</td>
               <td>{{ order.orderInfo.servantName }}</td>
               <td>
-                <b>{{ order.orderInfo.discountStr }}</b> /- {{ order.orderInfo.value }}
+                <b>{{ order.orderInfo.discountStr.replace('p', '%') }}</b> / -{{ order.orderInfo.value | priceDisplay }}
               </td>
             </tr>
           </template>
