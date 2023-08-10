@@ -1,18 +1,39 @@
 <template>
-  <div style="height: 100vh" class="d-flex flex-column">
-    <div v-if="loading" class="d-flex flex-column justify-center align-center grey lighten-2"
-         style="height: 100vh;width: 400px">
-      <v-progress-circular size="48" indeterminate/>
+  <div
+      style="height: 100vh"
+      class="d-flex flex-column"
+  >
+    <div
+        v-if="loading"
+        class="d-flex flex-column justify-center align-center grey lighten-2"
+        style="height: 100vh;width: 400px"
+    >
+      <v-progress-circular
+          size="48"
+          indeterminate
+      />
     </div>
     <template v-else>
-      <v-card tile color="grey lighten-3" elevation="0" class="pa-3 d-flex align-center" style="width: 100%">
+      <v-card
+          tile
+          color="grey lighten-3"
+          elevation="0"
+          class="pa-3 d-flex align-center"
+          style="width: 100%"
+      >
         <div class="text-h6">{{ $t('BillPlease') }}</div>
         <v-spacer></v-spacer>
-        <v-btn @click="cancel" icon>
+        <v-btn
+            @click="cancel"
+            icon
+        >
           <v-icon>mdi-close</v-icon>
         </v-btn>
       </v-card>
-      <div class="flex-grow-1 d-flex flex-column" style="width: 400px">
+      <div
+          class="flex-grow-1 d-flex flex-column"
+          style="width: 400px"
+      >
         <div class="d-flex grey lighten-4 text-body-1 pa-2 px-3">
           <div>{{ $t('TotalPrice') }}</div>
           <v-spacer></v-spacer>
@@ -20,13 +41,26 @@
             {{ total | priceDisplay }}
           </div>
         </div>
-        <div v-if="readyToCheckOut" class="paymentLog flex-grow-1">
-          <div style="height: 100%" class="pa-2 px-3 d-flex flex-column">
+        <div
+            v-if="readyToCheckOut"
+            class="paymentLog flex-grow-1"
+        >
+          <div
+              style="height: 100%"
+              class="pa-2 px-3 d-flex flex-column"
+          >
             <div class="text-body-2">{{ $t('Payingmethod') }}</div>
             <template v-for="paymentInfo in paymentLog">
-              <div :key="'price' + paymentInfo.hash" class="d-flex py-2 mb-1" style="width: 100%">
-                <v-card color="grey lighten-4 black--text" class="pa-1 px-2 text-capitalize text-body-1"
-                        elevation="0">
+              <div
+                  :key="'price' + paymentInfo.hash"
+                  class="d-flex py-2 mb-1"
+                  style="width: 100%"
+              >
+                <v-card
+                    color="grey lighten-4 black--text"
+                    class="pa-1 px-2 text-capitalize text-body-1"
+                    elevation="0"
+                >
                   <template v-if="paymentInfo.icon.startsWith('mdi')">
                     <v-icon large>{{ paymentInfo.icon }}</v-icon>
                   </template>
@@ -40,15 +74,21 @@
                 </div>
               </div>
             </template>
-            <div class="my-4" v-if="GlobalConfig.activeVip&&currentMemberId">
-              <div class="text-body-2">{{ $t('CurrentVipMemberId') }}: {{currentMemberId}}</div>
+            <div
+                class="my-4"
+                v-if="GlobalConfig.activeVip&&currentMemberId"
+            >
+              <div class="text-body-2">{{ $t('CurrentVipMemberId') }}: {{ currentMemberId }}</div>
               <div class="text-body-1 mt-2 font-weight-black">
-                {{ $t('MaxVipCollectAblePoints') }}: <span class="success--text">{{parseInt(total)}}</span>
+                {{ $t('MaxVipCollectAblePoints') }}: <span class="success--text">{{ parseInt(total) }}</span>
               </div>
             </div>
             <div>
               <div class="text-body-2">{{ $t('BillType') }}</div>
-              <div class="my-2" style="background: transparent">
+              <div
+                  class="my-2"
+                  style="background: transparent"
+              >
                 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))">
                   <v-card
                       @click="billType = 0"
@@ -78,10 +118,30 @@
                 <div class="d-flex">
                   <span class="font-weight-bold text-body-2">{{ $t('OwnerBillData') }}</span>
                 </div>
-                <v-form ref="form" v-model="valid" class="mt-2" lazy-validation>
-                  <v-text-field :label="$t('companyName')" v-model="companyOrPersonName" filled required/>
-                  <v-text-field :label="$t('reason')" v-model="reasonOfVisit" filled required/>
-                  <v-text-field :label="$t('Date')" v-model="locationAndDate" filled required/>
+                <v-form
+                    ref="form"
+                    v-model="valid"
+                    class="mt-2"
+                    lazy-validation
+                >
+                  <v-text-field
+                      :label="$t('companyName')"
+                      v-model="companyOrPersonName"
+                      filled
+                      required
+                  />
+                  <v-text-field
+                      :label="$t('reason')"
+                      v-model="reasonOfVisit"
+                      filled
+                      required
+                  />
+                  <v-text-field
+                      :label="$t('Date')"
+                      v-model="locationAndDate"
+                      filled
+                      required
+                  />
                 </v-form>
               </div>
             </template>
@@ -117,8 +177,13 @@
 
           </div>
         </div>
-        <v-card v-else tile class="calculator pa-2 px-3 d-flex flex-column" elevation="1"
-                style="width: 100%; height: 100%">
+        <v-card
+            v-else
+            tile
+            class="calculator pa-2 px-3 d-flex flex-column"
+            elevation="1"
+            style="width: 100%; height: 100%"
+        >
           <v-card
               v-if="Math.abs(remainTotal - total) > 0.001 && remainTotal !== 0"
               class="pa-4 mt-1 d-flex align-center"
@@ -131,24 +196,36 @@
             <v-spacer></v-spacer>
             <span class="totalNumber">{{ remainTotal | priceDisplay }}</span>
           </v-card>
-          <v-card v-if="remainTotal !== 0" class="pa-4 mt-1 d-flex align-center" color="primary lighten-4"
-                  elevation="0">
+          <v-card
+              v-if="remainTotal !== 0"
+              class="pa-4 mt-1 d-flex align-center"
+              color="primary lighten-4"
+              elevation="0"
+          >
             <div class="text-body-1">
               {{ $t('PayWillHaveTo') }}
             </div>
             <v-spacer></v-spacer>
-            <span :class="inputBuffer ? ' ' : 'grey--text'" class="totalNumber font-weight-black">{{
+            <span
+                :class="inputBuffer ? ' ' : 'grey--text'"
+                class="totalNumber font-weight-black"
+            >{{
                 inputBuffer || remainTotal | priceDisplay
               }}</span>
           </v-card>
 
           <div class="mt-3">
-            <keyboard-layout :keys="keyArr" @input="input"/>
+            <keyboard-layout
+                :keys="keyArr"
+                @input="input"
+            />
           </div>
           <v-divider class="my-4"/>
           <div>
-            <div class="pa-1"
-                 style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-gap: 8px">
+            <div
+                class="pa-1"
+                style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-gap: 8px"
+            >
               <v-card
                   v-for="(item, index) in realExtraPaymentMethodName"
                   :key="index"
@@ -177,6 +254,8 @@ import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import { round } from 'lodash-es'
 import { writeCompanyInfo } from '@/api/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import IKUtils from 'innerken-js-utils'
+import { getUserByUid } from '@/api/VIPCard/VIPApi'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
 const fixedNames = {
@@ -282,6 +361,11 @@ export default {
           p.name = p.langs[0].name
           return p
         })
+      this.paymentMethods.unshift({
+        name: 'VIP',
+        id: -2,
+        icon: ''
+      })
       this.realName = Object.assign({}, defaultRealName)
       this.paymentMethods.forEach((p) => {
         this.$set(this.realName, p.name, p.id)
@@ -345,13 +429,14 @@ export default {
       }
       return read
     },
-    addPaymentLogToList (id, price, icon, hash, name, memberCardId = null) {
+    addPaymentLogToList (id, price, icon, hash, name, memberCardId = null, uid = null) {
       this.paymentLog.push({
         id,
         price,
         icon,
         hash,
         memberCardId,
+        uid,
         name
       })
       if (parseInt(id) !== 1 && !this.equals(this.remainTotal, 0)) {
@@ -379,7 +464,22 @@ export default {
         icon,
         hash
       }
-
+      if (parseInt(type) === -2) {
+        const uid = await IKUtils.showInput('请扫描NFC卡')
+        const card = await getUserByUid(uid)
+        if (card?.local) {
+          const leftAmount = parseFloat(card.voucherTotal)
+          if (parseFloat(leftAmount) === 0) {
+            IKUtils.showError('卡中没有余额')
+            return
+          }
+          obj.price = leftAmount > price ? price : leftAmount
+          obj.uid = uid
+        } else {
+          IKUtils.showError('用户不存在')
+          return
+        }
+      }
       if (parseInt(type) === 4) {
         const res = await fastSweetAlertRequest(
           this.$t('EnterVoucherId'),
@@ -399,7 +499,7 @@ export default {
           return
         }
       }
-      this.addPaymentLogToList(obj.id, obj.price, obj.icon, obj.hash, name, obj.memberCardId)
+      this.addPaymentLogToList(obj.id, obj.price, obj.icon, obj.hash, name, obj.memberCardId, obj.uid)
     },
     async input (input) {
       if (!isNaN(parseInt(input))) {
