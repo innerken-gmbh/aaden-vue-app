@@ -68,7 +68,19 @@ export async function editUser (id, userInfo) {
 
 export async function getMyGroup () {
   return await firebaseAction(async () => {
-    const myGroupId = (await getDocContent(doc(db, selfGroupInfo, await getCurrentDeviceId()))).groupId
+    const myDeviceId = await getCurrentDeviceId()
+    const myGroupId = (await getDocContent(doc(db, selfGroupInfo, myDeviceId)))?.groupId ?? myDeviceId
+    if (!myGroupId) {
+      await setDoc(
+        doc(db, selfGroupInfo, myDeviceId),
+        { groupId: myDeviceId }
+      )
+      await setDoc(
+        doc(db, groupInfo, myDeviceId),
+        doc(db, groupInfo, myDeviceId),
+        { devices: [myDeviceId] }
+      )
+    }
     return (await getDocContent(doc(db, groupInfo, myGroupId))).devices
   })
 }
