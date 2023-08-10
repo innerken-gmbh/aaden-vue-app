@@ -370,7 +370,6 @@ export default {
       if (price === 0) {
         return
       }
-      console.log(this.realName, type)
       const icon = Object.entries(this.realName).find(([k, v]) => v === type)[0]
       const hash = this.paymentLog.length + 'p' + price + 'icon' + icon
       const obj = {
