@@ -1,4 +1,5 @@
 {
+  "OrderDetails": "Einzelheiten zur Bestellung",
   "OrderHistory" : "Bestellprotokoll",
   "CancelOrderAndRefundMoney" : "zurückbuchen",
   "cancelSuccess" : "Stornierung erfolgreich",

@@ -1,4 +1,5 @@
 {
+  "OrderDetails" : "订单详细信息",
   "UserNotExist" : "用户不存在",
   "NoCreditOnCard" : "卡中没有余额",
   "ScanNfcCard": "请扫描NFC卡",
