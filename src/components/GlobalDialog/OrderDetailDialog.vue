@@ -65,7 +65,7 @@
                  small
                  @click="$emit('return-order', orderInfo.id)">
             <v-icon>mdi-file-cancel-outline</v-icon>
-            {{ isReturned ? $t('Refunded') : $t('CancelOrder') + orderInfo.id }}
+            {{ isReturned ? $t('Refunded') : $t('CancelOrderAndRefundMoney') + ' ' + orderInfo.id }}
           </v-btn>
         </v-list-item-group>
       </v-list>
@@ -89,9 +89,9 @@
                       <div>
                         <div class="d-flex">
                           <span>{{ Math.abs(d.count) }}&times; </span>
-                          <span class="text-capitalize text-no-wrap text-truncate font-weight-bold"> {{
+                          <span class="ml-1 text-capitalize text-no-wrap text-truncate font-weight-bold">{{
                               d.currentCode
-                            }} </span>
+                            }}</span>
                           <v-spacer></v-spacer>
                           <template v-if="parseFloat(d.tempDiscountMod)!==0">
                               <span class="text-decoration-line-through warning--text text--darken-1"
@@ -176,7 +176,7 @@ export default {
             name = this.$t('BillSplit')
             break
           default:
-            name = this.$t('BuyNow')
+            name = this.$t('OrderHistory')
         }
         o.dishStatusName = name
         return o

@@ -158,7 +158,7 @@
                         <v-card :disabled="!selectedCard.local" @click="startDeposit" color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
                           <v-responsive :aspect-ratio="1">
                             <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-wrap">
-                              <v-icon>mdi-cash-refund</v-icon>
+                              <v-icon style="width: 100%;">mdi-cash-refund</v-icon>
                               <div class="text-body-2 text-truncate">
                                 {{ $t('LoadPrepaid') }}
                               </div>
@@ -170,7 +170,7 @@
                         <v-card @click="changeBonusPoint" color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
                           <v-responsive :aspect-ratio="1">
                             <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-wrap">
-                              <v-icon>mdi-plus-circle-multiple-outline</v-icon>
+                              <v-icon style="width: 100%;">mdi-plus-circle-multiple-outline</v-icon>
                               <div class="text-body-2 text-truncate">
                                 {{ $t('EditPoints') }}
                               </div>
@@ -185,7 +185,7 @@
                           style="border-radius: 12px !important;" elevation="0">
                           <v-responsive :aspect-ratio="1">
                             <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-wrap">
-                              <v-icon>mdi-briefcase-arrow-left-right</v-icon>
+                              <v-icon style="width: 100%;">mdi-briefcase-arrow-left-right</v-icon>
                               <div class="text-body-2 text-truncate">
                                 {{ $t('ReportLoss') }}
                               </div>
@@ -203,7 +203,7 @@
                           elevation="0">
                           <v-responsive :aspect-ratio="1">
                             <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-wrap">
-                              <v-icon>mdi-folder-edit</v-icon>
+                              <v-icon style="width: 100%;">mdi-folder-edit</v-icon>
                               <div class="text-body-2 text-truncate">
                                 {{ $t('EditInformation') }}
                               </div>
@@ -215,7 +215,7 @@
                         <v-card @click="transferToCloud" v-if="selectedCard.local&&!selectedCard.cloudId" color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
                           <v-responsive :aspect-ratio="1">
                             <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-wrap">
-                              <v-icon>mdi-cloud-arrow-up</v-icon>
+                              <v-icon style="width: 100%;">mdi-cloud-arrow-up</v-icon>
                               <div class="text-body-2 text-truncate">
                                 {{ $t('SwitchToCloud') }}
                               </div>
@@ -227,7 +227,7 @@
                         <v-card color="grey lighten-3" width="96" style="border-radius: 12px !important;" elevation="0">
                           <v-responsive :aspect-ratio="1">
                             <div style="height: 100%" class="pa-4 d-flex align-center justify-center flex-wrap">
-                              <v-icon>mdi-dots-horizontal</v-icon>
+                              <v-icon style="width: 100%;">mdi-dots-horizontal</v-icon>
                               <div class="text-body-2 text-truncate">
                                 {{ $t('StayTurned') }}
                               </div>
