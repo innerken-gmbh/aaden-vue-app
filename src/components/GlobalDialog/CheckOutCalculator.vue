@@ -371,6 +371,7 @@ export default {
         return
       }
       const icon = Object.entries(this.realName).find(([k, v]) => v === type)[0]
+      const name = this.paymentMethods.find(it => it.id === type)?.name ?? icon
       const hash = this.paymentLog.length + 'p' + price + 'icon' + icon
       const obj = {
         id: type,
@@ -388,6 +389,7 @@ export default {
           { amount: 0 },
           'GET'
         )
+        console.log(res)
 
         if (res.content) {
           const leftAmount = parseFloat(res.content.leftAmount)
@@ -397,10 +399,9 @@ export default {
           return
         }
       }
-      this.addPaymentLogToList(obj.id, obj.price, obj.icon, obj.hash, obj.memberCardId)
+      this.addPaymentLogToList(obj.id, obj.price, obj.icon, obj.hash, name, obj.memberCardId)
     },
     async input (input) {
-      console.log(input)
       if (!isNaN(parseInt(input))) {
         this.inputBuffer += input
       } else {

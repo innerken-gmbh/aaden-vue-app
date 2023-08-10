@@ -2,7 +2,6 @@
   <v-navigation-drawer
       v-model="realShow"
       fixed
-      temporary
       right
       touchless
       width="fit-content"
@@ -110,8 +109,10 @@ export default {
       }
       let ecAmount = 0
       if (paymentLog.length > 0) {
+        console.log(paymentLog)
         checkOutData.paymentLog = JSON.stringify(paymentLog)
-        ecAmount = paymentLog.filter(it => parseInt(it.id) === 2).reduce((sum, i) => sum + parseFloat(i.price), 0).toFixed(2)
+        ecAmount = paymentLog.filter(it => parseInt(it.id) === 2)
+          .reduce((sum, i) => sum + parseFloat(i.price), 0).toFixed(2)
       }
       if (ecAmount > 0 && GlobalConfig.cardTerminalIp) {
         IKUtils.showLoading(false)
