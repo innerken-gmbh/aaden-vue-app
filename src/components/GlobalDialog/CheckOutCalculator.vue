@@ -465,18 +465,18 @@ export default {
         hash
       }
       if (parseInt(type) === -2) {
-        const uid = await IKUtils.showInput('请扫描NFC卡')
+        const uid = await IKUtils.showInput(this.$t('ScanNfcCard'))
         const card = await getUserByUid(uid)
         if (card?.local) {
           const leftAmount = parseFloat(card.voucherTotal)
           if (parseFloat(leftAmount) === 0) {
-            IKUtils.showError('卡中没有余额')
+            IKUtils.showError(this.$t('NoCreditOnCard'))
             return
           }
           obj.price = leftAmount > price ? price : leftAmount
           obj.uid = uid
         } else {
-          IKUtils.showError('用户不存在')
+          IKUtils.showError(this.$t('UserNotExist'))
           return
         }
       }
