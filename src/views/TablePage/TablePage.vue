@@ -1012,7 +1012,12 @@
       <member-selection-dialog :current-member-id="currentMemberId" @update="e=>currentMemberId=e"
                                v-model="showMemberSelectionDialog"/>
     </template>
-    <template v-else></template>
+    <template v-else>
+      <div style="height: 100vh;width: 100vw;background: #f6f6f6">
+        <div style="width: 300px;height: 100vh;background: #000"></div>
+
+      </div>
+    </template>
   </div>
 </template>
 
