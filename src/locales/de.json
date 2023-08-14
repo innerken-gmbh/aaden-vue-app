@@ -1,4 +1,6 @@
 {
+  "ReprintAllDishes": "Alle bestellten Gerichte erneut drucken",
+  "AreYouSureToContinue": "Sind Sie sich sicher, dass Sie fortfahren möchten?",
   "OrderDetails": "Einzelheiten zur Bestellung",
   "OrderHistory" : "Bestellprotokoll",
   "CancelOrderAndRefundMoney" : "zurückbuchen",

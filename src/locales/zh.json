@@ -1,4 +1,6 @@
 {
+  "ReprintAllDishes": "重新打印所有订购的菜肴",
+  "AreYouSureToContinue": "你确定你要继续吗？",
   "OrderDetails" : "订单详细信息",
   "UserNotExist" : "用户不存在",
   "NoCreditOnCard" : "卡中没有余额",

@@ -1804,7 +1804,7 @@ export default {
     async reprintOrder () {
       this.isSendingRequest = true
       try {
-        const res = await IKUtils.showConfirmAsyn('Are you sure you want to continue?', 'Reprint all the dishes')
+        const res = await IKUtils.showConfirmAsyn(this.$t('AreYouSureToContinue'), this.$t('ReprintAllDishes'))
         if (res.isConfirmed) {
           await hillo.post('Printer.php?op=questReprintOrder', {
             orderId: this.tableDetailInfo.order.id
