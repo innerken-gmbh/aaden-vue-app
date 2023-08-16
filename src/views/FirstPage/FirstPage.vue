@@ -304,7 +304,7 @@
       </div>
 
     </v-card>
-    <v-dialog v-model="noNetwork" fullscreen>
+    <v-dialog v-if="!noNetwork" v-model="noNetwork" fullscreen>
       <v-card tile>
         <v-card class="pa-4" height="100vh" width="100vw">
           <no-content-display
