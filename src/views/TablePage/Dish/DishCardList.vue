@@ -1,8 +1,8 @@
 <template>
   <v-card
+      class="d-flex flex-column flex-grow-1"
       color="transparent"
       elevation="0"
-      class="d-flex flex-column flex-grow-1"
       style="max-height: calc(100% - 76px)"
   >
     <div v-if="shouldDisplaySourceMarks">
@@ -17,20 +17,20 @@
     </div>
 
     <template v-if="dishList.length > 0">
-      <div v-dragscroll v-show="expand" class="px-2" style="overflow-y: scroll">
+      <div v-show="expand" v-dragscroll class="px-2" style="overflow-y: scroll">
         <template v-for="(order, index) in dishList">
-          <div @click="checkIfOpen(index)" :key="'order' + title + order.identity" style="font-size: larger">
+          <div :key="'order' + title + order.identity" style="font-size: larger" @click="checkIfOpen(index)">
             <dish-card
-                :expand="index === expandIndex"
-                :show-number="showNumber"
                 :click-callback="() => _clickCallBack(index, order)"
-                :show-edit="showEdit"
                 :dish="order"
+                :expand="index === expandIndex"
+                :show-edit="showEdit"
+                :show-number="showNumber"
             />
           </div>
         </template>
         <template v-if="discountDish != null">
-          <dish-card :show-number="showNumber" :show-edit="showEdit" :dish="discountDish"/>
+          <dish-card :dish="discountDish" :show-edit="showEdit" :show-number="showNumber"/>
         </template>
       </div>
       <v-spacer></v-spacer>
@@ -43,11 +43,11 @@
     </template>
 
     <div>
-      <div class="d-flex align-center pt-2 px-2" style="overflow-x: scroll" v-dragscroll>
+      <div v-dragscroll class="d-flex align-center pt-2 px-2" style="overflow-x: scroll">
         <v-spacer></v-spacer>
 
         <slot name="action"></slot>
-        <v-btn small text :color="onlyPaid ? 'primary' : ''" @click="onlyPaid = !onlyPaid">
+        <v-btn :color="onlyPaid ? 'primary' : ''" small text @click="onlyPaid = !onlyPaid">
           <v-icon left>{{ onlyPaid ? 'mdi-checkbox-outline' : 'mdi-checkbox-blank-outline' }}</v-icon>
           {{ $t('OnlyPay') }}
         </v-btn>
@@ -163,6 +163,7 @@ export default {
       return this.sourceMarks.length > 1
     },
     dishList: function () {
+      console.log(this.dishListModel.list, 'list')
       const list = [...this.dishListModel.list].filter((it) => {
         return (
           (this.activeSourceMark === '' || it.sourceMark === this.activeSourceMark) &&
@@ -175,6 +176,7 @@ export default {
       return list
     },
     originTotal: function () {
+      console.log(this.dishListModel.total(), 'this.dishListModel.total()')
       return this.dishListModel.list.length > 0 ? this.dishListModel.total() : 0
     },
     total: function () {

@@ -167,11 +167,11 @@
               <v-spacer></v-spacer>
               <v-btn
                   v-if="Config.activeVip"
+                  class="mr-4"
                   color="grey lighten-3 black--text"
                   elevation="0"
                   rounded
                   @click="showMemberSelectionDialog=true"
-                  class="mr-4"
               >
                 <template v-if="currentMemberId">
                   <v-icon left>mdi-wallet-membership</v-icon>
@@ -252,7 +252,7 @@
                     "
                   >
 
-                    <v-item v-slot="{active,toggle}" v-if="haveFavoriteItem">
+                    <v-item v-if="haveFavoriteItem" v-slot="{active,toggle}">
                       <v-card
                           :color="active?'primary':'grey lighten-4'"
                           :dark="active"
@@ -890,21 +890,21 @@
           </v-card-title>
           <v-card-text class="mt-4">
             <v-text-field
-                outlined
                 v-model="currentDish.currentPrice"
                 :label="$t('Amount')"
                 autofocus
+                outlined
             />
             <v-text-field
-                outlined
                 v-model="currentDish.currentName"
                 :label="$t('name')"
+                outlined
             />
             <v-btn
-                large
                 block
-                elevation="0"
                 class="primary lighten-4 black--text"
+                elevation="0"
+                large
                 @click="addExtraDish"
             >{{ $t('submit') }}
             </v-btn>
@@ -938,13 +938,13 @@
       <check-out-drawer
           :id="tableDetailInfo.order.id"
           :check-out-type="checkOutType"
+          :current-member-id="currentMemberId"
           :discount-ratio="discountRatio"
           :discount-str="discountStr"
           :order="checkOutModel"
           :password="password"
           :table-id="id"
           :visible="checkoutShow"
-          :current-member-id="currentMemberId"
           @visibility-changed="changeCheckOut"
       />
 
@@ -1009,8 +1009,8 @@
         </v-card>
       </v-dialog>
 
-      <member-selection-dialog :current-member-id="currentMemberId" @update="e=>currentMemberId=e"
-                               v-model="showMemberSelectionDialog"/>
+      <member-selection-dialog v-model="showMemberSelectionDialog" :current-member-id="currentMemberId"
+                               @update="e=>currentMemberId=e"/>
     </template>
     <template v-else>
       <div style="height: 100vh;width: 100vw;background: #f6f6f6">
@@ -1048,13 +1048,7 @@ import { dragscroll } from 'vue-dragscroll'
 
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 
-import {
-  findDish,
-  getCategoryListWithCache,
-  goHome,
-  processDishList,
-  setDefaultValueForApply
-} from '@/oldjs/StaticModel'
+import { findDish, getCategoryListWithCache, goHome, processDishList, setDefaultValueForApply } from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
@@ -1429,6 +1423,7 @@ export default {
       }
 
       const dish = findDish(code)
+      console.log(dish, 'dish')
 
       if (dish) {
         if (
@@ -1490,7 +1485,7 @@ export default {
             '*' +
             count +
             this.$t('AddedToCart')
-        this.addDish(dish, parseInt(count))
+        await this.addDish(dish, parseInt(count))
       } else {
         this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
       }
@@ -1537,6 +1532,7 @@ export default {
     async getCategory (consumeTypeId = 1, force = false) {
       if (this.categories.length === 0 || force) {
         this.categories = await getCategoryListWithCache(consumeTypeId)
+        console.log(this.categories, 'categories')
 
         this.dishes = processDishList(this.categories.reduce((arr, i) => {
           arr.push(...i.dishes)
