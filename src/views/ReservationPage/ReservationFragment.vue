@@ -55,7 +55,7 @@
                 append-icon="mdi-magnify"
                 dense
                 hide-details
-                label="Search"
+                :label="$t('search')"
                 solo
             ></v-text-field>
           </div>
@@ -234,12 +234,12 @@
     <v-dialog v-model="reservationAddDialog" max-width="600px">
       <v-card v-if="reservationStep===0"
               class="pa-4" color="grey lighten-4" elevation="0" style="border-radius: 12px">
-        <div class="d-flex">
-          <div class="text-subtitle-1">
+        <div class="d-flex align-baseline">
+          <div class="text-subtitle-1 font-weight-bold">
             {{ $t('CreateNewReservation') }}
           </div>
           <v-spacer></v-spacer>
-          {{ $t('EnterTimeAndNumberOfPeopleToDetermineIfATableIsAvailable') }}
+          <div style="max-width: 340px">{{ $t('EnterTimeAndNumberOfPeopleToDetermineIfATableIsAvailable') }}</div>
         </div>
         <div class="mt-8">
           <div class="d-flex align-center">
@@ -483,7 +483,7 @@ export default {
         { text: i18n.t('TableNumber'), value: 'tableNameNull' },
         { text: i18n.t('NumberOfPeople'), value: 'person' },
         { text: i18n.t('time'), value: 'time' },
-        { text: i18n.t('Confirm'), value: 'action' }
+        { text: i18n.t('status'), value: 'action' }
 
       ],
       setting: {
