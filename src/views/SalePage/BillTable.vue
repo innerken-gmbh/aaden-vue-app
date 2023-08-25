@@ -247,7 +247,7 @@ export default {
       this.$emit('need-refresh')
     },
     async returnOrder (orderId) {
-      IKUtils.showConfirm(this.$t('AreYouSure'), this.$t('Möchten Sie Umsatz Bon stoniren?'), () => {
+      IKUtils.showConfirm(this.$t('AreYouSure'), this.$t('CancelPrintSalesBon'), () => {
         IKUtils.showLoading()
         returnOrder(orderId).then(() => {
           IKUtils.toast()
@@ -276,7 +276,7 @@ export default {
       this.orderDetailDialog = true
     },
     async restoreOrder (orderId) {
-      IKUtils.showConfirm(this.$t('AreYouSure'), this.$t('Möchten Sie Umsatz Bon stoniren?'), async () => {
+      IKUtils.showConfirm(this.$t('AreYouSure'), this.$t('CancelPrintSalesBon'), async () => {
         IKUtils.showLoading()
         await restoreOrder(orderId)
         IKUtils.toast()
