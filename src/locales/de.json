@@ -55,7 +55,7 @@
   "EnterVoucherId" : "Bitte Gutschein ID eingeben",
   "PaymentFailed" : "Zahlung fehlgeschlagen",
   "Other" : "andere",
-  "BasketOrder" : "Warenkorb ---> Bestellen?",
+  "BasketOrder" : "Sind Sie sicher, dass Sie den Bestellvorgang abschließen möchten?",
   "Free" : "kostenlos",
   "Success" : "Erfolgreich",
   "ScanNewCard" : "Bitte Neue Karte Scannen",

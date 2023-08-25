@@ -37,7 +37,7 @@
   "BackendOutdatedErrorMessage": "Your backend version is outdated. Kindly contact Aaden customer service to upgrade",
   "Balance": "balance",
   "Base": "Local address",
-  "BasketOrder": "Shopping cart ---> Ordering?",
+  "BasketOrder": "Are you sure you want to complete the ordering process?",
   "Bill": "bill",
   "BillList": "List of bills",
   "BillLog": "Checkout details",
