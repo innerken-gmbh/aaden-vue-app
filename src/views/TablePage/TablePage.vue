@@ -698,7 +698,7 @@ import { printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
 
-import { debounce } from 'lodash-es'
+import { debounce, groupBy } from 'lodash-es'
 
 import IKUtils from 'innerken-js-utils'
 
@@ -761,6 +761,8 @@ function getReason () {
   const str = localStorage.getItem(key) ?? '[]'
   return JSON.parse(str) ?? []
 }
+
+let filterCache = {}
 
 const keyboardLayout =
 
@@ -1157,6 +1159,7 @@ export default {
           arr.push(...i.dishes)
           return arr
         }, []))
+        filterCache = groupBy(this.dishes, 'dishesCategoryId')
         this.favoriteList = this.dishes.filter(item => item.isFavorite === '1')
         this.cartListModel.setDishList(this.dishes)
       }
@@ -1643,21 +1646,19 @@ export default {
       return []
     },
     filterDish () {
-      let list = this.dishes
-      if (this.activeCategoryId === -10) {
-        list = list.filter(item => item.isFavorite === '1')
-      } else {
-        if (!this.keyboardInput) {
-          const dct = this.dct[this.activeDCT]
-          list = list.filter((item) => {
-            return parseInt(item.dishesCategoryTypeId) === parseInt(dct.id)
-          })
-          list = list.filter((item) => {
+      const list = this.dishes
+
+      if (!this.keyboardInput) {
+        if (!filterCache[this.activeCategoryId]) {
+          filterCache[this.activeCategoryId] = list.filter((item) => {
             return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
           })
         }
+        if (this.haveFavoriteItem && this.activeDCT === 0) {
+          return filterCache[this.activeCategoryId].filter(item => item.isFavorite === '1')
+        }
+        return filterCache[this.activeCategoryId]
       }
-      return list
     },
     async cartListModelClear () {
       this.cartListModel.clear()
@@ -1746,9 +1747,13 @@ export default {
       return parseInt(this.tableDetailInfo.order.consumeTypeStatusId ?? 2)
     },
     filteredC: function () {
-      const dct = this.dct[this.activeDCT]
       return this.categories.filter((item) => {
-        return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
+        if (this.haveFavoriteItem && this.activeDCT === 0) {
+          return item.dishes.some(it => it.isFavorite === '1')
+        } else {
+          const dct = this.dct?.[this.haveFavoriteItem ? (this.activeDCT - 1) : this.activeDCT]
+          return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
+        }
       })
     },
     orderListModelList () {
@@ -1773,13 +1778,8 @@ export default {
     },
 
     activeDCT: function (val) {
-      if (val === 0 && this.haveFavoriteItem) {
-        this.activeCategoryId = -10
-      } else {
-        this.keyboardInput = ''
-        this.activeCategoryId = null
-      }
-
+      this.keyboardInput = ''
+      this.activeCategoryId = null
       this.updateFilteredDish()
     },
     dishes: function () {
