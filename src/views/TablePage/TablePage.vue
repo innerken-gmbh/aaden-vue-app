@@ -1655,7 +1655,7 @@ export default {
           })
         }
         if (this.haveFavoriteItem && this.activeDCT === 0) {
-          return filterCache[this.activeCategoryId].filter(item => item.isFavorite === '1')
+          return list.filter(item => item.isFavorite === '1')
         }
         return filterCache[this.activeCategoryId]
       }
@@ -1748,12 +1748,8 @@ export default {
     },
     filteredC: function () {
       return this.categories.filter((item) => {
-        if (this.haveFavoriteItem && this.activeDCT === 0) {
-          return item.dishes.some(it => it.isFavorite === '1')
-        } else {
-          const dct = this.dct?.[this.haveFavoriteItem ? (this.activeDCT - 1) : this.activeDCT]
-          return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
-        }
+        const dct = this.dct?.[this.haveFavoriteItem ? (this.activeDCT - 1) : this.activeDCT]
+        return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
       })
     },
     orderListModelList () {
@@ -1778,8 +1774,12 @@ export default {
     },
 
     activeDCT: function (val) {
-      this.keyboardInput = ''
-      this.activeCategoryId = null
+      if (val === 0 && this.haveFavoriteItem) {
+        this.activeCategoryId = -10
+      } else {
+        this.keyboardInput = ''
+        this.activeCategoryId = null
+      }
       this.updateFilteredDish()
     },
     dishes: function () {
