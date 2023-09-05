@@ -167,11 +167,11 @@
               <v-spacer></v-spacer>
               <v-btn
                   v-if="Config.activeVip"
+                  class="mr-4"
                   color="grey lighten-3 black--text"
                   elevation="0"
                   rounded
                   @click="showMemberSelectionDialog=true"
-                  class="mr-4"
               >
                 <template v-if="currentMemberId">
                   <v-icon left>mdi-wallet-membership</v-icon>
@@ -252,7 +252,7 @@
                     "
                   >
 
-                    <v-item v-slot="{active,toggle}" v-if="haveFavoriteItem">
+                    <v-item v-if="haveFavoriteItem" v-slot="{active,toggle}">
                       <v-card
                           :color="active?'primary':'grey lighten-4'"
                           :dark="active"
@@ -890,21 +890,21 @@
           </v-card-title>
           <v-card-text class="mt-4">
             <v-text-field
-                outlined
                 v-model="currentDish.currentPrice"
                 :label="$t('Amount')"
                 autofocus
+                outlined
             />
             <v-text-field
-                outlined
                 v-model="currentDish.currentName"
                 :label="$t('name')"
+                outlined
             />
             <v-btn
-                large
                 block
-                elevation="0"
                 class="primary lighten-4 black--text"
+                elevation="0"
+                large
                 @click="addExtraDish"
             >{{ $t('submit') }}
             </v-btn>
@@ -938,13 +938,13 @@
       <check-out-drawer
           :id="tableDetailInfo.order.id"
           :check-out-type="checkOutType"
+          :current-member-id="currentMemberId"
           :discount-ratio="discountRatio"
           :discount-str="discountStr"
           :order="checkOutModel"
           :password="password"
           :table-id="id"
           :visible="checkoutShow"
-          :current-member-id="currentMemberId"
           @visibility-changed="changeCheckOut"
       />
 
@@ -1009,8 +1009,8 @@
         </v-card>
       </v-dialog>
 
-      <member-selection-dialog :current-member-id="currentMemberId" @update="e=>currentMemberId=e"
-                               v-model="showMemberSelectionDialog"/>
+      <member-selection-dialog v-model="showMemberSelectionDialog" :current-member-id="currentMemberId"
+                               @update="e=>currentMemberId=e"/>
     </template>
     <template v-else>
       <div style="height: 100vh;width: 100vw;background: #f6f6f6">
@@ -1048,13 +1048,7 @@ import { dragscroll } from 'vue-dragscroll'
 
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 
-import {
-  findDish,
-  getCategoryListWithCache,
-  goHome,
-  processDishList,
-  setDefaultValueForApply
-} from '@/oldjs/StaticModel'
+import { findDish, getCategoryListWithCache, goHome, processDishList, setDefaultValueForApply } from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
@@ -2060,7 +2054,7 @@ export default {
           })
         }
         if (this.haveFavoriteItem && this.activeDCT === 0) {
-          return filterCache[this.activeCategoryId].filter(item => item.isFavorite === '1')
+          return list.filter(item => item.isFavorite === '1')
         }
         return filterCache[this.activeCategoryId]
       }
@@ -2111,12 +2105,8 @@ export default {
     },
     filteredC: function () {
       return this.categories.filter((item) => {
-        if (this.haveFavoriteItem && this.activeDCT === 0) {
-          return item.dishes.some(it => it.isFavorite === '1')
-        } else {
-          const dct = this.dct?.[this.haveFavoriteItem ? (this.activeDCT - 1) : this.activeDCT]
-          return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
-        }
+        const dct = this.dct?.[this.haveFavoriteItem ? (this.activeDCT - 1) : this.activeDCT]
+        return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
       })
     },
     orderListModelList () {
@@ -2129,9 +2119,12 @@ export default {
   watch: {
 
     activeDCT: function (val) {
-      this.keyboardInput = ''
-      this.activeCategoryId = null
-
+      if (val === 0 && this.haveFavoriteItem) {
+        this.activeCategoryId = -10
+      } else {
+        this.keyboardInput = ''
+        this.activeCategoryId = null
+      }
       this.updateFilteredDish()
     },
     dishes: function () {
