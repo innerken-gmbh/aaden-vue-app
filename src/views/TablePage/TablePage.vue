@@ -1757,6 +1757,11 @@ export default {
     },
     cartListModelList () {
       return this.cartListModel.list
+    },
+    cartListModelHash () {
+      return this.cartListModel.list.map(it => {
+        return { name: it.name, count: it.count, allInfo: it }
+      })
     }
 
   },
@@ -1768,9 +1773,9 @@ export default {
     orderListModelList (val) {
       this.setOrderListByTableNameInFirebase(val)
     },
-
-    cartListModelList (val) {
-      this.setCartListByTableNameInFirebase(val)
+    cartListModelHash (val) {
+      const res = val.map(it => it.allInfo)
+      this.setCartListByTableNameInFirebase(res)
     },
 
     activeDCT: function (val) {
