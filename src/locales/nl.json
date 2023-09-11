@@ -119,7 +119,7 @@
   "MinMaxMealtime": "Totale maaltijdtijd (minuten)",
   "MoreNewFeatures": "Meer nieuwe functies",
   "NL": "Nederlands",
-  "NeedStroller": "Kinderwagen vereist",
+  "NeedStroller": "Kinderstoel vereist",
   "NetWorth": "Netto waarde",
   "New": "Nieuw",
   "NewTable": "Nieuwe tabel",
@@ -378,5 +378,6 @@
   "print_success": "Afdrukken is gelukt",
   "writeCompanyInfo": "Bedrijfsinformatie invullen",
   "infoDetail": "Informatie details",
-  "printDeliveryList" : "Distributielijst afdrukken"
+  "printDeliveryList" : "Distributielijst afdrukken",
+  "first_name": "Voornaam"
 }
