@@ -173,16 +173,16 @@ export default {
       })
     },
     async printSaleBon () {
-      IKUtils.showConfirm(i18n.t('AreYouSure'), i18n.t('Möchten Sie Umsatz Bon drucken?'), () => {
+      IKUtils.showConfirm(i18n.t('AreYouSure'), this.$t('PrintSalesBon'), () => {
         printSaleBon(this.singleZBonDate[0], this.singleZBonDate[1]).then(() => {
-          IKUtils.toast(i18n.t('Erfolgreich drucken!'))
+          IKUtils.toast(this.$t('PrintSuccessful'))
         })
       })
     },
     async printSaleBonByCode () {
-      IKUtils.showConfirm(i18n.t('AreYouSure'), i18n.t('Möchten Sie Umsatz Bon drucken?'), () => {
+      IKUtils.showConfirm(i18n.t('AreYouSure'), this.$t('PrintSalesBon'), () => {
         printSaleBonByCode(this.singleZBonDate[0], this.singleZBonDate[1]).then(() => {
-          IKUtils.toast(i18n.t('Erfolgreich drucken!'))
+          IKUtils.toast(this.$t('PrintSuccessful'))
         })
       })
     }

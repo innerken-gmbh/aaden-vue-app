@@ -1,4 +1,6 @@
 {
+  "PrintSuccessful" : "Drucken erfolgreich！",
+  "PrintSalesBon" : "Möchten Sie Umsatz Bon drucken?",
   "CancelPrintSalesBon" : "Möchten Sie den Umsatz Bon wirklich stornieren?",
   "ReprintAllDishes": "Alle bestellten Gerichte erneut drucken",
   "AreYouSureToContinue": "Sind Sie sich sicher, dass Sie fortfahren möchten?",

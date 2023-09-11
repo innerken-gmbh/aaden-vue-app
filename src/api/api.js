@@ -234,7 +234,7 @@ export function showSuccessMessage (title) {
   IKUtils.toast(title, 'success')
 }
 
-export async function sureTo (action, content = '', title = i18n.t('are_you_sure')) {
+export async function sureTo (action, content = '', title = i18n.t('AreYouSure')) {
   const res = await IKUtils.showConfirmAsyn(i18n.t(content), i18n.t(title))
   if (res.isConfirmed) {
     await action()
