@@ -22,8 +22,11 @@ import _ from 'lodash'
 import { getBaseAndUrlForDeviceId } from '@/api/restaurantInfoService'
 import hillo from 'hillo'
 import ParseInt from 'lodash-es/parseInt'
+import Print from 'vue-print-nb'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
+
+Vue.use(Print)
 
 Vue.use(VuetifyGoogleAutocomplete, {
   apiKey: 'AIzaSyB5lIPQQUJjjY6M-BoqUaZhF21oBbYkd9E',
@@ -66,6 +69,10 @@ Vue.filter('age', function (birthday) {
   } catch (e) {
     return ' - '
   }
+})
+
+Vue.filter('beautifulTime', function (timeStamp) {
+  return dayjs(timeStamp, 'YYYY-MM-DD HH:mm:ss').format('DD.MM/HH:mm')
 })
 
 export function uuidv4 () {

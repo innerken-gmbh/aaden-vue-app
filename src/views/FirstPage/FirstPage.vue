@@ -100,6 +100,10 @@
                 {{ notAccepted.length }}
               </trailing-number>
             </div>
+            <div
+              v-dragscroll
+              style="height: 95%;width: 100%;position: relative;overflow-y: hidden"
+            >
             <div class="mt-4"
                  style="display: grid;grid-gap: 12px;overflow-y: scroll;max-height:calc(100vh - 150px) ;">
               <takeaway-order-item
@@ -110,6 +114,7 @@
                   @accept="acceptOrder"
                   @click="openOrEnterTable(t.tableName)"
                   @reject="rejectOrder"/>
+            </div>
             </div>
 
           </v-card>
@@ -123,6 +128,10 @@
                 {{ accepted.length }}
               </trailing-number>
             </div>
+            <div
+              v-dragscroll
+              style="height: 95%;width: 100%;position: relative;overflow-y: hidden"
+            >
             <div class="mt-4" style="display: grid;grid-gap: 12px;overflow-y: scroll;">
               <table-grid-item
                   v-for="t in accepted"
@@ -131,6 +140,7 @@
                   :table-info="t"
                   @click="openOrEnterTable(t.tableName)"
                   @click-ok="updateStatus(t.id)"/>
+            </div>
             </div>
 
           </v-card>
@@ -142,6 +152,10 @@
             <div class="text-subtitle-2">{{ $t('CanBePickedUp') }}
               <trailing-number>{{ picked.length }}</trailing-number>
             </div>
+            <div
+              v-dragscroll
+              style="height: 95%;width: 100%;position: relative;overflow-y: hidden"
+            >
             <div class="mt-4" style="display: grid;grid-gap: 12px;overflow-y: scroll;">
               <pick-up-item
                   v-for="t in picked"
@@ -151,6 +165,7 @@
                   @click="openOrEnterTable(t.tableName)"
 
               />
+            </div>
             </div>
 
           </v-card>
@@ -308,11 +323,11 @@
       <v-card tile>
         <v-card class="pa-4" height="100vh" width="100vw">
           <no-content-display
-              icon="mdi-wifi-sync"
-              :title="$t('NoConnectionLocalOrRemote')"
               :desc="$t('CheckNetworkOrCallCustomerService')"
+              :title="$t('NoConnectionLocalOrRemote')"
+              icon="mdi-wifi-sync"
           >
-            <v-btn @click="reload" elevation="0" class="mt-4">
+            <v-btn class="mt-4" elevation="0" @click="reload">
               <v-icon left>mdi-refresh</v-icon>
               {{ $t('reload') }}
             </v-btn>

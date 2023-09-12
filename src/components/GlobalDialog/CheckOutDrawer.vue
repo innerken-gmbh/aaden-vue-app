@@ -12,8 +12,8 @@
     >
       <check-out-calculator
           :id="id"
-          :total="totalPrice"
           :current-member-id="currentMemberId"
+          :total="totalPrice"
           @payment-cancel="realShow = false"
           @payment-submit="checkOut"
       />
@@ -33,6 +33,7 @@ import { changeFireBaseOrderToFinished } from '@/api/fireStore'
 import IKUtils from 'innerken-js-utils'
 import { payWithCard } from '@/api/cardTerminal'
 import { addBonusPoint, getUserById } from '@/api/VIPCard/VIPApi'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'CheckOutDrawer',
@@ -68,6 +69,7 @@ export default {
   },
   data: function () {
     return {
+      showEmailDialog: false,
       GlobalConfig: GlobalConfig
     }
   },
@@ -85,10 +87,12 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['showOrderDetail']),
     cancel () {
       this.realShow = false
     },
-    async checkOut (paymentLog = [], billType) {
+    async checkOut (paymentLog = [], billType, selectedOption, orderId) {
+      console.log(selectedOption, 'selectedOption')
       const print = parseInt(billType)
       let withTitle = 0
       let printCount = 1
@@ -105,7 +109,8 @@ export default {
         printCount,
         payMethod: 1,
         discountStr: '',
-        pw: this.password
+        pw: this.password,
+        notPrintingCheckOutBon: selectedOption === 1 ? 0 : 1
       }
       let ecAmount = 0
       if (paymentLog.length > 0) {
@@ -138,7 +143,9 @@ export default {
         'Complex.php?op=' + this.checkOutType,
         checkOutData
       )
+      console.log(res, 'res')
       if (res) {
+        console.log('123')
         const externalId = await hillo.post(
           'Orders.php?op=getExternalIdByCheckOut',
           {
@@ -155,7 +162,13 @@ export default {
         }
         this.cancel()
         if (this.checkOutType === 'checkOut') {
-          await goHome()
+          console.log(selectedOption, 'selected')
+          console.log(orderId, 'orderId')
+          if (selectedOption === 1) {
+            await goHome()
+          } else {
+            this.showOrderDetail({ id: orderId, type: selectedOption })
+          }
         }
       }
       printNow()

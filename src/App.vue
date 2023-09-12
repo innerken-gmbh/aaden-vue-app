@@ -31,6 +31,16 @@
         </v-btn>
       </v-card>
     </v-dialog>
+    <v-dialog
+      v-model="showOrderDetail"
+      max-width="600px"
+      persistent
+    >
+      <bill-detail-page
+        :checkout-type="selectedCheckoutType"
+        :order-id="billDetailOrderId"
+      />
+    </v-dialog>
   </v-app>
 </template>
 
@@ -39,10 +49,12 @@ import { tryToReport } from './oldjs/common'
 import TableSelector from '@/components/GlobalDialog/TableSelector'
 import PinDialog from '@/components/GlobalDialog/PinDialog'
 import { mapState } from 'vuex'
+import BillDetailPage from '@/components/GlobalDialog/BillDetailPage'
 
 export default {
   name: 'App',
   components: {
+    BillDetailPage,
     TableSelector,
     PinDialog
   },
@@ -50,7 +62,7 @@ export default {
   data: () => ({}),
   computed: {
     ...mapState(
-      ['errorDialogTitle', 'errorDialogMessage']),
+      ['errorDialogTitle', 'errorDialogMessage', 'billDetailOrderId', 'selectedCheckoutType']),
     showErrorDialog: {
       get () {
         return this.$store.state.showErrorDialog
@@ -58,6 +70,16 @@ export default {
       set (val) {
         if (!val) {
           this.closeErrorDialog()
+        }
+      }
+    },
+    showOrderDetail: {
+      get () {
+        return this.$store.state.showOrderDetail
+      },
+      set (val) {
+        if (!val) {
+          this.closeOrderDetail()
         }
       }
     }

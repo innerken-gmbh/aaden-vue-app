@@ -37,6 +37,8 @@
     "register-service-worker": "^1.7.2",
     "remember": "^1.0.1",
     "sweetalert2": "^11.2.1",
+    "downloadjs": "^1.4.7",
+    "html-to-image": "^1.11.11",
     "tone": "^14.7.77",
     "vue": "^2.6.14",
     "vue-draggable-resizable-gorkys": "^2.4.8",
@@ -77,7 +79,8 @@
     "vue-cli-plugin-vuetify": "~2.4.4",
     "vue-template-compiler": "^2.6.14",
     "vuetify-loader": "^1.7.3",
-    "webpack": "^4.45.0"
+    "webpack": "^4.45.0",
+    "vue-print-nb": "^1.7.5"
   },
   "eslintConfig": {
     "root": true,

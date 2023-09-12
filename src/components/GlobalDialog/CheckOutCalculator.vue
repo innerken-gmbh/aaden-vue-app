@@ -1,7 +1,7 @@
 <template>
   <div
-      style="height: 100vh"
       class="d-flex flex-column"
+      style="height: 100vh"
   >
     <div
         v-if="loading"
@@ -9,23 +9,23 @@
         style="height: 100vh;width: 400px"
     >
       <v-progress-circular
-          size="48"
           indeterminate
+          size="48"
       />
     </div>
     <template v-else>
       <v-card
-          tile
+          class="pa-3 d-flex align-center"
           color="grey lighten-3"
           elevation="0"
-          class="pa-3 d-flex align-center"
           style="width: 100%"
+          tile
       >
         <div class="text-h6">{{ $t('BillPlease') }}</div>
         <v-spacer></v-spacer>
         <v-btn
-            @click="cancel"
             icon
+            @click="cancel"
         >
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -46,8 +46,8 @@
             class="paymentLog flex-grow-1"
         >
           <div
-              style="height: 100%"
               class="pa-2 px-3 d-flex flex-column"
+              style="height: 100%"
           >
             <div class="text-body-2">{{ $t('Payingmethod') }}</div>
             <template v-for="paymentInfo in paymentLog">
@@ -57,8 +57,8 @@
                   style="width: 100%"
               >
                 <v-card
-                    color="grey lighten-4 black--text"
                     class="pa-1 px-2 text-capitalize text-body-1"
+                    color="grey lighten-4 black--text"
                     elevation="0"
                 >
                   <template v-if="paymentInfo.icon.startsWith('mdi')">
@@ -75,12 +75,52 @@
               </div>
             </template>
             <div
-                class="my-4"
                 v-if="GlobalConfig.activeVip&&currentMemberId"
+                class="my-4"
             >
               <div class="text-body-2">{{ $t('CurrentVipMemberId') }}: {{ currentMemberId }}</div>
               <div class="text-body-1 mt-2 font-weight-black">
                 {{ $t('MaxVipCollectAblePoints') }}: <span class="success--text">{{ parseInt(total) }}</span>
+              </div>
+            </div>
+            <div>
+              <div class="text-body-2">额外设置</div>
+              <div
+                class="my-2"
+                style="background: transparent"
+              >
+                <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr))">
+                  <v-card
+                    :color="activeEmail ? 'primary lighten-4 black--text' : 'grey lighten-4'"
+                    class="pa-2 justify-center d-flex align-center flex-column"
+                    elevation="0"
+                    tile
+                    @click="selectOptions(1)"
+                  >
+                    <v-icon>mdi-email</v-icon>
+                    发送到邮箱
+                  </v-card>
+                  <v-card
+                    :color="activePDF ? 'primary lighten-4 black--text' : 'grey lighten-4'"
+                    class="pa-2 justify-center d-flex align-center flex-column"
+                    elevation="0"
+                    tile
+                    @click="selectOptions(2)"
+                  >
+                    <v-icon>mdi-printer</v-icon>
+                    PDF打印
+                  </v-card>
+                  <v-card
+                    :color="activeDefaultPrint ? 'primary lighten-4 black--text' : 'grey lighten-4'"
+                    class="pa-2 justify-center d-flex align-center flex-column"
+                    elevation="0"
+                    tile
+                    @click="selectOptions(3)"
+                  >
+                    <v-icon>mdi-cloud-print-outline</v-icon>
+                    小票打印机
+                  </v-card>
+                </div>
               </div>
             </div>
             <div>
@@ -91,21 +131,21 @@
               >
                 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))">
                   <v-card
-                      @click="billType = 0"
                       :color="billType === 0 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
-                      tile
-                      elevation="0"
                       class="pa-3 justify-center d-flex align-center"
+                      elevation="0"
+                      tile
+                      @click="billType = 0"
                   >
                     <v-icon class="mr-2">mdi-receipt-text-outline</v-icon>
                     {{ $t('tableCheckOutBillTypeOptionNormal') }}
                   </v-card>
                   <v-card
-                      @click="billType = 1"
                       :color="billType === 1 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
-                      tile
-                      elevation="0"
                       class="pa-3 justify-center d-flex align-center"
+                      elevation="0"
+                      tile
+                      @click="billType = 1"
                   >
                     <v-icon class="mr-2">mdi-script-text-outline</v-icon>
                     {{ $t('tableCheckOutBillTypeOptionCompany') }}
@@ -125,20 +165,20 @@
                     lazy-validation
                 >
                   <v-text-field
-                      :label="$t('companyName')"
                       v-model="companyOrPersonName"
+                      :label="$t('companyName')"
                       filled
                       required
                   />
                   <v-text-field
-                      :label="$t('reason')"
                       v-model="reasonOfVisit"
+                      :label="$t('reason')"
                       filled
                       required
                   />
                   <v-text-field
-                      :label="$t('Date')"
                       v-model="locationAndDate"
+                      :label="$t('Date')"
                       filled
                       required
                   />
@@ -148,9 +188,9 @@
             <v-spacer></v-spacer>
             <div>
               <v-btn
-                  rounded
                   class="mb-2"
                   elevation="0"
+                  rounded
                   @click="paymentLog = []"
               >
                 <v-icon left>mdi-arrow-left</v-icon>
@@ -160,14 +200,14 @@
             </div>
             <div>
               <v-btn
-                  height="56"
-                  block
-                  x-large
-                  rounded
-                  class="flex-grow-1"
                   :disabled="!readyToCheckOut"
+                  block
+                  class="flex-grow-1"
                   color="success lighten-4 black--text"
                   elevation="0"
+                  height="56"
+                  rounded
+                  x-large
                   @click="checkOut()"
               >
                 {{ $t('ConfirmTheOrder') }}
@@ -179,10 +219,10 @@
         </div>
         <v-card
             v-else
-            tile
             class="calculator pa-2 px-3 d-flex flex-column"
             elevation="1"
             style="width: 100%; height: 100%"
+            tile
         >
           <v-card
               v-if="Math.abs(remainTotal - total) > 0.001 && remainTotal !== 0"
@@ -256,6 +296,7 @@ import { writeCompanyInfo } from '@/api/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
 import { getUserByUid } from '@/api/VIPCard/VIPApi'
+import { Remember } from '@/api/remember'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
 const fixedNames = {
@@ -294,6 +335,10 @@ export default {
   },
   data: function () {
     return {
+      selectedOption: null,
+      activeDefaultPrint: Remember.defaultPrint,
+      activeEmail: Remember.sendToEmail,
+      activePDF: Remember.PDFPrint,
       valid: true,
       reasonOfVisit: '',
       companyOrPersonName: '',
@@ -354,6 +399,30 @@ export default {
     this.loadPaymentMethods()
   },
   methods: {
+    selectOptions (item) {
+      if (item === 1) {
+        this.activeEmail = !this.activeEmail
+        if (this.activeEmail) {
+          this.activePDF = false
+          this.activeDefaultPrint = false
+        }
+      } else if (item === 2) {
+        this.activePDF = !this.activePDF
+        if (this.activePDF) {
+          this.activeEmail = false
+          this.activeDefaultPrint = false
+        }
+      } else {
+        this.activeDefaultPrint = !this.activeDefaultPrint
+        if (this.activeDefaultPrint) {
+          this.activeEmail = false
+          this.activePDF = false
+        }
+      }
+      if (!this.activeEmail && !this.activePDF) {
+        this.activeDefaultPrint = true
+      }
+    },
     async loadPaymentMethods () {
       this.paymentMethods = (await hillo.get('PayMethod.php')).content
         .filter((p) => !includedPaymentMethods.includes(parseInt(p.id)))
@@ -375,6 +444,7 @@ export default {
       return Math.abs(a - b) < 0.001
     },
     async checkOut (fastCheckout = false) {
+      console.log(this.id, 'id')
       if (fastCheckout) {
         this.billType = 0
       }
@@ -392,7 +462,14 @@ export default {
         } catch (y) {
           console.log(y)
         }
-        this.$emit('payment-submit', this.paymentLog, this.billType)
+        if (this.activeDefaultPrint) {
+          this.selectedOption = 1
+        } else if (this.activePDF) {
+          this.selectedOption = 2
+        } else if (this.activeEmail) {
+          this.selectedOption = 3
+        }
+        this.$emit('payment-submit', this.paymentLog, this.billType, this.selectedOption, this.id)
         this.paymentLog = []
         this.clearBuffer()
         this.emptyCompanyInfoDialog()
