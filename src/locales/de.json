@@ -523,7 +523,7 @@
   "restore": "Wiederherstellen",
   "writeCustomerInfo": "Geben Sie Kundeninformationen ein！",
   "writeRightBillInfo": "Bitte geben Sie die Rechnungsinformationen des Kunden wahrheitsgemäß ein",
-  "customerName": "name",
+  "customerName": "Name",
   "downloadPDFBill": "Download PDF Rechnung",
   "sendToEmail": "An E-Mail senden",
   "extraSetting": "Zusätzliche Einstellungen",
