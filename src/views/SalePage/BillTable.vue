@@ -30,8 +30,8 @@
                 <v-btn
                     :disabled="order.isReturned==='1'"
                     color="primary lighten-4 black--text"
-                    small
                     elevation="0"
+                    small
                     @click.stop="reprintOrder(order.orderId)">
                   <v-icon left>
                     mdi-printer-settings
@@ -42,8 +42,8 @@
                   <v-btn :disabled="order.isReturned==='1'"
                          class="ml-2"
                          color="grey lighten-3 black--text"
-                         small
                          elevation="0"
+                         small
                          @click.stop="startChangePaymentMethodForOrder(order)">
                     <v-icon left>mdi-cash-refund</v-icon>
                     {{ $t('replace') }}
@@ -51,8 +51,8 @@
                   <v-btn :disabled="order.isReturned==='1'"
                          class="ml-2"
                          color="indigo lighten-4 black--text"
-                         small
                          elevation="0"
+                         small
                          @click.stop="restoreOrder(order.orderId)">
                     <v-icon left>mdi-history</v-icon>
                     {{ $t('restore') }}
@@ -66,19 +66,70 @@
         </tbody>
       </template>
     </v-simple-table>
-    <v-dialog v-model="reprintDialog" max-width="300px">
-      <v-card>
-        <v-card-title>{{ $t('tableCheckOutBillTypeLabel') }}</v-card-title>
-        <v-card-text>
-          <v-btn block elevation="0" large @click="reprintDialog = false, checkCompanyInfo = true">{{
-              $t('tableCheckOutBillTypeOptionCompany')
-            }}
-          </v-btn>
-          <v-btn block class="mt-4" elevation="0" large @click="realReprintOrder(0)">
-            {{ $t('tableCheckOutBillTypeOptionNormal') }}
-          </v-btn>
-        </v-card-text>
-      </v-card>
+    <v-dialog v-model="reprintDialog" max-width="350px">
+      <template v-if="!checkPrintType">
+        <v-card class="pa-4">
+          <div class="d-flex align-center justify-center">
+            <div class="text-h5">
+              请选择打印类型
+            </div>
+            <v-spacer/>
+            <div>
+              <v-btn
+                icon
+                @click="reprintDialog = false"
+              >
+                <v-icon>
+                  mdi-close
+                </v-icon>
+              </v-btn>
+            </div>
+          </div>
+          <div class="mt-4" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr))">
+            <v-card
+              class="pa-2 justify-center d-flex align-center flex-column"
+              elevation="0"
+              tile
+              @click="notDefaultType(3)"
+            >
+              <v-icon>mdi-email</v-icon>
+              发送到邮箱
+            </v-card>
+            <v-card
+              class="pa-2 justify-center d-flex align-center flex-column"
+              elevation="0"
+              tile
+              @click="notDefaultType(2)"
+            >
+              <v-icon>mdi-printer</v-icon>
+              PDF打印
+            </v-card>
+            <v-card
+              class="pa-2 justify-center d-flex align-center flex-column"
+              elevation="0"
+              tile
+              @click="defaultType"
+            >
+              <v-icon>mdi-cloud-print-outline</v-icon>
+              小票打印机
+            </v-card>
+          </div>
+        </v-card>
+      </template>
+      <template v-else>
+        <v-card>
+          <v-card-title>{{ $t('tableCheckOutBillTypeLabel') }}</v-card-title>
+          <v-card-text>
+            <v-btn block elevation="0" large @click="reprintDialog = false, checkCompanyInfo = true">{{
+                $t('tableCheckOutBillTypeOptionCompany')
+              }}
+            </v-btn>
+            <v-btn block class="mt-4" elevation="0" large @click="realReprintOrder(0)">
+              {{ $t('tableCheckOutBillTypeOptionNormal') }}
+            </v-btn>
+          </v-card-text>
+        </v-card>
+      </template>
     </v-dialog>
     <v-dialog v-model="checkCompanyInfo" max-width="600px">
       <v-card class="pa-4">
@@ -142,7 +193,7 @@
         </div>
       </v-card>
     </v-dialog>
-    <v-navigation-drawer width="400" right app temporary v-model="checkOutDialog">
+    <v-navigation-drawer v-model="checkOutDialog" app right temporary width="400">
       <v-card width="100%">
         <check-out-calculator
             :total="changeOrderTotal"
@@ -180,6 +231,7 @@ import {
 } from '@/api/api'
 import CheckOutCalculator from '@/components/GlobalDialog/CheckOutCalculator'
 import OrderDetailDialog from '@/components/GlobalDialog/OrderDetailDialog'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'BillTable',
@@ -189,6 +241,7 @@ export default {
   },
   data: function () {
     return {
+      checkPrintType: false,
       valid: true,
       reasonOfVisit: '',
       companyOrPersonName: '',
@@ -209,6 +262,11 @@ export default {
     showOperation: { default: false }
   },
   watch: {
+    reprintDialog (val) {
+      if (!val) {
+        this.checkPrintType = false
+      }
+    },
     checkCompanyInfo (val) {
       if (!val) {
         this.reasonOfVisit = ''
@@ -218,6 +276,13 @@ export default {
     }
   },
   methods: {
+    notDefaultType (type) {
+      console.log('1')
+      this.showOrderDetail({ id: this.reprintOrderId, type: type, reprint: 1 })
+    },
+    defaultType () {
+      this.checkPrintType = true
+    },
     async submitCompanyInfo () {
       await sureTo(
         async () => {
@@ -255,6 +320,7 @@ export default {
         })
       })
     },
+    ...mapMutations(['showOrderDetail', 'closeOrderDetail']),
     async reprintOrder (orderId) {
       this.reprintOrderId = orderId
       this.reprintDialog = true

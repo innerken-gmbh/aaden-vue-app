@@ -27,16 +27,19 @@ export default new Vuex.Store({
     errorDialogMessage: '',
     showOrderDetail: false,
     billDetailOrderId: '',
-    selectedCheckoutType: null
+    selectedCheckoutType: null,
+    reprintType: null
   },
   mutations: {
     showOrderDetail (state, payload) {
       console.log(payload, 'id')
       state.showOrderDetail = true
+      state.reprintType = payload.reprint
       state.billDetailOrderId = payload.id
       state.selectedCheckoutType = payload.type
     },
     closeOrderDetail (state) {
+      state.billDetailOrderId = ''
       state.showOrderDetail = false
     },
     showErrorDialog (state, title, message = '') {

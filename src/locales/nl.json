@@ -810,5 +810,13 @@
   "yesIAm": "Ja, ik weet het zeker",
   "yesterday": "gisteren",
   "zbonList": "ZbON-lijst",
-  "zoom": "zoomt"
+  "zoom": "zoomt",
+  "writeCustomerInfo": "Vul klantgegevens in！",
+  "writeRightBillInfo": "Vul de factuurgegevens van de klant in.",
+  "customerName": "Naam van de klant",
+  "downloadPDFBill": "PDF factuur downloaden",
+  "sendToEmail": "Verzenden naar e-mail",
+  "extraSetting": "Aanvullende instellingen",
+  "pdfPrint": "PDF afdrukken",
+  "defaultPrinter": "Ticketprinter"
 }

@@ -36,10 +36,16 @@
       max-width="600px"
       persistent
     >
+      <v-card
+        v-if="showOrderDetail"
+        color="#f6f6f6"
+        tile
+      >
       <bill-detail-page
         :checkout-type="selectedCheckoutType"
         :order-id="billDetailOrderId"
       />
+      </v-card>
     </v-dialog>
   </v-app>
 </template>

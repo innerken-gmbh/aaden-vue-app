@@ -92,7 +92,6 @@ export default {
       this.realShow = false
     },
     async checkOut (paymentLog = [], billType, selectedOption, orderId) {
-      console.log(selectedOption, 'selectedOption')
       const print = parseInt(billType)
       let withTitle = 0
       let printCount = 1
@@ -143,9 +142,7 @@ export default {
         'Complex.php?op=' + this.checkOutType,
         checkOutData
       )
-      console.log(res, 'res')
       if (res) {
-        console.log('123')
         const externalId = await hillo.post(
           'Orders.php?op=getExternalIdByCheckOut',
           {
@@ -162,12 +159,10 @@ export default {
         }
         this.cancel()
         if (this.checkOutType === 'checkOut') {
-          console.log(selectedOption, 'selected')
-          console.log(orderId, 'orderId')
           if (selectedOption === 1) {
             await goHome()
           } else {
-            this.showOrderDetail({ id: orderId, type: selectedOption })
+            this.showOrderDetail({ id: orderId, type: selectedOption, reprint: 0 })
           }
         }
       }

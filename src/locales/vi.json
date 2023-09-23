@@ -810,5 +810,13 @@
   "yesIAm": "Vâng tôi chắc chắn",
   "yesterday": "hôm qua",
   "zbonList": "Danh sách Zbon",
-  "zoom": "phóng"
+  "zoom": "phóng",
+  "writeCustomerInfo": "Điền thông tin khách hàng！",
+  "writeRightBillInfo": "Vui lòng điền đầy đủ thông tin thanh toán của khách hàng",
+  "customerName": "Tên khách hàng",
+  "downloadPDFBill": "Tải xuống hóa đơn PDF",
+  "sendToEmail": "Gửi đến hộp thư",
+  "extraSetting": "Cài đặt bổ sung",
+  "pdfPrint": "In PDF",
+  "defaultPrinter": "Máy in vé nhỏ"
 }

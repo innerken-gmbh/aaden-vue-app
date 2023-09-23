@@ -1,45 +1,70 @@
 <template>
   <div>
-    <v-card class="pa-4">
-      <div id="billDetail">
+    <div v-if="checkCustomerInfo" class="pa-4">
+      <div class="d-flex">
+        <div class="text-body-1 font-weight-bold">{{ $t('writeCustomerInfo') }}</div>
+        <v-spacer/>
+        <div>
+          <v-btn
+            icon
+            @click="backToOrder"
+          >
+            <v-icon>
+              mdi-close
+            </v-icon>
+          </v-btn>
+        </div>
+      </div>
+      <div class="text-body-2 mt-1">{{ $t('writeRightBillInfo') }}</div>
+      <div class="mt-4">
+        <v-form ref="form" v-model="valid" lazy-validation>
+          <v-text-field v-model="customerName" :placeholder="$t('customerName')" :rules="rules" hide-details outlined/>
+          <v-text-field v-model="customerAddress" :placeholder="$t('CustomerAddress')" :rules="rules" class="mt-2" hide-details outlined/>
+          <v-text-field v-model="customerCity" :placeholder="$t('City')" :rules="rules" class="mt-2" hide-details outlined/>
+          <v-text-field v-model="customerPostcode" :placeholder="$t('postcode')" :rules="rules" class="mt-2" hide-details outlined/>
+          <v-text-field v-model="customerEmail" :placeholder="$t('Email')" :rules="rules" class="mt-2" hide-details outlined/>
+        </v-form>
+      </div>
+      <div class="mt-4">
+        <v-btn :disabled="!valid" class="mr-2" color="primary" elevation="0" @click="getCustomerInfo">
+          <v-icon left>mdi-arrow-right</v-icon>
+          {{ $t('nextStep') }}
+        </v-btn>
+      </div>
+    </div>
+    <div v-else>
+      <div  id="billDetail" class="pa-4" style="background-color: white">
         <div>
           Order Detail · #{{ orderId }}
         </div>
         <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
         <div>
-          <div>
-            <div style="font-size: 14px; font-weight: bold">
-              <span>{{ InnerkenInfo.name }}</span>
-              <span style="float: right">Bill To</span>
-            </div>
-            <div style="font-size: 10px">
-              <span>{{ InnerkenInfo.address }}</span>
-              <span style="float: right">{{ restaurantInfo?.name }}</span>
-            </div>
-            <div style="font-size: 10px">
-              <span>{{ InnerkenInfo.city }}</span>
-              <span style="float: right">{{ restaurantInfo?.adress1 }}</span>
-            </div>
-            <div style="font-size: 10px">
-              <span>{{ InnerkenInfo.country }}</span>
-              <span style="float: right">{{ restaurantInfo?.city }} {{ restaurantInfo?.postCode }}</span>
-            </div>
-            <div style="font-size: 10px">
-              <span>{{ InnerkenInfo.phone }}</span>
-              <span style="float: right">{{ restaurantInfo?.emailAddress }}</span>
-            </div>
-            <div style="font-size: 10px">
-              <span>{{ InnerkenInfo.email }}</span>
-            </div>
+          <div style="font-size: 14px; font-weight: bold;display: flex;justify-content: space-between;white-space: nowrap">
+            <div>{{ restaurantInfo?.name }}</div>
+            <div>Bill To</div>
+          </div>
+          <div style="font-size: 14px;display: flex;justify-content: space-between;white-space: nowrap">
+            <div>{{ restaurantInfo?.adress1 }}</div>
+            <div>{{ customerName }}</div>
+          </div>
+          <div style="font-size: 14px;display: flex;justify-content: space-between;white-space: nowrap">
+            <div>{{ restaurantInfo?.city }} {{ restaurantInfo?.postCode }}</div>
+            <div>{{ customerAddress }}</div>
+          </div>
+          <div style="font-size: 14px;display: flex;justify-content: space-between;white-space: nowrap">
+            <div>{{ restaurantInfo?.emailAddress }}</div>
+            <div>{{ customerCity }} {{customerPostcode }}</div>
+          </div>
+          <div style="font-size: 14px;display: flex;justify-content: space-between;white-space: nowrap">
+            <div></div>
+            <div>{{ customerEmail }}</div>
           </div>
         </div>
-        <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
+         <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
         <div>
-          <div>
-            <span>Order details</span>
-            <div
-              style="float: right"
-            >
+          <div style="display: flex;justify-content: space-between;white-space: nowrap">
+            <div>Order details</div>
+            <div>
               <v-icon
                 v-if="billData?.billInfo?.paymentStatus==='1'"
                 class="mr-2"
@@ -57,14 +82,14 @@
               {{ enPaymentStatus }}
             </div>
           </div>
-          <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
-          <div>
-            <span>Start of Ordering</span>
-            <div style="float: right">
-              {{ basicInfo.startTime | beautifulTime }}
+           <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
+          <div style="display: flex;justify-content: space-between;white-space: nowrap">
+            <div>Start of Ordering</div>
+            <div>
+              {{ basicInfo?.startTime | beautifulTime }}
             </div>
           </div>
-          <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
+           <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
           <template v-if="displayDetailInfo">
             <template v-for="t in Object.keys(displayDetailInfo)">
               <div :key="t">
@@ -72,40 +97,47 @@
                   v-for="op in Object.keys(displayDetailInfo[t])"
                   :key="t+'op'+op"
                 >
-                  <div>
-                    <span>Order</span>
-                    <div style="float: right">
+                  <div style="display: flex;justify-content: space-between;white-space: nowrap">
+                    <div>Order</div>
+                    <div>
                       {{ t | beautifulTime }}
                     </div>
                   </div>
-                  <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
+                   <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
                   <div class="mt-4">
                     <div
                       v-for="d in displayDetailInfo[t][op]"
                       :key="d.id"
                     >
-                      <div>
+                      <div style="display: flex;justify-content: space-between;white-space: nowrap">
                         <div>
-                          <b>{{ Math.abs(d.count) }}&times; </b>
-                          <span> #{{ d.currentCode }} </span>
+                          <div style="display: flex">
+                            <b>{{ Math.abs(d.count) }}&times; </b>
+                            <div> #{{ d.currentCode }} </div>
+                            <div style="margin-left: 20px">{{(d.currentTaxRate * 100).toFixed(2)}}%</div>
+                          </div>
+                          <div>
+                            <div class="maxLine2">{{ d.name }}</div>
+                          </div>
+                        </div>
+                        <div>
                           <template v-if="parseFloat(d.tempDiscountMod)!==0">
-                            <div style="float: right">
-                                <span
+                            <div>
+                                <div
                                   class="text-decoration-line-through warning--text text--darken-1"
-                                  style="font-size: 10px"
-                                >{{ d.price | priceDisplay }}</span>
-                              <span class="text-no-wrap">
-                                  {{ parseFloat(d.price) + parseFloat(d.tempDiscountMod) | priceDisplay }}</span>
+                                  style="font-size: 10px;"
+                                >{{ d.price | priceDisplay }}
+                                </div>
+                              <div class="text-no-wrap">
+                                  {{ parseFloat(d.price) + parseFloat(d.tempDiscountMod) | priceDisplay }}
+                              </div>
                             </div>
                           </template>
-                          <span
+                          <div
                             v-else
                             class="text-no-wrap"
                             style="float: right"
-                          >{{ d.price | priceDisplay }}</span>
-                        </div>
-                        <div>
-                          <span class="maxLine2">{{ d.name }}</span>
+                          >{{ d.price | priceDisplay }}</div>
                         </div>
                       </div>
                       <template v-if="d.aName">
@@ -113,48 +145,48 @@
                           {{ d.aName }}
                         </div>
                       </template>
-                      <v-divider style="margin-top: 2px;margin-bottom: 2px"/>
+                      <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
                     </div>
                   </div>
                 </div>
               </div>
             </template>
           </template>
-          <div style="margin-top: 8px">
-            <span>End of Ordering</span>
-            <div style="float: right">
-              {{ basicInfo.endTime | beautifulTime }}
+          <div style="display: flex;justify-content: space-between;white-space: nowrap">
+            <div>End of Ordering</div>
+            <div>
+              {{ basicInfo?.endTime | beautifulTime }}
             </div>
           </div>
-          <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
+           <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
         </div>
 
         <div>
-          <div>
-              <span>
+          <div style="display: flex;justify-content: space-between;white-space: nowrap">
+              <div>
                 Table Number:
-              </span>
-            <div style="float: right">
-              {{ billData.billInfo.tableName }}
+              </div>
+            <div>
+              {{ billData?.billInfo?.tableName }}
             </div>
           </div>
-          <div>
-              <span>
+          <div style="display: flex;justify-content: space-between;white-space: nowrap">
+              <div>
                 No. Person:
-              </span>
-            <div style="float: right">
-              {{ billData.billInfo.personCount }}
+              </div>
+            <div>
+              {{ billData?.billInfo?.personCount }}
             </div>
           </div>
-          <div>
-              <span>
+          <div style="display: flex;justify-content: space-between;white-space: nowrap">
+              <div>
                 Order Type:
-              </span>
-            <div style="float: right">
+              </div>
+            <div>
               {{ consumeType }}
             </div>
           </div>
-          <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
+           <v-divider style="margin-top: 10px;margin-bottom: 10px;"/>
           <table
             class="mt-6"
             style="width: 100%"
@@ -171,16 +203,16 @@
                 {{ dishTotalPrice | priceDisplay }}
               </td>
             </tr>
-            <tr v-if="billData.billInfo.tipIncome>0">
+            <tr v-if="billData?.billInfo?.tipIncome>0">
               <td style="width: 140px">
                 Tips
               </td>
               <td style="width: 140px"/>
               <td style="text-align: right">
-                {{ billData.billInfo.tipIncome | priceDisplay }}
+                {{ billData?.billInfo?.tipIncome | priceDisplay }}
               </td>
             </tr>
-            <tr v-if="billData.billInfo.discountStr">
+            <tr v-if="billData?.billInfo?.discountStr">
               <td style="width: 140px">
                 Discount
               </td>
@@ -188,7 +220,27 @@
                 Total Price
               </td>
               <td style="text-align: right">
-                {{ billData.billInfo.discountStr }}
+                {{ billData?.billInfo?.discountStr }}
+              </td>
+            </tr>
+            <tr class="font-weight-bold">
+              <td style="width: 140px">
+                Total excluding tax
+              </td>
+              <td/>
+
+              <td style="text-align: right">
+                {{ totalExcludingTax | priceDisplay }}
+              </td>
+            </tr>
+            <tr class="font-weight-bold">
+              <td style="width: 140px">
+                VAT
+              </td>
+              <td/>
+
+              <td style="text-align: right">
+                {{ totalTax | priceDisplay }}
               </td>
             </tr>
             <tr class="font-weight-bold">
@@ -203,24 +255,26 @@
             </tr>
             </tbody>
           </table>
-          <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
-          <div class="text-subtitle-2 font-weight-regular">
+           <v-divider style="margin-top: 10px;margin-bottom: 10px"/>
+          <div class="font-weight-regular">
             Customer Payment
           </div>
           <div
             v-for="item in paymentRecordList"
             :key="item.id"
           >
-              <span>
+            <div style="display: flex;justify-content: space-between;white-space: nowrap">
+              <div>
                 {{ item.enPaymentMethodName }}
-              </span>
-            <div style="float: right">
-              {{ item.amount | priceDisplay }}
+              </div>
+              <div>
+                {{ item.amount | priceDisplay }}
+              </div>
             </div>
           </div>
         </div>
       </div>
-      <div class="d-flex justify-center align-center flex-column">
+      <div class="d-flex justify-center align-center flex-column pa-4">
         <v-btn
           v-if="checkoutType === 2"
           v-print="'#billDetail'"
@@ -229,17 +283,18 @@
           elevation="0"
           width="100%"
         >
-          下载PDF账单
+          {{ $t('downloadPDFBill') }}
         </v-btn>
         <v-btn
           v-if="checkoutType === 3"
-          class="ml-2 mt-10"
+          :loading="sendEmailLoading"
+          class="ml-2 mt-2"
           color="primary lighten-4 black--text"
           elevation="0"
           width="100%"
-          @click="showEmailDialog = true"
+          @click="sendEmail"
         >
-          发送至邮箱
+          {{ $t('sendToEmail') }}
         </v-btn>
         <v-btn
           class="ml-2 mt-2"
@@ -248,44 +303,16 @@
           width="100%"
           @click="backToOrder"
         >
-          返回
+          {{ $t('Return') }}
         </v-btn>
       </div>
-    </v-card>
-    <v-dialog v-model="showEmailDialog" max-width="600px">
-      <v-card class="pa-4">
-        <div class="d-flex">
-          <div class="text-body-1 font-weight-bold">发送账单到邮箱！📧</div>
-          <v-spacer/>
-          <div>
-            <v-btn
-              icon
-              @click="showEmailDialog = false"
-            >
-              <v-icon>
-                mdi-close
-              </v-icon>
-            </v-btn>
-          </div>
-        </div>
-        <div class="text-body-2 mt-1">如果需要，请在下方添加一个邮箱地址，账单可以自动发送</div>
-        <div class="mt-4">
-          <v-text-field v-model="email" hide-details outlined placeholder="需要发送的邮件地址"/>
-        </div>
-        <div class="mt-4">
-          <v-btn class="mr-2" color="primary" elevation="0" @click="sendEmail">
-            <v-icon left>mdi-arrow-right</v-icon>
-            确定发送
-          </v-btn>
-        </div>
-      </v-card>
-    </v-dialog>
+    </div>
   </div>
 </template>
 
 <script>
 import { getNiceRestaurantInfo } from '@/oldjs/zbonPrint'
-import { loadDetailOrder } from '@/api/api'
+import { loadDetailOrderEn } from '@/api/api'
 import {
   getAllConsumeTypeList,
   getAllConsumeTypeStatus,
@@ -296,6 +323,7 @@ import { groupBy } from 'lodash'
 import print from 'vue-print-nb'
 import { mapMutations } from 'vuex'
 import { goHome } from '@/oldjs/StaticModel'
+import store from '@/store'
 import * as htmlToImage from 'html-to-image'
 
 export default {
@@ -309,7 +337,18 @@ export default {
   },
   data: function () {
     return {
-      email: '',
+      sendEmailLoading: false,
+      rules: [
+        v => !!v || 'This is required'
+      ],
+      valid: true,
+      customerName: '',
+      customerAddress: '',
+      customerCity: '',
+      customerPostcode: '',
+      customerEmail: '',
+      checkCustomerInfo: true,
+      orders: null,
       showEmailDialog: false,
       consumeTypeStatusList: [],
       payMethods: [],
@@ -317,8 +356,7 @@ export default {
       paymentRecordList: [],
       enPaymentStatus: '',
       billData: [],
-      restaurantInfo: [],
-      InnerkenInfo: { name: 'Innerken GmbH', address: 'Jülicher Str. 236', country: 'Germany', city: 'Aachen 52070', phone: '+49 17645762773', email: 'info@innerken.com' }
+      restaurantInfo: []
     }
   },
   computed: {
@@ -363,7 +401,6 @@ export default {
           }, [])
         }
       }
-      console.log(groupedInfo, 'groupInfo')
       return groupedInfo
     },
     dishTotalPrice () {
@@ -372,22 +409,35 @@ export default {
     basicInfo () {
       return this.billData?.billInfo
     },
+    totalTax () {
+      return parseFloat(this.billData.billInfo.tax ?? 0)
+    },
+    totalExcludingTax () {
+      return parseFloat(this.billData.billInfo.totalPrice - this.billData.billInfo.tax ?? 0)
+    },
     totalPrice () {
       return parseFloat(this.billData.billInfo.totalPrice ?? 0)
     }
   },
   async mounted () {
-    if (this.orderId) {
-      await this.reload()
-    }
+    await this.reload()
   },
   methods: {
+    getCustomerInfo () {
+      if (this.$refs.form.validate()) {
+        this.checkCustomerInfo = false
+      }
+    },
     async backToOrder () {
+      this.checkCustomerInfo = true
       this.closeOrderDetail()
-      await goHome()
+      if (store.state.reprintType !== 1) {
+        await goHome()
+      }
     },
     ...mapMutations(['showOrderDetail', 'closeOrderDetail']),
     async sendEmail () {
+      this.sendEmailLoading = true
       const node = document.getElementById('billDetail')
       const data = (await htmlToImage.toPng(node)).split(',')
       const type = data[0].match(/:(.*?);/)[1]
@@ -401,15 +451,18 @@ export default {
       const file = new File([u8arr], `${this.orderId}.${suffix}`, {
         type: type
       })
-      await sendBillDetailToEmail(this.email, file, this.orderId)
-      this.showEmailDialog = false
+      try {
+        await sendBillDetailToEmail(this.customerEmail, file, this.orderId)
+      } catch (e) {
+        console.log('e')
+      }
+      this.sendEmailLoading = false
       await this.backToOrder()
     },
     async reload () {
       this.restaurantInfo = await getNiceRestaurantInfo()
-      console.log(this.restaurantInfo, 'info')
       this.payMethods = (await getAllPaymentList())
-      this.billData = await loadDetailOrder(this.orderId)
+      this.billData = await loadDetailOrderEn(this.orderId)
       this.consumeTypeStatusList = await getAllConsumeTypeStatus()
       const list = await getAllConsumeTypeList()
 
@@ -443,7 +496,6 @@ export default {
         item.createdAt = item.createdAt ?? ''
         return item
       }) ?? []
-      console.log(this.paymentRecordList, 'paymentList')
     }
   }
 }

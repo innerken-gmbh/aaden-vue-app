@@ -84,7 +84,7 @@
               </div>
             </div>
             <div>
-              <div class="text-body-2">额外设置</div>
+              <div class="text-body-2">{{ $t('extraSetting') }}</div>
               <div
                 class="my-2"
                 style="background: transparent"
@@ -98,7 +98,7 @@
                     @click="selectOptions(1)"
                   >
                     <v-icon>mdi-email</v-icon>
-                    发送到邮箱
+                    {{ $t('sendToEmail') }}
                   </v-card>
                   <v-card
                     :color="activePDF ? 'primary lighten-4 black--text' : 'grey lighten-4'"
@@ -108,7 +108,7 @@
                     @click="selectOptions(2)"
                   >
                     <v-icon>mdi-printer</v-icon>
-                    PDF打印
+                    {{ $t('pdfPrint') }}
                   </v-card>
                   <v-card
                     :color="activeDefaultPrint ? 'primary lighten-4 black--text' : 'grey lighten-4'"
@@ -118,12 +118,12 @@
                     @click="selectOptions(3)"
                   >
                     <v-icon>mdi-cloud-print-outline</v-icon>
-                    小票打印机
+                    {{ $t('defaultPrinter') }}
                   </v-card>
                 </div>
               </div>
             </div>
-            <div>
+            <div v-if="activeDefaultPrint">
               <div class="text-body-2">{{ $t('BillType') }}</div>
               <div
                   class="my-2"
@@ -444,7 +444,6 @@ export default {
       return Math.abs(a - b) < 0.001
     },
     async checkOut (fastCheckout = false) {
-      console.log(this.id, 'id')
       if (fastCheckout) {
         this.billType = 0
       }

@@ -809,5 +809,13 @@
   "yesIAm": "yes, Im sure",
   "yesterday": "yesterday",
   "zbonList": "Zbon List",
-  "zoom": "zoom"
+  "zoom": "zoom",
+  "writeCustomerInfo": "Fill in customer information！",
+  "writeRightBillInfo": "Please truthfully fill in the customer's billing information",
+  "customerName": "name",
+  "downloadPDFBill": "Download PDF Bill",
+  "sendToEmail": "Send To Email",
+  "extraSetting": "Additional settings",
+  "pdfPrint": "PDF printing",
+  "defaultPrinter": "Ticket printer"
 }

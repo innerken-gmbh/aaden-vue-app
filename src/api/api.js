@@ -159,10 +159,18 @@ export async function loadDishStatistic (startDate, endDate) {
   })).content
 }
 
-export async function loadDetailOrder (id) {
+export async function loadDetailOrderEn (id) {
   return hillo.get('BackendData.php', {
     // params: {
     op: 'billDetail', lang: 'EN', id: id
+    // },
+  })
+}
+
+export async function loadDetailOrder (id) {
+  return hillo.get('BackendData.php', {
+    // params: {
+    op: 'billDetail', lang: GlobalConfig.lang.toUpperCase(), id: id
     // },
   })
 }

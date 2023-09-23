@@ -520,5 +520,14 @@
   "EditVipPoints": "积分变动记录",
   "Add": "新增",
   "VIP": "VIP",
-  "LoadPrepaid": "充值"
+  "LoadPrepaid": "充值",
+  "nextStep": "下一步",
+  "writeCustomerInfo": "填写客户信息！",
+  "writeRightBillInfo": "请如实填写客户账单信息",
+  "customerName": "客户姓名",
+  "downloadPDFBill": "下载PDF账单",
+  "sendToEmail": "发送至邮箱",
+  "extraSetting": "额外设置",
+  "pdfPrint": "PDF打印",
+  "defaultPrinter": "小票打印机"
 }
