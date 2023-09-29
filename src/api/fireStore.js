@@ -18,18 +18,15 @@ export function listenFireStoreOrders () {
   const doSend = async (orderList) => {
     if (orderList.length > 0) {
       const res = await sendFireStoreOrder(orderList)
-      console.log(res, 'result')
+      await new Promise(resolve => setTimeout(resolve, 1000))
       for (const e of orderList) {
-        console.log(res)
-        console.log(e)
         if (res[e.cloudId]) {
-          console.log('update')
           await confirmFireBaseOrder(e.cloudId, res[e.cloudId].tableName)
         }
       }
     }
   }
-  const unsub = onSnapshot(q, (querySnapshot) => {
+  return onSnapshot(q, (querySnapshot) => {
     console.log(querySnapshot)
     const toSend = []
     querySnapshot.forEach(doc => {
@@ -41,7 +38,6 @@ export function listenFireStoreOrders () {
 
     })
   })
-  return unsub
 }
 
 export async function confirmFireBaseOrder (cloudId, tableName) {
