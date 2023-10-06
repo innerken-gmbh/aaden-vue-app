@@ -803,6 +803,7 @@ export default {
   },
   data: function () {
     return {
+      checkoutId: [],
       favoriteList: null,
       reasons: getReason(),
       deleteDishReason: '',
@@ -1328,7 +1329,6 @@ export default {
     },
     needSplitOrder: async function () {
       this.password = await optionalAuthorizeAsync('', GlobalConfig.checkOutUsePassword, '', true, this.id)
-      this.checkoutShow = true
       checkoutFactory.clear()
       checkoutFactory.loadTTDishList(this.splitOrderListModel.list)
       this.checkOutModel = {
@@ -1336,6 +1336,8 @@ export default {
         count: checkoutFactory.count(),
         list: checkoutFactory.list
       }
+      this.checkoutId = this.checkOutModel.list.map(it => it.code)
+      this.checkoutShow = true
       this.checkOutType = 'splitOrder'
     },
     anyMenuOpen () {
@@ -1544,7 +1546,6 @@ export default {
     },
     jumpToPayment () {
       const realCheckOut = async (pw) => {
-        this.checkoutShow = true
         checkoutFactory.clear()
         checkoutFactory.loadTTDishList(this.orderListModel.list)
         this.checkOutModel = {
@@ -1552,6 +1553,8 @@ export default {
           count: checkoutFactory.count(),
           list: checkoutFactory.list
         }
+        this.checkoutId = this.checkOutModel.list.map(it => it.code)
+        this.checkoutShow = true
         this.checkOutType = 'checkOut'
         this.discountStr = ''
         this.password = pw
@@ -1768,7 +1771,10 @@ export default {
   watch: {
 
     checkoutShow (val) {
-      setCheckOutStatusInFirebase(val, this.deviceId)
+      if (!val) {
+        this.checkoutId = []
+      }
+      setCheckOutStatusInFirebase(val, this.deviceId, this.checkoutId)
     },
     orderListModelList (val) {
       this.setOrderListByTableNameInFirebase(val)

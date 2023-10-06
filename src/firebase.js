@@ -31,11 +31,11 @@ export async function setCartListInFirebase (cartList, deviceIdPath) {
   }
 }
 
-export async function setCheckOutStatusInFirebase (showBetrag, deviceIdPath) {
+export async function setCheckOutStatusInFirebase (showBetrag, deviceIdPath, code) {
   if (!GlobalConfig.useCustomerDisplay) {
     return
   }
-  const data = { showBetrag: showBetrag }
+  const data = { showBetrag: showBetrag, checkoutCode: code }
   try {
     await updateDoc(doc(FirestorageDB, firebasePath, deviceIdPath.toString()), data)
   } catch (e) {
