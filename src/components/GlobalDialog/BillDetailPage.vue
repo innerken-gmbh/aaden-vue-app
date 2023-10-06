@@ -56,7 +56,7 @@
             <div>{{ customerCity }} {{customerPostcode }}</div>
           </div>
           <div style="font-size: 14px;display: flex;justify-content: space-between;white-space: nowrap">
-            <div></div>
+            <div>Tax Number: {{ restaurantInfo.taxNumber }}</div>
             <div>{{ customerEmail }}</div>
           </div>
         </div>
