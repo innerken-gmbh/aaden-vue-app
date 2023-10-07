@@ -9,6 +9,7 @@ const TableInfoMetaDataSetting = {
   createTimestamp: {
     icon: 'mdi-clock-outline',
     classFunc: (v) => {
+      console.log(v)
       const [hour, minute] = v.split(':')
       const diff = timeFromNowInMinute(hour, minute)
       return diff > GlobalConfig.maxEatMinute ? 'error lighten-4 font-weight-bold' : ''
@@ -25,7 +26,8 @@ const TableInfoMetaDataSetting = {
     }
   },
   dishCount: {
-    icon: 'mdi-silverware-fork-knife', classFunc: (v) => parseInt(v) === 0 ? 'error' : ''
+    icon: 'mdi-silverware-fork-knife',
+    classFunc: (v) => parseInt(v) === 0 ? 'error' : ''
   },
   totalPrice: { icon: 'mdi-currency-eur' },
   buffetCount: { icon: 'mdi-account-multiple' },
@@ -36,7 +38,8 @@ const TableInfoMetaDataSetting = {
 }
 
 const defaultMetaData = {
-  icon: null, classFunc: null
+  icon: null,
+  classFunc: null
 }
 export const TableFilter = {
   activeFilter (t) {
@@ -56,13 +59,14 @@ export const TableFixedSectionId = {
   }
 }
 
-export const TableInfoMetaData = Object.entries(TableInfoMetaDataSetting).map(entry => {
-  entry[1] = Object.assign({}, defaultMetaData, entry[1])
-  return entry
-}).reduce((obj, entry) => {
-  obj[entry[0]] = entry[1]
-  return obj
-}, {})
+export const TableInfoMetaData = Object.entries(TableInfoMetaDataSetting)
+  .map(entry => {
+    entry[1] = Object.assign({}, defaultMetaData, entry[1])
+    return entry
+  }).reduce((obj, entry) => {
+    obj[entry[0]] = entry[1]
+    return obj
+  }, {})
 
 export async function loadReservationTableInfo () {
   const reservableTableSet = new Set((await loadAllReservable()).map(it => it.id))
