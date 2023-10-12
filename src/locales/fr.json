@@ -282,6 +282,8 @@
   "PrintDailySummaryBon": "Imprimez vos relevés quotidiens",
   "PrintFailed": "Échec de l'impression",
   "PrintNow": "Imprimer maintenant ?",
+  "PrintSalesBon": "Vous souhaitez imprimer un reçu de vente ?",
+  "PrintSuccessful": "Imprimé avec succès !",
   "PrintXBon": "Imprimer xBon",
   "PrintZBon": "Imprimer ZBON",
   "Protocol": "protocoles",

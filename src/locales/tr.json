@@ -282,6 +282,8 @@
   "PrintDailySummaryBon": "Günlük ifadeleri yazdırma",
   "PrintFailed": "Yazdırma başarısız oldu",
   "PrintNow": "Şimdi yazdırın?",
+  "PrintSalesBon": "Bir satış makbuzu yazdırmak ister misiniz?",
+  "PrintSuccessful": "Başarıyla basıldı!",
   "PrintXBon": "Yazdır xBon",
   "PrintZBon": "Yazdır ZBON",
   "Protocol": "protokolleri",

@@ -282,6 +282,8 @@
   "PrintDailySummaryBon": "طباعة البيانات اليومية",
   "PrintFailed": "فشلت الطباعة",
   "PrintNow": "اطبع الآن؟",
+  "PrintSalesBon": "هل ترغب في طباعة إيصال مبيعات؟",
+  "PrintSuccessful": "تمت الطباعة بنجاح!",
   "PrintXBon": "طباعة إكس بون",
   "PrintZBon": "طباعة زيبون",
   "Protocol": "بروتوكولات",
