@@ -1,7 +1,7 @@
 <template>
   <div
-      style="height: 100vh"
       class="d-flex flex-column"
+      style="height: 100vh"
   >
     <div
         v-if="loading"
@@ -9,23 +9,23 @@
         style="height: 100vh;width: 400px"
     >
       <v-progress-circular
-          size="48"
           indeterminate
+          size="48"
       />
     </div>
     <template v-else>
       <v-card
-          tile
+          class="pa-3 d-flex align-center"
           color="grey lighten-3"
           elevation="0"
-          class="pa-3 d-flex align-center"
           style="width: 100%"
+          tile
       >
         <div class="text-h6">{{ $t('BillPlease') }}</div>
         <v-spacer></v-spacer>
         <v-btn
-            @click="cancel"
             icon
+            @click="cancel"
         >
           <v-icon>mdi-close</v-icon>
         </v-btn>
@@ -46,8 +46,8 @@
             class="paymentLog flex-grow-1"
         >
           <div
-              style="height: 100%"
               class="pa-2 px-3 d-flex flex-column"
+              style="height: 100%"
           >
             <div class="text-body-2">{{ $t('Payingmethod') }}</div>
             <template v-for="paymentInfo in paymentLog">
@@ -57,8 +57,8 @@
                   style="width: 100%"
               >
                 <v-card
-                    color="grey lighten-4 black--text"
                     class="pa-1 px-2 text-capitalize text-body-1"
+                    color="grey lighten-4 black--text"
                     elevation="0"
                 >
                   <template v-if="paymentInfo.icon.startsWith('mdi')">
@@ -75,15 +75,47 @@
               </div>
             </template>
             <div
-                class="my-4"
                 v-if="GlobalConfig.activeVip&&currentMemberId"
+                class="my-4"
             >
               <div class="text-body-2">{{ $t('CurrentVipMemberId') }}: {{ currentMemberId }}</div>
               <div class="text-body-1 mt-2 font-weight-black">
                 {{ $t('MaxVipCollectAblePoints') }}: <span class="success--text">{{ parseInt(total) }}</span>
               </div>
             </div>
+
             <div>
+              <div class="text-body-2">打印类型</div>
+              <div
+                class="my-2"
+                style="background: transparent"
+              >
+                <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))">
+                  <v-card
+                    :color="printType === 0 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
+                    class="pa-3 justify-center d-flex align-center"
+                    elevation="0"
+                    tile
+                    @click="printType = 0"
+                  >
+                    <v-icon class="mr-2">mdi-printer</v-icon>
+                    默认打印
+                  </v-card>
+                  <v-card
+                    :color="printType === 1 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
+                    class="pa-3 justify-center d-flex align-center"
+                    elevation="0"
+                    tile
+                    @click="printType = 1"
+                  >
+                    <v-icon class="mr-2">mdi-form-select</v-icon>
+                    电子账单
+                  </v-card>
+                </div>
+              </div>
+            </div>
+
+            <div v-if="printType === 0">
               <div class="text-body-2">{{ $t('BillType') }}</div>
               <div
                   class="my-2"
@@ -91,21 +123,21 @@
               >
                 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))">
                   <v-card
-                      @click="billType = 0"
                       :color="billType === 0 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
-                      tile
-                      elevation="0"
                       class="pa-3 justify-center d-flex align-center"
+                      elevation="0"
+                      tile
+                      @click="billType = 0"
                   >
                     <v-icon class="mr-2">mdi-receipt-text-outline</v-icon>
                     {{ $t('tableCheckOutBillTypeOptionNormal') }}
                   </v-card>
                   <v-card
-                      @click="billType = 1"
                       :color="billType === 1 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
-                      tile
-                      elevation="0"
                       class="pa-3 justify-center d-flex align-center"
+                      elevation="0"
+                      tile
+                      @click="billType = 1"
                   >
                     <v-icon class="mr-2">mdi-script-text-outline</v-icon>
                     {{ $t('tableCheckOutBillTypeOptionCompany') }}
@@ -125,20 +157,20 @@
                     lazy-validation
                 >
                   <v-text-field
-                      :label="$t('companyName')"
                       v-model="companyOrPersonName"
+                      :label="$t('companyName')"
                       filled
                       required
                   />
                   <v-text-field
-                      :label="$t('reason')"
                       v-model="reasonOfVisit"
+                      :label="$t('reason')"
                       filled
                       required
                   />
                   <v-text-field
-                      :label="$t('Date')"
                       v-model="locationAndDate"
+                      :label="$t('Date')"
                       filled
                       required
                   />
@@ -148,9 +180,9 @@
             <v-spacer></v-spacer>
             <div>
               <v-btn
-                  rounded
                   class="mb-2"
                   elevation="0"
+                  rounded
                   @click="paymentLog = []"
               >
                 <v-icon left>mdi-arrow-left</v-icon>
@@ -160,14 +192,14 @@
             </div>
             <div>
               <v-btn
-                  height="56"
-                  block
-                  x-large
-                  rounded
-                  class="flex-grow-1"
                   :disabled="!readyToCheckOut"
+                  block
+                  class="flex-grow-1"
                   color="success lighten-4 black--text"
                   elevation="0"
+                  height="56"
+                  rounded
+                  x-large
                   @click="checkOut()"
               >
                 {{ $t('ConfirmTheOrder') }}
@@ -179,10 +211,10 @@
         </div>
         <v-card
             v-else
-            tile
             class="calculator pa-2 px-3 d-flex flex-column"
             elevation="1"
             style="width: 100%; height: 100%"
+            tile
         >
           <v-card
               v-if="Math.abs(remainTotal - total) > 0.001 && remainTotal !== 0"
@@ -299,6 +331,7 @@ export default {
       companyOrPersonName: '',
       locationAndDate: '',
       billType: 0,
+      printType: 0,
       paymentMethods: [],
       realName: defaultRealName,
       inputBuffer: '',
@@ -377,6 +410,7 @@ export default {
     async checkOut (fastCheckout = false) {
       if (fastCheckout) {
         this.billType = 0
+        this.printType = 0
       }
       this.loading = true
       try {
@@ -392,7 +426,7 @@ export default {
         } catch (y) {
           console.log(y)
         }
-        this.$emit('payment-submit', this.paymentLog, this.billType)
+        this.$emit('payment-submit', this.paymentLog, this.billType, this.printType)
         this.paymentLog = []
         this.clearBuffer()
         this.emptyCompanyInfoDialog()

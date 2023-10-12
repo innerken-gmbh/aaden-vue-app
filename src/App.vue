@@ -6,13 +6,13 @@
     <pin-dialog></pin-dialog>
     <table-selector></table-selector>
     <v-dialog
-        v-model="showErrorDialog"
-        max-width="600"
+      v-model="showErrorDialog"
+      max-width="600"
     >
       <v-card class="pa-6 d-flex align-center justify-center flex-column">
         <v-icon
-            color="error lighten-2"
-            size="64"
+          color="error lighten-2"
+          size="64"
         >
           mdi-alert-box
         </v-icon>
@@ -23,12 +23,60 @@
           {{ errorDialogMessage }}
         </div>
         <v-btn
-            class="primary lighten-4 black--text mt-4"
-            elevation="0"
-            @click="showErrorDialog=false"
+          class="primary lighten-4 black--text mt-4"
+          elevation="0"
+          @click="showErrorDialog=false"
         >
           {{ $t('confirm') }}
         </v-btn>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+      v-model="showBillDetailQRDialog"
+      max-width="600"
+    >
+      <v-card class="pa-4">
+        <div class="d-flex">
+          <div class="text-h5">
+            电子账单
+          </div>
+          <v-spacer/>
+          <div>
+            <v-btn
+              icon
+              @click="showBillDetailQRDialog = false"
+            >
+              <v-icon large>
+                mdi-close
+              </v-icon>
+            </v-btn>
+          </div>
+        </div>
+        <div class="d-flex justify-center align-center flex-column py-6">
+          <div class="d-flex">
+            <div class="pa-4 white">
+              <v-img
+                :aspect-ratio="1"
+                :src="'https://api.qrserver.com/v1/create-qr-code/?size=260x260&data='+ billDetailUrlHead + billDetailQr"
+                width="196"
+              />
+            </div>
+          </div>
+          <div>
+            {{billDetailQr}}
+          </div>
+        </div>
+        <div class="text-body-2 mt-1">如果需要，请在下方添加一个邮箱地址，电子账单可以自动发送</div>
+        <div class="mt-4">
+          <v-text-field v-model="email" hide-details outlined placeholder="需要发送的邮件地址"/>
+        </div>
+        <div v-if="email" class="mt-4 d-flex justify-center">
+          <v-btn class="mr-2" color="primary" elevation="0" width="100%" @click="sendToEmail">
+            <v-icon left>mdi-arrow-right</v-icon>
+            确定发送
+          </v-btn>
+        </div>
       </v-card>
     </v-dialog>
   </v-app>
@@ -38,7 +86,8 @@
 import { tryToReport } from './oldjs/common'
 import TableSelector from '@/components/GlobalDialog/TableSelector'
 import PinDialog from '@/components/GlobalDialog/PinDialog'
-import { mapState } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
+import { sendBillDetailToEmail } from '@/api/api'
 
 export default {
   name: 'App',
@@ -47,10 +96,25 @@ export default {
     PinDialog
   },
   props: {},
-  data: () => ({}),
+  data: function () {
+    return {
+      email: ''
+    }
+  },
   computed: {
     ...mapState(
-      ['errorDialogTitle', 'errorDialogMessage']),
+      ['errorDialogTitle', 'errorDialogMessage', 'billDetailQr', 'billDetailUrlHead']),
+
+    showBillDetailQRDialog: {
+      get () {
+        return this.$store.state.showBillDetailQRDialog
+      },
+      set (val) {
+        if (!val) {
+          this.closeBillDetailQRDialog()
+        }
+      }
+    },
     showErrorDialog: {
       get () {
         return this.$store.state.showErrorDialog
@@ -64,6 +128,15 @@ export default {
   },
   mounted () {
     tryToReport()
+  },
+  methods: {
+    ...mapMutations(['closeBillDetailQRDialog']),
+    async sendToEmail () {
+      const content = this.billDetailUrlHead + this.billDetailQr + '<br>' + '<img src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=' + this.billDetailUrlHead + this.billDetailQr + '"></img>'
+      await sendBillDetailToEmail(content, this.email)
+      this.email = ''
+      this.closeBillDetailQRDialog()
+    }
   }
 }
 </script>

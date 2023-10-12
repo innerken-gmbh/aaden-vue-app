@@ -64,6 +64,29 @@ export async function returnOrder (id) {
   }))
 }
 
+export async function sendBillDetailToEmail (content, email) {
+  const realContent = 'Download your digital receipt:' + content
+  await hillo.post('Complex.php?op=sendCustomEmail', {
+    subject: 'Your digital receipt from Innerken GmbH',
+    content: realContent,
+    mailTo: email
+  })
+}
+
+export async function getUUidByOrderId (orderId) {
+  return (await hillo.get('Orders.php?op=showOne', {
+    id: orderId
+  })).content[0]?.electronicUuid ?? ''
+}
+
+export async function getPointCode (id) {
+  const res = (await hillo.get('Orders.php?op=getPointCodeByOrderId', {
+    orderId: id
+  })).content
+  console.log(res, 'res')
+  return res.pointCode
+}
+
 export async function acceptOrder (reason, tableId) {
   await resetTableStatus(tableId)
   IKUtils.showLoading(true)

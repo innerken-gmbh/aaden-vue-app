@@ -12,8 +12,8 @@
     >
       <check-out-calculator
           :id="id"
-          :total="totalPrice"
           :current-member-id="currentMemberId"
+          :total="totalPrice"
           @payment-cancel="realShow = false"
           @payment-submit="checkOut"
       />
@@ -33,6 +33,8 @@ import { changeFireBaseOrderToFinished } from '@/api/fireStore'
 import IKUtils from 'innerken-js-utils'
 import { payWithCard } from '@/api/cardTerminal'
 import { addBonusPoint, getUserById } from '@/api/VIPCard/VIPApi'
+import { getPointCode } from '@/api/api'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'CheckOutDrawer',
@@ -85,10 +87,11 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['showBillDetailQRDialog']),
     cancel () {
       this.realShow = false
     },
-    async checkOut (paymentLog = [], billType) {
+    async checkOut (paymentLog = [], billType, printType) {
       const print = parseInt(billType)
       let withTitle = 0
       let printCount = 1
@@ -105,7 +108,8 @@ export default {
         printCount,
         payMethod: 1,
         discountStr: '',
-        pw: this.password
+        pw: this.password,
+        notPrintingCheckOutBon: printType === 1 ? 1 : 0
       }
       let ecAmount = 0
       if (paymentLog.length > 0) {
@@ -155,7 +159,13 @@ export default {
         }
         this.cancel()
         if (this.checkOutType === 'checkOut') {
+          const pointCode = await getPointCode(this.id)
+          console.log(pointCode, 'pointCode')
           await goHome()
+          if (printType === 1) {
+            // type: 1 指结账后通过pointCode
+            this.showBillDetailQRDialog({ code: pointCode, type: 1 })
+          }
         }
       }
       printNow()
