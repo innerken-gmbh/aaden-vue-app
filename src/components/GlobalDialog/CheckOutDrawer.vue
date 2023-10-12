@@ -158,10 +158,12 @@ export default {
           await addBonusPoint(user.uid, this.totalPrice)
         }
         this.cancel()
+        await goHome()
         if (this.checkOutType === 'checkOut') {
+          IKUtils.showLoading()
+
           const pointCode = await getPointCode(this.id)
-          console.log(pointCode, 'pointCode')
-          await goHome()
+          IKUtils.toast()
           if (printType === 1) {
             // type: 1 指结账后通过pointCode
             this.showBillDetailQRDialog({ code: pointCode, type: 1 })
