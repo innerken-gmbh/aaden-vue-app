@@ -1,4 +1,5 @@
 {
+  "UK" : "Oekraïens",
   "AR": "Arabisch",
   "AadenSupport": "Neem contact op met de klantenservice van Aaden om te updaten",
   "AadenTheMostReliablePOSystemEurope": "Europa's meest betrouwbare kassasysteem om u te helpen",
@@ -282,6 +283,8 @@
   "PrintDailySummaryBon": "Dagelijkse overzichten afdrukken",
   "PrintFailed": "Afdrukken is mislukt",
   "PrintNow": "Nu printen?",
+  "PrintSalesBon": "Wil je kassabonnen afdrukken?",
+  "PrintSuccessful": "Succesvol geprint!",
   "PrintXBon": "Xbon afdrukken",
   "PrintZBon": "Zon afdrukken",
   "Protocol": "protocollen",

@@ -1,4 +1,5 @@
 {
+  "UK" : "украинец",
   "AR": "арабский",
   "AadenSupport": "Обратитесь в службу поддержки клиентов Aaden и обновите",
   "AadenTheMostReliablePOSystemEurope": "Самая надежная система POS в Европе, которая поможет вам",
@@ -282,6 +283,8 @@
   "PrintDailySummaryBon": "Печатать ежедневные отчеты",
   "PrintFailed": "Печать не удалась",
   "PrintNow": "Распечатать сейчас?",
+  "PrintSalesBon": "Хотите распечатать товарный чек?",
+  "PrintSuccessful": "Отпечатано успешно!",
   "PrintXBon": "Распечатать XBon",
   "PrintZBon": "Распечатать ZBON",
   "Protocol": "протоколов",

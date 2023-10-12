@@ -1,4 +1,5 @@
 {
+  "UK" : "tiếng Ukraina",
   "AR": "tiếng Ả Rập",
   "AadenSupport": "Vui lòng liên hệ với bộ phận chăm sóc khách hàng của Aaden và cập nhật",
   "AadenTheMostReliablePOSystemEurope": "Hệ thống POS đáng tin cậy nhất châu Âu để giúp bạn",
@@ -282,6 +283,8 @@
   "PrintDailySummaryBon": "In báo cáo hàng ngày",
   "PrintFailed": "In không thành công",
   "PrintNow": "In ngay bây giờ?",
+  "PrintSalesBon": "Bạn có muốn in biên lai bán hàng không?",
+  "PrintSuccessful": "In thành công!",
   "PrintXBon": "In XBon",
   "PrintZBon": "In ZbN",
   "Protocol": "giao thức",

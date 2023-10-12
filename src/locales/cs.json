@@ -1,4 +1,5 @@
 {
+  "UK": "ukrajinština",
   "AR": "arabština",
   "AadenSupport": "Kontaktujte zákaznický servis Aaden a aktualizujte",
   "AadenTheMostReliablePOSystemEurope": "Nejspolehlivější pokladní systém v Evropě, který vám pomůže",
@@ -282,6 +283,8 @@
   "PrintDailySummaryBon": "Tisk denních výpisů",
   "PrintFailed": "Tisk selhal",
   "PrintNow": "Vytisknout teď?",
+  "PrintSalesBon": "Chcete tisknout účtenky z prodeje?",
+  "PrintSuccessful": "Tisk byl úspěšný!",
   "PrintXBon": "Tisk XBon",
   "PrintZBon": "Tisk ZBON",
   "Protocol": "protokoly",

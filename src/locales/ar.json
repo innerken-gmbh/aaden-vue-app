@@ -1,4 +1,5 @@
 {
+  "UK" : "الأوكرانية",
   "AR": "العربية",
   "AadenSupport": "يرجى الاتصال بخدمة عملاء Aaden والتحديث",
   "AadenTheMostReliablePOSystemEurope": "نظام نقاط البيع الأكثر موثوقية في أوروبا لمساعدتك",
@@ -282,6 +283,8 @@
   "PrintDailySummaryBon": "طباعة البيانات اليومية",
   "PrintFailed": "فشلت الطباعة",
   "PrintNow": "اطبع الآن؟",
+  "PrintSalesBon": "هل ترغب في طباعة إيصال مبيعات؟",
+  "PrintSuccessful": "تمت الطباعة بنجاح!",
   "PrintXBon": "طباعة إكس بون",
   "PrintZBon": "طباعة زيبون",
   "Protocol": "بروتوكولات",

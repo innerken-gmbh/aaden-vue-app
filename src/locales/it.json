@@ -1,4 +1,5 @@
 {
+  "UK" : "ucraino",
   "AR": "arabo",
   "AadenSupport": "Contatta il servizio clienti Aaden e aggiorna",
   "AadenTheMostReliablePOSystemEurope": "Il sistema POS più affidabile d'Europa per aiutarti",
@@ -282,6 +283,8 @@
   "PrintDailySummaryBon": "Stampa rendiconti giornalieri",
   "PrintFailed": "Stampa non riuscita",
   "PrintNow": "Stampare adesso?",
+  "PrintSalesBon": "Vuoi stampare una ricevuta di vendita?",
+  "PrintSuccessful": "Stampato con successo!",
   "PrintXBon": "Stampa XBon",
   "PrintZBon": "Stampa ZBON",
   "Protocol": "protocolli",
