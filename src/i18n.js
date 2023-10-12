@@ -16,6 +16,7 @@ import pl from 'vuetify/lib/locale/pl'
 import pt from 'vuetify/lib/locale/pt'
 import ru from 'vuetify/lib/locale/ru'
 import tr from 'vuetify/lib/locale/tr'
+import uk from 'vuetify/lib/locale/uk'
 
 import dayjs from 'dayjs'
 Vue.use(VueI18n)
@@ -132,6 +133,13 @@ const messages = {
     langLabel: 'TR',
     ...require('@/locales/tr.json'),
     $vuetify: tr
+  },
+  uk: {
+    langCode: 'uk',
+    flag: 'ua',
+    langLabel: 'UK',
+    ...require('@/locales/uk.json'),
+    $vuetify: uk
   }
 }
 
@@ -164,6 +172,7 @@ require('dayjs/locale/ru')
 require('dayjs/locale/tr')
 require('dayjs/locale/vi')
 require('dayjs/locale/zh')
+require('dayjs/locale/uk')
 
 dayjs.locale(localStorage.getItem('frontEndLang')?.toLowerCase())
 
