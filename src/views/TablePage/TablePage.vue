@@ -730,7 +730,13 @@ import uniqBy from 'lodash-es/uniqBy'
 
 import { acceptFireBaseOrder } from '@/api/fireStore'
 
-import { setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFirebase } from '@/firebase.js'
+import {
+  findPointCodeByOrderId,
+  setCartListInFirebase,
+  setCheckOutStatusInFirebase,
+  setOrderListInFirebase,
+  setPointCodeInFirebase
+} from '@/firebase.js'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -1770,11 +1776,13 @@ export default {
   },
   watch: {
 
-    checkoutShow (val) {
+    async checkoutShow (val) {
       if (!val) {
         this.checkoutId = []
       }
-      setCheckOutStatusInFirebase(val, this.deviceId, this.checkoutId)
+      await setCheckOutStatusInFirebase(val, this.deviceId, this.checkoutId)
+      const res = await findPointCodeByOrderId(this.tableDetailInfo.order.id)
+      await setPointCodeInFirebase(res.id, res.deviceId)
     },
     orderListModelList (val) {
       this.setOrderListByTableNameInFirebase(val)

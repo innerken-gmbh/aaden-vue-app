@@ -1,4 +1,4 @@
-import { doc, updateDoc } from 'firebase/firestore'
+import { collectionGroup, doc, getDocs, query, updateDoc, where } from 'firebase/firestore'
 
 import { db } from '@/api/fireStore'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
@@ -36,6 +36,37 @@ export async function setCheckOutStatusInFirebase (showBetrag, deviceIdPath, cod
     return
   }
   const data = { showBetrag: showBetrag, checkoutCode: code }
+  try {
+    await updateDoc(doc(FirestorageDB, firebasePath, deviceIdPath.toString()), data)
+  } catch (e) {
+    console.log(e)
+  }
+}
+//
+const pointCode = 'point-code'
+
+export async function findPointCodeByOrderId (orderId) {
+  const orderInfo = query(collectionGroup(db, pointCode),
+    where('orderId', '==', orderId))
+  return await firstResultOf(orderInfo)
+}
+
+export async function firstResultOf (query, logLabel = '') {
+  const res = (await getDocs(query)).docs
+    .map(it => {
+      return { id: it.id, ...it.data() }
+    })
+  if (logLabel) {
+    console.log(res, logLabel)
+  }
+  return res[0]
+}
+
+export async function setPointCodeInFirebase (code, deviceIdPath) {
+  if (!GlobalConfig.useCustomerDisplay) {
+    return
+  }
+  const data = { pointCode: code }
   try {
     await updateDoc(doc(FirestorageDB, firebasePath, deviceIdPath.toString()), data)
   } catch (e) {

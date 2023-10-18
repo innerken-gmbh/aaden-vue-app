@@ -4,16 +4,20 @@ import { initializeApp } from 'firebase/app'
 import { collection, doc, getFirestore, onSnapshot, query, updateDoc, where } from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDwY4rJNrLXdrLI-ukxzCAGan97lOx84cM',
-  authDomain: 'aaden-online-order.firebaseapp.com',
-  projectId: 'aaden-online-order'
+  apiKey: 'AIzaSyCtvQ3d-HAtHTUg_-505c-qXRnlz8RlZeg',
+  authDomain: 'aaden-saas.firebaseapp.com',
+  projectId: 'aaden-saas',
+  storageBucket: 'aaden-saas.appspot.com',
+  messagingSenderId: '169167876904',
+  appId: '1:169167876904:web:b83934e5a34d1cbfcc161d',
+  measurementId: 'G-QRPH7NLDZS'
 }
 export const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)
 
 export function listenFireStoreOrders () {
   console.log(GlobalConfig.DeviceId.toString())
-  const q = query(collection(db, 'order'), where('confirmed', '==', false),
+  const q = query(collection(db, 'orderDisplay'), where('confirmed', '==', false),
     where('deviceId', '==', GlobalConfig.DeviceId.toString()))
   const doSend = async (orderList) => {
     if (orderList.length > 0) {
@@ -41,32 +45,32 @@ export function listenFireStoreOrders () {
 }
 
 export async function confirmFireBaseOrder (cloudId, tableName) {
-  return await updateDoc(doc(db, 'order', cloudId), {
+  return await updateDoc(doc(db, 'orderDisplay', cloudId), {
     confirmed: true, tableName
   })
 }
 
 export async function acceptFireBaseOrder (cloudId, accepted = true) {
-  return await updateDoc(doc(db, 'order', cloudId), {
+  return await updateDoc(doc(db, 'orderDisplay', cloudId), {
     accepted: accepted
   })
 }
 
 export async function changeFireBaseOrderToReadyToPick (cloudId) {
   console.log(cloudId, 'ready to pick')
-  return await updateDoc(doc(db, 'order', cloudId), {
+  return await updateDoc(doc(db, 'orderDisplay', cloudId), {
     canPickUp: true
   })
 }
 
 export async function changeFireBaseOrderToFinished (cloudId) {
-  return await updateDoc(doc(db, 'order', cloudId), {
+  return await updateDoc(doc(db, 'orderDisplay', cloudId), {
     finished: true
   })
 }
 
 export async function changeFireBaseOrderDeliveryTime (cloudId, deliveryTime) {
-  return await updateDoc(doc(db, 'order', cloudId), {
+  return await updateDoc(doc(db, 'orderDisplay', cloudId), {
     deliveryTime
   })
 }
