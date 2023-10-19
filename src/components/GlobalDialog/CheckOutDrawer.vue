@@ -1,11 +1,11 @@
 <template>
-  <v-navigation-drawer width="fit-content" left fixed temporary v-model="realShow" touchless stateless>
+  <v-navigation-drawer v-model="realShow" fixed left stateless temporary touchless width="fit-content">
     <v-card class="fill-height">
       <check-out-calculator
         :id="id"
+        :total="totalPrice"
         @payment-cancel="realShow=false"
-        @payment-submit="checkOut"
-        :total="totalPrice"/>
+        @payment-submit="checkOut"/>
     </v-card>
   </v-navigation-drawer>
 </template>
@@ -21,6 +21,7 @@ import { round } from 'lodash-es'
 import { changeFireBaseOrderToFinished } from '@/api/fireStore'
 import IKUtils from 'innerken-js-utils'
 import { payWithCard } from '@/api/cardTerminal'
+import { findPointCodeByOrderId, setPointCodeInFirebase } from '@/firebase'
 
 export default {
   name: 'CheckOutDrawer',
@@ -120,6 +121,13 @@ export default {
 
       delete checkOutData.discountStr
       const res = await hillo.post('Complex.php?op=' + this.checkOutType, checkOutData)
+      let pointCode
+      if (this.checkOutType === 'splitOrder') {
+        pointCode = await findPointCodeByOrderId(res.content.toString())
+      } else {
+        pointCode = await findPointCodeByOrderId(this.id.toString())
+      }
+      await setPointCodeInFirebase(pointCode.id, pointCode.deviceId)
       if (res) {
         const externalId = await hillo.post('Orders.php?op=getExternalIdByCheckOut', {
           tableId: checkOutData.tableId
