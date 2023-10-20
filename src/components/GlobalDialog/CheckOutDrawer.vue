@@ -121,13 +121,15 @@ export default {
 
       delete checkOutData.discountStr
       const res = await hillo.post('Complex.php?op=' + this.checkOutType, checkOutData)
-      let pointCode
-      if (this.checkOutType === 'splitOrder') {
-        pointCode = await findPointCodeByOrderId(res.content.toString())
-      } else {
-        pointCode = await findPointCodeByOrderId(this.id.toString())
+      if (GlobalConfig.useCustomerDisplay) {
+        let pointCode
+        if (this.checkOutType === 'splitOrder') {
+          pointCode = await findPointCodeByOrderId(res.content.toString())
+        } else {
+          pointCode = await findPointCodeByOrderId(this.id.toString())
+        }
+        await setPointCodeInFirebase(pointCode.id, pointCode.deviceId)
       }
-      await setPointCodeInFirebase(pointCode.id, pointCode.deviceId)
       if (res) {
         const externalId = await hillo.post('Orders.php?op=getExternalIdByCheckOut', {
           tableId: checkOutData.tableId
