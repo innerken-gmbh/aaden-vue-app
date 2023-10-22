@@ -7,7 +7,7 @@ import {
   listBonusForUser,
   listCloudUser
 } from '@/api/VIPCard/VIPCloudApi'
-import { keyBy } from 'lodash-es'
+import { keyBy, orderBy } from 'lodash-es'
 
 export function defaultVipCard () {
   return {
@@ -86,6 +86,7 @@ export async function searchNfcCard () {
   })
   const localDict = keyBy(localInfo, 'uid')
   cloudInfo.forEach(it => {
+    console.log(it)
     if (localDict[it.uid]) {
       localDict[it.uid].cloudId = it.id
     } else {
@@ -94,7 +95,7 @@ export async function searchNfcCard () {
       localDict[it.uid].local = false
     }
   })
-  return Object.values(localDict)
+  return orderBy(Object.values(localDict), ['createdAt'], ['desc'])
 }
 
 export async function getUserByUid (uid) {

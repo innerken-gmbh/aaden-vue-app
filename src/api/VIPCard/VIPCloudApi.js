@@ -32,7 +32,8 @@ export async function generateUserInfo (uid = '', name = '', email = '', birthda
     name,
     email,
     birthday,
-    deviceId: await getCurrentDeviceId()
+    deviceId: await getCurrentDeviceId(),
+    createdAt: dayjs().format('YYYY-MM-dd HH:mm:ss')
   }
 }
 
