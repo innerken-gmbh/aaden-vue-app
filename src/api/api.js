@@ -321,7 +321,7 @@ export async function sendMailTo (mailTo, uuid) {
     await hillo.jsonPost('https://sendinvoicemail-evhwqutgjq-ey.a.run.app', {
       mailTo,
       uuid,
-      template_id: 'z3m5jgr8xpoldpyo'
+      templateId: 'z3m5jgr8xpoldpyo'
     })
   } catch (e) {
     IKUtils.showError(e?.message)
