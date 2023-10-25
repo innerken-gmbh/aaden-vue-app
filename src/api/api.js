@@ -315,3 +315,15 @@ export const printDeliveryBon = async function (timeSpan) {
 export async function restoreOrder (orderId) {
   return await hillo.post('Complex.php?op=makeOrderAgain', { orderId })
 }
+
+export async function sendMailTo (mailTo, uuid) {
+  try {
+    await hillo.jsonPost('https://sendinvoicemail-evhwqutgjq-ey.a.run.app', {
+      mailTo,
+      uuid,
+      template_id: 'z3m5jgr8xpoldpyo'
+    })
+  } catch (e) {
+    IKUtils.showError(e?.message)
+  }
+}

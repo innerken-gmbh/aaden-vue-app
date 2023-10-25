@@ -10,7 +10,12 @@ let tablePickResolve = () => {
 }
 
 const basePayloadParam = {
-  typeIsBoss: false, force: false, tableId: null, successCallback: null, resolve: null, failedCallback: null
+  typeIsBoss: false,
+  force: false,
+  tableId: null,
+  successCallback: null,
+  resolve: null,
+  failedCallback: null
 }
 
 export default new Vuex.Store({
@@ -33,11 +38,7 @@ export default new Vuex.Store({
     showBillDetailQRDialog (state, payload) {
       state.showBillDetailQRDialog = true
       state.billDetailQr = payload.code
-      if (payload.type === 1) {
-        state.billDetailUrlHead = location.protocol + '//baobao.aaden.io/?pointCode='
-      } else if (payload.type === 2) {
-        state.billDetailUrlHead = location.protocol + '//baobao.aaden.io/?uuid='
-      }
+      state.billDetailUrlHead = location.protocol + '//baobao.aaden.io/?uuid='
     },
     closeBillDetailQRDialog (state) {
       state.billDetailQr = ''

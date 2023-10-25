@@ -87,7 +87,7 @@ import { tryToReport } from './oldjs/common'
 import TableSelector from '@/components/GlobalDialog/TableSelector'
 import PinDialog from '@/components/GlobalDialog/PinDialog'
 import { mapMutations, mapState } from 'vuex'
-import { sendBillDetailToEmail } from '@/api/api'
+import { sendMailTo } from '@/api/api'
 
 export default {
   name: 'App',
@@ -131,9 +131,9 @@ export default {
   },
   methods: {
     ...mapMutations(['closeBillDetailQRDialog']),
+
     async sendToEmail () {
-      const content = this.billDetailUrlHead + this.billDetailQr + '<br>' + '<img src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=' + this.billDetailUrlHead + this.billDetailQr + '"></img>'
-      await sendBillDetailToEmail(content, this.email)
+      await sendMailTo(this.email, this.billDetailQr)
       this.email = ''
       this.closeBillDetailQRDialog()
     }
