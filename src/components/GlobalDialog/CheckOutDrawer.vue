@@ -33,7 +33,7 @@ import { changeFireBaseOrderToFinished } from '@/api/fireStore'
 import IKUtils from 'innerken-js-utils'
 import { payWithCard } from '@/api/cardTerminal'
 import { addBonusPoint, getUserById } from '@/api/VIPCard/VIPApi'
-import { getPointCode, getUUidByOrderId } from '@/api/api'
+import { getUUidByOrderId } from '@/api/api'
 import { mapMutations } from 'vuex'
 
 export default {
@@ -166,7 +166,10 @@ export default {
           IKUtils.toast()
           if (printType === 1) {
             // type: 1 指结账后通过pointCode
-            this.showBillDetailQRDialog({ code: uuid, type: 1 })
+            this.showBillDetailQRDialog({
+              code: uuid,
+              type: 1
+            })
           }
         }
       }
