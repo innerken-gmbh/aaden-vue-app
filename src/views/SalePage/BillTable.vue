@@ -30,20 +30,32 @@
                 <v-btn
                     :disabled="order.isReturned==='1'"
                     color="primary lighten-4 black--text"
-                    small
                     elevation="0"
+                    small
                     @click.stop="reprintOrder(order.orderId)">
                   <v-icon left>
                     mdi-printer-settings
                   </v-icon>
                   {{ $tc('reprint', 1) }}
                 </v-btn>
+                <v-btn
+                  :disabled="order.isReturned==='1'"
+                  class="ml-2"
+                  color="green lighten-4 black--text"
+                  elevation="0"
+                  small
+                  @click.stop="checkBillDetail(order.orderId)">
+                  <v-icon left>
+                    mdi-card-search-outline
+                  </v-icon>
+                  查看
+                </v-btn>
                 <template v-if="showOperation">
                   <v-btn :disabled="order.isReturned==='1'"
                          class="ml-2"
                          color="grey lighten-3 black--text"
-                         small
                          elevation="0"
+                         small
                          @click.stop="startChangePaymentMethodForOrder(order)">
                     <v-icon left>mdi-cash-refund</v-icon>
                     {{ $t('replace') }}
@@ -51,8 +63,8 @@
                   <v-btn :disabled="order.isReturned==='1'"
                          class="ml-2"
                          color="indigo lighten-4 black--text"
-                         small
                          elevation="0"
+                         small
                          @click.stop="restoreOrder(order.orderId)">
                     <v-icon left>mdi-history</v-icon>
                     {{ $t('restore') }}
@@ -142,7 +154,7 @@
         </div>
       </v-card>
     </v-dialog>
-    <v-navigation-drawer width="400" right app temporary v-model="checkOutDialog">
+    <v-navigation-drawer v-model="checkOutDialog" app right temporary width="400">
       <v-card width="100%">
         <check-out-calculator
             :total="changeOrderTotal"
@@ -170,6 +182,7 @@
 import IKUtils from 'innerken-js-utils'
 import {
   changePayMethodForOrder,
+  getUUidByOrderId,
   loadDetailOrder,
   reprintOrder,
   restoreOrder,
@@ -180,6 +193,7 @@ import {
 } from '@/api/api'
 import CheckOutCalculator from '@/components/GlobalDialog/CheckOutCalculator'
 import OrderDetailDialog from '@/components/GlobalDialog/OrderDetailDialog'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'BillTable',
@@ -218,6 +232,12 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['showBillDetailQRDialog']),
+    async checkBillDetail (id) {
+      const res = await getUUidByOrderId(id)
+      // type: 2 指通过uuid查看
+      this.showBillDetailQRDialog({ code: res, type: 2 })
+    },
     async submitCompanyInfo () {
       await sureTo(
         async () => {

@@ -11,7 +11,8 @@ import { acceptFireBaseOrder, changeFireBaseOrderToReadyToPick } from '@/api/fir
 
 export async function previewZBon (startDate, endDate) {
   return (await hillo.get('ZBon.php?op=previewBySpan', {
-    startDate, endDate
+    startDate,
+    endDate
   })).content
 }
 
@@ -23,20 +24,25 @@ export async function printXBon (startDate, endDate) {
 
 export async function printZBonUseDate (startDate, endDate, printByDay = 1, resetTable = 0) {
   return (await hillo.post('ZBon.php?op=printZbonBySpan', {
-    startDate, endDate, printByDay, resetTable
+    startDate,
+    endDate,
+    printByDay,
+    resetTable
   }))
 }
 
 // 还缺上传category id
 export async function printSaleBon (startDate, endDate) {
   return (await hillo.post('Dishes.php?op=printSalesBon', {
-    start: startDate, end: endDate
+    start: startDate,
+    end: endDate
   }))
 }
 
 export async function printSaleBonByCode (startDate, endDate) {
   return (await hillo.post('Dishes.php?op=printSalesBonByDishCode', {
-    start: startDate, end: endDate
+    start: startDate,
+    end: endDate
   }))
 }
 
@@ -64,6 +70,36 @@ export async function returnOrder (id) {
   }))
 }
 
+export async function sendBillDetailToEmail (content, email) {
+  const realContent = 'Download your digital receipt:' + content
+  await hillo.post('Complex.php?op=sendCustomEmail', {
+    subject: 'Your digital receipt from Innerken GmbH',
+    content: realContent,
+    mailTo: email
+  })
+}
+
+export async function getUUidByOrderId (orderId) {
+  return (await hillo.get('Orders.php?op=showOne', {
+    id: orderId
+  })).content[0]?.electronicUuid ?? ''
+}
+
+export async function getPointCode (id) {
+  let res = null
+  let counter = 0
+  while (!res && counter < 3) {
+    res = (await hillo.get('Orders.php?op=getPointCodeByOrderId', {
+      orderId: id
+    })).content?.pointCode
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    counter++
+    console.log(res, counter)
+  }
+
+  return res
+}
+
 export async function acceptOrder (reason, tableId) {
   await resetTableStatus(tableId)
   IKUtils.showLoading(true)
@@ -72,7 +108,8 @@ export async function acceptOrder (reason, tableId) {
     tableId: tableId
   })
   await hillo.post('Orders.php?op=acceptTakeawayOrder', {
-    tableId: tableId, reason: reason
+    tableId: tableId,
+    reason: reason
   })
   if (parseInt(externalId) !== 0) {
     await acceptFireBaseOrder(externalId, true)
@@ -94,7 +131,8 @@ export async function rejectOrder (id) {
 export async function readyToPick (id) {
   IKUtils.showLoading(true)
   await hillo.post('Orders.php?op=changeOrderPickUpStatus', {
-    orderId: id, status: 1
+    orderId: id,
+    status: 1
   })
   const externalId = await hillo.post('Orders.php?op=getExternalId', {
     orderId: id
@@ -113,7 +151,9 @@ export async function getExternalIdByRejectOrder (tableId) {
 
 export async function printServantSummary (pw, start, end) {
   return (await hillo.get('Servant.php?op=printSummaryBonByPassword', {
-    pw, start, end
+    pw,
+    start,
+    end
   })).content
 }
 
@@ -123,7 +163,8 @@ export async function loadMemberCard () {
 
 export async function checkOneMemberCard (longId) {
   return (await hillo.get('MemberCard.php?op=check', {
-    id: longId, amount: 0
+    id: longId,
+    amount: 0
   })).content
 }
 
@@ -149,20 +190,28 @@ export async function getBillListForServant (pw = null, date, endDate = null) {
     endDate = date
   }
   return (await hillo.get('BackendData.php?op=mobileV3StatWithLang', {
-    pw, date, endDate, lang: GlobalConfig.lang
+    pw,
+    date,
+    endDate,
+    lang: GlobalConfig.lang
   })).content
 }
 
 export async function loadDishStatistic (startDate, endDate) {
   return (await hillo.get('BackendData.php', {
-    op: 'dishStatistic', lang: GlobalConfig.lang, start: startDate, end: endDate
+    op: 'dishStatistic',
+    lang: GlobalConfig.lang,
+    start: startDate,
+    end: endDate
   })).content
 }
 
 export async function loadDetailOrder (id) {
   return hillo.get('BackendData.php', {
     // params: {
-    op: 'billDetail', lang: GlobalConfig.lang.toUpperCase(), id: id
+    op: 'billDetail',
+    lang: GlobalConfig.lang.toUpperCase(),
+    id: id
     // },
   })
 }
@@ -181,14 +230,18 @@ export async function changeOrderToBuffet (orderId, buffetDishes, buffetSetting)
 
 export async function reportDeviceInfo () {
   return (await hillo.post('Route.php?op=deviceLog', {
-    MACAddress: Remember.uuid, deviceType: deviceType, version: version, note: ''
+    MACAddress: Remember.uuid,
+    deviceType: deviceType,
+    version: version,
+    note: ''
   }))
 }
 
 export async function changePayMethodForOrder (orderId, paymentLogs) {
   console.log(orderId, paymentLogs)
   return (await hillo.post('Complex.php?op=changePayMethodForOrder', {
-    orderId: orderId, paymentLog: JSON.stringify(paymentLogs)
+    orderId: orderId,
+    paymentLog: JSON.stringify(paymentLogs)
   }))
 }
 
@@ -219,14 +272,18 @@ export async function safeRequest (func) {
 export async function reprintOrder (orderId, type = 0) {
   await safeRequest(async () => {
     await hillo.post('BackendData.php?op=reprintOrder', {
-      id: orderId, withTitle: type, printCount: 1
+      id: orderId,
+      withTitle: type,
+      printCount: 1
     })
   })
 }
 
 export async function deleteDish (id, items, reason) {
   return (await hillo.post('Complex.php?op=deleteDishes', {
-    tableId: id, dishes: JSON.stringify(items), reason: reason
+    tableId: id,
+    dishes: JSON.stringify(items),
+    reason: reason
   }))
 }
 
@@ -250,7 +307,8 @@ export async function writeCompanyInfo (item) {
 export const printDeliveryBon = async function (timeSpan) {
   const [timeStart, timeEnd] = timeSpan
   return await hillo.post('Orders.php?op=printDeliveryBon', {
-    fromTime: timeStart, toTime: timeEnd
+    fromTime: timeStart,
+    toTime: timeEnd
   })
 }
 

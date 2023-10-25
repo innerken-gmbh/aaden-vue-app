@@ -9,7 +9,6 @@ const TableInfoMetaDataSetting = {
   createTimestamp: {
     icon: 'mdi-clock-outline',
     classFunc: (v) => {
-      console.log(v)
       const [hour, minute] = v.split(':')
       const diff = timeFromNowInMinute(hour, minute)
       return diff > GlobalConfig.maxEatMinute ? 'error lighten-4 font-weight-bold' : ''

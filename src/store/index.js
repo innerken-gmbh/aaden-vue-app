@@ -24,9 +24,26 @@ export default new Vuex.Store({
 
     showErrorDialog: false,
     errorDialogTitle: '',
-    errorDialogMessage: ''
+    errorDialogMessage: '',
+    billDetailQr: '',
+    billDetailUrlHead: '',
+    showBillDetailQRDialog: false
   },
   mutations: {
+    showBillDetailQRDialog (state, payload) {
+      state.showBillDetailQRDialog = true
+      state.billDetailQr = payload.code
+      if (payload.type === 1) {
+        state.billDetailUrlHead = location.protocol + '//baobao.aaden.io/?pointCode='
+      } else if (payload.type === 2) {
+        state.billDetailUrlHead = location.protocol + '//baobao.aaden.io/?uuid='
+      }
+    },
+    closeBillDetailQRDialog (state) {
+      state.billDetailQr = ''
+      state.billDetailUrlHead = ''
+      state.showBillDetailQRDialog = false
+    },
     showErrorDialog (state, title, message = '') {
       state.showErrorDialog = true
       state.errorDialogMessage = message
