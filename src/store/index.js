@@ -38,7 +38,7 @@ export default new Vuex.Store({
     showBillDetailQRDialog (state, payload) {
       state.showBillDetailQRDialog = true
       state.billDetailQr = payload.code
-      state.billDetailUrlHead = location.protocol + '//baobao.aaden.io/?uuid='
+      state.billDetailUrlHead = 'https://baobao.aaden.io/?uuid='
     },
     closeBillDetailQRDialog (state) {
       state.billDetailQr = ''
