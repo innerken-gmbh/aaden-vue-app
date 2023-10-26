@@ -1,4 +1,11 @@
 {
+  "Check" : "查看",
+  "StandardPrint" : "默认打印",
+  "PrintType" : "打印类型",
+  "SentOutMail" : "确定发送",
+  "ThisOrderHasNoElectronicBill" : "该订单没有电子账单",
+  "ElectronicBill" : "电子账单",
+  "ElectronicBillHint" : "如果需要，请在下方添加一个邮箱地址，电子账单可以自动发送",
   "UK" : "乌克兰",
   "PrintSuccessful" : "打印成功！",
   "PrintSalesBon" : "您想打印销售收据吗？",

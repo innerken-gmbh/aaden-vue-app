@@ -85,7 +85,7 @@
             </div>
 
             <div>
-              <div class="text-body-2">打印类型</div>
+              <div class="text-body-2">{{ $t('PrintType') }}</div>
               <div
                 class="my-2"
                 style="background: transparent"
@@ -99,7 +99,7 @@
                     @click="printType = 0"
                   >
                     <v-icon class="mr-2">mdi-printer</v-icon>
-                    默认打印
+                    {{ $t('StandardPrint') }}
                   </v-card>
                   <v-card
                     :color="printType === 1 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
@@ -109,7 +109,7 @@
                     @click="printType = 1"
                   >
                     <v-icon class="mr-2">mdi-form-select</v-icon>
-                    电子账单
+                    {{ $t('ElectronicBill') }}
                   </v-card>
                 </div>
               </div>
