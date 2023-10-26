@@ -160,16 +160,18 @@ export default {
         this.cancel()
         await goHome()
         if (this.checkOutType === 'checkOut') {
-          IKUtils.showLoading()
-
           const uuid = await getUUidByOrderId(this.id)
-          IKUtils.toast()
+          await goHome()
           if (printType === 1) {
             // type: 1 指结账后通过pointCode
-            this.showBillDetailQRDialog({
-              code: uuid,
-              type: 1
-            })
+            this.showBillDetailQRDialog({ code: uuid, type: 2 })
+          }
+        } else if (this.checkOutType === 'splitOrder') {
+          const uuid = await getUUidByOrderId(res.content.toString())
+          await goHome()
+          if (printType === 1) {
+            // type: 1 指结账后通过pointCode
+            this.showBillDetailQRDialog({ code: uuid, type: 2 })
           }
         }
       }
