@@ -47,7 +47,7 @@
                   <v-icon left>
                     mdi-card-search-outline
                   </v-icon>
-                  查看
+                  {{ $t('Check') }}
                 </v-btn>
                 <template v-if="showOperation">
                   <v-btn :disabled="order.isReturned==='1'"
@@ -235,7 +235,7 @@ export default {
     async checkBillDetail (id) {
       const res = await getUUidByOrderId(id)
       if (!res) {
-        this.showErrorDialog('该订单没有电子账单')
+        this.showErrorDialog(this.$t('ThisOrderHasNoElectronicBill'))
         return
       }
       // type: 2 指通过uuid查看

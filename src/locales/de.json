@@ -1,4 +1,11 @@
 {
+  "Check" : "Überprüfen",
+  "StandardPrint" : "Standarddruck",
+  "PrintType" : "Drucktyp",
+  "SentOutMail" : "Jetzt Senden",
+  "ElectronicBill" : "Elektronische Rechnung",
+  "ElectronicBillHint" : "Bitte fügen Sie eine E-Mail-Adresse hinzu, damit E-Rechnungen automatisch an Sie versendet werden können",
+  "ElectronicBillReceiver" : "E-Mail des E-Rechnungsempfängers",
   "UK" : "Ukrainisch",
   "PrintSuccessful" : "Drucken erfolgreich！",
   "PrintSalesBon" : "Möchten Sie Umsatz Bon drucken?",

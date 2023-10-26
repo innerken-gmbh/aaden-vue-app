@@ -39,7 +39,7 @@
       <v-card class="pa-4">
         <div class="d-flex">
           <div class="text-h5">
-            电子账单
+            {{ $t('ElectronicBill') }}
           </div>
           <v-spacer/>
           <div>
@@ -67,14 +67,14 @@
             {{billDetailQr}}
           </div>
         </div>
-        <div class="text-body-2 mt-1">如果需要，请在下方添加一个邮箱地址，电子账单可以自动发送</div>
+        <div class="text-body-2 mt-1">{{ $t('ElectronicBillHint') }}</div>
         <div class="mt-4">
-          <v-text-field v-model="email" hide-details outlined placeholder="需要发送的邮件地址"/>
+          <v-text-field v-model="email" hide-details outlined :placeholder="$t('ElectronicBillReceiver')"/>
         </div>
         <div v-if="email" class="mt-4 d-flex justify-center">
           <v-btn class="mr-2" color="primary" elevation="0" width="100%" @click="sendToEmail">
             <v-icon left>mdi-arrow-right</v-icon>
-            确定发送
+            {{ $t('SentOutMail') }}
           </v-btn>
         </div>
       </v-card>
