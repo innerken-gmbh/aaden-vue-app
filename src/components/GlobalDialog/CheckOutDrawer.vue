@@ -158,20 +158,21 @@ export default {
           await addBonusPoint(user.uid, this.totalPrice)
         }
         this.cancel()
-        await goHome()
         if (this.checkOutType === 'checkOut') {
+          IKUtils.showLoading()
           const uuid = await getUUidByOrderId(this.id)
+          IKUtils.toast()
           await goHome()
           if (printType === 1) {
-            // type: 1 指结账后通过pointCode
-            this.showBillDetailQRDialog({ code: uuid, type: 2 })
+            this.showBillDetailQRDialog({ code: uuid })
           }
         } else if (this.checkOutType === 'splitOrder') {
+          IKUtils.showLoading()
           const uuid = await getUUidByOrderId(res.content.toString())
+          IKUtils.toast()
           await goHome()
           if (printType === 1) {
-            // type: 1 指结账后通过pointCode
-            this.showBillDetailQRDialog({ code: uuid, type: 2 })
+            this.showBillDetailQRDialog({ code: uuid })
           }
         }
       }

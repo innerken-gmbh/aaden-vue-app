@@ -130,7 +130,7 @@ export default {
     tryToReport()
   },
   methods: {
-    ...mapMutations(['closeBillDetailQRDialog']),
+    ...mapMutations(['closeBillDetailQRDialog', 'closeErrorDialog']),
 
     async sendToEmail () {
       await sendMailTo(this.email, this.billDetailQr)

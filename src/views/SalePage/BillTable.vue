@@ -39,7 +39,6 @@
                   {{ $tc('reprint', 1) }}
                 </v-btn>
                 <v-btn
-                  :disabled="order.isReturned==='1'"
                   class="ml-2"
                   color="green lighten-4 black--text"
                   elevation="0"
@@ -232,9 +231,13 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['showBillDetailQRDialog']),
+    ...mapMutations(['showBillDetailQRDialog', 'showErrorDialog']),
     async checkBillDetail (id) {
       const res = await getUUidByOrderId(id)
+      if (!res) {
+        this.showErrorDialog('该订单没有电子账单')
+        return
+      }
       // type: 2 指通过uuid查看
       this.showBillDetailQRDialog({ code: res, type: 2 })
     },

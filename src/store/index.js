@@ -38,11 +38,7 @@ export default new Vuex.Store({
     showBillDetailQRDialog (state, payload) {
       state.showBillDetailQRDialog = true
       state.billDetailQr = payload.code
-      if (payload.type === 1) {
-        state.billDetailUrlHead = location.protocol + '//baobao.aaden.io/%23/?pointCode='
-      } else if (payload.type === 2) {
-        state.billDetailUrlHead = location.protocol + '//baobao.aaden.io/%23/?uuid='
-      }
+      state.billDetailUrlHead = 'https://baobao.aaden.io/%23/?uuid='
     },
     closeBillDetailQRDialog (state) {
       state.billDetailQr = ''
@@ -55,6 +51,7 @@ export default new Vuex.Store({
       state.errorDialogTitle = title
     },
     closeErrorDialog (state) {
+      state.errorDialogTitle = ''
       state.showErrorDialog = false
     },
     START_TABLE_PICK (state, payload) {
