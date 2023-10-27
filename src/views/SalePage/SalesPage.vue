@@ -16,7 +16,7 @@
       </v-tabs>
     </v-app-bar>
     <v-navigation-drawer
-        :value="true"
+        v-if="isBoss"
         app
         permanent
         right
