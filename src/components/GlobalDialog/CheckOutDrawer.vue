@@ -32,6 +32,8 @@ import { round } from 'lodash-es'
 import { changeFireBaseOrderToFinished } from '@/api/fireStore'
 import { addBonusPoint, getUserById } from '@/api/VIPCard/VIPApi'
 import IKUtils from 'innerken-js-utils'
+import { getUUidByOrderId } from '@/api/api'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'CheckOutDrawer',
@@ -84,10 +86,11 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['showBillDetailQRDialog']),
     cancel () {
       this.realShow = false
     },
-    async checkOut (paymentLog = [], billType) {
+    async checkOut (paymentLog = [], billType, printType) {
       const print = parseInt(billType)
       let withTitle = 0
       let printCount = 1
@@ -104,7 +107,8 @@ export default {
         printCount,
         payMethod: 1,
         discountStr: '',
-        pw: this.password
+        pw: this.password,
+        notPrintingCheckOutBon: printType === 1 ? 1 : 0
       }
       if (paymentLog.length > 0) {
         checkOutData.paymentLog = JSON.stringify(paymentLog)
@@ -145,7 +149,21 @@ export default {
         }
         this.cancel()
         if (this.checkOutType === 'checkOut') {
+          IKUtils.showLoading()
+          const uuid = await getUUidByOrderId(this.id)
+          IKUtils.toast()
           await goHome()
+          if (printType === 1) {
+            this.showBillDetailQRDialog({ code: uuid })
+          }
+        } else if (this.checkOutType === 'splitOrder') {
+          IKUtils.showLoading()
+          const uuid = await getUUidByOrderId(res.content.toString())
+          IKUtils.toast()
+          await goHome()
+          if (printType === 1) {
+            this.showBillDetailQRDialog({ code: uuid })
+          }
         }
       }
       printNow()

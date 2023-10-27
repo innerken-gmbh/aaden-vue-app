@@ -10,7 +10,12 @@ let tablePickResolve = () => {
 }
 
 const basePayloadParam = {
-  typeIsBoss: false, force: false, tableId: null, successCallback: null, resolve: null, failedCallback: null
+  typeIsBoss: false,
+  force: false,
+  tableId: null,
+  successCallback: null,
+  resolve: null,
+  failedCallback: null
 }
 
 export default new Vuex.Store({
@@ -24,15 +29,29 @@ export default new Vuex.Store({
 
     showErrorDialog: false,
     errorDialogTitle: '',
-    errorDialogMessage: ''
+    errorDialogMessage: '',
+    billDetailQr: '',
+    billDetailUrlHead: '',
+    showBillDetailQRDialog: false
   },
   mutations: {
+    showBillDetailQRDialog (state, payload) {
+      state.showBillDetailQRDialog = true
+      state.billDetailQr = payload.code
+      state.billDetailUrlHead = 'https://baobao.aaden.io/%23/?uuid='
+    },
+    closeBillDetailQRDialog (state) {
+      state.billDetailQr = ''
+      state.billDetailUrlHead = ''
+      state.showBillDetailQRDialog = false
+    },
     showErrorDialog (state, title, message = '') {
       state.showErrorDialog = true
       state.errorDialogMessage = message
       state.errorDialogTitle = title
     },
     closeErrorDialog (state) {
+      state.errorDialogTitle = ''
       state.showErrorDialog = false
     },
     START_TABLE_PICK (state, payload) {

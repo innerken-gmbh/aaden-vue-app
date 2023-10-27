@@ -1,4 +1,11 @@
 {
+  "Check" : "Check",
+  "StandardPrint" : "Standard print",
+  "PrintType" : "Print type",
+  "SentOutMail" : "Send now",
+  "ElectronicBill" : "Electronic invoice",
+  "ElectronicBillHint" : "Please add an email address so that e-invoices can be sent automatically",
+  "ElectronicBillReceiver" : "Email of the e-invoice recipient",
   "UK": "Ukrainian",
   "CancelPrintSalesBon" : "Are you sure you want to cancel the sales receipt?",
   "cardTerminalIp" : "Terminal Identification Number (TID)",
