@@ -15,7 +15,7 @@ export default {
   data: function () {
     return {
       Config: GlobalConfig,
-      endPoint: 'Admin',
+      endPoint: GlobalConfig.adminEndpoint,
       deviceId: null,
       base: null
     }
