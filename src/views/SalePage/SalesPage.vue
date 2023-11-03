@@ -9,6 +9,7 @@
         <template v-if="isBoss">
           <v-tab>{{ $t('BillList') }}</v-tab>
           <v-tab>{{ $t('WaiterShow') }}</v-tab>
+          <v-tab>现金帐</v-tab>
         </template>
         <template v-else>
           <v-tab>{{ $t('SalesDetails') }}</v-tab>
@@ -28,8 +29,8 @@
         <v-card
             v-if="isBoss||Config.servantShowHistoryBill"
             class="pa-4 d-flex"
-            elevation="0"
             color="grey lighten-4"
+            elevation="0"
             tile
             @click="showDatePicker=true"
         >
@@ -139,7 +140,7 @@
             </v-card>
           </div>
           <v-divider class="my-4"></v-divider>
-          <v-btn x-large class="primary lighten-4 black--text" elevation="0" width="100%"
+          <v-btn class="primary lighten-4 black--text" elevation="0" width="100%" x-large
                  @click="billsPrintDialog = true">{{
               $t('PrintDailySummaryBon')
             }}
@@ -167,6 +168,9 @@
               <v-card elevation="0">
                 <servant-list :single-z-bon-date="singleZBonDate"></servant-list>
               </v-card>
+            </v-tab-item>
+            <v-tab-item>
+              <CashBookPage :date="singleZBonDate"/>
             </v-tab-item>
           </template>
           <v-tab-item>
@@ -399,6 +403,7 @@ import { getNiceLabel, getToday, today } from '@/api/Repository/DateRepository'
 import DateRangePicker from '@/components/GlobalDialog/DateRangePicker'
 import ServantList from '@/views/SalePage/Fragment/ServantList'
 import BillsPrinterPage from '@/views/SalePage/Fragment/BillsPrinterPage'
+import CashBookPage from '@/views/SalePage/CashBookPage'
 
 const defaultDisplayData = {
   orders: [],
@@ -413,6 +418,7 @@ const defaultDisplayData = {
 export default {
   name: 'SalePage',
   components: {
+    CashBookPage,
     BillsPrinterPage,
     ServantList,
     DateRangePicker,
@@ -494,6 +500,7 @@ export default {
     async dateSubmit () {
       this.showDatePicker = false
       this.singleZBonDate = this.dateInput
+      console.log(this.singleZBonDate, 'date')
       await this.loadData()
     },
     getNiceLabel,

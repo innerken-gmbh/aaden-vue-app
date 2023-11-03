@@ -99,16 +99,18 @@
                     @click="printType = 0"
                   >
                     <v-icon class="mr-2">mdi-printer</v-icon>
-                    {{ $t('StandardPrint') }}
+                    打印小票
                   </v-card>
                   <v-card
                     :color="printType === 1 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
+                    :disabled="!electronicBillStatus"
                     class="pa-3 justify-center d-flex align-center"
                     elevation="0"
                     tile
                     @click="printType = 1"
                   >
-                    <v-icon class="mr-2">mdi-form-select</v-icon>
+                    <v-icon v-if="electronicBillStatus" class="mr-2">mdi-form-select</v-icon>
+                    <v-icon v-else class="mr-2">mdi-checkbox-blank-off-outline</v-icon>
                     {{ $t('ElectronicBill') }}
                   </v-card>
                 </div>
@@ -284,7 +286,7 @@ import { fastSweetAlertRequest } from '@/oldjs/common'
 import hillo from 'hillo'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import { round } from 'lodash-es'
-import { writeCompanyInfo } from '@/api/api'
+import { checkElectronicBillingStatus, writeCompanyInfo } from '@/api/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
 import { getUserByUid } from '@/api/VIPCard/VIPApi'
@@ -326,6 +328,7 @@ export default {
   },
   data: function () {
     return {
+      electronicBillStatus: null,
       valid: true,
       reasonOfVisit: '',
       companyOrPersonName: '',
@@ -388,6 +391,8 @@ export default {
   },
   methods: {
     async loadPaymentMethods () {
+      this.electronicBillStatus = await checkElectronicBillingStatus()
+      console.log(this.electronicBillStatus, 'statsu')
       this.paymentMethods = (await hillo.get('PayMethod.php')).content
         .filter((p) => !includedPaymentMethods.includes(parseInt(p.id)))
         .map((p) => {

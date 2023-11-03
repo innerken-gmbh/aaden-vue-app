@@ -327,3 +327,46 @@ export async function sendMailTo (mailTo, uuid) {
     IKUtils.showError(e?.message)
   }
 }
+
+export async function getCashBookInfo (date) {
+  const [fromDate, toDate] = date
+  return (await hillo.get('Complex.php?op=getCashInOutDetail', {
+    fromDate,
+    toDate
+  })).content.map(it => {
+    if (it.cashAccountNote.toLowerCase() === 'umsatz' || it.cashAccountNote.toLowerCase() === 'trinkgeld') {
+      it.cashInCome = '营业收入'
+    } else {
+      it.cashInCome = '非营业收入'
+    }
+    if (!it.name) {
+      if (it.payLogAmount >= 0) {
+        it.name = '收入'
+      } else {
+        it.name = '支出'
+      }
+    }
+    return it
+  })
+}
+
+export const manageCashAccount = function (amount, note = '', isDatevAccountRef = null) {
+  return hillo.post('Complex.php?op=manageCashAccount', {
+    datevAccountRef: isDatevAccountRef,
+    amount: amount,
+    note: note
+  })
+}
+
+export async function getAllCashAccount () {
+  return (await hillo.get('/Datev.php?op=getAllDatevCashAccount', {})).content.filter(it => !it.deletedAt)
+}
+
+export async function addNewCashBookInfo (item) {
+  return await manageCashAccount(item.cashUseType !== '1' ? -item.payLogAmount : item.payLogAmount, item.cashAccountNote,
+    item.cashType)
+}
+
+export async function checkElectronicBillingStatus () {
+  return (await hillo.get('Complex.php?op=checkAadenPoint', {})).content.enabled
+}
