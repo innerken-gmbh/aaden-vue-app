@@ -580,7 +580,7 @@ left: 0;right: 0;margin: auto;height: 6px;border-radius: 3px"></div>
         <v-card width="550">
           <v-card-title class="font-weight-bold"> {{ currentDish.name }}</v-card-title>
           <v-card-text>
-            <v-text-field v-model="currentDish.currentPrice" :label="$t('Amount')" autofocus/>
+            <v-text-field v-model="currentDish.currentPrice" :label="$t('Price')" autofocus/>
             <v-text-field v-model="currentDish.currentName" :label="$t('name')"/>
           </v-card-text>
           <v-card-actions>
