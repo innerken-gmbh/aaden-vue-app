@@ -891,7 +891,7 @@
           <v-card-text class="mt-4">
             <v-text-field
                 v-model="currentDish.currentPrice"
-                :label="$t('Amount')"
+                :label="$t('Price')"
                 autofocus
                 outlined
             />
