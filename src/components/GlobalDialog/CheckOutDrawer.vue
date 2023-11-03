@@ -30,9 +30,8 @@ import { printNow } from '@/oldjs/Timer'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { round } from 'lodash-es'
 import { changeFireBaseOrderToFinished } from '@/api/fireStore'
-import IKUtils from 'innerken-js-utils'
-import { payWithCard } from '@/api/cardTerminal'
 import { addBonusPoint, getUserById } from '@/api/VIPCard/VIPApi'
+import IKUtils from 'innerken-js-utils'
 import { getUUidByOrderId } from '@/api/api'
 import { mapMutations } from 'vuex'
 
@@ -111,25 +110,10 @@ export default {
         pw: this.password,
         notPrintingCheckOutBon: printType === 1 ? 1 : 0
       }
-      let ecAmount = 0
       if (paymentLog.length > 0) {
-        console.log(paymentLog)
         checkOutData.paymentLog = JSON.stringify(paymentLog)
-        ecAmount = paymentLog.filter(it => parseInt(it.id) === 2)
-          .reduce((sum, i) => sum + parseFloat(i.price), 0).toFixed(2)
       }
-      if (ecAmount > 0 && GlobalConfig.cardTerminalIp) {
-        IKUtils.showLoading(false)
-        console.log(ecAmount, 'payAmount')
-        const paymentResult = await payWithCard(GlobalConfig.cardTerminalIp, ecAmount)
-        if (paymentResult) {
-          IKUtils.toast('👌')
-        } else {
-          IKUtils.showError(this.$t('PaymentFailed'))
-          return
-        }
-      }
-
+      IKUtils.showLoading(false)
       if (this.discountRatio !== 0) {
         checkOutData.discountStr =
             (this.discountStr ?? '').indexOf('p') !== -1
@@ -138,10 +122,16 @@ export default {
       }
 
       delete checkOutData.discountStr
-      const res = await hillo.post(
-        'Complex.php?op=' + this.checkOutType,
-        checkOutData
-      )
+      let res
+      try {
+        res = await hillo.post(
+          'Complex.php?op=' + this.checkOutType,
+          checkOutData, { timeout: 300 * 1000 }
+        )
+        IKUtils.toast('👌')
+      } catch (e) {
+        IKUtils.showError(this.$t('PaymentFailed'))
+      }
       if (res) {
         const externalId = await hillo.post(
           'Orders.php?op=getExternalIdByCheckOut',
