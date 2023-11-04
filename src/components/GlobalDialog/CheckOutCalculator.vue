@@ -528,7 +528,6 @@ export default {
           { amount: 0 },
           'GET'
         )
-        console.log(res)
 
         if (res.content) {
           const leftAmount = parseFloat(res.content.leftAmount)

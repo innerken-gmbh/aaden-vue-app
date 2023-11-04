@@ -337,6 +337,7 @@
                   >
                     <div class="dishCardList mt-2">
                       <v-card
+                          v-if="!haveFavoriteItem||activeDCT!==0"
                           class="d-flex align-center"
                           elevation="0"
                           style="
