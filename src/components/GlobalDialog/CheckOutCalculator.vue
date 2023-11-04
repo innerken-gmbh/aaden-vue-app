@@ -361,13 +361,23 @@ export default {
           '8',
           '9',
           fixedNames.card,
-          'C',
+          'AC',
           '0',
           'mdi-circle-small',
           fixedNames.cash
         ]
       } else {
-        return ['', '', '', '', '', '', '', '', '', '', '', fixedNames.tip, '', '', '', fixedNames.return]
+        return ['1',
+          '2',
+          '3',
+          'mdi-backspace',
+          '4',
+          '5',
+          '6',
+          '',
+          '7',
+          '8',
+          '9', fixedNames.tip, 'AC', '0', '', fixedNames.return]
       }
     },
     realExtraPaymentMethodName: function () {
