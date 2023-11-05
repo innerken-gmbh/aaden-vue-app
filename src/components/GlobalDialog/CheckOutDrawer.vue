@@ -34,6 +34,7 @@ import { addBonusPoint, getUserById } from '@/api/VIPCard/VIPApi'
 import IKUtils from 'innerken-js-utils'
 import { getUUidByOrderId } from '@/api/api'
 import { mapMutations } from 'vuex'
+import { getCurrentOrderInfo } from '@/api/Repository/OrderInfo'
 
 export default {
   name: 'CheckOutDrawer',
@@ -130,6 +131,12 @@ export default {
         )
         IKUtils.toast('👌')
       } catch (e) {
+        setTimeout(async () => {
+          const res = await getCurrentOrderInfo(this.tableId)
+          if (res.usageStatus === '0') {
+            await goHome()
+          }
+        }, 3 * 1000)
         IKUtils.showError(this.$t('PaymentFailed'))
       }
       if (res) {

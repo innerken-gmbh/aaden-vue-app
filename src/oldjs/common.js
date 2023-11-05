@@ -349,9 +349,11 @@ export function remove (arr, index) {
 
 export function jumpTo (url, params) {
   clearAllTimer()
-  router.replace({
-    name: url, params
-  })
+  if (router.currentRoute.name !== url) {
+    router.replace({
+      name: url, params
+    })
+  }
 }
 
 export function oldJumpTo (url, params) {
