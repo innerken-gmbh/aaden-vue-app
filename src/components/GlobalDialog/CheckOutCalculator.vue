@@ -87,30 +87,38 @@
             <div>
               <div class="text-body-2">{{ $t('PrintType') }}</div>
               <div
-                class="my-2"
-                style="background: transparent"
+                  class="my-2"
+                  style="background: transparent"
               >
                 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))">
                   <v-card
-                    :color="printType === 0 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
-                    class="pa-3 justify-center d-flex align-center"
-                    elevation="0"
-                    tile
-                    @click="printType = 0"
+                      :color="printType === 0 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
+                      class="pa-3 justify-center d-flex align-center"
+                      elevation="0"
+                      tile
+                      @click="printType = 0"
                   >
                     <v-icon class="mr-2">mdi-printer</v-icon>
                     打印小票
                   </v-card>
                   <v-card
-                    :color="printType === 1 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
-                    :disabled="!electronicBillStatus"
-                    class="pa-3 justify-center d-flex align-center"
-                    elevation="0"
-                    tile
-                    @click="printType = 1"
+                      :color="printType === 1 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
+                      :disabled="!electronicBillStatus"
+                      class="pa-3 justify-center d-flex align-center"
+                      elevation="0"
+                      tile
+                      @click="printType = 1"
                   >
-                    <v-icon v-if="electronicBillStatus" class="mr-2">mdi-form-select</v-icon>
-                    <v-icon v-else class="mr-2">mdi-checkbox-blank-off-outline</v-icon>
+                    <v-icon
+                        v-if="electronicBillStatus"
+                        class="mr-2"
+                    >mdi-form-select
+                    </v-icon>
+                    <v-icon
+                        v-else
+                        class="mr-2"
+                    >mdi-checkbox-blank-off-outline
+                    </v-icon>
                     {{ $t('ElectronicBill') }}
                   </v-card>
                 </div>
@@ -479,23 +487,44 @@ export default {
       return read
     },
     addPaymentLogToList (id, price, icon, hash, name, memberCardId = null, uid = null) {
-      this.paymentLog.push({
-        id,
-        price,
-        icon,
-        hash,
-        memberCardId,
-        uid,
-        name
-      })
-      if (parseInt(id) !== 1 && !this.equals(this.remainTotal, 0)) {
-        if (this.remainTotal < 0) {
-          this.paymentLog.push({
-            id: 9,
-            price: this.remainTotal,
-            icon: 'TIP',
-            hash: '' + this.paymentLog.length + 'p' + price + 'icon' + icon
-          })
+      if (this.remainTotal < 0 && price !== this.remainTotal) {
+        price = -price
+        this.paymentLog.push({
+          id,
+          price,
+          icon,
+          hash,
+          memberCardId,
+          uid,
+          name
+        })
+
+        this.paymentLog.push({
+          id: parseInt(id) === 1 ? 9 : 1,
+          price: this.remainTotal,
+          icon: parseInt(id) === 1 ? 'TIP' : 'RC',
+          hash: '' + this.paymentLog.length + 'p' + price + 'icon' + icon
+        })
+      } else {
+        this.paymentLog.push({
+          id,
+          price,
+          icon,
+          hash,
+          memberCardId,
+          uid,
+          name
+        })
+
+        if (parseInt(id) !== 1 && !this.equals(this.remainTotal, 0)) {
+          if (this.remainTotal < 0) {
+            this.paymentLog.push({
+              id: 9,
+              price: this.remainTotal,
+              icon: 'TIP',
+              hash: '' + this.paymentLog.length + 'p' + price + 'icon' + icon
+            })
+          }
         }
       }
     },
