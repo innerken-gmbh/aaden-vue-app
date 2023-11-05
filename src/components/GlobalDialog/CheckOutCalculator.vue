@@ -487,7 +487,7 @@ export default {
       return read
     },
     addPaymentLogToList (id, price, icon, hash, name, memberCardId = null, uid = null) {
-      if (this.remainTotal < 0 && price !== this.remainTotal) {
+      if (this.remainTotal < 0 && !this.equals(price, this.remainTotal)) {
         price = -price
         this.paymentLog.push({
           id,
