@@ -252,7 +252,10 @@
                     "
                   >
 
-                    <v-item v-if="haveFavoriteItem" v-slot="{active,toggle}">
+                    <v-item
+                        v-if="haveFavoriteItem"
+                        v-slot="{active,toggle}"
+                    >
                       <v-card
                           :color="active?'primary':'grey lighten-4'"
                           :dark="active"
@@ -260,8 +263,13 @@
                           class="d-flex justify-center align-center px-6"
                           height="48"
                           style="border-radius: 12px;font-size: 18px"
-                          @click="toggle">
-                        <v-icon :color="active?'white':'primary'" left>mdi-heart-circle</v-icon>
+                          @click="toggle"
+                      >
+                        <v-icon
+                            :color="active?'white':'primary'"
+                            left
+                        >mdi-heart-circle
+                        </v-icon>
                         Favorite
                       </v-card>
                     </v-item>
@@ -1010,8 +1018,11 @@
         </v-card>
       </v-dialog>
 
-      <member-selection-dialog v-model="showMemberSelectionDialog" :current-member-id="currentMemberId"
-                               @update="e=>currentMemberId=e"/>
+      <member-selection-dialog
+          v-model="showMemberSelectionDialog"
+          :current-member-id="currentMemberId"
+          @update="e=>currentMemberId=e"
+      />
     </template>
     <template v-else>
       <div style="height: 100vh;width: 100vw;background: #f6f6f6">
@@ -1084,6 +1095,7 @@ import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import uniqBy from 'lodash-es/uniqBy'
 import priceDisplay from '../SalePage/Fragment/PriceDisplay.vue'
 import MemberSelectionDialog from '@/views/TablePage/Dialog/MemberSelectionDialog.vue'
+import { getCurrentOrderInfo } from '@/api/Repository/OrderInfo'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -1725,15 +1737,10 @@ export default {
     },
     async getTableDetail () {
       try {
-        const res = await hillo.silentGet(
-          'Tables.php',
-          {
-            op: 'currentInfo',
-            id: this.id
-          },
-          { noDebug: true }
-        )
-        this.tableDetailInfo = res.content
+        this.tableDetailInfo = await getCurrentOrderInfo(this.id)
+        if (!this.tableDetailInfo) {
+          return
+        }
         this.tableDetailInfo.consumeTypeName = findConsumeTypeById(
           this.tableDetailInfo.consumeTypeId
         ).name
@@ -2116,16 +2123,9 @@ export default {
         const dct = this.dct?.[this.haveFavoriteItem ? (this.activeDCT - 1) : this.activeDCT]
         return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
       })
-    },
-    orderListModelList () {
-      return this.orderListModel.list
-    },
-    cartListModelList () {
-      return this.cartListModel.list
     }
   },
   watch: {
-
     activeDCT: function (val) {
       if (val === 0 && this.haveFavoriteItem) {
         this.activeCategoryId = -10
