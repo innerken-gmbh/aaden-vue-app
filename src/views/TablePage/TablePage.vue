@@ -1739,6 +1739,7 @@ export default {
       try {
         this.tableDetailInfo = await getCurrentOrderInfo(this.id)
         if (!this.tableDetailInfo) {
+          await goHome()
           return
         }
         this.tableDetailInfo.consumeTypeName = findConsumeTypeById(
