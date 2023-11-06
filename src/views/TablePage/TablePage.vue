@@ -1790,6 +1790,9 @@ export default {
       if (this.isSendingRequest) {
         return
       }
+      if (this.anyMenuOpen()) {
+        return
+      }
       if (this.keyboardInput === null) {
         this.keyboardInput = ''
       }
