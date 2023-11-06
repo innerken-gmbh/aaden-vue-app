@@ -2098,8 +2098,7 @@ export default {
     realAddressInfo () {
       if (this.tableDetailInfo.order.rawAddressInfo?.length > 0) {
         try {
-          const res = JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
-          return res
+          return JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
         } catch (e) {
           return null
         }
