@@ -298,6 +298,7 @@ import { checkElectronicBillingStatus, writeCompanyInfo } from '@/api/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
 import { getUserByUid } from '@/api/VIPCard/VIPApi'
+import { setOrderListInFirebase } from '@/api/customerDiaplay'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
 const fixedNames = {
@@ -350,7 +351,8 @@ export default {
       extraPaymentMethodName: [fixedNames.vip],
       paymentLog: [],
       loading: false,
-      GlobalConfig
+      GlobalConfig,
+      deviceId: -1
     }
   },
   computed: {
@@ -406,6 +408,7 @@ export default {
   },
   created () {
     this.loadPaymentMethods()
+    this.deviceId = GlobalConfig.DeviceId
   },
   methods: {
     async loadPaymentMethods () {
@@ -437,6 +440,13 @@ export default {
       }
       this.loading = true
       try {
+        try {
+          setTimeout(() => {
+            setOrderListInFirebase({}, this.deviceId)
+          }, 10)
+        } catch (x) {
+          console.log(x)
+        }
         try {
           if (this.id) {
             await writeCompanyInfo({

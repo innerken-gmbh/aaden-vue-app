@@ -35,6 +35,7 @@ import IKUtils from 'innerken-js-utils'
 import { getUUidByOrderId } from '@/api/api'
 import { mapMutations } from 'vuex'
 import { getCurrentOrderInfo } from '@/api/Repository/OrderInfo'
+import { setUuidInFirebase } from '@/api/customerDiaplay'
 
 export default {
   name: 'CheckOutDrawer',
@@ -161,14 +162,17 @@ export default {
           IKUtils.toast()
           await goHome()
           if (printType === 1) {
+            await setUuidInFirebase(uuid)
             this.showBillDetailQRDialog({ code: uuid })
           }
         } else if (this.checkOutType === 'splitOrder') {
           IKUtils.showLoading()
           const uuid = await getUUidByOrderId(res.content.toString())
+          console.log(uuid, 'uuid')
           IKUtils.toast()
           await goHome()
           if (printType === 1) {
+            await setUuidInFirebase(uuid)
             this.showBillDetailQRDialog({ code: uuid })
           }
         }

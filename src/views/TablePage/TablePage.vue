@@ -1060,13 +1060,7 @@ import { dragscroll } from 'vue-dragscroll'
 
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 
-import {
-  findDish,
-  getCategoryListWithCache,
-  goHome,
-  processDishList,
-  setDefaultValueForApply
-} from '@/oldjs/StaticModel'
+import { findDish, getCategoryListWithCache, goHome, processDishList, setDefaultValueForApply } from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
@@ -1096,6 +1090,7 @@ import uniqBy from 'lodash-es/uniqBy'
 import priceDisplay from '../SalePage/Fragment/PriceDisplay.vue'
 import MemberSelectionDialog from '@/views/TablePage/Dialog/MemberSelectionDialog.vue'
 import { getCurrentOrderInfo } from '@/api/Repository/OrderInfo'
+import { setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFirebase } from '@/api/customerDiaplay'
 
 const checkoutFactory = StandardDishesListFactory()
 const splitOrderFactory = StandardDishesListFactory()
@@ -1179,6 +1174,7 @@ export default {
   },
   data: function () {
     return {
+      checkoutId: [],
       globalLoading: true,
       favoriteList: null,
       reasons: getReason(),
@@ -1240,10 +1236,13 @@ export default {
       /* new input */
       keyboardInput: '',
       currentCodeBuffer: '',
-
+      deviceId: -1,
       currentMemberId: null,
       showMemberSelectionDialog: null
     }
+  },
+  created () {
+    this.deviceId = GlobalConfig.DeviceId
   },
   methods: {
     async deleteAndSaveReason (note) {
@@ -1661,6 +1660,25 @@ export default {
       this.activeCategoryId = null
       this.updateActiveDCT(0)
     },
+    async setOrderListByTableNameInFirebase (orderListModelList) {
+      // upload orderList to Firebase
+      const constData = {}
+      let number = 1
+      if (orderListModelList.length > 0) {
+        orderListModelList.forEach(orderItem => {
+          const result = {}
+          Object.keys(orderItem).filter(key => {
+            return key !== 'change' && key !== 'displayApply'
+          }).forEach(key => {
+            result[key] = orderItem[key]
+          })
+          const dishKey = 'dish_' + orderItem.dishesId + number
+          number++
+          constData[dishKey] = result
+        })
+      }
+      await setOrderListInFirebase(constData, this.deviceId)
+    },
     back () {
       if (this.keyboardInput || this.currentCodeBuffer) {
         this.resetInputAndBuffer()
@@ -1671,13 +1689,21 @@ export default {
       } else if (this.modificationShow) {
         this.cancel()
       } else if (this.checkoutShow) {
+        // clear the data in firestore
+        setOrderListInFirebase({}, this.deviceId)
+        setCartListInFirebase({}, this.deviceId)
         this.checkoutShow = false
         this.initialUI()
       } else if (this.splitOrderListModel.list.length > 0) {
         this.removeAllFromSplitOrder()
       } else if (this.cartListModel.list.length > 0) {
+        // clear the data in firestore
+        setCartListInFirebase({}, this.deviceId)
         this.cartListModel.clear()
       } else {
+        // clear the data in firestore
+        setOrderListInFirebase({}, this.deviceId)
+        setCartListInFirebase({}, this.deviceId)
         this.goHome()
       }
       blockReady()
@@ -1708,14 +1734,7 @@ export default {
       checkOut(pw, this.id, print, payMethod, tipIncome, memberCardId)
     },
     needSplitOrder: async function () {
-      this.password = await optionalAuthorizeAsync(
-        '',
-        GlobalConfig.checkOutUsePassword,
-        '',
-        true,
-        this.id
-      )
-      this.checkoutShow = true
+      this.password = await optionalAuthorizeAsync('', GlobalConfig.checkOutUsePassword, '', true, this.id)
       checkoutFactory.clear()
       checkoutFactory.loadTTDishList(this.splitOrderListModel.list)
       this.checkOutModel = {
@@ -1723,6 +1742,8 @@ export default {
         count: checkoutFactory.count(),
         list: checkoutFactory.list
       }
+      this.checkoutId = this.checkOutModel.list.map(it => it.code)
+      this.checkoutShow = true
       this.checkOutType = 'splitOrder'
     },
     anyMenuOpen () {
@@ -1946,6 +1967,8 @@ export default {
         this.isSendingRequest = false
       }
       blockReady()
+      await setOrderListInFirebase({}, this.deviceId)
+      await setCartListInFirebase({}, this.deviceId)
     },
     jumpToPayment () {
       const realCheckOut = async (pw) => {
@@ -1957,6 +1980,8 @@ export default {
           count: checkoutFactory.count(),
           list: checkoutFactory.list
         }
+        this.checkoutId = this.checkOutModel.list.map(it => it.code)
+        this.checkoutShow = true
         this.checkOutType = 'checkOut'
         this.discountStr = ''
         this.password = pw
@@ -2080,6 +2105,46 @@ export default {
     },
     async cartListModelClear () {
       this.cartListModel.clear()
+      await setCartListInFirebase({}, this.deviceId)
+    },
+    async setCartListByTableNameInFirebase (dishList) {
+      const constData = {}
+      let number = 1
+      if (dishList.length > 0) {
+        dishList.forEach(dish => {
+          const result = {}
+          Object.keys(dish).filter(key => {
+            return (key !== 'change' && key !== 'edit' &&
+              key !== 'apply' &&
+              key !== 'langs' && key !== 'langsDesc' &&
+              key !== 'modInfo' && key !== 'options')
+          }).forEach(key => {
+            result[key] = dish[key]
+          })
+
+          result.hasAppend = false
+
+          if (result.displayApply.length > 0) {
+            const aNameArr = []
+            const priceInfoArr = []
+            result.displayApply.forEach(i => {
+              aNameArr.push((i.groupName + ':' + i.value))
+              priceInfoArr.push(i.priceInfo)
+            })
+
+            result.aNameArr = aNameArr
+            result.priceInfoArr = priceInfoArr
+            result.hasAppend = true
+          }
+
+          const dishKey = 'cart_' + dish.code + number
+          number++
+
+          constData[dishKey] = result
+        })
+      }
+
+      await setCartListInFirebase(constData, this.deviceId)
     }
 
   },
@@ -2126,9 +2191,33 @@ export default {
         const dct = this.dct?.[this.haveFavoriteItem ? (this.activeDCT - 1) : this.activeDCT]
         return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
       })
+    },
+    orderListModelList () {
+      return this.orderListModel.list
+    },
+    cartListModelList () {
+      return this.cartListModel.list
+    },
+    cartListModelHash () {
+      return this.cartListModel.list.map(it => {
+        return { name: it.name, count: it.count, allInfo: it }
+      })
     }
   },
   watch: {
+    async checkoutShow (val) {
+      if (!val) {
+        this.checkoutId = []
+      }
+      await setCheckOutStatusInFirebase(val, this.deviceId, this.checkoutId)
+    },
+    orderListModelList (val) {
+      this.setOrderListByTableNameInFirebase(val)
+    },
+    cartListModelHash (val) {
+      const res = val.map(it => it.allInfo)
+      this.setCartListByTableNameInFirebase(res)
+    },
     activeDCT: function (val) {
       if (val === 0 && this.haveFavoriteItem) {
         this.activeCategoryId = -10
