@@ -1060,7 +1060,13 @@ import { dragscroll } from 'vue-dragscroll'
 
 import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 
-import { findDish, getCategoryListWithCache, goHome, processDishList, setDefaultValueForApply } from '@/oldjs/StaticModel'
+import {
+  findDish,
+  getCategoryListWithCache,
+  goHome,
+  processDishList,
+  setDefaultValueForApply
+} from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
@@ -1476,6 +1482,10 @@ export default {
               const unitCount = await IKUtils.showInput(
                 i18n.t('PleaseEnter') + ' ' + unitName + ' ' + i18n.t('AmountOfProductMeasured')
               )
+              if (!unitCount) {
+                blockReady()
+                return
+              }
               dish.currentPrice = (unitCount / unitBase) * unitPrice
               dish.currentName = `${name} ${unitPrice}/${unit} | ${unitCount}${unitName}`
 
