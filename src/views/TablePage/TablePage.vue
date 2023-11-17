@@ -1052,13 +1052,11 @@ import {
   showTimedAlert,
   toast
 } from '@/oldjs/common'
-import { getOrderInfo } from 'aaden-base-model/lib/Models/AadenApi'
+
 import Swal from 'sweetalert2'
 import hillo from 'hillo'
 import { checkOut, optionalAuthorizeAsync, printZwichenBon } from '@/oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
-
-import { StandardDishesListFactory } from 'aaden-base-model/lib/Models/AadenBase'
 
 import {
   findDish,
@@ -1068,7 +1066,6 @@ import {
   setDefaultValueForApply
 } from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
-import CategoryType from 'aaden-base-model/lib/Models/CategoryType'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
 
 import { debounce, groupBy } from 'lodash-es'
@@ -1097,11 +1094,13 @@ import priceDisplay from '../SalePage/Fragment/PriceDisplay.vue'
 import MemberSelectionDialog from '@/views/TablePage/Dialog/MemberSelectionDialog.vue'
 import { getCurrentOrderInfo } from '@/api/Repository/OrderInfo'
 import { setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFirebase } from '@/api/customerDiaplay'
+import { DishDocker } from 'aaden-base-model/lib'
+import { getCategoryList, getOrderInfo } from '@/api/aaden-base-model/api'
 
-const checkoutFactory = StandardDishesListFactory()
-const splitOrderFactory = StandardDishesListFactory()
-const orderListFactory = StandardDishesListFactory()
-const cartListFactory = StandardDishesListFactory()
+const checkoutFactory = DishDocker.StandardDishesListFactory()
+const splitOrderFactory = DishDocker.StandardDishesListFactory()
+const orderListFactory = DishDocker.StandardDishesListFactory()
+const cartListFactory = DishDocker.StandardDishesListFactory()
 const defaultCurrentDish = {
   currentName: '',
   currentPrice: ''
@@ -1536,13 +1535,7 @@ export default {
     },
     async getDCT () {
       if (this.dct.length === 0) {
-        this.dct = (await CategoryType.getList())
-          .map((i) => {
-            if (!i.isActive) {
-              i.isActive = false
-            }
-            return i
-          })
+        this.dct = (await getCategoryList())
           .sort((a, b) => {
             const rank = GlobalConfig.defaultSort.split(',')
             const idToRank = (id) => {

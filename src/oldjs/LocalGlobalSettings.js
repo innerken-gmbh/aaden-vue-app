@@ -1,4 +1,4 @@
-import { loadBaseConfig } from 'aaden-base-model/lib/Models/GlobalSettings'
+import { AadenBaseConfig } from 'aaden-base-model/lib/AadenSettingManager'
 import i18n from '@/i18n'
 
 import dayjs from 'dayjs'
@@ -13,7 +13,7 @@ export let NeededKeys = []
 
 export async function loadConfig () {
   try {
-    GlobalConfig = Object.assign(GlobalConfig, await loadBaseConfig(defaultConfig), fix)
+    GlobalConfig = Object.assign(GlobalConfig, await AadenBaseConfig(defaultConfig), fix)
     NeededKeys = GlobalConfig.neededKeys
     GlobalConfig.getMilepayUrl = function () {
       return GlobalConfig.Protocol + GlobalConfig.Base + ':' + GlobalConfig.milePayPort + '/milePay/'

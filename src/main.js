@@ -13,7 +13,6 @@ import VueDraggableResizable from 'vue-draggable-resizable-gorkys'
 
 import { reportDeviceInfo } from '@/api/api'
 import { addToQueue } from '@/oldjs/poolJobs'
-import { getActiveTables } from 'aaden-base-model/lib/Models/AadenApi'
 import IKUtils from 'innerken-js-utils'
 import dayjs from 'dayjs'
 import { onlyTimeFormat, timeDisplay } from '@/api/dateUtils'
@@ -22,6 +21,7 @@ import _ from 'lodash'
 import { getBaseAndUrlForDeviceId } from '@/api/restaurantInfoService'
 import hillo from 'hillo'
 import ParseInt from 'lodash-es/parseInt'
+import { getActiveTables } from '@/api/aaden-base-model/api'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 

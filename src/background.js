@@ -1,5 +1,4 @@
 'use strict'
-import settings from 'electron-settings'
 import { app, BrowserWindow, ipcMain, protocol } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
@@ -27,12 +26,15 @@ function createWindow () {
     height: 1080,
     show: false,
     webPreferences: {
-      nodeIntegration: true, enableRemoteModule: true
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      nodeIntegrationInWorker: true,
+      nodeIntegrationInSubFrames: true,
+      javascript: true,
+      contextIsolation: false
     }
   })
-  const Debug = settings.getSync('config.Debug')
-  console.log('Debug', Debug)
-  win.setFullScreen(!Debug)
+  win.setFullScreen(true)
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
@@ -42,9 +44,6 @@ function createWindow () {
   }
   win.once('ready-to-show', () => {
     win.show()
-    if (Debug) {
-      win.webContents.openDevTools()
-    }
   })
 
   win.on('closed', () => {
@@ -83,9 +82,6 @@ if (!gotTheLock) {
 
   // 创建 myWindow, 加载应用的其余部分, etc...
   app.whenReady().then(async () => {
-    if (!settings.hasSync('config')) {
-      settings.setSync('config', require('@/assets/AadenConfig.json'))
-    }
     createWindow()
   })
 }
