@@ -104,7 +104,7 @@ async function initial () {
   } catch (e) {
 
   }
-  listenFireStoreOrders()
+  await listenFireStoreOrders()
   new Vue({
     router,
     store,

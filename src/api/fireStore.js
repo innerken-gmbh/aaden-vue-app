@@ -4,17 +4,20 @@ import { initializeApp } from 'firebase/app'
 import { collection, doc, getFirestore, onSnapshot, query, updateDoc, where } from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyDwY4rJNrLXdrLI-ukxzCAGan97lOx84cM',
+  apiKey: 'AIzaSyDnlXhMVxLIIWPAt3zqrC1bdrhP1ZMxwWE',
   authDomain: 'aaden-online-order.firebaseapp.com',
-  projectId: 'aaden-online-order'
+  projectId: 'aaden-online-order',
+  storageBucket: 'aaden-online-order.appspot.com',
+  messagingSenderId: '35511673943',
+  appId: '1:35511673943:web:0a49cc6b61fb4f96f2ef12',
+  measurementId: 'G-G2JET1PGPK'
 }
 export const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)
 
-export function listenFireStoreOrders () {
-  console.log(GlobalConfig.DeviceId.toString())
-  const q = query(collection(db, 'orderDisplay'), where('confirmed', '==', false),
-    where('deviceId', '==', GlobalConfig.DeviceId.toString()))
+export async function listenFireStoreOrders () {
+  const q = query(collection(db, 'order'), where('confirmed', '==', false),
+    where('deviceId', '==', GlobalConfig.DeviceId))
   const doSend = async (orderList) => {
     if (orderList.length > 0) {
       const res = await sendFireStoreOrder(orderList)
@@ -27,7 +30,6 @@ export function listenFireStoreOrders () {
     }
   }
   return onSnapshot(q, (querySnapshot) => {
-    console.log(querySnapshot)
     const toSend = []
     querySnapshot.forEach(doc => {
       const order = doc.data()
