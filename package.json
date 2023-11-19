@@ -1,6 +1,6 @@
 {
   "name": "aaden-vue-app",
-  "version": "1.0.61",
+  "version": "1.0.62",
   "private": true,
   "description": "科学管店，化繁为简",
   "author": "juhaodong@gmail.com",
@@ -21,7 +21,7 @@
   },
   "main": "background.js",
   "dependencies": {
-    "aaden-base-model": "1.0.11",
+    "aaden-base-model": "1.0.12",
     "biewangle": "^1.0.11",
     "core-js": "^3.19.2",
     "dayjs": "^1.10.7",
