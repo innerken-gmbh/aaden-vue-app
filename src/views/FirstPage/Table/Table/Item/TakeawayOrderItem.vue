@@ -74,7 +74,6 @@ export default {
   },
   computed: {
     table () {
-      console.log(this.tableInfo, '桌子')
       return beautifulTable(this.tableInfo)
     }
   },
