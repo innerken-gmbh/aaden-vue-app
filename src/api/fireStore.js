@@ -14,9 +14,9 @@ const firebaseConfig = {
 }
 export const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)
-
+const path = 'order'
 export async function listenFireStoreOrders () {
-  const q = query(collection(db, 'order'), where('confirmed', '==', false),
+  const q = query(collection(db, path), where('confirmed', '==', false),
     where('deviceId', '==', GlobalConfig.DeviceId))
   const doSend = async (orderList) => {
     if (orderList.length > 0) {
@@ -43,32 +43,32 @@ export async function listenFireStoreOrders () {
 }
 
 export async function confirmFireBaseOrder (cloudId, tableName) {
-  return await updateDoc(doc(db, 'orderDisplay', cloudId), {
+  return await updateDoc(doc(db, path, cloudId), {
     confirmed: true, tableName
   })
 }
 
 export async function acceptFireBaseOrder (cloudId, accepted = true) {
-  return await updateDoc(doc(db, 'orderDisplay', cloudId), {
+  return await updateDoc(doc(db, path, cloudId), {
     accepted: accepted
   })
 }
 
 export async function changeFireBaseOrderToReadyToPick (cloudId) {
   console.log(cloudId, 'ready to pick')
-  return await updateDoc(doc(db, 'orderDisplay', cloudId), {
+  return await updateDoc(doc(db, path, cloudId), {
     canPickUp: true
   })
 }
 
 export async function changeFireBaseOrderToFinished (cloudId) {
-  return await updateDoc(doc(db, 'orderDisplay', cloudId), {
+  return await updateDoc(doc(db, path, cloudId), {
     finished: true
   })
 }
 
 export async function changeFireBaseOrderDeliveryTime (cloudId, deliveryTime) {
-  return await updateDoc(doc(db, 'orderDisplay', cloudId), {
+  return await updateDoc(doc(db, path, cloudId), {
     deliveryTime
   })
 }
