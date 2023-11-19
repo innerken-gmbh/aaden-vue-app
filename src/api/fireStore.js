@@ -1,7 +1,11 @@
 import { sendFireStoreOrder } from '@/api/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { initializeApp } from 'firebase/app'
-import { collection, doc, getFirestore, onSnapshot, query, updateDoc, where } from 'firebase/firestore'
+import { collection, doc, getFirestore, onSnapshot, query, setDoc, updateDoc, where } from 'firebase/firestore'
+import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
+import { getCurrentBackendVersion } from '@/api/nightwatch'
+import dayjs from 'dayjs'
+import { getNiceRestaurantInfo } from '@/oldjs/zbonPrint'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCtvQ3d-HAtHTUg_-505c-qXRnlz8RlZeg',
@@ -46,7 +50,8 @@ export function listenFireStoreOrders () {
 
 export async function confirmFireBaseOrder (cloudId, tableName) {
   return await updateDoc(doc(db, 'orderDisplay', cloudId), {
-    confirmed: true, tableName
+    confirmed: true,
+    tableName
   })
 }
 
@@ -73,4 +78,28 @@ export async function changeFireBaseOrderDeliveryTime (cloudId, deliveryTime) {
   return await updateDoc(doc(db, 'orderDisplay', cloudId), {
     deliveryTime
   })
+}
+
+const deviceEchoPath = 'DeviceEcho'
+const { version } = require('../../package.json')
+const echoLogPath = 'echoLog'
+
+export async function deviceEcho () {
+  try {
+    const myDeviceId = await getCurrentDeviceId()
+    if (parseInt(myDeviceId) === -1) {
+      return
+    }
+    await setDoc(doc(db, deviceEchoPath, myDeviceId, echoLogPath, dayjs().valueOf().toString()), {
+      frontendVersion: version,
+      backendVersion: await getCurrentBackendVersion(),
+      timestamp: dayjs().valueOf(),
+      restaurantInfo: await getNiceRestaurantInfo(),
+      deviceId: myDeviceId,
+      accessFrom: location.toString()
+    })
+    console.log('report to remote server complete')
+  } catch (e) {
+    console.log(e)
+  }
 }
