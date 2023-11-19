@@ -1,7 +1,5 @@
-import { sendFireStoreOrder } from '@/api/api'
-import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { initializeApp } from 'firebase/app'
-import { collection, doc, getFirestore, onSnapshot, query, setDoc, updateDoc, where } from 'firebase/firestore'
+import { doc, getFirestore, setDoc, updateDoc } from 'firebase/firestore'
 import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
 import { getCurrentBackendVersion } from '@/api/nightwatch'
 import dayjs from 'dayjs'
@@ -18,35 +16,6 @@ const firebaseConfig = {
 }
 export const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)
-
-export function listenFireStoreOrders () {
-  console.log(GlobalConfig.DeviceId.toString())
-  const q = query(collection(db, 'orderDisplay'), where('confirmed', '==', false),
-    where('deviceId', '==', GlobalConfig.DeviceId.toString()))
-  const doSend = async (orderList) => {
-    if (orderList.length > 0) {
-      const res = await sendFireStoreOrder(orderList)
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      for (const e of orderList) {
-        if (res[e.cloudId]) {
-          await confirmFireBaseOrder(e.cloudId, res[e.cloudId].tableName)
-        }
-      }
-    }
-  }
-  return onSnapshot(q, (querySnapshot) => {
-    console.log(querySnapshot)
-    const toSend = []
-    querySnapshot.forEach(doc => {
-      const order = doc.data()
-      order.cloudId = doc.id
-      toSend.push(order)
-    })
-    doSend(toSend).then(r => {
-
-    })
-  })
-}
 
 export async function confirmFireBaseOrder (cloudId, tableName) {
   return await updateDoc(doc(db, 'orderDisplay', cloudId), {
