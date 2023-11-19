@@ -1737,17 +1737,26 @@ export default {
       checkOut(pw, this.id, print, payMethod, tipIncome, memberCardId)
     },
     needSplitOrder: async function () {
-      this.password = await optionalAuthorizeAsync('', GlobalConfig.checkOutUsePassword, '', true, this.id)
-      checkoutFactory.clear()
-      checkoutFactory.loadTTDishList(this.splitOrderListModel.list)
-      this.checkOutModel = {
-        total: checkoutFactory.total(),
-        count: checkoutFactory.count(),
-        list: checkoutFactory.list
+      if (this.orderListModel.count() === 0) {
+        this.orderListModel.loadTTDishList(this.splitOrderListModel.list)
+        this.splitOrderListModel.clear()
+        this.jumpToPayment()
+      } else {
+        this.password = await optionalAuthorizeAsync('',
+          GlobalConfig.checkOutUsePassword, '',
+          true, this.id)
+
+        checkoutFactory.clear()
+        checkoutFactory.loadTTDishList(this.splitOrderListModel.list)
+        this.checkOutModel = {
+          total: checkoutFactory.total(),
+          count: checkoutFactory.count(),
+          list: checkoutFactory.list
+        }
+        this.checkoutId = this.checkOutModel.list.map(it => it.code)
+        this.checkoutShow = true
+        this.checkOutType = 'splitOrder'
       }
-      this.checkoutId = this.checkOutModel.list.map(it => it.code)
-      this.checkoutShow = true
-      this.checkOutType = 'splitOrder'
     },
     anyMenuOpen () {
       return (
@@ -2118,9 +2127,9 @@ export default {
           const result = {}
           Object.keys(dish).filter(key => {
             return (key !== 'change' && key !== 'edit' &&
-              key !== 'apply' &&
-              key !== 'langs' && key !== 'langsDesc' &&
-              key !== 'modInfo' && key !== 'options')
+                key !== 'apply' &&
+                key !== 'langs' && key !== 'langsDesc' &&
+                key !== 'modInfo' && key !== 'options')
           }).forEach(key => {
             result[key] = dish[key]
           })
@@ -2203,7 +2212,11 @@ export default {
     },
     cartListModelHash () {
       return this.cartListModel.list.map(it => {
-        return { name: it.name, count: it.count, allInfo: it }
+        return {
+          name: it.name,
+          count: it.count,
+          allInfo: it
+        }
       })
     }
   },
