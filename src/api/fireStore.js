@@ -4,13 +4,9 @@ import { initializeApp } from 'firebase/app'
 import { collection, doc, getFirestore, onSnapshot, query, updateDoc, where } from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCtvQ3d-HAtHTUg_-505c-qXRnlz8RlZeg',
-  authDomain: 'aaden-saas.firebaseapp.com',
-  projectId: 'aaden-saas',
-  storageBucket: 'aaden-saas.appspot.com',
-  messagingSenderId: '169167876904',
-  appId: '1:169167876904:web:b83934e5a34d1cbfcc161d',
-  measurementId: 'G-QRPH7NLDZS'
+  apiKey: 'AIzaSyDwY4rJNrLXdrLI-ukxzCAGan97lOx84cM',
+  authDomain: 'aaden-online-order.firebaseapp.com',
+  projectId: 'aaden-online-order'
 }
 export const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)
