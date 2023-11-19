@@ -792,7 +792,8 @@
                   <v-icon class="mr-2">mdi-calculator-variant</v-icon>
                 </div>
                 <div class="text-body-1 font-weight-black">
-                  {{ splitOrderListModel.total() | priceDisplay }} ({{ splitOrderListModel.count() }})
+                  {{ splitOrderListModel.total()*(1-discountRatio) | priceDisplay }}
+                  ({{ splitOrderListModel.count() }})
                 </div>
               </div>
               <dish-card-list
