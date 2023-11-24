@@ -170,7 +170,6 @@ export default {
           const uuid = await getUUidByOrderId(res.content.toString())
           console.log(uuid, 'uuid')
           IKUtils.toast()
-          await goHome()
           if (printType === 1) {
             await setUuidInFirebase(uuid)
             this.showBillDetailQRDialog({ code: uuid })
