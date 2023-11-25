@@ -169,7 +169,7 @@ async function informOpenTable (password = '', tableId, personCount = 1, childCo
 
 export async function requestOutTable (pw = null) {
   const res = await hillo.post('Complex.php?op=openTakeawayTable', {
-    pw: pw ?? Config.defaultPassword, personCount: 0
+    pw: pw ?? Config.defaultPassword
   })
   if (goodRequest(res)) {
     jumpToTable(res.content.tableId, res.content.tableName)
