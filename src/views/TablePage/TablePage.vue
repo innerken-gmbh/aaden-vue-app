@@ -1824,7 +1824,7 @@ export default {
       if (this.isSendingRequest) {
         return
       }
-      if (this.anyMenuOpen()) {
+      if (this.anyMenuOpen() && e.key !== 'Enter') {
         return
       }
       if (this.keyboardInput === null) {
@@ -1882,6 +1882,7 @@ export default {
       if (isBlocking()) {
         return
       }
+
       if (t !== '' && t !== null) {
         if (t?.length === 8) {
           const VIPCardDish = findDish(GlobalConfig.VIPCardCode)
@@ -2083,7 +2084,7 @@ export default {
                 d.rank = d.dishName.length
                 result.push(d)
               }
-              if (result.length > 5) {
+              if (result.length > 10) {
                 break
               }
             }
