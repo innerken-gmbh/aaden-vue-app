@@ -28,45 +28,42 @@
             <td>
               <template v-if="order.paymentLabel">
                 <v-btn
-                    :disabled="order.isReturned==='1'"
+                    :disabled="shouldDisable(order)"
                     color="primary lighten-4 black--text"
                     elevation="0"
                     small
                     @click.stop="reprintOrder(order.orderId)">
-                  <v-icon left>
+                  <v-icon>
                     mdi-printer-settings
                   </v-icon>
-                  {{ $tc('reprint', 1) }}
                 </v-btn>
                 <v-btn
+                    :disabled="shouldDisable(order)"
                   class="ml-2"
                   color="green lighten-4 black--text"
                   elevation="0"
                   small
                   @click.stop="checkBillDetail(order.orderId)">
-                  <v-icon left>
-                    mdi-card-search-outline
+                  <v-icon>
+                    mdi-qrcode-scan
                   </v-icon>
-                  {{ $t('Check') }}
                 </v-btn>
                 <template v-if="showOperation">
-                  <v-btn :disabled="order.isReturned==='1'"
+                  <v-btn :disabled="shouldDisable(order)"
                          class="ml-2"
                          color="grey lighten-3 black--text"
                          elevation="0"
                          small
                          @click.stop="startChangePaymentMethodForOrder(order)">
-                    <v-icon left>mdi-cash-refund</v-icon>
-                    {{ $t('replace') }}
+                    <v-icon>mdi-cash-refund</v-icon>
                   </v-btn>
-                  <v-btn :disabled="order.isReturned==='1'"
+                  <v-btn :disabled="shouldDisable(order)"
                          class="ml-2"
                          color="indigo lighten-4 black--text"
                          elevation="0"
                          small
                          @click.stop="restoreOrder(order.orderId)">
-                    <v-icon left>mdi-history</v-icon>
-                    {{ $t('restore') }}
+                    <v-icon>mdi-history</v-icon>
                   </v-btn>
                 </template>
               </template>
@@ -231,6 +228,10 @@ export default {
     }
   },
   methods: {
+    shouldDisable (order) {
+      console.log(order)
+      return order.isReturned === '1' || order.totalPrice < 0
+    },
     ...mapMutations(['showBillDetailQRDialog', 'showErrorDialog']),
     async checkBillDetail (id) {
       const res = await getUUidByOrderId(id)

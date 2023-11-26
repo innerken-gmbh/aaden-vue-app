@@ -138,7 +138,8 @@ export default {
   },
   computed: {
     isReturned () {
-      return this.order.isReturned === '1'
+      console.log(this.order)
+      return this.order.isReturned === '1' || this.orderInfo.totalPrice < 0
     },
     orderInfo () {
       return this.order.billInfo
