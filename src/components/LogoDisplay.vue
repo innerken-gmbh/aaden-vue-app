@@ -1,20 +1,19 @@
 <template>
-  <div
-    class="d-flex align-center flex-column"
-  >
-    <v-avatar
-      tile
-      size="24"
+  <div style="width: 100%" class="d-flex justify-center">
+    <v-card
+        elevation="0"
+        color="transparent"
+        class="pa-1"
     >
-      <v-img :src="require('@/assets/new/logo/logo.png')"/>
-    </v-avatar>
-    <div
-      class="text-caption"
-    >
-      Aaden
-      <span class="font-weight-black">POS</span>
-    </div>
+      <v-avatar
+          tile
+          size="28"
+      >
+        <v-img :src="require('@/assets/new/logo/logo.png')"/>
+      </v-avatar>
+    </v-card>
   </div>
+
 </template>
 
 <script>

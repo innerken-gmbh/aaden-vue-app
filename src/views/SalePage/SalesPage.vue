@@ -1,159 +1,159 @@
 <template>
   <div style="width: 100%">
-    <v-app-bar
-        app
-        flat
-        height="56"
-    >
-      <v-tabs v-model="tabIndex">
-        <template v-if="isBoss">
-          <v-tab>{{ $t('BillList') }}</v-tab>
-          <v-tab>{{ $t('WaiterShow') }}</v-tab>
-          <v-tab>现金帐</v-tab>
-        </template>
-        <template v-else>
-          <v-tab>{{ $t('SalesDetails') }}</v-tab>
-        </template>
-      </v-tabs>
-    </v-app-bar>
-    <v-navigation-drawer
-        v-if="isBoss"
-        app
-        permanent
-        right
-        stateless
-        touchless
-        width="300"
-    >
-      <div>
-        <v-card
-            v-if="isBoss||Config.servantShowHistoryBill"
-            class="pa-4 d-flex"
-            color="grey lighten-4"
-            elevation="0"
-            tile
-            @click="showDatePicker=true"
-        >
-          <v-icon left>mdi-calendar</v-icon>
-          {{ getNiceLabel(singleZBonDate) }}
-          <v-spacer/>
-          <v-icon left>mdi-swap-horizontal</v-icon>
-          {{ $t('ChangeDate') }}
-        </v-card>
-        <div class="pa-4">
-          <div>
-            <div class="d-flex justify-space-between align-center">
-              <div
-                  class="hideMore"
-                  style="max-width: 150px"
-              >
-                <div>{{ $t('Sales') }}</div>
+
+    <div class="pa-1 d-flex">
+      <v-card
+          color="grey darken-2"
+          width="300"
+          class="d-flex flex-column"
+          style="border-radius: 16px 0 0 16px !important;"
+          dark
+          v-if="isBoss"
+      >
+        <div>
+          <div class="pa-6 py-4">
+            <v-icon size="24">mdi-cash-register</v-icon>
+            <div>
+              <div class="d-flex justify-space-between align-center mt-8">
+                <div
+                    class="hideMore"
+                    style="max-width: 150px"
+                >
+                  <div>{{ $t('Sales') }}</div>
+                </div>
+                <div
+                    class="font-weight-bold"
+                >{{
+                    billContent.total | priceDisplay
+                  }}
+                </div>
               </div>
-              <div
-                  class="font-weight-bold"
-                  style="font-size: 24px"
-              >{{
-                  billContent.total | priceDisplay
-                }}
-              </div>
-            </div>
-            <div class="d-flex justify-space-between mt-1">
-              <div>{{ $t('NetWorth') }}/ {{ $t('Taxes') }}</div>
-              <div>{{ billContent.fTotalTe }}/{{ billContent.fTotalTax }}</div>
-            </div>
-            <v-divider class="my-2"></v-divider>
-          </div>
-          <template v-for="(total,index) in taxGroupInfo">
-            <div :key="total.taxRatePercentage+'-'+index">
-              <div class="d-flex justify-space-between">
-                <div> {{ $t('Sales') }} {{ total.taxRatePercentage }}%</div>
-                <div class="font-weight-bold">{{ total.groupTotal | priceDisplay }}</div>
-              </div>
-              <div class="d-flex justify-space-between">
+              <div class="d-flex justify-space-between mt-1">
                 <div>{{ $t('NetWorth') }}/ {{ $t('Taxes') }}</div>
-                <div>{{ total.nettoumsatz }}/{{ total.umsatzsteuer }}</div>
+                <div>{{ billContent.fTotalTe }}/{{ billContent.fTotalTax }}</div>
               </div>
               <v-divider class="my-2"></v-divider>
             </div>
-          </template>
+            <template v-for="(total,index) in taxGroupInfo">
+              <div :key="total.taxRatePercentage+'-'+index">
+                <div class="d-flex justify-space-between">
+                  <div> {{ $t('Sales') }} {{ total.taxRatePercentage }}%</div>
+                  <div class="font-weight-bold">{{ total.groupTotal | priceDisplay }}</div>
+                </div>
+                <div class="d-flex justify-space-between">
+                  <div>{{ $t('NetWorth') }}/ {{ $t('Taxes') }}</div>
+                  <div>{{ total.nettoumsatz }}/{{ total.umsatzsteuer }}</div>
+                </div>
+                <v-divider class="my-2"></v-divider>
+              </div>
+            </template>
 
-          <div
-              v-for="p in paidInfoList"
-              :key="p.id"
-              class="d-flex"
-          >
-            <div>
-              {{ p.paidName }}
-            </div>
-            <v-spacer></v-spacer>
-            <div class="font-weight-bold">
-              {{ p.paidTotal | priceDisplay }}
-            </div>
-          </div>
-
-          <v-divider class="my-4"></v-divider>
-          <div
-              class="d-flex align-center"
-              @click="returnDishDialog=true"
-          >
             <div
-                class="hideMore"
-                style="max-width: 90px"
+                v-for="p in paidInfoList"
+                :key="p.id"
+                class="d-flex"
             >
-              <div>{{ $t('CancelOrder') }}</div>
+              <div>
+                {{ p.paidName }}
+              </div>
+              <v-spacer></v-spacer>
+              <div class="font-weight-bold">
+                {{ p.paidTotal | priceDisplay }}
+              </div>
             </div>
-            <v-spacer></v-spacer>
-            <v-card
-                class="pa-2"
-                color="error lighten-4 black--text"
-                elevation="0"
-            >{{
-                totalReturn | priceDisplay
-              }} ({{ returnList.length }})
-              <v-icon
-                  class="mt-n1"
-                  color="black"
-                  size="18px"
-              >mdi-chevron-right
-              </v-icon>
-            </v-card>
+
+            <v-divider class="my-4"></v-divider>
+            <div
+                class="d-flex align-center"
+                @click="returnDishDialog=true"
+            >
+              <div
+                  class="hideMore"
+                  style="max-width: 90px"
+              >
+                <div>{{ $t('CancelOrder') }}</div>
+              </div>
+              <v-spacer></v-spacer>
+              <v-card
+                  class="pa-2"
+                  color="error lighten-4 black--text"
+                  elevation="0"
+              >{{
+                  totalReturn | priceDisplay
+                }} ({{ returnList.length }})
+                <v-icon
+                    class="mt-n1"
+                    color="black"
+                    size="18px"
+                >mdi-chevron-right
+                </v-icon>
+              </v-card>
+            </div>
+            <div
+                class="d-flex align-center  mt-2"
+                @click="discountDialog=true"
+            >
+              <div>{{ $t('Discount') }}</div>
+              <v-spacer></v-spacer>
+              <v-card
+                  class="pa-2"
+                  color="orange lighten-4 black--text"
+                  elevation="0"
+              >{{
+                  totalDiscount | priceDisplay
+                }} ({{ discountList.length }})
+                <v-icon
+                    class="mt-n1"
+                    color="black"
+                    size="18px"
+                >mdi-chevron-right
+                </v-icon>
+              </v-card>
+            </div>
+            <v-divider class="my-4"></v-divider>
           </div>
-          <div
-              class="d-flex align-center  mt-2"
-              @click="discountDialog=true"
-          >
-            <div>{{ $t('Discount') }}</div>
-            <v-spacer></v-spacer>
-            <v-card
-                class="pa-2"
-                color="orange lighten-4 black--text"
-                elevation="0"
-            >{{
-                totalDiscount | priceDisplay
-              }} ({{ discountList.length }})
-              <v-icon
-                  class="mt-n1"
-                  color="black"
-                  size="18px"
-              >mdi-chevron-right
-              </v-icon>
-            </v-card>
-          </div>
-          <v-divider class="my-4"></v-divider>
+        </div>
+        <v-spacer></v-spacer>
+        <div class="pa-2 py-4">
           <v-btn class="primary lighten-4 black--text" elevation="0" width="100%" x-large
                  @click="billsPrintDialog = true">{{
               $t('PrintDailySummaryBon')
             }}
           </v-btn>
         </div>
-      </div>
-    </v-navigation-drawer>
-    <div
-        class="d-flex"
-        style="height: calc(100vh - 64px)"
-    >
-      <div class="flex-grow-1">
 
+      </v-card>
+      <div class="flex-grow-1" style="height: calc(100vh - 8px)">
+        <v-app-bar
+            dark
+            color="transparent"
+            flat
+            height="56"
+        >
+          <v-tabs color="white" v-model="tabIndex">
+            <template v-if="isBoss">
+              <v-tab>{{ $t('BillList') }}</v-tab>
+              <v-tab>{{ $t('WaiterShow') }}</v-tab>
+              <v-tab>现金帐</v-tab>
+            </template>
+            <template v-else>
+              <v-tab>{{ $t('SalesDetails') }}</v-tab>
+            </template>
+          </v-tabs>
+          <v-spacer></v-spacer>
+          <v-card
+              color="rgba(255,255,255,0.2)"
+              class="flex-shrink-0 text-no-wrap pa-2 px-4"
+              v-if="isBoss||Config.servantShowHistoryBill"
+              elevation="0"
+              style="border-radius: 8px !important;"
+              @click="showDatePicker=true"
+          >
+            <v-icon left>mdi-calendar</v-icon>
+            {{ getNiceLabel(singleZBonDate) }}
+            <v-spacer/>
+          </v-card>
+        </v-app-bar>
         <v-tabs-items v-model="tabIndex">
           <template v-if="isBoss">
             <template>
@@ -257,6 +257,7 @@
 
       </div>
     </div>
+
     <v-dialog
         v-model="returnDishDialog"
         width="fit-content"

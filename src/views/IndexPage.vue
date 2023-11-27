@@ -1,53 +1,56 @@
 <template>
-  <div>
+  <div class="gradient">
     <v-navigation-drawer
         app
         dark
+        color="transparent"
         mini-variant
-        mini-variant-width="72" permanent
-        stateless style="z-index: 100">
-      <v-card class="d-flex flex-column py-2" color="transparent"
-              elevation="0"
+        mini-variant-width="72"
+        permanent
+        stateless style="z-index: 100;">
+      <div class="d-flex flex-column py-2"
               style="height: 100vh">
-        <div style="display: grid;grid-auto-flow: row;;grid-gap: 12px">
-          <v-card
+        <div style="display: grid;grid-auto-flow: row;;grid-gap: 24px;align-content: center">
+          <logo-display/>
+          <div
               v-for="m in menuList"
               :key="m.icon"
-              color="transparent"
-              elevation="0"
+              class="d-flex align-center flex-column"
               @click="goto(m)"
           >
-            <v-responsive :aspect-ratio="1">
-              <div class="d-flex flex-column justify-center align-center" style="height: 100%">
-                <div>
-                  <v-icon :color="color(m.path)">{{ m.icon }}</v-icon>
-                </div>
-                <div class="hideMore"
-                     style="max-width: 56px">
-                  <div class="mt-1 text-caption text-no-wrap
-                  text-body-1 font-weight-black
-             text-truncate overflow-hidden text-capitalize"
-                  >
-                    {{ $t(m.text) }}
+            <v-card :color="color(m.path)"
+                    :class="isActive(m.path)?'pa-2':'pa-1'"
+                    style="border-radius: 12px !important;">
+              <v-responsive :aspect-ratio="1">
+                <div class="d-flex flex-column justify-center align-center" style="height: 100%">
+                  <div>
+                    <v-icon   :size="isActive(m.path)?'':'28'">{{ m.icon }}</v-icon>
                   </div>
                 </div>
+              </v-responsive>
+            </v-card>
+
+            <div class="hideMore"
+                 style="max-width: 56px">
+              <div  class="mt-1 text-caption text-no-wrap
+                  text-body-1 font-weight-black white--text
+             text-truncate overflow-hidden text-capitalize"
+              >
+                {{ $t(m.text) }}
               </div>
-            </v-responsive>
-          </v-card>
+            </div>
+          </div>
         </div>
         <v-spacer/>
-        <div class="d-flex align-center flex-column justify-center">
-          <logo-display/>
+        <div class="d-flex align-center flex-column justify-center white--text">
           <div class="text-no-wrap text-caption text-center mt-n1">
             v{{ version }}
           </div>
         </div>
-
-      </v-card>
-
+      </div>
     </v-navigation-drawer>
     <v-main app>
-      <router-view></router-view>
+        <router-view></router-view>
     </v-main>
   </div>
 </template>
@@ -141,7 +144,7 @@ export default {
       }
     },
     color (myName) {
-      return this.isActive(myName) ? 'primary' : ''
+      return this.isActive(myName) ? 'rgba(255,255,255,0.2)' : 'transparent'
     },
     isActive (myName) {
       return this.$route.name === myName
@@ -167,6 +170,11 @@ export default {
 </script>
 
 <style scoped>
+.gradient{
+  background: #3a7bd5;  /* fallback for old browsers */
+  background: linear-gradient(to bottom, #3e3e3e, #2b2b2b); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
 .tableDisplay {
   height: calc(100vh - 48px);
   overflow: scroll;
@@ -240,7 +248,9 @@ export default {
 .navItem {
 
 }
-
+.v-navigation-drawer >>> .v-navigation-drawer__border {
+  display: none
+}
 .hideMore {
   overflow: hidden;
   text-overflow: ellipsis;

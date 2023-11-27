@@ -1,5 +1,5 @@
 <template>
-    <div style="max-height: calc(100vh - 112px); overflow-y: scroll">
+    <div style="height: calc(100vh - 64px); overflow-y: scroll" class="white">
         <div style="display: grid;grid-template-columns: 1fr min-content">
             <div
                     class="mt-2 mx-4 flex-grow-1"

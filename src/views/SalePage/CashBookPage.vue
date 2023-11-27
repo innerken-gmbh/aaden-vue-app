@@ -14,7 +14,7 @@
       </div>
     </div>
     <template v-if="!loading">
-      <v-simple-table class="transparent" fixed-header height="calc(100vh - 136px)">
+      <v-simple-table class="transparent" fixed-header height="calc(100vh - 124px)">
         <template v-slot:default>
           <thead class="transparent">
           <tr>

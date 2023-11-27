@@ -1,48 +1,54 @@
 <template>
-    <v-card color="#f6f6f6" elevation="0" style="position: relative">
+  <v-card color="#f6f6f6" elevation="0" style="position: relative">
 
-        <div class="flex-grow-1">
-            <bill-table :is-boss="isBoss" :orders="displayOrder" :show-operation="true" @need-refresh="loadData"/>
+    <div class="flex-grow-1">
+      <bill-table :is-boss="isBoss" :orders="displayOrder" :show-operation="true" @need-refresh="loadData"/>
+    </div>
+
+    <div style="position: fixed;bottom: 0;right:4px;width: calc(100vw - 380px)" class="pa-2">
+      <v-card color="grey lighten-3" class="d-flex px-4 py-4 " elevation="0">
+        <div style="width: 100%; display: grid;grid-auto-flow: column;grid-gap: 16px;align-items: center">
+          <v-text-field
+              dense
+              outlined
+              hide-details
+              v-model="search"
+              :placeholder="$t('SearchOrderTable')"
+              prepend-inner-icon="mdi-magnify">
+          </v-text-field>
+          <v-select
+              dense
+              outlined
+              hide-details
+              v-model="appliedFilter.payment"
+              :item-text="item => item.langPayMethodName"
+              :items="payMethodList"
+              :label="$t('PaymentMethod')"
+              multiple
+              @change="updateFilter"
+          >
+          </v-select>
+          <v-select
+              dense
+              outlined
+              hide-details
+              v-model="appliedFilter.servant"
+              :item-text="item => item.name"
+              :items="servantList"
+              :label="$t('WaiterInfo')"
+              @change="updateFilter"
+          >
+          </v-select>
+          <v-btn elevation="0" color="grey lighten-2" v-if="showClearButton" @click="clearFilter">
+            <v-icon left>mdi-close-circle</v-icon>
+            {{ $t('Clear') }}
+          </v-btn>
         </div>
+        <v-spacer></v-spacer>
+      </v-card>
+    </div>
 
-        <div style="position: fixed;bottom: 0;left: 64px;width: calc(100vw - 364px)">
-            <v-card class="d-flex px-4 py-2 pb-4" color="white" elevation="0" tile>
-                <div style="width: 100%; display: grid;grid-auto-flow: column;grid-gap: 8px;">
-                    <v-text-field
-                            hide-details
-                            v-model="search"
-                            :placeholder="$t('SearchOrderTable')"
-                            prepend-inner-icon="mdi-magnify">
-                    </v-text-field>
-                    <v-select
-                            hide-details
-                            v-model="appliedFilter.payment"
-                            :item-text="item => item.langPayMethodName"
-                            :items="payMethodList"
-                            :label="$t('PaymentMethod')"
-                            multiple
-                            @change="updateFilter"
-                    >
-                    </v-select>
-                    <v-select
-                            hide-details
-                            v-model="appliedFilter.servant"
-                            :item-text="item => item.name"
-                            :items="servantList"
-                            :label="$t('WaiterInfo')"
-                            @change="updateFilter"
-                    >
-                    </v-select>
-                    <v-btn v-if="showClearButton" class="mt-2" @click="clearFilter">
-                        <v-icon>mdi-close-circle</v-icon>
-                        {{ $t('Clear') }}
-                    </v-btn>
-                </div>
-                <v-spacer></v-spacer>
-            </v-card>
-        </div>
-
-    </v-card>
+  </v-card>
 </template>
 
 <script>
@@ -160,9 +166,9 @@ export default {
 
 <style scoped>
 .hideMore {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 </style>

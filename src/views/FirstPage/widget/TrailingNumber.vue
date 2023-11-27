@@ -1,5 +1,5 @@
 <template>
- <span class="white--text ml-2" :class="color"
+ <span class="ml-2" :class="color"
        style="font-size: small;border-radius: 24px;padding: 1px 8px"><slot></slot></span>
 </template>
 
@@ -8,7 +8,7 @@ export default {
   name: 'TrailingNumber',
   props: {
     content: {},
-    color: { default: 'primary' }
+    color: { default: 'grey lighten-4 black--text' }
   }
 }
 </script>

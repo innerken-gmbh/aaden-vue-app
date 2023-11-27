@@ -1,6 +1,5 @@
 <template>
-  <v-app-bar flat style="border-bottom: 1px solid rgba(0,0,0,0.1)"
-             app>
+  <v-app-bar >
 
     <slot></slot>
     <v-spacer></v-spacer>
