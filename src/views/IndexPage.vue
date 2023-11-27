@@ -19,6 +19,7 @@
               @click="goto(m)"
           >
             <v-card :color="color(m.path)"
+                    elevation="0"
                     :class="isActive(m.path)?'pa-2':'pa-1'"
                     style="border-radius: 12px !important;">
               <v-responsive :aspect-ratio="1">
