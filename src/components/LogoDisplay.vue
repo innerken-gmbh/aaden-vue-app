@@ -3,7 +3,7 @@
     <v-card
         elevation="0"
         color="transparent"
-        class="pa-1"
+        class="pa-1 pb-0"
     >
       <v-avatar
           tile

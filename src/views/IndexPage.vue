@@ -8,10 +8,10 @@
         mini-variant-width="72"
         permanent
         stateless style="z-index: 100;">
-      <div class="d-flex flex-column py-2"
+      <div class="d-flex flex-column py-2 pt-3"
               style="height: 100vh">
         <div style="display: grid;grid-auto-flow: row;;grid-gap: 24px;align-content: center">
-          <logo-display/>
+          <logo-display  />
           <div
               v-for="m in menuList"
               :key="m.icon"
