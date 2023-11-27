@@ -54,20 +54,26 @@ const { version } = require('../../package.json')
 const echoLogPath = 'echoLog'
 
 export async function deviceEcho () {
+  const myDeviceId = await getCurrentDeviceId()
+  if (parseInt(myDeviceId) === -1) {
+    return
+  }
+  const timestamp = dayjs().format('YYYY-MM-DD')
+  await setDoc(doc(db, deviceEchoPath, myDeviceId, echoLogPath, timestamp), {
+    frontendVersion: version,
+    backendVersion: await getCurrentBackendVersion(),
+    timestamp: dayjs().valueOf(),
+    restaurantInfo: await getNiceRestaurantInfo(),
+    deviceId: myDeviceId,
+    accessFrom: location.toString()
+  })
+  console.log('report to remote server complete')
+}
+
+export function registerDeviceLog () {
   try {
-    const myDeviceId = await getCurrentDeviceId()
-    if (parseInt(myDeviceId) === -1) {
-      return
-    }
-    await setDoc(doc(db, deviceEchoPath, myDeviceId, echoLogPath, dayjs().valueOf().toString()), {
-      frontendVersion: version,
-      backendVersion: await getCurrentBackendVersion(),
-      timestamp: dayjs().valueOf(),
-      restaurantInfo: await getNiceRestaurantInfo(),
-      deviceId: myDeviceId,
-      accessFrom: location.toString()
-    })
-    console.log('report to remote server complete')
+    deviceEcho()
+    setTimeout(registerDeviceLog, 60000)
   } catch (e) {
     console.log(e)
   }

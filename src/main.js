@@ -22,7 +22,7 @@ import { getBaseAndUrlForDeviceId } from '@/api/restaurantInfoService'
 import hillo from 'hillo'
 import ParseInt from 'lodash-es/parseInt'
 import { getActiveTables } from '@/api/aaden-base-model/api'
-import { deviceEcho } from '@/api/fireStore'
+import { registerDeviceLog } from '@/api/fireStore'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
@@ -107,7 +107,7 @@ async function initial () {
   }
   i18n.locale = GlobalConfig.frontEndLang.toLowerCase()
   try {
-    await deviceEcho()
+    registerDeviceLog()
     reportDeviceInfo().then(r => console.log(r))
   } catch (e) {
 
