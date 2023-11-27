@@ -7,18 +7,17 @@
     <v-card
         height="100%"
         elevation="0"
+        style="backdrop-filter: blur(6px);"
         class="tableCard d-flex flex-column align-center justify-center lighten-4"
         :color="tableColor"
         @click='$emit("click",table.tableName)'>
       <div class="d-flex align-center">
-        <div class="tableCardName d-flex align-center justify-center" :class="table.inUse?'mt-3':''">
+        <div class="tableCardName d-flex align-center justify-center" :class="table.inUse?'mt-2':''">
           <template v-if="table.inCall">
             <v-icon class="mr-1" size="18">mdi-bell</v-icon>
           </template>
           {{ table.tableName }}
-
         </div>
-
       </div>
 
       <div class="text-caption" v-if="table.inUse&&table?.h>100">
@@ -117,7 +116,7 @@ export default {
       return '20px'
     },
     tableColor () {
-      return this.table.inCall ? 'error' : this.table.inUse ? 'primary' : '#f6f6f6'
+      return this.table.inCall ? 'error' : this.table.inUse ? 'rgba(255,216,154,0.8)' : '#f6f6f6'
     },
     tableChipList () {
       let allowCount = 1
@@ -173,7 +172,7 @@ export default {
   text-align: center
   width: 100%
   z-index: 1
-  font-family: Roboto, "Axure Handwriting", sans-serif
+  font-family: "Axure Handwriting", sans-serif
   font-weight: 600
   overflow: hidden
   text-overflow: ellipsis
@@ -228,8 +227,8 @@ export default {
   border-radius: 0 0 16px 16px
 
 .personDot
-  top: 8px
-  left: 8px
+  top: 12px
+  left: 12px
   right: 12px
   display: grid
   grid-template-columns: repeat(auto-fit, 6px)
@@ -244,7 +243,7 @@ export default {
   border-radius: 3px
 
 .dot.child
-  background: #fff
+  background: #ffffff
 
 .dragging .tableCard
   box-shadow: 1px 3px 12px rgba(0, 0, 0, 0.11) !important

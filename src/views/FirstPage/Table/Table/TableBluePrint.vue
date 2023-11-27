@@ -1,5 +1,5 @@
 <template>
-  <div class="mr-16">
+  <div>
     <div
         ref="blueprintContainer"
         class="flex-grow-1 pa-2"
@@ -7,7 +7,7 @@
          height:calc(100vh - 64px);
          width: 100%;
        transform-origin: left top;
-       background: #e8e8e8;"
+     "
     >
       <template v-if="tableWithInfo.length===0">
         <div

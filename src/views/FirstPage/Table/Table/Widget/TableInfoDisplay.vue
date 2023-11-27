@@ -1,16 +1,18 @@
 <template>
-  <div
+  <v-card
+      elevation="0"
+      color="rgba(255,255,255,0.3)"
       :class="metaData.classFunc ? metaData.classFunc(table[infoKey]) :''"
-      class="d-flex align-center"
-      style="width:fit-content;margin:auto;overflow: hidden;padding: 2px;border-radius: 4px"
+      class="d-flex align-center font-weight-black"
+      style="width:fit-content;margin:auto;overflow: hidden;padding: 2px 4px;border-radius: 4px"
   >
     <template v-if="metaData.icon">
       <v-icon x-small left>{{ metaData.icon }}</v-icon>
     </template>
     <div
-        class="text-no-wrap text-caption text-truncate">{{ info.length > 5 ? info.slice(0, 5) : info }}
+        class="text-no-wrap text-caption text-truncate font-weight-black">{{ info.length > 5 ? info.slice(0, 5) : info }}
     </div>
-  </div>
+  </v-card>
 </template>
 
 <script>

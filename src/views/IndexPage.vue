@@ -172,7 +172,7 @@ export default {
 <style scoped>
 .gradient{
   background: #3a7bd5;  /* fallback for old browsers */
-  background: linear-gradient(to bottom, #3e3e3e, #2b2b2b); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(to bottom, #3e3e3e, #341d33); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
 }
 .tableDisplay {
