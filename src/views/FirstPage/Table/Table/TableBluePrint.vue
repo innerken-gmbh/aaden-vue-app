@@ -30,7 +30,6 @@
                 @reservation-clicked="showReservation"
             ></table-card>
           </div>
-
         </template>
         <template
             v-for="i in tableWithInfo"

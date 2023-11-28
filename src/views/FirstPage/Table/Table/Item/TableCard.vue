@@ -7,7 +7,6 @@
     <v-card
         height="100%"
         elevation="0"
-        style="backdrop-filter: blur(6px);"
         class="tableCard d-flex flex-column align-center justify-center lighten-4"
         :color="tableColor"
         @click='$emit("click",table.tableName)'>
