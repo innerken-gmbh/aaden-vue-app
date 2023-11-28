@@ -610,7 +610,8 @@ export default {
     },
     async loadData () {
       const activeReservationStoreList = (await getReservationUserList()).map(it => it.id)
-      this.notActive = !activeReservationStoreList.includes(await getCurrentDeviceId())
+      this.notActive = !activeReservationStoreList.includes(parseInt(await getCurrentDeviceId()))
+      console.log(activeReservationStoreList)
       await this.loadReservations()
       await this.getTables()
       this.activeReservation = null
