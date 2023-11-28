@@ -445,6 +445,7 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { showSuccessMessage, sureTo } from '@/api/api'
 import i18n from '@/i18n'
 import NoContentDisplay from '@/views/FirstPage/widget/NoContentDisplay.vue'
+import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
 
 export default {
   name: 'Reservation',
@@ -609,11 +610,7 @@ export default {
     },
     async loadData () {
       const activeReservationStoreList = (await getReservationUserList()).map(it => it.id)
-      if (!activeReservationStoreList.includes(parseInt(GlobalConfig.DeviceId))) {
-        this.notActive = true
-      } else {
-        this.notActive = false
-      }
+      this.notActive = !activeReservationStoreList.includes(await getCurrentDeviceId())
       await this.loadReservations()
       await this.getTables()
       this.activeReservation = null

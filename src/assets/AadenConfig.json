@@ -31,7 +31,6 @@
   "showTableList": false,
   "servantShowHistoryBill": true,
   "frontEndLang": "de",
-  "cardTerminalIp": "",
   "activeVip": false,
   "useCustomerDisplay" : false
 }
