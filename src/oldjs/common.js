@@ -29,11 +29,12 @@ export function tryToReport () {
       console.error('reportBad', err)
     })
 }
-
+const lock = false
 export async function getConsumeTypeList () {
-  if (consumeTypeList.length === 0) {
+  if (consumeTypeList.length === 0 && !lock) {
     const res = await hillo.get('Complex.php', {
-      op: 'showAllConsumeTypeInfo', chaos: timeStampNow()
+      op: 'showAllConsumeTypeInfo',
+      chaos: timeStampNow()
     })
     res.content.forEach(ct => {
       ct.name = getCurrentLangObj(ct.langs).name
@@ -61,14 +62,18 @@ export function findConsumeTypeById (id) {
 
 export async function resetTableStatus (tableId) {
   return await hillo.get('Complex.php', {
-    op: 'resetTableCallStatus', tableId: tableId, chaos: timeStampNow()
+    op: 'resetTableCallStatus',
+    tableId: tableId,
+    chaos: timeStampNow()
   })
 }
 
 export function jumpToTable (tableId, tableName) {
   resetTableStatus(tableId)
   const params = Object.assign({
-    id: tableId, tableId, tableName
+    id: tableId,
+    tableId,
+    tableName
   })
   jumpTo('table', params)
 }
@@ -99,7 +104,10 @@ export async function popAuthorize (type = '', force = false, tableId = null) {
   }
   return new Promise(resolve => {
     store.commit('START_AUTHORIZE', {
-      typeIsBoss, force, tableId, resolve
+      typeIsBoss,
+      force,
+      tableId,
+      resolve
     })
   })
 }
@@ -107,7 +115,9 @@ export async function popAuthorize (type = '', force = false, tableId = null) {
 export async function showTableSelector (filter = null, requiredTableKey = 'tableName') {
   return new Promise(resolve => {
     store.commit('START_TABLE_PICK', {
-      tableFilter: filter, resolve, requiredTableKey
+      tableFilter: filter,
+      resolve,
+      requiredTableKey
     })
   })
 }
@@ -145,7 +155,8 @@ export async function openOrEnterTable (number, password) {
 
 export async function forceOpenTable (tableName, pw) {
   return await hillo.post('Complex.php?op=forceOpenTable', {
-    tableName, pw
+    tableName,
+    pw
   })
 }
 
@@ -158,7 +169,10 @@ export async function getFalsePrinterList () {
 async function informOpenTable (password = '', tableId, personCount = 1, childCount = 0) {
   try {
     const res = await hillo.post('Complex.php?op=openTable', {
-      tableId: tableId, pw: password, personCount: personCount, childCount: childCount
+      tableId: tableId,
+      pw: password,
+      personCount: personCount,
+      childCount: childCount
     })
     jumpToTable(res.content.tableId, res.content.tableName)
   } catch (e) {
@@ -210,7 +224,8 @@ export function toast (str = 'Ok', callback, type) {
     }
   })
   Toast.fire({
-    title: str, icon: type
+    title: str,
+    icon: type
   })
 }
 
@@ -313,14 +328,18 @@ export async function fastSweetAlertRequest (title, input, url, dataName, dataOb
 
 export function toastError (str) {
   Swal.fire({
-    icon: 'error', title: str, showConfirmButton: true
+    icon: 'error',
+    title: str,
+    showConfirmButton: true
 
   })
 }
 
 export function toManage () {
   oldJumpTo('admin/index.html', {
-    DeviceId: GlobalConfig.DeviceId, lang: GlobalConfig.lang, Base: GlobalConfig.Base
+    DeviceId: GlobalConfig.DeviceId,
+    lang: GlobalConfig.lang,
+    Base: GlobalConfig.Base
   })
 }
 
@@ -349,9 +368,10 @@ export function remove (arr, index) {
 
 export function jumpTo (url, params) {
   clearAllTimer()
-  if (router.currentRoute.name !== url) {
+  if (router.currentRoute.name !== url || router.currentRoute.params !== params) {
     router.replace({
-      name: url, params
+      name: url,
+      params
     })
   }
 }

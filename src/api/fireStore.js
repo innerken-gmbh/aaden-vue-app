@@ -1,9 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { doc, getFirestore, setDoc, updateDoc } from 'firebase/firestore'
-import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
-import { getCurrentBackendVersion } from '@/api/nightwatch'
-import dayjs from 'dayjs'
-import { getNiceRestaurantInfo } from '@/oldjs/zbonPrint'
+import { doc, getFirestore, updateDoc } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCtvQ3d-HAtHTUg_-505c-qXRnlz8RlZeg',
@@ -47,34 +43,4 @@ export async function changeFireBaseOrderDeliveryTime (cloudId, deliveryTime) {
   return await updateDoc(doc(db, 'orderDisplay', cloudId), {
     deliveryTime
   })
-}
-
-const deviceEchoPath = 'DeviceEcho'
-const { version } = require('../../package.json')
-const echoLogPath = 'echoLog'
-
-export async function deviceEcho () {
-  const myDeviceId = await getCurrentDeviceId()
-  if (parseInt(myDeviceId) === -1) {
-    return
-  }
-  const timestamp = dayjs().format('YYYY-MM-DD')
-  await setDoc(doc(db, deviceEchoPath, myDeviceId, echoLogPath, timestamp), {
-    frontendVersion: version,
-    backendVersion: await getCurrentBackendVersion(),
-    timestamp: dayjs().valueOf(),
-    restaurantInfo: await getNiceRestaurantInfo(),
-    deviceId: myDeviceId,
-    accessFrom: location.toString()
-  })
-  console.log('report to remote server complete')
-}
-
-export function registerDeviceLog () {
-  try {
-    deviceEcho()
-    setTimeout(registerDeviceLog, 60000)
-  } catch (e) {
-    console.log(e)
-  }
 }

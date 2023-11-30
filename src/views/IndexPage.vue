@@ -7,33 +7,45 @@
         mini-variant
         mini-variant-width="72"
         permanent
-        stateless style="z-index: 100;">
-      <div class="d-flex flex-column py-2 pt-3"
-              style="height: 100vh">
+        stateless
+        style="z-index: 100;"
+    >
+      <div
+          class="d-flex flex-column py-2 pt-3"
+          style="height: 100vh"
+      >
         <div style="display: grid;grid-auto-flow: row;;grid-gap: 24px;align-content: center">
-          <logo-display  />
+          <logo-display/>
           <div
               v-for="m in menuList"
               :key="m.icon"
               class="d-flex align-center flex-column"
               @click="goto(m)"
           >
-            <v-card :color="color(m.path)"
-                    elevation="0"
-                    :class="isActive(m.path)?'pa-2':'pa-1'"
-                    style="border-radius: 12px !important;">
+            <v-card
+                :color="color(m.path)"
+                elevation="0"
+                :class="isActive(m.path)?'pa-2':'pa-1'"
+                style="border-radius: 12px !important;"
+            >
               <v-responsive :aspect-ratio="1">
-                <div class="d-flex flex-column justify-center align-center" style="height: 100%">
+                <div
+                    class="d-flex flex-column justify-center align-center"
+                    style="height: 100%"
+                >
                   <div>
-                    <v-icon   :size="isActive(m.path)?'':'28'">{{ m.icon }}</v-icon>
+                    <v-icon :size="isActive(m.path)?'':'28'">{{ m.icon }}</v-icon>
                   </div>
                 </div>
               </v-responsive>
             </v-card>
 
-            <div class="hideMore"
-                 style="max-width: 56px">
-              <div  class="mt-1 text-caption text-no-wrap
+            <div
+                class="hideMore"
+                style="max-width: 56px"
+            >
+              <div
+                  class="mt-1 text-caption text-no-wrap
                   text-body-1 font-weight-black white--text
              text-truncate overflow-hidden text-capitalize"
               >
@@ -51,7 +63,7 @@
       </div>
     </v-navigation-drawer>
     <v-main app>
-        <router-view></router-view>
+      <router-view></router-view>
     </v-main>
   </div>
 </template>
@@ -171,11 +183,12 @@ export default {
 </script>
 
 <style scoped>
-.gradient{
-  background: #3a7bd5;  /* fallback for old browsers */
+.gradient {
+  background: #3a7bd5; /* fallback for old browsers */
   background: linear-gradient(to bottom, #3e3e3e, #341d33); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
 }
+
 .tableDisplay {
   height: calc(100vh - 48px);
   overflow: scroll;
@@ -249,9 +262,11 @@ export default {
 .navItem {
 
 }
+
 .v-navigation-drawer >>> .v-navigation-drawer__border {
   display: none
 }
+
 .hideMore {
   overflow: hidden;
   text-overflow: ellipsis;

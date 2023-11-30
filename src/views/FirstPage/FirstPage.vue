@@ -418,7 +418,8 @@ export default {
       tableList: [],
       currentView: parseInt(Remember.currentView),
       showOtherOrder: Remember.showOtherOrder,
-      loading: false
+      loading: false,
+      lock: false
 
     }
   },
@@ -608,15 +609,20 @@ export default {
     },
     async initPage () {
       window.onkeydown = this.listenKeyDown
-      try {
-        await this.loadRestaurantInfo()
-        this.servantList = await getServantList()
-        getRestaurantInfo()
-        await getConsumeTypeList()
-        await this.refreshTables()
-        addToQueue('firstPageTables', this.refreshTables)
-      } catch (e) {
-        this.noNetwork = true
+      if (!this.lock) {
+        this.lock = true
+        try {
+          await this.loadRestaurantInfo()
+          this.servantList = await getServantList()
+          getRestaurantInfo()
+          await getConsumeTypeList()
+          await this.refreshTables()
+          addToQueue('firstPageTables', this.refreshTables)
+        } catch (e) {
+          this.noNetwork = true
+        } finally {
+          this.lock = false
+        }
       }
     },
     reload () {
