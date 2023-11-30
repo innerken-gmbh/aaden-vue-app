@@ -1,4 +1,5 @@
 {
+  "Admin" : "Admin",
   "useCustomerDisplay" : "Kundendisplay aktivieren",
   "Employees" : "Mitarbeiter",
   "MoneyAmount" : "Betrag",
@@ -125,7 +126,7 @@
   "ChangePosition": "Positionen wechseln",
   "ChangeToBuffet": "Buffet",
   "CheckoutPending": "Bezahlung ausstehend",
-  "Chef": "Admin",
+  "Chef": "Chef",
   "City": "Stadt",
   "Clear": "leeren",
   "Close": "schließen",

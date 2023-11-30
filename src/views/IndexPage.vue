@@ -124,8 +124,8 @@ export default {
           path: 'member'
         },
         {
-          icon: 'mdi-home-analytics',
-          text: 'Chef',
+          icon: 'mdi-view-dashboard',
+          text: 'Admin',
           async beforeEnter () {
             const pw = await popAuthorize('', true)
             return {
