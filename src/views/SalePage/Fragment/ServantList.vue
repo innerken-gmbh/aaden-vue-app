@@ -112,6 +112,9 @@
                         block
                         @click="allZBon(...singleZBonDate)"
                 >
+                  <v-icon class="mr-2" color="black">
+                    mdi-printer
+                  </v-icon>
                     {{ $t('PrintAllSummaryBon') }}
                 </v-btn>
             </div>

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="d-flex justify-center align-center  px-4 py-2">
-      <div class="text-h5">现金帐</div>
+      <div class="text-h5">{{ $t('CashBook') }}</div>
       <v-spacer></v-spacer>
       <div>
         <v-btn :loading="btnLoading" class="primary lighten-4 black--text" elevation="0" large
@@ -9,7 +9,7 @@
           <v-icon left>
             mdi-plus
           </v-icon>
-          新增
+          {{ $t('New') }}
         </v-btn>
       </div>
     </div>
@@ -18,12 +18,12 @@
         <template v-slot:default>
           <thead class="transparent">
           <tr>
-            <th class="text-left">订单号</th>
-            <th>收入类型</th>
-            <th class="text-left">详细信息</th>
-            <th class="text-left">备注</th>
-            <th class="text-left" style="width: max-content">金额</th>
-            <th class="text-left">时间戳</th>
+            <th class="text-left">{{ $t('OrderNumber') }}</th>
+            <th>{{ $t('TypeOfIncome') }}</th>
+            <th class="text-left">{{ $t('Details') }}</th>
+            <th class="text-left">{{ $t('note') }}</th>
+            <th class="text-left" style="width: max-content">{{ $t('MoneyAmount') }}</th>
+            <th class="text-left">{{ $t('Timestamp') }}</th>
           </tr>
           </thead>
           <tbody>
@@ -40,7 +40,7 @@
                 {{ item.cashAccountNote }}
               </td>
               <td>
-                {{ item.payLogAmount }}
+                {{ item.payLogAmount | priceDisplay }}
               </td>
               <td>
                 {{ item.updateTimestamp }}
@@ -69,7 +69,7 @@
         elevation="0"
       >
         <div class="d-flex align-center justify-center">
-          <div class="text-h5 font-weight-bold">新增现金帐</div>
+          <div class="text-h5 font-weight-bold">{{ $t('AddCashOperation') }}</div>
           <v-spacer></v-spacer>
           <div>
             <v-btn icon @click="newCashBookDialog = false">
@@ -91,7 +91,7 @@
               <div
                 class="text-h5"
               >
-                备注
+                {{ $t('note') }}
               </div>
               <v-spacer/>
               <v-text-field
@@ -109,7 +109,7 @@
               <div
                 class="text-h5"
               >
-                金额
+                {{ $t('MoneyAmount') }}
               </div>
               <v-spacer/>
               <v-text-field
@@ -127,7 +127,7 @@
               <div
                 class="text-h5"
               >
-                操作类型
+                {{ $t('OperationType') }}
               </div>
               <v-spacer/>
               <v-select
@@ -145,7 +145,7 @@
         </div>
         <v-btn :loading="btnLoading" class="primary lighten-4 black--text mt-8" elevation="0" width="100%" x-large
                @click="save">
-          保存
+          {{ $t('Save') }}
         </v-btn>
       </v-card>
     </v-dialog>

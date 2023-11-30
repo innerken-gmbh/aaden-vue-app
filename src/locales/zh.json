@@ -1,4 +1,11 @@
 {
+  "useCustomerDisplay" : "激活客户显示",
+  "Employees" : "雇员",
+  "MoneyAmount" : "数量",
+  "OperationType" : "操作类型",
+  "AddCashOperation" : "新增现金帐",
+  "TypeOfIncome" : "收入类型",
+  "CashBook" : "现金帐",
   "Price" : "价格",
   "Check" : "查看",
   "StandardPrint" : "默认打印",

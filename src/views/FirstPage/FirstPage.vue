@@ -45,7 +45,7 @@
                 @click="toggle"
             >
               <v-icon left>mdi-account</v-icon>
-              <span style="padding: 2px 4px">{{ $t('ServerOrder') }}</span>
+              <span style="padding: 2px 4px">{{ $t('Employees') }}</span>
             </div>
           </v-item>
         </div>

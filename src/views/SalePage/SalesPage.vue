@@ -116,7 +116,11 @@
         <v-spacer></v-spacer>
         <div class="pa-2 py-4">
           <v-btn class="primary lighten-4 black--text" elevation="0" width="100%" x-large
-                 @click="billsPrintDialog = true">{{
+                 @click="billsPrintDialog = true">
+            <v-icon class="mr-2" color="black">
+              mdi-printer
+            </v-icon>
+            {{
               $t('PrintDailySummaryBon')
             }}
           </v-btn>
@@ -134,7 +138,7 @@
             <template v-if="isBoss">
               <v-tab>{{ $t('BillList') }}</v-tab>
               <v-tab>{{ $t('WaiterShow') }}</v-tab>
-              <v-tab>现金帐</v-tab>
+              <v-tab>{{ $t('CashBook') }}</v-tab>
             </template>
             <template v-else>
               <v-tab>{{ $t('SalesDetails') }}</v-tab>
@@ -190,7 +194,7 @@
                       dense
                       subheader
                   >
-                    <v-subheader>{{ $t('Waiter') }} : {{ displayData.servant.name }}
+                    <v-subheader>{{ $t('Employees') }} : {{ displayData.servant.name }}
                       ({{ $t('WithoutTip') }})
                     </v-subheader>
                     <v-list-item>
