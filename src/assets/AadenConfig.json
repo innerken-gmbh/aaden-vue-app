@@ -10,7 +10,7 @@
   "defaultSort": "10,9,8,11,13",
   "dishBlockFontSize": "-1",
   "useEnterTablePermissionCheck": false,
-  "adminEndpoint": "Admin",
+  "adminEndpoint": "AppCenter/Admin",
   "autoCompletePLZ": "",
   "topKeyboardKey": "E,F,B,R",
   "bigDiscountRatio": 0.7,
