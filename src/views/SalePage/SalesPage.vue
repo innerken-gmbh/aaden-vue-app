@@ -136,8 +136,8 @@
         >
           <v-tabs color="white" v-model="tabIndex">
             <template v-if="isBoss">
-              <v-tab>{{ $t('BillList') }}</v-tab>
-              <v-tab>{{ $t('WaiterShow') }}</v-tab>
+              <v-tab>{{ $t('Bill') }}</v-tab>
+              <v-tab>{{ $t('Employees') }}</v-tab>
               <v-tab>{{ $t('CashBook') }}</v-tab>
             </template>
             <template v-else>
@@ -322,7 +322,7 @@
             <th class="text-left">{{ $t('DishOrOrderNumber') }}</th>
             <th class="text-left">{{ $t('Timestamp') }}</th>
             <th class="text-left">{{ $t('WaiterInfo') }}</th>
-            <th class="text-left">{{ $t('DiscountContent') }}</th>
+            <th class="text-left">{{ $t('Discount') }}</th>
           </tr>
           </thead>
           <tbody>

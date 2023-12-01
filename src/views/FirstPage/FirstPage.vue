@@ -32,7 +32,7 @@
                 @click="toggle"
             >
               <v-icon left>mdi-truck-fast</v-icon>
-              {{ $t('togo') }}
+              {{ $t('PickUpAndDeliveryService') }}
               <trailing-number>
                 {{ takeawayList.length }}
               </trailing-number>
