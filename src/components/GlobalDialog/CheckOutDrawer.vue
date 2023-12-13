@@ -147,8 +147,12 @@ export default {
             tableId: checkOutData.tableId
           }
         )
-        if (parseInt(externalId) !== 0) {
-          await changeFireBaseOrderToFinished(externalId)
+        try {
+          if (parseInt(externalId) !== 0) {
+            await changeFireBaseOrderToFinished(externalId)
+          }
+        } catch (e) {
+          console.log('firebase error')
         }
         toast(this.$t('JSTableCheckOutSuccess'))
         if (this.currentMemberId) {

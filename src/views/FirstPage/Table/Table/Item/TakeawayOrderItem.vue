@@ -1,12 +1,12 @@
 <template>
   <v-card
+    :key="table.id"
+    :width="bigCard?'100%':'240px'"
+    class="pa-3"
     color="white"
     elevation="0"
-    @click='$emit("click",table.tableName)'
-    class="pa-3"
-    :width="bigCard?'100%':'240px'"
     style="border-radius: 12px;position: relative;"
-    :key="table.id">
+    @click='$emit("click",table.tableName)'>
 
     <div class="d-flex align-center">
 
@@ -16,7 +16,7 @@
       {{ table.addressInfo.firstName }}
       </span>
       <v-spacer></v-spacer>
-      <v-chip color="error" elevation="0" v-if="table.inCall" small label class="mr-2">
+      <v-chip v-if="table.inCall" class="mr-2" color="error" elevation="0" label small>
         <v-icon x-small>mdi-bell</v-icon>
         {{ $t('New') }}
       </v-chip>
@@ -24,18 +24,18 @@
     </div>
     <div class="text--disabled mt-2">
       <v-chip outlined small>
-        <v-icon x-small color="grey darken-1" class="mr-1">mdi-silverware-fork-knife</v-icon>
+        <v-icon class="mr-1" color="grey darken-1" x-small>mdi-silverware-fork-knife</v-icon>
         {{ table.dishCount }}
-        <v-icon x-small color="grey darken-1" class="mr-1 ml-1">mdi-beer</v-icon>
+        <v-icon class="mr-1 ml-1" color="grey darken-1" x-small>mdi-beer</v-icon>
         {{ table.drinkCount }}
       </v-chip>
       <v-chip class="ml-1" outlined small>
-        <v-icon color="grey darken-1" class="mr-1">mdi-cash</v-icon>
+        <v-icon class="mr-1" color="grey darken-1">mdi-cash</v-icon>
         {{ table.totalPrice | priceDisplay }}
       </v-chip>
     </div>
     <div class="mt-2">
-      <v-chip outlined label>
+      <v-chip label outlined>
         {{ $t(table.addressInfo.deliveryMethod) }} @ <b>{{ table.addressInfo.time }}</b>
       </v-chip>
       <div>
@@ -43,17 +43,17 @@
           v-for="(time) in [0,10,15,20,30,40,50,60]"
         >
           <v-chip
-            label
-            class="ma-1"
             :key="time"
-            outlined
+            class="ma-1"
             color="success"
+            label
+            outlined
             @click.stop="acceptOrderWithTime(time)"
           >
             + {{ time }}
           </v-chip>
         </template>
-        <v-chip label outlined color="error" @click.stop="$emit('reject',tableInfo.tableId)">{{ $t('Reject') }}</v-chip>
+        <v-chip color="error" label outlined @click.stop="$emit('reject',tableInfo.tableId)">{{ $t('Reject') }}</v-chip>
       </div>
     </div>
   </v-card>
@@ -101,8 +101,12 @@ export default {
       console.log(this.table)
 
       this.$emit('accept', timeReal.format('DD.MM.YYYY HH:mm'), this.tableInfo.tableId)
-      await changeFireBaseOrderDeliveryTime(this.table.externalId,
-        Timestamp.fromDate(timeReal.toDate()))
+      try {
+        await changeFireBaseOrderDeliveryTime(this.table.externalId,
+          Timestamp.fromDate(timeReal.toDate()))
+      } catch (e) {
+        console.log('firebaseError')
+      }
     }
   }
 }

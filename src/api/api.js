@@ -111,8 +111,12 @@ export async function acceptOrder (reason, tableId) {
     tableId: tableId,
     reason: reason
   })
-  if (parseInt(externalId) !== 0) {
-    await acceptFireBaseOrder(externalId, true)
+  try {
+    if (parseInt(externalId) !== 0) {
+      await acceptFireBaseOrder(externalId, true)
+    }
+  } catch (e) {
+    console.log('firebaseError')
   }
 
   IKUtils.toast('ok')
