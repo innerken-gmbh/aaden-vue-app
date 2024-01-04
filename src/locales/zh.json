@@ -1,7 +1,7 @@
 {
   "YouCanStampInNormal" : "正常打卡",
   "ReplacementCard": "补卡",
-  "IsThisReplacementCard" : "Handelt es sich um eine Ersatzkarte?",
+  "IsThisReplacementCard" : "是否为补卡?",
   "SuccessfullyStampedOutShiftIsOver" : "\uD83D\uDC4C打卡下班成功",
   "SuccessfullyCommitted" : "\uD83D\uDC4C打卡上班成功",
   "HourlyWage" : "工作时薪",
