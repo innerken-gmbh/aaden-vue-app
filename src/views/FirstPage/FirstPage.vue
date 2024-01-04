@@ -358,19 +358,19 @@
             </div>
           </div>
           <div class="d-flex mt-4 justify-center align-center">
-            <div>备注:</div>
+            <div>{{ $t('note') }}:</div>
             <v-spacer></v-spacer>
             <v-text-field v-model="note" dense hide-details outlined/>
           </div>
           <div class="d-flex align-center justify-center mt-8">
             <v-btn color="primary" elevation="0" width="100%" @click="endWorks">
-              打卡下班
+              {{ $t('ShiftStampOut') }}
             </v-btn>
           </div>
         </template>
         <template v-else>
           <v-btn color="primary" elevation="0" width="100%" @click="gotoWork">
-            打卡上班
+            {{ $t('ShiftStampIn') }}
           </v-btn>
         </template>
       </v-card>
@@ -508,11 +508,11 @@ export default {
       return dayjs(dayjs().format('YYYY-MM-DD HH:mm:ss')).diff(dayjs(this.servantWorkStatus?.fromDateTime), 'minute') ?? 0
     },
     servantWorkInfo () {
-      return [{ value: this.servant?.name, display: '员工姓名', id: 1 },
-        { value: this.servantWorkStatus?.fromDateTime, display: '打卡时间', id: 2 },
-        { value: this.servantWorkMinutes, display: '工作时长(分钟)', id: 3 },
-        { value: this.servantWorkStatus?.currentHourlyWage, display: '工作时薪', id: 4 },
-        { value: this.servantWorkStatus?.correctionDisplay, display: '是否为补卡', id: 5 }]
+      return [{ value: this.servant?.name, display: this.$t('Employees'), id: 1 },
+        { value: this.servantWorkStatus?.fromDateTime, display: this.$t('StartsWorkingAt'), id: 2 },
+        { value: this.servantWorkMinutes, display: this.$t('WorkTimeInMinutes'), id: 3 },
+        { value: this.servantWorkStatus?.currentHourlyWage, display: this.$t('HourlyWage'), id: 4 },
+        { value: this.servantWorkStatus?.correctionDisplay, display: this.$t('IsThisReplacementCard'), id: 5 }]
     },
     ...mapGetters(['systemDialogShow']),
     activeTables () {
@@ -551,18 +551,18 @@ export default {
     async gotoWork () {
       this.servantWorkStatus = await startWork(this.servant.id, '')
       if (this.servantWorkStatus.correction === 0) {
-        this.servantWorkStatus.correctionDisplay = '补卡'
+        this.servantWorkStatus.correctionDisplay = this.$t('ReplacementCard')
       } else {
-        this.servantWorkStatus.correctionDisplay = '正常打卡'
+        this.servantWorkStatus.correctionDisplay = this.$t('YouCanStampInNormal')
       }
-      IKUtils.toast('👌打卡上班成功')
+      IKUtils.toast(this.$t('SuccessfullyCommitted'))
       this.clockStatus = true
     },
     async endWorks () {
       console.log('a')
       await endWork(this.servant.id, this.note)
       this.showServantStatus = false
-      IKUtils.toast('👌打卡下班成功')
+      IKUtils.toast(this.$t('SuccessfullyStampedOutShiftIsOver'))
     },
     async checkStaffStatus () {
       const pw = await popAuthorize('', true)
@@ -572,9 +572,9 @@ export default {
       if (this.clockStatus === true) {
         this.servantWorkStatus = res.lastRecord
         if (this.servantWorkStatus.correction === 0) {
-          this.servantWorkStatus.correctionDisplay = '补卡'
+          this.servantWorkStatus.correctionDisplay = this.$t('ReplacementCard')
         } else {
-          this.servantWorkStatus.correctionDisplay = '正常打卡'
+          this.servantWorkStatus.correctionDisplay = this.$t('YouCanStampInNormal')
         }
       }
       this.showServantStatus = true
