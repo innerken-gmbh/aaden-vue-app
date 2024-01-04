@@ -7,7 +7,6 @@
   "HourlyWage" : "Stundenlohn",
   "WorkTimeInMinutes" : "Arbeitszeit (Minuten)",
   "StartsWorkingAt" : "Dienstantritt",
-  "ShiftStampInTime" : "",
   "ShiftStampIn" : "Schicht beginnen",
   "ShiftStampOut" : "Ausstempeln",
   "PickUpAndDeliveryService" : "Abholung/Lieferung",
