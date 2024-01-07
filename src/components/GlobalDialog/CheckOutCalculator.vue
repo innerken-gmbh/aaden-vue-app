@@ -526,7 +526,7 @@ export default {
           name
         })
 
-        if (parseInt(id) !== 1 && !this.equals(this.remainTotal, 0)) {
+        if (parseInt(id) !== 1 && (!this.equals(this.remainTotal, 0))) {
           if (this.remainTotal < 0) {
             this.paymentLog.push({
               id: 9,
@@ -540,7 +540,7 @@ export default {
     },
     async logPayment (type) {
       const price = this.readBuffer()
-      if (price === 0) {
+      if (price === 0 && this.paymentLog.length !== 0) {
         return
       }
       const icon = Object.entries(this.realName).find(([k, v]) => v === type)[0]
