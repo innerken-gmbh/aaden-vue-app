@@ -99,7 +99,7 @@
                       @click="printType = 0"
                   >
                     <v-icon class="mr-2">mdi-printer</v-icon>
-                    打印小票
+                    {{ $t('print') }}
                   </v-card>
                   <v-card
                       :color="printType === 1 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
