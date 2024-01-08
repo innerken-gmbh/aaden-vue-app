@@ -128,6 +128,7 @@
   "DishCode": "Dish No.",
   "DishNumberNotFound": "No items found with the dish No. {n}",
   "DishNumberQuantity": "Dish No.*quantity",
+  "DishOrOrderNumber": "Dish No./Order No.",
   "DishStatistics": "Dish statistics",
   "DishesOrdered": "Already ordered",
   "DishesRecord": "Consume history",

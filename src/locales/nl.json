@@ -128,6 +128,7 @@
   "DishCode": "Nummer van het gerecht",
   "DishNumberNotFound": "Er is geen gerecht met artikelnummer {n} gevonden",
   "DishNumberQuantity": "Nummer van het gerecht* hoeveelheid",
+  "DishOrOrderNumber": "Gerechtnr./bestelnr.",
   "DishStatistics": "Statistieken over gerechten",
   "DishesOrdered": "Reeds besteld",
   "DishesRecord": "Verbruiksrecords",

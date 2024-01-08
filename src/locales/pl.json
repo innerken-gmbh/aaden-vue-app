@@ -128,6 +128,7 @@
   "DishCode": "Numer naczynia",
   "DishNumberNotFound": "Nie znaleziono pozycji z numerem pozycji {n}",
   "DishNumberQuantity": "Numer naczyń* Ilość",
+  "DishOrOrderNumber": "Numer sądu/numer zamówienia",
   "DishStatistics": "Statystyki potraw",
   "DishesOrdered": "Już zamówione",
   "DishesRecord": "Rekordy zużycia",

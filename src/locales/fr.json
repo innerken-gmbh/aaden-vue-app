@@ -128,6 +128,7 @@
   "DishCode": "Numéro de plat",
   "DishNumberNotFound": "Aucun article n'a été trouvé avec le numéro d'article {n}",
   "DishNumberQuantity": "Numéro du plat* Quantité",
+  "DishOrOrderNumber": "Numéro de tribunal/Numéro d'ordonnance",
   "DishStatistics": "Statistiques sur les plats",
   "DishesOrdered": "Déjà commandé",
   "DishesRecord": "Record de consommation",

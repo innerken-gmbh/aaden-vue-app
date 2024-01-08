@@ -128,6 +128,7 @@
   "DishCode": "номер тарілки",
   "DishNumberNotFound": "Номер страви {n} не знайдено",
   "DishNumberQuantity": "Кількість страв* Кількість",
+  "DishOrOrderNumber": "Номер суду/номер наказу",
   "DishStatistics": "Статистика страв",
   "DishesOrdered": "пунктуальний",
   "DishesRecord": "Облік споживання",
