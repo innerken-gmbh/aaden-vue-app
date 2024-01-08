@@ -1,5 +1,5 @@
 {
-  "DishOrOrderNumber" : "法院号码/命令号码",
+  "DishOrOrderNumber" : "表号/订单号",
   "Timestamp" : "时间戳",
   "YouCanStampInNormal" : "正常打卡",
   "ReplacementCard": "补卡",

@@ -39,7 +39,7 @@
   "UserNotExist" : "Benutzer existiert nicht",
   "NoCreditOnCard" : "Kein Guthaben auf der Karte",
   "ScanNfcCard" : "Bitte scannen Sie die NFC-Karte",
-  "DishOrOrderNumber" : "Gericht-Nr./Bestell-Nr.",
+  "DishOrOrderNumber" : "Tisch-Nr./Bestell-Nr.",
   "OrderNumber" : "Bestell-Nr.",
   "MaxVipCollectAblePoints": "Die Gesamtpunktzahl, die erreicht werden kann",
   "CurrentVipMemberId" : "Aktuelle Mitgliedskarten-ID",
