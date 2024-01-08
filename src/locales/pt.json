@@ -128,7 +128,7 @@
   "DishCode": "Número do prato",
   "DishNumberNotFound": "Nenhum item encontrado com o número do item {n}",
   "DishNumberQuantity": "Número do prato* Quantidade",
-  "DishOrOrderNumber": "Número do tribunal/número do pedido",
+  "DishOrOrderNumber": "Número da tabela/Número do pedido",
   "DishStatistics": "Estatísticas de pratos",
   "DishesOrdered": "Já encomendado",
   "DishesRecord": "Registros de consumo",

@@ -128,7 +128,7 @@
   "DishCode": "Číslo misky",
   "DishNumberNotFound": "Nebyly nalezeny žádné položky s číslem položky {n}",
   "DishNumberQuantity": "Číslo miske* Množství",
-  "DishOrOrderNumber": "Číslo produktu, číslo objednávky",
+  "DishOrOrderNumber": "Číslo tabulky/číslo objednávky",
   "DishStatistics": "Statistiky pokrmů",
   "DishesOrdered": "Již objednané",
   "DishesRecord": "Záznamy o spotřebě",

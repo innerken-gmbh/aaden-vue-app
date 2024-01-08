@@ -128,7 +128,7 @@
   "DishCode": "Çanak numarası",
   "DishNumberNotFound": "{n} öğe numarasına sahip öğe bulunamadı",
   "DishNumberQuantity": "Çanak Numarası* Miktar",
-  "DishOrOrderNumber": "Mahkeme Numarası/Emir Numarası",
+  "DishOrOrderNumber": "Tablo numarası/sipariş numarası",
   "DishStatistics": "Çanak istatistikleri",
   "DishesOrdered": "Zaten sipariş",
   "DishesRecord": "Tüketim kayıtları",

@@ -128,7 +128,7 @@
   "DishCode": "شماره ظرف",
   "DishNumberNotFound": "هیچ آیتمی با شماره آیتم {n} یافت نشد",
   "DishNumberQuantity": "شماره ظرف* مقدار",
-  "DishOrOrderNumber": "شماره دادگاه/شماره دستور",
+  "DishOrOrderNumber": "شماره جدول/شماره سفارش",
   "DishStatistics": "آمار ظرف",
   "DishesOrdered": "قبلا سفارش داده شده",
   "DishesRecord": "سوابق مصرف",

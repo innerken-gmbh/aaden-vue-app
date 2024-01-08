@@ -128,7 +128,7 @@
   "DishCode": "Номер блюда",
   "DishNumberNotFound": "Не найдено ни одного товара с номером товара {n}",
   "DishNumberQuantity": "Номер блюда* Количество",
-  "DishOrOrderNumber": "Номер суда/Номер приказа",
+  "DishOrOrderNumber": "Номер стола/номер заказа",
   "DishStatistics": "Статистика блюд",
   "DishesOrdered": "Уже заказано",
   "DishesRecord": "Записи потребления",

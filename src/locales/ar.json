@@ -128,7 +128,7 @@
   "DishCode": "رقم الطبق",
   "DishNumberNotFound": "لم يتم العثور على أي عناصر برقم الصنف {n}",
   "DishNumberQuantity": "رقم الطبق* الكمية",
-  "DishOrOrderNumber": "المحكمة, الأمر رقم.",
+  "DishOrOrderNumber": "رقم الجدول/رقم الطلب",
   "DishStatistics": "إحصائيات الطبق",
   "DishesOrdered": "تم طلبها بالفعل",
   "DishesRecord": "سجلات الاستهلاك",
