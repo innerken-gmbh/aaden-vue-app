@@ -1445,7 +1445,7 @@ export default {
 }
 
 .navigationPillItem {
-  background: rgba(0, 0, 0, 0.01);
+  background: rgba(0, 0, 0, 0.02);
   border-radius: 12px;
   display: flex;
   color: black;
@@ -1454,7 +1454,7 @@ export default {
 }
 
 .navigationPillItem.active {
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.12);
   font-weight: bold;
 }
 </style>
