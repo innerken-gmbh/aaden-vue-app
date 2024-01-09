@@ -35,7 +35,7 @@ Vue.config.productionTip = false
 Vue.filter('priceDisplay', function (price) {
   price = price ?? 0
   let d = price
-  if (price.includes && price.includes(',') && price?.includes('.')) {
+  if (price.includes && price.includes(',')) {
     d = price.replace('.', '').replace(',', '.')
   }
   return _.round(parseFloat(d), 2).toFixed(2).replace('.', ',') + ' €'
