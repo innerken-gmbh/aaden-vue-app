@@ -535,7 +535,7 @@ import LanguageSwitcher from '@/views/Widget/LanguageSwitcher'
 
 import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
 
-import { mapGetters, mapMutations } from 'vuex'
+import { mapMutations } from 'vuex'
 import { TableFixedSectionId } from '@/api/tableService'
 
 import { getRestaurantInfo } from '@/api/restaurantInfoService'
@@ -672,7 +672,6 @@ export default {
         id: 5
       }]
     },
-    ...mapGetters(['systemDialogShow']),
     activeTables () {
       return this.tableList.filter(t => t.usageStatus === '1')
     },
@@ -864,7 +863,7 @@ export default {
       }
     },
     anyMenuOpen () {
-      return Swal.isVisible() || this.menu || this.systemDialogShow
+      return Swal.isVisible() || this.menu
     },
 
     async loadRestaurantInfo () {

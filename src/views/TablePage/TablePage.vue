@@ -71,8 +71,7 @@
         >
           <v-card
               class="d-flex justify-space-between flex-shrink-0 flex-column fill-height"
-              dark
-              color="transparent"
+              color="grey lighten-3"
               elevation="0"
               style="height: 100vh"
               tile
@@ -184,7 +183,7 @@
           <v-card
               v-cloak
               class="flex-grow-1 flex-column"
-              color="#f6f6f6"
+              color="grey lighten-4"
               elevation="0"
               style="height: 100vh"
           >
@@ -521,8 +520,6 @@ import GlobalConfig from '../../oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
 
 import { acceptOrder, deleteDish, reprintOrder, safeRequest, showSuccessMessage } from '@/api/api'
-
-import { mapGetters } from 'vuex'
 
 import i18n from '../../i18n'
 import dayjs from 'dayjs'
@@ -1256,7 +1253,6 @@ export default {
     priceDisplay () {
       return priceDisplay
     },
-    ...mapGetters(['systemDialogShow']),
     sourceMarks: function () {
       return this.tableDetailInfo?.sourceMarks ?? []
     },
