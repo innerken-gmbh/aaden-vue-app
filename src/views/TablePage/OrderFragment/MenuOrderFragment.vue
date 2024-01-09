@@ -76,7 +76,7 @@
           <template v-for="category of filteredC">
             <v-item
                 v-bind:key="'categorytypes' + category.id"
-                v-slot="{ active, toggle }"
+                v-slot="{ toggle }"
             >
               <v-card
                   :color="category.color ? category.color : 'white'"
@@ -238,13 +238,10 @@
 <script>
 import DishBlock from '@/views/TablePage/Dish/DishBlock.vue'
 import { dragscroll } from 'vue-dragscroll/src/main'
-import { getCategoryList } from '@/api/aaden-base-model/api'
+import { getCategoryTypeList } from '@/api/aaden-base-model/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import { getCategoryListWithCache, processDishList } from '@/oldjs/StaticModel'
-import { groupBy } from 'lodash-es'
-import { cartListFactory } from '@/views/TablePage/cart'
 
-let filterCache = {}
+const filterCache = {}
 export default {
   name: 'MenuOrderFragment',
   components: { DishBlock },
@@ -253,11 +250,13 @@ export default {
       activeCategoryId: null,
       favoriteList: null,
       dct: [],
-      dishes: [],
-      categories: [],
       filteredDish: [],
       activeDCT: 0
     }
+  },
+  props: {
+    categories: {},
+    dishes: {}
   },
   directives: {
     dragscroll
@@ -287,7 +286,7 @@ export default {
       this.updateFilteredDish()
     },
     dishes: function () {
-      this.updateFilteredDish()
+      this.reloadDish()
     },
     activeCategoryId: function (val) {
       this.updateFilteredDish()
@@ -297,11 +296,10 @@ export default {
     async initial () {
       await this.getDCT()
       await this.reloadDish(1, true)
-      this.activeCategoryId = null
     },
     async getDCT () {
       if (this.dct.length === 0) {
-        this.dct = (await getCategoryList())
+        this.dct = (await getCategoryTypeList())
           .sort((a, b) => {
             const rank = GlobalConfig.defaultSort.split(',')
             const idToRank = (id) => {
@@ -322,21 +320,8 @@ export default {
         this.activeDCT = index
       })
     },
-    async getCategory (consumeTypeId = 1, force = false) {
-      if (this.categories.length === 0 || force) {
-        this.categories = await getCategoryListWithCache(consumeTypeId)
-
-        this.dishes = processDishList(this.categories.reduce((arr, i) => {
-          arr.push(...i.dishes)
-          return arr
-        }, []))
-        filterCache = groupBy(this.dishes, 'dishesCategoryId')
-        this.favoriteList = this.dishes.filter(item => item.isFavorite === '1')
-        cartListFactory.setDishList(this.dishes)
-      }
-    },
     async reloadDish (consumeTypeId, force = false) {
-      await this.getCategory(consumeTypeId, force)
+      this.favoriteList = this.dishes.filter(item => item.isFavorite === '1')
       this.activeCategoryId = null
       this.updateActiveDCT(0)
     },
@@ -381,6 +366,7 @@ export default {
   margin-bottom: 120px;
   width: 100%;
 }
+
 .dragscroll {
   overflow-x: hidden;
 }

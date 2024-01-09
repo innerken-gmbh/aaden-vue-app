@@ -62,44 +62,6 @@
       </template>
     </v-btn>
 
-    <v-menu offset-y>
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-            class="mr-4"
-            color="grey lighten-3 black--text"
-            elevation="0"
-            rounded
-            v-bind="attrs"
-            v-on="on"
-        >
-          <v-icon>mdi-swap-horizontal</v-icon>
-        </v-btn>
-      </template>
-      <v-list>
-        <v-list-item
-            v-for="ct of consumeTypeList"
-            :key="ct.id + 'consumeType'"
-            @click="overrideConsumeTypeId = ct.id"
-        >
-          <v-list-item-title>
-            {{ ct.name }}
-          </v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-    <v-btn
-        color="grey lighten-3 black--text"
-        elevation="0"
-        rounded
-        @click="keyboardMode = !keyboardMode"
-    >
-      <template v-if="!keyboardMode">
-        <v-icon>mdi-keyboard</v-icon>
-      </template>
-      <template v-else>
-        <v-icon>mdi-menu</v-icon>
-      </template>
-    </v-btn>
   </div>
 
 </template>

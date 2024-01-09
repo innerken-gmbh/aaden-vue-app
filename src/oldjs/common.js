@@ -12,7 +12,6 @@ import { optionalAuthorizeAsync } from '@/oldjs/api'
 const Config = GlobalConfig
 
 export let TableId = null
-let blocked = false
 const TOASTTIME = 700
 
 export const consumeTypeList = []
@@ -76,20 +75,6 @@ export function jumpToTable (tableId, tableName) {
     tableName
   })
   jumpTo('table', params)
-}
-
-export function blockReady () {
-  // console.warn('released')
-  blocked = false
-}
-
-export function blocking () {
-  // console.warn('blocked!')
-  blocked = true
-}
-
-export function isBlocking () {
-  return blocked
 }
 
 export function setGlobalTableId (id) {
@@ -242,7 +227,6 @@ export function getData (url, data) {
   data = Object.assign(defaultData, data)
   url.search = url.search + '&' + new URLSearchParams(data).toString()
   return fetch(url).then(res => {
-    blockReady()
     return res.json().catch(err => {
       console.log(err, res, url)
     })
@@ -413,9 +397,6 @@ export function logErrorAndPop (t) {
   const info = t?.data?.info
   toastError(info ?? t)
   console.error(t)
-  if (blockReady) {
-    blockReady()
-  }
 }
 
 export function showTimedAlert (type, title, time = 1000, callback = null) {

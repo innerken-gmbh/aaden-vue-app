@@ -383,7 +383,6 @@
 <script>
 import { version } from '../../../package.json'
 import {
-  blockReady,
   findConsumeTypeById,
   getConsumeTypeList,
   openOrEnterTable,
@@ -655,9 +654,7 @@ export default {
         this.$refs.ins.focus()
       }
       this.buffer = ''
-
       this.HIDE_AUTHORIZE_DIALOG()
-      blockReady()
     },
     async refreshTables () {
       this.tableList = await getTableListWithCells()

@@ -229,149 +229,16 @@
 
             </v-card>
             <template v-if="currentView===menu[0].name">
-              <template v-if="!keyboardMode">
-                <menu-order-fragment></menu-order-fragment>
-              </template>
-              <div
-                  v-else
-                  class="flex-grow-1"
-                  style="
-                display: grid;
-                grid-template-columns: 1fr 360px;
-                height: calc(100vh - 130px);
-                grid-gap: 0px;
-              "
-              >
-                <v-card
-                    class="l-result-display"
-                    color="transparent"
-                    elevation="0"
-                >
-                  <div
-                      v-if="searchDish.length > 0"
-                      class="flex-shrink-1"
-                      style="overflow: hidden"
-                  >
-                    <v-card
-                        class="px-4 py-3"
-                        color="grey lighten-4"
-                        elevation="0"
-                        tile
-                    >
-                      {{ $t('SearchResult') }}
-                    </v-card>
-                    <!--                  需要监听键盘的地方-->
-                    <template v-for="(dish, index) in searchDish">
-                      <v-card
-                          :key="dish.id"
-                          :class="index === indexActive ? 'first' : ''"
-                          :style="{
-                        backgroundColor: '' + dish.displayColor,
-                        color: '' + dish.foreground,
-                      }"
-                          class="d-flex px-4 py-1 align-start"
-                          elevation="0"
-                          style="
-                        width: 100%;
-                        border-bottom: 2px dashed #e2e3e5;
-                        font-size: x-large;
-                      "
-                          tile
-                          @click="searchDishClick(dish.code)"
-                      >
-                        <div class="name mr-2">
-                        <span>{{ dish.code }}.</span
-                        >{{ dish.dishName }}
-                        </div>
-                        <v-spacer></v-spacer>
-                        <div
-                            v-if="dish.isFree === '1'"
-                            class="price d-flex align-center green lighten-3 white--text"
-                            style="padding: 2px 4px; border-radius: 4px"
-                        >
-                          {{ $t('Free') }}
-                        </div>
-                        <div
-                            v-else
-                            class="price d-flex align-center text-no-wrap text-truncate"
-                        >
-                          {{ dish.price | priceDisplay }}
-                        </div>
-                      </v-card>
-                    </template>
-                  </div>
-                  <div
-                      v-else
-                      class="d-flex align-center justify-center"
-                      style="height: 100%; width: 100%"
-                  >
-                    <div class="d-flex flex-column align-center">
-                      <div>
-                        <v-icon
-                            color="grey lighten-1"
-                            x-large
-                        >mdi-keyboard
-                        </v-icon>
-                      </div>
-                      <div class="text--disabled">
-                        {{ $t('PleaseUseKeyboardOrType') }}
-                      </div>
-                    </div>
-                  </div>
-                </v-card>
-                <v-card
-                    class="d-flex flex-column"
-                    elevation="0"
-                >
-                  <div
-                      class="pa-2 text-h6"
-                      style="min-height: 96px"
-                  >
-                    <template v-if="keyboardInput">
-                      {{
-                        Config.numberFirst
-                            ? $t('QuantityDishNumber')
-                            : $t('DishNumberQuantity')
-                      }}<br/>
-                      {{ $t('Input') }}
-                    </template>
-                    <template v-else>
-                      {{ feedback }}
-                    </template>
-                  </div>
-                  <v-spacer></v-spacer>
-                  <div
-                      class="pa-2 flex-shrink-0"
-                      @click.stop
-                  >
-                    <v-card
-                        :class="keyboardInput ? '' : 'text--secondary'"
-                        class="text-h4 pa-3 py-6 mb-2 d-flex align-center"
-                        color="grey lighten-3"
-                        elevation="0"
-                    >
-                      {{
-                        keyboardInput
-                            ? keyboardInput
-                            : Config.numberFirst
-                                ? $t('quantity_x_dishNumber')
-                                : $t('DishNumberQuantity')
-                      }}
-                    </v-card>
-                    <keyboard-layout
-                        :keys="keyboardLayout"
-                        @input="numberInput"
-                    ></keyboard-layout>
-                  </div>
-                </v-card>
-              </div>
+              <menu-fragement
+                  @dish-add="findAndOrderDish"
+                  @dish-detail="e=>showModification(e,1)"
+              />
             </template>
             <template v-else-if="currentView===1">
               <address-display
                   v-if="consumeTypeId===2"
                   :consume-type-status-id="consumeTypeStatusId"
                   :raw-address-info="realAddressInfo"
-                  :should-open-menu.sync="addressFormOpen"
                   class="mr-2"
                   @accept="acceptOrderWithTime"
                   @reject="rejectOrder"
@@ -484,86 +351,6 @@
             </v-card>
           </div>
         </div>
-      </template>
-
-      <template v-if="!keyboardMode">
-        <keep-alive>
-          <v-fade-transition>
-            <v-card
-                v-if="keyboardInput || currentCodeBuffer"
-                class="pa-4"
-                style="
-                position: fixed;
-                top: 0;
-                right: 0;
-                margin: auto;
-                box-shadow: 0 3px 16px var(--v-primary-lighten4);
-                left: 0;
-                bottom: 0;
-                min-width: 300px;
-                max-width: calc(100vw - 200px);
-                z-index: 15;
-                width: fit-content;
-                height: fit-content;
-              "
-            >
-              <div>
-                <h1>{{ keyboardInput }}</h1>
-              </div>
-              <div
-                  v-if="searchDish.length > 0"
-                  class="flex-shrink-1 blue lighten-5"
-                  style="overflow: hidden"
-              >
-                <template v-for="(dish, index) in searchDish">
-                  <v-card
-                      :key="dish.id"
-                      :class="index === indexActive ? 'first' : ''"
-                      :style="{
-                      backgroundColor: '' + dish.displayColor,
-                      color: '' + dish.foreground,
-                    }"
-                      class="d-flex px-1 py-1 align-start"
-                      elevation="0"
-                      style="
-                      width: 100%;
-                      border-bottom: 2px dashed #e2e3e5;
-                      font-size: x-large;
-                    "
-                      tile
-                      @click="searchDishClick(dish.code)"
-                  >
-                    <div class="name mr-2">
-                      <span>{{ dish.code }}.</span
-                      >{{ dish.dishName }}
-                    </div>
-                    <v-spacer></v-spacer>
-                    <div
-                        v-if="dish.isFree === '1'"
-                        class="price d-flex align-center green lighten-3 white--text"
-                        style="padding: 2px 4px; border-radius: 4px"
-                    >
-                      {{ $t('Free') }}
-                    </div>
-                    <div
-                        v-else
-                        class="price d-flex align-center text-no-wrap text-truncate"
-                    >
-                      {{ dish.price | priceDisplay }}
-                    </div>
-                  </v-card>
-                </template>
-              </div>
-              <div
-                  class="text-caption text--secondary"
-                  style="font-size: 14px !important"
-              >
-                {{ $t('PressESCToEnterWindow') }}<br/>
-                {{ $t('PressESCToCloseWindow') }}
-              </div>
-            </v-card>
-          </v-fade-transition>
-        </keep-alive>
       </template>
 
       <v-dialog
@@ -711,13 +498,10 @@
 
 <script>
 import {
-  blocking,
-  blockReady,
   consumeTypeList,
   fastSweetAlertRequest,
   findConsumeTypeById,
   getConsumeTypeList,
-  isBlocking,
   loadingComplete,
   logError,
   logErrorAndPop,
@@ -734,17 +518,9 @@ import hillo from 'hillo'
 import { checkOut, optionalAuthorizeAsync, printZwichenBon } from '@/oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
 
-import {
-  findDish,
-  getCategoryListWithCache,
-  goHome,
-  processDishList,
-  setDefaultValueForApply
-} from '@/oldjs/StaticModel'
+import { findDish, goHome, setDefaultValueForApply } from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
-
-import { debounce } from 'lodash-es'
 
 import IKUtils from 'innerken-js-utils'
 
@@ -755,24 +531,21 @@ import { mapGetters } from 'vuex'
 import i18n from '../../i18n'
 import dayjs from 'dayjs'
 import { TableFilter } from '@/api/tableService'
-import { Remember } from '@/api/remember'
 import BuffetStartDialog from '@/views/TablePage/Dialog/BuffetStartDialog'
 import AddressDisplay from '@/views/TablePage/Address/AddressDisplay'
 import DiscountDialog from '@/views/TablePage/Dialog/DiscountDialog'
 import CheckOutDrawer from '@/components/GlobalDialog/CheckOutDrawer'
 import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
 import DishCardList from '@/views/TablePage/Dish/DishCardList'
-import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import uniqBy from 'lodash-es/uniqBy'
 import priceDisplay from '../SalePage/Fragment/PriceDisplay.vue'
 import MemberSelectionDialog from '@/views/TablePage/Dialog/MemberSelectionDialog.vue'
 import { getCurrentOrderInfo } from '@/api/Repository/OrderInfo'
-import { setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFirebase } from '@/api/customerDiaplay'
 import { DishDocker } from 'aaden-base-model/lib'
 import { getOrderInfo } from '@/api/aaden-base-model/api'
 import LogoDisplay from '@/components/LogoDisplay.vue'
 import { cartListFactory } from '@/views/TablePage/cart'
-import MenuOrderFragment from '@/views/TablePage/OrderFragment/MenuOrderFragment.vue'
+import MenuFragement from '@/views/TablePage/OrderFragment/MenuFragement.vue'
 
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
@@ -804,25 +577,6 @@ function getReason () {
   return JSON.parse(str) ?? []
 }
 
-const keyboardLayout = [
-  '7',
-  '8',
-  '9',
-  'C',
-  '4',
-  '5',
-  '6',
-  'A',
-  '1',
-  '2',
-  '3',
-  'M',
-  '.',
-  '0',
-  'mdi-close',
-  'OK'
-]
-
 // endregion
 export default {
   name: 'TablePage',
@@ -830,13 +584,12 @@ export default {
     dragscroll
   },
   components: {
-    MenuOrderFragment,
+    MenuFragement,
     LogoDisplay,
     MemberSelectionDialog,
     BuffetStartDialog,
     AddressDisplay,
     DiscountDialog,
-    KeyboardLayout,
     CheckOutDrawer,
     ModificationDrawer,
     DishCardList
@@ -854,19 +607,15 @@ export default {
   },
   data: function () {
     return {
-      checkoutId: [],
       globalLoading: true,
       reasons: getReason(),
       deleteDishReason: '',
       deleteDishReasonDialog: false,
+
       useDishesDiscount: false,
-      keyboardMode: Remember.keyboardMode,
-      tab: null,
-      addressFormOpen: false,
+
       consumeTypeList: [],
-      keyboardLayout: GlobalConfig.topKeyboardKey
-        .split(',')
-        .concat(keyboardLayout),
+
       feedback: '',
       checkoutShow: false,
       extraDishShow: false,
@@ -881,18 +630,14 @@ export default {
         count: 0,
         list: []
       },
+
       currentView: 'Menu',
-      /**/
       discountRatio: 1,
       discountStr: null,
       overrideConsumeTypeId: null,
       dish: {},
       count: 1,
-      /* 存储菜品和过滤的信息 */
-      dishes: [],
-      categories: [],
-      searchDish: [],
-      indexActive: 0,
+
       Config: GlobalConfig,
       //* */
       splitOrderListModel: splitOrderFactory,
@@ -911,7 +656,7 @@ export default {
       password: '',
       /* new input */
       keyboardInput: '',
-      currentCodeBuffer: '',
+
       deviceId: -1,
       currentMemberId: null,
       showMemberSelectionDialog: null,
@@ -956,12 +701,10 @@ export default {
     },
     async submitReason (item) {
       const note = item ?? (this.deleteDishReason || this.reasons[0])
-
       if (!note) {
         IKUtils.showError('')
         return
       }
-
       await this.deleteAndSaveReason(note)
       showSuccessMessage()
       this.deleteDishReasonDialog = false
@@ -1021,14 +764,7 @@ export default {
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
     },
-    async editNote () {
-      const note = await Swal.fire({
-        title: this.$t('note'),
-        input: 'text',
-        inputValue: this.cartCurrentDish.note
-      })
-      this.$set(this.cartCurrentDish, 'note', note.value)
-    },
+
     async submitRawAddressInfo (addressInfo) {
       await hillo.post('Orders.php?op=updateRawAddressInfo', {
         orderId: this.tableDetailInfo.order.id,
@@ -1037,27 +773,6 @@ export default {
       await this.getTableDetail()
       toast()
     },
-    numberInput (key) {
-      if (this.keyboardInput == null) {
-        this.keyboardInput = ''
-      }
-      switch (key) {
-        case 'mdi-close':
-          this.keyboardInput += '*'
-          break
-        case 'C':
-          this.keyboardInput = ''
-          break
-        case 'OK':
-          this.insDecode(this.keyboardInput)
-          this.resetInputAndBuffer()
-          break
-        default:
-          this.keyboardInput += key
-          break
-      }
-    },
-
     async changeServant () {
       const res = await fastSweetAlertRequest(
         this.$t('WaiterPagePasswordPrompt'),
@@ -1109,9 +824,6 @@ export default {
                 this.orderListModel.total()
           }
           this.discountRatio = discountRatio
-          await this.setOrderListByTableNameInFirebase(
-            this.orderListModel.list
-          )
         }
       } catch (e) {
         console.log(e)
@@ -1152,7 +864,6 @@ export default {
         if (dish.haveMod > 0) {
           const apply = setDefaultValueForApply(dish.modInfo, [])
           this.submitModification(apply, dish, count)
-          blockReady()
           return
         }
         if (dish.code.toLowerCase().includes('ea')) {
@@ -1165,7 +876,6 @@ export default {
                 i18n.t('PleaseEnter') + ' ' + unitName + ' ' + i18n.t('AmountOfProductMeasured')
               )
               if (!unitCount) {
-                blockReady()
                 return
               }
               dish.currentPrice = (unitCount / unitBase) * unitPrice
@@ -1178,12 +888,12 @@ export default {
             } catch (e) {
               console.warn(e)
               this.showExtraDish(dish)
-              blockReady()
+
               return
             }
           } else {
             this.showExtraDish(dish)
-            blockReady()
+
             return
           }
         }
@@ -1199,8 +909,6 @@ export default {
       } else {
         this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
       }
-
-      blockReady()
     },
     showExtraDish (dish) {
       this.currentDish = Object.assign({}, defaultCurrentDish, dish)
@@ -1216,15 +924,7 @@ export default {
       }
       this.modificationShow = true
     },
-    async getCategory (consumeTypeId = 1, force = false) {
-      if (this.categories.length === 0 || force) {
-        this.categories = await getCategoryListWithCache(consumeTypeId)
-        this.dishes = processDishList(this.categories.reduce((arr, i) => {
-          arr.push(...i.dishes)
-          return arr
-        }, []))
-      }
-    },
+
     removeFromSplitOrder: function (dish) {
       const realItem = IKUtils.deepCopy(dish)
       this.splitOrderListModel.add(realItem, -1)
@@ -1290,57 +990,29 @@ export default {
       if (this.count !== 1) {
         count = this.count
       }
-      dish.apply = _mod // here we add a apply
+      dish.apply = _mod
       dish.forceFormat = true
 
       this.addDish(dish, count ?? parseInt(this.count))
       dish.edit = () => {
         this.showModification(dish, 1, saveInfo)
       }
-      blockReady()
     },
     cancel: function () {
       this.modificationShow = false
-      blockReady()
     },
     async initialUI (forceReload = false) {
-      this.feedback = ''
-      this.resetInputAndBuffer()
       this.discountModelShow = false
       this.buffetDialogShow = false
       this.overrideConsumeTypeId = null
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
-      await this.reloadDish(this.realConsumeTypeId, forceReload)
       await this.getTableDetail()
       setGlobalTableId(this.id)
-      blockReady()
-    },
-    async reloadDish (consumeTypeId, force = false) {
-      await this.getCategory(consumeTypeId, force)
-    },
-    async setOrderListByTableNameInFirebase (orderListModelList) {
-      // upload orderList to Firebase
-      const constData = {}
-      let number = 1
-      if (orderListModelList.length > 0) {
-        orderListModelList.forEach(orderItem => {
-          const result = {}
-          Object.keys(orderItem).filter(key => {
-            return key !== 'change' && key !== 'displayApply'
-          }).forEach(key => {
-            result[key] = orderItem[key]
-          })
-          const dishKey = 'dish_' + orderItem.dishesId + number
-          number++
-          constData[dishKey] = result
-        })
-      }
-      await setOrderListInFirebase(constData, this.deviceId)
     },
     back () {
-      if (this.keyboardInput || this.currentCodeBuffer) {
-        this.resetInputAndBuffer()
+      if (this.keyboardInput) {
+        this.keyboardInput = ''
       } else if (this.discountModelShow) {
         this.discountModelShow = false
       } else if (this.buffetDialogShow) {
@@ -1348,35 +1020,15 @@ export default {
       } else if (this.modificationShow) {
         this.cancel()
       } else if (this.checkoutShow) {
-        // clear the data in firestore
-        setOrderListInFirebase({}, this.deviceId)
-        setCartListInFirebase({}, this.deviceId)
         this.checkoutShow = false
         this.initialUI()
       } else if (this.splitOrderListModel.list.length > 0) {
         this.removeAllFromSplitOrder()
       } else if (this.cartListModel.list.length > 0) {
-        // clear the data in firestore
-        setCartListInFirebase({}, this.deviceId)
         this.cartListModel.clear()
       } else {
-        // clear the data in firestore
-        setOrderListInFirebase({}, this.deviceId)
-        setCartListInFirebase({}, this.deviceId)
         this.goHome()
       }
-      blockReady()
-    },
-    async searchDishClick (code) {
-      this.currentCodeBuffer = code
-      await this.findAndOrderDish(code)
-      this.keyboardInput = ''
-    },
-    resetInputAndBuffer () {
-      this.currentCodeBuffer = ''
-      this.keyboardInput = ''
-      this.indexActive = -1
-      this.updateSearchDish()
     },
     discountClear () {
       this.submitDiscount('')
@@ -1409,7 +1061,6 @@ export default {
           count: checkoutFactory.count(),
           list: checkoutFactory.list
         }
-        this.checkoutId = this.checkOutModel.list.map(it => it.code)
         this.checkoutShow = true
         this.checkOutType = 'splitOrder'
       }
@@ -1513,7 +1164,6 @@ export default {
           })
         }
         toast()
-        blockReady()
       } catch (e) {
       } finally {
         this.isSendingRequest = false
@@ -1524,7 +1174,6 @@ export default {
       try {
         await reprintOrder(this.tableDetailInfo.order.id, 0)
         toast()
-        blockReady()
       } catch (e) {
       } finally {
         this.isSendingRequest = false
@@ -1534,40 +1183,27 @@ export default {
       if (this.deleteDishReasonDialog) {
         await this.submitReason()
       }
-      if (isBlocking()) {
-        return
-      }
-
       if (t !== '' && t !== null) {
         if (t?.length === 8) {
           const VIPCardDish = findDish(GlobalConfig.VIPCardCode)
           this.showExtraDish(VIPCardDish)
           this.currentDish.currentName = t
-          blockReady()
           return
         }
         if (t.indexOf('*') !== -1) {
           let [code, count] = this.getCodeAndCountFromInput(t)
           count = parseInt(count)
           await this.findAndOrderDish(code, count)
-          return
         } else {
           await this.findAndOrderDish(t)
-          return
         }
       } else {
         if (this.discountModelShow) {
           this.submitDiscount()
-          blockReady()
-          return
         } else if (this.extraDishShow) {
           this.addExtraDish()
-          blockReady()
-          return
         } else if (this.modificationShow) {
           this.$refs.modification.forceSubmit()
-          blockReady()
-          return
         } else if (!this.checkoutShow && !this.modificationShow) {
           if (this.cartListModel.list.length > 0) {
             setTimeout(async () => {
@@ -1578,9 +1214,7 @@ export default {
               if (res.value) {
                 this.orderDish(this.cartListModel.list)
               }
-              blockReady()
             }, 10)
-            return
           } else {
             if (GlobalConfig.useEnterKeyToPay) {
               setTimeout(async () => {
@@ -1595,17 +1229,11 @@ export default {
                   )
                   this.checkOut(pw)
                 }
-                blockReady()
               }, 10)
-            } else {
-              blockReady()
             }
-
-            return
           }
         }
       }
-      blocking()
     },
     async orderDish (order = this.cartListModel.list, print = true) {
       try {
@@ -1635,9 +1263,6 @@ export default {
       } finally {
         this.isSendingRequest = false
       }
-      blockReady()
-      await setOrderListInFirebase({}, this.deviceId)
-      await setCartListInFirebase({}, this.deviceId)
     },
     jumpToPayment () {
       const realCheckOut = async (pw) => {
@@ -1649,7 +1274,6 @@ export default {
           count: checkoutFactory.count(),
           list: checkoutFactory.list
         }
-        this.checkoutId = this.checkOutModel.list.map(it => it.code)
         this.checkoutShow = true
         this.checkOutType = 'checkOut'
         this.discountStr = ''
@@ -1673,13 +1297,6 @@ export default {
       await this.initialUI(true)
       this.globalLoading = false
     },
-    debounce: debounce(
-      (f) => {
-        f()
-      },
-      200,
-      { trailing: true }
-    ),
     getCodeAndCountFromInput (string = '') {
       let [code, count] = ['', 1]
       if (string.includes('*')) {
@@ -1693,102 +1310,10 @@ export default {
       }
       return [code, count]
     },
-    updateSearchDish () {
-      if (this.keyboardInput || this.currentCodeBuffer) {
-        this.searchDish = this.searchDishes()
-      } else {
-        this.searchDish = []
-      }
-      this.indexActive = 0
-    },
-    searchDishes () {
-      const list = this.dishes
-      const searchWord = this.currentCodeBuffer || this.keyboardInput
-      const codeOnly = !!this.currentCodeBuffer
-      if (searchWord) {
-        if (searchWord !== '' && !searchWord.includes('/')) {
-          const [code] = this.getCodeAndCountFromInput(searchWord)
-          const result = []
-          const exactMatch = findDish(code)
-          if (exactMatch) {
-            exactMatch.rank = -999 + exactMatch.code.length
-            result.push(exactMatch)
-          }
-          if (!codeOnly) {
-            for (const d of list) {
-              if (
-                d.code.toLowerCase().startsWith(code.toLowerCase()) &&
-                  d.code !== code
-              ) {
-                d.rank = 999 + d.code.length
-                result.push(d)
-              } else if (
-                d.dishName.toLowerCase().startsWith(code.toLowerCase())
-              ) {
-                d.rank = d.dishName.length
-                result.push(d)
-              }
-              if (result.length > 10) {
-                break
-              }
-            }
-          }
-          return result.sort((a, b) => {
-            if (a.rank > b.rank) {
-              return 1
-            } else if (a.rank === b.rank) {
-              return 0
-            } else {
-              return -1
-            }
-          })
-        }
-      }
-      return []
-    },
+
     async cartListModelClear () {
       this.cartListModel.clear()
-      await setCartListInFirebase({}, this.deviceId)
-    },
-    async setCartListByTableNameInFirebase (dishList) {
-      const constData = {}
-      let number = 1
-      if (dishList.length > 0) {
-        dishList.forEach(dish => {
-          const result = {}
-          Object.keys(dish).filter(key => {
-            return (key !== 'change' && key !== 'edit' &&
-                key !== 'apply' &&
-                key !== 'langs' && key !== 'langsDesc' &&
-                key !== 'modInfo' && key !== 'options')
-          }).forEach(key => {
-            result[key] = dish[key]
-          })
-
-          result.hasAppend = false
-
-          if (result.displayApply.length > 0) {
-            const aNameArr = []
-            const priceInfoArr = []
-            result.displayApply.forEach(i => {
-              aNameArr.push((i.groupName + ':' + i.value))
-              priceInfoArr.push(i.priceInfo)
-            })
-
-            result.aNameArr = aNameArr
-            result.priceInfoArr = priceInfoArr
-            result.hasAppend = true
-          }
-
-          const dishKey = 'cart_' + dish.code + number
-          number++
-
-          constData[dishKey] = result
-        })
-      }
-      await setCartListInFirebase(constData, this.deviceId)
     }
-
   },
   computed: {
     priceDisplay () {
@@ -1823,18 +1348,6 @@ export default {
     },
     consumeTypeStatusId () {
       return parseInt(this.tableDetailInfo.order.consumeTypeStatusId ?? 2)
-    },
-    orderListModelList () {
-      return this.orderListModel.list
-    },
-    cartListModelHash () {
-      return this.cartListModel.list.map(it => {
-        return {
-          name: it.name,
-          count: it.count,
-          allInfo: it
-        }
-      })
     },
     currentMenu () {
       const normalActions = [
@@ -1904,44 +1417,12 @@ export default {
       ]
     }
   },
-  watch: {
-    async checkoutShow (val) {
-      if (!val) {
-        this.checkoutId = []
-      }
-      await setCheckOutStatusInFirebase(val, this.deviceId, this.checkoutId)
-    },
-    orderListModelList (val) {
-      this.setOrderListByTableNameInFirebase(val)
-    },
-    cartListModelHash (val) {
-      const res = val.map(it => it.allInfo)
-      this.setCartListByTableNameInFirebase(res)
-    },
-    dishes: function () {
-      this.updateFilteredDish()
-    },
-    keyboardInput: function () {
-      if (this.keyboardInput) {
-        this.currentCodeBuffer = ''
-        this.indexActive = ''
-      }
-      this.debounce(this.updateSearchDish)
-    },
-    keyboardMode: function (val) {
-      Remember.keyboardMode = val
-    },
-    realConsumeTypeId (val) {
-      this.reloadDish(val, true)
-    }
-  },
   async activated () {
     await this.realInitial()
     this.currentMemberId = null
   },
   async mounted () {
     await getConsumeTypeList()
-
     const selectableId = GlobalConfig.selectableConsumeTypeId
       ?.split(',')
       .map((d) => parseInt(d))
@@ -1966,6 +1447,7 @@ export default {
 }
 
 .navigationPillItem {
+  background: rgba(0, 0, 0, 0.01);
   border-radius: 12px;
   display: flex;
   color: black;

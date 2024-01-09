@@ -1,4 +1,4 @@
-import { blockReady, fastSweetAlertRequest, loadingComplete, popAuthorize, toast } from './common'
+import { fastSweetAlertRequest, loadingComplete, popAuthorize, toast } from './common'
 import { goHome } from './StaticModel'
 import hillo from 'hillo'
 import i18n from '../i18n'
@@ -62,7 +62,6 @@ export function checkOut (pw = '', tableId, print = 1, payMethod = 1, tipIncome 
     pw
   }).then(res => {
     toast(i18n.t('JSTableCheckOutSuccess'))
-    blockReady()
     goHome()
   })
 }

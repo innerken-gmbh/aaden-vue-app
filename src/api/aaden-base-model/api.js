@@ -11,7 +11,7 @@ export async function getActiveTables () {
   return tableList
 }
 
-export async function getCategoryList () {
+export async function getCategoryTypeList () {
   return (await hillo.get('CategoryType.php', {
     lang: GlobalConfig.getLang()
   }))
