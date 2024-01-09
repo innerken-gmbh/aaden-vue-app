@@ -1,36 +1,79 @@
 <template>
-  <div @click="keyboardInput = ''">
+  <div @click="keyboardInput = ''" class="gradient">
+    <v-navigation-drawer
+        app
+        dark
+        color="transparent"
+        mini-variant
+        mini-variant-width="72"
+        permanent
+        stateless
+        style="z-index: 100;"
+    >
+      <div
+          class="d-flex flex-column py-2 pt-3"
+          style="height: 100vh"
+      >
+        <div style="display: grid;grid-auto-flow: row;;grid-gap: 24px;align-content: center">
+          <logo-display/>
+          <div
+              :key="item.title"
+              v-for="item in currentMenu"
+              @click="item.action"
+              class="d-flex align-center flex-column"
+          >
+            <v-card
+                class="pa-2"
+                color=""
+                elevation="0"
+                style="border-radius: 12px !important;"
+            >
+              <v-responsive :aspect-ratio="1">
+                <div
+                    class="d-flex flex-column justify-center align-center"
+                    style="height: 100%"
+                >
+                  <div>
+                    <v-icon>{{ item.icon }}</v-icon>
+                  </div>
+                </div>
+              </v-responsive>
+            </v-card>
+
+            <div
+                class="hideMore"
+                style="max-width: 56px"
+            >
+              <div
+                  class="mt-1 text-caption
+                   text-no-wrap
+                  white--text text-truncate overflow-hidden text-capitalize"
+              >
+                {{ $t(item.title) }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <v-spacer/>
+      </div>
+    </v-navigation-drawer>
     <template v-if="!globalLoading">
-      <v-main>
+
+      <v-main app>
         <div
             style="
             display: grid;
-            grid-template-columns: 348px calc(100vw - 348px);
-            background: #f6f6f6;
+            grid-template-columns: 348px calc(100% - 348px);
           "
         >
           <v-card
               class="d-flex justify-space-between flex-shrink-0 flex-column fill-height"
               dark
+              color="transparent"
               elevation="0"
               style="height: 100vh"
               tile
           >
-            <v-card
-                class="d-flex align-center pa-2 py-3"
-                color="transparent"
-                elevation="0"
-                @click="back"
-            >
-              <v-icon
-                  class="mr-2"
-                  large
-              >mdi-chevron-left
-              </v-icon>
-              <div class="text-body-2">{{ $t('Return') }}</div>
-              <v-spacer></v-spacer>
-            </v-card>
-            <div class="pa-2"></div>
             <keep-alive>
               <dish-card-list
                   v-if="cartListModel.list.length === 0"
@@ -138,7 +181,7 @@
           <v-card
               v-cloak
               class="flex-grow-1 flex-column"
-              color="transparent"
+              color="#f6f6f6"
               elevation="0"
               style="height: 100vh"
           >
@@ -609,7 +652,7 @@
               bottom: 0;
               right: 0;
               overflow-x: scroll;
-              width: calc(100vw - 350px);
+              width: calc(100vw - 350px - 72px );
             "
           >
             <div
@@ -715,7 +758,7 @@
             background: rgba(0, 0, 0, 0.4);
             top: 0;
             z-index: 50;
-            left: 348px;
+            left: 420px;
           "
             @click="removeAllFromSplitOrder"
         >
@@ -1028,7 +1071,6 @@
     <template v-else>
       <div style="height: 100vh;width: 100vw;background: #f6f6f6">
         <div style="width: 300px;height: 100vh;background: #000"></div>
-
       </div>
     </template>
   </div>
@@ -1097,6 +1139,7 @@ import { getCurrentOrderInfo } from '@/api/Repository/OrderInfo'
 import { setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFirebase } from '@/api/customerDiaplay'
 import { DishDocker } from 'aaden-base-model/lib'
 import { getCategoryList, getOrderInfo } from '@/api/aaden-base-model/api'
+import LogoDisplay from '@/components/LogoDisplay.vue'
 
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
@@ -1156,6 +1199,7 @@ export default {
     dragscroll
   },
   components: {
+    LogoDisplay,
     MemberSelectionDialog,
     BuffetStartDialog,
     GridButton,
@@ -2220,6 +2264,15 @@ export default {
           allInfo: it
         }
       })
+    },
+    currentMenu () {
+      return [{
+        title: 'Return',
+        icon: 'mdi-arrow-left',
+        action: () => {
+          this.back()
+        }
+      }]
     }
   },
   watch: {
@@ -2367,7 +2420,7 @@ tr:hover {
 
 .bottomCart {
   position: fixed;
-  width: calc(100vw - 354px);
+  width: calc(100vw - 420px);
   height: 100vh;
 }
 
@@ -2449,5 +2502,11 @@ tr:hover {
   color: black;
   background: #bbdefb !important;
   border-bottom: 2px solid #367aeb !important;
+}
+
+.gradient {
+  background: #3a7bd5; /* fallback for old browsers */
+  background: linear-gradient(to bottom, #3e3e3e, #341d33); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
 }
 </style>

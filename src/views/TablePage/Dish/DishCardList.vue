@@ -3,8 +3,12 @@
       color="transparent"
       elevation="0"
       class="d-flex flex-column flex-grow-1"
-      style="max-height: calc(100% - 76px)"
+      style="height: calc(100vh)"
   >
+    <div class="pa-4 text-h5">
+      {{title}}
+    </div>
+
     <div v-if="shouldDisplaySourceMarks">
       <div class="pa-2 d-flex" style="max-width: 100%">
         <v-chip-group v-model="currentSourceMark" active-class="primary--text">
