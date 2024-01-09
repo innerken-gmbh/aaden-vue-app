@@ -66,13 +66,77 @@
         <div
             style="
             display: grid;
-            grid-template-columns: 330px 1fr;
+            grid-template-columns:  1fr 330px;
           "
         >
           <v-card
-              class="d-flex justify-space-between flex-shrink-0 flex-column fill-height"
-              color="grey lighten-3"
+              v-cloak
+              class="flex-grow-1 flex-column"
+              color="grey lighten-4"
               elevation="0"
+              style="height: 100vh"
+          >
+
+            <v-card
+                class="d-flex pa-3 px-4 align-center"
+                color="grey lighten-2"
+                elevation="0"
+                tile
+            >
+
+              <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
+                <div
+                    v-for="m in menu"
+                    :key="m.name"
+                    :class="currentView===m.name?' active':''"
+                    class="navigationPillItem"
+                    @click="currentView=m.name"
+                >
+                  <v-icon left>{{ m.icon }}</v-icon>
+                  {{ $t(m.name) }}
+                </div>
+              </div>
+
+              <v-spacer></v-spacer>
+              <div class="text-body-2 d-flex align-center">
+                <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
+                <div class=" text-capitalize mr-6">
+                  {{ tableDetailInfo.tableBasicInfo.name }}
+                </div>
+                <template v-if="$vuetify.breakpoint.lgAndUp">
+                  <v-icon>mdi-office-building-marker</v-icon>
+                  <div class="ml-2  text-truncate">
+                    {{ findConsumeTypeById(consumeTypeId) }}
+                  </div>
+                </template>
+                <v-icon class="mr-2 ml-6">mdi-account-circle</v-icon>
+                <div>
+                  {{ tableDetailInfo.servant }}
+                </div>
+              </div>
+
+            </v-card>
+            <template v-if="currentView===menu[0].name">
+              <menu-fragement
+                  @dish-add="findAndOrderDish"
+                  @dish-detail="e=>showModification(e,1)"
+              />
+            </template>
+            <template v-else-if="currentView===1">
+              <address-display
+                  v-if="consumeTypeId===2"
+                  :consume-type-status-id="consumeTypeStatusId"
+                  :raw-address-info="realAddressInfo"
+                  class="mr-2"
+                  @accept="acceptOrderWithTime"
+                  @reject="rejectOrder"
+                  @address-change="submitRawAddressInfo"
+              />
+            </template>
+          </v-card>
+          <v-card
+              class="d-flex justify-space-between flex-shrink-0 flex-column fill-height"
+              color="grey lighten-5"
               style="height: 100vh"
               tile
           >
@@ -179,71 +243,6 @@
                 </div>
               </template>
             </dish-card-list>
-          </v-card>
-          <v-card
-              v-cloak
-              class="flex-grow-1 flex-column"
-              color="grey lighten-4"
-              elevation="0"
-              style="height: 100vh"
-          >
-
-            <v-card
-                class="d-flex pa-3 px-4 align-center"
-                color="grey lighten-2"
-                elevation="0"
-                tile
-            >
-
-              <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
-                <div
-                    v-for="m in menu"
-                    :key="m.name"
-                    :class="currentView===m.name?' active':''"
-                    class="navigationPillItem"
-                    @click="currentView=m.name"
-                >
-                  <v-icon left>{{ m.icon }}</v-icon>
-                  {{ $t(m.name) }}
-                </div>
-              </div>
-
-              <v-spacer></v-spacer>
-              <div class="text-body-2 d-flex align-center">
-                <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
-                <div class=" text-capitalize mr-6">
-                  {{ tableDetailInfo.tableBasicInfo.name }}
-                </div>
-                <template v-if="$vuetify.breakpoint.lgAndUp">
-                  <v-icon>mdi-office-building-marker</v-icon>
-                  <div class="ml-2  text-truncate">
-                    {{ findConsumeTypeById(consumeTypeId) }}
-                  </div>
-                </template>
-                <v-icon class="mr-2 ml-6">mdi-account-circle</v-icon>
-                <div>
-                  {{ tableDetailInfo.servant }}
-                </div>
-              </div>
-
-            </v-card>
-            <template v-if="currentView===menu[0].name">
-              <menu-fragement
-                  @dish-add="findAndOrderDish"
-                  @dish-detail="e=>showModification(e,1)"
-              />
-            </template>
-            <template v-else-if="currentView===1">
-              <address-display
-                  v-if="consumeTypeId===2"
-                  :consume-type-status-id="consumeTypeStatusId"
-                  :raw-address-info="realAddressInfo"
-                  class="mr-2"
-                  @accept="acceptOrderWithTime"
-                  @reject="rejectOrder"
-                  @address-change="submitRawAddressInfo"
-              />
-            </template>
           </v-card>
         </div>
       </v-main>
