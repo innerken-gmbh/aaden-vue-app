@@ -70,6 +70,7 @@
           "
         >
           <v-card
+              tile
               v-cloak
               class="flex-grow-1 flex-column"
               color="grey lighten-4"
@@ -103,7 +104,7 @@
                 <div class=" text-capitalize mr-6">
                   {{ tableDetailInfo.tableBasicInfo.name }}
                 </div>
-                <template v-if="$vuetify.breakpoint.lgAndUp">
+                <template>
                   <v-icon>mdi-office-building-marker</v-icon>
                   <div class="ml-2  text-truncate">
                     {{ findConsumeTypeById(consumeTypeId) }}
@@ -154,23 +155,21 @@
                 <template #action>
                   <v-btn
                       :loading="isSendingRequest"
-                      color="info"
+                      class="grey lighten-4 mr-2"
                       elevation="0"
-                      text
+                      icon
                       @click="checkOut(Config.defaultPassword)"
                   >
-                    <v-icon left>mdi-cash-fast</v-icon>
-                    {{ $t('QuickBill') }}
+                    <v-icon>mdi-cash-fast</v-icon>
                   </v-btn>
                   <v-btn
                       :loading="isSendingRequest"
-                      color="warning"
+                      class="grey lighten-4 mr-2"
                       elevation="0"
-                      text
+                      icon
                       @click="discountShow"
                   >
-                    <v-icon left>mdi-sale</v-icon>
-                    {{ $t('Discount') }}
+                    <v-icon>mdi-sale</v-icon>
                   </v-btn>
                 </template>
                 <template v-slot:default="{ total }">
@@ -188,7 +187,7 @@
                           class="mr-6"
                           left
                           size="28"
-                      >mdi-calculator-variant
+                      >mdi-wallet
                       </v-icon>
                       <span class="text-h5">{{ total | priceDisplay }}</span>
                     </v-btn>
@@ -212,13 +211,12 @@
             >
               <template #action>
                 <v-btn
-                    color="error"
+                    class="error lighten-4 mr-2"
                     elevation="0"
-                    text
+                    icon
                     @click="cartListModelClear"
                 >
-                  <v-icon left> mdi-trash-can</v-icon>
-                  {{ $t('EmptyShoppingCart') }}
+                  <v-icon> mdi-trash-can</v-icon>
                 </v-btn>
               </template>
               <template v-slot:default="{ total }">

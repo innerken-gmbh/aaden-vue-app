@@ -5,14 +5,32 @@
       class="d-flex flex-column flex-grow-1"
       style="height: calc(100vh)"
   >
-    <div class="pa-4 text-h5">
-      {{title}}
+    <div class="pa-4 text-h5 d-flex align-center">
+      {{ title }}
+      <v-spacer></v-spacer>
+      <slot name="action"></slot>
+      <v-btn
+          icon
+          :class="onlyPaid ? 'grey lighten-4' : ''"
+          @click="onlyPaid = !onlyPaid"
+      >
+        <v-icon>{{ onlyPaid ? 'mdi-checkbox-outline' : 'mdi-checkbox-blank-outline' }}</v-icon>
+      </v-btn>
     </div>
 
     <div v-if="shouldDisplaySourceMarks">
-      <div class="pa-2 d-flex" style="max-width: 100%">
-        <v-chip-group v-model="currentSourceMark" active-class="primary--text">
-          <v-chip v-for="mark in sourceMarks" :key="mark">
+      <div
+          class="pa-2 d-flex"
+          style="max-width: 100%"
+      >
+        <v-chip-group
+            v-model="currentSourceMark"
+            active-class="primary--text"
+        >
+          <v-chip
+              v-for="mark in sourceMarks"
+              :key="mark"
+          >
             {{ mark == null ? $t('Other') : mark }}
           </v-chip>
         </v-chip-group>
@@ -21,21 +39,33 @@
     </div>
 
     <template v-if="dishList.length > 0">
-      <div v-dragscroll v-show="expand" class="px-2" style="overflow-y: scroll">
+      <div
+          v-dragscroll
+          v-show="expand"
+          class="px-3"
+          style="overflow-y: scroll"
+      >
+
         <template v-for="(order, index) in dishList">
-          <div @click="checkIfOpen(index)" :key="'order' + title + order.identity" style="font-size: larger">
-            <dish-card
-                :expand="index === expandIndex"
-                :show-number="showNumber"
-                :click-callback="() => _clickCallBack(index, order)"
-                :show-edit="showEdit"
-                :dish="order"
-            />
-          </div>
+          <dish-card
+              @click="checkIfOpen(index)"
+              :key="'order' + title + order.identity"
+              style="font-size: larger"
+              :expand="index === expandIndex"
+              :show-number="showNumber"
+              :click-callback="() => _clickCallBack(index, order)"
+              :show-edit="showEdit"
+              :dish="order"
+          />
         </template>
         <template v-if="discountDish != null">
-          <dish-card :show-number="showNumber" :show-edit="showEdit" :dish="discountDish"/>
+          <dish-card
+              :show-number="showNumber"
+              :show-edit="showEdit"
+              :dish="discountDish"
+          />
         </template>
+
       </div>
       <v-spacer></v-spacer>
     </template>
@@ -47,16 +77,6 @@
     </template>
 
     <div>
-      <div class="d-flex align-center pt-2 px-2" style="overflow-x: scroll" v-dragscroll>
-        <v-spacer></v-spacer>
-
-        <slot name="action"></slot>
-        <v-btn small text :color="onlyPaid ? 'primary' : ''" @click="onlyPaid = !onlyPaid">
-          <v-icon left>{{ onlyPaid ? 'mdi-checkbox-outline' : 'mdi-checkbox-blank-outline' }}</v-icon>
-          {{ $t('OnlyPay') }}
-        </v-btn>
-      </div>
-
       <slot v-bind:total="total"></slot>
     </div>
   </v-card>
