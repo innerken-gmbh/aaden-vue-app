@@ -138,6 +138,7 @@ import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout.vue'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { findDish } from '@/oldjs/StaticModel'
 import { debounce } from 'lodash-es'
+import { showTimedAlert } from '@/oldjs/common'
 
 const keyboardLayout = [
   '7',
@@ -180,7 +181,6 @@ export default {
     resetInputAndBuffer () {
       this.currentCodeBuffer = ''
       this.keyboardInput = ''
-      this.indexActive = -1
       this.updateSearchDish()
     },
     getCodeAndCountFromInput (string = '') {
@@ -205,7 +205,7 @@ export default {
     ),
     async searchDishClick (code) {
       this.currentCodeBuffer = code
-      this.$emit('dish-click', code)
+      this.$emit('dish-add', code)
       this.keyboardInput = ''
     },
     updateSearchDish () {
@@ -214,7 +214,6 @@ export default {
       } else {
         this.searchDish = []
       }
-      this.indexActive = 0
     },
     searchDishes () {
       const list = this.dishes
@@ -273,12 +272,35 @@ export default {
           this.keyboardInput = ''
           break
         case 'OK':
-          this.insDecode(this.keyboardInput)
+          this.submit()
           this.resetInputAndBuffer()
           break
         default:
           this.keyboardInput += key
           break
+      }
+    },
+    async submit () {
+      const t = this.keyboardInput
+      const submit = (code, count = 1) => {
+        const dish = findDish(code)
+        if (!dish) {
+          this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
+        } else {
+          this.$emit('dish-add', code, count)
+        }
+      }
+      if (t.indexOf('*') !== -1) {
+        let [code, count] = this.getCodeAndCountFromInput(t)
+        count = parseInt(count)
+        if (count < 1) {
+          this.feedback = '❌' + this.$t('CanNotAddNegativeDishes')
+          showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
+        } else {
+          submit(code, count)
+        }
+      } else {
+        submit(t)
       }
     }
   },

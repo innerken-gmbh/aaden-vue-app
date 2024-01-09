@@ -9,8 +9,8 @@
         <v-card
             flat
             rounded="lg"
-            :color="realConsumeTypeId===ct.id?'primary white--text':'transparent'"
-            class="mr-2 pa-2 px-3 text-body-2 font-weight-black"
+            :class="realConsumeTypeId===ct.id?'active':''"
+            class="mr-2 pa-2 px-3 text-body-2 navigationPillItem"
             v-for="ct of consumeTypeList"
             :key="ct.id + 'consumeType'"
             @click="overrideConsumeTypeId = ct.id"
@@ -43,6 +43,7 @@
     </template>
     <template v-else>
       <keyboard-order-fragment
+          @dish-add="openDish"
           :dishes="dishes"
       ></keyboard-order-fragment>
     </template>
@@ -97,8 +98,9 @@ export default {
     }
   },
   methods: {
-    openDish (code) {
-      this.$emit('dish-add', code)
+    openDish (code, count = 1) {
+      console.log(code, count, 'here')
+      this.$emit('dish-add', code, count)
     },
     openDishDetail (dish) {
       this.$emit('dish-detail', dish)
@@ -123,5 +125,18 @@ export default {
 </script>
 
 <style scoped>
+.navigationPillItem {
+  background: rgba(0, 0, 0, 0.01);
+  border-radius: 12px;
+  display: flex;
+  color: black;
+  align-items: center;
+  padding: 8px 16px;
+}
+
+.navigationPillItem.active {
+  background: rgba(0, 0, 0, 0.08);
+  font-weight: bold;
+}
 
 </style>

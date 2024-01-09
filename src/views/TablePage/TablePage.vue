@@ -840,9 +840,7 @@ export default {
         showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
         return
       }
-
       const dish = findDish(code)
-
       if (dish) {
         if (
           parseInt(GlobalConfig.oneStepOrderNumber) !== -1 &&
