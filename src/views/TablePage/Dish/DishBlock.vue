@@ -14,8 +14,15 @@
         v-show="count > 0"
     >{{ count }}</span
     >
-    <div style="font-size: 16px" class="text-truncate">{{ code }}</div>
-    <span :style="{ fontSize: autoFontSize + 'px' }" class="name">
+    <div
+        style="font-size: 16px"
+        class="text-truncate"
+    >{{ code }}
+    </div>
+    <span
+        :style="{ fontSize: autoFontSize + 'px' }"
+        class="name"
+    >
       {{ dishName }}
     </span>
     <v-card
@@ -26,13 +33,23 @@
         :class="haveMod>0?'py-1':''"
         style="align-items: center; border-radius: 4px !important; flex-wrap: wrap"
     >
-      <div v-if="isFree === '1'" class="price d-flex align-center green lighten-3 white--text px-1 rounded">
-        {{ $t("Free") }}
+      <div
+          v-if="isFree === '1'"
+          class="price d-flex align-center green lighten-3 white--text px-1 rounded"
+      >
+        {{ $t('Free') }}
       </div>
-      <div v-else class="text-body-2 d-flex align-center">
+      <div
+          v-else
+          class="text-body-2 d-flex align-center"
+      >
         {{ price | priceDisplay }}
         <template v-if="haveMod > 0">
-          <v-icon small right>mdi-cog</v-icon>
+          <v-icon
+              small
+              right
+          >mdi-cog
+          </v-icon>
         </template>
       </div>
     </v-card>
@@ -43,11 +60,12 @@
 
 export default {
   name: 'DishBlock',
-  props: ['displayColor', 'code', 'count', 'isFree', 'price', 'dishName', 'foreground', 'haveMod', 'fontSize'],
+  props: ['displayColor', 'code', 'count', 'isFree', 'price', 'dishName',
+    'foreground', 'haveMod'],
   computed: {
     autoFontSize () {
       const length = this.dishName?.length ?? 0
-      return this.fontSize === '-1' ? (length < 32 ? 18 : length < 48 ? 14 : 10) : this.fontSize
+      return (length < 32 ? 18 : length < 48 ? 14 : 10)
     }
   }
 }

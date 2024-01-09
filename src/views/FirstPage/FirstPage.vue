@@ -10,7 +10,8 @@
            style="min-width: 200px">{{ restaurantInfo.displayName }}
       </div>
       <v-spacer></v-spacer>
-      <v-item-group v-model="currentView" class="align-self-center" mandatory style="width: max-content">
+      <v-item-group v-model="currentView" class="align-self-center"
+                    mandatory style="width: max-content">
         <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
           <v-item #default="{active,toggle}">
             <div

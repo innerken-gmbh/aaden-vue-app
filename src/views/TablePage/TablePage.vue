@@ -1,5 +1,8 @@
 <template>
-  <div @click="keyboardInput = ''" class="gradient">
+  <div
+      @click="keyboardInput = ''"
+      class="gradient"
+  >
     <v-navigation-drawer
         app
         dark
@@ -24,7 +27,7 @@
           >
             <v-card
                 class="pa-2"
-                color=""
+                :color="item.color+' lighten-4'"
                 elevation="0"
                 style="border-radius: 12px !important;"
             >
@@ -34,7 +37,7 @@
                     style="height: 100%"
                 >
                   <div>
-                    <v-icon>{{ item.icon }}</v-icon>
+                    <v-icon color="black">{{ item.icon }}</v-icon>
                   </div>
                 </div>
               </v-responsive>
@@ -63,7 +66,7 @@
         <div
             style="
             display: grid;
-            grid-template-columns: 348px calc(100% - 348px);
+            grid-template-columns: 330px 1fr;
           "
         >
           <v-card
@@ -185,12 +188,36 @@
               elevation="0"
               style="height: 100vh"
           >
+
             <v-card
                 class="d-flex pa-3 px-4 align-center"
                 color="grey lighten-2"
                 elevation="0"
                 tile
             >
+              <v-item-group
+                  v-model="currentView"
+                  class="align-self-center"
+                  mandatory
+                  style="width: max-content"
+              >
+                <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
+                  <v-item
+                      v-for="m in menu"
+                      :key="m.name"
+                      #default="{active,toggle}"
+                  >
+                    <div
+                        :class="active?' active':''"
+                        class="navigationPillItem"
+                        @click="toggle"
+                    >
+                      <v-icon left>{{ m.icon }}</v-icon>
+                      {{ $t(m.name) }}
+                    </div>
+                  </v-item>
+                </div>
+              </v-item-group>
               <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
               <div class="text-h6 text-capitalize mr-6">
                 {{ tableDetailInfo.tableBasicInfo.name }}
@@ -224,16 +251,7 @@
                   <v-icon>mdi-wallet-membership</v-icon>
                 </template>
               </v-btn>
-              <address-display
-                  v-if="consumeTypeId===2"
-                  :consume-type-status-id="consumeTypeStatusId"
-                  :raw-address-info="realAddressInfo"
-                  :should-open-menu.sync="addressFormOpen"
-                  class="mr-2"
-                  @accept="acceptOrderWithTime"
-                  @reject="rejectOrder"
-                  @address-change="submitRawAddressInfo"
-              />
+
               <v-menu offset-y>
                 <template v-slot:activator="{ on, attrs }">
                   <v-btn
@@ -273,374 +291,157 @@
                 </template>
               </v-btn>
             </v-card>
-
-            <template v-if="!keyboardMode">
-              <v-card
-                  class="d-flex py-2 px-4"
-                  color="grey lighten-3"
-                  elevation="0"
-              >
-                <template>
-                  <v-item-group
-                      v-if="favoriteList"
-                      v-model="activeDCT"
-                      v-dragscroll
-                      mandatory
-                      style="
-                      display: grid;
-                      grid-gap: 8px;
-                      grid-auto-columns: max-content;
-                      grid-auto-flow: column;
-                      overflow-x: scroll;
-                    "
-                  >
-
-                    <v-item
-                        v-if="haveFavoriteItem"
-                        v-slot="{active,toggle}"
-                    >
-                      <v-card
-                          :color="active?'primary':'grey lighten-4'"
-                          :dark="active"
-                          :elevation="active?4:0"
-                          class="d-flex justify-center align-center px-6"
-                          height="48"
-                          style="border-radius: 12px;font-size: 18px"
-                          @click="toggle"
-                      >
-                        <v-icon
-                            :color="active?'white':'primary'"
-                            left
-                        >mdi-heart-circle
-                        </v-icon>
-                        Favorite
-                      </v-card>
-                    </v-item>
-                    <v-item
-                        v-for="ct of dct"
-                        v-bind:key="ct.id + 'categorytypes'"
-                        v-slot="{ active, toggle }"
-                    >
-                      <v-card
-                          :color="active ? 'primary' : 'grey lighten-4'"
-                          :dark="active"
-                          :elevation="active ? 4 : 0"
-                          class="d-flex justify-center align-center px-6"
-                          height="48"
-                          style="border-radius: 12px; font-size: 18px"
-                          @click="toggle"
-                      >{{ ct.name }}
-                      </v-card>
-                    </v-item>
-                  </v-item-group>
-                  <v-spacer></v-spacer>
-                </template>
-              </v-card>
-              <v-card
-                  v-dragscroll
-                  class="dragscroll dishCardListContainer flex-grow-1 px-4"
-                  color="transparent"
-                  elevation="0"
-                  style="position: relative"
-              >
-                <div
-                    v-if="!activeCategoryId"
-                    class="mt-2"
-                >
-                  <v-item-group class="dishCardList">
-                    <template v-for="category of filteredC">
-                      <v-item
-                          v-bind:key="'categorytypes' + category.id"
-                          v-slot="{ active, toggle }"
-                      >
-                        <v-card
-                            :color="category.color ? category.color : 'white'"
-                            class="d-flex text-h6 align-center justify-center text-center pa-2"
-                            elevation="0"
-                            style="
-                            position: relative;
-                            width: 100%;
-                            height: 124px;
-
-                            display: -webkit-box;
-                            word-break: break-all;
-                            -webkit-line-clamp: 3;
-                            -webkit-box-orient: vertical;
-                            border-radius: 12px;
-                            overflow: hidden;
-                            text-overflow: ellipsis;
-                          "
-                            @click="changeCategory(category.id, toggle)"
-                        >
-                          {{ category.name }}
-                        </v-card>
-                      </v-item>
-                    </template>
-                  </v-item-group>
-                </div>
-                <template v-if="activeCategoryId">
-                  <div
-                      style="
-                      display: grid;
-                      grid-template-columns: 1fr 108px;
-                      grid-gap: 24px;
-                    "
-                  >
-                    <div class="dishCardList mt-2">
-                      <v-card
-                          v-if="!haveFavoriteItem||activeDCT!==0"
-                          class="d-flex align-center"
-                          elevation="0"
-                          style="
-                          width: 100%;
-                          color: var(--v-primary-base);
-                          height: 124px;
-                          border-radius: 12px;
-                        "
-                          @click="activeCategoryId = null"
-                      >
-                        <div
-                            class="d-flex flex-column justify-center align-center"
-                            style="width: 100%"
-                        >
-                          <v-icon
-                              color="primary"
-                              large
-                          >mdi-arrow-left
-                          </v-icon>
-                          <div class="mt-1 text-body-2">{{ $t('return') }}</div>
-                        </div>
-                      </v-card>
-                      <template v-for="dish of filteredDish">
-                        <dish-block
-                            :key="'dish' + dish.code"
-                            v-ripple
-                            :code="dish.code"
-                            :count="dish.count"
-                            :dish-name="dish.dishName"
-                            :display-color="dish.displayColor"
-                            :font-size="Config.dishBlockFontSize"
-                            :foreground="dish.foreground"
-                            :have-mod="dish.haveMod"
-                            :is-free="dish.isFree"
-                            :price="dish.price"
-                            @click="orderOneDish(dish.code)"
-                            @click-tune="showModification(dish, 1)"
-                        />
-                      </template>
-                    </div>
-                  </div>
-                  <div
-                      v-dragscroll
-                      style="
-                      width: 108px;
-                      height: calc(100vh - 192px);
-                      overflow: hidden;
-                      position: fixed;
-                      right: 12px;
-                      top: 132px;
-                    "
-                  >
-                    <v-item-group
-                        style="
-                        display: grid;
-                        grid-auto-columns: 108px;
-                        grid-auto-rows: 48px;
-                        grid-auto-flow: row;
-                        grid-gap: 4px;
-                      "
-                    >
-                      <template v-for="category of filteredC">
-                        <v-item
-                            v-bind:key="'categorytypes' + category.id"
-                            v-slot="{ active, toggle }"
-                        >
-                          <v-card
-                              :color="
-                              activeCategoryId === category.id
-                                ? 'primary'
-                                : 'white'
-                            "
-                              :dark="activeCategoryId === category.id"
-                              class="d-flex align-center justify-center text-center pa-2"
-                              elevation="0"
-                              style="
-                              position: relative;
-                              width: 100%;
-                              height: 48px;
-                              font-size: 16px;
-                              white-space: nowrap;
-                              border-radius: 12px;
-                              overflow: hidden;
-                              text-overflow: ellipsis;
-                            "
-                              @click="changeCategory(category.id, toggle)"
-                          >
-                            <div
-                                style="
-                                white-space: nowrap;
-                                overflow: hidden;
-                                text-overflow: ellipsis;
-                              "
-                            >
-                              {{ category.name }}
-                            </div>
-
-                            <div
-                                :style="{ background: category.color }"
-                                style="
-                                position: absolute;
-                                width: 40%;
-                                bottom: 0;
-                                left: 0;
-                                right: 0;
-                                margin: auto;
-                                height: 6px;
-                                border-radius: 3px;
-                              "
-                            ></div>
-                          </v-card>
-                        </v-item>
-                      </template>
-                    </v-item-group>
-                  </div>
-                </template>
-                <div style="width: 100%; height: 160px"></div>
-              </v-card>
-            </template>
-            <div
-                v-else
-                class="flex-grow-1"
-                style="
+            <template v-if="currentView===0">
+              <template v-if="!keyboardMode">
+                <menu-order-fragment></menu-order-fragment>
+              </template>
+              <div
+                  v-else
+                  class="flex-grow-1"
+                  style="
                 display: grid;
                 grid-template-columns: 1fr 360px;
                 height: calc(100vh - 130px);
                 grid-gap: 0px;
               "
-            >
-              <v-card
-                  class="l-result-display"
-                  color="transparent"
-                  elevation="0"
               >
-                <div
-                    v-if="searchDish.length > 0"
-                    class="flex-shrink-1"
-                    style="overflow: hidden"
+                <v-card
+                    class="l-result-display"
+                    color="transparent"
+                    elevation="0"
                 >
-                  <v-card
-                      class="px-4 py-3"
-                      color="grey lighten-4"
-                      elevation="0"
-                      tile
+                  <div
+                      v-if="searchDish.length > 0"
+                      class="flex-shrink-1"
+                      style="overflow: hidden"
                   >
-                    {{ $t('SearchResult') }}
-                  </v-card>
-                  <!--                  需要监听键盘的地方-->
-                  <template v-for="(dish, index) in searchDish">
                     <v-card
-                        :key="dish.id"
-                        :class="index === indexActive ? 'first' : ''"
-                        :style="{
+                        class="px-4 py-3"
+                        color="grey lighten-4"
+                        elevation="0"
+                        tile
+                    >
+                      {{ $t('SearchResult') }}
+                    </v-card>
+                    <!--                  需要监听键盘的地方-->
+                    <template v-for="(dish, index) in searchDish">
+                      <v-card
+                          :key="dish.id"
+                          :class="index === indexActive ? 'first' : ''"
+                          :style="{
                         backgroundColor: '' + dish.displayColor,
                         color: '' + dish.foreground,
                       }"
-                        class="d-flex px-4 py-1 align-start"
-                        elevation="0"
-                        style="
+                          class="d-flex px-4 py-1 align-start"
+                          elevation="0"
+                          style="
                         width: 100%;
                         border-bottom: 2px dashed #e2e3e5;
                         font-size: x-large;
                       "
-                        tile
-                        @click="searchDishClick(dish.code)"
-                    >
-                      <div class="name mr-2">
+                          tile
+                          @click="searchDishClick(dish.code)"
+                      >
+                        <div class="name mr-2">
                         <span>{{ dish.code }}.</span
                         >{{ dish.dishName }}
+                        </div>
+                        <v-spacer></v-spacer>
+                        <div
+                            v-if="dish.isFree === '1'"
+                            class="price d-flex align-center green lighten-3 white--text"
+                            style="padding: 2px 4px; border-radius: 4px"
+                        >
+                          {{ $t('Free') }}
+                        </div>
+                        <div
+                            v-else
+                            class="price d-flex align-center text-no-wrap text-truncate"
+                        >
+                          {{ dish.price | priceDisplay }}
+                        </div>
+                      </v-card>
+                    </template>
+                  </div>
+                  <div
+                      v-else
+                      class="d-flex align-center justify-center"
+                      style="height: 100%; width: 100%"
+                  >
+                    <div class="d-flex flex-column align-center">
+                      <div>
+                        <v-icon
+                            color="grey lighten-1"
+                            x-large
+                        >mdi-keyboard
+                        </v-icon>
                       </div>
-                      <v-spacer></v-spacer>
-                      <div
-                          v-if="dish.isFree === '1'"
-                          class="price d-flex align-center green lighten-3 white--text"
-                          style="padding: 2px 4px; border-radius: 4px"
-                      >
-                        {{ $t('Free') }}
+                      <div class="text--disabled">
+                        {{ $t('PleaseUseKeyboardOrType') }}
                       </div>
-                      <div
-                          v-else
-                          class="price d-flex align-center text-no-wrap text-truncate"
-                      >
-                        {{ dish.price | priceDisplay }}
-                      </div>
-                    </v-card>
-                  </template>
-                </div>
-                <div
-                    v-else
-                    class="d-flex align-center justify-center"
-                    style="height: 100%; width: 100%"
-                >
-                  <div class="d-flex flex-column align-center">
-                    <div>
-                      <v-icon
-                          color="grey lighten-1"
-                          x-large
-                      >mdi-keyboard
-                      </v-icon>
-                    </div>
-                    <div class="text--disabled">
-                      {{ $t('PleaseUseKeyboardOrType') }}
                     </div>
                   </div>
-                </div>
-              </v-card>
-              <v-card
-                  class="d-flex flex-column"
-                  elevation="0"
-              >
-                <div
-                    class="pa-2 text-h6"
-                    style="min-height: 96px"
+                </v-card>
+                <v-card
+                    class="d-flex flex-column"
+                    elevation="0"
                 >
-                  <template v-if="keyboardInput">
-                    {{
-                      Config.numberFirst
-                          ? $t('QuantityDishNumber')
-                          : $t('DishNumberQuantity')
-                    }}<br/>
-                    {{ $t('Input') }}
-                  </template>
-                  <template v-else>
-                    {{ feedback }}
-                  </template>
-                </div>
-                <v-spacer></v-spacer>
-                <div
-                    class="pa-2 flex-shrink-0"
-                    @click.stop
-                >
-                  <v-card
-                      :class="keyboardInput ? '' : 'text--secondary'"
-                      class="text-h4 pa-3 py-6 mb-2 d-flex align-center"
-                      color="grey lighten-3"
-                      elevation="0"
+                  <div
+                      class="pa-2 text-h6"
+                      style="min-height: 96px"
                   >
-                    {{
-                      keyboardInput
-                          ? keyboardInput
-                          : Config.numberFirst
-                              ? $t('quantity_x_dishNumber')
-                              : $t('DishNumberQuantity')
-                    }}
-                  </v-card>
-                  <keyboard-layout
-                      :keys="keyboardLayout"
-                      @input="numberInput"
-                  ></keyboard-layout>
-                </div>
-              </v-card>
-            </div>
+                    <template v-if="keyboardInput">
+                      {{
+                        Config.numberFirst
+                            ? $t('QuantityDishNumber')
+                            : $t('DishNumberQuantity')
+                      }}<br/>
+                      {{ $t('Input') }}
+                    </template>
+                    <template v-else>
+                      {{ feedback }}
+                    </template>
+                  </div>
+                  <v-spacer></v-spacer>
+                  <div
+                      class="pa-2 flex-shrink-0"
+                      @click.stop
+                  >
+                    <v-card
+                        :class="keyboardInput ? '' : 'text--secondary'"
+                        class="text-h4 pa-3 py-6 mb-2 d-flex align-center"
+                        color="grey lighten-3"
+                        elevation="0"
+                    >
+                      {{
+                        keyboardInput
+                            ? keyboardInput
+                            : Config.numberFirst
+                                ? $t('quantity_x_dishNumber')
+                                : $t('DishNumberQuantity')
+                      }}
+                    </v-card>
+                    <keyboard-layout
+                        :keys="keyboardLayout"
+                        @input="numberInput"
+                    ></keyboard-layout>
+                  </div>
+                </v-card>
+              </div>
+            </template>
+            <template v-else-if="currentView===1">
+              <address-display
+                  v-if="consumeTypeId===2"
+                  :consume-type-status-id="consumeTypeStatusId"
+                  :raw-address-info="realAddressInfo"
+                  :should-open-menu.sync="addressFormOpen"
+                  class="mr-2"
+                  @accept="acceptOrderWithTime"
+                  @reject="rejectOrder"
+                  @address-change="submitRawAddressInfo"
+              />
+            </template>
+
           </v-card>
           <v-card
               class="d-flex align-center"
@@ -664,43 +465,6 @@
                 grid-auto-flow: column;
               "
             >
-              <grid-button
-                  :loading="isSendingRequest"
-                  :text="$t('reprint')"
-                  color="red"
-                  icon="mdi-printer"
-                  @click="reprintOrder"
-              />
-              <grid-button
-                  :loading="isSendingRequest"
-                  :text="$t('TemporaryBill')"
-                  color="amber"
-                  icon="mdi-printer-pos"
-                  @click="zwitchenBon"
-              />
-              <grid-button
-                  v-if="consumeTypeId !== 2"
-                  :loading="isSendingRequest"
-                  :text="$t('tableChange')"
-                  color="indigo"
-                  icon="mdi-swap-horizontal"
-                  @click="changeTable"
-              />
-              <grid-button
-                  v-if="consumeTypeId !== 2"
-                  :loading="isSendingRequest"
-                  :text="$t('tableMerge')"
-                  color="green"
-                  icon="mdi-merge"
-                  @click="mergeTable"
-              />
-              <grid-button
-                  :loading="isSendingRequest"
-                  :text="$t('WaiterTransfer')"
-                  color="deep-orange"
-                  icon="mdi-account"
-                  @click="changeServant"
-              />
               <template v-if="consumeTypeId === 2">
                 <template v-if="consumeTypeStatusId < 2">
                   <template v-for="time in [0, 15, 20, 30, 60]">
@@ -736,14 +500,6 @@
                     @click="rejectOrder"
                 />
               </template>
-              <grid-button
-                  v-if="consumeTypeId === 1 || consumeTypeId === 5"
-                  :loading="isSendingRequest"
-                  :text="$t('ChangeToBuffet')"
-                  color="pink"
-                  icon="mdi-silverware"
-                  @click="buffetDialogShow = true"
-              />
             </div>
           </v-card>
         </div>
@@ -835,7 +591,7 @@
                   <v-icon class="mr-2">mdi-calculator-variant</v-icon>
                 </div>
                 <div class="text-body-1 font-weight-black">
-                  {{ splitOrderListModel.total()*(1-discountRatio) | priceDisplay }}
+                  {{ splitOrderListModel.total() * (1 - discountRatio) | priceDisplay }}
                   ({{ splitOrderListModel.count() }})
                 </div>
               </div>
@@ -1111,7 +867,7 @@ import {
 import { printNow } from '@/oldjs/Timer'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
 
-import { debounce, groupBy } from 'lodash-es'
+import { debounce } from 'lodash-es'
 
 import IKUtils from 'innerken-js-utils'
 
@@ -1127,7 +883,6 @@ import BuffetStartDialog from '@/views/TablePage/Dialog/BuffetStartDialog'
 import GridButton from '@/components/Base/GridButton'
 import AddressDisplay from '@/views/TablePage/Address/AddressDisplay'
 import DiscountDialog from '@/views/TablePage/Dialog/DiscountDialog'
-import DishBlock from '@/views/TablePage/Dish/DishBlock'
 import CheckOutDrawer from '@/components/GlobalDialog/CheckOutDrawer'
 import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
 import DishCardList from '@/views/TablePage/Dish/DishCardList'
@@ -1140,11 +895,13 @@ import { setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFireb
 import { DishDocker } from 'aaden-base-model/lib'
 import { getCategoryList, getOrderInfo } from '@/api/aaden-base-model/api'
 import LogoDisplay from '@/components/LogoDisplay.vue'
+import { cartListFactory } from '@/views/TablePage/cart'
+import MenuOrderFragment from '@/views/TablePage/OrderFragment/MenuOrderFragment.vue'
 
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
 const orderListFactory = DishDocker.StandardDishesListFactory()
-const cartListFactory = DishDocker.StandardDishesListFactory()
+
 const defaultCurrentDish = {
   currentName: '',
   currentPrice: ''
@@ -1190,8 +947,6 @@ const keyboardLayout = [
   'OK'
 ]
 
-let filterCache = {}
-
 // endregion
 export default {
   name: 'TablePage',
@@ -1199,6 +954,7 @@ export default {
     dragscroll
   },
   components: {
+    MenuOrderFragment,
     LogoDisplay,
     MemberSelectionDialog,
     BuffetStartDialog,
@@ -1206,7 +962,6 @@ export default {
     AddressDisplay,
     DiscountDialog,
     KeyboardLayout,
-    DishBlock,
     CheckOutDrawer,
     ModificationDrawer,
     DishCardList
@@ -1226,7 +981,6 @@ export default {
     return {
       checkoutId: [],
       globalLoading: true,
-      favoriteList: null,
       reasons: getReason(),
       deleteDishReason: '',
       deleteDishReasonDialog: false,
@@ -1252,13 +1006,13 @@ export default {
         count: 0,
         list: []
       },
+      currentView: null,
       /**/
       discountRatio: 1,
       discountStr: null,
       overrideConsumeTypeId: null,
       dish: {},
       count: 1,
-      activeCategoryId: null,
       /* 存储菜品和过滤的信息 */
       dct: [],
       dishes: [],
@@ -1288,7 +1042,25 @@ export default {
       currentCodeBuffer: '',
       deviceId: -1,
       currentMemberId: null,
-      showMemberSelectionDialog: null
+      showMemberSelectionDialog: null,
+      menu: [
+        {
+          icon: 'mdi-book-open',
+          name: 'Menu'
+        },
+        {
+          icon: 'mdi-map-clock',
+          name: 'Delivery'
+        },
+        {
+          icon: 'mdi-wallet',
+          name: 'Checkout'
+        },
+        {
+          icon: 'mdi-book-cog-outline',
+          name: 'Operation'
+        }
+      ]
     }
   },
   created () {
@@ -1411,12 +1183,6 @@ export default {
         default:
           this.keyboardInput += key
           break
-      }
-    },
-    changeCategory (id, toggle) {
-      this.activeCategoryId = id
-      if (toggle) {
-        toggle()
       }
     },
 
@@ -1598,18 +1364,11 @@ export default {
     async getCategory (consumeTypeId = 1, force = false) {
       if (this.categories.length === 0 || force) {
         this.categories = await getCategoryListWithCache(consumeTypeId)
-
         this.dishes = processDishList(this.categories.reduce((arr, i) => {
           arr.push(...i.dishes)
           return arr
         }, []))
-        filterCache = groupBy(this.dishes, 'dishesCategoryId')
-        this.favoriteList = this.dishes.filter(item => item.isFavorite === '1')
-        this.cartListModel.setDishList(this.dishes)
       }
-    },
-    orderOneDish: async function (code) {
-      await this.findAndOrderDish(code)
     },
     removeFromSplitOrder: function (dish) {
       const realItem = IKUtils.deepCopy(dish)
@@ -1695,7 +1454,6 @@ export default {
       this.discountModelShow = false
       this.buffetDialogShow = false
       this.overrideConsumeTypeId = null
-      this.activeCategoryId = null
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
       await this.reloadDish(this.realConsumeTypeId, forceReload)
@@ -1705,8 +1463,6 @@ export default {
     },
     async reloadDish (consumeTypeId, force = false) {
       await this.getCategory(consumeTypeId, force)
-      this.activeCategoryId = null
-      this.updateActiveDCT(0)
     },
     async setOrderListByTableNameInFirebase (orderListModelList) {
       // upload orderList to Firebase
@@ -2062,17 +1818,6 @@ export default {
       await this.initialUI(true)
       this.globalLoading = false
     },
-    updateActiveDCT (index) {
-      this.activeDCT = null
-      this.$nextTick(() => {
-        this.activeDCT = index
-      })
-    },
-    updateFilteredDish () {
-      if (this.activeCategoryId) {
-        this.filteredDish = this.filterDish()
-      }
-    },
     debounce: debounce(
       (f) => {
         f()
@@ -2146,21 +1891,6 @@ export default {
       }
       return []
     },
-    filterDish () {
-      const list = this.dishes
-
-      if (!this.keyboardInput) {
-        if (!filterCache[this.activeCategoryId]) {
-          filterCache[this.activeCategoryId] = list.filter((item) => {
-            return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
-          })
-        }
-        if (this.haveFavoriteItem && this.activeDCT === 0) {
-          return list.filter(item => item.isFavorite === '1')
-        }
-        return filterCache[this.activeCategoryId]
-      }
-    },
     async cartListModelClear () {
       this.cartListModel.clear()
       await setCartListInFirebase({}, this.deviceId)
@@ -2201,7 +1931,6 @@ export default {
           constData[dishKey] = result
         })
       }
-
       await setCartListInFirebase(constData, this.deviceId)
     }
 
@@ -2211,13 +1940,9 @@ export default {
       return priceDisplay
     },
     ...mapGetters(['systemDialogShow']),
-    haveFavoriteItem () {
-      return this.favoriteList?.length > 0
-    },
     sourceMarks: function () {
       return this.tableDetailInfo?.sourceMarks ?? []
     },
-
     totalPrice: function () {
       return this.tableDetailInfo.order?.totalPrice ?? 0
     },
@@ -2244,17 +1969,8 @@ export default {
     consumeTypeStatusId () {
       return parseInt(this.tableDetailInfo.order.consumeTypeStatusId ?? 2)
     },
-    filteredC: function () {
-      return this.categories.filter((item) => {
-        const dct = this.dct?.[this.haveFavoriteItem ? (this.activeDCT - 1) : this.activeDCT]
-        return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
-      })
-    },
     orderListModelList () {
       return this.orderListModel.list
-    },
-    cartListModelList () {
-      return this.cartListModel.list
     },
     cartListModelHash () {
       return this.cartListModel.list.map(it => {
@@ -2266,13 +1982,71 @@ export default {
       })
     },
     currentMenu () {
-      return [{
-        title: 'Return',
-        icon: 'mdi-arrow-left',
-        action: () => {
-          this.back()
+      const normalActions = [
+        {
+          title: 'reprint',
+          icon: 'mdi-printer',
+          color: 'red',
+          action: () => {
+            this.reprintOrder()
+          }
+        },
+        {
+          title: 'TemporaryBill',
+          icon: 'mdi-printer-pos',
+          color: 'amber',
+          action: () => {
+            this.zwitchenBon()
+          }
         }
-      }]
+      ]
+      if (this.consumeTypeId !== 2) {
+        normalActions.push({
+          title: 'tableChange',
+          icon: 'mdi-swap-horizontal',
+          color: 'indigo',
+          action: () => {
+            this.changeTable()
+          }
+        })
+        normalActions.push({
+          title: 'tableMerge',
+          icon: 'mdi-merge',
+          color: 'green',
+          action: () => {
+            this.mergeTable()
+          }
+        })
+      }
+      normalActions.push({
+        title: 'WaiterTransfer',
+        icon: 'mdi-account',
+        color: 'deep-orange',
+        action: () => {
+          this.changeServant()
+        }
+      })
+      if (this.consumeTypeId === 1 || this.consumeTypeId === 5) {
+        normalActions.push({
+          title: 'ChangeToBuffet',
+          icon: 'mdi-silverware',
+          color: 'deep-orange',
+          action: () => {
+            this.changeServant()
+          }
+        })
+      }
+      return [
+        {
+          title: 'Return',
+          icon: 'mdi-arrow-left',
+          color: 'grey',
+          action: () => {
+            this.back()
+          }
+        },
+        ...normalActions
+      ]
     }
   },
   watch: {
@@ -2289,19 +2063,7 @@ export default {
       const res = val.map(it => it.allInfo)
       this.setCartListByTableNameInFirebase(res)
     },
-    activeDCT: function (val) {
-      if (val === 0 && this.haveFavoriteItem) {
-        this.activeCategoryId = -10
-      } else {
-        this.keyboardInput = ''
-        this.activeCategoryId = null
-      }
-      this.updateFilteredDish()
-    },
     dishes: function () {
-      this.updateFilteredDish()
-    },
-    activeCategoryId: function (val) {
       this.updateFilteredDish()
     },
     keyboardInput: function () {
@@ -2341,172 +2103,23 @@ export default {
 </script>
 
 <style scoped>
-::-webkit-scrollbar {
-  height: 80%;
-  margin-top: 20%;
-  width: 6px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: url("/Resource/点餐/菜菜单窗口的拖拽键@2x.png") top / contain no-repeat;
-  width: 6px;
-  cursor: pointer;
-  height: 56px;
-}
-
-::-webkit-scrollbar-track {
-  width: 10px;
-}
-
-.collapse .areaC {
-  flex-grow: 1;
-  width: 100%;
-  height: 100%;
-  padding: 12px 0;
-}
-
-.spaceBetween {
-  display: flex;
-  justify-content: space-between;
-}
-
-th {
-  font-weight: 600;
-  font-size: 16px;
-}
-
-td {
-  color: #4b4b4b;
-  font-size: 18px;
-}
-
-td,
-th {
-  padding: 8px 4px;
-}
-
-tr:hover {
-  background: #f8f8f8;
-}
-
-.smallTableBody > tr {
-  border-bottom-width: 0.2px;
-}
-
-.smallTableBody > tr > td {
-  padding: 0 6px;
-}
-
-.input-field > label {
-  font-size: 14px;
-}
-
-.dishCardList {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  grid-gap: 12px;
-  margin-bottom: 120px;
-  width: 100%;
-}
-
-.dragscroll {
-  overflow-x: hidden;
-}
-
-.dishCardListContainer {
-  width: 100%;
-  height: 100%;
-}
-
-.bottomCart {
-  position: fixed;
-  width: calc(100vw - 420px);
-  height: 100vh;
-}
-
-.bigTableName {
-  white-space: nowrap;
-  font-size: 36px;
-  font-weight: bold;
-}
-
-.icon-line {
-  display: flex;
-  align-items: center;
-  font-size: 18px;
-}
-
-.v-list-item-group .v-list-item--active {
-  color: #367aeb;
-  font-weight: bold;
-  border-right: 3px solid #367aeb;
-}
-
-.menu-item {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
-  width: calc(25% - 4px);
-  height: 72px;
-  padding: 8px;
-  margin: 2px;
-  text-transform: capitalize;
-  font-size: 20px;
-}
-
-.menu-item.active {
-  border: none;
-  background: #367aeb !important;
-  color: white !important;
-  font-weight: bold;
-}
-
-.menu-always {
-  width: fit-content;
-  margin: 2px;
-  font-size: 18px;
-  padding: 4px 8px;
-}
-
-.menu-always.active {
-  border: none;
-  background: #367aeb !important;
-  color: white !important;
-  font-weight: bold;
-}
-
-.consumeTypeItem {
-  border-radius: 8px;
-  width: max-content;
-  padding: 8px 12px;
-  background: white;
-  white-space: nowrap;
-  text-transform: capitalize;
-  font-size: 20px;
-}
-
-.consumeTypeItem.active {
-  font-weight: bold;
-  text-transform: capitalize;
-  background: #367aeb !important;
-  color: #ffffff;
-  border-bottom: 2px solid #367aeb;
-}
-
-.first {
-  padding: 8px !important;
-  font-size: large;
-  color: black;
-  background: #bbdefb !important;
-  border-bottom: 2px solid #367aeb !important;
-}
 
 .gradient {
   background: #3a7bd5; /* fallback for old browsers */
   background: linear-gradient(to bottom, #3e3e3e, #341d33); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
+}
+
+.navigationPillItem {
+  border-radius: 12px;
+  display: flex;
+  color: black;
+  align-items: center;
+  padding: 8px 16px;
+}
+
+.navigationPillItem.active {
+  background: rgba(0, 0, 0, 0.08);
+  font-weight: bold;
 }
 </style>
