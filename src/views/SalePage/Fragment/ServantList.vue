@@ -108,7 +108,7 @@
                         x-large
                         dark
                         elevation="0"
-                        class="primary lighten-4 black--text"
+                        class="amber lighten-4 black--text"
                         block
                         @click="allZBon(...singleZBonDate)"
                 >

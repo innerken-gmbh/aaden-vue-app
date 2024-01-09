@@ -48,7 +48,7 @@
         </v-list>
         <v-btn
             style="position: fixed;right: 32px;bottom: 32px;"
-            color="primary lighten-4 black--text "
+            color="amber lighten-4 black--text "
             elevation="0"
             x-large
             rounded

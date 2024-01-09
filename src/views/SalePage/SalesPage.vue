@@ -115,7 +115,7 @@
         </div>
         <v-spacer></v-spacer>
         <div class="pa-2 py-4">
-          <v-btn class="primary lighten-4 black--text" elevation="0" width="100%" x-large
+          <v-btn class="amber lighten-4 black--text" elevation="0" width="100%" x-large
                  @click="billsPrintDialog = true">
             <v-icon class="mr-2" color="black">
               mdi-printer

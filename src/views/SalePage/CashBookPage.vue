@@ -4,7 +4,7 @@
       <div class="text-h5">{{ $t('CashBook') }}</div>
       <v-spacer></v-spacer>
       <div>
-        <v-btn :loading="btnLoading" class="primary lighten-4 black--text" elevation="0" large
+        <v-btn :loading="btnLoading" class="amber lighten-4 black--text" elevation="0" large
                @click="newCashBookDialog = true">
           <v-icon left>
             mdi-plus
@@ -143,7 +143,7 @@
             </div>
           </v-form>
         </div>
-        <v-btn :loading="btnLoading" class="primary lighten-4 black--text mt-8" elevation="0" width="100%" x-large
+        <v-btn :loading="btnLoading" class="amber lighten-4 black--text mt-8" elevation="0" width="100%" x-large
                @click="save">
           {{ $t('Save') }}
         </v-btn>

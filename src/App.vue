@@ -23,7 +23,7 @@
           {{ errorDialogMessage }}
         </div>
         <v-btn
-          class="primary lighten-4 black--text mt-4"
+          class="amber lighten-4 black--text mt-4"
           elevation="0"
           @click="showErrorDialog=false"
         >

@@ -163,7 +163,7 @@
                   <v-btn
                       :loading="isSendingRequest"
                       block
-                      color="primary lighten-4 black--text"
+                      color="amber lighten-4 black--text"
                       elevation="0"
                       height="64"
                       rounded
@@ -375,7 +375,7 @@
             />
             <v-btn
                 block
-                class="primary lighten-4 black--text"
+                class="amber lighten-4 black--text"
                 elevation="0"
                 large
                 @click="addExtraDish"

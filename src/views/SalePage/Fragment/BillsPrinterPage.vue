@@ -118,7 +118,7 @@
             :disabled="!disablePrint"
             block
             class="mt-2"
-            color="primary lighten-4 black--text"
+            color="amber lighten-4 black--text"
             elevation="0"
             large
             @click="selectPrintType"
@@ -166,7 +166,7 @@
             </v-btn>
             <v-btn
                 class="ml-4"
-                color="primary lighten-4 black--text"
+                color="amber lighten-4 black--text"
                 elevation="0"
                 width="80%"
                 @click="realPrintZbon"
@@ -218,7 +218,7 @@
           <v-btn
               :loading="isLoading"
               class="mt-6"
-              color="primary lighten-4 black--text"
+              color="amber lighten-4 black--text"
               elevation="0"
               width="100%"
               @click="backToSelectPrint"

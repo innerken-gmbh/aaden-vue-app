@@ -3,7 +3,7 @@
       class="d-flex flex-column align-center"
   >
     <v-card
-        :color="active?'primary lighten-4':'grey lighten-4'"
+        :color="active?'amber lighten-4':'grey lighten-4'"
         :disabled="disabled"
         elevation="0"
         width="100%"

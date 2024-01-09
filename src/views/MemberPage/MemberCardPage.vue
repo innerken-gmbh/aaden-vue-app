@@ -34,7 +34,7 @@
                   @click="createNewMemberCard"
                   height="42"
                   elevation="0"
-                  color="primary lighten-4 black--text"
+                  color="amber lighten-4 black--text"
               >
                 <v-icon
                     color="black"
@@ -455,7 +455,7 @@
         <v-btn
             @click="saveCard"
             large
-            color="primary lighten-4 black--text"
+            color="amber lighten-4 black--text"
             elevation="0"
         >
           <v-icon left>mdi-check</v-icon>

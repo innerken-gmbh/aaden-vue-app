@@ -92,7 +92,7 @@
               >
                 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))">
                   <v-card
-                      :color="printType === 0 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
+                      :color="printType === 0 ? 'amber lighten-4 black--text' : 'grey lighten-4'"
                       class="pa-3 justify-center d-flex align-center"
                       elevation="0"
                       tile
@@ -102,7 +102,7 @@
                     {{ $t('print') }}
                   </v-card>
                   <v-card
-                      :color="printType === 1 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
+                      :color="printType === 1 ? 'amber lighten-4 black--text' : 'grey lighten-4'"
                       :disabled="!electronicBillStatus"
                       class="pa-3 justify-center d-flex align-center"
                       elevation="0"
@@ -133,7 +133,7 @@
               >
                 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr))">
                   <v-card
-                      :color="billType === 0 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
+                      :color="billType === 0 ? 'amber lighten-4 black--text' : 'grey lighten-4'"
                       class="pa-3 justify-center d-flex align-center"
                       elevation="0"
                       tile
@@ -143,7 +143,7 @@
                     {{ $t('tableCheckOutBillTypeOptionNormal') }}
                   </v-card>
                   <v-card
-                      :color="billType === 1 ? 'primary lighten-4 black--text' : 'grey lighten-4'"
+                      :color="billType === 1 ? 'amber lighten-4 black--text' : 'grey lighten-4'"
                       class="pa-3 justify-center d-flex align-center"
                       elevation="0"
                       tile
@@ -241,7 +241,7 @@
           <v-card
               v-if="remainTotal !== 0"
               class="pa-4 mt-1 d-flex align-center"
-              color="primary lighten-4"
+              color="amber lighten-4"
               elevation="0"
           >
             <div class="text-body-1">

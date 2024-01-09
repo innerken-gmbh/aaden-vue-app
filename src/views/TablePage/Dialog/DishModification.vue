@@ -36,7 +36,7 @@
                             class="d-flex flex-column ma-1"
                             width="124px"
                             min-height="96"
-                            :color="active?'primary lighten-4 black--text':''"
+                            :color="active?'amber lighten-4 black--text':''"
                             @click="activeCallback(active,toggle,item,index)">
                       <div class="ma-2 flex-grow-1" style="font-size: 18px">
                         {{ s.text }} {{ s.priceInfo }}
@@ -88,7 +88,7 @@
           </v-btn>
           <v-btn
               elevation="0"
-              color="primary lighten-4 black--text"
+              color="amber lighten-4 black--text"
               ref="submit"
               x-large
               class="flex-grow-1 ml-2"

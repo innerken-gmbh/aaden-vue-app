@@ -29,7 +29,7 @@
               <template v-if="order.paymentLabel">
                 <v-btn
                     :disabled="shouldDisable(order)"
-                    color="primary lighten-4 black--text"
+                    color="amber lighten-4 black--text"
                     elevation="0"
                     small
                     @click.stop="reprintOrder(order.orderId)">
