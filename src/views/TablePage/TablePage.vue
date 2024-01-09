@@ -498,10 +498,8 @@
 
 <script>
 import {
-  consumeTypeList,
   fastSweetAlertRequest,
   findConsumeTypeById,
-  getConsumeTypeList,
   loadingComplete,
   logError,
   logErrorAndPop,
@@ -512,8 +510,6 @@ import {
   showTimedAlert,
   toast
 } from '@/oldjs/common'
-
-import Swal from 'sweetalert2'
 import hillo from 'hillo'
 import { checkOut, optionalAuthorizeAsync, printZwichenBon } from '@/oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
@@ -614,9 +610,6 @@ export default {
 
       useDishesDiscount: false,
 
-      consumeTypeList: [],
-
-      feedback: '',
       checkoutShow: false,
       extraDishShow: false,
       modificationShow: false,
@@ -836,8 +829,6 @@ export default {
     },
     async findAndOrderDish (code, count = 1) {
       if (count < 1) {
-        this.feedback = '❌' + this.$t('CanNotAddNegativeDishes')
-        showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
         return
       }
       const dish = findDish(code)
@@ -895,17 +886,7 @@ export default {
             return
           }
         }
-        this.feedback =
-            '✅' +
-            dish.code +
-            '.' +
-            dish.dishName +
-            '*' +
-            count +
-            this.$t('AddedToCart')
         this.addDish(dish, parseInt(count))
-      } else {
-        this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
       }
     },
     showExtraDish (dish) {
@@ -1063,16 +1044,6 @@ export default {
         this.checkOutType = 'splitOrder'
       }
     },
-    anyMenuOpen () {
-      return (
-        this.modificationShow ||
-          this.checkoutShow ||
-          this.discountModelShow ||
-          this.extraDishShow ||
-          this.systemDialogShow ||
-          Swal.isVisible()
-      )
-    },
     async getTableDetail () {
       try {
         this.tableDetailInfo = await getCurrentOrderInfo(this.id)
@@ -1119,37 +1090,6 @@ export default {
       )
       if (res) {
         this.goHome()
-      }
-    },
-    listenKeyDown (e) {
-      if (Swal.isVisible()) {
-        return
-      }
-      if (this.isSendingRequest) {
-        return
-      }
-      if (this.anyMenuOpen() && e.key !== 'Enter') {
-        return
-      }
-      if (this.keyboardInput === null) {
-        this.keyboardInput = ''
-      }
-      switch (e.key) {
-        case 'Backspace':
-          this.keyboardInput = ''
-          break
-        case 'Escape':
-          this.back()
-          break
-        case 'Enter':
-          this.insDecode(this.keyboardInput)
-          this.resetInputAndBuffer()
-          e.preventDefault()
-          break
-        default:
-          if (e.target.nodeName !== 'INPUT' && e.key.length < 3) {
-            this.keyboardInput += e.key
-          }
       }
     },
     async reprintOrder () {
@@ -1290,7 +1230,6 @@ export default {
       }, 20)
     },
     async realInitial () {
-      window.onkeydown = this.listenKeyDown
       this.globalLoading = true
       await this.initialUI(true)
       this.globalLoading = false
@@ -1420,17 +1359,6 @@ export default {
     this.currentMemberId = null
   },
   async mounted () {
-    await getConsumeTypeList()
-    const selectableId = GlobalConfig.selectableConsumeTypeId
-      ?.split(',')
-      .map((d) => parseInt(d))
-    if (selectableId?.length > 0) {
-      this.consumeTypeList = consumeTypeList.filter((c) =>
-        selectableId.includes(parseInt(c.id))
-      )
-    } else {
-      this.consumeTypeList = consumeTypeList
-    }
     await this.realInitial()
   }
 }

@@ -139,6 +139,7 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { findDish } from '@/oldjs/StaticModel'
 import { debounce } from 'lodash-es'
 import { showTimedAlert } from '@/oldjs/common'
+import Swal from 'sweetalert2'
 
 const keyboardLayout = [
   '7',
@@ -173,11 +174,37 @@ export default {
       currentCodeBuffer: ''
     }
   },
+  mounted () {
+    console.log('i init')
+    window.onkeydown = this.listenKeyDown
+  },
   props: {
     dishes: {}
   },
   computed: {},
   methods: {
+    listenKeyDown (e) {
+      if (Swal.isVisible()) {
+        Swal.clickConfirm()
+        return
+      }
+      switch (e.key) {
+        case 'Backspace':
+          this.keyboardInput = ''
+          break
+        case 'Escape':
+          this.keyboardInput = ''
+          break
+        case 'Enter':
+          this.submit(this.keyboardInput)
+          break
+        default:
+          if (e.target.nodeName === 'BODY') {
+            this.keyboardInput += e.key
+            console.log(this.buffer)
+          }
+      }
+    },
     resetInputAndBuffer () {
       this.currentCodeBuffer = ''
       this.keyboardInput = ''
@@ -273,7 +300,7 @@ export default {
           break
         case 'OK':
           this.submit()
-          this.resetInputAndBuffer()
+
           break
         default:
           this.keyboardInput += key
@@ -302,6 +329,7 @@ export default {
       } else {
         submit(t)
       }
+      this.resetInputAndBuffer()
     }
   },
   watch: {
