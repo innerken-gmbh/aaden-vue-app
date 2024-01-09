@@ -195,103 +195,40 @@
                 elevation="0"
                 tile
             >
-              <v-item-group
-                  v-model="currentView"
-                  class="align-self-center"
-                  mandatory
-                  style="width: max-content"
-              >
-                <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
-                  <v-item
-                      v-for="m in menu"
-                      :key="m.name"
-                      #default="{active,toggle}"
-                  >
-                    <div
-                        :class="active?' active':''"
-                        class="navigationPillItem"
-                        @click="toggle"
-                    >
-                      <v-icon left>{{ m.icon }}</v-icon>
-                      {{ $t(m.name) }}
-                    </div>
-                  </v-item>
-                </div>
-              </v-item-group>
-              <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
-              <div class="text-h6 text-capitalize mr-6">
-                {{ tableDetailInfo.tableBasicInfo.name }}
-              </div>
-              <template v-if="$vuetify.breakpoint.lgAndUp">
-                <v-icon>mdi-office-building-marker</v-icon>
-                <div class="ml-2 text-h6 text-truncate">
-                  {{ findConsumeTypeById(consumeTypeId) }}
-                </div>
-              </template>
 
-              <v-icon class="mr-2 ml-6">mdi-account-circle</v-icon>
-              <div class="text-h6">
-                {{ tableDetailInfo.servant }}
+              <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
+                <div
+                    v-for="m in menu"
+                    :key="m.name"
+                    :class="currentView===m.name?' active':''"
+                    class="navigationPillItem"
+                    @click="currentView=m.name"
+                >
+                  <v-icon left>{{ m.icon }}</v-icon>
+                  {{ $t(m.name) }}
+                </div>
               </div>
 
               <v-spacer></v-spacer>
-              <v-btn
-                  v-if="Config.activeVip"
-                  class="mr-4"
-                  color="grey lighten-3 black--text"
-                  elevation="0"
-                  rounded
-                  @click="showMemberSelectionDialog=true"
-              >
-                <template v-if="currentMemberId">
-                  <v-icon left>mdi-wallet-membership</v-icon>
-                  {{ currentMemberId }}
+              <div class="text-body-2 d-flex align-center">
+                <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
+                <div class=" text-capitalize mr-6">
+                  {{ tableDetailInfo.tableBasicInfo.name }}
+                </div>
+                <template v-if="$vuetify.breakpoint.lgAndUp">
+                  <v-icon>mdi-office-building-marker</v-icon>
+                  <div class="ml-2  text-truncate">
+                    {{ findConsumeTypeById(consumeTypeId) }}
+                  </div>
                 </template>
-                <template v-else>
-                  <v-icon>mdi-wallet-membership</v-icon>
-                </template>
-              </v-btn>
+                <v-icon class="mr-2 ml-6">mdi-account-circle</v-icon>
+                <div>
+                  {{ tableDetailInfo.servant }}
+                </div>
+              </div>
 
-              <v-menu offset-y>
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn
-                      class="mr-4"
-                      color="grey lighten-3 black--text"
-                      elevation="0"
-                      rounded
-                      v-bind="attrs"
-                      v-on="on"
-                  >
-                    <v-icon>mdi-swap-horizontal</v-icon>
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item
-                      v-for="ct of consumeTypeList"
-                      :key="ct.id + 'consumeType'"
-                      @click="overrideConsumeTypeId = ct.id"
-                  >
-                    <v-list-item-title>
-                      {{ ct.name }}
-                    </v-list-item-title>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-              <v-btn
-                  color="grey lighten-3 black--text"
-                  elevation="0"
-                  rounded
-                  @click="keyboardMode = !keyboardMode"
-              >
-                <template v-if="!keyboardMode">
-                  <v-icon>mdi-keyboard</v-icon>
-                </template>
-                <template v-else>
-                  <v-icon>mdi-menu</v-icon>
-                </template>
-              </v-btn>
             </v-card>
-            <template v-if="currentView===0">
+            <template v-if="currentView===menu[0].name">
               <template v-if="!keyboardMode">
                 <menu-order-fragment></menu-order-fragment>
               </template>
@@ -441,66 +378,6 @@
                   @address-change="submitRawAddressInfo"
               />
             </template>
-
-          </v-card>
-          <v-card
-              class="d-flex align-center"
-              elevation="0"
-              height="60px"
-              style="
-              position: fixed;
-              z-index: 3;
-              bottom: 0;
-              right: 0;
-              overflow-x: scroll;
-              width: calc(100vw - 350px - 72px );
-            "
-          >
-            <div
-                class="ml-2"
-                style="
-                display: grid;
-                grid-auto-columns: min-content;
-                grid-gap: 6px;
-                grid-auto-flow: column;
-              "
-            >
-              <template v-if="consumeTypeId === 2">
-                <template v-if="consumeTypeStatusId < 2">
-                  <template v-for="time in [0, 15, 20, 30, 60]">
-                    <grid-button
-                        :key="time"
-                        :text="time"
-                        color="success"
-                        icon="mdi-plus"
-                        @click="acceptOrderWithTime(time)"
-                    />
-                  </template>
-                  <grid-button
-                      :text="$t('Reject')"
-                      color="error"
-                      icon="mdi-minus"
-                      @click="rejectOrder"
-                  />
-                </template>
-              </template>
-              <template v-else-if="consumeTypeStatusId < 2">
-                <grid-button
-                    :loading="isSendingRequest"
-                    :text="$t('Accept')"
-                    color="success"
-                    icon="mdi-check"
-                    @click="acceptOrder"
-                />
-                <grid-button
-                    :loading="isSendingRequest"
-                    :text="$t('Reject')"
-                    color="error"
-                    icon="mdi-close"
-                    @click="rejectOrder"
-                />
-              </template>
-            </div>
           </v-card>
         </div>
       </v-main>
@@ -880,7 +757,6 @@ import dayjs from 'dayjs'
 import { TableFilter } from '@/api/tableService'
 import { Remember } from '@/api/remember'
 import BuffetStartDialog from '@/views/TablePage/Dialog/BuffetStartDialog'
-import GridButton from '@/components/Base/GridButton'
 import AddressDisplay from '@/views/TablePage/Address/AddressDisplay'
 import DiscountDialog from '@/views/TablePage/Dialog/DiscountDialog'
 import CheckOutDrawer from '@/components/GlobalDialog/CheckOutDrawer'
@@ -893,7 +769,7 @@ import MemberSelectionDialog from '@/views/TablePage/Dialog/MemberSelectionDialo
 import { getCurrentOrderInfo } from '@/api/Repository/OrderInfo'
 import { setCartListInFirebase, setCheckOutStatusInFirebase, setOrderListInFirebase } from '@/api/customerDiaplay'
 import { DishDocker } from 'aaden-base-model/lib'
-import { getCategoryList, getOrderInfo } from '@/api/aaden-base-model/api'
+import { getOrderInfo } from '@/api/aaden-base-model/api'
 import LogoDisplay from '@/components/LogoDisplay.vue'
 import { cartListFactory } from '@/views/TablePage/cart'
 import MenuOrderFragment from '@/views/TablePage/OrderFragment/MenuOrderFragment.vue'
@@ -958,7 +834,6 @@ export default {
     LogoDisplay,
     MemberSelectionDialog,
     BuffetStartDialog,
-    GridButton,
     AddressDisplay,
     DiscountDialog,
     KeyboardLayout,
@@ -1006,7 +881,7 @@ export default {
         count: 0,
         list: []
       },
-      currentView: null,
+      currentView: 'Menu',
       /**/
       discountRatio: 1,
       discountStr: null,
@@ -1014,11 +889,8 @@ export default {
       dish: {},
       count: 1,
       /* 存储菜品和过滤的信息 */
-      dct: [],
       dishes: [],
       categories: [],
-      activeDCT: 0,
-      filteredDish: [],
       searchDish: [],
       indexActive: 0,
       Config: GlobalConfig,
@@ -1343,23 +1215,6 @@ export default {
         this.oldMod = null
       }
       this.modificationShow = true
-    },
-    async getDCT () {
-      if (this.dct.length === 0) {
-        this.dct = (await getCategoryList())
-          .sort((a, b) => {
-            const rank = GlobalConfig.defaultSort.split(',')
-            const idToRank = (id) => {
-              const index = rank.indexOf(id.toString())
-              return 10 - (index === -1 ? 10 : index)
-            }
-            const [ra, rb] = [a.id, b.id].map(idToRank)
-            return ra > rb ? -1 : 1
-          })
-          .filter(
-            (i) => typeof i.childCount === 'undefined' || i.childCount > 0
-          )
-      }
     },
     async getCategory (consumeTypeId = 1, force = false) {
       if (this.categories.length === 0 || force) {
@@ -2086,7 +1941,7 @@ export default {
   },
   async mounted () {
     await getConsumeTypeList()
-    await this.getDCT()
+
     const selectableId = GlobalConfig.selectableConsumeTypeId
       ?.split(',')
       .map((d) => parseInt(d))
