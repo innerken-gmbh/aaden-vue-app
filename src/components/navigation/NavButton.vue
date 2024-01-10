@@ -15,7 +15,7 @@
             style="height: 100%"
         >
           <div>
-            <v-icon :size="isActive?'':'28'">{{ icon }}</v-icon>
+            <v-icon color="white" :size="isActive?'':'28'">{{ icon }}</v-icon>
           </div>
         </div>
       </v-responsive>

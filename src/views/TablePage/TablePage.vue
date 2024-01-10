@@ -222,92 +222,63 @@
         <div
             v-cloak
             id="splitOrderContainer"
-            class="bottomCart surface d-flex justify-end"
+            class="d-flex justify-end pr-1"
             style="
+            position: fixed;
             background: rgba(0, 0, 0, 0.4);
             top: 0;
             z-index: 50;
-            left: 420px;
+            left: 0;
+            width: calc(100vw - 330px);
           "
             @click="removeAllFromSplitOrder"
         >
           <div
-              class="d-flex"
-              style="max-width: 600px; width: 50vw"
+              class="d-flex "
+              style="max-width: 400px; width: 50vw"
               @click.stop
           >
-            <div class="pa-1 d-flex flex-column">
-              <v-btn
-                  class="mt-1"
-                  color="error  lighten-4 black--text"
-                  x-large
+            <div
+                class="pa-2 pt-4 gradient"
+                style="display: grid;grid-auto-flow: row;grid-auto-rows: min-content;
+                grid-gap: 24px"
+            >
+              <nav-button
+                  color="grey"
+                  text="Cancel"
+                  icon="mdi-close"
                   @click="removeAllFromSplitOrder()"
-              >
-                <v-icon left>mdi-close-circle</v-icon>
-                {{ $t('Cancel') }}
-              </v-btn>
-              <v-btn
-                  class="mt-1"
-                  color="success  lighten-4 black--text"
-                  x-large
-                  @click="needSplitOrder()"
-              >
-                <v-icon left>mdi-set-split</v-icon>
-                {{ $t('BillSplit') }}
-              </v-btn>
-              <v-btn
-                  class="mt-1"
-                  color="warning lighten-4 black--text"
-                  x-large
-                  v-on:click="showDeleteDishDialog"
-              >
-                <v-icon left>mdi-calendar-remove</v-icon>
-                {{ $t('DishCancel') }}
-              </v-btn>
-              <v-btn
-                  class="mt-1"
-                  color="pink lighten-4 black--text"
-                  x-large
-                  v-on:click="dishesSetDiscount()"
-              >
-                <v-icon left>mdi-sale</v-icon>
-                {{ $t('GiveDishADiscount') }}
-              </v-btn>
-              <v-btn
-                  class="mt-1"
-                  color="indigo  lighten-4 black--text"
-                  x-large
-                  v-on:click="dishesChangeTable"
-              >
-                <v-icon left>mdi-inbox-arrow-up</v-icon>
-                {{ $t('tableChange') }}
-              </v-btn>
-              <v-btn
-                  class="mt-1"
-                  color="blue  lighten-4 black--text"
-                  x-large
-                  v-on:click="printZwichenBon()"
-              >
-                <v-icon left>mdi-receipt-text-arrow-left</v-icon>
-                {{ $t('TemporaryBill') }}
-              </v-btn>
+              ></nav-button>
+              <nav-button
+                  color="pink"
+                  text="DishCancel"
+                  icon="mdi-minus"
+                  @click="showDeleteDishDialog()"
+              ></nav-button>
+              <nav-button
+                  color="orange darken-3"
+                  text="GiveDishADiscount"
+                  icon="mdi-sale"
+                  @click="dishesSetDiscount()"
+              ></nav-button>
+              <nav-button
+                  color="indigo"
+                  text="tableChange"
+                  icon="mdi-inbox-arrow-up"
+                  @click="dishesChangeTable()"
+              ></nav-button>
+              <nav-button
+                  color="blue"
+                  text="TemporaryBill"
+                  icon="mdi-receipt-text-arrow-left"
+                  @click="printZwichenBon()"
+              ></nav-button>
             </div>
             <v-card
                 dark
                 tile
                 width="100%"
             >
-              <div class="grey darken-3 pa-3 d-flex align-center">
-                <div class="text-body-1">{{ $t('SelectedProduct') }}</div>
-                <v-spacer/>
-                <div>
-                  <v-icon class="mr-2">mdi-calculator-variant</v-icon>
-                </div>
-                <div class="text-body-1 font-weight-black">
-                  {{ splitOrderListModel.total() * (1 - discountRatio) | priceDisplay }}
-                  ({{ splitOrderListModel.count() }})
-                </div>
-              </div>
               <dish-card-list
                   :click-callback="removeFromSplitOrder"
                   :default-expand="true"
@@ -316,7 +287,29 @@
                   :title="$t('operation')"
                   class="flex-grow-1"
                   extra-height="48px"
-              />
+              >
+                <template v-slot:default="{ total }">
+                  <div class="pa-2">
+                    <v-btn
+                        :disabled="tableDetailInfo.order.consumeTypeStatusId <= 1"
+                        block
+                        color="warning lighten-4 black--text"
+                        elevation="0"
+                        height="64"
+                        rounded
+                        @click="needSplitOrder()"
+                    >
+                      <v-icon
+                          class="mr-6"
+                          left
+                          size="28"
+                      >mdi-receipt-text-plus
+                      </v-icon>
+                      <span class="text-h5">{{ total | priceDisplay }}</span>
+                    </v-btn>
+                  </div>
+                </template>
+              </dish-card-list>
             </v-card>
           </div>
         </div>
@@ -631,12 +624,8 @@ export default {
           name: 'Delivery'
         },
         {
-          icon: 'mdi-wallet',
-          name: 'Checkout'
-        },
-        {
-          icon: 'mdi-book-cog-outline',
-          name: 'Operation'
+          icon: 'mdi-calendar-blank-outline',
+          name: 'Reservation'
         }
       ]
     }
@@ -893,6 +882,7 @@ export default {
       printZwichenBon(this.id, this.splitOrderListModel.list)
     },
     addToSplit: function (dish) {
+      console.log(dish)
       const item = IKUtils.deepCopy(dish)
       if (item.code === '-1') {
         logErrorAndPop(this.$t('DiscountDishCanNotBeAddedIntoSplitBill'))

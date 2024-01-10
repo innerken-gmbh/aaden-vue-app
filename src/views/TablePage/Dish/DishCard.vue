@@ -1,5 +1,6 @@
 <template>
   <v-card
+      @click="$emit('click')"
       flat
       color="transparent"
       class="dishCard pa-1 px-0 mb-0"
@@ -16,6 +17,7 @@
               color="grey lighten-3"
               style="border-radius: 24px"
               elevation="0"
+              light
               class="px-2 text-body-1 font-weight-bold text-no-wrap flex-shrink-0"
           >
             {{ dish.count }}

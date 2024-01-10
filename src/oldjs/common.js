@@ -6,7 +6,6 @@ import GlobalConfig from './LocalGlobalSettings'
 import store from './../store'
 import { clearAllTimer } from '@/oldjs/Timer'
 import dayjs from 'dayjs'
-import { capitalize } from 'lodash-es/string'
 import { optionalAuthorizeAsync } from '@/oldjs/api'
 
 const Config = GlobalConfig
@@ -28,7 +27,9 @@ export function tryToReport () {
       console.error('reportBad', err)
     })
 }
+
 const lock = false
+
 export async function getConsumeTypeList () {
   if (consumeTypeList.length === 0 && !lock) {
     const res = await hillo.get('Complex.php', {
@@ -110,23 +111,10 @@ export async function showTableSelector (filter = null, requiredTableKey = 'tabl
 export async function openOrEnterTable (number, password) {
   try {
     const table = (await hillo.silentGet('Tables.php', { name: number })).content[0]
-    if (table.usageStatus === '0') {
-      if (number.toLowerCase().startsWith('w')) {
-        logErrorAndPop('Bitte benutzen sie blaue button zu Lieferung.')
-        return
-      }
-      if (GlobalConfig.useOpenTableConfirm && !GlobalConfig.usePassword) {
-        const result = await showConfirmAsyn(capitalize(number) + i18n.t(' OpenTable'), i18n.t('NewTable'))
-        if (!result.isConfirmed) {
-          return
-        }
-      }
-      const pw = await optionalAuthorizeAsync('', password, password, false, table.id)
-      await informOpenTable(pw, table.id)
-    } else if (table.usageStatus === '1') {
-      await optionalAuthorizeAsync('', GlobalConfig.useEnterTablePermissionCheck, null, false, table.id)
-      jumpToTable(table.id, table.name)
-    }
+
+    await optionalAuthorizeAsync('', GlobalConfig.useEnterTablePermissionCheck,
+      null, false, table.id)
+    jumpToTable(table.id, table.name)
   } catch (e) {
     if (number.includes('.')) {
       const pw = await popAuthorize('')
@@ -151,7 +139,8 @@ export async function getFalsePrinterList () {
   })).content
 }
 
-async function informOpenTable (password = '', tableId, personCount = 1, childCount = 0) {
+export async function informOpenTable (password = '', tableId,
+  personCount = 1, childCount = 0) {
   try {
     const res = await hillo.post('Complex.php?op=openTable', {
       tableId: tableId,

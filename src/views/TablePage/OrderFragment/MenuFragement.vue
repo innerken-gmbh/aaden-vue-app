@@ -99,7 +99,6 @@ export default {
   },
   methods: {
     openDish (code, count = 1) {
-      console.log(code, count, 'here')
       this.$emit('dish-add', code, count, this.overrideConsumeTypeId)
     },
     openDishDetail (dish) {

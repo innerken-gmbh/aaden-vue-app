@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div
+      class="d-flex flex-column"
+      style="height: calc(100vh - 110px)"
+  >
     <v-card
         class="d-flex py-2 px-4"
         color="grey lighten-3"
@@ -63,6 +66,7 @@
     </v-card>
     <v-card
         v-dragscroll
+        height="0"
         class="dragscroll dishCardListContainer flex-grow-1 px-4"
         color="transparent"
         elevation="0"
@@ -161,8 +165,8 @@
                       height: calc(100vh - 192px);
                       overflow: hidden;
                       position: fixed;
-                      right: 12px;
-                      top: 132px;
+                      right: 342px;
+                      top: 192px;
                     "
         >
           <v-item-group
@@ -177,15 +181,10 @@
             <template v-for="category of filteredC">
               <v-item
                   v-bind:key="'categorytypes' + category.id"
-                  v-slot="{ active, toggle }"
+                  v-slot="{ toggle }"
               >
                 <v-card
-                    :color="
-                              activeCategoryId === category.id
-                                ? 'primary'
-                                : 'white'
-                            "
-                    :dark="activeCategoryId === category.id"
+                    :color="category.color"
                     class="d-flex align-center justify-center text-center pa-2"
                     elevation="0"
                     style="
@@ -201,17 +200,14 @@
                     @click="changeCategory(category.id, toggle)"
                 >
                   <div
-                      style="
-                                white-space: nowrap;
-                                overflow: hidden;
-                                text-overflow: ellipsis;
-                              "
+                      class="text-no-wrap text-capitalize text-body-2 text-truncate"
                   >
                     {{ category.name }}
                   </div>
 
                   <div
-                      :style="{ background: category.color }"
+                      v-if="activeCategoryId === category.id"
+                      :style="{ background: '#000000' }"
                       style="
                                 position: absolute;
                                 width: 40%;
@@ -321,6 +317,7 @@ export default {
       })
     },
     async reloadDish (consumeTypeId, force = false) {
+      this.favoriteList = null
       this.favoriteList = this.dishes.filter(item => item.isFavorite === '1')
       this.activeCategoryId = null
       this.updateActiveDCT(0)
