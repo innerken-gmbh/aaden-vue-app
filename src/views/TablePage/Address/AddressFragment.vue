@@ -3,7 +3,6 @@
     <address-form
         :current-address="address"
         @address-submit="submit"
-        :menu-show.sync="showMenu"
     >
       <v-btn
           @click="deleteAddress"

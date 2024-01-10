@@ -14,7 +14,10 @@
             class="d-flex flex-column justify-center align-center"
             style="height: 100%;width: 100%"
         >
-          <div class="px-1"   v-if="loading">
+          <div
+              class="px-1"
+              v-if="loading"
+          >
             <v-progress-circular
                 size="16"
                 indeterminate
@@ -22,12 +25,19 @@
             ></v-progress-circular>
           </div>
 
-          <div v-else>
+          <div v-else-if="(''+icon).startsWith('mdi-')">
             <v-icon
                 color="white"
                 :size="isActive?'':'28'"
             >{{ icon }}
             </v-icon>
+          </div>
+          <div
+              v-else
+              class="text-caption font-weight-black text-no-wrap text-center"
+              style="width: 28px"
+          >
+            {{ icon }}
           </div>
         </div>
       </v-responsive>

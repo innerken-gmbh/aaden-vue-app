@@ -1220,6 +1220,38 @@ export default {
             }
           })
         }
+      } else if (this.consumeTypeId === 2) {
+        normalActions.push(...[0, 15, 20, 30, 60].map(it => ({
+          icon: it,
+          color: 'green',
+          action: () => {
+            this.acceptOrderWithTime(it)
+          }
+        })))
+        normalActions.push({
+          icon: 'mdi-close',
+          color: 'red',
+          action: () => {
+            this.rejectOrder()
+          }
+        })
+      } else {
+        normalActions.push({
+          icon: 'mdi-check',
+          color: 'success',
+          title: 'Accept',
+          action: () => {
+            this.acceptOrder()
+          }
+        })
+        normalActions.push({
+          icon: 'mdi-close',
+          color: 'error',
+          title: 'Reject',
+          action: () => {
+            this.rejectOrder()
+          }
+        })
       }
       return [
         {
