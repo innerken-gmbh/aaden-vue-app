@@ -21,7 +21,6 @@ export async function getCurrentOrderInfo (tableId) {
       ...info.order,
       ...info
     }
-    console.log(result.order)
   }
   return result
 }

@@ -1,22 +1,16 @@
 <template>
-  <div @click="openAddressForm">
-    <template v-if="rawAddressInfo">
-      <address-pill :address="address" />
-    </template>
-    <template v-else>
-      <v-btn color="purple lighten-4 black--text" elevation="0" rounded>
-        <v-icon left>mdi-book-marker</v-icon>
-        {{ $t('AddAdress') }}
-      </v-btn>
-    </template>
+  <div>
     <address-form
-      :current-address="address"
-      @address-submit="submit"
-      :menu-show.sync="showMenu"
+        :current-address="address"
+        @address-submit="submit"
+        :menu-show.sync="showMenu"
     >
-      <v-btn @click="deleteAddress" v-if="rawAddressInfo">
+      <v-btn
+          @click="deleteAddress"
+          v-if="rawAddressInfo"
+      >
         <v-icon left>mdi-trash-can</v-icon>
-        {{ $t("DeleteAddress") }}
+        {{ $t('DeleteAddress') }}
       </v-btn>
     </address-form>
   </div>
@@ -24,13 +18,11 @@
 
 <script>
 import { DefaultAddressInfo } from '@/oldjs/StaticModel'
-import AddressPill from '@/views/TablePage/Address/AddressPill'
 import AddressForm from '@/views/TablePage/Address/AddressForm'
 
 export default {
-  name: 'AddressDisplay',
+  name: 'AddressPage',
   components: {
-    AddressPill,
     AddressForm
   },
   props: {

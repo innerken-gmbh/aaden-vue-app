@@ -65,7 +65,6 @@ import { beautifulTable, getRestaurantInfo } from '@/api/restaurantInfoService'
 import dayjs from 'dayjs'
 import { changeFireBaseOrderDeliveryTime } from '@/api/fireStore'
 import { Timestamp } from 'firebase/firestore'
-import i18n from '@/i18n'
 
 export default {
   name: 'TakeawayOrderItem',
@@ -75,7 +74,6 @@ export default {
   },
   computed: {
     table () {
-      console.log(this.tableInfo, i18n.t('Table'))
       return beautifulTable(this.tableInfo)
     }
   },

@@ -1,69 +1,66 @@
 <template>
-  <v-dialog
-    v-model="realShow"
-    max-width="600px"
-  >
-    <v-card>
-      <div>
-        <div v-if="!editingAddress">
-          <div style="display: grid;grid-template-columns: repeat(2,minmax(0,1fr))">
 
-            <addresses-card
+  <v-card flat>
+    <div>
+      <div v-if="!editingAddress">
+        <div style="display: grid;grid-template-columns: repeat(2,minmax(0,1fr))">
+
+          <addresses-card
               @change="editingAddress=true"
               :raw-address-info="currentAddress"
-            />
+          />
 
-            <div class="pa-2 py-6">
-              <v-select
+          <div class="pa-2 py-6">
+            <v-select
                 :items="deliveryMethods"
                 filled
                 :menu-props="{offsetY:true}"
                 v-model="rawAddressInfo.deliveryMethod"
                 :label="$t('DeliveryMethod')"
-              ></v-select>
-              <v-select
+            ></v-select>
+            <v-select
                 v-model="rawAddressInfo.time"
                 filled
                 :menu-props="{offsetY:true}"
                 :items="timeOption"
                 :label="$t('time')"
-              ></v-select>
-              <v-text-field
+            ></v-select>
+            <v-text-field
                 v-model="rawAddressInfo.note"
                 filled
                 :label="$t('OrderHint')"
-              ></v-text-field>
-              <v-btn
+            ></v-text-field>
+            <v-btn
                 elevation="0"
                 color="amber lighten-4 black--text"
                 block
                 @click="saveAddClose"
 
                 large
-              >
-                {{ $t('Confirm') }}
-              </v-btn>
-            </div>
-          </div>
-
-        </div>
-
-        <div
-          class="pa-4"
-          v-else
-        >
-          <div class="d-flex">
-            <span>{{ currentTitle }}</span>
-            <v-spacer/>
-            <v-btn
-              icon
-              @click="realShow=false"
             >
-              <v-icon>mdi-close</v-icon>
+              {{ $t('Confirm') }}
             </v-btn>
           </div>
-          <div class="mt-4">
-            <v-autocomplete
+        </div>
+
+      </div>
+
+      <div
+          class="pa-4"
+          v-else
+      >
+        <div class="d-flex">
+          <span>{{ currentTitle }}</span>
+          <v-spacer/>
+          <v-btn
+              icon
+              @click="realShow=false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </div>
+        <div class="mt-4">
+          <v-autocomplete
               v-if="!createNewUser"
               clearable
               filled
@@ -78,62 +75,62 @@
               autofocus
               @update:search-input="inputUpdate"
               type="search"
-            >
-              <template #no-data>
-                <v-btn
+          >
+            <template #no-data>
+              <v-btn
                   elevation="0"
                   text
                   color="primary"
                   block
                   @click="startCreateUser"
-                >{{ $t('NewUser') }}
-                </v-btn>
-              </template>
-              <template #item="{item}">
-                <div
+              >{{ $t('NewUser') }}
+              </v-btn>
+            </template>
+            <template #item="{item}">
+              <div
                   @click="applyAddress(item)"
                   class="d-flex align-center"
                   style="width: 100%"
-                >
-                  <div class="text-body-1">{{ item.rawInfo.tel }}</div>
-                  <v-spacer></v-spacer>
-                  <div class="text-body-2 text--secondary">{{ item.rawInfo.firstName }} {{
-                      item.rawInfo.lastName
-                    }}
-                  </div>
+              >
+                <div class="text-body-1">{{ item.rawInfo.tel }}</div>
+                <v-spacer></v-spacer>
+                <div class="text-body-2 text--secondary">{{ item.rawInfo.firstName }} {{
+                    item.rawInfo.lastName
+                  }}
                 </div>
-              </template>
-            </v-autocomplete>
+              </div>
+            </template>
+          </v-autocomplete>
 
-            <v-text-field
+          <v-text-field
               v-else
               filled
               autocomlete="off"
               type="search"
               :label="$t('telefon')"
               v-model="telInput"
-            />
-            <v-row dense>
-              <v-col cols="6">
-                <v-text-field
+          />
+          <v-row dense>
+            <v-col cols="6">
+              <v-text-field
                   filled
                   autocomlete="off"
                   type="search"
                   :label="$t('FirstName')"
                   v-model="rawAddressInfo.firstName"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
+              ></v-text-field>
+            </v-col>
+            <v-col cols="6">
+              <v-text-field
                   filled
                   autocomlete="off"
                   type="search"
                   :label="$t('last_name')"
                   v-model="rawAddressInfo.lastName"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <vuetify-google-autocomplete
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <vuetify-google-autocomplete
               browser-autocomplete="off"
               type="search"
               filled
@@ -146,74 +143,74 @@
                           Config.autoCompletePLZ.split(',').length>0?Config.autoCompletePLZ.split(','):
                            false"
               v-on:placechanged="getAddressData"
-            />
-            <v-row dense>
-              <v-col cols="6">
-                <v-text-field
+          />
+          <v-row dense>
+            <v-col cols="6">
+              <v-text-field
                   filled
                   :label="$t('AddressLine01')"
                   autocomlete="off"
                   type="search"
                   v-model="rawAddressInfo.addressLine1"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
+              ></v-text-field>
+            </v-col>
+            <v-col cols="6">
+              <v-text-field
                   filled
                   :label="$t('AddressLine02')"
                   autocomlete="off"
                   type="search"
                   v-model="rawAddressInfo.addressline2"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
+              ></v-text-field>
+            </v-col>
+            <v-col cols="6">
+              <v-text-field
                   filled
                   :label="$t('City')"
                   autocomlete="off"
                   type="search"
                   v-model="rawAddressInfo.city"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
+              ></v-text-field>
+            </v-col>
+            <v-col cols="6">
+              <v-text-field
                   filled
                   :label="$t('postcode')"
                   autocomlete="off"
                   type="search"
                   v-model="rawAddressInfo.plz"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-text-field
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-text-field
               filled
               :label="$t('Email')"
               autocomlete="off"
               type="search"
               v-model="rawAddressInfo.email"
-            ></v-text-field>
-            <v-row
+          ></v-text-field>
+          <v-row
               dense
-            >
-              <v-col>
-                <v-btn
+          >
+            <v-col>
+              <v-btn
                   x-large
                   elevation="0"
                   color="primary"
                   @click="saveAddress"
                   block
-                >{{ $t('Confirm') }}
-                </v-btn>
-              </v-col>
-            </v-row>
-
-          </div>
+              >{{ $t('Confirm') }}
+              </v-btn>
+            </v-col>
+          </v-row>
 
         </div>
-      </div>
 
-    </v-card>
-  </v-dialog>
+      </div>
+    </div>
+
+  </v-card>
+
 </template>
 
 <script>

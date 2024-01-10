@@ -58,7 +58,9 @@
             >
 
               <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
-                <div
+                <v-card
+                    flat
+                    :disabled="haveOrder&&consumeTypeStatusId<1"
                     v-for="m in menu"
                     :key="m.name"
                     :class="currentView===m.name?' active':''"
@@ -67,7 +69,7 @@
                 >
                   <v-icon left>{{ m.icon }}</v-icon>
                   {{ $t(m.name) }}
-                </div>
+                </v-card>
               </div>
 
               <v-spacer></v-spacer>
@@ -96,8 +98,8 @@
                   @dish-detail="(dish,override)=>showModification(dish,1,null,override)"
               />
             </template>
-            <template v-else-if="currentView===1">
-              <address-display
+            <template v-else-if="currentView===menu[1].name">
+              <address-page
                   v-if="consumeTypeId===2"
                   :consume-type-status-id="consumeTypeStatusId"
                   :raw-address-info="realAddressInfo"
@@ -498,7 +500,7 @@ import i18n from '../../i18n'
 import dayjs from 'dayjs'
 import { TableFilter } from '@/api/tableService'
 import BuffetStartDialog from '@/views/TablePage/Dialog/BuffetStartDialog'
-import AddressDisplay from '@/views/TablePage/Address/AddressDisplay'
+import AddressPage from '@/views/TablePage/Address/AddressFragment.vue'
 import DiscountDialog from '@/views/TablePage/Dialog/DiscountDialog'
 import CheckOutDrawer from '@/components/GlobalDialog/CheckOutDrawer'
 import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
@@ -555,7 +557,7 @@ export default {
     LogoDisplay,
     MemberSelectionDialog,
     BuffetStartDialog,
-    AddressDisplay,
+    AddressPage,
     DiscountDialog,
     CheckOutDrawer,
     ModificationDrawer,
@@ -877,6 +879,13 @@ export default {
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
       await this.getTableDetail()
+      if (this.consumeTypeStatusId < 2) {
+        console.log('here', this.consumeTypeStatusId)
+        this.currentView = this.menu[1].name
+        console.log(this.currentView)
+      } else {
+        this.currentView = this.menu[0].name
+      }
       setGlobalTableId(this.id)
     },
     back () {
@@ -904,7 +913,6 @@ export default {
     async getTableDetail () {
       try {
         this.tableDetailInfo = await getCurrentOrderInfo(this.id)
-        console.log(this.tableDetailInfo)
         if (!this.tableDetailInfo.tableName) {
           await goHome()
           return
@@ -1163,7 +1171,7 @@ export default {
         : this.consumeTypeId ?? 1
     },
     consumeTypeStatusId () {
-      return parseInt(this.tableDetailInfo.order?.consumeTypeStatusId ?? 2)
+      return parseInt(this.tableDetailInfo?.order?.consumeTypeStatusId ?? 2)
     },
     currentMenu () {
       const normalActions = []
