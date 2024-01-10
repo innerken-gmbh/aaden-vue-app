@@ -3,9 +3,9 @@
       color="transparent"
       elevation="0"
       class="d-flex flex-column flex-grow-1"
-      style="height: calc(100vh)"
+      style="height: calc(100vh - 64px)"
   >
-    <div class="pa-4 text-h5 d-flex align-center font-weight-black grey lighten-4">
+    <div class="pa-4 pb-3 text-h5 d-flex align-center font-weight-black grey lighten-4">
       {{ title }}
       <v-spacer></v-spacer>
       <slot name="action"></slot>

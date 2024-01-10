@@ -4,7 +4,8 @@
       style="height: calc(100vh - 110px)"
   >
     <v-card
-        class="d-flex py-2 px-4"
+        rounded="lg"
+        class="d-flex py-2 px-4 align-center"
         color="grey lighten-3"
         elevation="0"
     >
@@ -62,6 +63,14 @@
           </v-item>
         </v-item-group>
         <v-spacer></v-spacer>
+        <v-btn
+            @click="$emit('toggle')"
+            color="grey lighten-4 black--text"
+            elevation="0"
+            rounded
+        >
+            <v-icon>mdi-keyboard</v-icon>
+        </v-btn>
       </template>
     </v-card>
     <v-card

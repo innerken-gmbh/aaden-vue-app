@@ -2,17 +2,26 @@
   <div
       class="flex-grow-1"
       style="
-                display: grid;
-                grid-template-columns: 1fr 360px;
-                height: calc(100vh - 130px);
-                grid-gap: 0px;
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      height: calc(100vh - 64px);
+      grid-gap: 0;
               "
   >
     <v-card
-        class="l-result-display"
         color="transparent"
         elevation="0"
     >
+      <v-btn
+          style="position: absolute;right: 24px;top: 24px"
+          @click="$emit('toggle')"
+          color="grey lighten-3 black--text"
+          elevation="0"
+          rounded
+      >
+        <v-icon>mdi-menu</v-icon>
+      </v-btn>
       <div
           v-if="searchDish.length > 0"
           class="flex-shrink-1"
@@ -75,11 +84,11 @@
           <div>
             <v-icon
                 color="grey lighten-1"
-                x-large
+                size="64"
             >mdi-keyboard
             </v-icon>
           </div>
-          <div class="text--disabled">
+          <div class="text--disabled text-body-2 mt-4">
             {{ $t('PleaseUseKeyboardOrType') }}
           </div>
         </div>
