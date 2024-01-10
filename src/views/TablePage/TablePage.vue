@@ -125,7 +125,10 @@
                   :title="$t('DishesOrdered')"
                   @discount-clear="discountClear"
               >
-                <template #action>
+                <template
+                    v-if="canOperate"
+                    #action
+                >
                   <v-btn
                       :loading="isSendingRequest"
                       class="grey lighten-4 mr-2"
@@ -186,6 +189,14 @@
                     class="error lighten-4 mr-2"
                     elevation="0"
                     icon
+                    @click="orderDish(cartListModel.list,false)"
+                >
+                  <v-icon> mdi-printer-off</v-icon>
+                </v-btn>
+                <v-btn
+                    class="error lighten-4 mr-2"
+                    elevation="0"
+                    icon
                     @click="cartListModelClear"
                 >
                   <v-icon> mdi-trash-can</v-icon>
@@ -221,7 +232,7 @@
         <div
             v-cloak
             id="splitOrderContainer"
-            class="d-flex justify-end pr-1"
+            class="d-flex justify-end"
             style="
             position: fixed;
             background: rgba(0, 0, 0, 0.4);
@@ -274,7 +285,6 @@
               ></nav-button>
             </div>
             <v-card
-                dark
                 tile
                 width="100%"
             >
@@ -461,6 +471,7 @@
 import {
   fastSweetAlertRequest,
   findConsumeTypeById,
+  informOpenTable,
   loadingComplete,
   logError,
   logErrorAndPop,
@@ -700,6 +711,8 @@ export default {
           this.discountRatio = discountRatio
         }
       } catch (e) {
+        this.orderListModel.loadTTDishList([])
+        this.discountRatio = 0
         console.log(e)
       }
     },
@@ -908,15 +921,15 @@ export default {
       }
     },
 
-    async orderDish (order = this.cartListModel.list, print = true) {
+    async orderDish (order, print = true) {
       try {
         this.isSendingRequest = true
-        order.forEach((o) => {
-          o.guestNumber = 1
-        })
+        if (!this.haveOrder) {
+          const password = await optionalAuthorizeAsync('', GlobalConfig.usePassword, null, false, this.id)
+          await informOpenTable(password, this.id)
+        }
         await hillo.post(
-          'Complex.php?op=addDishesToTable&_servantPw=' +
-            GlobalConfig.defaultPassword,
+          'Complex.php?op=addDishesToTable&_servantPw=' + GlobalConfig.defaultPassword,
           {
             params: JSON.stringify(order),
             tableId: this.id,
@@ -1117,6 +1130,9 @@ export default {
       return this.tableDetailInfo
         ?.tableName
     },
+    canOperate () {
+      return this.haveOrder && this.consumeTypeStatusId > 1
+    },
     haveOrder () {
       return !!this.currentOrderId
     },
@@ -1150,51 +1166,52 @@ export default {
       return parseInt(this.tableDetailInfo.order?.consumeTypeStatusId ?? 2)
     },
     currentMenu () {
-      const normalActions = [
-        {
+      const normalActions = []
+      if (this.canOperate) {
+        normalActions.push({
           title: 'reprint',
           icon: 'mdi-printer',
           color: 'red',
           action: () => {
             this.reprintOrder()
           }
-        }
-      ]
-      if (this.consumeTypeId !== 2) {
-        normalActions.push({
-          title: 'tableChange',
-          icon: 'mdi-swap-horizontal',
-          color: 'indigo',
-          action: () => {
-            this.changeTable()
-          }
         })
-        normalActions.push({
-          title: 'tableMerge',
-          icon: 'mdi-merge',
-          color: 'green',
-          action: () => {
-            this.mergeTable()
-          }
-        })
-      }
-      normalActions.push({
-        title: 'WaiterTransfer',
-        icon: 'mdi-account',
-        color: 'deep-orange',
-        action: () => {
-          this.changeServant()
+        if (this.consumeTypeId !== 2) {
+          normalActions.push({
+            title: 'tableChange',
+            icon: 'mdi-swap-horizontal',
+            color: 'indigo',
+            action: () => {
+              this.changeTable()
+            }
+          })
+          normalActions.push({
+            title: 'tableMerge',
+            icon: 'mdi-merge',
+            color: 'green',
+            action: () => {
+              this.mergeTable()
+            }
+          })
         }
-      })
-      if (this.consumeTypeId === 1 || this.consumeTypeId === 5) {
         normalActions.push({
-          title: 'ChangeToBuffet',
-          icon: 'mdi-silverware',
+          title: 'WaiterTransfer',
+          icon: 'mdi-account',
           color: 'deep-orange',
           action: () => {
             this.changeServant()
           }
         })
+        if (this.consumeTypeId === 1 || this.consumeTypeId === 5) {
+          normalActions.push({
+            title: 'ChangeToBuffet',
+            icon: 'mdi-silverware',
+            color: 'deep-orange',
+            action: () => {
+              this.changeServant()
+            }
+          })
+        }
       }
       return [
         {

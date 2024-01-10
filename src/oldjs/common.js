@@ -111,7 +111,6 @@ export async function showTableSelector (filter = null, requiredTableKey = 'tabl
 export async function openOrEnterTable (number, password) {
   try {
     const table = (await hillo.silentGet('Tables.php', { name: number })).content[0]
-
     await optionalAuthorizeAsync('', GlobalConfig.useEnterTablePermissionCheck,
       null, false, table.id)
     jumpToTable(table.id, table.name)

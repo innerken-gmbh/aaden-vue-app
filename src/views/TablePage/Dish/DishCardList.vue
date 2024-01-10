@@ -5,7 +5,7 @@
       class="d-flex flex-column flex-grow-1"
       style="height: calc(100vh)"
   >
-    <div class="pa-4 text-h5 d-flex align-center font-weight-black">
+    <div class="pa-4 text-h5 d-flex align-center font-weight-black grey lighten-4">
       {{ title }}
       <v-spacer></v-spacer>
       <slot name="action"></slot>
