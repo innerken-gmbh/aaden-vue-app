@@ -49,7 +49,7 @@
     >
       <div
           style="font-size: 0.65rem !important;"
-          class="mt-0 text-caption text-no-wrap
+          class="mt-1 text-caption text-no-wrap
                font-weight-black white--text
              overflow-hidden text-capitalize"
       >

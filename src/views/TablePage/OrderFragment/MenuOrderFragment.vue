@@ -1,7 +1,7 @@
 <template>
   <div
       class="d-flex flex-column"
-      style="height: calc(100vh - 110px)"
+      style="height: calc(100vh - 64px)"
   >
     <v-card
         rounded="lg"
@@ -54,6 +54,7 @@
                 :color="active ? 'primary' : 'grey lighten-4'"
                 :dark="active"
                 :elevation="active ? 4 : 0"
+                :class="active?'font-weight-black':''"
                 class="d-flex justify-center align-center px-6"
                 height="48"
                 style="border-radius: 12px; font-size: 18px"
@@ -93,13 +94,13 @@
             >
               <v-card
                   :color="category.color ? category.color : 'white'"
-                  class="d-flex text-h6 align-center justify-center text-center pa-2"
+                  class="d-flex text-body-1 text-capitalize pa-4"
                   elevation="0"
+                  :style="{fontSize:category.name.length>20?'1rem !important':'1.2rem !important'}"
                   style="
                             position: relative;
                             width: 100%;
-                            height: 124px;
-
+                            height: 96px;
                             display: -webkit-box;
                             word-break: break-all;
                             -webkit-line-clamp: 3;
@@ -171,11 +172,11 @@
             v-dragscroll
             style="
                       width: 108px;
-                      height: calc(100vh - 192px);
+                      height: calc(100vh - 148px);
                       overflow: hidden;
                       position: fixed;
                       right: 342px;
-                      top: 192px;
+                      top: 148px;
                     "
         >
           <v-item-group
