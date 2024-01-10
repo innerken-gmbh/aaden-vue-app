@@ -1,6 +1,5 @@
 <template>
   <div
-      @click="keyboardInput = ''"
       class="gradient"
   >
     <v-navigation-drawer
@@ -23,6 +22,7 @@
               v-for="m in currentMenu"
               :key="m.icon"
               @click="m.action"
+              :loading="isSendingRequest"
               :text="m.title"
               :icon="m.icon"
               :color="m.color"
@@ -34,7 +34,6 @@
       </div>
     </v-navigation-drawer>
     <template v-if="!globalLoading">
-
       <v-main app>
         <div
             style="
@@ -75,18 +74,19 @@
               <div class="text-body-2 d-flex align-center">
                 <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
                 <div class=" text-capitalize mr-6">
-                  {{ tableDetailInfo.tableBasicInfo.name }}
+                  {{ currentTableName }}
                 </div>
-                <template>
+                <template v-if="haveOrder">
                   <v-icon>mdi-office-building-marker</v-icon>
                   <div class="ml-2  text-truncate">
                     {{ findConsumeTypeById(consumeTypeId) }}
                   </div>
+
+                  <v-icon class="mr-2 ml-6">mdi-account-circle</v-icon>
+                  <div>
+                    {{ tableDetailInfo.servant }}
+                  </div>
                 </template>
-                <v-icon class="mr-2 ml-6">mdi-account-circle</v-icon>
-                <div>
-                  {{ tableDetailInfo.servant }}
-                </div>
               </div>
 
             </v-card>
@@ -148,7 +148,7 @@
                 <template v-slot:default="{ total }">
                   <div class="pa-2">
                     <v-btn
-                        :disabled="tableDetailInfo.order.consumeTypeStatusId <= 1"
+                        :disabled="consumeTypeStatusId <= 1"
                         block
                         color="green lighten-4 black--text"
                         elevation="0"
@@ -180,7 +180,6 @@
                 :show-number="true"
                 :title="$t('New')"
                 color="primary"
-                @current-dish-change="cartCurrentDish = $event"
             >
               <template #action>
                 <v-btn
@@ -291,7 +290,7 @@
                 <template v-slot:default="{ total }">
                   <div class="pa-2">
                     <v-btn
-                        :disabled="tableDetailInfo.order.consumeTypeStatusId <= 1"
+                        :disabled="consumeTypeStatusId <= 1"
                         block
                         color="warning lighten-4 black--text"
                         elevation="0"
@@ -354,8 +353,8 @@
           :discount-model-show="discountModelShow"
           :dishesItems="splitOrderListModel.list"
           :initial-u-i="initialUI"
-          :orderId="tableDetailInfo.order.id"
-          :total-price="tableDetailInfo.order.totalPrice"
+          :orderId="currentOrderId"
+          :total-price="totalPrice"
           :useDishesDiscount="useDishesDiscount"
           @visibility-changed="(val) => (this.discountModelShow = val)"
       />
@@ -371,7 +370,7 @@
       />
 
       <check-out-drawer
-          :id="tableDetailInfo.order.id"
+          :id="currentOrderId"
           :check-out-type="checkOutType"
           :current-member-id="currentMemberId"
           :discount-ratio="discountRatio"
@@ -384,7 +383,7 @@
       />
 
       <buffet-start-dialog
-          :id="tableDetailInfo.order.id"
+          :id="currentOrderId"
           :buffet-dialog-show="buffetDialogShow"
           :initial-u-i="initialUI"
           @visibility-changed="(val) => (this.buffetDialogShow = val)"
@@ -554,12 +553,6 @@ export default {
   props: {
     id: {
       type: String
-    },
-    tableName: {
-      type: String
-    },
-    refresh: {
-      type: Number
     }
   },
   data: function () {
@@ -568,9 +561,7 @@ export default {
       reasons: getReason(),
       deleteDishReason: '',
       deleteDishReasonDialog: false,
-
       useDishesDiscount: false,
-
       checkoutShow: false,
       extraDishShow: false,
       modificationShow: false,
@@ -597,21 +588,10 @@ export default {
       splitOrderListModel: splitOrderFactory,
       orderListModel: orderListFactory,
       cartListModel: cartListFactory,
-      defaultCurrentDish,
-      tableDetailInfo: {
-        order: {
-          id: -1,
-          rawAddressInfo: ''
-        },
-        tableBasicInfo: { name: '' }
-      },
+      tableDetailInfo: null,
       currentDish: defaultCurrentDish,
-      cartCurrentDish: null,
       password: '',
       /* new input */
-      keyboardInput: '',
-
-      deviceId: -1,
       currentMemberId: null,
       showMemberSelectionDialog: null,
       menu: [
@@ -629,9 +609,6 @@ export default {
         }
       ]
     }
-  },
-  created () {
-    this.deviceId = GlobalConfig.DeviceId
   },
   methods: {
     async deleteAndSaveReason (note) {
@@ -660,56 +637,6 @@ export default {
       this.deleteDishReasonDialog = false
       await this.initialUI()
     },
-    async mergeTable () {
-      const password = await popAuthorize(
-        GlobalConfig.mergeTableUseBossPassword ? 'boss' : ''
-      )
-      if (password) {
-        const tableName = await showTableSelector(TableFilter.activeFilter)
-        await safeRequest(async () => {
-          const res = await hillo.post('Tables.php?op=mergeTables', {
-            oldTableName: this.tableDetailInfo.tableBasicInfo.name,
-            newTableName: tableName
-          })
-
-          if (res) {
-            this.goHome()
-          }
-        })
-      }
-    },
-    async changeTable () {
-      const password = await popAuthorize(
-        GlobalConfig.changeTableUseBossPassword ? 'boss' : ''
-      )
-      if (password) {
-        const tableName = await showTableSelector(TableFilter.notActiveFilter)
-        const res = await hillo.post('Tables.php?op=change', {
-          oldTableName: this.tableDetailInfo.tableBasicInfo.name,
-          newTableName: tableName
-        })
-        if (res) {
-          this.goHome()
-        }
-      }
-    },
-    dishesChangeTable: async function () {
-      const password = await popAuthorize(
-        GlobalConfig.changeTableUseBossPassword ? 'boss' : ''
-      )
-      if (password) {
-        const tableName = await showTableSelector()
-        const res = await hillo.post('Complex.php?op=dishesChangeTable', {
-          oldTableName: this.tableDetailInfo.tableBasicInfo.name,
-          newTableName: tableName,
-          dishes: JSON.stringify(this.splitOrderListModel.list)
-        })
-        if (res) {
-          loadingComplete()
-          await this.initialUI()
-        }
-      }
-    },
 
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
@@ -717,7 +644,7 @@ export default {
 
     async submitRawAddressInfo (addressInfo) {
       await hillo.post('Orders.php?op=updateRawAddressInfo', {
-        orderId: this.tableDetailInfo.order.id,
+        orderId: this.currentOrderId,
         rawAddressInfo: JSON.stringify(addressInfo)
       })
       await this.getTableDetail()
@@ -733,11 +660,8 @@ export default {
         'POST'
       )
       if (res) {
-        goHome()
+        await goHome()
       }
-    },
-    goHome () {
-      goHome()
     },
     changeModification: function (val) {
       this.modificationShow = val
@@ -757,12 +681,12 @@ export default {
             this.id,
             false
           )
-          result
-            .filter((d) => d.code === 'lk')
-            .map((d) => {
-              d.originPrice = d.price
-              return d
-            })
+          const lkDish = result
+            .find((d) => d.code === 'lk')
+          if (lkDish) {
+            lkDish.originPrice = lkDish.price
+          }
+
           //* mark by ju
           const discountInfo = result.filter((r) => r.code === '-1')
           const noDiscount = result.filter((r) => r.code !== '-1')
@@ -862,7 +786,6 @@ export default {
       this.overrideConsumeTypeId = overrideConsumeTypeId
       this.modificationShow = true
     },
-
     removeFromSplitOrder: function (dish) {
       const realItem = IKUtils.deepCopy(dish)
       this.splitOrderListModel.add(realItem, -1)
@@ -877,9 +800,6 @@ export default {
       await optionalAuthorizeAsync('', !GlobalConfig.discountWithoutPassword)
       this.discountModelShow = true
       this.useDishesDiscount = true
-    },
-    printZwichenBon: function () {
-      printZwichenBon(this.id, this.splitOrderListModel.list)
     },
     addToSplit: function (dish) {
       console.log(dish)
@@ -919,9 +839,6 @@ export default {
         this.cartListModel.add(dish, count)
       }, 1)
     },
-    clear: function () {
-      this.cartListModel.clear()
-    },
     removeDish: function (dish) {
       this.cartListModel.add(dish, -1)
     },
@@ -950,9 +867,7 @@ export default {
       setGlobalTableId(this.id)
     },
     back () {
-      if (this.keyboardInput) {
-        this.keyboardInput = ''
-      } else if (this.discountModelShow) {
+      if (this.discountModelShow) {
         this.discountModelShow = false
       } else if (this.buffetDialogShow) {
         this.buffetDialogShow = false
@@ -966,173 +881,33 @@ export default {
       } else if (this.cartListModel.list.length > 0) {
         this.cartListModel.clear()
       } else {
-        this.goHome()
+        goHome()
       }
     },
     discountClear () {
       this.submitDiscount('')
     },
-    async submitDiscount (discountStr = null) {
-      if (this.$refs.discount) {
-        await this.$refs.discount.submitDiscount(discountStr)
-      }
-    },
-    checkOut (pw, print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
-      if (!memberCardId) {
-        memberCardId = null
-      }
-      checkOut(pw, this.id, print, payMethod, tipIncome, memberCardId)
-    },
-    needSplitOrder: async function () {
-      if (this.orderListModel.count() === 0) {
-        this.orderListModel.loadTTDishList(this.splitOrderListModel.list)
-        this.splitOrderListModel.clear()
-        this.jumpToPayment()
-      } else {
-        this.password = await optionalAuthorizeAsync('',
-          GlobalConfig.checkOutUsePassword, '',
-          true, this.id)
 
-        checkoutFactory.clear()
-        checkoutFactory.loadTTDishList(this.splitOrderListModel.list)
-        this.checkOutModel = {
-          total: checkoutFactory.total(),
-          count: checkoutFactory.count(),
-          list: checkoutFactory.list
-        }
-        this.checkoutShow = true
-        this.checkOutType = 'splitOrder'
-      }
-    },
     async getTableDetail () {
       try {
         this.tableDetailInfo = await getCurrentOrderInfo(this.id)
-        if (!this.tableDetailInfo) {
+        console.log(this.tableDetailInfo)
+        if (!this.tableDetailInfo.tableName) {
           await goHome()
           return
         }
-        this.tableDetailInfo.consumeTypeName = findConsumeTypeById(
-          this.tableDetailInfo.consumeTypeId
-        ).name
-        if (this.tableDetailInfo.order.discountStr) {
-          this.discountStr = this.tableDetailInfo.order.discountStr
+        if (this.tableDetailInfo.isActive) {
+          this.tableDetailInfo.consumeTypeName = findConsumeTypeById(this.tableDetailInfo.consumeTypeId).name
+          if (this.tableDetailInfo?.order?.discountStr) {
+            this.discountStr = this.tableDetailInfo.order.discountStr
+          }
         }
         await this.getOrderedDish()
       } catch (e) {
-        console.log(e)
+        console.log(e, 'error on table')
       }
     },
-    async acceptOrder (reason = 'ok') {
-      await acceptOrder(reason, this.id)
-      await this.initialUI()
-    },
-    async acceptOrderWithTime (time) {
-      const addressInfo = JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
-      let timeReal = dayjs()
-      if (addressInfo) {
-        if (addressInfo.date && addressInfo.time) {
-          timeReal = dayjs(
-            addressInfo.date + ' ' + addressInfo.time,
-            'YYYY-MM-DD HH:mm'
-          )
-        }
-      }
-      timeReal = timeReal.add(time, 'm')
-      await this.acceptOrder(timeReal.format('DD.MM.YYYY HH:mm'))
-    },
-    async rejectOrder () {
-      const res = await fastSweetAlertRequest(
-        i18n.t('RevocationDishReason'),
-        'text',
-        'Orders.php?op=rejectTakeAwayOrder',
-        'reason',
-        { tableId: this.id }
-      )
-      if (res) {
-        this.goHome()
-      }
-    },
-    async reprintOrder () {
-      this.isSendingRequest = true
-      try {
-        const res = await IKUtils.showConfirmAsyn(this.$t('AreYouSureToContinue'), this.$t('ReprintAllDishes'))
-        if (res.isConfirmed) {
-          await hillo.post('Printer.php?op=questReprintOrder', {
-            orderId: this.tableDetailInfo.order.id
-          })
-        }
-        toast()
-      } catch (e) {
-      } finally {
-        this.isSendingRequest = false
-      }
-    },
-    async zwitchenBon () {
-      this.isSendingRequest = true
-      try {
-        await reprintOrder(this.tableDetailInfo.order.id, 0)
-        toast()
-      } catch (e) {
-      } finally {
-        this.isSendingRequest = false
-      }
-    },
-    async insDecode (t) {
-      if (this.deleteDishReasonDialog) {
-        await this.submitReason()
-      }
-      if (t !== '' && t !== null) {
-        if (t?.length === 8) {
-          const VIPCardDish = findDish(GlobalConfig.VIPCardCode)
-          this.showExtraDish(VIPCardDish)
-          this.currentDish.currentName = t
-          return
-        }
-        if (t.indexOf('*') !== -1) {
-          let [code, count] = this.getCodeAndCountFromInput(t)
-          count = parseInt(count)
-          await this.findAndOrderDish(code, count)
-        } else {
-          await this.findAndOrderDish(t)
-        }
-      } else {
-        if (this.discountModelShow) {
-          this.submitDiscount()
-        } else if (this.extraDishShow) {
-          this.addExtraDish()
-        } else if (this.modificationShow) {
-          this.$refs.modification.forceSubmit()
-        } else if (!this.checkoutShow && !this.modificationShow) {
-          if (this.cartListModel.list.length > 0) {
-            setTimeout(async () => {
-              let res = { value: 1 }
-              if (!GlobalConfig.skipCartConfirm) {
-                res = await showConfirmAsyn(i18n.t('BasketOrder'))
-              }
-              if (res.value) {
-                this.orderDish(this.cartListModel.list)
-              }
-            }, 10)
-          } else {
-            if (GlobalConfig.useEnterKeyToPay) {
-              setTimeout(async () => {
-                const res = await showConfirmAsyn(this.$t('PaidWithoutTip'))
-                if (res.value) {
-                  const pw = await optionalAuthorizeAsync(
-                    '',
-                    GlobalConfig.checkOutUsePassword,
-                    null,
-                    true,
-                    this.id
-                  )
-                  this.checkOut(pw)
-                }
-              }, 10)
-            }
-          }
-        }
-      }
-    },
+
     async orderDish (order = this.cartListModel.list, print = true) {
       try {
         this.isSendingRequest = true
@@ -1149,11 +924,11 @@ export default {
           }
         )
         this.cartListModel.clear()
-        this.initialUI()
+        await this.initialUI()
         printNow()
         if (GlobalConfig.jumpToHomeWhenOrder) {
-          this.$nextTick(() => {
-            this.goHome()
+          this.$nextTick(async () => {
+            await goHome()
           })
         }
       } catch (res) {
@@ -1189,38 +964,170 @@ export default {
         await realCheckOut(pw)
       }, 20)
     },
-    async realInitial () {
-      this.globalLoading = true
-      await this.initialUI(true)
-      this.globalLoading = false
-    },
-    getCodeAndCountFromInput (string = '') {
-      let [code, count] = ['', 1]
-      if (string.includes('*')) {
-        [code, count] = string.split('*')
-        if (GlobalConfig.numberFirst) {
-          [code, count] = [count, code]
-        }
-        count = parseInt(count)
-      } else {
-        code = string
-      }
-      return [code, count]
-    },
-
     async cartListModelClear () {
       this.cartListModel.clear()
+    },
+    async mergeTable () {
+      const password = await popAuthorize(
+        GlobalConfig.mergeTableUseBossPassword ? 'boss' : ''
+      )
+      if (password) {
+        const tableName = await showTableSelector(TableFilter.activeFilter)
+        await safeRequest(async () => {
+          const res = await hillo.post('Tables.php?op=mergeTables', {
+            oldTableName: this.tableDetailInfo.tableBasicInfo.name,
+            newTableName: tableName
+          })
+
+          if (res) {
+            goHome()
+          }
+        })
+      }
+    },
+    async changeTable () {
+      const password = await popAuthorize(
+        GlobalConfig.changeTableUseBossPassword ? 'boss' : ''
+      )
+      if (password) {
+        const tableName = await showTableSelector(TableFilter.notActiveFilter)
+        const res = await hillo.post('Tables.php?op=change', {
+          oldTableName: this.tableDetailInfo.tableBasicInfo.name,
+          newTableName: tableName
+        })
+        if (res) {
+          goHome()
+        }
+      }
+    },
+    dishesChangeTable: async function () {
+      const password = await popAuthorize(
+        GlobalConfig.changeTableUseBossPassword ? 'boss' : ''
+      )
+      if (password) {
+        const tableName = await showTableSelector()
+        const res = await hillo.post('Complex.php?op=dishesChangeTable', {
+          oldTableName: this.tableDetailInfo.tableBasicInfo.name,
+          newTableName: tableName,
+          dishes: JSON.stringify(this.splitOrderListModel.list)
+        })
+        if (res) {
+          loadingComplete()
+          await this.initialUI()
+        }
+      }
+    },
+    async acceptOrder (reason = 'ok') {
+      await acceptOrder(reason, this.id)
+      await this.initialUI()
+    },
+    async acceptOrderWithTime (time) {
+      const addressInfo = JSON.parse(this.realAddressInfo)
+      let timeReal = dayjs()
+      if (addressInfo) {
+        if (addressInfo.date && addressInfo.time) {
+          timeReal = dayjs(
+            addressInfo.date + ' ' + addressInfo.time,
+            'YYYY-MM-DD HH:mm'
+          )
+        }
+      }
+      timeReal = timeReal.add(time, 'm')
+      await this.acceptOrder(timeReal.format('DD.MM.YYYY HH:mm'))
+    },
+    async rejectOrder () {
+      const res = await fastSweetAlertRequest(
+        i18n.t('RevocationDishReason'),
+        'text',
+        'Orders.php?op=rejectTakeAwayOrder',
+        'reason',
+        { tableId: this.id }
+      )
+      if (res) {
+        await goHome()
+      }
+    },
+    async reprintOrder () {
+      this.isSendingRequest = true
+      try {
+        const res = await IKUtils.showConfirmAsyn(this.$t('AreYouSureToContinue'), this.$t('ReprintAllDishes'))
+        if (res.isConfirmed) {
+          await hillo.post('Printer.php?op=questReprintOrder', {
+            orderId: this.currentOrderId
+          })
+        }
+        toast()
+      } catch (e) {
+      } finally {
+        this.isSendingRequest = false
+      }
+    },
+    async zwitchenBon () {
+      this.isSendingRequest = true
+      try {
+        await reprintOrder(this.currentOrderId, 0)
+        toast()
+      } catch (e) {
+      } finally {
+        this.isSendingRequest = false
+      }
+    },
+    printZwichenBon: function () {
+      printZwichenBon(this.id, this.splitOrderListModel.list)
+    },
+    async submitDiscount (discountStr = null) {
+      if (this.$refs.discount) {
+        await this.$refs.discount.submitDiscount(discountStr)
+      }
+    },
+    checkOut (pw, print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
+      if (!memberCardId) {
+        memberCardId = null
+      }
+      checkOut(pw, this.id, print, payMethod, tipIncome, memberCardId)
+    },
+    needSplitOrder: async function () {
+      if (this.orderListModel.count() === 0) {
+        this.orderListModel.loadTTDishList(this.splitOrderListModel.list)
+        this.splitOrderListModel.clear()
+        this.jumpToPayment()
+      } else {
+        this.password = await optionalAuthorizeAsync('',
+          GlobalConfig.checkOutUsePassword, '',
+          true, this.id)
+
+        checkoutFactory.clear()
+        checkoutFactory.loadTTDishList(this.splitOrderListModel.list)
+        this.checkOutModel = {
+          total: checkoutFactory.total(),
+          count: checkoutFactory.count(),
+          list: checkoutFactory.list
+        }
+        this.checkoutShow = true
+        this.checkOutType = 'splitOrder'
+      }
     }
   },
   computed: {
+    currentOrderId () {
+      return this.tableDetailInfo
+        ?.order?.id
+    },
+    currentTableName () {
+      return this.tableDetailInfo
+        ?.tableName
+    },
+    haveOrder () {
+      return !!this.currentOrderId
+    },
     sourceMarks: function () {
       return this.tableDetailInfo?.sourceMarks ?? []
     },
     totalPrice: function () {
-      return this.tableDetailInfo.order?.totalPrice ?? 0
+      return this.tableDetailInfo?.order?.totalPrice ?? 0
     },
     realAddressInfo () {
-      if (this.tableDetailInfo.order.rawAddressInfo?.length > 0) {
+      if (this.tableDetailInfo?.order.rawAddressInfo?.length > 0) {
         try {
           return JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
         } catch (e) {
@@ -1231,7 +1138,7 @@ export default {
       }
     },
     consumeTypeId () {
-      return parseInt(this.tableDetailInfo.order.consumeTypeId ?? 1)
+      return parseInt(this.tableDetailInfo?.order?.consumeTypeId ?? 1)
     },
     realConsumeTypeId () {
       return this.overrideConsumeTypeId &&
@@ -1240,7 +1147,7 @@ export default {
         : this.consumeTypeId ?? 1
     },
     consumeTypeStatusId () {
-      return parseInt(this.tableDetailInfo.order.consumeTypeStatusId ?? 2)
+      return parseInt(this.tableDetailInfo.order?.consumeTypeStatusId ?? 2)
     },
     currentMenu () {
       const normalActions = [
@@ -1303,11 +1210,15 @@ export default {
     }
   },
   async activated () {
-    await this.realInitial()
+    this.globalLoading = true
+    await this.initialUI(true)
+    this.globalLoading = false
     this.currentMemberId = null
   },
   async mounted () {
-    await this.realInitial()
+    this.globalLoading = true
+    await this.initialUI(true)
+    this.globalLoading = false
   }
 }
 </script>

@@ -413,7 +413,6 @@ export default {
   methods: {
     async loadPaymentMethods () {
       this.electronicBillStatus = await checkElectronicBillingStatus()
-      console.log(this.electronicBillStatus, 'statsu')
       this.paymentMethods = (await hillo.get('PayMethod.php')).content
         .filter((p) => !includedPaymentMethods.includes(parseInt(p.id)))
         .map((p) => {

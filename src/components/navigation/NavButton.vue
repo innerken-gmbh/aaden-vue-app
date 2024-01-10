@@ -12,10 +12,22 @@
       <v-responsive :aspect-ratio="1">
         <div
             class="d-flex flex-column justify-center align-center"
-            style="height: 100%"
+            style="height: 100%;width: 100%"
         >
-          <div>
-            <v-icon color="white" :size="isActive?'':'28'">{{ icon }}</v-icon>
+          <div class="px-1"   v-if="loading">
+            <v-progress-circular
+                size="16"
+                indeterminate
+
+            ></v-progress-circular>
+          </div>
+
+          <div v-else>
+            <v-icon
+                color="white"
+                :size="isActive?'':'28'"
+            >{{ icon }}
+            </v-icon>
           </div>
         </div>
       </v-responsive>
@@ -44,7 +56,8 @@ export default {
     isActive: {},
     color: {},
     icon: {},
-    text: {}
+    text: {},
+    loading: {}
   }
 }
 </script>

@@ -3,6 +3,7 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 const noDebug = { noDebug: true }
 let tableList = null
+
 export async function getActiveTables () {
   const res = await hillo.get('Tables.php', {
     op: 'showAllTableWithSection'
@@ -37,6 +38,7 @@ function reloadTables (arrOfT) {
 }
 
 let consumeTypeList = []
+
 export async function findConsumeTypeById (id) {
   if (consumeTypeList.length === 0) {
     consumeTypeList = (await hillo.get('Complex.php', {
@@ -53,10 +55,10 @@ export async function findConsumeTypeById (id) {
 }
 
 export async function getOrderInfo (tableId, usePrintModAsName = false) {
-  return (await hillo.get('Complex.php', {
+  return (await hillo.silentGet('Complex.php', {
     op: 'dishesInTable',
     tableId,
     lang: GlobalConfig.getLang(),
     usePrintModAsName: usePrintModAsName | 0
-  }, noDebug)).content
+  }, noDebug))?.content ?? []
 }
