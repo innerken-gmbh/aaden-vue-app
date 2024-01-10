@@ -16,43 +16,16 @@
       >
         <div style="display: grid;grid-auto-flow: row;;grid-gap: 24px;align-content: center">
           <logo-display/>
-          <div
+          <nav-button
               v-for="m in menuList"
               :key="m.icon"
-              class="d-flex align-center flex-column"
               @click="goto(m)"
+              :text="m.text"
+              :icon="m.icon"
+              :color="color(m.path)"
+              :is-active="isActive(m.path)"
           >
-            <v-card
-                :color="color(m.path)"
-                elevation="0"
-                :class="isActive(m.path)?'pa-2':'pa-1'"
-                style="border-radius: 12px !important;"
-            >
-              <v-responsive :aspect-ratio="1">
-                <div
-                    class="d-flex flex-column justify-center align-center"
-                    style="height: 100%"
-                >
-                  <div>
-                    <v-icon :size="isActive(m.path)?'':'28'">{{ m.icon }}</v-icon>
-                  </div>
-                </div>
-              </v-responsive>
-            </v-card>
-
-            <div
-                class="hideMore"
-                style="max-width: 56px"
-            >
-              <div
-                  class="mt-1 text-caption text-no-wrap
-                  text-body-1 font-weight-black white--text
-             text-truncate overflow-hidden text-capitalize"
-              >
-                {{ $t(m.text) }}
-              </div>
-            </div>
-          </div>
+          </nav-button>
         </div>
         <v-spacer/>
         <div class="d-flex align-center flex-column justify-center white--text">
@@ -73,12 +46,16 @@ import { getServantList } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { resetCache } from '@/oldjs/StaticModel'
 import LogoDisplay from '@/components/LogoDisplay.vue'
+import NavButton from '@/components/navigation/NavButton.vue'
 
 const version = require('../../package.json').version
 
 export default {
   name: 'IndexPage',
-  components: { LogoDisplay },
+  components: {
+    NavButton,
+    LogoDisplay
+  },
   data: function () {
     return {
       version,

@@ -5,7 +5,7 @@
       class="d-flex flex-column flex-grow-1"
       style="height: calc(100vh)"
   >
-    <div class="pa-4 text-h5 d-flex align-center">
+    <div class="pa-4 text-h5 d-flex align-center font-weight-black">
       {{ title }}
       <v-spacer></v-spacer>
       <slot name="action"></slot>
@@ -14,7 +14,7 @@
           :class="onlyPaid ? 'grey lighten-4' : ''"
           @click="onlyPaid = !onlyPaid"
       >
-        <v-icon>{{ onlyPaid ? 'mdi-checkbox-outline' : 'mdi-checkbox-blank-outline' }}</v-icon>
+        <v-icon>{{ onlyPaid ? 'mdi-filter-check' : 'mdi-filter-off' }}</v-icon>
       </v-btn>
     </div>
 

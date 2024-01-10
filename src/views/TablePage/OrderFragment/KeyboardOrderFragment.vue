@@ -112,7 +112,7 @@
       >
         <v-card
             :class="keyboardInput ? '' : 'text--secondary'"
-            class="text-h4 pa-3 py-6 mb-2 d-flex align-center"
+            class="text-h6 pa-3 py-6 mb-2 d-flex align-center"
             color="grey lighten-3"
             elevation="0"
         >
@@ -315,6 +315,7 @@ export default {
           this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
         } else {
           this.$emit('dish-add', code, count)
+          this.feedback = '🆗'
         }
       }
       if (t.indexOf('*') !== -1) {

@@ -100,10 +100,10 @@ export default {
   methods: {
     openDish (code, count = 1) {
       console.log(code, count, 'here')
-      this.$emit('dish-add', code, count)
+      this.$emit('dish-add', code, count, this.overrideConsumeTypeId)
     },
     openDishDetail (dish) {
-      this.$emit('dish-detail', dish)
+      this.$emit('dish-detail', dish, this.overrideConsumeTypeId)
     },
     async getCategory (consumeTypeId = 1, force = false) {
       if (this.categories.length === 0 || force) {

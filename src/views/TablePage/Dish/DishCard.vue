@@ -16,7 +16,7 @@
               color="grey lighten-3"
               style="border-radius: 24px"
               elevation="0"
-              class="px-2 text-body-1 font-weight-bold flex-shrink-0"
+              class="px-2 text-body-1 font-weight-bold text-no-wrap flex-shrink-0"
           >
             {{ dish.count }}
           </v-card>
@@ -40,17 +40,17 @@
           </div>
         </div>
         <v-spacer/>
-        <div class="flex-shrink-0 text-body-1">
+        <div class="flex-shrink-0 text-body-1 d-flex">
           <template>
-            <v-chip
-                small
-                label
+            <v-card
                 v-if="dish.overrideConsumeTypeId"
-                class="mr-1"
-                color="primary"
+                class="mr-1 px-1 font-weight-black"
+                style="font-size: 0.5rem"
+                flat
+                color="grey lighten-3"
             >
               {{ findConsumeTypeById(dish.overrideConsumeTypeId) }}
-            </v-chip>
+            </v-card>
             <span v-if="dish.isFree === '1'">{{ $t('Free') }}</span>
             <template v-else>
               <span

@@ -19,43 +19,16 @@
       >
         <div style="display: grid;grid-auto-flow: row;;grid-gap: 24px;align-content: center">
           <logo-display/>
-          <div
-              :key="item.title"
-              v-for="item in currentMenu"
-              @click="item.action"
-              class="d-flex align-center flex-column"
+          <nav-button
+              v-for="m in currentMenu"
+              :key="m.icon"
+              @click="m.action"
+              :text="m.title"
+              :icon="m.icon"
+              :color="m.color"
+              :is-active="false"
           >
-            <v-card
-                class="pa-2"
-                :color="item.color+' lighten-4'"
-                elevation="0"
-                style="border-radius: 12px !important;"
-            >
-              <v-responsive :aspect-ratio="1">
-                <div
-                    class="d-flex flex-column justify-center align-center"
-                    style="height: 100%"
-                >
-                  <div>
-                    <v-icon color="black">{{ item.icon }}</v-icon>
-                  </div>
-                </div>
-              </v-responsive>
-            </v-card>
-
-            <div
-                class="hideMore"
-                style="max-width: 56px"
-            >
-              <div
-                  class="mt-1 text-caption
-                   text-no-wrap
-                  white--text text-truncate overflow-hidden text-capitalize"
-              >
-                {{ $t(item.title) }}
-              </div>
-            </div>
-          </div>
+          </nav-button>
         </div>
         <v-spacer/>
       </div>
@@ -120,7 +93,7 @@
             <template v-if="currentView===menu[0].name">
               <menu-fragement
                   @dish-add="findAndOrderDish"
-                  @dish-detail="e=>showModification(e,1)"
+                  @dish-detail="(dish,override)=>showModification(dish,1,null,override)"
               />
             </template>
             <template v-else-if="currentView===1">
@@ -158,9 +131,9 @@
                       class="grey lighten-4 mr-2"
                       elevation="0"
                       icon
-                      @click="checkOut(Config.defaultPassword)"
+                      @click="zwitchenBon"
                   >
-                    <v-icon>mdi-cash-fast</v-icon>
+                    <v-icon>mdi-receipt-text-clock</v-icon>
                   </v-btn>
                   <v-btn
                       :loading="isSendingRequest"
@@ -528,7 +501,6 @@ import CheckOutDrawer from '@/components/GlobalDialog/CheckOutDrawer'
 import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
 import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import uniqBy from 'lodash-es/uniqBy'
-import priceDisplay from '../SalePage/Fragment/PriceDisplay.vue'
 import MemberSelectionDialog from '@/views/TablePage/Dialog/MemberSelectionDialog.vue'
 import { getCurrentOrderInfo } from '@/api/Repository/OrderInfo'
 import { DishDocker } from 'aaden-base-model/lib'
@@ -536,6 +508,7 @@ import { getOrderInfo } from '@/api/aaden-base-model/api'
 import LogoDisplay from '@/components/LogoDisplay.vue'
 import { cartListFactory } from '@/views/TablePage/cart'
 import MenuFragement from '@/views/TablePage/OrderFragment/MenuFragement.vue'
+import NavButton from '@/components/navigation/NavButton.vue'
 
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
@@ -574,6 +547,7 @@ export default {
     dragscroll
   },
   components: {
+    NavButton,
     MenuFragement,
     LogoDisplay,
     MemberSelectionDialog,
@@ -821,10 +795,11 @@ export default {
       this.discountModelShow = true
       this.useDishesDiscount = false
     },
-    async findAndOrderDish (code, count = 1) {
+    async findAndOrderDish (code, count = 1, overrideConsumeTypeId) {
       if (count < 1) {
         return
       }
+      this.overrideConsumeTypeId = overrideConsumeTypeId
       const dish = findDish(code)
       if (dish) {
         if (
@@ -887,7 +862,7 @@ export default {
       this.currentDish = Object.assign({}, defaultCurrentDish, dish)
       this.extraDishShow = true
     },
-    showModification (dish, count, mod = null) {
+    showModification (dish, count, mod = null, overrideConsumeTypeId = null) {
       this.dish = dish
       this.count = count
       if (mod) {
@@ -895,6 +870,7 @@ export default {
       } else {
         this.oldMod = null
       }
+      this.overrideConsumeTypeId = overrideConsumeTypeId
       this.modificationShow = true
     },
 
@@ -945,7 +921,7 @@ export default {
       this.addDish(dish)
     },
     addDish: async function (dish, count = 1) {
-      if (this.realConsumeTypeId !== this.consumeTypeId) {
+      if (parseInt(this.realConsumeTypeId) !== parseInt(this.consumeTypeId)) {
         dish.overrideConsumeTypeId = this.realConsumeTypeId
         dish.forceFormat = true
       }
@@ -1247,9 +1223,6 @@ export default {
     }
   },
   computed: {
-    priceDisplay () {
-      return priceDisplay
-    },
     sourceMarks: function () {
       return this.tableDetailInfo?.sourceMarks ?? []
     },
@@ -1287,14 +1260,6 @@ export default {
           color: 'red',
           action: () => {
             this.reprintOrder()
-          }
-        },
-        {
-          title: 'TemporaryBill',
-          icon: 'mdi-printer-pos',
-          color: 'amber',
-          action: () => {
-            this.zwitchenBon()
           }
         }
       ]
