@@ -43,13 +43,14 @@ export default {
   },
   data: function () {
     return {
-      keyboardMode: Remember.keyboardMode,
+      keyboardMode: Remember.keyboardMode === 'true',
       dishes: [],
       categories: []
     }
   },
   watch: {
     keyboardMode: function (val) {
+      console.log(val)
       Remember.keyboardMode = val
     },
     realConsumeTypeId (val) {
@@ -57,6 +58,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.keyboardMode)
     this.initial()
   },
   computed: {

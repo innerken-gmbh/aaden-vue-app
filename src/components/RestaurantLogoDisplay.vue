@@ -4,7 +4,7 @@
   >
     <v-avatar
         class="mr-3"
-        size="24"
+        size="18"
     >
       <v-img :src="logoPath"/>
     </v-avatar>
