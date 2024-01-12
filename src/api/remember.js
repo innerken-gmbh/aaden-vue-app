@@ -1,7 +1,7 @@
 import { LocalSettingManager } from 'biewangle'
 
 export const Remember = LocalSettingManager.config({
-  keyboardMode: true,
+  keyboardMode: false,
   currentView: 0,
   uuid: '',
   showOtherOrder: false,

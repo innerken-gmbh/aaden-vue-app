@@ -454,8 +454,8 @@
           elevation="0"
           style="overflow: visible;"
       >
-        <div class="d-flex  mb-4">
-          <div class="text-subtitle-1 font-weight-bold">
+        <div class="d-flex  align-center mb-8">
+          <div class="text-h4 font-weight-black">
             {{ restaurantInfo?.displayName }}
           </div>
           <v-spacer/>
@@ -476,13 +476,13 @@
               :key="item.id"
           >
             <div class="d-flex mt-2">
-              <div>{{ item.display }}:</div>
+              <div class="text-body-2">{{ item.display }}:</div>
               <v-spacer></v-spacer>
-              <div>{{ item.value }}</div>
+              <div class="text-body-1 text-right">{{ item.value }}</div>
             </div>
           </div>
           <div class="d-flex mt-4 justify-center align-center">
-            <div>{{ $t('note') }}:</div>
+            <div class="text-body-2">{{ $t('note') }}:</div>
             <v-spacer></v-spacer>
             <v-text-field
                 v-model="note"
@@ -493,6 +493,7 @@
           </div>
           <div class="d-flex align-center justify-center mt-8">
             <v-btn
+                x-large
                 color="primary"
                 elevation="0"
                 width="100%"
@@ -504,6 +505,7 @@
         </template>
         <template v-else>
           <v-btn
+              x-large
               color="primary"
               elevation="0"
               width="100%"

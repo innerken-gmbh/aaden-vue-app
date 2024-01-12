@@ -1,31 +1,57 @@
 <template>
-  <v-dialog max-width="400px" v-model="realShow">
+  <v-dialog
+      max-width="400px"
+      v-model="realShow"
+  >
     <v-card>
-      <v-toolbar tile :color="error?'error':'primary'" dark elevation="0">
-        <v-toolbar-title>{{ $t('PleaseEnterPassword') }}</v-toolbar-title>
-      </v-toolbar>
+      <v-card
+          class="pa-4"
+          tile
+          :color="error?'error darken-3':'primary'"
+          dark
+          elevation="0"
+      >
+        <div class="text-body-1 font-weight-black">{{ $t('PleaseEnterPassword') }}</div>
+      </v-card>
       <span class="caption"></span>
       <div class="pa-1">
         <template v-if="!loading">
-          <div style="display: grid;grid-gap: 16px" class="pa-4"
-               :style="{gridTemplateColumns:'repeat('+(slots.length>3?slots.length:3)+',1fr)'}"
+          <div
+              style="display: grid;grid-gap: 16px"
+              class="pa-4"
+              :style="{gridTemplateColumns:'repeat('+(slots.length>3?slots.length:3)+',1fr)'}"
           >
             <template v-for="(s,i) in slots">
-              <div :key="i" class="slot" :class="s.length>0?'':' empty'">{{ s ? s : '-' }}</div>
+              <div
+                  :key="i"
+                  class="slot"
+                  :class="s.length>0?'':' empty'"
+              >{{ s ? s : '-' }}
+              </div>
             </template>
           </div>
           <v-text-field
               style="width: 0;height: 0"
               autofocus
               @keydown.enter="check"
-              @focus="focusEnd" ref="hiddenInput" type="search"
-              autocomlete="off" dense hide-details
+              @focus="focusEnd"
+              ref="hiddenInput"
+              type="search"
+              autocomlete="off"
+              dense
+              hide-details
               v-model="hiddenInput"
           />
-          <keyboard-layout :keys="keyboardLayout" @input="numberInput"/>
+          <keyboard-layout
+              :keys="keyboardLayout"
+              @input="numberInput"
+          />
         </template>
         <template v-else>
-          <div style="width: 100%;" class="d-flex justify-center align-center pa-4">
+          <div
+              style="width: 100%;"
+              class="d-flex justify-center align-center pa-4"
+          >
             <v-progress-circular
                 :size="70"
                 :width="7"
@@ -197,7 +223,7 @@ export default {
 
 <style scoped>
 .slot {
-  border-bottom: 1px solid black;
+  border-bottom: 5px solid black;
   font-size: 36px;
   display: flex;
   justify-content: center;
