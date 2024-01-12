@@ -9,9 +9,9 @@
       <v-img :src="logoPath"/>
     </v-avatar>
     <div
-        class="text-body-1"
+        class="text-h6"
     >
-     {{name}}
+      {{ name }}
     </div>
   </div>
 </template>
@@ -29,7 +29,7 @@ export default {
     }
   },
   async mounted () {
-    const info = getRestaurantInfo()
+    const info = await getRestaurantInfo()
     this.name = info.name
     this.logoPath = GlobalConfig.getBaseUrl() + info.buffetLogo
   }

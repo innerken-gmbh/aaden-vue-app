@@ -4,19 +4,14 @@ import { loadRestaurantInfo } from '@/api/api'
 import hillo from 'hillo'
 
 const defaultRestaurantInfo = {
-  tableColor: '#ffffff', callColor: '#f57f17'
+  tableColor: '#ffffff',
+  callColor: '#f57f17'
 }
 let restaurantInfo = null
-let loading = false
 
-export function getRestaurantInfo () {
-  if (!restaurantInfo && !loading) {
-    loading = true
-    loadRestaurantInfo().then(res => {
-      restaurantInfo = Object.assign({}, defaultRestaurantInfo, (res))
-    }).finally(() => {
-      loading = false
-    })
+export async function getRestaurantInfo () {
+  if (!restaurantInfo) {
+    restaurantInfo = Object.assign(await loadRestaurantInfo(), defaultRestaurantInfo)
   }
   return restaurantInfo ?? defaultRestaurantInfo
 }
@@ -45,7 +40,11 @@ export function beautifulTable (table) {
 }
 
 export const defaultTable = {
-  tableName: '1', usageStatus: '1', callService: '0', dishCount: 0, drinkCount: 0
+  tableName: '1',
+  usageStatus: '1',
+  callService: '0',
+  dishCount: 0,
+  drinkCount: 0
 }
 
 export const cloudUrl = 'https://cloud5.api.aaden.io'

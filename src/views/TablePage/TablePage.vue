@@ -41,10 +41,7 @@
             elevation="0"
             tile
         >
-          <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
-          <div class=" text-capitalize mr-6">
-            {{ currentTableName }}
-          </div>
+          <restaurant-logo-display></restaurant-logo-display>
           <v-spacer/>
           <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
             <v-card
@@ -62,6 +59,10 @@
             </v-card>
           </div>
           <v-spacer></v-spacer>
+          <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
+          <div class=" text-capitalize mr-6">
+            {{ currentTableName }}
+          </div>
           <div class="text-body-2 d-flex align-center">
 
             <template v-if="haveOrder">
@@ -549,6 +550,7 @@ import LogoDisplay from '@/components/LogoDisplay.vue'
 import { cartListFactory } from '@/views/TablePage/cart'
 import MenuFragement from '@/views/TablePage/OrderFragment/MenuFragement.vue'
 import NavButton from '@/components/navigation/NavButton.vue'
+import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
 
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
@@ -587,6 +589,7 @@ export default {
     dragscroll
   },
   components: {
+    RestaurantLogoDisplay,
     NavButton,
     MenuFragement,
     LogoDisplay,

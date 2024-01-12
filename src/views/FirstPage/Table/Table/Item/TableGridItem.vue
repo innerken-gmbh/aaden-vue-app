@@ -63,8 +63,7 @@
 </template>
 
 <script>
-import { getColorLightness } from '@/oldjs/api'
-import { beautifulTable, getRestaurantInfo } from '@/api/restaurantInfoService'
+import { beautifulTable } from '@/api/restaurantInfoService'
 
 export default {
   name: 'TableGirdItem',
@@ -75,17 +74,6 @@ export default {
   computed: {
     table () {
       return beautifulTable(this.tableInfo)
-    }
-  },
-  methods: {
-    async tableBackgroundColor (table) {
-      return table.inCall ? getRestaurantInfo().callColor : this.$vuetify.theme.currentTheme.primary
-    },
-    tableColorIsDark (table) {
-      return this.colorIsDark(this.tableBackgroundColor(table))
-    },
-    colorIsDark (color) {
-      return getColorLightness(color) < 128
     }
   }
 }

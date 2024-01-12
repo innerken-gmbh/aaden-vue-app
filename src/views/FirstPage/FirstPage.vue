@@ -8,12 +8,7 @@
         elevation="0"
         height="56"
     >
-      <div
-          v-if="restaurantInfo"
-          class="text-h6 mb-0 font-weight-bold"
-          style="min-width: 200px"
-      >{{ restaurantInfo.displayName }}
-      </div>
+      <restaurant-logo-display></restaurant-logo-display>
       <v-spacer></v-spacer>
       <v-item-group
           v-model="currentView"
@@ -90,13 +85,13 @@
     </v-app-bar>
 
     <v-card
-        class="pa-2"
         color="transparent"
         elevation="0"
-        height="calc(100vh - 56px)"
+        class="mt-2"
+        height="calc(100vh - 64px)"
         rounded
     >
-      <v-card style="border-radius: 12px !important;overflow: hidden">
+      <v-card style="border-radius: 12px 12px 0px 0px !important;overflow: hidden">
         <v-tabs-items
             v-model="currentView"
             touchless
@@ -455,16 +450,15 @@
           style="overflow: visible;"
       >
         <div class="d-flex  align-center mb-8">
-          <div class="text-h4 font-weight-black">
-            {{ restaurantInfo?.displayName }}
-          </div>
+          <restaurant-logo-display/>
           <v-spacer/>
           <div>
             <v-btn
+                small
                 icon
                 @click="showServantStatus = false"
             >
-              <v-icon large>
+              <v-icon>
                 mdi-close
               </v-icon>
             </v-btn>
@@ -540,8 +534,6 @@ import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
 import { mapMutations } from 'vuex'
 import { TableFixedSectionId } from '@/api/tableService'
 
-import { getRestaurantInfo } from '@/api/restaurantInfoService'
-
 import { acceptOrder, loadRestaurantInfo, readyToPick, rejectOrder, syncTakeawaySettingToCloud } from '@/api/api'
 import { Remember } from '@/api/remember'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
@@ -557,6 +549,7 @@ import { addToQueue } from '@/oldjs/poolJobs'
 import { endWork, servantWorkStatus, startWork } from '@/api/servantRecords'
 import dayjs from 'dayjs'
 import IKUtils from 'innerken-js-utils'
+import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
 
 const keyboardLayout =
     [
@@ -572,6 +565,7 @@ export default {
     dragscroll
   },
   components: {
+    RestaurantLogoDisplay,
     NoContentDisplay,
     PickUpItem,
     KeyboardLayout,
@@ -870,7 +864,6 @@ export default {
 
     async loadRestaurantInfo () {
       this.restaurantInfo = await loadRestaurantInfo()
-      this.restaurantInfo.displayName = (this.restaurantInfo?.name ?? '').replace('<BR>', '')
       this.takeawayEnabled = this.restaurantInfo.currentlyOpening === '1'
     },
     async initPage () {
@@ -880,7 +873,6 @@ export default {
         try {
           await this.loadRestaurantInfo()
           this.servantList = await getServantList()
-          getRestaurantInfo()
           await getConsumeTypeList()
           await this.refreshTables()
           addToQueue('firstPageTables', this.refreshTables)
