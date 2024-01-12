@@ -127,28 +127,11 @@ export async function readyToPick (id) {
   IKUtils.toast('ok')
 }
 
-export async function getExternalIdByRejectOrder (tableId) {
-  return await hillo.post('Orders.php?op=getExternalIdByRejectOrder', {
-    tableId: tableId
-  })
-}
-
 export async function printServantSummary (pw, start, end) {
   return (await hillo.get('Servant.php?op=printSummaryBonByPassword', {
     pw,
     start,
     end
-  })).content
-}
-
-export async function loadMemberCard () {
-  return (await hillo.get('MemberCard.php?op=showAllMemberCardSaleRecord')).content
-}
-
-export async function checkOneMemberCard (longId) {
-  return (await hillo.get('MemberCard.php?op=check', {
-    id: longId,
-    amount: 0
   })).content
 }
 

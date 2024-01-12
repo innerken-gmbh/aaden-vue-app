@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app'
-import { doc, getFirestore, updateDoc } from 'firebase/firestore'
+import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyCtvQ3d-HAtHTUg_-505c-qXRnlz8RlZeg',
@@ -12,9 +12,3 @@ const firebaseConfig = {
 }
 export const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)
-
-export async function acceptFireBaseOrder (cloudId, accepted = true) {
-  return await updateDoc(doc(db, 'orderDisplay', cloudId), {
-    accepted: accepted
-  })
-}
