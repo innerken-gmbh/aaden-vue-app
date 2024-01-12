@@ -81,7 +81,6 @@
             rounded="lg"
             style="position: sticky;display:grid;grid-auto-flow: row;
             grid-template-rows: 36px;
-            grid-gap: 2px;
             left: 0;top:0; z-index: 4;"
             class="white"
         >
@@ -105,7 +104,7 @@
           </div>
         </v-card>
         <div
-            style="display: grid;grid-gap: 2px;position: relative"
+            style="display: grid;grid-gap: 0;position: relative"
             :style="{gridTemplateColumns:'repeat('+timeSlot.length+',40px)',
              gridTemplateRows:'repeat('+(tableList.length+2)+',36px)',
              }"
@@ -113,8 +112,8 @@
           <template v-for="t in bigTime">
             <div
                 :key="t"
-                class="grey lighten-2 pa-1 text-caption"
-                style="width: 100%;height: 100%;grid-column:span 4"
+                class="grey lighten-2 pa-1 text-caption d-flex align-center"
+                style="width: 100%;height: 100%;grid-column:span 4;border-right: 1px solid #fefefe !important;"
             >
               {{ t }}
             </div>
@@ -122,23 +121,36 @@
           <template v-for="t in seatedInfo">
             <div
                 :key="t.time"
-                class="grey lighten-5 pa-1 text-center text-body-2"
-                style="width: 100%;height: 100%;grid-column:span 2"
+                class="grey lighten-5 pa-1 d-flex align-center justify-center text-center text-body-2"
+                style="width: 100%;height: 100%;grid-column:span 2;border-right: 1px solid #e6e6e6 !important;"
             >
               {{ t.count }}
             </div>
           </template>
-          <canvas
-              ref="background"
-              class=""
-              :width="containerWidth"
-              :height="containerHeight"
-              style="position: absolute;"
+          <div
               :style="{
-            gridColumn:'0 / '+timeSlot.length,
+    backgroundColor: '#808080',
+    background: 'linear-gradient(-90deg, rgba(0, 0, 0, .1) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, .1) 1px, transparent 1px)',
+    backgroundSize: '40px 36px',
+    height:(containerHeight+1)+'px',
+    width: containerWidth+'px',
+      gridColumn:'0 / '+timeSlot.length,
             gridRow:'3 / '+(tableList.length+6)
-          }"
-          ></canvas>
+  }"
+              style="position: absolute;"
+          ></div>
+          <div
+              class="rounded-sm"
+              :style="{
+    backgroundColor: 'red',
+    height:(containerHeight+72)+'px',
+    width: '8px',
+    left:currentTimePosition+'px',
+    top:0,
+    zIndex:100,
+  }"
+              style="position: absolute;"
+          ></div>
           <v-card
               color="transparent"
               flat
@@ -206,10 +218,6 @@
                 </template>
               </v-card>
             </vue-draggable-resizable>
-            <template>
-
-            </template>
-
           </v-card>
 
         </div>
@@ -805,7 +813,7 @@ import {
   setReservable
 } from '@/api/ReservationService'
 import IKUtils from 'innerken-js-utils'
-import { onlyTimeFormat, todayDate } from '@/api/dateUtils'
+import { onlyTimeFormat, sliceTime, todayDate } from '@/api/dateUtils'
 import { loadReservationTableInfo } from '@/api/tableService'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { showSuccessMessage, sureTo } from '@/api/api'
@@ -815,6 +823,7 @@ import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
 import dayjs from 'dayjs'
 import { dragscroll } from 'vue-dragscroll/src/main'
 
+let timer = null
 export default {
   name: 'Reservation',
   components: {
@@ -834,6 +843,7 @@ export default {
                   ':' + (minute * 15).toString().padStart(2, '0'))).flat(),
       reservations: [],
       timeGap: [],
+      currentTimePosition: 0,
       activeReservation: null,
       tableList: [],
       search: '',
@@ -888,10 +898,10 @@ export default {
       return this.reservations.filter(item => (this.showAllReservation || item.completed === '0'))
     },
     containerWidth () {
-      return (this.timeSlot.length * 40) + (this.timeSlot.length - 1) * 2
+      return (this.timeSlot.length * 40)
     },
     containerHeight () {
-      return (this.tableList.length * 36) + (this.tableList.length - 1) * 2
+      return (this.tableList.length * 36)
     },
     bigTime () {
       console.log(this.timeSlot.filter(it => it.endsWith('00')))
@@ -928,8 +938,16 @@ export default {
   },
   methods: {
     dayjs,
-    onDrag: function (table, x, y) {
-      console.log(table, x, y)
+    async onDrag (r, x, y) {
+      console.log(r, x, y)
+      const tableIndex = Math.floor(y / 36)
+
+      const tableId = this.tableList[tableIndex]?.tableId
+      console.log(tableIndex, tableId)
+      const timeIndex = Math.floor(x / 40)
+      const startTime = this.timeSlot[timeIndex]
+      console.log(tableId)
+      console.log(startTime, 'time')
     },
     filterItem (value, search, item) {
       if (search.trim() === '') {
@@ -1037,31 +1055,20 @@ export default {
       await this.getTables()
       await this.loadReservations()
 
+      if (timer) {
+        clearInterval(timer)
+      }
+      timer = setInterval(() => {
+        const timeNowMinute = dayjs().diff(dayjs().set('h', 7), 'm')
+        const totalMinute = 19 * 60
+        this.currentTimePosition = timeNowMinute / totalMinute * this.containerWidth
+        console.log(this.currentTimePosition, 'pos x')
+      }, 20 * 1000)
+
       this.activeReservation = null
       this.setting = await loadReserveSettings()
       this.timeGap = await getTimeSlotForDate(this.reservationDate, this.setting)
       this.userId = parseInt(GlobalConfig.DeviceId)
-      this.$nextTick(() => {
-        if (this.$refs.background) {
-          const ctx = this.$refs.background.getContext('2d')
-          const maxHeight = this.tableList.length * 36 + (this.tableList.length - 1) * 2
-          const maxWidth = this.timeSlot.length * 40 + (this.timeSlot.length - 1) * 2
-          let currentX = 0
-          let currentY = 0
-          ctx.fillStyle = '#e0e0e0'
-          ctx.clearRect(0, 0, maxWidth, maxHeight)
-
-          this.tableList.forEach(() => {
-            currentX = 0
-            this.timeSlot.forEach(() => {
-              ctx.fillRect(currentX, currentY, 40, 36)
-              currentX += 40 + 2
-            })
-            ctx.fillStyle = ctx.fillStyle === '#e0e0e0' ? '#f5f5f5' : '#e0e0e0'
-            currentY += 36 + 2
-          })
-        }
-      })
     },
     async getTables () {
       this.tableList = await loadReservationTableInfo()
@@ -1075,10 +1082,11 @@ export default {
         const xIndex = this.timeSlot.findIndex(t => dayjs(it.fromDateTime).format('HH:mm') === t)
         const xStopIndex = this.timeSlot.findIndex(t => dayjs(it.toDateTime).format('HH:mm') === t)
         const yIndex = this.tableList.findIndex(t => parseInt(t.tableId) === parseInt(it.tableId))
+        it.timeMap = sliceTime(it.fromDateTime, it.toDateTime)
         it.grid = {
-          x: xIndex * 40 + (xIndex - 1) * 2,
-          w: (xStopIndex - xIndex) * 40 + (xStopIndex - xIndex) * 2,
-          y: yIndex * 36 + (yIndex - 1) * 2
+          x: xIndex * 40,
+          w: (xStopIndex - xIndex) * 40,
+          y: yIndex * 36
         }
         return it
       })

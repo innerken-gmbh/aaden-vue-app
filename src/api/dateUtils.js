@@ -13,7 +13,7 @@ export function timeDisplay (str) {
   return dayjs(str).format(timestampTemplate)
 }
 
-export function sliceTime (startTimeString, endTimeString, duration) {
+export function sliceTime (startTimeString, endTimeString, duration = 'PT15M') {
   const [startTime, endTime] = dayjs(startTimeString, timestampTemplate)
     .isBefore(dayjs(endTimeString, timestampTemplate)) ? [dayjs(startTimeString, timestampTemplate), dayjs(endTimeString, timestampTemplate)]
     : [dayjs(endTimeString, timestampTemplate), dayjs(startTimeString, timestampTemplate)]
