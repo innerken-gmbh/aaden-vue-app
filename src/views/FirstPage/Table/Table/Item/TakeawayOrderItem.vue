@@ -63,8 +63,6 @@
 import { getColorLightness } from '@/oldjs/api'
 import { beautifulTable, getRestaurantInfo } from '@/api/restaurantInfoService'
 import dayjs from 'dayjs'
-import { changeFireBaseOrderDeliveryTime } from '@/api/fireStore'
-import { Timestamp } from 'firebase/firestore'
 
 export default {
   name: 'TakeawayOrderItem',
@@ -96,15 +94,7 @@ export default {
         }
       }
       timeReal = timeReal.add(time, 'm')
-      console.log(this.table)
-
       this.$emit('accept', timeReal.format('DD.MM.YYYY HH:mm'), this.tableInfo.tableId)
-      try {
-        await changeFireBaseOrderDeliveryTime(this.table.externalId,
-          Timestamp.fromDate(timeReal.toDate()))
-      } catch (e) {
-        console.log('firebaseError')
-      }
     }
   }
 }

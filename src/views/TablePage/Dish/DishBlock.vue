@@ -8,29 +8,31 @@
       :style="{ backgroundColor: '' + displayColor, color: '' + foreground }"
       class="dishBlock d-flex flex-column fill-height justify-center align-center pa-2"
   >
-    <span
-        style="font-size: 16px; border-radius: 4px; position: absolute; right: 0; top: 0"
-        class="px-2 mr-1 white--text red"
+    <v-card
+        flat
+        rounded="xl"
+        style="font-size: 16px; border-radius: 4px; position: absolute; right: 8px; top:12px"
+        class="px-2 mr-1 grey lighten-3 font-weight-black"
         v-show="count > 0"
-    >{{ count }}</span
+    >{{ count }}
+    </v-card
     >
     <div
-        style="font-size: 16px"
-        class="text-truncate"
+        class="text-truncate text-body-2"
     >{{ code }}
     </div>
     <span
-        :style="{ fontSize: autoFontSize + 'px' }"
-        class="name"
+        :style="{ fontSize: autoFontSize + 'px !important' }"
+        class="name text-body-1"
     >
       {{ dishName }}
     </span>
     <v-card
         @click.stop="haveMod > 0 ? $emit('click-tune') : $emit('click')"
         elevation="0"
-        :color="haveMod > 0 ? 'grey lighten-4 black--text' : 'transparent'"
+        :color="haveMod > 0 ? 'rgba(255,255,255,.67)' : 'transparent'"
         class="mt-1 px-1"
-        :class="haveMod>0?'py-1':''"
+        :class="haveMod>0?'py-1 black--text':''"
         style="align-items: center; border-radius: 4px !important; flex-wrap: wrap"
     >
       <div
@@ -65,7 +67,7 @@ export default {
   computed: {
     autoFontSize () {
       const length = this.dishName?.length ?? 0
-      return (length < 32 ? 18 : length < 48 ? 14 : 10)
+      return length < 8 ? 22 : (length < 32 ? 18 : length < 48 ? 14 : 10)
     }
   }
 }
@@ -86,7 +88,6 @@ export default {
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   font-size: 18px;
   font-weight: 600;
-  line-height: 20px;
   text-align: center;
   overflow: hidden;
   word-break: break-word;

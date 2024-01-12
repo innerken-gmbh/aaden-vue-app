@@ -1056,7 +1056,8 @@ export default {
       await this.initialUI()
     },
     async acceptOrderWithTime (time) {
-      const addressInfo = JSON.parse(this.realAddressInfo)
+      console.log(this.realAddressInfo)
+      const addressInfo = this.realAddressInfo
       let timeReal = dayjs()
       if (addressInfo) {
         if (addressInfo.date && addressInfo.time) {

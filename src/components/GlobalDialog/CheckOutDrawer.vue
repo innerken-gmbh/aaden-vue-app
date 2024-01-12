@@ -29,7 +29,6 @@ import { goHome } from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { round } from 'lodash-es'
-import { changeFireBaseOrderToFinished } from '@/api/fireStore'
 import { addBonusPoint, getUserById } from '@/api/VIPCard/VIPApi'
 import IKUtils from 'innerken-js-utils'
 import { getUUidByOrderId } from '@/api/api'
@@ -141,19 +140,6 @@ export default {
         IKUtils.showError(this.$t('PaymentFailed'))
       }
       if (res) {
-        const externalId = await hillo.post(
-          'Orders.php?op=getExternalIdByCheckOut',
-          {
-            tableId: checkOutData.tableId
-          }
-        )
-        try {
-          if (parseInt(externalId) !== 0) {
-            await changeFireBaseOrderToFinished(externalId)
-          }
-        } catch (e) {
-          console.log('firebase error')
-        }
         toast(this.$t('JSTableCheckOutSuccess'))
         if (this.currentMemberId) {
           const user = await getUserById(this.currentMemberId)

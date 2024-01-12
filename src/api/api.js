@@ -7,7 +7,6 @@ import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
 import { fastSweetAlertRequest, resetTableStatus } from '@/oldjs/common'
 import { Remember } from '@/api/remember'
 import i18n from '@/i18n'
-import { acceptFireBaseOrder, changeFireBaseOrderToReadyToPick } from '@/api/fireStore'
 
 export async function previewZBon (startDate, endDate) {
   return (await hillo.get('ZBon.php?op=previewBySpan', {
@@ -104,31 +103,18 @@ export async function acceptOrder (reason, tableId) {
   await resetTableStatus(tableId)
   IKUtils.showLoading(true)
 
-  const externalId = await hillo.post('Orders.php?op=getExternalIdByAcceptOrder', {
-    tableId: tableId
-  })
   await hillo.post('Orders.php?op=acceptTakeawayOrder', {
     tableId: tableId,
     reason: reason
   })
-  try {
-    if (parseInt(externalId) !== 0) {
-      await acceptFireBaseOrder(externalId, true)
-    }
-  } catch (e) {
-    console.log('firebaseError')
-  }
 
   IKUtils.toast('ok')
 }
 
 export async function rejectOrder (id) {
   await resetTableStatus(id)
-  const externalId = await getExternalIdByRejectOrder(id)
-  const res = await fastSweetAlertRequest(i18n.t('RevocationDishReason'), 'text', 'Orders.php?op=rejectTakeAwayOrder', 'reason', { tableId: id })
-  if (res) {
-    await acceptFireBaseOrder(externalId, false)
-  }
+  await fastSweetAlertRequest(i18n.t('RevocationDishReason'), 'text',
+    'Orders.php?op=rejectTakeAwayOrder', 'reason', { tableId: id })
   IKUtils.toast('ok')
 }
 
@@ -138,12 +124,6 @@ export async function readyToPick (id) {
     orderId: id,
     status: 1
   })
-  const externalId = await hillo.post('Orders.php?op=getExternalId', {
-    orderId: id
-  })
-  if (parseInt(externalId) !== 0) {
-    await changeFireBaseOrderToReadyToPick(externalId)
-  }
   IKUtils.toast('ok')
 }
 
