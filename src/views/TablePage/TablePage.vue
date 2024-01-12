@@ -487,8 +487,16 @@
       />
     </template>
     <template v-else>
-      <div style="height: 100vh;width: 100vw;background: #f6f6f6">
-        <div style="width: 300px;height: 100vh;background: #000"></div>
+      <div
+          style="height: 100vh;width: 100vw;"
+          class="d-flex gradient"
+      >
+
+        <v-card
+            rounded="lg"
+            style="width: calc(100vw - 78px);margin-left: 78px;margin-top: 64px;height: calc(100vh - 64px)"
+            class="grey lighten-4"
+        ></v-card>
       </div>
     </template>
   </div>
