@@ -189,7 +189,8 @@
               >
                 <template #action>
                   <v-btn
-                      class="error lighten-4 mr-2"
+                      dark
+                      class="primary mr-2"
                       elevation="0"
                       icon
                       @click="orderDish(cartListModel.list,false)"

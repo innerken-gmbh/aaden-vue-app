@@ -6,21 +6,28 @@
         flat
     >
       <v-icon>mdi-menu</v-icon>
-      <v-btn icon>
+      <v-btn
+          icon
+          @click="reservationDate=dayjs(reservationDate).add(-1,'d').format('YYYY-MM-DD')"
+      >
         <v-icon>mdi-chevron-left</v-icon>
       </v-btn>
       <div class="d-flex align-center">
-        <div class="text-body-2">
-          Thu
+        <div class="text-caption">
+          {{ dayjs(reservationDate).format('dddd') }}
         </div>
         <div class="font-weight-black text-h5 mx-2">
-          11
+          {{ dayjs(reservationDate).format('DD') }}
         </div>
-        <div class="text-body-2">
-          Jan
+        <div class="text-caption font-weight-black">
+          {{ dayjs(reservationDate).format('MMMM') }}
         </div>
       </div>
-      <v-btn icon>
+      <v-btn
+          icon
+          @click="reservationDate=dayjs(reservationDate).add(1,'d').format('YYYY-MM-DD')"
+
+      >
         <v-icon>mdi-chevron-right</v-icon>
       </v-btn>
       <v-card
@@ -51,45 +58,45 @@
       >
         <v-icon>mdi-cog</v-icon>
       </v-btn>
-      <v-card
-          class="pa-2 py-1 d-flex align-center"
-          flat
-          color="white black--text"
+      <v-btn
+          @click="addNewReservation"
+          small
+          icon
+          class="white black--text"
       >
         <v-icon
-            color="black"
-            left
         >mdi-plus
         </v-icon>
-        {{ $t('Reservation') }}
-      </v-card>
+      </v-btn>
     </v-app-bar>
     <v-card rounded="lg">
       <div
           class="d-flex align-start"
           style="height: calc(100vh - 64px);
           width: 100vw;
-
           overflow-x: scroll;overflow-y: scroll;"
       >
-        <div
-            style="width: 72px;height: 300px"
-            class="flex-shrink-0 grey lighten-3"
-        ></div>
         <v-card
-            flat
             tile
             rounded="lg"
-            style="position: fixed;left: 72px;top:92px; z-index: 4;"
+            style="position: sticky;display:grid;grid-auto-flow: row;
+            grid-template-rows: 36px;
+            grid-gap: 2px;
+            left: 0;top:0; z-index: 4;"
             class="white"
         >
-          <div style="height: 28px" class="px-2 text-body-2">
+          <div></div>
+          <div
+              style="height: 36px"
+              class="px-2 text-body-2"
+          >
             Seated
           </div>
           <div
+              :class="i%2===0?'grey lighten-2':'grey lighten-4'"
               class="d-flex align-center px-2 font-weight-black"
-              style="height: 32px;width: 72px"
-              v-for="t in tableList"
+              style="height: 36px;width: 72px"
+              v-for="(t,i) in tableList"
               :key="t.id"
           >
             {{ t.tableName }}
@@ -98,12 +105,12 @@
           </div>
         </v-card>
         <div
-            style="display: grid;grid-gap: 2px;"
+            style="display: grid;grid-gap: 2px;position: relative"
             :style="{gridTemplateColumns:'repeat('+timeSlot.length+',40px)',
-             gridTemplateRows:'repeat('+tableList.length+',auto)',
+             gridTemplateRows:'repeat('+(tableList.length+2)+',36px)',
              }"
         >
-          <template v-for="t in timeSlot.filter(it=>it.endsWith('00'))">
+          <template v-for="t in bigTime">
             <div
                 :key="t"
                 class="grey lighten-2 pa-1 text-caption"
@@ -112,37 +119,102 @@
               {{ t }}
             </div>
           </template>
-          <template v-for="t in timeSlot.filter(it=>it.endsWith('15')||it.endsWith('30'))">
+          <template v-for="t in seatedInfo">
             <div
-                :key="t"
+                :key="t.time"
                 class="grey lighten-5 pa-1 text-center text-body-2"
                 style="width: 100%;height: 100%;grid-column:span 2"
             >
-              0
+              {{ t.count }}
             </div>
           </template>
-          <template v-for="(r,i) in tableList">
-            <template v-for="t in timeSlot">
-              <div
-                  :key="t+r.id"
-                  style="width: 100%;height:30px"
-                  :class="i%2===1?'grey lighten-4':'grey lighten-2'"
-              ></div>
+          <canvas
+              ref="background"
+              class=""
+              :width="containerWidth"
+              :height="containerHeight"
+              style="position: absolute;"
+              :style="{
+            gridColumn:'0 / '+timeSlot.length,
+            gridRow:'3 / '+(tableList.length+6)
+          }"
+          ></canvas>
+          <v-card
+              color="transparent"
+              flat
+              tile
+              :width="containerWidth"
+              :height="containerHeight"
+              style="position: absolute;"
+              :style="{
+            gridColumn:'0 / '+timeSlot.length,
+            gridRow:'3 / '+(tableList.length+6)
+          }"
+          >
+            <vue-draggable-resizable
+                v-for="r in reservations"
+                :key="r.id"
+                :draggable="true"
+                :grid="[40,36]"
+                :h="36"
+                :parent="true"
+                :prevent-deactivation="false"
+                active-class=""
+                :resizable="false"
+                :snap="true"
+                :x="r.grid.x"
+                :y="r.grid.y"
+                :w="r.grid.w"
+                class-name-dragging="dragging"
+                @dragstop="(...args)=>onDrag(r,...args)"
+            >
+              <v-card
+
+                  color="rgba(0,0,0,.64)"
+                  height="36"
+                  class="pa-2 white--text text-caption d-flex align-center reservationCard"
+                  style="position: absolute;width: 100%"
+                  :style="{
+              gridColumn:r.grid.xStart+' / '+r.grid.xEnd,
+              gridRow:r.grid.y
+            }"
+              >
+                <v-icon
+                    small
+                    class="mr-2"
+                    color="white"
+                    @click="toggleActiveReservation(r)"
+                >mdi-arrow-expand
+                </v-icon>
+                {{ r.firstName }} {{ r.lastName }}
+                <v-spacer></v-spacer>
+                <v-icon
+                    small
+                    class="mr-2"
+                    color="white"
+                >mdi-account
+                </v-icon>
+                {{ r.personCount }}
+                <template v-if="r.childCount>0">
+                  <v-icon
+                      small
+                      class="mx-2"
+                      color="white"
+                  >mdi-human-child
+                  </v-icon>
+                  {{ r.childCount }}
+                </template>
+              </v-card>
+            </vue-draggable-resizable>
+            <template>
+
             </template>
-          </template>
+
+          </v-card>
+
         </div>
         <template v-if="false">
           <template v-if="!notActive">
-            <div class="d-flex flex-column">
-              <v-date-picker
-                  v-model="reservationDate"
-                  :locale="$i18n.locale"
-                  :min="todayDate"
-                  color="primary"
-                  full-width
-                  style="border-radius: 12px"
-              />
-            </div>
             <v-card
                 elevation="0"
                 style="border-radius: 12px"
@@ -158,17 +230,6 @@
                   <v-icon left>mdi-refresh</v-icon>
                   {{ $t('reload') }}
                 </v-btn>
-                <div
-                    class="d-flex align-center text-body-2 mr-2"
-                    @click="showAllReservation=!showAllReservation"
-                >
-                  <v-simple-checkbox
-                      v-model="showAllReservation"
-                      dense
-                      hide-details
-                  ></v-simple-checkbox>
-                  {{ $t('DisplayAll') }}
-                </div>
                 <div style="max-width: 196px">
                   <v-text-field
                       v-model="search"
@@ -751,10 +812,14 @@ import { showSuccessMessage, sureTo } from '@/api/api'
 import i18n from '@/i18n'
 import NoContentDisplay from '@/views/FirstPage/widget/NoContentDisplay.vue'
 import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
+import dayjs from 'dayjs'
+import { dragscroll } from 'vue-dragscroll/src/main'
 
 export default {
   name: 'Reservation',
-  components: { NoContentDisplay },
+  components: {
+    NoContentDisplay
+  },
   data: function () {
     return {
       notActive: true,
@@ -821,7 +886,37 @@ export default {
   computed: {
     displayReservationItems () {
       return this.reservations.filter(item => (this.showAllReservation || item.completed === '0'))
+    },
+    containerWidth () {
+      return (this.timeSlot.length * 40) + (this.timeSlot.length - 1) * 2
+    },
+    containerHeight () {
+      return (this.tableList.length * 36) + (this.tableList.length - 1) * 2
+    },
+    bigTime () {
+      console.log(this.timeSlot.filter(it => it.endsWith('00')))
+      return this.timeSlot.filter(it => it.endsWith('00'))
+    },
+    seatedInfo () {
+      const list = this.timeSlot.filter(it => it.endsWith('00') || it.endsWith('30'))
+      return list.map(it => {
+        let seatCount = 0
+        const target = dayjs(this.reservationDate + ' ' + it)
+        this.reservations.forEach(r => {
+          const [start, end] = [r.fromDateTime, r.toDateTime].map(t => dayjs(t))
+          if (target.isBefore(end) && target.add(30, 'm').isAfter(start)) {
+            seatCount++
+          }
+        })
+        return {
+          time: it,
+          count: seatCount
+        }
+      })
     }
+  },
+  directives: {
+    dragscroll
   },
   watch: {
     reservationDate (val) {
@@ -832,6 +927,10 @@ export default {
     }
   },
   methods: {
+    dayjs,
+    onDrag: function (table, x, y) {
+      console.log(table, x, y)
+    },
     filterItem (value, search, item) {
       if (search.trim() === '') {
         return true
@@ -870,8 +969,7 @@ export default {
     async confirmReservation (id) {
       await sureTo(
         async () => {
-          const res = await confirmReservation(id)
-          console.log(res)
+          await confirmReservation(id)
         })
       await this.loadData()
     },
@@ -893,7 +991,6 @@ export default {
         useStroller: this.useStroller ? 1 : 0,
         userId: this.userId
       })
-      console.log(res)
       if (res.message === '已预定') {
         IKUtils.showError(this.$t('emailAlreadyOrder') + '!')
         this.email = ''
@@ -937,13 +1034,34 @@ export default {
     async loadData () {
       const activeReservationStoreList = (await getReservationUserList()).map(it => it.id)
       this.notActive = !activeReservationStoreList.includes(parseInt(await getCurrentDeviceId()))
-      await this.loadReservations()
       await this.getTables()
+      await this.loadReservations()
+
       this.activeReservation = null
       this.setting = await loadReserveSettings()
       this.timeGap = await getTimeSlotForDate(this.reservationDate, this.setting)
-
       this.userId = parseInt(GlobalConfig.DeviceId)
+      this.$nextTick(() => {
+        if (this.$refs.background) {
+          const ctx = this.$refs.background.getContext('2d')
+          const maxHeight = this.tableList.length * 36 + (this.tableList.length - 1) * 2
+          const maxWidth = this.timeSlot.length * 40 + (this.timeSlot.length - 1) * 2
+          let currentX = 0
+          let currentY = 0
+          ctx.fillStyle = '#e0e0e0'
+          ctx.clearRect(0, 0, maxWidth, maxHeight)
+
+          this.tableList.forEach(() => {
+            currentX = 0
+            this.timeSlot.forEach(() => {
+              ctx.fillRect(currentX, currentY, 40, 36)
+              currentX += 40 + 2
+            })
+            ctx.fillStyle = ctx.fillStyle === '#e0e0e0' ? '#f5f5f5' : '#e0e0e0'
+            currentY += 36 + 2
+          })
+        }
+      })
     },
     async getTables () {
       this.tableList = await loadReservationTableInfo()
@@ -953,7 +1071,17 @@ export default {
       await this.getTables()
     },
     async loadReservations () {
-      this.reservations = (await getReservation(this.reservationDate))
+      this.reservations = (await getReservation(this.reservationDate)).map(it => {
+        const xIndex = this.timeSlot.findIndex(t => dayjs(it.fromDateTime).format('HH:mm') === t)
+        const xStopIndex = this.timeSlot.findIndex(t => dayjs(it.toDateTime).format('HH:mm') === t)
+        const yIndex = this.tableList.findIndex(t => parseInt(t.tableId) === parseInt(it.tableId))
+        it.grid = {
+          x: xIndex * 40 + (xIndex - 1) * 2,
+          w: (xStopIndex - xIndex) * 40 + (xStopIndex - xIndex) * 2,
+          y: yIndex * 36 + (yIndex - 1) * 2
+        }
+        return it
+      })
     }
   },
   async mounted () {
@@ -963,5 +1091,8 @@ export default {
 </script>
 
 <style scoped>
+.reservationCard:hover {
+  background-color: black !important;
+}
 
 </style>

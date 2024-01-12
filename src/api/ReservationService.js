@@ -99,6 +99,8 @@ export async function cancelReservation (reservationId) {
 export async function getTimeSlotForDate (date, setting) {
   const targetDayOfWeek = dayjs(date, standardDateTemplate).isoWeekday()
   const duration = setting.gap
+  console.log((setting.weeklySettings
+    .find(it => parseInt(it.dayOfWeek) === targetDayOfWeek)))
   return (setting.weeklySettings
     .find(it => parseInt(it.dayOfWeek) === targetDayOfWeek)?.openingTimespan ?? [])
     .map(it => sliceTime(date + ' ' + it.from, date + ' ' + it.to, duration))
