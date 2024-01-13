@@ -72,6 +72,7 @@
     <v-card rounded="lg">
       <div
           class="d-flex align-start"
+          ref="mainContainer"
           style="height: calc(100vh - 64px);
           width: 100vw;
           overflow-x: scroll;overflow-y: scroll;"
@@ -140,9 +141,8 @@
               style="position: absolute;"
           ></div>
           <div
-              class="rounded-sm"
+              class="rounded-sm indigo lighten-4"
               :style="{
-    backgroundColor: 'red',
     height:(containerHeight+72)+'px',
     width: '8px',
     left:currentTimePosition+'px',
@@ -1060,6 +1060,7 @@ export default {
       }
       timer = setInterval(() => {
         const timeNowMinute = dayjs().diff(dayjs().set('h', 7), 'm')
+        console.log(timeNowMinute, 'minute')
         const totalMinute = 19 * 60
         this.currentTimePosition = timeNowMinute / totalMinute * this.containerWidth
         console.log(this.currentTimePosition, 'pos x')
