@@ -137,7 +137,8 @@
                 </div>
                 <div
                     class="mt-4"
-                    style="display: grid;grid-gap: 12px;overflow-y: scroll;max-height:calc(100vh - 150px) ;"
+                    style="display: grid;grid-gap: 12px;overflow-y: scroll;
+                    max-height:calc(100vh - 150px) ;"
                 >
                   <takeaway-order-item
                       v-for="t in notAccepted"
@@ -165,15 +166,15 @@
                 </div>
                 <div
                     class="mt-4"
-                    style="display: grid;grid-gap: 12px;overflow-y: scroll;"
+                    style="display: grid;grid-gap: 12px;overflow-y: scroll; max-height:calc(100vh - 150px) ;"
                 >
-                  <table-grid-item
+                  <takeaway-order-item
                       v-for="t in accepted"
                       :key="t.tableName"
                       :big-card="true"
                       :table-info="t"
-                      @click="openOrEnterTable(t.tableName)"
                       @click-ok="updateStatus(t.id)"
+                      @click="openOrEnterTable(t.tableName)"
                   />
                 </div>
 
@@ -192,13 +193,12 @@
                     class="mt-4"
                     style="display: grid;grid-gap: 12px;overflow-y: scroll;"
                 >
-                  <pick-up-item
+                  <takeaway-order-item
                       v-for="t in picked"
                       :key="t.tableName"
                       :big-card="true"
                       :table-info="t"
                       @click="openOrEnterTable(t.tableName)"
-
                   />
                 </div>
 
@@ -269,16 +269,6 @@
                           hide-details
                       ></v-switch>
                     </div>
-                    <!--                <div class="py-2 d-flex align-center">-->
-                    <!--                  自动接单-->
-                    <!--                  <v-spacer></v-spacer>-->
-                    <!--                  <v-switch hide-details class="mt-0" color="warning"></v-switch>-->
-                    <!--                </div>-->
-                    <!--                <div class="py-2 d-flex align-center">-->
-                    <!--                  接受配送订单-->
-                    <!--                  <v-spacer></v-spacer>-->
-                    <!--                  <v-switch hide-details class="mt-0" color="warning"></v-switch>-->
-                    <!--                </div>-->
                   </div>
 
                 </v-card>
@@ -541,9 +531,7 @@ import TrailingNumber from '@/views/FirstPage/widget/TrailingNumber'
 import TableBluePrint from '@/views/FirstPage/Table/Table/TableBluePrint'
 import TimeDisplay from '@/components/Base/TimeDisplay'
 import TakeawayOrderItem from '@/views/FirstPage/Table/Table/Item/TakeawayOrderItem'
-import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
 import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
-import PickUpItem from '@/views/FirstPage/Table/Table/Item/PickUpItem.vue'
 import NoContentDisplay from '@/views/FirstPage/widget/NoContentDisplay.vue'
 import { addToQueue } from '@/oldjs/poolJobs'
 import { endWork, servantWorkStatus, startWork } from '@/api/servantRecords'
@@ -567,11 +555,9 @@ export default {
   components: {
     RestaurantLogoDisplay,
     NoContentDisplay,
-    PickUpItem,
     KeyboardLayout,
     TakeawayOrderItem,
     TrailingNumber,
-    TableGridItem,
     TableListItem,
     TableBluePrint,
     TimeDisplay,

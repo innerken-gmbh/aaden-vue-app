@@ -28,6 +28,9 @@ export default new Vuex.Store({
     requiredTableKey: 'tableName',
 
     showErrorDialog: false,
+    showOrderAcceptDialog: false,
+    orderResolve: null,
+
     errorDialogTitle: '',
     errorDialogMessage: '',
     billDetailQr: '',
@@ -35,6 +38,11 @@ export default new Vuex.Store({
     showBillDetailQRDialog: false
   },
   mutations: {
+
+    hideOrderAcceptDialog (state) {
+      state.showOrderAcceptDialog = false
+      state.orderResolve = null
+    },
     showBillDetailQRDialog (state, payload) {
       state.showBillDetailQRDialog = true
       state.billDetailQr = payload.code
@@ -97,6 +105,13 @@ export default new Vuex.Store({
       return state.tableSelectDialogShow || state.pinDialogShow
     }
   },
-  actions: {},
+  actions: {
+    async showOrderAcceptDialog ({ state }) {
+      state.showOrderAcceptDialog = true
+      return await new Promise(resolve => {
+        state.orderResolve = resolve
+      })
+    }
+  },
   modules: {}
 })
