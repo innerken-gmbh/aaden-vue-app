@@ -144,6 +144,7 @@
                       :key="t.tableName"
                       :big-card="true"
                       :table-info="t"
+                      @address="showAddress"
                       @accept="acceptOrder"
                       @click="openOrEnterTable(t.tableName)"
                       @reject="rejectOrder"
@@ -174,6 +175,7 @@
                       :key="t.tableName"
                       :big-card="true"
                       :table-info="t"
+                      @address="showAddress"
                       @checkout="checkoutForTable(t.tableId,t.totalPrice)"
                       @click-ok="updateStatus(t.id)"
                       @click="openOrEnterTable(t.tableName)"
@@ -201,6 +203,7 @@
                       :key="t.tableName"
                       :big-card="true"
                       :table-info="t"
+                      @address="showAddress"
                       @checkout="checkoutForTable(t.tableId,t.totalPrice)"
                       @click="openOrEnterTable(t.tableName)"
                   />
@@ -404,33 +407,7 @@
           </div>
 
         </v-card>
-        <v-dialog
-            v-model="noNetwork"
-            fullscreen
-        >
-          <v-card tile>
-            <v-card
-                class="pa-4"
-                height="100vh"
-                width="100vw"
-            >
-              <no-content-display
-                  :desc="$t('CheckNetworkOrCallCustomerService')"
-                  :title="$t('NoConnectionLocalOrRemote')"
-                  icon="mdi-wifi-sync"
-              >
-                <v-btn
-                    class="mt-4"
-                    elevation="0"
-                    @click="reload"
-                >
-                  <v-icon left>mdi-refresh</v-icon>
-                  {{ $t('reload') }}
-                </v-btn>
-              </no-content-display>
-            </v-card>
-          </v-card>
-        </v-dialog>
+
       </v-card>
 
     </v-card>
@@ -504,19 +481,52 @@
         </template>
       </v-card>
     </v-dialog>
+    <v-dialog
+        v-model="noNetwork"
+        fullscreen
+    >
+      <v-card tile>
+        <v-card
+            class="pa-4"
+            height="100vh"
+            width="100vw"
+        >
+          <no-content-display
+              :desc="$t('CheckNetworkOrCallCustomerService')"
+              :title="$t('NoConnectionLocalOrRemote')"
+              icon="mdi-wifi-sync"
+          >
+            <v-btn
+                class="mt-4"
+                elevation="0"
+                @click="reload"
+            >
+              <v-icon left>mdi-refresh</v-icon>
+              {{ $t('reload') }}
+            </v-btn>
+          </no-content-display>
+        </v-card>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+        max-width="400"
+        v-model="showAddressDialog"
+    >
+      <v-card rounded="lg" class="pa-4">
+        <addresses-card
+            :raw-address-info="currentAddress"
+            v-if="currentAddress"
+        ></addresses-card>
+      </v-card>
+
+    </v-dialog>
 
   </div>
 </template>
 
 <script>
 import { version } from '../../../package.json'
-import {
-  findConsumeTypeById,
-  getConsumeTypeList,
-  openOrEnterTable,
-  popAuthorize,
-  requestOutTable
-} from '@/oldjs/common'
+import { getConsumeTypeList, openOrEnterTable, popAuthorize, requestOutTable } from '@/oldjs/common'
 import Swal from 'sweetalert2'
 import { dragscroll } from 'vue-dragscroll'
 
@@ -543,6 +553,7 @@ import dayjs from 'dayjs'
 import IKUtils from 'innerken-js-utils'
 import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
 import { checkout } from '@/api/Repository/OrderInfo'
+import AddressesCard from '@/views/TablePage/Address/AddressesCard.vue'
 
 const keyboardLayout =
     [
@@ -558,6 +569,7 @@ export default {
     dragscroll
   },
   components: {
+    AddressesCard,
     RestaurantLogoDisplay,
     NoContentDisplay,
     KeyboardLayout,
@@ -580,6 +592,7 @@ export default {
       servantWorkStatus: null,
       servant: {},
       showServantStatus: false,
+
       noNetwork: false,
       storeListOfId: [],
       showKeyboard: false,
@@ -588,21 +601,20 @@ export default {
       restaurantInfo: null,
       takeawayEnabled: null,
 
-      menu: null,
-      menu1: null,
-
       servantList: [],
       version: version,
 
       buffer: '',
       ins: {},
-
       Config: GlobalConfig,
       tableList: [],
       currentView: parseInt(Remember.currentView),
       showOtherOrder: Remember.showOtherOrder,
       loading: false,
-      lock: false
+      lock: false,
+
+      currentAddress: null,
+      showAddressDialog: false
 
     }
   },
@@ -692,6 +704,11 @@ export default {
     }
   },
   methods: {
+    showAddress (addressInfo) {
+      console.log(addressInfo)
+      this.currentAddress = addressInfo
+      this.showAddressDialog = true
+    },
     async gotoWork () {
       this.servantWorkStatus = await startWork(this.servant.id, '')
       if (this.servantWorkStatus.correction === 0) {
@@ -779,13 +796,6 @@ export default {
       } catch (e) {
       }
     },
-    findConsumeTypeColorById (id) {
-      return findConsumeTypeById(id)?.color ?? this.$vuetify.theme.currentTheme.primary
-    },
-    findConsumeTypeById (id) {
-      return findConsumeTypeById(id).name
-    },
-
     openOrEnterTable: openOrEnterTable,
     ...mapMutations(['HIDE_AUTHORIZE_DIALOG']),
     initialUI () {
@@ -846,7 +856,7 @@ export default {
       }
     },
     anyMenuOpen () {
-      return Swal.isVisible() || this.menu
+      return Swal.isVisible()
     },
     ...mapActions(['doCheckout']),
     async checkoutForTable (tableId, totalPrice) {

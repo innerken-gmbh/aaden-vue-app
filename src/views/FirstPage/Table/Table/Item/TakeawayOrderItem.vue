@@ -110,7 +110,7 @@
           </v-card>
           <v-card
               v-if="table.addressInfo.firstName||table.addressInfo.lastName"
-              @click.stop="$emit('address',tableInfo.tableId)"
+              @click.stop="$emit('address',table.addressInfo)"
               flat
               rounded="xl"
               color="grey lighten-4"

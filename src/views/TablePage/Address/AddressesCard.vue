@@ -1,12 +1,22 @@
 <template>
   <v-card
-      class="d-flex pa-4 flex-column justify-center align-start"
+      class="d-flex flex-column justify-center align-start"
       color="transparent"
       elevation="0"
   >
-    <div class="text-h4 font-weight-black">{{ $t('CurrentAddress') }}</div>
-    <div class="text-body-1 mt-2">
-      <div class="font-weight-bold text-capitalize">
+    <div class="text-h6 d-flex align-center">
+      <v-icon
+          class="mr-4"
+          large
+          color="black"
+      >mdi-map-marker
+      </v-icon>
+      Address Info
+    </div>
+
+    <div class="text-body-1 mt-2 px-2">
+
+      <div class="font-weight-bold text-capitalize mt-8">
         {{ address.firstName }} {{ address.lastName }}
       </div>
       <filter-empty-string-displayer :data="address.addressLine1">
@@ -28,16 +38,6 @@
         {{ address.date }}
       </div>
     </div>
-    <v-btn
-        @click="$emit('change')"
-        color="grey lighten-2"
-        elevation="0"
-        class="mt-4"
-    >
-      <v-icon left>mdi-swap-horizontal</v-icon>
-      {{ $t('ChangeAdress') }}
-    </v-btn>
-
   </v-card>
 </template>
 
