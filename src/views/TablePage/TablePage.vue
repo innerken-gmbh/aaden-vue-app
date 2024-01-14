@@ -597,7 +597,6 @@ export default {
       deleteDishReason: '',
       deleteDishReasonDialog: false,
       useDishesDiscount: false,
-      checkoutShow: false,
       extraDishShow: false,
       modificationShow: false,
       discountModelShow: null,
@@ -605,13 +604,6 @@ export default {
       consumeTypeDialogShow: false,
       isSendingRequest: false,
       oldMod: null,
-      checkOutType: 'checkOut',
-      checkOutModel: {
-        total: 0,
-        count: 0,
-        list: []
-      },
-
       currentView: 'Menu',
       discountRatio: 1,
       discountStr: null,
@@ -619,7 +611,6 @@ export default {
       dish: {},
       consumeTypeList: [],
       count: 1,
-
       Config: GlobalConfig,
       //* */
       splitOrderListModel: splitOrderFactory,
@@ -687,10 +678,7 @@ export default {
     changeModification: function (val) {
       this.modificationShow = val
     },
-    changeCheckOut: function (val) {
-      this.checkoutShow = val
-      this.initialUI()
-    },
+
     async getOrderedDish () {
       try {
         if (
@@ -731,11 +719,10 @@ export default {
       this.discountModelShow = true
       this.useDishesDiscount = false
     },
-    async findAndOrderDish (code, count = 1, overrideConsumeTypeId) {
+    async findAndOrderDish (code, count = 1) {
       if (count < 1) {
         return
       }
-      this.overrideConsumeTypeId = overrideConsumeTypeId
       const dish = findDish(code)
       if (dish) {
         if (
@@ -903,9 +890,6 @@ export default {
         this.buffetDialogShow = false
       } else if (this.modificationShow) {
         this.cancel()
-      } else if (this.checkoutShow) {
-        this.checkoutShow = false
-        this.initialUI()
       } else if (this.splitOrderListModel.list.length > 0) {
         this.removeAllFromSplitOrder()
       } else if (this.cartListModel.list.length > 0) {
