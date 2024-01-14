@@ -26,33 +26,14 @@ export default {
   },
   props: {
     rawAddressInfo: {},
-    consumeTypeStatusId: {},
-    shouldOpenMenu: {
-      default: false
-    }
-  },
-  data: function () {
-    return {
-      showMenu: null
-    }
+    consumeTypeStatusId: {}
   },
   methods: {
-    openAddressForm () {
-      this.showMenu = !this.showMenu
-    },
     submit (event) {
       this.$emit('address-change', event)
     },
     deleteAddress () {
       this.$emit('address-change', {})
-    }
-  },
-  watch: {
-    showMenu: function (val) {
-      this.$emit('update:shouldOpenMenu', val)
-    },
-    shouldOpenMenu: async function (val) {
-      this.showMenu = val
     }
   },
   computed: {

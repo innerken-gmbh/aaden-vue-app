@@ -1,18 +1,35 @@
 <template>
-  <div v-ripple @click="$emit('click',keyName)"
-       style="height: 72px;font-size: 24px;font-weight: 600;background: #f6f6f6;border-radius: 8px"
-       class="d-flex justify-center align-center">
+  <v-card
+      flat
+      :color="color"
+      @click="$emit('click',keyName)"
+      :style="{fontSize:keyNameText.length<6?'22px':'14px'}"
+      style="height: 72px;font-size: 24px;
+       font-weight: 600;
+       ;border-radius: 8px"
+      class="d-flex justify-center align-center font-weight-black text-center"
+  >
     <template v-if="keyName.startsWith('mdi')">
       <v-icon large>{{ keyName }}</v-icon>
     </template>
-    <template v-else>{{ !isNaN(keyName) ? keyName : $t(keyName) }}</template>
-  </div>
+    <template v-else>
+      {{ keyNameText }}
+    </template>
+  </v-card>
 </template>
 
 <script>
 export default {
   name: 'Key',
-  props: { keyName: { default: '' } }
+  props: {
+    keyName: { default: '' },
+    color: { default: 'grey lighten-4' }
+  },
+  computed: {
+    keyNameText () {
+      return !isNaN(this.keyName) ? this.keyName : this.$t(this.keyName)
+    }
+  }
 }
 </script>
 

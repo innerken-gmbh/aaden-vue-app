@@ -105,8 +105,6 @@
                     :consume-type-status-id="consumeTypeStatusId"
                     :raw-address-info="realAddressInfo"
                     class="mr-2"
-                    @accept="acceptOrderWithTime"
-                    @reject="rejectOrder"
                     @address-change="submitRawAddressInfo"
                 />
               </template>
@@ -552,6 +550,7 @@ import { cartListFactory } from '@/views/TablePage/cart'
 import MenuFragement from '@/views/TablePage/OrderFragment/MenuFragement.vue'
 import NavButton from '@/components/navigation/NavButton.vue'
 import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
+import { mapActions } from 'vuex'
 
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
@@ -1063,24 +1062,26 @@ export default {
         }
       }
     },
+    ...mapActions(['showOrderAcceptDialog']),
     async acceptOrder (reason = 'ok') {
-      await acceptOrder(reason, this.id)
-      await this.initialUI()
-    },
-    async acceptOrderWithTime (time) {
-      console.log(this.realAddressInfo)
-      const addressInfo = this.realAddressInfo
-      let timeReal = dayjs()
-      if (addressInfo) {
-        if (addressInfo.date && addressInfo.time) {
-          timeReal = dayjs(
-            addressInfo.date + ' ' + addressInfo.time,
-            'YYYY-MM-DD HH:mm'
-          )
+      let time = null
+      if (this.consumeTypeId === 2) {
+        const t = await this.showOrderAcceptDialog()
+        const addressInfo = this.realAddressInfo
+        let timeReal = dayjs()
+        if (addressInfo) {
+          if (addressInfo.date && addressInfo.time) {
+            timeReal = dayjs(
+              addressInfo.date + ' ' + addressInfo.time,
+              'YYYY-MM-DD HH:mm'
+            )
+          }
         }
+        timeReal = timeReal.add(t, 'm')
+        time = timeReal.format('DD.MM.YYYY HH:mm')
       }
-      timeReal = timeReal.add(time, 'm')
-      await this.acceptOrder(timeReal.format('DD.MM.YYYY HH:mm'))
+      await acceptOrder(time ?? reason, this.id)
+      await this.initialUI()
     },
     async rejectOrder () {
       const res = await fastSweetAlertRequest(
@@ -1265,21 +1266,6 @@ export default {
             }
           })
         }
-      } else if (this.consumeTypeId === 2) {
-        normalActions.push(...[0, 15, 20, 30, 60].map(it => ({
-          icon: it,
-          color: 'green',
-          action: () => {
-            this.acceptOrderWithTime(it)
-          }
-        })))
-        normalActions.push({
-          icon: 'mdi-close',
-          color: 'red',
-          action: () => {
-            this.rejectOrder()
-          }
-        })
       } else if (this.consumeTypeStatusId < 2) {
         normalActions.push({
           icon: 'mdi-check',

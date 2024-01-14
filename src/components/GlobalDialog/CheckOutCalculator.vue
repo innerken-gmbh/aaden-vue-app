@@ -15,32 +15,52 @@
     </div>
     <template v-else>
       <v-card
-          class="pa-3 d-flex align-center"
-          color="grey lighten-3"
+          dark
+          class="pa-3"
+          color="black"
           elevation="0"
           style="width: 100%"
           tile
       >
-        <div class="text-h6">{{ $t('BillPlease') }}</div>
-        <v-spacer></v-spacer>
-        <v-btn
-            icon
-            @click="cancel"
+        <div class="d-flex align-center mb-1">
+          <div class="d-flex align-center">
+            <div class="mr-2">
+              <v-icon>mdi-wallet</v-icon>
+            </div>
+            <div class="font-weight-black text-body-1">
+              {{ total | priceDisplay }}
+            </div>
+          </div>
+          <v-spacer></v-spacer>
+          <v-btn
+              icon
+              @click="cancel"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </div>
+        <div
+            class="mt-4"
+            v-if="Math.abs(remainTotal - total) > 0.001 && remainTotal !== 0"
         >
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
+          <div
+              @click="paymentLog=[]"
+
+              class="d-flex align-center text-body-1"
+          >
+            <div>
+              {{ $t('PaymentStillRequired') }}
+            </div>
+            <v-spacer></v-spacer>
+            <span class="font-weight-black">{{ remainTotal | priceDisplay }}</span>
+          </div>
+        </div>
+
       </v-card>
       <div
           class="flex-grow-1 d-flex flex-column"
           style="width: 400px"
       >
-        <div class="d-flex grey lighten-4 text-body-1 pa-2 px-3">
-          <div>{{ $t('TotalPrice') }}</div>
-          <v-spacer></v-spacer>
-          <div class="mt-1 font-weight-regular">
-            {{ total | priceDisplay }}
-          </div>
-        </div>
         <div
             v-if="readyToCheckOut"
             class="paymentLog flex-grow-1"
@@ -216,35 +236,23 @@
                 <v-icon right>mdi-check</v-icon>
               </v-btn>
             </div>
-
           </div>
         </div>
         <v-card
             v-else
-            class="calculator pa-2 px-3 d-flex flex-column"
+            class="pa-2 px-3 d-flex flex-column"
             elevation="1"
             style="width: 100%; height: 100%"
             tile
         >
           <v-card
-              v-if="Math.abs(remainTotal - total) > 0.001 && remainTotal !== 0"
-              class="pa-4 mt-1 d-flex align-center"
-              color="#f6f6f6"
-              elevation="0"
-          >
-            <div class="text-body-1">
-              {{ $t('PaymentStillRequired') }}
-            </div>
-            <v-spacer></v-spacer>
-            <span class="totalNumber">{{ remainTotal | priceDisplay }}</span>
-          </v-card>
-          <v-card
               v-if="remainTotal !== 0"
               class="pa-4 mt-1 d-flex align-center"
-              color="amber lighten-4"
+              color="grey lighten-4"
               elevation="0"
+              rounded="lg"
           >
-            <div class="text-body-1">
+            <div class="text-body-1 font-weight-black">
               {{ $t('PayWillHaveTo') }}
             </div>
             <v-spacer></v-spacer>
@@ -261,25 +269,6 @@
                 :keys="keyArr"
                 @input="input"
             />
-          </div>
-          <v-divider class="my-4"/>
-          <div>
-            <div
-                class="pa-1"
-                style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-gap: 8px"
-            >
-              <v-card
-                  v-for="(item, index) in realExtraPaymentMethodName"
-                  :key="index"
-                  class="pa-2 text-body-2"
-                  color="grey lighten-4"
-                  elevation="0"
-                  style="height: 48px"
-                  @click="input(item)"
-              >
-                {{ item === 'coupon' ? $t('Coupon') : item }}
-              </v-card>
-            </div>
           </div>
         </v-card>
       </div>
@@ -362,7 +351,10 @@ export default {
           '1',
           '2',
           '3',
-          'mdi-backspace',
+          {
+            name: 'mdi-backspace',
+            color: 'pink lighten-4'
+          },
           '4',
           '5',
           '6',
@@ -370,24 +362,54 @@ export default {
           '7',
           '8',
           '9',
-          fixedNames.card,
-          'AC',
+          {
+            name: fixedNames.card,
+            color: 'green lighten-4'
+          },
+          {
+            name: 'AC',
+            color: 'red lighten-4'
+          },
           '0',
           'mdi-circle-small',
-          fixedNames.cash
+          {
+            name: fixedNames.cash,
+            color: 'amber lighten-4'
+          },
+          ...this.realExtraPaymentMethodName.map(it => ({
+            name: it,
+            color: 'grey lighten-5'
+          }))
         ]
       } else {
         return ['1',
           '2',
           '3',
-          'mdi-backspace',
+          {
+            name: 'mdi-backspace',
+            color: 'pink lighten-4'
+          },
           '4',
           '5',
           '6',
           '',
           '7',
           '8',
-          '9', fixedNames.tip, 'AC', '0', '', fixedNames.return]
+          '9',
+          {
+            name: fixedNames.tip,
+            color: 'green lighten-4'
+          },
+          {
+            name: 'AC',
+            color: 'red lighten-4'
+          },
+          '0', '',
+          {
+            name: fixedNames.return,
+            color: 'amber lighten-4'
+          }
+        ]
       }
     },
     realExtraPaymentMethodName: function () {

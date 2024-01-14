@@ -35,7 +35,11 @@ export default new Vuex.Store({
     errorDialogMessage: '',
     billDetailQr: '',
     billDetailUrlHead: '',
-    showBillDetailQRDialog: false
+    showBillDetailQRDialog: false,
+
+    showCheckoutDialog: false,
+    checkoutTotal: 0,
+    checkoutResolve: null
   },
   mutations: {
 
@@ -108,6 +112,13 @@ export default new Vuex.Store({
   actions: {
     async showOrderAcceptDialog ({ state }) {
       state.showOrderAcceptDialog = true
+      return await new Promise(resolve => {
+        state.orderResolve = resolve
+      })
+    },
+    async doCheckout ({ state }, amount) {
+      state.showCheckoutDialog = true
+      state.checkoutTotal = amount
       return await new Promise(resolve => {
         state.orderResolve = resolve
       })

@@ -106,7 +106,7 @@
               color="grey lighten-4"
               class="pa-1 mr-1"
           >
-            <v-icon color="black">mdi-shopping</v-icon>
+            <v-icon color="grey darken-2">mdi-shopping</v-icon>
           </v-card>
           <v-card
               v-if="table.addressInfo.firstName||table.addressInfo.lastName"
@@ -116,7 +116,7 @@
               color="grey lighten-4"
               class="pa-1 mr-1"
           >
-            <v-icon color="black">mdi-map-marker</v-icon>
+            <v-icon color="grey darken-2">mdi-map-marker</v-icon>
           </v-card>
           <v-card
               @click.stop="$emit('checkout',tableInfo.tableId)"
@@ -125,7 +125,7 @@
               color="grey lighten-4"
               class="pa-1 mr-1"
           >
-            <v-icon color="black">mdi-wallet</v-icon>
+            <v-icon color="grey darken-2">mdi-wallet</v-icon>
           </v-card>
         </template>
 

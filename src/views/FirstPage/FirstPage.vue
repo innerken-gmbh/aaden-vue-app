@@ -158,6 +158,7 @@
                   elevation="0"
                   height="calc(100vh - 96px)"
                   style="border-radius: 12px"
+                  width="100%"
               >
                 <div class="text-subtitle-2">{{ $t('ReceivedOrders') }}
                   <trailing-number>
@@ -166,7 +167,8 @@
                 </div>
                 <div
                     class="mt-4"
-                    style="display: grid;grid-gap: 12px;overflow-y: scroll; max-height:calc(100vh - 150px) ;"
+                    style="display: grid;grid-gap: 12px;overflow-y: scroll;
+                    max-height:calc(100vh - 150px) ;"
                 >
                   <takeaway-order-item
                       v-for="t in accepted"
@@ -191,7 +193,8 @@
                 </div>
                 <div
                     class="mt-4"
-                    style="display: grid;grid-gap: 12px;overflow-y: scroll;"
+                    style="display: grid;grid-gap: 12px;overflow-y: scroll;
+                    max-height:calc(100vh - 150px) ;"
                 >
                   <takeaway-order-item
                       v-for="t in picked"
