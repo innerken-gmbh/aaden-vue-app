@@ -10,7 +10,6 @@
         mini-variant-width="72"
         permanent
         stateless
-        style="z-index: 100;"
     >
       <div
           class="d-flex flex-column py-4 pt-3"
@@ -241,7 +240,7 @@
             background: rgba(0, 0, 0, 0.4);
             top: 0;
             height: 100vh;
-            z-index: 50;
+            z-index: 1;
             left: 0;
             width: calc(100vw - 330px);
           "
@@ -384,19 +383,6 @@
           @visibility-changed="changeModification"
       />
 
-      <check-out-drawer
-          :id="currentOrderId"
-          :check-out-type="checkOutType"
-          :current-member-id="currentMemberId"
-          :discount-ratio="discountRatio"
-          :discount-str="discountStr"
-          :order="checkOutModel"
-          :password="password"
-          :table-id="id"
-          :visible="checkoutShow"
-          @visibility-changed="changeCheckOut"
-      />
-
       <buffet-start-dialog
           :id="currentOrderId"
           :buffet-dialog-show="buffetDialogShow"
@@ -520,7 +506,7 @@ import {
   toast
 } from '@/oldjs/common'
 import hillo from 'hillo'
-import { checkOut, optionalAuthorizeAsync, printZwichenBon } from '@/oldjs/api'
+import { optionalAuthorizeAsync, printZwichenBon } from '@/oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
 
 import { findDish, goHome, setDefaultValueForApply } from '@/oldjs/StaticModel'
@@ -529,7 +515,7 @@ import GlobalConfig from '../../oldjs/LocalGlobalSettings'
 
 import IKUtils from 'innerken-js-utils'
 
-import { acceptOrder, deleteDish, reprintOrder, safeRequest, showSuccessMessage } from '@/api/api'
+import { acceptOrder, deleteDish, getUUidByOrderId, reprintOrder, safeRequest, showSuccessMessage } from '@/api/api'
 
 import i18n from '../../i18n'
 import dayjs from 'dayjs'
@@ -537,12 +523,11 @@ import { TableFilter } from '@/api/tableService'
 import BuffetStartDialog from '@/views/TablePage/Dialog/BuffetStartDialog'
 import AddressPage from '@/views/TablePage/Address/AddressFragment.vue'
 import DiscountDialog from '@/views/TablePage/Dialog/DiscountDialog'
-import CheckOutDrawer from '@/components/GlobalDialog/CheckOutDrawer'
 import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
 import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import uniqBy from 'lodash-es/uniqBy'
 import MemberSelectionDialog from '@/views/TablePage/Dialog/MemberSelectionDialog.vue'
-import { getCurrentOrderInfo } from '@/api/Repository/OrderInfo'
+import { checkout, getCurrentOrderInfo } from '@/api/Repository/OrderInfo'
 import { DishDocker } from 'aaden-base-model/lib'
 import { getOrderInfo } from '@/api/aaden-base-model/api'
 import LogoDisplay from '@/components/LogoDisplay.vue'
@@ -550,7 +535,7 @@ import { cartListFactory } from '@/views/TablePage/cart'
 import MenuFragement from '@/views/TablePage/OrderFragment/MenuFragement.vue'
 import NavButton from '@/components/navigation/NavButton.vue'
 import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
@@ -597,7 +582,6 @@ export default {
     BuffetStartDialog,
     AddressPage,
     DiscountDialog,
-    CheckOutDrawer,
     ModificationDrawer,
     DishCardList
   },
@@ -982,20 +966,33 @@ export default {
         this.isSendingRequest = false
       }
     },
-    jumpToPayment () {
+    jumpToPayment (paymentType = 'checkOut') {
       const realCheckOut = async (pw) => {
-        this.checkoutShow = true
         checkoutFactory.clear()
-        checkoutFactory.loadTTDishList(this.orderListModel.list)
-        this.checkOutModel = {
-          total: checkoutFactory.total(),
-          count: checkoutFactory.count(),
-          list: checkoutFactory.list
+        checkoutFactory.loadTTDishList(paymentType === 'checkOut'
+          ? this.orderListModel.list
+          : this.splitOrderListModel.list)
+        const totalPrice = checkoutFactory.total()
+        const checkoutInfo = await this.doCheckout(totalPrice)
+        const res = await checkout(Object.assign({
+          tableId: this.id,
+          dishes: checkoutFactory.list,
+          password: pw,
+          checkOutType: paymentType
+        }, checkoutInfo))
+        await this.initialUI()
+        if (checkoutInfo.printType === 1) {
+          IKUtils.showLoading()
+          const uuid = await getUUidByOrderId(paymentType === 'checkOut'
+            ? this.currentOrderId : res.id)
+          IKUtils.toast()
+          this.showBillDetailQRDialog({ code: uuid })
         }
-        this.checkoutShow = true
-        this.checkOutType = 'checkOut'
-        this.discountStr = ''
-        this.password = pw
+        if (res.success && this.orderListModel.count() === 0) {
+          await goHome()
+        }
+        printNow()
+        console.log(res)
       }
       setTimeout(async () => {
         const pw = await optionalAuthorizeAsync(
@@ -1005,10 +1002,11 @@ export default {
           true,
           this.id
         )
-
         await realCheckOut(pw)
       }, 20)
     },
+    ...mapActions(['doCheckout']),
+    ...mapMutations(['showBillDetailQRDialog']),
     async cartListModelClear () {
       this.cartListModel.clear()
     },
@@ -1128,31 +1126,13 @@ export default {
         await this.$refs.discount.submitDiscount(discountStr)
       }
     },
-    checkOut (pw, print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
-      if (!memberCardId) {
-        memberCardId = null
-      }
-      checkOut(pw, this.id, print, payMethod, tipIncome, memberCardId)
-    },
     needSplitOrder: async function () {
       if (this.orderListModel.count() === 0) {
         this.orderListModel.loadTTDishList(this.splitOrderListModel.list)
         this.splitOrderListModel.clear()
         this.jumpToPayment()
       } else {
-        this.password = await optionalAuthorizeAsync('',
-          GlobalConfig.checkOutUsePassword, '',
-          true, this.id)
-
-        checkoutFactory.clear()
-        checkoutFactory.loadTTDishList(this.splitOrderListModel.list)
-        this.checkOutModel = {
-          total: checkoutFactory.total(),
-          count: checkoutFactory.count(),
-          list: checkoutFactory.list
-        }
-        this.checkoutShow = true
-        this.checkOutType = 'splitOrder'
+        this.jumpToPayment('splitOrder')
       }
     }
   },

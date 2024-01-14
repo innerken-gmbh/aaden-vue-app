@@ -475,11 +475,11 @@
           width="100%"
           height="100vh"
       >
-        <check-out-calculator
+        <checkout-dialog
             :total="depositTotal"
             @payment-cancel="checkOutDialog=false"
             @payment-submit="onDeposit"
-        ></check-out-calculator>
+        ></checkout-dialog>
       </v-card>
     </v-navigation-drawer>
   </div>
@@ -497,7 +497,7 @@ import {
   transferToCloud
 } from '@/api/VIPCard/VIPApi'
 import IKUtils from 'innerken-js-utils'
-import CheckOutCalculator from '@/components/GlobalDialog/CheckOutCalculator.vue'
+import CheckoutDialog from '@/components/GlobalDialog/CheckoutDialog.vue'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import NoContentDisplay from '@/views/FirstPage/widget/NoContentDisplay.vue'
 
@@ -505,7 +505,7 @@ export default {
   name: 'MemberCardPage',
   components: {
     NoContentDisplay,
-    CheckOutCalculator,
+    CheckoutDialog,
     LottieAnimation
   },
   data: function () {

@@ -1,28 +1,14 @@
 <template>
-  <v-navigation-drawer
-      v-model="realShow"
-      fixed
-      right
-      touchless
-      width="fit-content"
-  >
+  <div>
     <v-card
         class="fill-height"
         tile
     >
-      <check-out-calculator
-          :id="id"
-          :current-member-id="currentMemberId"
-          :total="totalPrice"
-          @payment-cancel="realShow = false"
-          @payment-submit="checkOut"
-      />
     </v-card>
-  </v-navigation-drawer>
+  </div>
 </template>
 
 <script>
-import CheckOutCalculator from './CheckOutCalculator'
 import hillo from 'hillo'
 import { toast } from '@/oldjs/common'
 import { goHome } from '@/oldjs/StaticModel'
@@ -38,7 +24,6 @@ import { setUuidInFirebase } from '@/api/customerDiaplay'
 
 export default {
   name: 'CheckOutDrawer',
-  components: { CheckOutCalculator },
   props: {
     id: {
       default: null
@@ -115,14 +100,6 @@ export default {
         checkOutData.paymentLog = JSON.stringify(paymentLog)
       }
       IKUtils.showLoading(false)
-      if (this.discountRatio !== 0) {
-        checkOutData.discountStr =
-            (this.discountStr ?? '').indexOf('p') !== -1
-              ? this.discountStr
-              : (this.order.total * this.discountRatio).toFixed(2)
-      }
-
-      delete checkOutData.discountStr
       let res
       try {
         res = await hillo.post(
@@ -152,7 +129,6 @@ export default {
           IKUtils.toast()
           await goHome()
           if (printType === 1) {
-            await setUuidInFirebase(uuid)
             this.showBillDetailQRDialog({ code: uuid })
           }
         } else if (this.checkOutType === 'splitOrder') {

@@ -1,5 +1,4 @@
-import { fastSweetAlertRequest, loadingComplete, popAuthorize, toast } from './common'
-import { goHome } from './StaticModel'
+import { fastSweetAlertRequest, loadingComplete, popAuthorize } from './common'
 import hillo from 'hillo'
 import i18n from '../i18n'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
@@ -32,38 +31,6 @@ export function splitOrder (discountStr = '', id, items, initialUI, print, payMe
 
 export function openDrawer () {
   hillo.get('Printer.php?op=openDrawer')
-}
-
-/**
- * @param pw
- * @param {string} tableId
- * @param {number|string} print
- * @param {number} payMethod
- * @param {number} tipIncome
- * @param {null} memberCardId
- */
-export function checkOut (pw = '', tableId, print = 1, payMethod = 1, tipIncome = 0, memberCardId) {
-  let withTitle = 0
-  let printCount = 1
-  if (parseInt(print) === 2) {
-    withTitle = 1
-  }
-  if (parseInt(print) === 3) {
-    withTitle = 1
-    printCount = 2
-  }
-  hillo.post('Complex.php?op=checkOut', {
-    withTitle: withTitle,
-    printCount: printCount,
-    tableId: tableId,
-    payMethod: payMethod,
-    tipIncome: tipIncome || 0,
-    memberCardId: memberCardId ?? null,
-    pw
-  }).then(res => {
-    toast(i18n.t('JSTableCheckOutSuccess'))
-    goHome()
-  })
 }
 
 export async function deleteDishes (id, items) {

@@ -152,12 +152,12 @@
     </v-dialog>
     <v-navigation-drawer v-model="checkOutDialog" app right temporary width="400">
       <v-card width="100%">
-        <check-out-calculator
+        <checkout-dialog
             :total="changeOrderTotal"
             style="height: 564px"
             @payment-cancel="checkOutDialog=false"
             @payment-submit="changePaymentMethod"
-        ></check-out-calculator>
+        ></checkout-dialog>
       </v-card>
     </v-navigation-drawer>
     <v-dialog v-model="orderDetailDialog" max-width="600px">
@@ -187,7 +187,7 @@ import {
   sureTo,
   writeCompanyInfo
 } from '@/api/api'
-import CheckOutCalculator from '@/components/GlobalDialog/CheckOutCalculator'
+import CheckoutDialog from '@/components/GlobalDialog/CheckoutDialog.vue'
 import OrderDetailDialog from '@/components/GlobalDialog/OrderDetailDialog'
 import { mapMutations } from 'vuex'
 
@@ -195,7 +195,7 @@ export default {
   name: 'BillTable',
   components: {
     OrderDetailDialog,
-    CheckOutCalculator
+    CheckoutDialog
   },
   data: function () {
     return {

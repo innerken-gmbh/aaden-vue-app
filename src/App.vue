@@ -6,6 +6,7 @@
     <pin-dialog></pin-dialog>
     <table-selector></table-selector>
     <order-accept-dialog/>
+    <checkout-dialog/>
     <v-dialog
         v-model="showErrorDialog"
         max-width="600"
@@ -104,10 +105,12 @@ import PinDialog from '@/components/GlobalDialog/PinDialog'
 import { mapMutations, mapState } from 'vuex'
 import { sendMailTo } from '@/api/api'
 import OrderAcceptDialog from '@/components/GlobalDialog/OrderAcceptDialog.vue'
+import CheckoutDialog from '@/components/GlobalDialog/CheckoutDialog.vue'
 
 export default {
   name: 'App',
   components: {
+    CheckoutDialog,
     OrderAcceptDialog,
     TableSelector,
     PinDialog

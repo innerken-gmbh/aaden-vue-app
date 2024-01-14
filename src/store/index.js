@@ -42,7 +42,10 @@ export default new Vuex.Store({
     checkoutResolve: null
   },
   mutations: {
-
+    hideCheckoutDialog (state) {
+      state.showCheckoutDialog = false
+      state.checkoutResolve = null
+    },
     hideOrderAcceptDialog (state) {
       state.showOrderAcceptDialog = false
       state.orderResolve = null
@@ -120,7 +123,7 @@ export default new Vuex.Store({
       state.showCheckoutDialog = true
       state.checkoutTotal = amount
       return await new Promise(resolve => {
-        state.orderResolve = resolve
+        state.checkoutResolve = resolve
       })
     }
   },
