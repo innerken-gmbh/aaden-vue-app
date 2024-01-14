@@ -50,7 +50,6 @@ export default {
   },
   watch: {
     keyboardMode: function (val) {
-      console.log(val)
       Remember.keyboardMode = val
     },
     realConsumeTypeId (val) {
@@ -58,7 +57,6 @@ export default {
     }
   },
   mounted () {
-    console.log(this.keyboardMode)
     this.initial()
   },
   computed: {

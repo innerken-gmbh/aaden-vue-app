@@ -107,7 +107,6 @@ export default {
       const setting = Object.assign({}, DefaultBuffetSetting, this.buffetSetting)
       setting.maxDineTime = setting.maxDineTimeMin * 60
       setting.roundTime = setting.roundTimeMin * 60
-      console.log(Object.entries(this.selectedBuffetDishesMap))
       await changeOrderToBuffet(this.id, Object.entries(this.selectedBuffetDishesMap).map(e => {
         return {
           dishesId: e[0],

@@ -205,7 +205,6 @@ export async function reportDeviceInfo () {
 }
 
 export async function changePayMethodForOrder (orderId, paymentLogs) {
-  console.log(orderId, paymentLogs)
   return (await hillo.post('Complex.php?op=changePayMethodForOrder', {
     orderId: orderId,
     paymentLog: JSON.stringify(paymentLogs)

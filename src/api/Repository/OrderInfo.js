@@ -32,10 +32,10 @@ export async function checkout (checkoutInfo) {
     const {
       billType,
       printType,
+      paymentLog,
       tableId,
       dishes,
       password,
-      paymentLog,
       checkOutType
     } = checkoutInfo
     console.log(checkoutInfo, 'info')
@@ -71,6 +71,7 @@ export async function checkout (checkoutInfo) {
       success: true
     }
   } catch (e) {
+    console.log(e, 'error')
     await new Promise(resolve => setTimeout(resolve, 3 * 1000))
     const res = await getCurrentOrderInfo(this.tableId)
     if (res.usageStatus === '0') {

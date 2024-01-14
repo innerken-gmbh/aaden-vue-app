@@ -110,7 +110,6 @@
               <table-blue-print
                   :out-side-table-list="tableList"
                   @need-refresh="refreshTables"
-                  @edit-table-clicked="showEditTableDialog"
                   @table-clicked="openOrEnterTable"
               />
             </div>
@@ -175,6 +174,7 @@
                       :key="t.tableName"
                       :big-card="true"
                       :table-info="t"
+                      @checkout="checkoutForTable(t.tableId,t.totalPrice)"
                       @click-ok="updateStatus(t.id)"
                       @click="openOrEnterTable(t.tableName)"
                   />
@@ -201,6 +201,7 @@
                       :key="t.tableName"
                       :big-card="true"
                       :table-info="t"
+                      @checkout="checkoutForTable(t.tableId,t.totalPrice)"
                       @click="openOrEnterTable(t.tableName)"
                   />
                 </div>
@@ -524,7 +525,7 @@ import LanguageSwitcher from '@/views/Widget/LanguageSwitcher'
 
 import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
 
-import { mapMutations } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 import { TableFixedSectionId } from '@/api/tableService'
 
 import { acceptOrder, loadRestaurantInfo, readyToPick, rejectOrder, syncTakeawaySettingToCloud } from '@/api/api'
@@ -541,6 +542,7 @@ import { endWork, servantWorkStatus, startWork } from '@/api/servantRecords'
 import dayjs from 'dayjs'
 import IKUtils from 'innerken-js-utils'
 import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
+import { checkout } from '@/api/Repository/OrderInfo'
 
 const keyboardLayout =
     [
@@ -701,7 +703,6 @@ export default {
       this.clockStatus = true
     },
     async endWorks () {
-      console.log('a')
       await endWork(this.servant.id, this.note)
       this.showServantStatus = false
       IKUtils.toast(this.$t('SuccessfullyStampedOutShiftIsOver'))
@@ -745,10 +746,6 @@ export default {
       this.$i18n.locale = Remember.locale
       changeLanguage(locale)
       location.reload()
-    },
-
-    showEditTableDialog (tableInfo) {
-      console.log(tableInfo)
     },
 
     numberInput (key) {
@@ -803,25 +800,26 @@ export default {
     },
 
     listenKeyDown (e) {
-      if (Swal.isVisible()) {
-        Swal.clickConfirm()
-        return
-      }
-      switch (e.key) {
-        case 'Backspace':
-          this.buffer = ''
-          break
-        case 'Escape':
-          this.back()
-          break
-        case 'Enter':
-          this.insDecode(this.readBuffer())
-          break
-        default:
-          if (e.target.nodeName === 'BODY') {
-            this.buffer += e.key
-            console.log(this.buffer)
-          }
+      if (this.$route.path === '/') {
+        if (Swal.isVisible()) {
+          Swal.clickConfirm()
+          return
+        }
+        switch (e.key) {
+          case 'Backspace':
+            this.buffer = ''
+            break
+          case 'Escape':
+            this.back()
+            break
+          case 'Enter':
+            this.insDecode(this.readBuffer())
+            break
+          default:
+            if (e.target.nodeName === 'BODY' && e.key?.length < 3) {
+              this.buffer += e.key
+            }
+        }
       }
     },
     back () {
@@ -849,6 +847,20 @@ export default {
     },
     anyMenuOpen () {
       return Swal.isVisible() || this.menu
+    },
+    ...mapActions(['doCheckout']),
+    async checkoutForTable (tableId, totalPrice) {
+      const info = await this.doCheckout(totalPrice)
+      const res = await checkout(Object.assign({
+        tableId,
+        dishes: [],
+        password: GlobalConfig.defaultPassword,
+        checkOutType: 'checkOut'
+
+      }, info))
+      if (res.success) {
+        await this.refreshTables()
+      }
     },
 
     async loadRestaurantInfo () {

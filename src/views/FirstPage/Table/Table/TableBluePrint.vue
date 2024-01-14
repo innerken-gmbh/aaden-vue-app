@@ -338,15 +338,15 @@ async function submitTable (table, x, y, w, h, currentSectionId) {
     h: Math.round(h / 10) * 10
   })
   const supplyMentSectionId = currentSectionId === '0' ? table.sectionId : '0'
-  console.log(supplyMentSectionId, table, currentSectionId)
-  table.cells = uniqBy([table.cells.filter(c => c.sectionId && c.sectionId !== currentSectionId), newCell].flat().map(c => {
-    c.sectionId = c.sectionId ?? supplyMentSectionId
-    return c
-  }), function (c) {
+
+  table.cells = uniqBy([table.cells.filter(c => c.sectionId && c.sectionId !== currentSectionId), newCell]
+    .flat().map(c => {
+      c.sectionId = c.sectionId ?? supplyMentSectionId
+      return c
+    }), function (c) {
     return c.sectionId
   }
   )
-  console.log(table.cells)
 
   await setTableLocation(table)
 }

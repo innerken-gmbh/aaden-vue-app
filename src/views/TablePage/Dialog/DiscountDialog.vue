@@ -71,7 +71,6 @@ export default {
       if (this.localDiscountStr == null) {
         this.localDiscountStr = ''
       }
-      console.log(key, 'keyInput')
       switch (key) {
         case '1':
         case '2':

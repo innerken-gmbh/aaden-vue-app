@@ -184,7 +184,6 @@ export default {
     }
   },
   mounted () {
-    console.log('i init')
     window.onkeydown = this.listenKeyDown
   },
   props: {
@@ -210,7 +209,6 @@ export default {
         default:
           if (e.target.nodeName === 'BODY') {
             this.keyboardInput += e.key
-            console.log(this.buffer)
           }
       }
     },

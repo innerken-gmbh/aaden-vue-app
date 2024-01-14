@@ -1,6 +1,10 @@
 <template>
   <div>
-    <v-simple-table class="transparent" fixed-header height="calc(100vh - 148px)">
+    <v-simple-table
+        class="transparent"
+        fixed-header
+        height="calc(100vh - 148px)"
+    >
       <template v-slot:default>
         <thead class="transparent">
         <tr>
@@ -8,12 +12,19 @@
           <th>{{ $t('OrderNumber') }}</th>
           <th class="text-left">{{ $t('time') }}</th>
           <th class="text-left">{{ $t('MoneyAmount') }}</th>
-          <th class="text-left" style="width: max-content">{{ $t('operation') }}</th>
+          <th
+              class="text-left"
+              style="width: max-content"
+          >{{ $t('operation') }}
+          </th>
         </tr>
         </thead>
         <tbody>
         <template v-for="order in orders">
-          <tr v-bind:key="order.orderId" @click="checkOrderDetail(order)">
+          <tr
+              v-bind:key="order.orderId"
+              @click="checkOrderDetail(order)"
+          >
             <td>
               <span class="font-weight-bold">{{ order.tableName }}</span>
             </td>
@@ -32,37 +43,43 @@
                     color="amber lighten-4 black--text"
                     elevation="0"
                     small
-                    @click.stop="reprintOrder(order.orderId)">
+                    @click.stop="reprintOrder(order.orderId)"
+                >
                   <v-icon>
                     mdi-printer-settings
                   </v-icon>
                 </v-btn>
                 <v-btn
                     :disabled="shouldDisable(order)"
-                  class="ml-2"
-                  color="green lighten-4 black--text"
-                  elevation="0"
-                  small
-                  @click.stop="checkBillDetail(order.orderId)">
+                    class="ml-2"
+                    color="green lighten-4 black--text"
+                    elevation="0"
+                    small
+                    @click.stop="checkBillDetail(order.orderId)"
+                >
                   <v-icon>
                     mdi-qrcode-scan
                   </v-icon>
                 </v-btn>
                 <template v-if="showOperation">
-                  <v-btn :disabled="shouldDisable(order)"
-                         class="ml-2"
-                         color="grey lighten-3 black--text"
-                         elevation="0"
-                         small
-                         @click.stop="startChangePaymentMethodForOrder(order)">
+                  <v-btn
+                      :disabled="shouldDisable(order)"
+                      class="ml-2"
+                      color="grey lighten-3 black--text"
+                      elevation="0"
+                      small
+                      @click.stop="startChangePaymentMethodForOrder(order)"
+                  >
                     <v-icon>mdi-cash-refund</v-icon>
                   </v-btn>
-                  <v-btn :disabled="shouldDisable(order)"
-                         class="ml-2"
-                         color="indigo lighten-4 black--text"
-                         elevation="0"
-                         small
-                         @click.stop="restoreOrder(order.orderId)">
+                  <v-btn
+                      :disabled="shouldDisable(order)"
+                      class="ml-2"
+                      color="indigo lighten-4 black--text"
+                      elevation="0"
+                      small
+                      @click.stop="restoreOrder(order.orderId)"
+                  >
                     <v-icon>mdi-history</v-icon>
                   </v-btn>
                 </template>
@@ -74,21 +91,38 @@
         </tbody>
       </template>
     </v-simple-table>
-    <v-dialog v-model="reprintDialog" max-width="300px">
+    <v-dialog
+        v-model="reprintDialog"
+        max-width="300px"
+    >
       <v-card>
         <v-card-title>{{ $t('tableCheckOutBillTypeLabel') }}</v-card-title>
         <v-card-text>
-          <v-btn block elevation="0" large @click="reprintDialog = false, checkCompanyInfo = true">{{
+          <v-btn
+              block
+              elevation="0"
+              large
+              @click="reprintDialog = false, checkCompanyInfo = true"
+          >{{
               $t('tableCheckOutBillTypeOptionCompany')
             }}
           </v-btn>
-          <v-btn block class="mt-4" elevation="0" large @click="realReprintOrder(0)">
+          <v-btn
+              block
+              class="mt-4"
+              elevation="0"
+              large
+              @click="realReprintOrder(0)"
+          >
             {{ $t('tableCheckOutBillTypeOptionNormal') }}
           </v-btn>
         </v-card-text>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="checkCompanyInfo" max-width="600px">
+    <v-dialog
+        v-model="checkCompanyInfo"
+        max-width="600px"
+    >
       <v-card class="pa-4">
         <div class="d-flex">
           <div class="text-h5 font-weight-bold">
@@ -110,7 +144,8 @@
             ref="form"
             v-model="valid"
             class="mt-2"
-            lazy-validation>
+            lazy-validation
+        >
           <div>{{ $t('companyName') }}:</div>
           <v-text-field
               v-model="companyOrPersonName"
@@ -150,18 +185,14 @@
         </div>
       </v-card>
     </v-dialog>
-    <v-navigation-drawer v-model="checkOutDialog" app right temporary width="400">
-      <v-card width="100%">
-        <checkout-dialog
-            :total="changeOrderTotal"
-            style="height: 564px"
-            @payment-cancel="checkOutDialog=false"
-            @payment-submit="changePaymentMethod"
-        ></checkout-dialog>
-      </v-card>
-    </v-navigation-drawer>
-    <v-dialog v-model="orderDetailDialog" max-width="600px">
-      <v-card style="" width="100%">
+    <v-dialog
+        v-model="orderDetailDialog"
+        max-width="600px"
+    >
+      <v-card
+          style=""
+          width="100%"
+      >
         <order-detail-dialog
             :is-boss="isBoss"
             :order="selectedOrder"
@@ -187,15 +218,15 @@ import {
   sureTo,
   writeCompanyInfo
 } from '@/api/api'
-import CheckoutDialog from '@/components/GlobalDialog/CheckoutDialog.vue'
+
 import OrderDetailDialog from '@/components/GlobalDialog/OrderDetailDialog'
-import { mapMutations } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 
 export default {
   name: 'BillTable',
   components: {
-    OrderDetailDialog,
-    CheckoutDialog
+    OrderDetailDialog
+
   },
   data: function () {
     return {
@@ -205,9 +236,6 @@ export default {
       locationAndDate: '',
       checkCompanyInfo: false,
       orderDetailDialog: false,
-      checkOutDialog: null,
-      changeOrderTotal: 0,
-      changeOrderId: null,
       reprintOrderId: null,
       reprintDialog: null,
       selectedOrder: null
@@ -229,7 +257,6 @@ export default {
   },
   methods: {
     shouldDisable (order) {
-      console.log(order)
       return order.isReturned === '1' || order.totalPrice < 0
     },
     ...mapMutations(['showBillDetailQRDialog', 'showErrorDialog']),
@@ -240,7 +267,10 @@ export default {
         return
       }
       // type: 2 指通过uuid查看
-      this.showBillDetailQRDialog({ code: res, type: 2 })
+      this.showBillDetailQRDialog({
+        code: res,
+        type: 2
+      })
     },
     async submitCompanyInfo () {
       await sureTo(
@@ -256,20 +286,7 @@ export default {
           showSuccessMessage(this.$t('print_success'))
         })
     },
-    async changePaymentMethod (paymentLog = []) {
-      if (paymentLog?.length === 0) {
-        paymentLog = [{
-          id: 1,
-          price: this.changeOrderTotal
-        }]
-      }
-      IKUtils.showLoading()
-      const res = await changePayMethodForOrder(this.changeOrderId, paymentLog)
-      console.log(res)
-      IKUtils.toast('OK')
-      this.checkOutDialog = false
-      this.$emit('need-refresh')
-    },
+
     async returnOrder (orderId) {
       IKUtils.showConfirm(this.$t('AreYouSure'), this.$t('CancelPrintSalesBon'), () => {
         IKUtils.showLoading()
@@ -289,10 +306,13 @@ export default {
       this.reprintDialog = false
       IKUtils.toast()
     },
-    startChangePaymentMethodForOrder (order) {
-      this.changeOrderId = order.orderId
-      this.changeOrderTotal = order.totalPrice
-      this.checkOutDialog = true
+    ...mapActions(['doCheckout']),
+    async startChangePaymentMethodForOrder (order) {
+      const { paymentLog } = await this.doCheckout(order.totalPrice)
+      IKUtils.showLoading()
+      await changePayMethodForOrder(order.orderId, paymentLog)
+      IKUtils.toast('OK')
+      this.$emit('need-refresh')
     },
     async checkOrderDetail (order) {
       this.selectedOrder = await loadDetailOrder(order.orderId)
