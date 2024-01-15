@@ -74,7 +74,6 @@
         </div>
       </div>
     </div>
-
     <div class="mt-2">
       <div class="d-flex align-baseline mt-1">
         <template v-if="table.consumeTypeStatusId<2">
@@ -103,7 +102,6 @@
               @click.stop="$emit('click-ok')"
               flat
               rounded="xl"
-              color="grey lighten-4"
               class="pa-1 mr-1"
           >
             <v-icon color="grey darken-2">mdi-shopping</v-icon>
@@ -113,7 +111,6 @@
               @click.stop="$emit('address',table.addressInfo)"
               flat
               rounded="xl"
-              color="grey lighten-4"
               class="pa-1 mr-1"
           >
             <v-icon color="grey darken-2">mdi-map-marker</v-icon>
@@ -122,7 +119,6 @@
               @click.stop="$emit('checkout',tableInfo.tableId)"
               flat
               rounded="xl"
-              color="grey lighten-4"
               class="pa-1 mr-1"
           >
             <v-icon color="grey darken-2">mdi-wallet</v-icon>
