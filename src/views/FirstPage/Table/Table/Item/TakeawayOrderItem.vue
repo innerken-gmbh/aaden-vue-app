@@ -11,9 +11,6 @@
     <div class="d-flex align-center mt-1">
       <div
           class="text-body-1 font-weight-black text--darken-4"
-          :class="(table.addressInfo.toNow>30
-            ?'black':table.addressInfo.toNow>15
-            ?'warning':'orange')+'--text'"
       >
         {{ table.addressInfo.time }}
         <span
@@ -23,18 +20,13 @@
         >(~{{ timeToNow }})</span>
       </div>
       <v-spacer></v-spacer>
-      <v-chip
-          v-if="table.inCall"
-          class="mr-2"
-          color="error"
-          elevation="0"
-          label
-          small
-      >
-        <v-icon x-small>mdi-bell</v-icon>
-        {{ $t('New') }}
-      </v-chip>
-
+      <v-icon
+          v-if="table.addressInfo.toNow<30"
+          :color="(table.addressInfo.toNow>30
+            ?'black':table.addressInfo.toNow>15
+            ?'warning':'red')"
+      >mdi-timer-alert
+      </v-icon>
     </div>
 
     <div class="text-body-2 mt-2">
@@ -126,6 +118,7 @@
         </template>
 
         <v-spacer></v-spacer>
+
         <div
             class="text-caption"
             style="max-width: 220px"

@@ -374,7 +374,7 @@ export default {
           },
           ...this.realExtraPaymentMethodName.map(it => ({
             name: it,
-            color: 'grey lighten-5'
+            color: 'grey lighten-2'
           }))
         ]
       } else {

@@ -29,7 +29,7 @@ export function beautifulTable (table) {
     }
   }
   res.addressInfo = Object.assign({}, DefaultAddressInfo, addressInfo)
-  res.addressInfo.toNow = null
+  res.addressInfo.toNow = 999
   if (res.addressInfo.time !== 'ASAP') {
     const [hour, minute] = res.addressInfo.time.split(':')
     const time = dayjs().set('h', hour).set('m', minute)

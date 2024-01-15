@@ -3,7 +3,7 @@
       flat
       :color="color"
       @click="$emit('click',keyName)"
-      :style="{fontSize:keyNameText.length<6?'22px':'14px'}"
+      :style="{fontSize:keyNameText.length<3?'22px':'14px'}"
       style="height: 72px;font-size: 24px;
        font-weight: 600;
        ;border-radius: 8px"
