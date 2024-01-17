@@ -335,7 +335,6 @@ export default {
       }
     },
     showCheckoutDialog (val) {
-      console.log(val, 'check')
       this.show = val
     }
   },

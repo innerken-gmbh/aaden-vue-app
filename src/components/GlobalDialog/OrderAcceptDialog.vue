@@ -48,6 +48,8 @@ export default {
   watch: {
     showOrderAcceptDialog (val) {
       this.show = val
+    },
+    show (val) {
       if (!val) {
         this.hideOrderAcceptDialog()
       }
