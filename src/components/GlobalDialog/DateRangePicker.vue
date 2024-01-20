@@ -89,12 +89,12 @@ export default {
   components: { BaseCard },
   data: function () {
     return {
-      today,
+      today: today(),
       startDate: null,
       endDate: null,
       startDateDialog: null,
       endDateDialog: null,
-      predefinedTimeList: predefinedDateRangeList
+      predefinedTimeList: predefinedDateRangeList()
     }
   },
   computed: {
@@ -123,6 +123,10 @@ export default {
   },
   props: {
     value: {}
+  },
+  mounted () {
+    console.log('init')
+    this.predefinedTimeList = predefinedDateRangeList()
   },
   methods: {
     currentDateMatch (dateRange) {

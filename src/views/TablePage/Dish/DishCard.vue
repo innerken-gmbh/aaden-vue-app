@@ -117,7 +117,6 @@ export default {
       return findConsumeTypeById(id).name
     },
     editCallBack () {
-      console.log(this.dish)
       this.dish.edit()
       this.dish.change(-1)
     },

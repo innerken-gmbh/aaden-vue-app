@@ -354,7 +354,7 @@
           elevation="0"
           tile
       >
-        <date-range-picker v-model="dateInput"></date-range-picker>
+        <date-range-picker v-if="showDatePicker" v-model="dateInput"></date-range-picker>
         <div class="px-2 mt-2">
           <v-btn
               block
@@ -443,9 +443,9 @@ export default {
       Config: GlobalConfig,
       tabIndex: 0,
       displayData: defaultDisplayData,
-      today,
-      dateInput: [today, today],
-      singleZBonDate: [today, today],
+      today: today(),
+      dateInput: [today(), today()],
+      singleZBonDate: [today(), today()],
       loaded: false,
 
       billData: {

@@ -229,7 +229,6 @@ export default {
   },
   methods: {
     shouldDisable (order) {
-      console.log(order)
       return order.isReturned === '1' || order.totalPrice < 0
     },
     ...mapMutations(['showBillDetailQRDialog', 'showErrorDialog']),
