@@ -535,7 +535,7 @@ import LanguageSwitcher from '@/views/Widget/LanguageSwitcher'
 
 import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
 
-import { mapActions, mapMutations } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 import { TableFixedSectionId } from '@/api/tableService'
 
 import { acceptOrder, loadRestaurantInfo, readyToPick, rejectOrder, syncTakeawaySettingToCloud } from '@/api/api'
@@ -701,7 +701,8 @@ export default {
     },
     notAccepted: function () {
       return this.takeawayList.filter(it => it.consumeTypeStatusId < 2)
-    }
+    },
+    ...mapState(['showOrderAcceptDialog'])
   },
   methods: {
     showAddress (addressInfo) {
@@ -806,7 +807,9 @@ export default {
       this.HIDE_AUTHORIZE_DIALOG()
     },
     async refreshTables () {
-      this.tableList = await getTableListWithCells()
+      if (!Swal.isVisible() && !this.showOrderAcceptDialog) {
+        this.tableList = await getTableListWithCells()
+      }
     },
 
     listenKeyDown (e) {
