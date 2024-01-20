@@ -115,7 +115,6 @@ export async function rejectOrder (id) {
   await resetTableStatus(id)
   await fastSweetAlertRequest(i18n.t('请输入拒绝理由'), 'text',
     'Orders.php?op=rejectTakeAwayOrder', 'reason', { tableId: id })
-  IKUtils.toast('ok')
 }
 
 export async function readyToPick (id) {

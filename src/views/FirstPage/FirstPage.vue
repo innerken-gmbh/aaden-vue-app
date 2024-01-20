@@ -807,9 +807,7 @@ export default {
       this.HIDE_AUTHORIZE_DIALOG()
     },
     async refreshTables () {
-      if (!Swal.isVisible() && !this.showOrderAcceptDialog) {
-        this.tableList = await getTableListWithCells()
-      }
+      this.tableList = await getTableListWithCells()
     },
 
     listenKeyDown (e) {
