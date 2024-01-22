@@ -39,7 +39,7 @@ export default {
   data: function () {
     return {
       show: false,
-      availableTime: [0, 10, 15, 20, 30, 40, 50, 60, 90, 120]
+      availableTime: ['0 ', 10, 15, 20, 30, 40, 50, 60, 90, 120]
     }
   },
   computed: {

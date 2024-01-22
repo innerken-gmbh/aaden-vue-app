@@ -238,7 +238,7 @@ export default {
     applyAddress (addressInfo) {
       this.rawAddressInfo = Object.assign({}, DefaultAddressInfo, addressInfo)
       if (!this.rawAddressInfo.date) {
-        this.rawAddressInfo.date = dayjs().format('YYYY-MM-dd')
+        this.rawAddressInfo.date = dayjs().format('YYYY-MM-DD')
       }
       if (!this.rawAddressInfo.time) {
         this.rawAddressInfo.time = 'ASAP'

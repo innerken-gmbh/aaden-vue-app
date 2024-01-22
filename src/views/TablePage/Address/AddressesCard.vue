@@ -34,6 +34,11 @@
       <filter-empty-string-displayer :data="address.tel">
         {{ address.tel }}
       </filter-empty-string-displayer>
+      <filter-empty-string-displayer :data="address.note">
+        <div class="font-weight-black">
+          Note:{{ address.note }}
+        </div>
+      </filter-empty-string-displayer>
       <div class="text-body-1 ">
         {{ address.date }}
       </div>
