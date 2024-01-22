@@ -1058,7 +1058,6 @@ export default {
           w: (xStopIndex - xIndex) * this.xSize,
           y: yIndex * this.ySize
         }
-        console.log(it)
         return it
       })
     }

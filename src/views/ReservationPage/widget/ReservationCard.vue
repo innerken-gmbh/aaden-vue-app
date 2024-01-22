@@ -109,7 +109,7 @@ export default {
   computed: {
     color () {
       if (this.checkedIn) {
-        return 'green darken-4'
+        return 'complete'
       } else if (this.reservationInfo.cancelled === '1') {
         return 'red lighten-2'
       }
@@ -129,7 +129,13 @@ export default {
 
 .gradient {
   background: #3a7bd5; /* fallback for old browsers */
-  background: linear-gradient(to right bottom, rgba(0, 0, 0, .56), #341d33); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: linear-gradient(to right bottom, rgba(0, 0, 0, .56), #341d33);
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
 
+.complete {
+  background: #3a7bd5; /* fallback for old browsers */
+  background: linear-gradient(to right bottom, rgba(11, 84, 24, 0.48), rgba(18, 132, 38, 0.48));
+  /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 </style>
