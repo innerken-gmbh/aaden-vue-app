@@ -120,4 +120,5 @@ async function initial () {
   }).$mount('#app')
 }
 
+window.dayjs = dayjs
 initial()

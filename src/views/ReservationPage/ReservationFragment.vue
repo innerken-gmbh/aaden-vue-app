@@ -80,39 +80,46 @@
         <v-card
             tile
             rounded="lg"
+            :style="{
+          gridTemplateRows:ySize+'px',
+            }"
             style="position: sticky;display:grid;grid-auto-flow: row;
-            grid-template-rows: 36px;
             left: 0;top:0; z-index: 4;"
             class="white"
         >
           <div></div>
           <div
-              style="height: 36px"
-              class="px-2 text-body-2"
+              :style="{height:ySize+'px'}"
+              class="px-2 text-caption font-weight-black"
           >
             Seated
           </div>
           <div
               :class="i%2===0?'grey lighten-2':'grey lighten-4'"
-              class="d-flex align-center px-2 font-weight-black"
-              style="height: 36px;width: 72px"
+              class="d-flex align-center pl-2 pr-1 font-weight-black text-body-2"
+              :style="{height:ySize+'px'}"
+              style="width: 100%"
               v-for="(t,i) in tableList"
               :key="t.id"
           >
             {{ t.tableName }}
             <v-spacer></v-spacer>
-            <v-icon color="green">mdi-circle-medium</v-icon>
+            <v-icon color="green">mdi-circle-small</v-icon>
+            <div class="font-weight-thin text-caption">
+              {{ t.tableSeatCount }}
+            </div>
+
           </div>
         </v-card>
         <div
             style="display: grid;grid-gap: 0;position: relative"
-            :style="{gridTemplateColumns:'repeat('+timeSlot.length+',40px)',
-             gridTemplateRows:'repeat('+(tableList.length+2)+',36px)',
+            :style="{gridTemplateColumns:'repeat('+timeSlot.length+','+xSize+'px)',
+             gridTemplateRows:'repeat('+(tableList.length+2)+','+ySize+'px)',
              }"
         >
-          <template v-for="t in bigTime">
+          <template v-for="(t,i) in bigTime">
             <div
-                :key="t"
+                :key="i"
                 class="grey lighten-2 pa-1 text-caption d-flex align-center"
                 style="width: 100%;height: 100%;grid-column:span 4;border-right: 1px solid #fefefe !important;"
             >
@@ -132,7 +139,7 @@
               :style="{
     backgroundColor: '#808080',
     background: 'linear-gradient(-90deg, rgba(0, 0, 0, .1) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, .1) 1px, transparent 1px)',
-    backgroundSize: '40px 36px',
+    backgroundSize: xSize+'px '+ySize+'px',
     height:(containerHeight+1)+'px',
     width: containerWidth+'px',
       gridColumn:'0 / '+timeSlot.length,
@@ -163,61 +170,16 @@
             gridRow:'3 / '+(tableList.length+6)
           }"
           >
-            <vue-draggable-resizable
+            <reservation-card
                 v-for="r in reservations"
                 :key="r.id"
-                :draggable="true"
-                :grid="[40,36]"
-                :h="36"
-                :parent="true"
-                :prevent-deactivation="false"
-                active-class=""
-                :resizable="false"
-                :snap="true"
-                :x="r.grid.x"
-                :y="r.grid.y"
-                :w="r.grid.w"
-                class-name-dragging="dragging"
+                :reservation-info="r"
+                :x-size="xSize"
+                :y-size="ySize"
+                @checkin="confirmReservation(r.id)"
+                @open="toggleActiveReservation(r)"
                 @dragstop="(...args)=>onDrag(r,...args)"
-            >
-              <v-card
-
-                  color="rgba(0,0,0,.64)"
-                  height="36"
-                  class="pa-2 white--text text-caption d-flex align-center reservationCard"
-                  style="position: absolute;width: 100%"
-                  :style="{
-              gridColumn:r.grid.xStart+' / '+r.grid.xEnd,
-              gridRow:r.grid.y
-            }"
-              >
-                <v-icon
-                    small
-                    class="mr-2"
-                    color="white"
-                    @click="toggleActiveReservation(r)"
-                >mdi-arrow-expand
-                </v-icon>
-                {{ r.firstName }} {{ r.lastName }}
-                <v-spacer></v-spacer>
-                <v-icon
-                    small
-                    class="mr-2"
-                    color="white"
-                >mdi-account
-                </v-icon>
-                {{ r.personCount }}
-                <template v-if="r.childCount>0">
-                  <v-icon
-                      small
-                      class="mx-2"
-                      color="white"
-                  >mdi-human-child
-                  </v-icon>
-                  {{ r.childCount }}
-                </template>
-              </v-card>
-            </vue-draggable-resizable>
+            ></reservation-card>
           </v-card>
 
         </div>
@@ -822,11 +784,13 @@ import NoContentDisplay from '@/views/FirstPage/widget/NoContentDisplay.vue'
 import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
 import dayjs from 'dayjs'
 import { dragscroll } from 'vue-dragscroll/src/main'
+import ReservationCard from '@/views/ReservationPage/widget/ReservationCard.vue'
 
 let timer = null
 export default {
   name: 'Reservation',
   components: {
+    ReservationCard,
     NoContentDisplay
   },
   data: function () {
@@ -888,6 +852,8 @@ export default {
         }
 
       ],
+      xSize: 40,
+      ySize: 24,
       setting: {
         gap: 'PT15M'
       }
@@ -898,13 +864,13 @@ export default {
       return this.reservations.filter(item => (this.showAllReservation || item.completed === '0'))
     },
     containerWidth () {
-      return (this.timeSlot.length * 40)
+      return (this.timeSlot.length * this.xSize)
     },
     containerHeight () {
-      return (this.tableList.length * 36)
+      return (this.tableList.length * this.ySize)
     },
     bigTime () {
-      console.log(this.timeSlot.filter(it => it.endsWith('00')))
+      console.log(this.timeSlot.filter(it => it.endsWith('00')), '123')
       return this.timeSlot.filter(it => it.endsWith('00'))
     },
     seatedInfo () {
@@ -940,11 +906,11 @@ export default {
     dayjs,
     async onDrag (r, x, y) {
       console.log(r, x, y)
-      const tableIndex = Math.floor(y / 36)
+      const tableIndex = Math.floor(y / this.ySize)
 
       const tableId = this.tableList[tableIndex]?.tableId
       console.log(tableIndex, tableId)
-      const timeIndex = Math.floor(x / 40)
+      const timeIndex = Math.floor(x / this.xSize)
       const startTime = this.timeSlot[timeIndex]
       console.log(tableId)
       console.log(startTime, 'time')
@@ -1073,6 +1039,7 @@ export default {
     },
     async getTables () {
       this.tableList = await loadReservationTableInfo()
+      console.log(this.tableList, 'tables')
     },
     async setTableReservable (id, reservable) {
       await setReservable(id, reservable)
@@ -1080,15 +1047,18 @@ export default {
     },
     async loadReservations () {
       this.reservations = (await getReservation(this.reservationDate)).map(it => {
-        const xIndex = this.timeSlot.findIndex(t => dayjs(it.fromDateTime).format('HH:mm') === t)
-        const xStopIndex = this.timeSlot.findIndex(t => dayjs(it.toDateTime).format('HH:mm') === t)
+        const xIndex = this.timeSlot.findIndex(t => dayjs(it.fromDateTime)
+          .format('HH:mm') === t)
+        const xStopIndex = this.timeSlot.findIndex(t => dayjs(it.toDateTime)
+          .format('HH:mm') === t)
         const yIndex = this.tableList.findIndex(t => parseInt(t.tableId) === parseInt(it.tableId))
         it.timeMap = sliceTime(it.fromDateTime, it.toDateTime)
         it.grid = {
-          x: xIndex * 40,
-          w: (xStopIndex - xIndex) * 40,
-          y: yIndex * 36
+          x: xIndex * this.xSize,
+          w: (xStopIndex - xIndex) * this.xSize,
+          y: yIndex * this.ySize
         }
+        console.log(it)
         return it
       })
     }
@@ -1100,8 +1070,5 @@ export default {
 </script>
 
 <style scoped>
-.reservationCard:hover {
-  background-color: black !important;
-}
 
 </style>
