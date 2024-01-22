@@ -76,7 +76,6 @@
           <v-textarea
               v-model="reservationInfo.note"
               outlined
-              height="40"
               auto-grow
               placeholder="add notes"
               hide-details

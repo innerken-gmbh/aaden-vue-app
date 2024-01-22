@@ -8,7 +8,9 @@
       <v-icon>mdi-menu</v-icon>
       <v-btn
           icon
-          @click="reservationDate=dayjs(reservationDate).add(-1,'d').format('YYYY-MM-DD')"
+          @click="reservationDate=dayjs(reservationDate)
+          .add(-1,'d')
+          .format('YYYY-MM-DD')"
       >
         <v-icon>mdi-chevron-left</v-icon>
       </v-btn>
@@ -870,7 +872,6 @@ export default {
       return (this.tableList.length * this.ySize)
     },
     bigTime () {
-      console.log(this.timeSlot.filter(it => it.endsWith('00')), '123')
       return this.timeSlot.filter(it => it.endsWith('00'))
     },
     seatedInfo () {

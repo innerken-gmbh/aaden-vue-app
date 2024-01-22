@@ -70,7 +70,7 @@
             elevation="0"
             rounded
         >
-            <v-icon>mdi-keyboard</v-icon>
+          <v-icon>mdi-keyboard</v-icon>
         </v-btn>
       </template>
     </v-card>
@@ -301,7 +301,7 @@ export default {
   methods: {
     async initial () {
       await this.getDCT()
-      await this.reloadDish(1, true)
+      await this.reloadDish()
     },
     async getDCT () {
       if (this.dct.length === 0) {
@@ -326,7 +326,8 @@ export default {
         this.activeDCT = index
       })
     },
-    async reloadDish (consumeTypeId, force = false) {
+    async reloadDish () {
+      console.log('123')
       this.favoriteList = null
       this.favoriteList = this.dishes.filter(item => item.isFavorite === '1')
       this.activeCategoryId = null

@@ -59,7 +59,6 @@ export async function getTableListWithCells () {
       p.y = parseInt(p.y)
       return p
     }) ?? []
-
     return t
   })
 }

@@ -10,7 +10,6 @@ export async function loadAllReservable () {
 }
 
 export async function setReservable (tableId, newState) {
-  console.log(tableId, newState)
   if (newState) {
     await addToReservable(tableId)
   } else {
@@ -42,7 +41,8 @@ export async function getCurrentReservation () {
 
 export async function loadAllReservation (fromDateTime, toDateTime) {
   return (await hillo.get('Tables.php?op=getReservationByTimeSpan', {
-    fromDateTime, toDateTime
+    fromDateTime,
+    toDateTime
   })).content
 }
 
@@ -80,7 +80,8 @@ export async function moveReservation (reservationId) {
   const newTableId = await showTableSelector(null, 'tableId')
 
   return (await hillo.post('Tables.php?op=moveReservation', {
-    reservationId, newTableId
+    reservationId,
+    newTableId
   }))
 }
 
@@ -109,7 +110,10 @@ export async function getTimeSlotForDate (date, setting) {
 
 export async function checkTableTimeAvailable (date, time, personCount, id) {
   const getTableTime = (await hillo.jsonPost(host + 'reservableTable/getTableTime', {
-    reserveTime: time, reserveDate: date, peopleCount: personCount, userId: id
+    reserveTime: time,
+    reserveDate: date,
+    peopleCount: personCount,
+    userId: id
   }))
   const res = getTableTime.data
   console.log(getTableTime, 'getTableTime')
