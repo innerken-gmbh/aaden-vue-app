@@ -44,14 +44,13 @@
     </v-card>
 
     <div
-        class="hideMore"
+        class="d-block overflow-hidden"
         style="max-width: 56px"
     >
       <div
           style="font-size: 0.65rem !important;"
-          class="mt-1 text-caption text-no-wrap
-               font-weight-black white--text
-             overflow-hidden text-capitalize"
+          class="mt-1 text-truncate text-caption
+               font-weight-black white--text text-capitalize"
       >
         {{ $t(text) }}
       </div>

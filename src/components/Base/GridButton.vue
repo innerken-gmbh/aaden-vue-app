@@ -10,8 +10,8 @@
     class="black--text lighten-4"
   >
     <v-icon left >{{ icon }}</v-icon>
-    <div class="hideMore" style="max-width: 100px">
-      {{ text }}
+    <div class="d-block overflow-hidden">
+      <div class="text-truncate">{{ text }}</div>
     </div>
   </v-btn>
 </template>

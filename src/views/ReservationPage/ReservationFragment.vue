@@ -37,14 +37,14 @@
           flat
           color="rgba(255,255,255,.17)"
       >
-        Today
+        {{ $t('Today') }}
       </v-card>
       <v-card
           class="pa-2 py-1 mr-1  text-body-2"
           flat
           color="rgba(255,255,255,.17)"
       >
-        Tomorrow
+        {{  $t('Tomorrow')  }}
       </v-card>
       <v-text-field
           dense
@@ -52,7 +52,7 @@
           prepend-inner-icon="mdi-magnify"
           hide-details
           solo-inverted
-          placeholder="Start typing to search"
+          :placeholder="$t('StartSearch')"
       ></v-text-field>
       <v-btn
           icon
@@ -94,7 +94,7 @@
               :style="{height:ySize+'px'}"
               class="px-2 text-caption font-weight-black"
           >
-            Seated
+            {{ $t('Seats') }}
           </div>
           <div
               :class="i%2===0?'grey lighten-2':'grey lighten-4'"

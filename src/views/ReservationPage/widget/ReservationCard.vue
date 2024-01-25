@@ -77,7 +77,7 @@
               v-model="reservationInfo.note"
               outlined
               auto-grow
-              placeholder="add notes"
+              :placeholder="$t('AddAnnotation')"
               hide-details
           ></v-textarea>
         </div>
