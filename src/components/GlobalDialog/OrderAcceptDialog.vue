@@ -13,7 +13,7 @@
       >mdi-timer
       </v-icon>
       <div class="text-body-1 text-center mb-4 font-weight-black">
-        Please choose estimate finish time for orders
+        {{ $t('SelectEstimateTime') }}
       </div>
       <div style="display: grid;grid-template-columns: repeat(2,minmax(0,1fr));grid-gap: 8px;width: 100%">
         <v-card

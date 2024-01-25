@@ -1,4 +1,5 @@
 {
+  "SelectEstimateTime" : "Please choose estimate finish time for orders",
   "EnterReasonForRejection" : "Enter the reason for the rejection",
   "DishesInBasket" : "Already ordered",
   "Menu" : "Menu",
