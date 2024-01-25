@@ -122,7 +122,7 @@
                     :discount-ratio="discountRatio"
                     :dish-list-model="orderListModel"
                     :source-marks="sourceMarks"
-                    :title="$t('DishesOrdered')"
+                    :title="$t('DishesInBasket')"
                     @discount-clear="discountClear"
                 >
                   <template
@@ -449,7 +449,7 @@
       >
         <v-card class="pa-4">
           <div class="text-h5 font-weight-black">
-            Select consume type
+            {{ $t('SelectConsumeType') }}
           </div>
           <v-card
               flat

@@ -113,7 +113,7 @@ export async function acceptOrder (reason, tableId) {
 
 export async function rejectOrder (id) {
   await resetTableStatus(id)
-  await fastSweetAlertRequest(i18n.t('请输入拒绝理由'), 'text',
+  await fastSweetAlertRequest(i18n.t('EnterReasonForRejection'), 'text',
     'Orders.php?op=rejectTakeAwayOrder', 'reason', { tableId: id })
 }
 
@@ -261,7 +261,7 @@ export async function sureTo (action, content = '', title = i18n.t('AreYouSure')
   if (res.isConfirmed) {
     await action()
   } else {
-    IKUtils.toast(i18n.t('cancelSuccess'), 'info')
+    IKUtils.toast(i18n.t('AbortSuccessfully'), 'info')
   }
 }
 
