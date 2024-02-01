@@ -544,5 +544,11 @@
   "RU": "Russisch",
   "TR": "Türkisch",
   "ChangeLanguage": "Sprache wechseln",
-  "restore": "Wiederherstellen"
+  "restore": "Wiederherstellen",
+  "checkIn": "Check in",
+  "wannaCheckOut": "Wollen Sie ein- und aussteigen?",
+  "wannaCheckIn": "Möchten Sie in die Arbeit einsteigen?",
+  "checkOut": "After Work",
+  "workTimeMinHour": "Arbeitszeiten (Minuten/Stunde)",
+  "No": "Nein"
 }

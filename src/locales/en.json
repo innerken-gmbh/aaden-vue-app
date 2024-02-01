@@ -643,7 +643,7 @@
   "normal": "normal",
   "notBindAnyStore": "You currently have no associated stores!",
   "not_received_orders": "No order",
-  "note": "Remarquer",
+  "note": "Note",
   "nothing": "none",
   "notuse": "Unused",
   "number": "No",
@@ -835,9 +835,15 @@
   "will_have_to_pay": "will pay",
   "wirklich?": "Are you sure?",
   "writeCompanyInfo": "Fill in company information",
-  "yes": "UN M",
+  "yes": "Yes",
   "yesIAm": "yes, I&#39;m sure",
   "yesterday": "Ayer",
   "zbonList": "Zbon List",
-  "zoom": "zoom"
+  "zoom": "zoom",
+  "checkIn": "Clock in",
+  "wannaCheckOut": "Do you want to clock out?",
+  "wannaCheckIn": "Do you want to clock in?",
+  "checkOut": "Clock Out",
+  "workTimeMinHour": "Working hours (Minutes/Hour)",
+  "No": "No"
 }

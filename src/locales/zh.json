@@ -544,5 +544,10 @@
   "EditVipPoints": "积分变动记录",
   "Add": "新增",
   "VIP": "VIP",
-  "LoadPrepaid": "充值"
+  "LoadPrepaid": "充值",
+  "wannaCheckOut": "要打卡下班吗?",
+  "wannaCheckIn": "要打卡上班吗?",
+  "checkOut": "下班",
+  "workTimeMinHour": "工作时长(分钟/小时)",
+  "No": "否"
 }

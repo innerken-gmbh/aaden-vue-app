@@ -3,6 +3,7 @@ import { goHome } from './StaticModel'
 import hillo from 'hillo'
 import i18n from '../i18n'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import { servantWorkStatus } from '@/api/servantRecords'
 
 export function splitOrder (discountStr = '', id, items, initialUI, print, payMethod, tipIncome, memberCardId) {
   print = parseInt(print)
@@ -114,7 +115,21 @@ export function printZwichenBon (tableId, items) {
 }
 
 export async function getServantList () {
-  return (await hillo.get('Servant.php')).content
+  const res = (await hillo.get('Servant.php')).content
+  const promises = res.map(it => servantWorkStatus(it.id)
+    .then(s => {
+      it.clockedIn = s.clockedIn
+      it.lastRecord = s.lastRecord
+    }))
+
+  await Promise.all(promises)
+
+  // for (const item of res) {
+  //   item.clockedIn = (await servantWorkStatus(item.id)).clockedIn
+  // }
+
+  console.log(res, 'getServantList')
+  return res
 }
 
 export async function getSectionList () {

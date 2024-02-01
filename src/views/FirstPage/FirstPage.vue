@@ -328,13 +328,13 @@
       </v-card>
 
     </v-card>
-    <v-dialog v-model="showServantStatus" max-width="400px">
+    <v-dialog v-model="showServantStatus" max-width="800px">
       <v-card
         class="text-body-1 pa-6"
         elevation="0"
         style="overflow: visible;">
         <div class="d-flex  mb-4">
-          <div class="text-subtitle-1 font-weight-bold">
+          <div class="text-h5 font-weight-bold">
             {{ restaurantInfo?.displayName }}
           </div>
           <v-spacer />
@@ -349,33 +349,55 @@
             </v-btn>
           </div>
         </div>
-        <template v-if="clockStatus">
-          <div v-for="item in servantWorkInfo" :key="item.id">
-            <div class="d-flex mt-2">
-              <div>{{item.display}}:</div>
-              <v-spacer></v-spacer>
-              <div>{{item.value}}</div>
-            </div>
-          </div>
-          <div class="d-flex mt-4 justify-center align-center">
-            <div>{{ $t('note') }}:</div>
-            <v-spacer></v-spacer>
-            <v-text-field v-model="note" dense hide-details outlined/>
-          </div>
-          <div class="d-flex align-center justify-center mt-8">
-            <v-btn color="primary" elevation="0" width="100%" @click="endWorks">
-              {{ $t('ShiftStampOut') }}
-            </v-btn>
-          </div>
-        </template>
-        <template v-else>
-          <v-btn color="primary" elevation="0" width="100%" @click="gotoWork">
-            {{ $t('ShiftStampIn') }}
-          </v-btn>
-        </template>
+        <div class="mt-8" style="display: grid;
+                    grid-auto-rows:200px;
+                    grid-template-columns: repeat(5,minmax(0,1fr));
+                    grid-gap: 12px">
+          <v-card v-for="item in servantList"
+                  :key="item.id"
+                  class="d-flex flex-column text-body-1"
+                  color="grey lighten-2"
+                  elevation="0" outlined @click="changeWorkStatus(item)">
+            <v-img :src="checkStaffPhoto(item.photo) ? photoPath(item.photo) : defaultStaffImg"></v-img>
+            <div v-if="item.clockedIn" class="d-flex justify-center align-center text-h5" style="background-color: green; color: white">{{item.name}}</div>
+            <div v-else class="d-flex justify-center align-center text-h5">{{item.name}}</div>
+          </v-card>
+        </div>
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="staffChangeWorkStatus" max-width="400px">
+      <v-card class="pa-4">
+        <div class="d-flex align-center justify-center">
+        <div class="text-subtitle-1 font-weight-bold">{{servant?.clockedIn ? $t('wannaCheckOut') : $t('wannaCheckIn')}}</div>
+          <v-spacer></v-spacer>
+          <v-btn icon @click="staffChangeWorkStatus = false"><v-icon>mdi-close</v-icon></v-btn>
+        </div>
+        <template v-if="!servant?.clockedIn">
+          <div class="d-flex mt-4 justify-center align-center">
+            <v-text-field v-model="note" :placeholder="$t('note')" hide-details outlined/>
+          </div>
+        <div class="d-flex align-center justify-center mt-4">
+          <v-btn :loading="staffBtnLoading" class="success" width="100%" @click="gotoWork">{{ $t('checkIn') }}</v-btn>
+        </div>
+        </template>
+        <template v-else>
+                    <div v-for="item in servantWorkInfo" :key="item.id">
+                      <div class="d-flex mt-2">
+                        <div>{{item.display}}:</div>
+                        <v-spacer></v-spacer>
+                        <div>{{item.value}}</div>
+                      </div>
+                    </div>
+          <div class="d-flex mt-4 justify-center align-center">
+            <v-text-field v-model="note" :placeholder="$t('note')" hide-details outlined/>
+          </div>
+          <div class="d-flex align-center justify-center mt-8">
+            <v-btn :loading="staffBtnLoading" class="success" width="100%" @click="endWorks">{{ $t('checkOut') }}</v-btn>
+          </div>
+        </template>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -450,6 +472,9 @@ export default {
   },
   data: function () {
     return {
+      staffBtnLoading: false,
+      selectedStaff: [],
+      staffChangeWorkStatus: false,
       clockStatus: false,
       note: '',
       servantWorkStatus: null,
@@ -504,15 +529,21 @@ export default {
     }
   },
   computed: {
+    defaultStaffImg () {
+      return require('@/assets/staff.png')
+    },
     servantWorkMinutes () {
-      return dayjs(dayjs().format('YYYY-MM-DD HH:mm:ss')).diff(dayjs(this.servantWorkStatus?.fromDateTime), 'minute') ?? 0
+      return dayjs(dayjs().format('YYYY-MM-DD HH:mm:ss')).diff(dayjs(this.servant.lastRecord?.fromDateTime), 'minute') ?? 0
+    },
+    servantWorkHour () {
+      return parseFloat(this.servantWorkMinutes / 60).toFixed(2)
     },
     servantWorkInfo () {
       return [{ value: this.servant?.name, display: this.$t('Employees'), id: 1 },
-        { value: this.servantWorkStatus?.fromDateTime, display: this.$t('StartsWorkingAt'), id: 2 },
-        { value: this.servantWorkMinutes, display: this.$t('WorkTimeInMinutes'), id: 3 },
-        { value: this.servantWorkStatus?.currentHourlyWage, display: this.$t('HourlyWage'), id: 4 },
-        { value: this.servantWorkStatus?.correctionDisplay, display: this.$t('IsThisReplacementCard'), id: 5 }]
+        { value: this.servant.lastRecord?.fromDateTime, display: this.$t('StartsWorkingAt'), id: 2 },
+        { value: this.servantWorkMinutes + '/' + this.servantWorkHour, display: this.$t('workTimeMinHour'), id: 3 },
+        { value: this.servant.lastRecord?.currentHourlyWage, display: this.$t('HourlyWage'), id: 4 },
+        { value: this.servant?.lastRecord?.correction === '1' ? this.$t('yes') : this.$t('No'), display: this.$t('IsThisReplacementCard'), id: 5 }]
     },
     ...mapGetters(['systemDialogShow']),
     activeTables () {
@@ -548,35 +579,48 @@ export default {
     }
   },
   methods: {
-    async gotoWork () {
-      this.servantWorkStatus = await startWork(this.servant.id, '')
-      if (this.servantWorkStatus.correction === 0) {
-        this.servantWorkStatus.correctionDisplay = this.$t('ReplacementCard')
+    async reloadStaffInfo () {
+      this.note = ''
+      this.servant = {}
+      this.servantList = (await getServantList())
+    },
+    async changeWorkStatus (item) {
+      this.servant = item
+      if (GlobalConfig.useStaffCheckInPassword) {
+        const pw = await popAuthorize('', true)
+        if (pw === item.password) {
+          this.staffChangeWorkStatus = true
+        }
       } else {
-        this.servantWorkStatus.correctionDisplay = this.$t('YouCanStampInNormal')
+        this.staffChangeWorkStatus = true
       }
+    },
+    photoPath (item) {
+      return location.protocol + '//' + GlobalConfig.Base + '/Resource/servantImg/' + item
+    },
+    checkStaffPhoto (item) {
+      return item.split('.')[1]
+    },
+    async getStaffWorkStatus (item) {
+      return (await servantWorkStatus(item.id)).clockedIn
+    },
+    async gotoWork () {
+      this.staffBtnLoading = true
+      await startWork(this.servant.id, this.note)
       IKUtils.toast(this.$t('SuccessfullyCommitted'))
-      this.clockStatus = true
+      await this.reloadStaffInfo()
+      this.staffBtnLoading = false
+      this.staffChangeWorkStatus = false
     },
     async endWorks () {
-      console.log('a')
+      this.staffBtnLoading = true
       await endWork(this.servant.id, this.note)
-      this.showServantStatus = false
+      await this.reloadStaffInfo()
+      this.staffBtnLoading = false
+      this.staffChangeWorkStatus = false
       IKUtils.toast(this.$t('SuccessfullyStampedOutShiftIsOver'))
     },
     async checkStaffStatus () {
-      const pw = await popAuthorize('', true)
-      this.servant = await this.findServant(pw)
-      const res = await servantWorkStatus(this.servant.id)
-      this.clockStatus = res.clockedIn
-      if (this.clockStatus === true) {
-        this.servantWorkStatus = res.lastRecord
-        if (this.servantWorkStatus.correction === 0) {
-          this.servantWorkStatus.correctionDisplay = this.$t('ReplacementCard')
-        } else {
-          this.servantWorkStatus.correctionDisplay = this.$t('YouCanStampInNormal')
-        }
-      }
       this.showServantStatus = true
     },
     async findServant (pw) {
@@ -722,7 +766,7 @@ export default {
         this.lock = true
         try {
           await this.loadRestaurantInfo()
-          this.servantList = await getServantList()
+          await this.reloadStaffInfo()
           getRestaurantInfo()
           await getConsumeTypeList()
           await this.refreshTables()
