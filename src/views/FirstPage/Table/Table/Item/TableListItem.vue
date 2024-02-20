@@ -14,7 +14,7 @@
     <v-spacer/>
     <div style="text-align: right">
       <div class="caption" v-if="table.consumeType==='1'||table.consumeType==='2'||table.consumeType==='5'">
-        {{ table.dishCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
+        {{ table.buffetCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
       </div>
       <div class="caption d-flex align-center justify-end" v-else>
         <v-icon x-small>mdi-account</v-icon>
