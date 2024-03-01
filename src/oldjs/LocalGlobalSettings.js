@@ -4,6 +4,7 @@ import i18n from '@/i18n'
 import dayjs from 'dayjs'
 import { LocalSettingManager } from 'biewangle'
 import { goHome } from '@/oldjs/StaticModel'
+import { getReservationStatus } from '@/api/ReservationService'
 
 const fix = require('@/assets/FixedConfig.json')
 const defaultConfig = require('@/assets/AadenConfig.json')
@@ -15,13 +16,11 @@ export async function loadConfig () {
   try {
     GlobalConfig = Object.assign(GlobalConfig, await AadenBaseConfig(defaultConfig), fix)
     NeededKeys = GlobalConfig.neededKeys
-    GlobalConfig.getMilepayUrl = function () {
-      return GlobalConfig.Protocol + GlobalConfig.Base + ':' + GlobalConfig.milePayPort + '/milePay/'
-    }
     GlobalConfig.getBaseUrl = function () {
       return location.protocol + '//' + GlobalConfig.Base + '/'
     }
-
+    GlobalConfig.activeReservation = !!await getReservationStatus()
+    console.log(GlobalConfig.activeReservation, 'Active')
     GlobalConfig.startUpTimestamp = dayjs().utcOffset()
     refreshGetter()
     window.Config = GlobalConfig

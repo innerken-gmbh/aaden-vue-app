@@ -238,7 +238,6 @@
                   >
                     {{ $t('CancelReservation') }}
                   </v-btn>
-
                   <div
                       v-if="showChangeButton === 1"
                       class="ml-2"
@@ -252,6 +251,16 @@
                       {{ $t('ChangePosition') }}
                     </v-btn>
                   </div>
+                  <v-btn
+                      class="ml-2"
+                      color="success"
+                      elevation="0"
+                      small
+                      @click="checkIn(re.id)"
+                  >
+                    {{ $t('checkIn') }}
+                  </v-btn>
+
                 </div>
 
               </v-card>
@@ -274,7 +283,7 @@ import { defaultSection } from '@/oldjs/defaultConst'
 import { getSectionList, setTableLocation } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import debounce from 'lodash-es/debounce'
-import { cancelReservation, moveReservation } from '@/api/ReservationService'
+import { cancelReservation, checkIn, moveReservation } from '@/api/ReservationService'
 import uniqBy from 'lodash-es/uniqBy'
 import IKUtils from 'innerken-js-utils'
 import TableCard from '@/views/FirstPage/Table/Table/Item/TableCard'
@@ -405,6 +414,7 @@ export default {
     }
   },
   methods: {
+    checkIn,
     async moveReservation (id, tableId) {
       await moveReservation(id, tableId)
       this.reservationDialog = false

@@ -14,6 +14,15 @@ export async function moveReservation (reservationId, tableId) {
   return (await hillo.jsonPost(host + 'changeSeatPlan/' + reservationId, reservation.seatPlan))
 }
 
+export async function getReservationStatus () {
+  const userId = parseInt(await getCurrentDeviceId())
+  return (await hillo.get('https://reservation-api.aaden.io/user/getDetail/' + userId)).data
+}
+
+export async function getReservationsByTableId (tableId) {
+  return (await getCurrentReservation()).filter(it => it.seatPlan.find(s => s.tableId === parseInt(tableId)))
+}
+
 const todayEnd = dayjs().startOf('d')
   .add(1, 'd').add('3', 'h')
   .add(59, 'm').format(timestampTemplate)
@@ -43,4 +52,9 @@ export async function cancelReservation (reservationId) {
   if (res.isConfirmed) {
     return (await hillo.jsonPost(host + 'cancelInternal/' + reservationId))
   }
+}
+
+export async function checkIn (id) {
+  return (await hillo.jsonPost(host + 'checkIn/' + id,
+    {}))
 }

@@ -46,7 +46,7 @@
             <v-card
                 color="transparent"
                 flat
-                :disabled="haveOrder&&consumeTypeStatusId<1"
+                :disabled="m.disable()"
                 v-for="m in menu"
                 :key="m.name"
                 :class="currentView===m.name?' active':''"
@@ -90,7 +90,7 @@
               style="height: calc(100vh - 64px);grid-template-columns: 1fr 330px;display: grid"
           >
             <div>
-              <template v-if="currentView===menu[0].name">
+              <template v-if="currentView==='Menu'">
                 <menu-fragement
                     :consume-type-id="consumeTypeId"
                     :override-consume-type-id="overrideConsumeTypeId"
@@ -98,13 +98,20 @@
                     @dish-detail="(dish,override)=>showModification(dish,1,null,override)"
                 />
               </template>
-              <template v-else-if="currentView===menu[1].name">
+              <template v-else-if="currentView==='Delivery'">
                 <address-page
                     v-if="consumeTypeId===2"
                     :consume-type-status-id="consumeTypeStatusId"
                     :raw-address-info="realAddressInfo"
                     class="mr-2"
                     @address-change="submitRawAddressInfo"
+                />
+              </template>
+              <template v-else-if="currentView==='Reservation'">
+                <reservation-list-page
+                    @need-refresh="refreshReservation"
+                    :reservation-list="reservations"
+                    :id="id"
                 />
               </template>
             </div>
@@ -536,6 +543,8 @@ import MenuFragement from '@/views/TablePage/OrderFragment/MenuFragement.vue'
 import NavButton from '@/components/navigation/NavButton.vue'
 import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
 import { mapActions, mapMutations } from 'vuex'
+import { getReservationsByTableId } from '@/api/ReservationService'
+import ReservationListPage from '@/views/TablePage/ReservationList/ReservationListPage.vue'
 
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
@@ -574,6 +583,7 @@ export default {
     dragscroll
   },
   components: {
+    ReservationListPage,
     RestaurantLogoDisplay,
     NavButton,
     MenuFragement,
@@ -621,7 +631,8 @@ export default {
       password: '',
       /* new input */
       currentMemberId: null,
-      showMemberSelectionDialog: null
+      showMemberSelectionDialog: null,
+      reservations: []
     }
   },
   methods: {
@@ -875,9 +886,7 @@ export default {
       this.removeAllFromSplitOrder()
       await this.getTableDetail()
       if (this.consumeTypeStatusId < 2) {
-        console.log('here', this.consumeTypeStatusId)
         this.currentView = this.menu[1].name
-        console.log(this.currentView)
       } else {
         this.currentView = this.menu[0].name
       }
@@ -916,11 +925,15 @@ export default {
           }
         }
         await this.getOrderedDish()
+        await this.refreshReservation()
+        console.log(this.reservations, 'res')
       } catch (e) {
         console.log(e, 'error on table')
       }
     },
-
+    async refreshReservation () {
+      this.reservations = await getReservationsByTableId(this.id)
+    },
     async orderDish (order, print = true) {
       try {
         this.isSendingRequest = true
@@ -1124,18 +1137,21 @@ export default {
     menu () {
       const menu = [{
         icon: 'mdi-book-open',
-        name: 'Menu'
+        name: 'Menu',
+        disable: () => this.haveOrder && this.consumeTypeStatusId < 1
       }]
       if (this.consumeTypeId === 2) {
         menu.push({
           icon: 'mdi-map-clock',
-          name: 'Delivery'
+          name: 'Delivery',
+          disable: () => this.haveOrder && this.consumeTypeStatusId < 1
         })
       }
       menu.push(
         {
           icon: 'mdi-calendar-blank-outline',
-          name: 'Reservation'
+          name: 'Reservation',
+          disable: () => (this.haveOrder && this.consumeTypeStatusId < 1) || this.reservations.length === 0
         }
       )
       return menu
