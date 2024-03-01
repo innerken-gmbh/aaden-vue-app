@@ -19,9 +19,9 @@ const todayEnd = dayjs().startOf('d')
   .add(59, 'm').format(timestampTemplate)
 
 export async function getCurrentReservation () {
-  const nowMinus30 = dayjs().subtract(30, 'm').format(timestampTemplate)
+  const nowMinus30 = dayjs().subtract(60, 'm').format(timestampTemplate)
 
-  return await loadAllReservation(nowMinus30, todayEnd)
+  return (await loadAllReservation(nowMinus30, todayEnd)).filter(it => it.status === 'Confirmed')
 }
 
 const host = 'https://reservation-api.aaden.io/reservation/'

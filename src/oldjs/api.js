@@ -45,9 +45,7 @@ export async function getTableListWithCells () {
         reservationDict[s.tableId].push(r)
       })
     })
-    console.log(allReservation, 'reservation')
   }
-  console.log(reservationDict)
   return (await hillo.get('Tables.php?op=showAllTableWithCells')).content.map(t => {
     t.cells = t.cells.map(p => {
       p.x = parseInt(p.x)

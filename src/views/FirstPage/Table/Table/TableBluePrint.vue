@@ -200,12 +200,14 @@
                   elevation="0"
                   height="100%"
               >
-                <div class="d-flex align-center text-body-1 mt-1">
+                <div class="d-flex align-center text-body-1">
                   <span
-                      class="text-truncate text-no-wrap"
+                      class="text-truncate text-no-wrap d-flex"
                       style="max-width: 200px"
                   >
+                    <div class="font-weight-black mr-2">{{ re.personCount }} P</div>
                     {{ re.title }}
+
                     {{ re.firstName }}
                     {{ re.lastName }}
                   </span>
@@ -223,60 +225,35 @@
                   </v-chip>
 
                 </div>
-                <div class="d-flex">
-                  <div>
-                    <div class="d-flex align-center mt-2">
-                      <v-icon
-                          class="mr-3"
-                          small
-                      >mdi-phone
-                      </v-icon>
-                      <div> {{ re.tel }}</div>
-                    </div>
-                    <div class="d-flex align-center mt-2">
-                      <v-icon
-                          class="mr-3"
-                          small
-                      >mdi-human-male-female
-                      </v-icon>
-                      <div> {{ re.personCount }}</div>
-                      <v-icon
-                          class="mr-3 ml-4"
-                          small
-                      >mdi-human-child
-                      </v-icon>
-                      <div>{{ re.childCount }}</div>
-                    </div>
-                  </div>
-                  <v-spacer/>
-                  <div class="d-flex align-end flex-column">
-                    <div class="mt-1">
-                      <v-btn
-                          color="error"
-                          elevation="0"
-                          small
-                          @click="cancelReservation(re.id)"
-                      >
-                        {{ $t('CancelReservation') }}
-                      </v-btn>
-                    </div>
-                    <div
-                        v-if="showChangeButton === 1"
-                        class="mt-1"
-                    >
-                      <v-btn
-                          color="warning"
-                          elevation="0"
-                          small
-                          @click="moveReservation(re.id,activeTable.tableId)"
-                      >
-                        {{ $t('ChangePosition') }}
-                      </v-btn>
-                    </div>
-
-                  </div>
-
+                <div class="d-flex align-center mt-2">
+                  <div> {{ re.tel }}</div>
                 </div>
+                <div class="d-flex mt-2">
+
+                  <v-btn
+                      color="error"
+                      elevation="0"
+                      small
+                      @click="cancelReservation(re.id)"
+                  >
+                    {{ $t('CancelReservation') }}
+                  </v-btn>
+
+                  <div
+                      v-if="showChangeButton === 1"
+                      class="ml-2"
+                  >
+                    <v-btn
+                        color="warning"
+                        elevation="0"
+                        small
+                        @click="moveReservation(re.id,activeTable.tableId)"
+                    >
+                      {{ $t('ChangePosition') }}
+                    </v-btn>
+                  </div>
+                </div>
+
               </v-card>
             </div>
 
