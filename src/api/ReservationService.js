@@ -23,6 +23,7 @@ export async function getReservationsByTableId (tableId) {
   return (await getCurrentReservation()).filter(it => it.seatPlan.find(s => s.tableId === parseInt(tableId)))
 }
 
+const host = 'https://reservation-api.aaden.io/reservation/'
 const todayEnd = dayjs().startOf('d')
   .add(1, 'd').add('3', 'h')
   .add(59, 'm').format(timestampTemplate)
@@ -32,8 +33,6 @@ export async function getCurrentReservation () {
 
   return (await loadAllReservation(nowMinus30, todayEnd)).filter(it => it.status === 'Confirmed')
 }
-
-const host = 'https://reservation-api.aaden.io/reservation/'
 
 export async function loadAllReservation (fromDateTime, toDateTime) {
   const deviceId = parseInt(await getCurrentDeviceId())
