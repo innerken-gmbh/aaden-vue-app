@@ -1,7 +1,7 @@
-import { fastSweetAlertRequest, loadingComplete, popAuthorize } from './common'
+import { popAuthorize } from './common'
 import hillo from 'hillo'
-import i18n from '../i18n'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import { getCurrentReservation } from '@/api/ReservationService'
 
 export function splitOrder (discountStr = '', id, items, initialUI, print, payMethod, tipIncome, memberCardId) {
   print = parseInt(print)
@@ -33,32 +33,28 @@ export function openDrawer () {
   hillo.get('Printer.php?op=openDrawer')
 }
 
-export async function deleteDishes (id, items) {
-  await optionalAuthorizeAsync('boss', !GlobalConfig.returnDishWithoutPassword)
-  if (GlobalConfig.useDeleteDishReason) {
-    const res = await fastSweetAlertRequest(i18n.t('JSTableAdditionPopReturnDishInfo'), 'text', 'Complex.php?op=deleteDishes', 'reason', {
-      tableId: id, dishes: JSON.stringify(items)
-    }, 'POST', true, null, GlobalConfig.defaultCancelReason)
-    console.log(res, 'res')
-    if (res) {
-      GlobalConfig.updateSettings('defaultCancelReason', res.originalData)
-      loadingComplete()
-    }
-  } else {
-    await hillo.post('Complex.php?op=deleteDishes', {
-      tableId: id, dishes: JSON.stringify(items), reason: i18n.t('InputError')
-    })
-    loadingComplete()
-  }
-}
-
 export async function getTableListWithCells () {
+  const reservationDict = {}
+  if (GlobalConfig.activeReservation) {
+    const allReservation = await getCurrentReservation()
+    allReservation.forEach(r => {
+      r.seatPlan.forEach(s => {
+        if (!reservationDict[s.tableId]) {
+          reservationDict[s.tableId] = []
+        }
+        reservationDict[s.tableId].push(r)
+      })
+    })
+    console.log(allReservation, 'reservation')
+  }
+  console.log(reservationDict)
   return (await hillo.get('Tables.php?op=showAllTableWithCells')).content.map(t => {
     t.cells = t.cells.map(p => {
       p.x = parseInt(p.x)
       p.y = parseInt(p.y)
       return p
     }) ?? []
+    t.reservations = reservationDict[t.tableId] || []
     return t
   })
 }
@@ -74,7 +70,8 @@ export async function optionalAuthorizeAsync (authType = '', shouldAuthorize = t
 
 export function printZwichenBon (tableId, items) {
   return hillo.get('Orders.php?op=printZwichenBonUseDishesList', {
-    tableId, dishes: JSON.stringify(items)
+    tableId,
+    dishes: JSON.stringify(items)
   })
 }
 
@@ -103,6 +100,7 @@ export function getColorLightness (c) {
 
 export async function checkServant (boss, password, tableId = null) {
   return (await hillo.silentGet('Servant.php?op=' + (boss ? 'checkBoss' : 'checkServant'), {
-    tableId: tableId ?? null, pw: password
+    tableId: tableId ?? null,
+    pw: password
   }))
 }

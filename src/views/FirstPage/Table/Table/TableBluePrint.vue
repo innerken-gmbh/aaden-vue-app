@@ -268,7 +268,7 @@
                           color="warning"
                           elevation="0"
                           small
-                          @click="moveReservation(re.id)"
+                          @click="moveReservation(re.id,activeTable.tableId)"
                       >
                         {{ $t('ChangePosition') }}
                       </v-btn>
@@ -428,13 +428,15 @@ export default {
     }
   },
   methods: {
-    async moveReservation (id) {
-      await moveReservation(id)
+    async moveReservation (id, tableId) {
+      await moveReservation(id, tableId)
       this.reservationDialog = false
+      this.$emit('need-refresh')
     },
     async cancelReservation (id) {
       await cancelReservation(id)
       this.reservationDialog = false
+      this.$emit('need-refresh')
     },
     async refreshSectionList () {
       this.sectionList = (await getSectionList())

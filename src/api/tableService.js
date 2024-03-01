@@ -1,5 +1,3 @@
-import { getTableListWithCells } from '@/oldjs/api'
-import { loadAllReservable } from '@/api/ReservationService'
 import { timeFromNowInMinute } from '@/api/dateUtils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
@@ -66,18 +64,3 @@ export const TableInfoMetaData = Object.entries(TableInfoMetaDataSetting)
     obj[entry[0]] = entry[1]
     return obj
   }, {})
-
-export async function loadReservationTableInfo () {
-  const reservableTableSet = new Set((await loadAllReservable()).map(it => it.id))
-  return (await getTableListWithCells())
-    .filter(TableFixedSectionId.notTogoFilter).map(it => {
-      it.reservable = reservableTableSet.has(it.tableId)
-      return it
-    })
-}
-
-const ServantColors = ['#ffffff', '#ffffff', '#ffffff', '#ffffff', '#ffffff']
-
-export function getColorFromName (name = '') {
-  return ServantColors[name.charCodeAt(0) % ServantColors.length - 1]
-}

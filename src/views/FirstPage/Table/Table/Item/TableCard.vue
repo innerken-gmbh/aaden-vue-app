@@ -71,8 +71,6 @@
 </template>
 
 <script>
-import { getColorLightness } from '@/oldjs/api'
-import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { defaultTable } from '@/api/restaurantInfoService'
 import { findConsumeTypeById } from '@/oldjs/common'
 import TableInfoDisplay from '@/views/FirstPage/Table/Table/Widget/TableInfoDisplay'
@@ -86,46 +84,22 @@ export default {
     cardOnly: { default: false }
   },
   methods: {
-    findConsumeTypeColorById (id) {
-      return findConsumeTypeById(id)?.color ?? this.$vuetify.theme.currentTheme.primary
-    },
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
     },
     showReservationDialog () {
       this.$emit('reservation-clicked', this.tableInfo)
     },
-    colorIsDark (color) {
-      return getColorLightness(color) < 128
-    },
     getKeys () {
       return Remember.tableDisplayKeys
     }
   },
   computed: {
-    tableXSize () {
-      const minSize = GlobalConfig.minTileSize
-      return this.table.w / minSize
-    },
-    tableYSize () {
-      const minSize = GlobalConfig.minTileSize
-      return this.table.h / minSize
-    },
     tableCardFontSize () {
       return '20px'
     },
     tableColor () {
       return this.table.inCall ? 'error' : this.table.inUse ? 'rgba(255,216,154,0.8)' : '#f6f6f6'
-    },
-    tableChipList () {
-      let allowCount = 1
-      if (this.tableXSize > 1 || this.tableYSize > 1) {
-        allowCount = 2
-      } else if (this.tableXSize >= 2 && this.tableYSize > 1) {
-        allowCount = 4
-      }
-      return Object.keys(this.table)
-        .filter(it => it.includes('info') && it.replace('info', '') < allowCount)
     },
     table () {
       const res = Object.assign({}, defaultTable, this.tableInfo)
