@@ -414,7 +414,11 @@ export default {
     }
   },
   methods: {
-    checkIn,
+    async checkIn (id) {
+      await checkIn(id)
+      this.reservationDialog = false
+      this.$emit('need-refresh')
+    },
     async moveReservation (id, tableId) {
       await moveReservation(id, tableId)
       this.reservationDialog = false
