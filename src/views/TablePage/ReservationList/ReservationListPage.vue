@@ -19,6 +19,9 @@
         <div class="text-body-1 mt-2">
           Note: {{ r.note || '-' }}
         </div>
+        <div class="text-body-1 mt-2">
+          Kinderwagen: {{r.useStroller===1?'Ja':'Nein'}}
+        </div>
       </div>
       <div class="d-flex mt-4">
         <v-btn

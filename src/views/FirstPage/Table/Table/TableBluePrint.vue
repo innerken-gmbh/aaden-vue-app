@@ -182,7 +182,7 @@
     </v-card>
     <v-dialog
         v-model="reservationDialog"
-        max-width="400px"
+        max-width="600px"
     >
       <v-card color="#f6f6f6">
         <v-card-title>{{ $t('FollowingTableReservation') }}</v-card-title>
