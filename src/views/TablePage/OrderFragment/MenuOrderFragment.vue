@@ -9,7 +9,7 @@
         color="grey lighten-3"
         elevation="0"
     >
-      <template>
+      <template v-if="favoriteList">
         <v-item-group
             v-if="favoriteList"
             v-model="activeDCT"
