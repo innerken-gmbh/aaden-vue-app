@@ -38,7 +38,11 @@ Vue.filter('priceDisplay', function (price) {
   if (price.includes && price.includes(',')) {
     d = price.replace('.', '').replace(',', '.')
   }
-  return _.round(parseFloat(d), 2).toFixed(2).replace('.', ',') + ' €'
+  if (!GlobalConfig.useDenmarkSymbol) {
+    return _.round(parseFloat(d), 2).toFixed(2).replace('.', ',') + ' €'
+  } else {
+    return _.round(parseFloat(d), 2).toFixed(2).replace('.', ',') + ' Kr'
+  }
 })
 
 Vue.filter('shorterName', function (longName) {

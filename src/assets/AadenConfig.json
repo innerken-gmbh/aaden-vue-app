@@ -33,5 +33,6 @@
   "frontEndLang": "de",
   "activeVip": false,
   "useCustomerDisplay" : false,
-  "useStaffCheckInPassword": false
+  "useStaffCheckInPassword": false,
+  "useDenmarkSymbol": false
 }

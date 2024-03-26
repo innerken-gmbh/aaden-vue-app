@@ -65,12 +65,23 @@ function getComputedOption (dish) {
           item.priceInfo = (item.priceInfo?.split(',')) ?? []
         }
         item.selectName.forEach((name, index) => {
-          const select = {
-            text: `${name}`,
-            value: item.selectValue[index],
-            priceInfo: parseFloat(item.priceInfo[index]) === 0 ? '' : ` €${parseFloat(item.priceInfo[index]).toFixed(2)}`,
-            count: 0,
-            price: parseFloat(item.priceInfo[index] ?? 0)
+          let select = {}
+          if (!GlobalConfig.useDenmarkSymbol) {
+            select = {
+              text: `${name}`,
+              value: item.selectValue[index],
+              priceInfo: parseFloat(item.priceInfo[index]) === 0 ? '' : ` €${parseFloat(item.priceInfo[index]).toFixed(2)}`,
+              count: 0,
+              price: parseFloat(item.priceInfo[index] ?? 0)
+            }
+          } else {
+            select = {
+              text: `${name}`,
+              value: item.selectValue[index],
+              priceInfo: parseFloat(item.priceInfo[index]) === 0 ? '' : ` Kr${parseFloat(item.priceInfo[index]).toFixed(2)}`,
+              count: 0,
+              price: parseFloat(item.priceInfo[index] ?? 0)
+            }
           }
           item.select.push(select)
         })
