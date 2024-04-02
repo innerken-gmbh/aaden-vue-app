@@ -3,12 +3,12 @@
 
     <div class="pa-1 d-flex">
       <v-card
-          color="grey darken-2"
-          width="300"
-          class="d-flex flex-column"
-          style="border-radius: 16px 0 0 16px !important;"
-          dark
           v-if="isBoss"
+          class="d-flex flex-column"
+          color="grey darken-2"
+          dark
+          style="border-radius: 16px 0 0 16px !important;"
+          width="300"
       >
         <div>
           <div class="pa-6 py-4">
@@ -129,12 +129,12 @@
       </v-card>
       <div class="flex-grow-1" style="height: calc(100vh - 8px)">
         <v-app-bar
-            dark
             color="transparent"
+            dark
             flat
             height="56"
         >
-          <v-tabs color="white" v-model="tabIndex">
+          <v-tabs v-model="tabIndex" color="white">
             <template v-if="isBoss">
               <v-tab>{{ $t('Bill') }}</v-tab>
               <v-tab>{{ $t('Employees') }}</v-tab>
@@ -146,9 +146,9 @@
           </v-tabs>
           <v-spacer></v-spacer>
           <v-card
-              color="rgba(255,255,255,0.2)"
-              class="flex-shrink-0 text-no-wrap pa-2 px-4"
               v-if="isBoss||Config.servantShowHistoryBill"
+              class="flex-shrink-0 text-no-wrap pa-2 px-4"
+              color="rgba(255,255,255,0.2)"
               elevation="0"
               style="border-radius: 8px !important;"
               @click="showDatePicker=true"
@@ -158,16 +158,13 @@
             <v-spacer/>
           </v-card>
         </v-app-bar>
-        <v-tabs-items v-model="tabIndex">
-          <template v-if="isBoss">
-            <template>
-              <v-tab-item>
-                <calendar
-                    :is-boss="isBoss"
-                    :single-z-bon-date="singleZBonDate"
-                />
-              </v-tab-item>
-            </template>
+        <v-tabs-items v-if="isBoss" v-model="tabIndex">
+            <v-tab-item>
+              <calendar
+                  :is-boss="isBoss"
+                  :single-z-bon-date="singleZBonDate"
+              />
+            </v-tab-item>
             <v-tab-item>
               <v-card elevation="0">
                 <servant-list :single-z-bon-date="singleZBonDate"></servant-list>
@@ -176,23 +173,24 @@
             <v-tab-item>
               <CashBookPage :date="singleZBonDate"/>
             </v-tab-item>
-          </template>
+        </v-tabs-items>
+        <v-tabs-items v-else v-model="tabIndex">
           <v-tab-item>
             <v-card>
               <div class="d-flex pa-1">
                 <div class="pa-2 flex-grow-1">
                   <bill-table
-                      :is-boss="isBoss"
-                      :orders="displayData.orders"
+                    :is-boss="isBoss"
+                    :orders="displayData.orders"
                   ></bill-table>
                 </div>
                 <div
-                    class="pa-2"
-                    style="width: 240px"
+                  class="pa-2"
+                  style="width: 240px"
                 >
                   <v-list
-                      dense
-                      subheader
+                    dense
+                    subheader
                   >
                     <v-subheader>{{ $t('Employees') }} : {{ displayData.servant.name }}
                       ({{ $t('WithoutTip') }})
@@ -212,7 +210,7 @@
                     <v-divider></v-divider>
                     <v-subheader>{{ $t('payMethod') }}</v-subheader>
                     <template
-                        v-for="payment in displayData.payMethodTotal.filter(p=>p.payMethodId!=='9')"
+                      v-for="payment in displayData.payMethodTotal.filter(p=>p.payMethodId!=='9')"
                     >
                       <v-list-item v-bind:key="payment.payMethodId">
                         <v-list-item-content>
@@ -246,10 +244,10 @@
                     <v-divider></v-divider>
                   </v-list>
                   <v-btn
-                      block
-                      class="mt-4"
-                      color="primary"
-                      @click="printSummaryBon"
+                    block
+                    class="mt-4"
+                    color="primary"
+                    @click="printSummaryBon"
                   >
                     {{ $t('WaiterBon') }}
                   </v-btn>
@@ -505,7 +503,6 @@ export default {
     async dateSubmit () {
       this.showDatePicker = false
       this.singleZBonDate = this.dateInput
-      console.log(this.singleZBonDate, 'date')
       await this.loadData()
     },
     getNiceLabel,
