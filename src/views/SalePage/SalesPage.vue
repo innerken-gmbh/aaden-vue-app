@@ -26,8 +26,7 @@
       <div class="flex-grow-1">
         <v-card-text class="d-flex pa-0">
           <div class="flex-grow-1">
-            <v-tabs-items v-model="tabIndex">
-              <template v-if="isBoss">
+            <v-tabs-items v-if="isBoss" v-model="tabIndex">
                 <template>
                   <v-tab-item>
                     <calendar :is-boss="isBoss" :single-z-bon-date="singleZBonDate"/>
@@ -120,7 +119,8 @@
                 <v-tab-item>
                   <price-display></price-display>
                 </v-tab-item>
-              </template>
+            </v-tabs-items>
+            <v-tabs-items v-else v-model="tabIndex">
               <v-tab-item>
                 <v-card>
                   <div class="d-flex pa-1">
