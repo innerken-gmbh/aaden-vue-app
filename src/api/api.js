@@ -374,3 +374,9 @@ export async function addNewCashBookInfo (item) {
 export async function checkElectronicBillingStatus () {
   return (await hillo.get('Complex.php?op=checkAadenPoint', {})).content.enabled
 }
+
+export async function forceGetSystemSetting (item) {
+  return (await hillo.post('Restaurant.php?op=forceGetSystemSetting', {
+    systemSetting: JSON.stringify(item)
+  })).content
+}

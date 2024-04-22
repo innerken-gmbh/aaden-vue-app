@@ -32,9 +32,13 @@ export default new Vuex.Store({
     errorDialogMessage: '',
     billDetailQr: '',
     billDetailUrlHead: '',
-    showBillDetailQRDialog: false
+    showBillDetailQRDialog: false,
+    currencySymbols: ''
   },
   mutations: {
+    currencySymbols (state, symbols) {
+      state.currencySymbols = symbols
+    },
     showBillDetailQRDialog (state, payload) {
       state.showBillDetailQRDialog = true
       state.billDetailQr = payload.code

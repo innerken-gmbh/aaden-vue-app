@@ -11,7 +11,7 @@ import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
 import 'vue-draggable-resizable-gorkys/dist/VueDraggableResizable.css'
 import VueDraggableResizable from 'vue-draggable-resizable-gorkys'
 
-import { reportDeviceInfo } from '@/api/api'
+import { forceGetSystemSetting, reportDeviceInfo } from '@/api/api'
 import { addToQueue } from '@/oldjs/poolJobs'
 import IKUtils from 'innerken-js-utils'
 import dayjs from 'dayjs'
@@ -38,10 +38,11 @@ Vue.filter('priceDisplay', function (price) {
   if (price.includes && price.includes(',')) {
     d = price.replace('.', '').replace(',', '.')
   }
-  if (!GlobalConfig.useDenmarkSymbol) {
-    return _.round(parseFloat(d), 2).toFixed(2).replace('.', ',') + ' €'
+  const res = _.round(parseFloat(d), 2).toFixed(2)
+  if (store.state.currencySymbols === '$') {
+    return store.state.currencySymbols + ' ' + res.replace(',', '.')
   } else {
-    return _.round(parseFloat(d), 2).toFixed(2).replace('.', ',') + ' Kr'
+    return res.replace('.', ',') + ' ' + store.state.currencySymbols
   }
 })
 
@@ -109,6 +110,19 @@ async function initial () {
     Remember.uuid = uuidv4()
   }
   i18n.locale = GlobalConfig.frontEndLang.toLowerCase()
+
+  const symbol = await forceGetSystemSetting({
+    section: 'currencySymbols',
+    sKey: 'useCurrencySymbols',
+    sValue: '€',
+    defaultValue: '€',
+    sType: 'string',
+    minimumVersion: '1.7.784',
+    sOptions: '',
+    tagList: 'basic'
+  })
+  store.commit('currencySymbols', symbol)
+  console.log(symbol, 'symbol')
   try {
     reportDeviceInfo().then(r => console.log(r))
   } catch (e) {
