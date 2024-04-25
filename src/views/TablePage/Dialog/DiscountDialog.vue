@@ -1,17 +1,17 @@
 <template>
-  <v-dialog max-width="400px" v-model="realShow">
+  <v-dialog v-model="realShow" max-width="400px">
     <v-card>
-      <v-toolbar tile color="primary" dark elevation="0">
+      <v-toolbar color="primary" dark elevation="0" tile>
         <v-toolbar-title> {{ $t('PleaseEnterDiscount2') }}</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
-        <v-text-field :label="$t('AmountOrPercentage')"
-                      :messages="$t('CashDiscountUseTips')" v-model="localDiscountStr"></v-text-field>
+        <v-text-field v-model="localDiscountStr"
+                      :label="$t('AmountOrPercentage')" :messages="$t('CashDiscountUseTips')"></v-text-field>
       </v-card-text>
       <v-card-actions>
         <div class="d-flex flex-wrap">
           <template v-for="d in predefinedDiscount">
-            <v-btn @click="submitDiscount(d)" :key="d">-{{ d.replace('p', '%') }}</v-btn>
+            <v-btn :key="d" @click="submitDiscount(d)">-{{ d.replace('p', '%') }}</v-btn>
           </template>
         </div>
         <v-spacer></v-spacer>
@@ -22,12 +22,12 @@
 </template>
 
 <script>
-import hillo from 'hillo'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
-import { loadingComplete } from '@/oldjs/common'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import { optionalAuthorizeAsync } from '@/oldjs/api'
+import { loadingComplete, toast } from '@/oldjs/common'
+import hillo from 'hillo'
 
 const keyboardLayout =
     [
@@ -155,16 +155,22 @@ export default {
           orderId: this.orderId,
           dishes: JSON.stringify(this.dishesItems)
         })
-        if (res) {
+        if (res.status === 'good') {
           loadingComplete()
           this.initialUI()
+        } else {
+          toast('打折失败,请重新打折！')
         }
       } else {
-        await hillo.post('Complex.php?op=setDiscount', {
+        const res = await hillo.post('Complex.php?op=setDiscount', {
           tableId: this.id,
           discountStr
         })
-        this.initialUI()
+        if (res.status === 'good') {
+          this.initialUI()
+        } else {
+          toast('打折失败,请重新打折！')
+        }
       }
     }
   },
