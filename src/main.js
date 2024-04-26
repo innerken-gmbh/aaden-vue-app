@@ -11,7 +11,7 @@ import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
 import 'vue-draggable-resizable-gorkys/dist/VueDraggableResizable.css'
 import VueDraggableResizable from 'vue-draggable-resizable-gorkys'
 
-import { forceGetSystemSetting, reportDeviceInfo } from '@/api/api'
+import { forceGetSystemSetting, getServantList, reportDeviceInfo } from '@/api/api'
 import { addToQueue } from '@/oldjs/poolJobs'
 import IKUtils from 'innerken-js-utils'
 import dayjs from 'dayjs'
@@ -122,6 +122,8 @@ async function initial () {
     tagList: 'basic'
   })
   store.commit('currencySymbols', symbol)
+  const servantList = (await getServantList()).map(it => it.name)
+  store.commit('servantList', servantList)
   console.log(symbol, 'symbol')
   try {
     reportDeviceInfo().then(r => console.log(r))

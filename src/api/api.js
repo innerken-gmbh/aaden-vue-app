@@ -380,3 +380,7 @@ export async function forceGetSystemSetting (item) {
     systemSetting: JSON.stringify(item)
   })).content
 }
+
+export async function getServantList () {
+  return (await hillo.get('Servant.php', { lang: GlobalConfig.lang })).content
+}

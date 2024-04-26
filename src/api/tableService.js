@@ -2,9 +2,9 @@ import { getTableListWithCells } from '@/oldjs/api'
 import { loadAllReservable } from '@/api/ReservationService'
 import { timeFromNowInMinute } from '@/api/dateUtils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import store from '@/store'
 
-const ServantColorArray = ['pink  ', 'green ', 'blue ', 'purple ', 'indigo']
-
+const ServantColorArray = ['red', 'pink', 'purple', 'green', 'blue', 'indigo', 'cyan', 'teal', 'lime', 'orange']
 const TableInfoMetaDataSetting = {
   createTimestamp: {
     icon: 'mdi-clock-outline',
@@ -17,11 +17,8 @@ const TableInfoMetaDataSetting = {
   servantName: {
     icon: 'mdi-account',
     classFunc: (v) => {
-      let sum = 0
-      for (let i = 0; i < v.length; i++) {
-        sum += v[i].charCodeAt(0)
-      }
-      return ServantColorArray[sum % (ServantColorArray.length - 1)] + ' lighten-4'
+      const indexOf = store.state.servantList.indexOf(v)
+      return ServantColorArray[indexOf % (ServantColorArray.length)] + ' lighten-4'
     }
   },
   dishCount: {

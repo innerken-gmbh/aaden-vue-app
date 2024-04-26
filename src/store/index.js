@@ -33,9 +33,13 @@ export default new Vuex.Store({
     billDetailQr: '',
     billDetailUrlHead: '',
     showBillDetailQRDialog: false,
-    currencySymbols: ''
+    currencySymbols: '',
+    servantList: []
   },
   mutations: {
+    servantList (state, list) {
+      state.servantList = list
+    },
     currencySymbols (state, symbols) {
       state.currencySymbols = symbols
     },
