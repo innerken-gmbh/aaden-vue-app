@@ -113,25 +113,26 @@
                 </v-btn>
               </template>
               <template v-slot:default="{ total }">
-                <div class="pa-2">
-                  <v-btn
-                      :loading="isSendingRequest"
-                      block
-                      color="primary lighten-4 black--text"
-                      elevation="0"
-                      height="64"
-                      rounded
-                      @click="orderDish(cartListModel.list)"
-                  >
-                    <v-icon
-                        class="mr-6"
-                        left
-                        size="28"
-                    >mdi-printer
-                    </v-icon>
+                <v-card class="d-flex align-center" color="primary lighten-4">
+                  <v-btn :loading="isSendingRequest" class="mr-1 ml-2"
+                         color="primary lighten-4 black--text"
+                         elevation="0"
+                         height="60px"
+                         large @click="orderDish(cartListModel.list,false)">
+                    <v-icon>mdi-printer-off</v-icon>
+                  </v-btn>
+                  <v-btn :loading="isSendingRequest"
+                         class="flex-grow-1"
+                         color="primary lighten-4 black--text"
+                         dark
+                         elevation="0"
+                         height="60px" large
+                         style="border-radius: 12px"
+                         x-large @click="orderDish(cartListModel.list)">
+                    <v-icon left size="28">mdi-printer</v-icon>
                     <span class="text-h5">{{ total | priceDisplay }}</span>
                   </v-btn>
-                </div>
+                </v-card>
               </template>
             </dish-card-list>
           </v-card>
@@ -1059,13 +1060,7 @@ import hillo from 'hillo'
 import { checkOut, optionalAuthorizeAsync, printZwichenBon } from '@/oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
 
-import {
-  findDish,
-  getCategoryListWithCache,
-  goHome,
-  processDishList,
-  setDefaultValueForApply
-} from '@/oldjs/StaticModel'
+import { findDish, getCategoryListWithCache, goHome, processDishList, setDefaultValueForApply } from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
 
