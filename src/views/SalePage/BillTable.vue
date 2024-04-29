@@ -66,6 +66,16 @@
                     <v-icon>mdi-history</v-icon>
                   </v-btn>
                 </template>
+                <template v-if="showFrenchBillBtn !== '0'">
+                  <v-btn
+                         class="ml-2"
+                         color="brown lighten-3 black--text"
+                         elevation="0"
+                         small
+                         @click.stop="openFrenchBillDialog(order)">
+                    <v-icon>mdi-ticket-account</v-icon>
+                  </v-btn>
+                </template>
               </template>
 
             </td>
@@ -163,12 +173,23 @@
     <v-dialog v-model="orderDetailDialog" max-width="600px">
       <v-card style="" width="100%">
         <order-detail-dialog
-            :is-boss="isBoss"
-            :order="selectedOrder"
-            @close-detail="orderDetailDialog = false"
-            @return-order="returnOrder"
+          :is-boss="isBoss"
+          :order="selectedOrder"
+          @close-detail="orderDetailDialog = false"
+          @return-order="returnOrder"
         ></order-detail-dialog>
       </v-card>
+    </v-dialog>
+    <v-dialog v-model="frenchBillDialog" max-width="600px">
+      <base-form
+        :schema="schemas"
+        @close="frenchBillDialog=false"
+        @submit="savePrintInfo">
+        <div>餐票打印</div>
+        <template #subtitle>
+          在这里打印餐票详细信息
+        </template>
+      </base-form>
     </v-dialog>
   </div>
 
@@ -178,8 +199,10 @@
 import IKUtils from 'innerken-js-utils'
 import {
   changePayMethodForOrder,
+  forceGetSystemSetting,
   getUUidByOrderId,
   loadDetailOrder,
+  printFrenchBillController,
   reprintOrder,
   restoreOrder,
   returnOrder,
@@ -190,15 +213,20 @@ import {
 import CheckOutCalculator from '@/components/GlobalDialog/CheckOutCalculator'
 import OrderDetailDialog from '@/components/GlobalDialog/OrderDetailDialog'
 import { mapMutations } from 'vuex'
+import BaseForm from '@/components/CommonDialog/BaseForm'
 
 export default {
   name: 'BillTable',
   components: {
+    BaseForm,
     OrderDetailDialog,
     CheckOutCalculator
   },
   data: function () {
     return {
+      showFrenchBillBtn: '',
+      orderId: '',
+      frenchBillDialog: false,
       valid: true,
       reasonOfVisit: '',
       companyOrPersonName: '',
@@ -218,6 +246,20 @@ export default {
     isBoss: {},
     showOperation: { default: false }
   },
+  computed: {
+    schemas () {
+      return [
+        {
+          key: 'personCount',
+          name: '人数'
+        },
+        {
+          key: 'note',
+          name: '备注'
+        }
+      ]
+    }
+  },
   watch: {
     checkCompanyInfo (val) {
       if (!val) {
@@ -227,7 +269,29 @@ export default {
       }
     }
   },
+  async mounted () {
+    this.showFrenchBillBtn = await forceGetSystemSetting({
+      section: 'aadenAdmin',
+      sKey: 'useFrenchBill',
+      sValue: '0',
+      defaultValue: '0',
+      sType: 'boolean',
+      minimumVersion: '1.7.784',
+      sOptions: '',
+      tagList: 'basic'
+    })
+    console.log(this.showFrenchBillBtn, 'btn')
+  },
   methods: {
+    openFrenchBillDialog (order) {
+      this.orderId = order.orderId
+      this.frenchBillDialog = true
+    },
+    async savePrintInfo (info) {
+      info.orderId = this.orderId
+      await printFrenchBillController(info)
+      this.frenchBillDialog = false
+    },
     shouldDisable (order) {
       return order.isReturned === '1' || order.totalPrice < 0
     },

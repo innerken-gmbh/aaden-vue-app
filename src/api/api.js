@@ -384,3 +384,9 @@ export async function forceGetSystemSetting (item) {
 export async function getServantList () {
   return (await hillo.get('Servant.php', { lang: GlobalConfig.lang })).content
 }
+
+export async function printFrenchBillController (item) {
+  return await hillo.post('FrenchBillController.php?op=addAndPrint', {
+    ...item
+  })
+}
