@@ -471,7 +471,7 @@
                 class="flex-grow-1"
                 style="
                 display: grid;
-                grid-template-columns: 1fr 360px;
+                grid-template-columns: 1fr 300px;
                 height: calc(100vh - 130px);
                 grid-gap: 0px;
               "
@@ -495,6 +495,11 @@
                     {{ $t('SearchResult') }}
                   </v-card>
                   <!--                  需要监听键盘的地方-->
+                  <div
+                    v-dragscroll
+                    style="height: calc(100vh - 180px);
+                               overflow: hidden;"
+                  >
                   <template v-for="(dish, index) in searchDish">
                     <v-card
                         :key="dish.id"
@@ -503,7 +508,7 @@
                         backgroundColor: '' + dish.displayColor,
                         color: '' + dish.foreground,
                       }"
-                        class="d-flex px-4 py-1 align-start"
+                        class="d-flex px-4 py-1 align-start justify-center"
                         elevation="0"
                         style="
                         width: 100%;
@@ -527,12 +532,13 @@
                       </div>
                       <div
                           v-else
-                          class="price d-flex align-center text-no-wrap text-truncate"
+                          class="price d-flex align-center text-no-wrap"
                       >
                         {{ dish.price | priceDisplay }}
                       </div>
                     </v-card>
                   </template>
+                  </div>
                 </div>
                 <div
                     v-else
