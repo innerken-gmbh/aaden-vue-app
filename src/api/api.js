@@ -92,7 +92,11 @@ export async function acceptOrder (reason, tableId) {
 export async function rejectOrder (id) {
   await resetTableStatus(id)
   const externalId = await getExternalIdByRejectOrder(id)
-  const res = await fastSweetAlertRequest(i18n.t('RevocationDishReason'), 'text', 'Orders.php?op=rejectTakeAwayOrder', 'reason', { tableId: id })
+  const res = await fastSweetAlertRequest(
+    i18n.t('RevocationDishReason'),
+    'text',
+    'Orders.php?op=rejectTakeAwayOrder',
+    'reason', { tableId: id })
   if (res) {
     await acceptFireBaseOrder(externalId, false)
   }

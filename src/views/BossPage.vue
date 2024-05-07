@@ -1,7 +1,9 @@
 <template>
-  <iframe width="100%"
-          :src="'http://'+Config.Base+'/'+endPoint+'?Base='+Config.Base+'&lang='+Config.lang+'&chaos='+Config.startUpTimestamp"
-          style="height: 100vh"></iframe>
+  <iframe
+    width="100%"
+    :src="'http://'+Config.Base+'/'+endPoint+'?Base='+Config.Base+'&lang='+Config.lang+'&chaos='+Config.startUpTimestamp"
+    style="height: 100vh"
+  />
 </template>
 
 <script>
