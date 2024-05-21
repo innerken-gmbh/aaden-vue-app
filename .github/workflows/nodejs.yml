@@ -4,9 +4,8 @@
 name: Release App To Snap Store
 
 on:
-  push:
-    tags:
-      - 'v*'
+  release:
+    types:  [published]
 
 jobs:
   build:
