@@ -4,10 +4,9 @@
 name: Release App To Snap Store
 
 on:
-  - push:
-      tags:
-        - 'v*'
-  - workflow_dispatch
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   build:
