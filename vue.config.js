@@ -18,6 +18,7 @@ module.exports = {
           publish: [
             {
               provider: 'snapStore',
+              repo: 'aaden',
               channels: 'stable'
             }
           ]
