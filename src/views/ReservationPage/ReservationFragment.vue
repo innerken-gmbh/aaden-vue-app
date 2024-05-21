@@ -2,7 +2,7 @@
   <div>
     <iframe
         v-if="id!=null"
-        :src="'https://aaden-vue3-reservation.vercel.app/?userid='+id+'&chaos='
+        :src="'https://aaden-vue3-reservation.vercel.app/?userId='+id+'&chaos='
         +GlobalConfig.startUpTimestamp"
         style="height: 98vh"
         width="100%"
