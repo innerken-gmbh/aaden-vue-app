@@ -1,7 +1,9 @@
 <template>
   <div>
     <iframe
-        :src="'https://aaden-vue3-reservation.vercel.app/?userid='+base+'&chaos='+GlobalConfig.startUpTimestamp"
+        v-if="id!=null"
+        :src="'https://aaden-vue3-reservation.vercel.app/?userid='+id+'&chaos='
+        +GlobalConfig.startUpTimestamp"
         style="height: 98vh"
         width="100%"
     ></iframe>
@@ -11,18 +13,18 @@
 
 <script>
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
 
 export default {
   name: 'Reservation',
   data: function () {
     return {
-      GlobalConfig
+      GlobalConfig,
+      id: null
     }
   },
-  computed: {
-    base () {
-      return parseInt(GlobalConfig.DeviceId)
-    }
+  async mounted () {
+    this.id = await getCurrentDeviceId()
   }
 }
 </script>
