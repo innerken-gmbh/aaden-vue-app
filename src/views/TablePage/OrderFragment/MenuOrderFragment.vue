@@ -9,60 +9,21 @@
         color="grey lighten-3"
         elevation="0"
     >
-      <template v-if="favoriteList">
-        <v-item-group
-            v-if="favoriteList"
-            v-model="activeDCT"
-            v-dragscroll
-            mandatory
-            style="
-                      display: grid;
-                      grid-gap: 8px;
-                      grid-auto-columns: max-content;
-                      grid-auto-flow: column;
-                      overflow-x: scroll;
-                    "
-        >
+      <template v-if="!loading">
+        <v-card
+            v-for="ct of displayDCT"
+            :key="ct.id + 'categorytypes'"
+            :color="activeDCT===ct.id ? 'primary' : 'grey lighten-4'"
+            :dark="activeDCT===ct.id"
+            :elevation="activeDCT===ct.id ? 4 : 0"
+            :class="activeDCT===ct.id?'font-weight-black':''"
+            class="d-flex justify-center align-center px-6"
+            height="48"
+            style="border-radius: 12px; font-size: 18px"
+            @click="activeDCT=ct.id"
+        >{{ ct.name }}
+        </v-card>
 
-          <v-item
-              v-if="haveFavoriteItem"
-              v-slot="{active,toggle}"
-          >
-            <v-card
-                :color="active?'primary':'grey lighten-4'"
-                :dark="active"
-                :elevation="active?4:0"
-                class="d-flex justify-center align-center px-6"
-                height="48"
-                style="border-radius: 12px;font-size: 18px"
-                @click="toggle"
-            >
-              <v-icon
-                  :color="active?'white':'primary'"
-                  left
-              >mdi-heart-circle
-              </v-icon>
-              Favorite
-            </v-card>
-          </v-item>
-          <v-item
-              v-for="ct of dct"
-              v-bind:key="ct.id + 'categorytypes'"
-              v-slot="{ active, toggle }"
-          >
-            <v-card
-                :color="active ? 'primary' : 'grey lighten-4'"
-                :dark="active"
-                :elevation="active ? 4 : 0"
-                :class="active?'font-weight-black':''"
-                class="d-flex justify-center align-center px-6"
-                height="48"
-                style="border-radius: 12px; font-size: 18px"
-                @click="toggle"
-            >{{ ct.name }}
-            </v-card>
-          </v-item>
-        </v-item-group>
         <v-spacer></v-spacer>
         <v-btn
             @click="$emit('toggle')"
@@ -72,6 +33,9 @@
         >
           <v-icon>mdi-keyboard</v-icon>
         </v-btn>
+      </template>
+      <template v-else>
+        <v-progress-circular indeterminate></v-progress-circular>
       </template>
     </v-card>
     <v-card
@@ -83,7 +47,7 @@
         style="position: relative"
     >
       <div
-          v-if="!activeCategoryId"
+          v-if="!activeCategoryId&&activeDCT!==0"
           class="mt-2"
       >
         <v-item-group class="dishCardList">
@@ -117,7 +81,7 @@
           </template>
         </v-item-group>
       </div>
-      <template v-if="activeCategoryId">
+      <template v-else>
         <div
             style="
                       display: grid;
@@ -127,7 +91,7 @@
         >
           <div class="dishCardList mt-2">
             <v-card
-                v-if="!haveFavoriteItem||activeDCT!==0"
+                v-if="activeDCT!==0"
                 class="d-flex align-center"
                 elevation="0"
                 style="
@@ -254,10 +218,9 @@ export default {
   data: function () {
     return {
       activeCategoryId: null,
-      favoriteList: null,
       dct: [],
-      filteredDish: [],
-      activeDCT: 0
+      activeDCT: 0,
+      loading: true
     }
   },
   props: {
@@ -268,91 +231,30 @@ export default {
     dragscroll
   },
   computed: {
+    displayDCT () {
+      const res = []
+      if (this.haveFavoriteItem) {
+        res.push({
+          id: 0,
+          name: 'Favorite'
+        })
+      }
+      return [...res, ...this.dct]
+    },
     haveFavoriteItem () {
       return this.favoriteList?.length > 0
     },
+    favoriteList () {
+      return this.dishes.filter(item => item.isFavorite === '1')
+    },
     filteredC: function () {
       return this.categories.filter((item) => {
-        const dct = this.dct?.[this.haveFavoriteItem ? (this.activeDCT - 1) : this.activeDCT]
-        return parseInt(item.dishesCategoryTypeId) === parseInt(dct?.id)
-      })
-    }
-  },
-  async mounted () {
-    await this.initial()
-  },
-  watch: {
-    activeDCT: function (val) {
-      if (val === 0 && this.haveFavoriteItem) {
-        this.activeCategoryId = -10
-      } else {
-        this.keyboardInput = ''
-        this.activeCategoryId = null
-      }
-      this.updateFilteredDish()
-    },
-    dishes: function () {
-      this.reloadDish()
-    },
-    activeCategoryId: function (val) {
-      this.updateFilteredDish()
-    }
-  },
-  methods: {
-    async initial () {
-      await this.getDCT()
-      await this.reloadDish()
-    },
-    async getDCT () {
-      if (this.dct.length === 0) {
-        this.dct = (await getCategoryTypeList())
-          .sort((a, b) => {
-            const rank = GlobalConfig.defaultSort.split(',')
-            const idToRank = (id) => {
-              const index = rank.indexOf(id.toString())
-              return 10 - (index === -1 ? 10 : index)
-            }
-            const [ra, rb] = [a.id, b.id].map(idToRank)
-            return ra > rb ? -1 : 1
-          })
-          .filter(
-            (i) => typeof i.childCount === 'undefined' || i.childCount > 0
-          )
-      }
-    },
-    updateActiveDCT (index) {
-      this.activeDCT = null
-      this.$nextTick(() => {
-        this.activeDCT = index
+        return parseInt(item.dishesCategoryTypeId) === parseInt(this.activeDCT)
       })
     },
-    async reloadDish () {
-      console.log('123')
-      this.favoriteList = null
-      this.favoriteList = this.dishes.filter(item => item.isFavorite === '1')
-      this.activeCategoryId = null
-      this.updateActiveDCT(0)
-    },
-    changeCategory (id, toggle) {
-      this.activeCategoryId = id
-      if (toggle) {
-        toggle()
-      }
-    },
-    updateFilteredDish () {
-      if (this.activeCategoryId) {
-        this.filteredDish = this.filterDish()
-      }
-    },
-    orderOneDish (code) {
-      this.$emit('dish-click', code)
-    },
-    tuneDish (dish) {
-      this.$emit('dish-tune', dish)
-    },
-    filterDish () {
+    filteredDish () {
       const list = this.dishes
-      if (this.haveFavoriteItem && this.activeDCT === 0) {
+      if (this.activeDCT === 0) {
         return list.filter(item => item.isFavorite === '1')
       }
       if (!filterCache[this.activeCategoryId]) {
@@ -361,6 +263,59 @@ export default {
         })
       }
       return filterCache[this.activeCategoryId]
+    }
+  },
+  async mounted () {
+    await this.initial()
+  },
+  watch: {
+    activeDCT: function () {
+      this.keyboardInput = ''
+      this.activeCategoryId = null
+    },
+    dishes: function () {
+      this.reloadDish()
+    }
+  },
+  methods: {
+    async initial () {
+      this.loading = true
+      await this.getDCT()
+      await this.reloadDish()
+      this.$nextTick(() => {
+        this.loading = false
+      })
+    },
+    async getDCT () {
+      this.dct = (await getCategoryTypeList())
+        .sort((a, b) => {
+          const rank = GlobalConfig.defaultSort.split(',')
+          const idToRank = (id) => {
+            const index = rank.indexOf(id.toString())
+            return 10 - (index === -1 ? 10 : index)
+          }
+          const [ra, rb] = [a.id, b.id].map(idToRank)
+          return ra > rb ? -1 : 1
+        })
+        .filter(
+          (i) => typeof i.childCount === 'undefined' || i.childCount > 0
+        )
+    },
+    async reloadDish () {
+      this.activeCategoryId = null
+      this.activeDCT = this.displayDCT[0]?.id ?? -10
+    },
+    changeCategory (id, toggle) {
+      this.activeCategoryId = id
+      if (toggle) {
+        toggle()
+      }
+    },
+    orderOneDish (code) {
+      this.$emit('dish-click', code)
+    },
+    tuneDish (dish) {
+      this.$emit('dish-tune', dish)
     }
   }
 }
