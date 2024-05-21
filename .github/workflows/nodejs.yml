@@ -4,8 +4,10 @@
 name: Release App To Snap Store
 
 on:
-  - release
-  - workflow_dispatch
+  release:
+    types:
+      - created
+
 
 jobs:
   build:
