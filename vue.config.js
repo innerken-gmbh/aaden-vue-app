@@ -2,9 +2,9 @@ module.exports = {
   pluginOptions: {
     electronBuilder: {
       builderOptions: {
-        appId: 'com.aaden.app.vue',
-        productName: 'Aaden-Vue',
-        copyright: 'Copyright InnerKen GmbH 2019', // 版权信息
+        appId: 'com.aaden.app',
+        productName: 'Aaden Desktop',
+        copyright: 'Copyright InnerKen GmbH 2019-2024', // 版权信息
         linux: {
           target: 'snap'
         },
