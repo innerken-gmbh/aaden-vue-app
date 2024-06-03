@@ -1015,7 +1015,7 @@ export default {
         const tableName = await showTableSelector(TableFilter.activeFilter)
         await safeRequest(async () => {
           const res = await hillo.post('Tables.php?op=mergeTables', {
-            oldTableName: this.tableDetailInfo.tableBasicInfo.name,
+            oldTableName: this.tableDetailInfo.tableName,
             newTableName: tableName
           })
 
@@ -1031,8 +1031,9 @@ export default {
       )
       if (password) {
         const tableName = await showTableSelector(TableFilter.notActiveFilter)
+        console.log(this.tableDetailInfo.tableName)
         const res = await hillo.post('Tables.php?op=change', {
-          oldTableName: this.tableDetailInfo.tableBasicInfo.name,
+          oldTableName: this.tableDetailInfo.tableName,
           newTableName: tableName
         })
         if (res) {
