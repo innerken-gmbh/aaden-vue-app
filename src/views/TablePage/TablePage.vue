@@ -926,7 +926,6 @@ export default {
         }
         await this.getOrderedDish()
         await this.refreshReservation()
-        console.log(this.reservations, 'res')
       } catch (e) {
         console.log(e, 'error on table')
       }
