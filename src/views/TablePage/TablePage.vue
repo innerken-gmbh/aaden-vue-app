@@ -4,8 +4,8 @@
   >
     <v-navigation-drawer
         app
-        dark
         color="transparent"
+        dark
         mini-variant
         mini-variant-width="72"
         permanent
@@ -20,12 +20,12 @@
           <nav-button
               v-for="m in currentMenu"
               :key="m.icon"
-              @click="m.action"
+              :color="m.color"
+              :icon="m.icon"
+              :is-active="false"
               :loading="isSendingRequest"
               :text="m.title"
-              :icon="m.icon"
-              :color="m.color"
-              :is-active="false"
+              @click="m.action"
           >
           </nav-button>
         </div>
@@ -35,8 +35,8 @@
     <template v-if="!globalLoading">
       <v-main app>
         <v-app-bar
-            dark
             color="transparent"
+            dark
             elevation="0"
             tile
         >
@@ -44,13 +44,13 @@
           <v-spacer/>
           <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
             <v-card
-                color="transparent"
-                flat
-                :disabled="m.disable()"
                 v-for="m in menu"
                 :key="m.name"
                 :class="currentView===m.name?' active':''"
+                :disabled="m.disable()"
                 class="navigationPillItem"
+                color="transparent"
+                flat
                 @click="currentView=m.name"
             >
               <v-icon left>{{ m.icon }}</v-icon>
@@ -67,8 +67,8 @@
             <template v-if="haveOrder">
               <v-icon>mdi-office-building-marker</v-icon>
               <div
-                  @click="consumeTypeDialogShow=true"
                   class="ml-2  text-truncate"
+                  @click="consumeTypeDialogShow=true"
               >
                 {{ findConsumeTypeById(realConsumeTypeId) }}
               </div>
@@ -82,11 +82,11 @@
         </v-app-bar>
         <div>
           <v-card
-              rounded="lg"
               v-cloak
               class="flex-grow-1 flex-column"
               color="grey lighten-4"
               elevation="0"
+              rounded="lg"
               style="height: calc(100vh - 64px);grid-template-columns: 1fr 330px;display: grid"
           >
             <div>
@@ -109,17 +109,17 @@
               </template>
               <template v-else-if="currentView==='Reservation'">
                 <reservation-list-page
-                    @need-refresh="refreshReservation"
-                    :reservation-list="reservations"
                     :id="id"
+                    :reservation-list="reservations"
+                    @need-refresh="refreshReservation"
                 />
               </template>
             </div>
             <v-card
                 class="d-flex justify-space-between flex-shrink-0 flex-column fill-height"
                 color="grey lighten-5"
-                style="height: calc(100vh - 64px)"
                 rounded="lg"
+                style="height: calc(100vh - 64px)"
             >
               <keep-alive>
                 <dish-card-list
@@ -193,8 +193,8 @@
               >
                 <template #action>
                   <v-btn
-                      dark
                       class="primary mr-2"
+                      dark
                       elevation="0"
                       icon
                       @click="orderDish(cartListModel.list,false)"
@@ -265,38 +265,38 @@
             >
               <nav-button
                   color="grey"
-                  text="Cancel"
                   icon="mdi-close"
+                  text="Cancel"
                   @click="removeAllFromSplitOrder()"
               ></nav-button>
               <nav-button
                   color="pink"
-                  text="DishCancel"
                   icon="mdi-minus"
+                  text="DishCancel"
                   @click="showDeleteDishDialog()"
               ></nav-button>
               <nav-button
                   color="orange darken-3"
-                  text="GiveDishADiscount"
                   icon="mdi-sale"
+                  text="GiveDishADiscount"
                   @click="dishesSetDiscount()"
               ></nav-button>
               <nav-button
                   color="indigo"
-                  text="tableChange"
                   icon="mdi-inbox-arrow-up"
+                  text="tableChange"
                   @click="dishesChangeTable()"
               ></nav-button>
               <nav-button
                   color="blue"
-                  text="TemporaryBill"
                   icon="mdi-receipt-text-arrow-left"
+                  text="TemporaryBill"
                   @click="printZwichenBon()"
               ></nav-button>
             </div>
             <v-card
-                tile
                 height="calc(100vh - 64px)"
+                tile
                 width="100%"
             >
               <dish-card-list
@@ -459,13 +459,13 @@
             {{ $t('SelectConsumeType') }}
           </div>
           <v-card
-              flat
-              rounded="lg"
-              color="grey lighten-4"
-              :class="realConsumeTypeId===ct.id?'active':''"
-              class="mt-2 pa-4 text-body-1"
               v-for="ct of consumeTypeList"
               :key="ct.id + 'consumeType'"
+              :class="realConsumeTypeId===ct.id?'active':''"
+              class="mt-2 pa-4 text-body-1"
+              color="grey lighten-4"
+              flat
+              rounded="lg"
               @click="overrideConsumeTypeId = ct.id;consumeTypeDialogShow=false"
           >
             {{ ct.name }}
@@ -481,14 +481,14 @@
     </template>
     <template v-else>
       <div
-          style="height: 100vh;width: 100vw;"
           class="d-flex gradient"
+          style="height: 100vh;width: 100vw;"
       >
 
         <v-card
+            class="grey lighten-4"
             rounded="lg"
             style="width: calc(100vw - 78px);margin-left: 78px;margin-top: 64px;height: calc(100vh - 64px)"
-            class="grey lighten-4"
         ></v-card>
       </div>
     </template>
@@ -976,7 +976,6 @@ export default {
           password: pw,
           checkOutType: paymentType
         }, checkoutInfo))
-        await this.initialUI()
         if (checkoutInfo.printType === 1) {
           IKUtils.showLoading()
           const uuid = await getUUidByOrderId(paymentType === 'checkOut'
@@ -984,6 +983,7 @@ export default {
           IKUtils.toast()
           this.showBillDetailQRDialog({ code: uuid })
         }
+        await this.initialUI()
         if (res.success && this.orderListModel.count() === 0) {
           await goHome()
         }
