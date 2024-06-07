@@ -545,6 +545,12 @@ import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
 import { mapActions, mapMutations } from 'vuex'
 import { getReservationsByTableId } from '@/api/ReservationService'
 import ReservationListPage from '@/views/TablePage/ReservationList/ReservationListPage.vue'
+import {
+  setCartListInFirebase,
+  setCheckOutStatusInFirebase,
+  setOrderListInFirebase,
+  setUuidInFirebase
+} from '@/api/customerDiaplay'
 
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
@@ -631,9 +637,14 @@ export default {
       password: '',
       /* new input */
       currentMemberId: null,
+      deviceId: -1,
+      checkoutId: [],
       showMemberSelectionDialog: null,
       reservations: []
     }
+  },
+  created () {
+    this.deviceId = GlobalConfig.DeviceId
   },
   methods: {
     async deleteAndSaveReason (note) {
@@ -718,6 +729,9 @@ export default {
                 this.orderListModel.total()
           }
           this.discountRatio = discountRatio
+          await this.setOrderListByTableNameInFirebase(
+            this.orderListModel.list
+          )
         }
       } catch (e) {
         this.orderListModel.loadTTDishList([])
@@ -902,8 +916,11 @@ export default {
       } else if (this.splitOrderListModel.list.length > 0) {
         this.removeAllFromSplitOrder()
       } else if (this.cartListModel.list.length > 0) {
+        setCartListInFirebase({}, this.deviceId)
         this.cartListModel.clear()
       } else {
+        setCartListInFirebase({}, this.deviceId)
+        setOrderListInFirebase({}, this.deviceId)
         goHome()
       }
     },
@@ -961,6 +978,8 @@ export default {
       } finally {
         this.isSendingRequest = false
       }
+      await setOrderListInFirebase({}, this.deviceId)
+      await setCartListInFirebase({}, this.deviceId)
     },
     jumpToPayment (paymentType = 'checkOut') {
       const realCheckOut = async (pw) => {
@@ -968,6 +987,12 @@ export default {
         checkoutFactory.loadTTDishList(paymentType === 'checkOut'
           ? this.orderListModel.list
           : this.splitOrderListModel.list)
+        this.checkOutModel = {
+          total: checkoutFactory.total(),
+          count: checkoutFactory.count(),
+          list: checkoutFactory.list
+        }
+        this.checkoutId = this.checkOutModel.list.map(it => it.code)
         const totalPrice = checkoutFactory.total()
         const checkoutInfo = await this.doCheckout(totalPrice)
         const res = await checkout(Object.assign({
@@ -978,9 +1003,12 @@ export default {
         }, checkoutInfo))
         if (checkoutInfo.printType === 1) {
           IKUtils.showLoading()
+          console.log(this.currentOrderId, res.id, 'id')
           const uuid = await getUUidByOrderId(paymentType === 'checkOut'
             ? this.currentOrderId : res.id)
           IKUtils.toast()
+          console.log(uuid, 'uuid')
+          await setUuidInFirebase(uuid)
           this.showBillDetailQRDialog({ code: uuid })
         }
         await this.initialUI()
@@ -1131,7 +1159,67 @@ export default {
       } else {
         this.jumpToPayment('splitOrder')
       }
+    },
+
+    async setOrderListByTableNameInFirebase (orderListModelList) {
+      // upload orderList to Firebase
+      const constData = {}
+      let number = 1
+      if (orderListModelList.length > 0) {
+        orderListModelList.forEach(orderItem => {
+          const result = {}
+          Object.keys(orderItem).filter(key => {
+            return key !== 'change' && key !== 'displayApply'
+          }).forEach(key => {
+            result[key] = orderItem[key]
+          })
+          const dishKey = 'dish_' + orderItem.dishesId + number
+          number++
+          constData[dishKey] = result
+        })
+      }
+      await setOrderListInFirebase(constData, this.deviceId)
+    },
+    async setCartListByTableNameInFirebase (dishList) {
+      const constData = {}
+      let number = 1
+      if (dishList.length > 0) {
+        dishList.forEach(dish => {
+          const result = {}
+          Object.keys(dish).filter(key => {
+            return (key !== 'change' && key !== 'edit' &&
+              key !== 'apply' &&
+              key !== 'langs' && key !== 'langsDesc' &&
+              key !== 'modInfo' && key !== 'options')
+          }).forEach(key => {
+            result[key] = dish[key]
+          })
+
+          result.hasAppend = false
+
+          if (result.displayApply.length > 0) {
+            const aNameArr = []
+            const priceInfoArr = []
+            result.displayApply.forEach(i => {
+              aNameArr.push((i.groupName + ':' + i.value))
+              priceInfoArr.push(i.priceInfo)
+            })
+
+            result.aNameArr = aNameArr
+            result.priceInfoArr = priceInfoArr
+            result.hasAppend = true
+          }
+
+          const dishKey = 'cart_' + dish.code + number
+          number++
+
+          constData[dishKey] = result
+        })
+      }
+
+      await setCartListInFirebase(constData, this.deviceId)
     }
+
   },
   computed: {
     menu () {
@@ -1275,6 +1363,36 @@ export default {
         },
         ...normalActions
       ]
+    },
+    cartListModelHash () {
+      return this.cartListModel.list.map(it => {
+        return {
+          name: it.name,
+          count: it.count,
+          allInfo: it
+        }
+      })
+    },
+    checkoutShow () {
+      return this.$store.state.showCheckoutDialog
+    },
+    orderListModelList () {
+      return this.orderListModel.list
+    }
+  },
+  watch: {
+    async checkoutShow (val) {
+      if (!val) {
+        this.checkoutId = []
+      }
+      await setCheckOutStatusInFirebase(val, this.deviceId, this.checkoutId)
+    },
+    cartListModelHash (val) {
+      const res = val.map(it => it.allInfo)
+      this.setCartListByTableNameInFirebase(res)
+    },
+    orderListModelList (val) {
+      this.setOrderListByTableNameInFirebase(val)
     }
   },
   async activated () {
