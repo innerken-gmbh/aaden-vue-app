@@ -1,32 +1,37 @@
 <template>
   <v-card
-      @click="$emit('click')"
-      flat
-      color="transparent"
       class="dishCard pa-1 px-0 mb-0"
+      color="transparent"
+      flat
       style="position: relative"
+      @click="$emit('click')"
   >
     <div class="px-1 py-1 pr-0">
       <div class="flex-grow-1 d-flex align-baseline">
         <div
-            style="min-width: 36px"
             class="mr-2"
+            style="min-width: 36px"
         >
           <v-card
-              width="fit-content"
+              class="px-2 text-body-1 font-weight-bold text-no-wrap flex-shrink-0"
               color="grey lighten-3"
-              style="border-radius: 24px"
               elevation="0"
               light
-              class="px-2 text-body-1 font-weight-bold text-no-wrap flex-shrink-0"
+              style="border-radius: 24px"
+              width="fit-content"
           >
             {{ dish.count }}
           </v-card>
         </div>
 
         <div class="text-body-1 font-weight-bold flex-grow-1 mr-4">
+          <div class="d-flex">
+          <div class="mr-2">
+            <span>{{ dish.code }}.</span>
+          </div>
           <div>
             <span>{{ dish.name }}</span>
+          </div>
           </div>
           <div
               v-show="dish.displayApply.length > 0"
@@ -35,8 +40,8 @@
             {{ dishModString }}
           </div>
           <div
-              class="text-body-2"
               v-if="dish.note"
+              class="text-body-2"
           >
             # {{ dish.note }}
           </div>
@@ -47,24 +52,24 @@
             <v-card
                 v-if="dish.overrideConsumeTypeId"
                 class="mr-1 px-1 font-weight-black"
-                style="font-size: 0.5rem"
-                flat
                 color="grey lighten-3"
+                flat
+                style="font-size: 0.5rem"
             >
               {{ findConsumeTypeById(dish.overrideConsumeTypeId) }}
             </v-card>
             <span v-if="dish.isFree === '1'">{{ $t('Free') }}</span>
             <template v-else>
               <span
-                  class="text-truncate text-no-wrap"
                   v-if="dish.tempDiscountMod && Math.abs(parseFloat(dish.tempDiscountMod)) > 0"
+                  class="text-truncate text-no-wrap"
               >
                 <s style="font-size: xx-small">{{ dish.originPrice | priceDisplay }}</s
                 >{{ dish.realPrice | priceDisplay }}</span
               >
               <span
-                  class="text-truncate text-no-wrap"
                   v-else
+                  class="text-truncate text-no-wrap"
               >
                 {{ dish.realPrice | priceDisplay }}
               </span>
@@ -78,8 +83,8 @@
     </div>
     <div v-show="expand">
       <div
-          @click.stop
           class="d-flex py-1"
+          @click.stop
       >
         <template v-if="showEdit">
           <template>
@@ -104,9 +109,9 @@
             </v-icon>
             <v-spacer></v-spacer>
             <v-icon
+                v-if="dish.haveMod > 0"
                 class="mr-2"
                 large
-                v-if="dish.haveMod > 0"
                 @click.stop="editCallBack"
             >
               mdi-cog-counterclockwise
@@ -121,9 +126,9 @@
         <template v-else>
           <div class="flex-grow-1 d-flex">
             <v-btn
+                class="flex-grow-1 mr-1"
                 elevation="0"
                 @click="callCallBack(1)"
-                class="flex-grow-1 mr-1"
             >
               <span style="font-size: 18px">&times;1</span>
             </v-btn>
@@ -135,9 +140,9 @@
               <span style="font-size: 18px">&times;5</span>
             </v-btn>
             <v-btn
+                color="primary"
                 elevation=""
                 @click="callCallBack(dish.count)"
-                color="primary"
             >
               <span style="font-size: 18px">{{ $t('All') }}</span>
             </v-btn>
