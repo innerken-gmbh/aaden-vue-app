@@ -11,7 +11,6 @@ module.exports = {
         win: {
           target: 'nsis'
         },
-        publish: 'always',
         snap: {
           autoStart: true,
           grade: 'stable',
