@@ -852,5 +852,6 @@
   "yesIAm": "Yes, I'm sure",
   "yesterday": "Yesterday",
   "zbonList": "ZBon history",
-  "zoom": "Zoom"
+  "zoom": "Zoom",
+  "userNoPower": "This user does not have permission!"
 }

@@ -29,7 +29,7 @@
             elevation="0"
             @click="showErrorDialog=false"
         >
-          {{ $t('confirm') }}
+          {{ $t('Confirm') }}
         </v-btn>
       </v-card>
     </v-dialog>
@@ -73,9 +73,9 @@
         <div class="mt-4">
           <v-text-field
               v-model="email"
+              :placeholder="$t('ElectronicBillReceiver')"
               hide-details
               outlined
-              :placeholder="$t('ElectronicBillReceiver')"
           />
         </div>
         <div

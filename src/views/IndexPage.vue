@@ -2,8 +2,8 @@
   <div class="gradient">
     <v-navigation-drawer
         app
-        dark
         color="transparent"
+        dark
         mini-variant
         mini-variant-width="72"
         permanent
@@ -19,11 +19,11 @@
           <nav-button
               v-for="m in menuList"
               :key="m.icon"
-              @click="goto(m)"
-              :text="m.text"
-              :icon="m.icon"
               :color="color(m.path)"
+              :icon="m.icon"
               :is-active="isActive(m.path)"
+              :text="m.text"
+              @click="goto(m)"
           >
           </nav-button>
         </div>
@@ -47,6 +47,7 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { resetCache } from '@/oldjs/StaticModel'
 import LogoDisplay from '@/components/LogoDisplay.vue'
 import NavButton from '@/components/navigation/NavButton.vue'
+import { mapMutations } from 'vuex'
 
 const version = require('../../package.json').version
 
@@ -103,9 +104,11 @@ export default {
         {
           icon: 'mdi-view-dashboard',
           text: 'Admin',
-          async beforeEnter () {
+          beforeEnter: async () => {
             const pw = await popAuthorize('', true)
+            const servant = this.findServant(pw)
             return {
+              isBoss: parseInt(servant.permission) === 1,
               password: pw
             }
           },
@@ -124,11 +127,16 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['showErrorDialog']),
     async goto (menuItem) {
       const res = await menuItem.beforeEnter()
       if (res) {
         if (menuItem.path === 'order') {
           resetCache()
+        }
+        if (menuItem.path === 'boss' && !res.isBoss) {
+          this.showErrorDialog(this.$t('userNoPower'))
+          return
         }
         jumpTo(menuItem.path, res)
       }

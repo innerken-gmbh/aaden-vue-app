@@ -555,5 +555,6 @@
   "RU": "Russisch",
   "TR": "Türkisch",
   "ChangeLanguage": "Sprache wechseln",
-  "restore": "Wiederherstellen"
+  "restore": "Wiederherstellen",
+  "userNoPower": "Dieser Benutzer hat keine Berechtigung!"
 }
