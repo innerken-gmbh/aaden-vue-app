@@ -7,5 +7,7 @@ export const Remember = LocalSettingManager.config({
   showOtherOrder: false,
   tableBluePrintScale: 1,
   tableDisplayKeys: ['createTimestamp', 'servantName'],
-  showFreeDish: false
+  showFreeDish: false,
+  cardTerminalIP: '',
+  cardTerminalPort: ''
 })

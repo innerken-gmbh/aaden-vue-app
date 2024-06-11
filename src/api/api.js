@@ -335,3 +335,9 @@ export async function addNewCashBookInfo (item) {
 export async function checkElectronicBillingStatus () {
   return (await hillo.get('Complex.php?op=checkAadenPoint', {})).content.enabled
 }
+
+export async function printDailyCardTerminal (info) {
+  return (await hillo.post('Complex.php?op=printPaymentBon', {
+    ...info
+  }))
+}

@@ -3,12 +3,12 @@
 
     <div class="pa-1 d-flex">
       <v-card
-          color="grey darken-2"
-          width="300"
-          class="d-flex flex-column"
-          style="border-radius: 16px 0 0 16px !important;"
-          dark
           v-if="isBoss"
+          class="d-flex flex-column"
+          color="grey darken-2"
+          dark
+          style="border-radius: 16px 0 0 16px !important;"
+          width="300"
       >
         <div>
           <div class="pa-6 py-4">
@@ -124,17 +124,24 @@
               $t('PrintDailySummaryBon')
             }}
           </v-btn>
+          <v-btn class="amber lighten-4 black--text mt-2" elevation="0" width="100%" x-large
+                 @click="cardTerminalDialog = true">
+            <v-icon class="mr-2" color="black">
+              mdi-printer
+            </v-icon>
+            打印刷卡机日结单
+          </v-btn>
         </div>
 
       </v-card>
       <div class="flex-grow-1" style="height: calc(100vh - 8px)">
         <v-app-bar
-            dark
             color="transparent"
+            dark
             flat
             height="56"
         >
-          <v-tabs color="white" v-model="tabIndex">
+          <v-tabs v-model="tabIndex" color="white">
             <template v-if="isBoss">
               <v-tab>{{ $t('Bill') }}</v-tab>
               <v-tab>{{ $t('Employees') }}</v-tab>
@@ -146,9 +153,9 @@
           </v-tabs>
           <v-spacer></v-spacer>
           <v-card
-              color="rgba(255,255,255,0.2)"
-              class="flex-shrink-0 text-no-wrap pa-2 px-4"
               v-if="isBoss||Config.servantShowHistoryBill"
+              class="flex-shrink-0 text-no-wrap pa-2 px-4"
+              color="rgba(255,255,255,0.2)"
               elevation="0"
               style="border-radius: 8px !important;"
               @click="showDatePicker=true"
@@ -385,6 +392,18 @@
           @closeDialog="billsPrintDialog = false"
       />
     </v-dialog>
+    <v-dialog v-model="cardTerminalDialog" max-width="600px">
+      <base-form
+        :schema="schemas"
+        @close="cardTerminalDialog=false"
+        @submit="savePrintInfo"
+      >
+        <div>刷卡机日结单</div>
+        <template #subtitle>
+          打印您当前刷卡机的日结单
+        </template>
+      </base-form>
+    </v-dialog>
   </div>
 
 </template>
@@ -395,6 +414,7 @@ import dayjs from 'dayjs'
 import {
   getBillListForServant,
   previewZBon,
+  printDailyCardTerminal,
   printDeliveryBon,
   printServantSummary,
   printXBon,
@@ -409,6 +429,8 @@ import DateRangePicker from '@/components/GlobalDialog/DateRangePicker'
 import ServantList from '@/views/SalePage/Fragment/ServantList'
 import BillsPrinterPage from '@/views/SalePage/Fragment/BillsPrinterPage'
 import CashBookPage from '@/views/SalePage/CashBookPage'
+import BaseForm from '@/components/Base/Form/BaseForm'
+import { Remember } from '@/api/remember'
 
 const defaultDisplayData = {
   orders: [],
@@ -423,6 +445,7 @@ const defaultDisplayData = {
 export default {
   name: 'SalePage',
   components: {
+    BaseForm,
     CashBookPage,
     BillsPrinterPage,
     ServantList,
@@ -438,6 +461,7 @@ export default {
   },
   data: function () {
     return {
+      cardTerminalDialog: false,
       billsPrintDialog: false,
       showDatePicker: false,
       Config: GlobalConfig,
@@ -465,6 +489,22 @@ export default {
     }
   },
   computed: {
+    schemas () {
+      return [
+        {
+          key: 'overrideCardTerminalIp',
+          name: '刷卡机IP',
+          required: false,
+          default: Remember.cardTerminalIP
+        },
+        {
+          key: 'overrideCardTerminalPort',
+          name: '刷卡机Port',
+          required: false,
+          default: Remember.cardTerminalPort
+        }
+      ]
+    },
     totalDiscount () {
       return this.discountList.reduce((arr, i) => {
         arr += parseFloat(i?.orderInfo?.value ?? 0)
@@ -502,6 +542,12 @@ export default {
 
   },
   methods: {
+    async savePrintInfo (info) {
+      Remember.cardTerminalIP = info.overrideCardTerminalIp
+      Remember.cardTerminalPort = info.overrideCardTerminalPort
+      await printDailyCardTerminal(info)
+      this.cardTerminalDialog = false
+    },
     async dateSubmit () {
       this.showDatePicker = false
       this.singleZBonDate = this.dateInput
