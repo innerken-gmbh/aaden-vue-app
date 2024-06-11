@@ -27,7 +27,7 @@
           elevation="0"
           @click="showErrorDialog=false"
         >
-          {{ $t('confirm') }}
+          {{ $t('Confirm') }}
         </v-btn>
       </v-card>
     </v-dialog>
@@ -69,7 +69,7 @@
         </div>
         <div class="text-body-2 mt-1">{{ $t('ElectronicBillHint') }}</div>
         <div class="mt-4">
-          <v-text-field v-model="email" hide-details outlined :placeholder="$t('ElectronicBillReceiver')"/>
+          <v-text-field v-model="email" :placeholder="$t('ElectronicBillReceiver')" hide-details outlined/>
         </div>
         <div v-if="email" class="mt-4 d-flex justify-center">
           <v-btn class="mr-2" color="primary" elevation="0" width="100%" @click="sendToEmail">

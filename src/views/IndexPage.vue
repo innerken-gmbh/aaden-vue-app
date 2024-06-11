@@ -2,8 +2,8 @@
   <div class="gradient">
     <v-navigation-drawer
         app
-        dark
         color="transparent"
+        dark
         mini-variant
         mini-variant-width="72"
         permanent
@@ -23,9 +23,9 @@
               @click="goto(m)"
           >
             <v-card
+                :class="isActive(m.path)?'pa-2':'pa-1'"
                 :color="color(m.path)"
                 elevation="0"
-                :class="isActive(m.path)?'pa-2':'pa-1'"
                 style="border-radius: 12px !important;"
             >
               <v-responsive :aspect-ratio="1">
@@ -73,6 +73,7 @@ import { getServantList } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { resetCache } from '@/oldjs/StaticModel'
 import LogoDisplay from '@/components/LogoDisplay.vue'
+import { mapMutations } from 'vuex'
 
 const version = require('../../package.json').version
 
@@ -126,9 +127,11 @@ export default {
         {
           icon: 'mdi-view-dashboard',
           text: 'Admin',
-          async beforeEnter () {
+          beforeEnter: async () => {
             const pw = await popAuthorize('', true)
+            const servant = this.findServant(pw)
             return {
+              isBoss: parseInt(servant.permission) === 1,
               password: pw
             }
           },
@@ -147,11 +150,16 @@ export default {
     }
   },
   methods: {
+    ...mapMutations(['showErrorDialog']),
     async goto (menuItem) {
       const res = await menuItem.beforeEnter()
       if (res) {
         if (menuItem.path === 'order') {
           resetCache()
+        }
+        if (menuItem.path === 'boss' && !res.isBoss) {
+          this.showErrorDialog(this.$t('userNoPower'))
+          return
         }
         jumpTo(menuItem.path, res)
       }

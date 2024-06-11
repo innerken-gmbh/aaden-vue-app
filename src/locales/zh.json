@@ -549,5 +549,6 @@
   "wannaCheckIn": "要打卡上班吗?",
   "checkOut": "下班",
   "workTimeMinHour": "工作时长(分钟/小时)",
-  "No": "否"
+  "No": "否",
+  "userNoPower": "该用户没有权限！"
 }

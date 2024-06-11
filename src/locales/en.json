@@ -845,5 +845,6 @@
   "wannaCheckIn": "Do you want to clock in?",
   "checkOut": "Clock Out",
   "workTimeMinHour": "Working hours (Minutes/Hour)",
-  "No": "No"
+  "No": "No",
+  "userNoPower": "This user does not have permission!"
 }

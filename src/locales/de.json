@@ -550,5 +550,6 @@
   "wannaCheckIn": "Möchten Sie in die Arbeit einsteigen?",
   "checkOut": "After Work",
   "workTimeMinHour": "Arbeitszeiten (Minuten/Stunde)",
-  "No": "Nein"
+  "No": "Nein",
+  "userNoPower": "Dieser Benutzer hat keine Berechtigung!"
 }
