@@ -853,5 +853,6 @@
   "yesterday": "Yesterday",
   "zbonList": "ZBon history",
   "zoom": "Zoom",
-  "userNoPower": "This user does not have permission!"
+  "userNoPower": "This user does not have permission!",
+  "PleaseInputTheX": "Please fill in {configItem}"
 }

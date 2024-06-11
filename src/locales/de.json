@@ -556,5 +556,6 @@
   "TR": "Türkisch",
   "ChangeLanguage": "Sprache wechseln",
   "restore": "Wiederherstellen",
-  "userNoPower": "Dieser Benutzer hat keine Berechtigung!"
+  "userNoPower": "Dieser Benutzer hat keine Berechtigung!",
+  "PleaseInputTheX" : "Bitte {configItem} ausfüllen"
 }
