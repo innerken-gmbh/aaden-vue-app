@@ -1,0 +1,22 @@
+{
+  "requiredBackendVersion": "1.7.251",
+  "backendIsOk": false,
+  "frontendMacAddress": "aaden-vue-app-",
+  "Protocol": "http://",
+  "deviceType": "dist-aaden-vue-app",
+  "tableInfoKeys": [
+    "dishCount",
+    "createTimestamp",
+    "servantName",
+    "totalPrice",
+    "drinkCount",
+    "buffetCount",
+    "buffetRound"
+  ],
+  "milePayPort": 8181,
+  "minTileSize": 80,
+  "showAllTableButton": true,
+  "maxEatMinute": 150,
+  "oneStepOrderNumber": 10,
+  "VIPCardCode": "eag"
+}
