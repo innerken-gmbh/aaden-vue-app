@@ -1075,7 +1075,7 @@ export default {
       if (password) {
         const tableName = await showTableSelector()
         const res = await hillo.post('Complex.php?op=dishesChangeTable', {
-          oldTableName: this.tableDetailInfo.tableBasicInfo.name,
+          oldTableName: this.tableDetailInfo.tableName,
           newTableName: tableName,
           dishes: JSON.stringify(this.splitOrderListModel.list)
         })
