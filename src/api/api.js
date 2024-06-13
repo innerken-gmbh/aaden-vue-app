@@ -1,11 +1,8 @@
 import hillo from 'hillo'
 import IKUtils from 'innerken-js-utils'
-import { version } from '../../package.json'
-import { deviceType } from '../assets/FixedConfig.json'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
 import { fastSweetAlertRequest, resetTableStatus } from '@/oldjs/common'
-import { Remember } from '@/api/remember'
 import i18n from '@/i18n'
 
 export async function previewZBon (startDate, endDate) {
@@ -195,12 +192,7 @@ export async function changeOrderToBuffet (orderId, buffetDishes, buffetSetting)
 }
 
 export async function reportDeviceInfo () {
-  return (await hillo.post('Route.php?op=deviceLog', {
-    MACAddress: Remember.uuid,
-    deviceType: deviceType,
-    version: version,
-    note: ''
-  }))
+
 }
 
 export async function changePayMethodForOrder (orderId, paymentLogs) {

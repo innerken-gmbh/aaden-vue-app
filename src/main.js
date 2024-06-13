@@ -10,8 +10,6 @@ import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
 
 import 'vue-draggable-resizable-gorkys/dist/VueDraggableResizable.css'
 import VueDraggableResizable from 'vue-draggable-resizable-gorkys'
-
-import { reportDeviceInfo } from '@/api/api'
 import { addToQueue } from '@/oldjs/poolJobs'
 import IKUtils from 'innerken-js-utils'
 import dayjs from 'dayjs'
@@ -105,12 +103,6 @@ async function initial () {
     Remember.uuid = uuidv4()
   }
   i18n.locale = GlobalConfig.frontEndLang.toLowerCase()
-  try {
-    reportDeviceInfo().then(r => console.log(r))
-  } catch (e) {
-
-  }
-  // listenFireStoreOrders()
   new Vue({
     router,
     store,

@@ -35,12 +35,16 @@ export async function getCurrentReservation () {
 }
 
 export async function loadAllReservation (fromDateTime, toDateTime) {
-  const deviceId = parseInt(await getCurrentDeviceId())
-  return (await hillo.get(host + 'getList/' + deviceId,
-    {
-      fromDateTime,
-      toDateTime
-    })).data
+  try {
+    const deviceId = parseInt(await getCurrentDeviceId())
+    return (await hillo.get(host + 'getList/' + deviceId,
+      {
+        fromDateTime,
+        toDateTime
+      }, { timeout: 10 * 1000 })).data
+  } catch (e) {
+    return []
+  }
 }
 
 export async function cancelReservation (reservationId) {
