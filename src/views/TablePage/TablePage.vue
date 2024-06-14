@@ -551,6 +551,7 @@ import {
   setOrderListInFirebase,
   setUuidInFirebase
 } from '@/api/customerDiaplay'
+import { round } from 'lodash-es'
 
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
@@ -993,8 +994,8 @@ export default {
           list: checkoutFactory.list
         }
         this.checkoutId = this.checkOutModel.list.map(it => it.code)
-        const totalPrice = checkoutFactory.total()
-        const checkoutInfo = await this.doCheckout(totalPrice)
+        const currentPrice = round(this.checkOutModel.total * (1 - this.discountRatio), 2)
+        const checkoutInfo = await this.doCheckout(currentPrice)
         const res = await checkout(Object.assign({
           tableId: this.id,
           dishes: checkoutFactory.list,
