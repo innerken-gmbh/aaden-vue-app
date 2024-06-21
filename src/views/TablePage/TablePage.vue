@@ -1331,7 +1331,7 @@ export default {
             icon: 'mdi-silverware',
             color: 'deep-orange',
             action: () => {
-              this.changeServant()
+              this.buffetDialogShow = true
             }
           })
         }
