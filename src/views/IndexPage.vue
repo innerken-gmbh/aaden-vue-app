@@ -48,6 +48,7 @@ import { resetCache } from '@/oldjs/StaticModel'
 import LogoDisplay from '@/components/LogoDisplay.vue'
 import NavButton from '@/components/navigation/NavButton.vue'
 import { mapMutations } from 'vuex'
+import IKUtils from 'innerken-js-utils'
 
 const version = require('../../package.json').version
 
@@ -137,6 +138,10 @@ export default {
         if (menuItem.path === 'boss' && !res.isBoss) {
           this.showErrorDialog(this.$t('userNoPower'))
           return
+        }
+        if (menuItem.path === 'sales' && this.$route.name === 'sales') {
+          jumpTo('order')
+          await IKUtils.wait(50)
         }
         jumpTo(menuItem.path, res)
       }

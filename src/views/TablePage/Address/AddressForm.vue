@@ -90,7 +90,16 @@
           </v-row>
 
           <v-row dense>
-            <v-col cols="6">
+            <v-col>
+              <v-text-field
+                  outlined
+                  autocomlete="off"
+                  type="search"
+                  :label="$t('Telephone')"
+                  v-model="rawAddressInfo.tel"
+              ></v-text-field>
+            </v-col>
+            <v-col >
               <v-text-field
                   outlined
                   autocomlete="off"
@@ -99,7 +108,7 @@
                   v-model="rawAddressInfo.firstName"
               ></v-text-field>
             </v-col>
-            <v-col cols="6">
+            <v-col>
               <v-text-field
                   outlined
                   autocomlete="off"
@@ -218,10 +227,10 @@ export default {
         value: 'inShop',
         text: this.$t('inShop')
       }, {
-        value: 'Zum Mitnehmen',
+        value: 'PickUp',
         text: this.$t('Pickup')
       }, {
-        value: 'Lieferung',
+        value: 'Delivery',
         text: this.$t('Delivery')
       }],
       date: new Date().toISOString().substring(0, 10),
@@ -243,6 +252,7 @@ export default {
       if (!this.rawAddressInfo.time) {
         this.rawAddressInfo.time = 'ASAP'
       }
+      console.log(addressInfo)
       if (!this.rawAddressInfo.deliveryMethod) {
         this.rawAddressInfo.deliveryMethod = DefaultAddressInfo.deliveryMethod
       }
