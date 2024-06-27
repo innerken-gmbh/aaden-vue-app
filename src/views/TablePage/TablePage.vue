@@ -1040,7 +1040,7 @@ export default {
         GlobalConfig.mergeTableUseBossPassword ? 'boss' : ''
       )
       if (password) {
-        const tableName = await showTableSelector(TableFilter.activeFilter)
+        const tableName = await showTableSelector((t) => TableFilter.activeFilter(t, this.tableDetailInfo.tableName))
         await safeRequest(async () => {
           const res = await hillo.post('Tables.php?op=mergeTables', {
             oldTableName: this.tableDetailInfo.tableName,

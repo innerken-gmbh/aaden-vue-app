@@ -39,8 +39,8 @@ const defaultMetaData = {
   classFunc: null
 }
 export const TableFilter = {
-  activeFilter (t) {
-    return t.usageStatus === '1'
+  activeFilter (t, selfName = null) {
+    return t.usageStatus === '1' && t.tableName !== selfName
   },
   notActiveFilter (t) {
     return t.usageStatus !== '1'
