@@ -373,6 +373,7 @@
           ref="discount"
           :discount-model-show="discountModelShow"
           :dishesItems="splitOrderListModel.list"
+          :total-price-without-any-discount="orderListModel.list"
           :initial-u-i="initialUI"
           :orderId="currentOrderId"
           :total-price="totalPrice"

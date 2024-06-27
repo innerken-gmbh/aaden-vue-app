@@ -1,22 +1,40 @@
 <template>
-  <v-dialog max-width="400px" v-model="realShow">
+  <v-dialog
+      max-width="400px"
+      v-model="realShow"
+  >
     <v-card>
-      <v-toolbar tile color="primary" dark elevation="0">
+      <v-toolbar
+          tile
+          color="primary"
+          dark
+          elevation="0"
+      >
         <v-toolbar-title> {{ $t('PleaseEnterDiscount2') }}</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
-        <v-text-field :label="$t('AmountOrPercentage')"
-                      :messages="$t('CashDiscountUseTips')" v-model="localDiscountStr"></v-text-field>
+        <v-text-field
+            :label="$t('AmountOrPercentage')"
+            :messages="$t('CashDiscountUseTips')"
+            v-model="localDiscountStr"
+        ></v-text-field>
       </v-card-text>
       <v-card-actions>
         <div class="d-flex flex-wrap">
           <template v-for="d in predefinedDiscount">
-            <v-btn @click="submitDiscount(d)" :key="d">-{{ d.replace('p', '%') }}</v-btn>
+            <v-btn
+                @click="submitDiscount(d)"
+                :key="d"
+            >-{{ d.replace('p', '%') }}
+            </v-btn>
           </template>
         </div>
         <v-spacer></v-spacer>
       </v-card-actions>
-      <keyboard-layout :keys="keyboardLayout" @input="numberInput"/>
+      <keyboard-layout
+          :keys="keyboardLayout"
+          @input="numberInput"
+      />
     </v-card>
   </v-dialog>
 </template>
@@ -28,6 +46,8 @@ import IKUtils from 'innerken-js-utils'
 import { loadingComplete } from '@/oldjs/common'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import { optionalAuthorizeAsync } from '@/oldjs/api'
+import { sum } from 'lodash-es'
+import DishDocker from 'aaden-base-model/lib/Models/DishDocker'
 
 const keyboardLayout =
     [
@@ -50,6 +70,7 @@ export default {
       default: () => () => {
       }
     },
+    totalPriceWithoutAnyDiscount: {},
     totalPrice: {},
     orderId: {},
     dishesItems: {},
@@ -122,6 +143,16 @@ export default {
         discountStr = this.localDiscountStr + (this.localDiscountType === 1 ? 'p' : '')
       }
       const discountPattern = /^([0-9]+(\.[0-9]+)?)?((p)+([kg])?)?$/
+      const priceBefore = this.dishesItems.length === 0 ? this.totalPriceWithSingle : this.totalPriceNoDiscount
+      let priceAfter = priceBefore
+      if (this.dishesItems.length > 0) {
+        const subPrice = sum(this.dishesItems.map(it => DishDocker.calculateDiscountPrice(it.count *
+            parseFloat(it.price), discountStr)))
+        priceAfter = priceBefore - subPrice
+      } else {
+        priceAfter = DishDocker.calculatePriceWithDiscount(priceBefore, discountStr)
+      }
+      console.log(priceBefore, priceAfter)
       if (!discountPattern.test(discountStr)) {
         IKUtils.toast(this.$t('Error'), this.$t('error'))
         return
@@ -132,9 +163,7 @@ export default {
         this.localDiscountStr = ''
         this.localDiscountType = 0
       }
-      const isPercentage = discountStr.includes('p')
-      const value = parseFloat(discountStr.replace('p', ''))
-      const ratio = isPercentage ? value / 100 : value / this.totalPrice
+      const ratio = (priceBefore - priceAfter) / priceBefore
       if (ratio > 1) {
         IKUtils.showError(this.$t('DiscountShouldNotGreaterThanOriginalPrice'))
         return
@@ -185,6 +214,14 @@ export default {
       set: function (val) {
         this.$emit('visibility-changed', val)
       }
+    },
+    totalPriceNoDiscount () {
+      return sum([...this.totalPriceWithoutAnyDiscount, ...this.dishesItems]
+        .map(it => parseFloat(it.price) * it.count))
+    },
+    totalPriceWithSingle () {
+      return sum([...this.totalPriceWithoutAnyDiscount, ...this.dishesItems]
+        .map(it => parseFloat(it.realPrice) * it.count))
     }
   }
 }
