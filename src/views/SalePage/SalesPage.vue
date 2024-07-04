@@ -191,6 +191,7 @@
                   <bill-table
                       :is-boss="isBoss"
                       :orders="displayData.orders"
+                      :orders-meta="displayData.orderMeta"
                   ></bill-table>
                 </div>
                 <div
@@ -413,6 +414,7 @@
 import dayjs from 'dayjs'
 import {
   getBillListForServant,
+  getOrderDetailInfo,
   previewZBon,
   printDailyCardTerminal,
   printDeliveryBon,
@@ -589,7 +591,7 @@ export default {
       this.billData = await previewZBon(...this.singleZBonDate)
       this.displayData = Object.assign({}, defaultDisplayData,
         await getBillListForServant(this.password ?? GlobalConfig.defaultPassword,
-          ...this.singleZBonDate))
+          ...this.singleZBonDate), { orderMeta: await getOrderDetailInfo(this.singleZBonDate) })
     },
     initial () {
       this.singleZBonDate = [getToday(), getToday()]

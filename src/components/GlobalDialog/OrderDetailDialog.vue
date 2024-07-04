@@ -1,7 +1,14 @@
 <template>
   <v-card class="fill-height lighten-4 grey">
     <v-subheader>
-      <h2 style="color: black">{{ $t('OrderDetails') }}: {{ orderInfo.id }}</h2>
+      <div class="d-flex align-end">
+      <h2 class="mr-4" style="color: black">{{ $t('OrderDetails') }}: {{ orderInfo.id }}</h2>
+      <template v-if="order.orderMeta.length>0" class="text-subtitle-1">
+        <div v-if="order.orderMeta[0].refCode !== 'returned'">
+          该订单的原始账单 #{{ order.orderMeta[0].refDOId }}
+        </div>
+      </template>
+      </div>
       <v-spacer></v-spacer>
       <v-btn icon @click="cancel">
         <v-icon>mdi-close</v-icon>

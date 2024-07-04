@@ -179,6 +179,14 @@ export async function loadDetailOrder (id) {
   })
 }
 
+export async function getOrderDetailInfo (dateRange) {
+  const timespan = dateRange.join(' - ')
+  return (await hillo.get('Orders.php', {
+    op: 'withSortAndFilter',
+    timespan
+  })).content ?? []
+}
+
 export async function getBuffetPriceDishes () {
   return (await hillo.get('ConsumeType.php?op=showBuffetPriceDishToConsumeType', { lang: GlobalConfig.lang })).content
 }

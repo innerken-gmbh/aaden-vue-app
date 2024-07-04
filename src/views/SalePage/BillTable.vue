@@ -242,6 +242,7 @@ export default {
     }
   },
   props: {
+    ordersMeta: [],
     orders: {},
     isBoss: {},
     showOperation: { default: false }
@@ -316,6 +317,7 @@ export default {
     },
     async checkOrderDetail (order) {
       this.selectedOrder = await loadDetailOrder(order.orderId)
+      this.selectedOrder.orderMeta = this.ordersMeta.find(it => it.orderId === order.orderId).orderMeta ?? []
       this.selectedOrder.isReturned = order.isReturned
       this.orderDetailDialog = true
     },
