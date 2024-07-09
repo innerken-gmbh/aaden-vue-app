@@ -61,9 +61,10 @@ export async function checkout (checkoutInfo) {
     if (paymentLog.length > 0) {
       checkOutData.paymentLog = JSON.stringify(paymentLog)
     }
+    IKUtils.showLoading()
     const res = await hillo.post(
       'Complex.php?op=' + checkOutType,
-      checkOutData, { timeout: 300 * 1000 }
+      checkOutData, { timeout: 15 * 60 * 1000 }
     )
     IKUtils.toast('👌')
     return {

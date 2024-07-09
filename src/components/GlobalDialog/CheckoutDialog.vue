@@ -127,7 +127,7 @@
                         class="pa-3 justify-center d-flex align-center"
                         elevation="0"
                         tile
-                        @click="printType = 1"
+                        @click="printType = 1;billType=0"
                     >
                       <v-icon
                           v-if="electronicBillStatus"
