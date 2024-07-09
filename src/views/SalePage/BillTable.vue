@@ -311,7 +311,12 @@ export default {
     async startChangePaymentMethodForOrder (order) {
       const { paymentLog } = await this.doCheckout(order.totalPrice)
       IKUtils.showLoading()
-      await changePayMethodForOrder(order.orderId, paymentLog)
+      try {
+        await changePayMethodForOrder(order.orderId, paymentLog)
+      } catch (e) {
+
+      }
+
       IKUtils.toast('OK')
       this.$emit('need-refresh')
     },
