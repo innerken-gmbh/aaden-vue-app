@@ -158,7 +158,7 @@
                   <template v-slot:default="{ total }">
                     <div class="pa-2">
                       <v-btn
-                          :disabled="consumeTypeStatusId <= 1"
+                          :disabled="!canOperate"
                           block
                           color="green lighten-4 black--text"
                           elevation="0"
