@@ -193,7 +193,6 @@ export default {
   methods: {
     listenKeyDown (e) {
       if (Swal.isVisible()) {
-        Swal.clickConfirm()
         return
       }
       switch (e.key) {
