@@ -14,7 +14,7 @@
         elevation="0"
     >
       <v-btn
-          style="position: absolute;right: 24px;top: 24px"
+          style="position: absolute;right: 0px;top: 0px;z-index: 2"
           @click="$emit('toggle')"
           color="grey lighten-3 black--text"
           elevation="0"
