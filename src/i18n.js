@@ -19,6 +19,7 @@ import tr from 'vuetify/lib/locale/tr'
 import uk from 'vuetify/lib/locale/uk'
 
 import dayjs from 'dayjs'
+
 Vue.use(VueI18n)
 
 export function loadTransLangs () {
@@ -177,7 +178,7 @@ require('dayjs/locale/uk')
 dayjs.locale(localStorage.getItem('frontEndLang')?.toLowerCase())
 
 export default new VueI18n({
-  locale: localStorage.getItem('frontEndLang')?.toLowerCase() || 'zh',
+  locale: 'de',
   fallbackLocale: process.env.VUE_APP_I18N_FALLBACK_LOCALE || 'zh',
   messages,
   numberFormats

@@ -73,7 +73,6 @@ export function setDeviceId (id) {
 export function changeLanguage (lang) {
   const l = lang.toLowerCase()
   const backServerLang = ['de', 'zh', 'en']
-  localStorage.setItem('frontEndLang', l)
   if (backServerLang.includes(l)) {
     GlobalConfig.updateSettings('lang', l)
   } else {

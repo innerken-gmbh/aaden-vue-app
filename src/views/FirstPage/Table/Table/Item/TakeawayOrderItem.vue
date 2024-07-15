@@ -37,19 +37,19 @@
     </div>
     <div class="text-body-2 d-flex align-center mt-1">
       <v-icon
-          small
           color="pink darken-2"
+          small
       >mdi-silverware-fork-knife
       </v-icon>
       <v-icon
-          small
           color="indigo darken-2"
+          small
       >mdi-beer
       </v-icon>
       <v-icon
           class="mr-2"
-          small
           color="orange darken-2"
+          small
       >mdi-cash
       </v-icon>
       <div class="text--darken-4 d-flex font-weight-black text--secondary">
@@ -67,23 +67,23 @@
       </div>
     </div>
     <div class="mt-2">
-      <div class="d-flex align-baseline mt-1">
+      <div class="d-flex mt-1 align-center justify-center">
         <template v-if="table.consumeTypeStatusId<2">
           <v-card
-              @click.stop="acceptOrderWithTime"
+              class="pa-1 mr-1"
+              color="grey lighten-4"
               flat
               rounded="xl"
-              color="grey lighten-4"
-              class="pa-1 mr-1"
+              @click.stop="acceptOrderWithTime"
           >
             <v-icon color="black">mdi-check</v-icon>
           </v-card>
           <v-card
-              @click.stop="$emit('reject',tableInfo.tableId)"
+              class="pa-1 mr-1"
+              color="grey lighten-4"
               flat
               rounded="xl"
-              color="grey lighten-4"
-              class="pa-1 mr-1"
+              @click.stop="$emit('reject',tableInfo.tableId)"
           >
             <v-icon color="black">mdi-close</v-icon>
           </v-card>
@@ -91,27 +91,27 @@
         <template v-else>
           <v-card
               v-if="table.pickStatus!=='1'"
-              @click.stop="$emit('click-ok')"
+              class="pa-1 mr-1"
               flat
               rounded="xl"
-              class="pa-1 mr-1"
+              @click.stop="$emit('click-ok')"
           >
             <v-icon color="grey darken-2">mdi-shopping</v-icon>
           </v-card>
           <v-card
               v-if="table.addressInfo.firstName||table.addressInfo.lastName"
-              @click.stop="$emit('address',table.addressInfo)"
+              class="pa-1 mr-1"
               flat
               rounded="xl"
-              class="pa-1 mr-1"
+              @click.stop="$emit('address',table.addressInfo)"
           >
             <v-icon color="grey darken-2">mdi-map-marker</v-icon>
           </v-card>
           <v-card
-              @click.stop="$emit('checkout',tableInfo.tableId)"
+              class="pa-1 mr-1"
               flat
               rounded="xl"
-              class="pa-1 mr-1"
+              @click.stop="$emit('checkout',tableInfo.tableId)"
           >
             <v-icon color="grey darken-2">mdi-wallet</v-icon>
           </v-card>
@@ -120,7 +120,7 @@
         <v-spacer></v-spacer>
 
         <div
-            class="text-caption"
+            class="text-h5"
             style="max-width: 220px"
         >
           #{{ table.tableName }}

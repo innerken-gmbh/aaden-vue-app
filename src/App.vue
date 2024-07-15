@@ -103,7 +103,7 @@ import { tryToReport } from './oldjs/common'
 import TableSelector from '@/components/GlobalDialog/TableSelector'
 import PinDialog from '@/components/GlobalDialog/PinDialog'
 import { mapMutations, mapState } from 'vuex'
-import { sendMailTo } from '@/api/api'
+import { getCurrentLanguage, sendMailTo } from '@/api/api'
 import OrderAcceptDialog from '@/components/GlobalDialog/OrderAcceptDialog.vue'
 import CheckoutDialog from '@/components/GlobalDialog/CheckoutDialog.vue'
 
@@ -146,7 +146,8 @@ export default {
       }
     }
   },
-  mounted () {
+  async mounted () {
+    this.$i18n.locale = await getCurrentLanguage()
     tryToReport()
   },
   methods: {

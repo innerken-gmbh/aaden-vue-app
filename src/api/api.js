@@ -341,3 +341,28 @@ export async function printDailyCardTerminal (info) {
     ...info
   }))
 }
+
+export async function forceGetSystemSetting (item) {
+  return (await hillo.post('Restaurant.php?op=forceGetSystemSetting', {
+    systemSetting: JSON.stringify(item)
+  })).content
+}
+
+export async function getCurrentLanguage () {
+  return await forceGetSystemSetting({
+    section: 'FrontApp',
+    sKey: 'language',
+    sValue: 'de',
+    defaultValue: 'de',
+    sType: 'string',
+    minimumVersion: '1.7.825',
+    sOptions: '',
+    tagList: 'basic,FrontApp,language'
+  })
+}
+
+export async function updateNewSetting (items) {
+  return (await hillo.post('Restaurant.php?op=updateSystemSettings', {
+    systemSettings: JSON.stringify(items)
+  })).content
+}

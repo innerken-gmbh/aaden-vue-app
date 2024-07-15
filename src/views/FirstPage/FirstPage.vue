@@ -85,9 +85,9 @@
     </v-app-bar>
 
     <v-card
+        class="mt-2"
         color="transparent"
         elevation="0"
-        class="mt-2"
         height="calc(100vh - 64px)"
         rounded
     >
@@ -144,8 +144,8 @@
                       :key="t.tableName"
                       :big-card="true"
                       :table-info="t"
-                      @address="showAddress"
                       @accept="acceptOrder"
+                      @address="showAddress"
                       @click="openOrEnterTable(t.tableName)"
                       @reject="rejectOrder"
                   />
@@ -177,8 +177,8 @@
                       :table-info="t"
                       @address="showAddress"
                       @checkout="checkoutForTable(t.tableId,t.totalPrice)"
-                      @click-ok="updateStatus(t.id)"
                       @click="openOrEnterTable(t.tableName)"
+                      @click-ok="updateStatus(t.id)"
                   />
                 </div>
 
@@ -425,8 +425,8 @@
           <v-spacer/>
           <div>
             <v-btn
-                small
                 icon
+                small
                 @click="showServantStatus = false"
             >
               <v-icon>
@@ -458,10 +458,10 @@
           </div>
           <div class="d-flex align-center justify-center mt-8">
             <v-btn
-                x-large
                 color="primary"
                 elevation="0"
                 width="100%"
+                x-large
                 @click="endWorks"
             >
               {{ $t('ShiftStampOut') }}
@@ -470,10 +470,10 @@
         </template>
         <template v-else>
           <v-btn
-              x-large
               color="primary"
               elevation="0"
               width="100%"
+              x-large
               @click="gotoWork"
           >
             {{ $t('ShiftStampIn') }}
@@ -509,13 +509,13 @@
       </v-card>
     </v-dialog>
     <v-dialog
-        max-width="400"
         v-model="showAddressDialog"
+        max-width="400"
     >
-      <v-card rounded="lg" class="pa-4">
+      <v-card class="pa-4" rounded="lg">
         <addresses-card
-            :raw-address-info="currentAddress"
             v-if="currentAddress"
+            :raw-address-info="currentAddress"
         ></addresses-card>
       </v-card>
 
@@ -530,7 +530,7 @@ import { getConsumeTypeList, openOrEnterTable, popAuthorize, requestOutTable } f
 import Swal from 'sweetalert2'
 import { dragscroll } from 'vue-dragscroll'
 
-import GlobalConfig, { changeLanguage } from '../../oldjs/LocalGlobalSettings'
+import GlobalConfig from '../../oldjs/LocalGlobalSettings'
 import LanguageSwitcher from '@/views/Widget/LanguageSwitcher'
 
 import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
@@ -538,7 +538,15 @@ import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
 import { mapActions, mapMutations, mapState } from 'vuex'
 import { TableFixedSectionId } from '@/api/tableService'
 
-import { acceptOrder, loadRestaurantInfo, readyToPick, rejectOrder, syncTakeawaySettingToCloud } from '@/api/api'
+import {
+  acceptOrder,
+  forceGetSystemSetting,
+  loadRestaurantInfo,
+  readyToPick,
+  rejectOrder,
+  syncTakeawaySettingToCloud,
+  updateNewSetting
+} from '@/api/api'
 import { Remember } from '@/api/remember'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
 import TrailingNumber from '@/views/FirstPage/widget/TrailingNumber'
@@ -760,9 +768,26 @@ export default {
     },
 
     async changeLanguage (locale) {
-      Remember.locale = locale
-      this.$i18n.locale = Remember.locale
-      changeLanguage(locale)
+      await forceGetSystemSetting({
+        section: 'FrontApp',
+        sKey: 'language',
+        sValue: 'de',
+        defaultValue: 'de',
+        sType: 'string',
+        minimumVersion: '1.7.825',
+        sOptions: '',
+        tagList: 'basic,FrontApp,language'
+      })
+      await updateNewSetting([{
+        section: 'FrontApp',
+        sKey: 'language',
+        sValue: locale,
+        defaultValue: 'de',
+        sType: 'string',
+        minimumVersion: '1.7.825',
+        sOptions: '',
+        tagList: 'basic,FrontApp,language'
+      }])
       location.reload()
     },
 
