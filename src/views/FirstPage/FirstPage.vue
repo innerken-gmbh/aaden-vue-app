@@ -109,7 +109,7 @@
             >
               <table-blue-print
                   :out-side-table-list="tableList"
-                  @need-refresh="refreshTables"
+                  @need-refresh="slowRefreshTable"
                   @table-clicked="openOrEnterTable"
               />
             </div>
@@ -833,6 +833,11 @@ export default {
     },
     async refreshTables () {
       this.tableList = await getTableListWithCells()
+    },
+    async slowRefreshTable () {
+      this.tableList = []
+      await IKUtils.wait(50)
+      await this.refreshTables()
     },
 
     listenKeyDown (e) {

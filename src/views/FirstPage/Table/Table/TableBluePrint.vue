@@ -493,6 +493,7 @@ export default {
   },
   async mounted () {
     this.$nextTick(async () => {
+      await IKUtils.wait(100)
       this.height = this.$refs.blueprintContainer.clientHeight
       this.width = this.$refs.blueprintContainer.clientWidth - 50
     })
