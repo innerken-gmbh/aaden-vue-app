@@ -38,13 +38,16 @@ function reloadTables (arrOfT) {
 }
 
 let consumeTypeList = []
+let lock = false
 
 export async function findConsumeTypeById (id) {
-  if (consumeTypeList.length === 0) {
+  if (consumeTypeList.length === 0 && !lock) {
+    lock = true
     consumeTypeList = (await hillo.get('Complex.php', {
       op: 'showAllConsumeTypeInfo'
     }))
       .content
+    lock = false
   }
   for (const i of consumeTypeList) {
     if (parseInt(i.id) === parseInt(id)) {

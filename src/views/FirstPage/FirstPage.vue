@@ -512,7 +512,10 @@
         v-model="showAddressDialog"
         max-width="400"
     >
-      <v-card class="pa-4" rounded="lg">
+      <v-card
+          class="pa-4"
+          rounded="lg"
+      >
         <addresses-card
             v-if="currentAddress"
             :raw-address-info="currentAddress"
@@ -562,6 +565,7 @@ import IKUtils from 'innerken-js-utils'
 import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
 import { checkout } from '@/api/Repository/OrderInfo'
 import AddressesCard from '@/views/TablePage/Address/AddressesCard.vue'
+import { getRestaurantInfo } from '@/api/restaurantInfoService'
 
 const keyboardLayout =
     [
@@ -913,7 +917,8 @@ export default {
       if (!this.lock) {
         this.lock = true
         try {
-          await this.loadRestaurantInfo()
+          this.restaurantInfo = await getRestaurantInfo()
+          this.takeawayEnabled = this.restaurantInfo.currentlyOpening === '1'
           this.servantList = await getServantList()
           await getConsumeTypeList()
           await this.refreshTables()

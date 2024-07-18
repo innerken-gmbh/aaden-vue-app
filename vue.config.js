@@ -9,7 +9,8 @@ module.exports = {
           target: 'snap'
         },
         win: {
-          target: 'nsis'
+          target: 'nsis',
+          publish: ['github']
         },
         snap: {
           autoStart: true,

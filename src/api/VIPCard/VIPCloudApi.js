@@ -11,13 +11,18 @@ const bonusPath = 'bonus'
 
 const groupInfo = 'app-bonus-group'
 const selfGroupInfo = 'app-self-group'
+let cached = false
 
 export async function getCurrentDeviceId () {
   try {
-    return (await hillo.get('AccessLog.php?op=deviceId')).content
+    if (!cached) {
+      GlobalConfig.DeviceId = (await hillo.get('AccessLog.php?op=deviceId')).content
+      cached = true
+    }
   } catch (e) {
-    return GlobalConfig.DeviceId
+
   }
+  return GlobalConfig.DeviceId
 }
 
 export async function createCloudUser (userInfo) {
