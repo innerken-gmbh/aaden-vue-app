@@ -15,7 +15,13 @@ ipcMain.on('reload', () => {
 })
 
 // Scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true } }])
+protocol.registerSchemesAsPrivileged([{
+  scheme: 'app',
+  privileges: {
+    secure: true,
+    standard: true
+  }
+}])
 
 function createWindow () {
   // Create the browser window.
@@ -25,6 +31,7 @@ function createWindow () {
     width: 1920,
     height: 1080,
     show: false,
+    titleBarStyle: 'hidden',
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,

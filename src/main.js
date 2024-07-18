@@ -7,7 +7,6 @@ import vuetify from './plugins/vuetify'
 import GlobalConfig, { loadConfig } from './oldjs/LocalGlobalSettings'
 import './registerServiceWorker'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
-
 import 'vue-draggable-resizable-gorkys/dist/VueDraggableResizable.css'
 import VueDraggableResizable from 'vue-draggable-resizable-gorkys'
 import { addToQueue } from '@/oldjs/poolJobs'
@@ -19,6 +18,7 @@ import _ from 'lodash'
 import { getBaseAndUrlForDeviceId } from '@/api/restaurantInfoService'
 import hillo from 'hillo'
 import ParseInt from 'lodash-es/parseInt'
+import { autoUpdater } from 'electron-updater'
 import { getActiveTables } from '@/api/aaden-base-model/api'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
@@ -93,6 +93,7 @@ export const realDeviceId = IKUtils.getQueryString('BaseId') || '-1'
 
 async function initial () {
   await loadConfig()
+
   if (realDeviceId !== '-1') {
     const realUrl = (await getBaseAndUrlForDeviceId(realDeviceId)).url
     GlobalConfig.DeviceId = ParseInt(realDeviceId)
@@ -110,6 +111,11 @@ async function initial () {
     vuetify,
     render: h => h(App)
   }).$mount('#app')
+  try {
+    await autoUpdater.checkForUpdatesAndNotify()
+  } catch (e) {
+    console.error(e)
+  }
 }
 
 window.dayjs = dayjs
