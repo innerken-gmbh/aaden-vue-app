@@ -13,11 +13,12 @@ jobs:
     steps:
       - name: Commit File
         uses: actions/checkout@v2
-
       - name: Use Node.js 16.x
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v4
         with:
           node-version: 16.x
+          cache: 'npm'
 
-      - run: npm install
-      - run: npm run release --if-present
+      - run: npm ci
+      - run: npm run win:build
+
