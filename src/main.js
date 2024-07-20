@@ -18,7 +18,6 @@ import _ from 'lodash'
 import { getBaseAndUrlForDeviceId } from '@/api/restaurantInfoService'
 import hillo from 'hillo'
 import ParseInt from 'lodash-es/parseInt'
-import { autoUpdater } from 'electron-updater'
 import { getActiveTables } from '@/api/aaden-base-model/api'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
@@ -111,11 +110,6 @@ async function initial () {
     vuetify,
     render: h => h(App)
   }).$mount('#app')
-  try {
-    await autoUpdater.checkForUpdatesAndNotify()
-  } catch (e) {
-    console.error(e)
-  }
 }
 
 window.dayjs = dayjs

@@ -1,6 +1,7 @@
 'use strict'
 import { app, BrowserWindow, ipcMain, protocol } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+import { autoUpdater } from 'electron-updater'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -27,6 +28,7 @@ function createWindow () {
   // Create the browser window.
 
   createProtocol('app')
+
   win = new BrowserWindow({
     width: 1920,
     height: 1080,
@@ -42,6 +44,12 @@ function createWindow () {
     }
   })
   win.setFullScreen(true)
+
+  try {
+    autoUpdater.checkForUpdatesAndNotify()
+  } catch (e) {
+    console.error(e)
+  }
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
