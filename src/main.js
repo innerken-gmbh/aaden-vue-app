@@ -102,7 +102,7 @@ async function initial () {
   if (!Remember.uuid) {
     Remember.uuid = uuidv4()
   }
-  i18n.locale = GlobalConfig.frontEndLang.toLowerCase()
+  // i18n.locale = GlobalConfig.frontEndLang.toLowerCase()
   new Vue({
     router,
     store,
