@@ -4,9 +4,8 @@
 name: Release App To Github
 
 on:
-  push:
-    branches:
-      - base1.0-rc
+  release:
+    types:  [created]
 
 jobs:
   build:
