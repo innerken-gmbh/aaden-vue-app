@@ -1,6 +1,6 @@
 {
   "name": "aaden",
-  "version": "1.2.46",
+  "version": "1.2.47",
   "private": true,
   "description": "科学管店，化繁为简",
   "author": "juhaodong@gmail.com",
@@ -109,7 +109,9 @@
       "tagName": "v${version}"
     },
     "github": {
-      "release": true
+      "release": true,
+      "web": true,
+      "autoGenerate": true
     }
   },
   "repository": {
