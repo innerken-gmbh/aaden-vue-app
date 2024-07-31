@@ -15,14 +15,29 @@ jobs:
 
       - name: Commit File
         uses: actions/checkout@v2
-
+      - uses: olegtarasov/get-tag@v2.1.3
+        id: tagName
       - name: Use Node.js 16.x
         uses: actions/setup-node@v4
         with:
           node-version: 16.x
           cache: 'npm'
-
+      - name: Create Draft Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tagName.outputs.tag }}
+          release_name: ${{ steps.tagName.outputs.tag }}
+          draft: true
+          prerelease: false
       - run: npm install
       - run: npm run win:build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: eregon/publish-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          release_id: ${{ steps.create_release.outputs.id }}

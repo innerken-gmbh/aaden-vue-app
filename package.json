@@ -1,6 +1,6 @@
 {
   "name": "aaden",
-  "version": "1.2.53",
+  "version": "1.2.54",
   "private": true,
   "description": "科学管店，化繁为简",
   "author": "juhaodong@gmail.com",
@@ -107,10 +107,6 @@
       "commitMessage": "[VersionChange]:: release v${version}",
       "requireCleanWorkingDir": false,
       "tagName": "v${version}"
-    },
-    "github": {
-      "release": true,
-      "draft": true
     }
   },
   "repository": {
