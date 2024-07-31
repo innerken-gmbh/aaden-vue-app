@@ -1,6 +1,6 @@
 {
   "name": "aaden",
-  "version": "1.2.45",
+  "version": "1.2.46",
   "private": true,
   "description": "科学管店，化繁为简",
   "author": "juhaodong@gmail.com",
@@ -105,7 +105,8 @@
   "release-it": {
     "git": {
       "commitMessage": "[VersionChange]:: release v${version}",
-      "requireCleanWorkingDir": false
+      "requireCleanWorkingDir": false,
+      "tagName": "v${version}"
     },
     "github": {
       "release": true
