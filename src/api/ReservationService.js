@@ -45,7 +45,7 @@ export async function loadAllReservation (fromDateTime, toDateTime) {
       {
         fromDateTime,
         toDateTime
-      }, { timeout: 0 })).data
+      })).data
   } catch (e) {
     return []
   }
