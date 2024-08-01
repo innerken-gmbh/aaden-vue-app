@@ -5,6 +5,7 @@ import i18n from '@/i18n'
 import { timestampTemplate } from '@/api/dateUtils'
 import dayjs from 'dayjs'
 import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 export async function moveReservation (reservationId, tableId) {
   const newTableId = await showTableSelector(null, 'tableId')
@@ -35,6 +36,9 @@ export async function getCurrentReservation () {
 }
 
 export async function loadAllReservation (fromDateTime, toDateTime) {
+  if (!GlobalConfig.activeReservation) {
+    return []
+  }
   try {
     const deviceId = parseInt(await getCurrentDeviceId())
     return (await hillo.get(host + 'getList/' + deviceId,
