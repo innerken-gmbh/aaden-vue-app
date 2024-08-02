@@ -130,6 +130,7 @@
                     :dish-list-model="orderListModel"
                     :source-marks="sourceMarks"
                     :title="$t('DishesInBasket')"
+                    @removeAllFromSplit="removeAllFromSplitOrder"
                     @discount-clear="discountClear"
                 >
                   <template
@@ -373,10 +374,10 @@
           ref="discount"
           :discount-model-show="discountModelShow"
           :dishesItems="splitOrderListModel.list"
-          :total-price-without-any-discount="orderListModel.list"
           :initial-u-i="initialUI"
           :orderId="currentOrderId"
           :total-price="totalPrice"
+          :total-price-without-any-discount="orderListModel.list"
           :useDishesDiscount="useDishesDiscount"
           @visibility-changed="(val) => (this.discountModelShow = val)"
       />
@@ -1261,7 +1262,7 @@ export default {
       return !!this.currentOrderId
     },
     sourceMarks: function () {
-      return this.tableDetailInfo?.sourceMarks ?? []
+      return this.tableDetailInfo?.order?.sourceMarks ?? []
     },
     totalPrice: function () {
       return this.tableDetailInfo?.order?.totalPrice ?? 0

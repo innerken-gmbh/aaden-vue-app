@@ -236,8 +236,8 @@ import { Remember } from '@/oldjs/LocalGlobalSettings'
 import i18n from '@/i18n'
 import dayjs from 'dayjs'
 import {
+  getAllTableList,
   getNiceRestaurantInfo,
-  getTableList,
   newGetZBon,
   newSetZBon,
   printRealTimeSalesBon,
@@ -466,7 +466,7 @@ export default {
       this.printEnd = true
     },
     async printZBonWarn () {
-      this.unCheckTable = (await getTableList()).filter(x => x.usageStatus === '1').map(it => it.name)
+      this.unCheckTable = (await getAllTableList()).filter(x => x.usageStatus === '1').map(it => it.name)
       Remember.sendZmail = this.sendZmail
       Remember.sendXmail = this.sendXmail
       Remember.sendEmail = this.sendEmail

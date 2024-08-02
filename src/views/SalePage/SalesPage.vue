@@ -4,10 +4,12 @@
     <div class="pa-1 d-flex">
       <v-card
           v-if="isBoss"
+          v-dragscroll
           class="d-flex flex-column"
           color="grey darken-2"
           dark
-          style="border-radius: 16px 0 0 16px !important;"
+          height="100vh"
+          style="border-radius: 16px 0 0 16px !important;overflow-y: scroll"
           width="300"
       >
         <div>
@@ -16,13 +18,13 @@
             <div>
               <div class="d-flex justify-space-between align-center mt-8">
                 <div
-                    class="hideMore"
-                    style="max-width: 150px"
+                  class="hideMore"
+                  style="max-width: 150px"
                 >
                   <div>{{ $t('Sales') }}</div>
                 </div>
                 <div
-                    class="font-weight-bold"
+                  class="font-weight-bold"
                 >{{
                     billContent.total | priceDisplay
                   }}
@@ -49,9 +51,9 @@
             </template>
 
             <div
-                v-for="p in paidInfoList"
-                :key="p.id"
-                class="d-flex"
+              v-for="p in paidInfoList"
+              :key="p.id"
+              class="d-flex"
             >
               <div>
                 {{ p.paidName }}
@@ -64,48 +66,48 @@
 
             <v-divider class="my-4"></v-divider>
             <div
-                class="d-flex align-center"
-                @click="returnDishDialog=true"
+              class="d-flex align-center"
+              @click="returnDishDialog=true"
             >
               <div
-                  class="hideMore"
-                  style="max-width: 90px"
+                class="hideMore"
+                style="max-width: 90px"
               >
                 <div>{{ $t('CancelOrder') }}</div>
               </div>
               <v-spacer></v-spacer>
               <v-card
-                  class="pa-2"
-                  color="error lighten-4 black--text"
-                  elevation="0"
+                class="pa-2"
+                color="error lighten-4 black--text"
+                elevation="0"
               >{{
                   totalReturn | priceDisplay
                 }} ({{ returnList.length }})
                 <v-icon
-                    class="mt-n1"
-                    color="black"
-                    size="18px"
+                  class="mt-n1"
+                  color="black"
+                  size="18px"
                 >mdi-chevron-right
                 </v-icon>
               </v-card>
             </div>
             <div
-                class="d-flex align-center  mt-2"
-                @click="discountDialog=true"
+              class="d-flex align-center  mt-2"
+              @click="discountDialog=true"
             >
               <div>{{ $t('Discount') }}</div>
               <v-spacer></v-spacer>
               <v-card
-                  class="pa-2"
-                  color="orange lighten-4 black--text"
-                  elevation="0"
+                class="pa-2"
+                color="orange lighten-4 black--text"
+                elevation="0"
               >{{
                   totalDiscount | priceDisplay
                 }} ({{ discountList.length }})
                 <v-icon
-                    class="mt-n1"
-                    color="black"
-                    size="18px"
+                  class="mt-n1"
+                  color="black"
+                  size="18px"
                 >mdi-chevron-right
                 </v-icon>
               </v-card>
@@ -433,6 +435,7 @@ import BillsPrinterPage from '@/views/SalePage/Fragment/BillsPrinterPage'
 import CashBookPage from '@/views/SalePage/CashBookPage'
 import BaseForm from '@/components/Base/Form/BaseForm'
 import { Remember } from '@/api/remember'
+import { dragscroll } from 'vue-dragscroll'
 
 const defaultDisplayData = {
   orders: [],
@@ -460,6 +463,9 @@ export default {
       default: false
     },
     password: {}
+  },
+  directives: {
+    dragscroll
   },
   data: function () {
     return {

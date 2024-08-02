@@ -1,8 +1,8 @@
 <template>
   <v-card
+      class="d-flex flex-column flex-grow-1"
       color="transparent"
       elevation="0"
-      class="d-flex flex-column flex-grow-1"
       style="height: calc(100vh - 64px)"
   >
     <div class="pa-4 pb-3 text-h5 d-flex align-center font-weight-black grey lighten-4">
@@ -10,8 +10,8 @@
       <v-spacer></v-spacer>
       <slot name="action"></slot>
       <v-btn
-          icon
           :class="onlyPaid ? 'grey lighten-4' : ''"
+          icon
           @click="onlyPaid = !onlyPaid"
       >
         <v-icon>{{ onlyPaid ? 'mdi-filter-check' : 'mdi-filter-off' }}</v-icon>
@@ -28,8 +28,9 @@
             active-class="primary--text"
         >
           <v-chip
-              v-for="mark in sourceMarks"
+            v-for="mark in sourceMarks"
               :key="mark"
+              filter
           >
             {{ mark == null ? $t('Other') : mark }}
           </v-chip>
@@ -40,29 +41,29 @@
 
     <template v-if="dishList.length > 0">
       <div
-          v-dragscroll
           v-show="expand"
+          v-dragscroll
           class="px-3"
           style="overflow-y: scroll"
       >
 
         <template v-for="(order, index) in dishList">
           <dish-card
-              @click="checkIfOpen(index)"
               :key="'order' + title + order.identity"
-              style="font-size: larger"
-              :expand="index === expandIndex"
-              :show-number="showNumber"
               :click-callback="() => _clickCallBack(index, order)"
-              :show-edit="showEdit"
               :dish="order"
+              :expand="index === expandIndex"
+              :show-edit="showEdit"
+              :show-number="showNumber"
+              style="font-size: larger"
+              @click="checkIfOpen(index)"
           />
         </template>
         <template v-if="discountDish != null">
           <dish-card
-              :show-number="showNumber"
-              :show-edit="showEdit"
               :dish="discountDish"
+              :show-edit="showEdit"
+              :show-number="showNumber"
           />
         </template>
 
@@ -134,6 +135,14 @@ export default {
     }
   },
   watch: {
+    currentSourceMark (val) {
+      this.$emit('removeAllFromSplit')
+      if (val > -1) {
+        for (const item of this.sliceDishBySourceMarks) {
+          this.clickCallback(item)
+        }
+      }
+    },
     expandIndex: {
       handler: function (val) {
         if (val == null) {
@@ -158,6 +167,7 @@ export default {
       this.expandIndex = this.resetCurrentExpandIndex ? (this.reverse ? 0 : this.dishList.length - 1) : null
     },
     _clickCallBack (index, dish) {
+      console.log(index, 'index')
       if (dish.count === 0) {
         this.expandIndex = null
       }
@@ -186,10 +196,22 @@ export default {
     shouldDisplaySourceMarks: function () {
       return this.sourceMarks.length > 1
     },
-    dishList: function () {
+    sliceDishBySourceMarks () {
       const list = [...this.dishListModel.list].filter((it) => {
         return (
           (this.activeSourceMark === '' || it.sourceMark === this.activeSourceMark) &&
+          (!this.onlyPaid || it.realPrice !== 0)
+        )
+      })
+      if (this.reverse) {
+        list.reverse()
+      }
+      return list
+    },
+    dishList: function () {
+      const list = [...this.dishListModel.list].filter((it) => {
+        return (
+          (this.activeSourceMark === '' || it.sourceMark !== this.activeSourceMark) &&
             (!this.onlyPaid || it.realPrice !== 0)
         )
       })

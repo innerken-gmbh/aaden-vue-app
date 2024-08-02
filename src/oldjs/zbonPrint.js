@@ -91,6 +91,12 @@ export const getTableList = async function () {
   })).content.filter(it => parseInt(it.sectionId) !== 6)
 }
 
+export const getAllTableList = async function () {
+  return (await hillo.get('Tables.php', {
+    op: 'currentInfos'
+  })).content
+}
+
 export async function getNiceRestaurantInfo () {
   return (await hillo.get('Restaurant.php?op=view')).content[0]
 }
