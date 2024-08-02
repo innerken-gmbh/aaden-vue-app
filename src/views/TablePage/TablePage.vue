@@ -95,7 +95,7 @@
                     :consume-type-id="consumeTypeId"
                     :override-consume-type-id="overrideConsumeTypeId"
                     @dish-add="findAndOrderDish"
-                    @dish-detail="(dish,override)=>showModification(dish,1,null,override)"
+                    @dish-detail="(dish)=>showModification(dish,1,null)"
                 />
               </template>
               <template v-else-if="currentView==='Delivery'">
@@ -821,7 +821,7 @@ export default {
       } else {
         this.oldMod = null
       }
-      this.overrideConsumeTypeId = overrideConsumeTypeId
+      // this.overrideConsumeTypeId = overrideConsumeTypeId
       this.modificationShow = true
     },
     removeFromSplitOrder: function (dish) {
