@@ -66,7 +66,27 @@
 
             <v-divider class="my-4"></v-divider>
             <div
-              class="d-flex align-center"
+              class="d-flex align-center  mt-2"
+            >
+              <div>刷卡</div>
+              <v-spacer></v-spacer>
+              <v-card
+                class="pa-2"
+                color="orange lighten-4 black--text"
+                elevation="0"
+              >{{
+                  totalCardPay | priceDisplay
+                }} ({{ totalCardPaidCount }})
+                <v-icon
+                  class="mt-n1"
+                  color="black"
+                  size="18px"
+                >mdi-chevron-right
+                </v-icon>
+              </v-card>
+            </div>
+            <div
+              class="d-flex align-center mt-2"
               @click="returnDishDialog=true"
             >
               <div
@@ -112,11 +132,11 @@
                 </v-icon>
               </v-card>
             </div>
-            <v-divider class="my-4"></v-divider>
+            <v-divider class="mt-4"></v-divider>
           </div>
         </div>
         <v-spacer></v-spacer>
-        <div class="pa-2 py-4">
+        <div class="pa-2 mb-2">
           <v-btn class="amber lighten-4 black--text" elevation="0" width="100%" x-large
                  @click="billsPrintDialog = true">
             <v-icon class="mr-2" color="black">
@@ -530,6 +550,21 @@ export default {
     },
     paidInfoList () {
       return this.billContent.paidInfo
+    },
+    totalCardPaidCount () {
+      return this.cardPaymentList.reduce((arr, i) => {
+        arr += parseFloat(i.paidCount)
+        return arr
+      }, 0)
+    },
+    totalCardPay () {
+      return this.cardPaymentList.reduce((arr, i) => {
+        arr += parseFloat(i.paidTotal.replace(',', '.'))
+        return arr
+      }, 0)
+    },
+    cardPaymentList () {
+      return this.paidInfoList.filter(it => it.id !== '1' && it.id !== '4' && it.id !== '9')
     },
     returnList () {
       return this.billContent.storno
