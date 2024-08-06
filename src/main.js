@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 import i18n from './i18n'
 import vuetify from './plugins/vuetify'
-import GlobalConfig, { loadConfig } from './oldjs/LocalGlobalSettings'
+import GlobalConfig, { changeLanguage, loadConfig } from './oldjs/LocalGlobalSettings'
 import './registerServiceWorker'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
 import 'vue-draggable-resizable-gorkys/dist/VueDraggableResizable.css'
@@ -19,6 +19,7 @@ import { getBaseAndUrlForDeviceId } from '@/api/restaurantInfoService'
 import hillo from 'hillo'
 import ParseInt from 'lodash-es/parseInt'
 import { getActiveTables } from '@/api/aaden-base-model/api'
+import { getCurrentLanguage } from '@/api/api'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
@@ -102,6 +103,7 @@ async function initial () {
   if (!Remember.uuid) {
     Remember.uuid = uuidv4()
   }
+  changeLanguage(await getCurrentLanguage())
   // i18n.locale = GlobalConfig.frontEndLang.toLowerCase()
   new Vue({
     router,

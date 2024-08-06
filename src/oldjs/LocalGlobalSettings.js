@@ -4,7 +4,6 @@ import i18n from '@/i18n'
 import dayjs from 'dayjs'
 import { LocalSettingManager } from 'biewangle'
 import { goHome } from '@/oldjs/StaticModel'
-import { getCurrentLanguage } from '@/api/api'
 
 const fix = require('@/assets/FixedConfig.json')
 const defaultConfig = require('@/assets/AadenConfig.json')
@@ -22,7 +21,6 @@ export async function loadConfig () {
     GlobalConfig.startUpTimestamp = dayjs().utcOffset()
     refreshGetter()
     window.Config = GlobalConfig
-    changeLanguage(await getCurrentLanguage())
   } catch (e) {
     console.log(e)
   }
