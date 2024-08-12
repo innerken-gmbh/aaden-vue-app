@@ -573,7 +573,7 @@ export default {
       const toTime = dayjs(this.realDate[1]).add(1, 'day').format('YYYY-MM-DD') + ' 03:59:59'
       this.detailTime = [fromTime, toTime]
       const ZbonPrintTime = [ZbonFromTime, toTime]
-      if (this.realDate[0] === today) {
+      if (this.realDate[0] === today()) {
         this.mergeBills = false
       }
       this.ZBonList = (await newGetZBon(ZbonPrintTime)).map(it => it.zbonNumber)

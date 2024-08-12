@@ -5,43 +5,47 @@ function standardFormatter (dayObj) {
   return dayObj.format('YYYY-MM-DD')
 }
 
-const now = dayjs().subtract(3, 'hour').subtract(59, 'minute')
+function now () {
+  return dayjs().subtract(3, 'hour').subtract(59, 'minute')
+}
 
-export const today = standardFormatter(now)
+export function today () {
+  return standardFormatter(now())
+}
 export const predefinedDateRangeList = [{
   label: 'today',
   dateRange: function () {
-    return [today, today]
+    return [today(), today()]
   }
 }, {
   label: 'yesterday',
   dateRange: function () {
-    return [standardFormatter(now.subtract(1, 'day')), standardFormatter(now.subtract(1, 'day'))]
+    return [standardFormatter(now().subtract(1, 'day')), standardFormatter(now().subtract(1, 'day'))]
   }
 }, {
   label: 'this_week',
   dateRange: function () {
-    return [standardFormatter(now.startOf('week')), today]
+    return [standardFormatter(now().startOf('week')), today()]
   }
 }, {
   label: 'last_week',
   dateRange: function () {
-    return [standardFormatter(now.subtract(1, 'week').startOf('week')), standardFormatter(now.subtract(1, 'week').endOf('week'))]
+    return [standardFormatter(now().subtract(1, 'week').startOf('week')), standardFormatter(now().subtract(1, 'week').endOf('week'))]
   }
 }, {
   label: 'this_month',
   dateRange: function () {
-    return [standardFormatter(now.startOf('month')), today]
+    return [standardFormatter(now().startOf('month')), today()]
   }
 }, {
   label: 'last_month',
   dateRange: function () {
-    return [standardFormatter(now.subtract(1, 'month').startOf('month')), standardFormatter(now.subtract(1, 'month').endOf('month'))]
+    return [standardFormatter(now().subtract(1, 'month').startOf('month')), standardFormatter(now().subtract(1, 'month').endOf('month'))]
   }
 }, {
   label: 'this_year',
   dateRange: function () {
-    return [standardFormatter(now.startOf('year')), today]
+    return [standardFormatter(now().startOf('year')), today()]
   }
 }]
 

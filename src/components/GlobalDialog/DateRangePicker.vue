@@ -14,17 +14,17 @@
                   v-model="startDate"
                   :label="$t('From')"
                   :placeholder="$t('From')"
+                  hide-details
                   prepend-inner-icon="mdi-calendar"
                   readonly
-                  hide-details
                   solo
                   v-bind="attrs"
                   v-on="on"
               ></v-text-field>
             </template>
             <v-date-picker
-                :max="endDate"
                 v-model="startDate"
+                :max="endDate"
                 @input="startDateDialog=false"
             >
             </v-date-picker>
@@ -41,18 +41,18 @@
                   v-model="endDate"
                   :label="$t('InputTo')"
                   :placeholder="$t('InputTo')"
+                  hide-details
                   prepend-inner-icon="mdi-calendar"
                   readonly
-                  hide-details
                   solo
                   v-bind="attrs"
                   v-on="on"
               ></v-text-field>
             </template>
             <v-date-picker
-                :min="startDate"
-                :max="today"
                 v-model="endDate"
+                :max="today"
+                :min="startDate"
                 @input="endDateDialog=false"
             >
             </v-date-picker>
@@ -61,11 +61,11 @@
       </div>
     </div>
 
-    <div style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 8px"
-         class="mt-4">
+    <div class="mt-4"
+         style="display: grid;grid-template-columns: repeat(4,1fr);grid-gap: 8px">
 
       <base-card
-          :key="d.label" v-for="d in predefinedTimeList"
+          v-for="d in predefinedTimeList" :key="d.label"
           :active="currentDateMatch(d.dateRange())"
           :style="currentDateMatch(d.dateRange())?{color:'white'}:{}"
           @click="dateRange=d.dateRange()">
@@ -82,14 +82,13 @@
 <script>
 
 import BaseCard from '@/components/Base/BaseCard'
-import { getToday, predefinedDateRangeList, today } from '@/api/Repository/DateRepository'
+import { predefinedDateRangeList, today } from '@/api/Repository/DateRepository'
 
 export default {
   name: 'DateRangePicker',
   components: { BaseCard },
   data: function () {
     return {
-      today,
       startDate: null,
       endDate: null,
       startDateDialog: null,
@@ -98,6 +97,9 @@ export default {
     }
   },
   computed: {
+    today () {
+      return today()
+    },
     dateRange: {
       get () {
         return [this.startDate, this.endDate]
@@ -114,7 +116,6 @@ export default {
       immediate: true,
       handler (val) {
         this.dateRange = val
-        this.today = getToday()
       }
     },
     dateRange (val) {

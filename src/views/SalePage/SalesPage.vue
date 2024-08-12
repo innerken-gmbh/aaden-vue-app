@@ -495,9 +495,8 @@ export default {
       Config: GlobalConfig,
       tabIndex: 0,
       displayData: defaultDisplayData,
-      today,
-      dateInput: [today, today],
-      singleZBonDate: [today, today],
+      dateInput: [today(), today()],
+      singleZBonDate: [today(), today()],
       loaded: false,
 
       billData: {
