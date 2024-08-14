@@ -5,7 +5,7 @@ name: Release App To Snap Store
 
 on:
   release:
-    types:  [created]
+    types:  [published]
 
 jobs:
   build:
