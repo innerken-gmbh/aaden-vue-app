@@ -357,6 +357,45 @@ export async function getCurrentLanguage () {
   })
 }
 
+export async function getCurrentReservationStatus () {
+  return await forceGetSystemSetting({
+    section: 'FrontApp',
+    sKey: 'activeReservation',
+    sValue: '0',
+    defaultValue: '0',
+    sType: 'boolean',
+    minimumVersion: '1.7.825',
+    sOptions: '',
+    tagList: 'basic,FrontApp,Reservation'
+  })
+}
+
+export async function getCurrentSearchStatus () {
+  return await forceGetSystemSetting({
+    section: 'FrontApp',
+    sKey: 'searchIncludesCode',
+    sValue: '0',
+    defaultValue: '0',
+    sType: 'boolean',
+    minimumVersion: '1.7.825',
+    sOptions: '',
+    tagList: 'basic,FrontApp'
+  })
+}
+
+export async function openCashBoxByPw () {
+  return await forceGetSystemSetting({
+    section: 'FrontApp',
+    sKey: 'openCashBoxByPw',
+    sValue: '0',
+    defaultValue: '0',
+    sType: 'boolean',
+    minimumVersion: '1.7.825',
+    sOptions: '',
+    tagList: 'basic,FrontApp'
+  })
+}
+
 export async function updateNewSetting (items) {
   return (await hillo.post('Restaurant.php?op=updateSystemSettings', {
     systemSettings: JSON.stringify(items)

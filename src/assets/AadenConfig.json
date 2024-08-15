@@ -25,7 +25,6 @@
   "tableInfoDisplayOrder": "createTimestamp,dishCount",
   "returnDishWithoutPassword": false,
   "discountWithoutPassword": false,
-  "activeReservation": false,
   "defaultTileHeight": 120,
   "defaultTileWidth": 100,
   "showTableList": false,

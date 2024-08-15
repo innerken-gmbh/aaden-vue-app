@@ -71,7 +71,7 @@
         </v-btn>
         <v-btn
             icon
-            @click="openDrawer"
+            @click="openDrawerWithPW"
         >
           <v-icon>mdi-lock-open</v-icon>
         </v-btn>
@@ -547,6 +547,7 @@ import {
   loadRestaurantInfo,
   readyToPick,
   rejectOrder,
+  showSuccessMessage,
   syncTakeawaySettingToCloud,
   updateNewSetting
 } from '@/api/api'
@@ -761,7 +762,19 @@ export default {
       await readyToPick(orderId)
       await this.refreshTables()
     },
-    openDrawer,
+    async openDrawerWithPW () {
+      if (GlobalConfig.openCashBoxByPw === '1') {
+        const pw = await popAuthorize('', true)
+        const servant = await this.findServant(pw)
+        if (servant.permission === '1') {
+          openDrawer()
+        }
+      } else {
+        openDrawer()
+      }
+      showSuccessMessage('打开成功')
+    },
+
     async acceptOrder (reason = 'ok', id) {
       await acceptOrder(reason, id)
       await this.refreshTables()

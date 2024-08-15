@@ -4,6 +4,7 @@ import i18n from '@/i18n'
 import dayjs from 'dayjs'
 import { LocalSettingManager } from 'biewangle'
 import { goHome } from '@/oldjs/StaticModel'
+import { getCurrentReservationStatus, getCurrentSearchStatus, openCashBoxByPw } from '@/api/api'
 
 const fix = require('@/assets/FixedConfig.json')
 const defaultConfig = require('@/assets/AadenConfig.json')
@@ -19,6 +20,9 @@ export async function loadConfig () {
       return location.protocol + '//' + GlobalConfig.Base + '/'
     }
     GlobalConfig.startUpTimestamp = dayjs().utcOffset()
+    GlobalConfig.searchIncludesCode = await getCurrentSearchStatus()
+    GlobalConfig.activeReservation = (await getCurrentReservationStatus()) === '1'
+    GlobalConfig.openCashBoxByPw = await openCashBoxByPw()
     refreshGetter()
     window.Config = GlobalConfig
   } catch (e) {

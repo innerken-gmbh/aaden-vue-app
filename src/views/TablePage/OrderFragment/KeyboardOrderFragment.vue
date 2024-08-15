@@ -14,11 +14,11 @@
         elevation="0"
     >
       <v-btn
-          style="position: absolute;right: 0px;top: 0px;z-index: 2"
-          @click="$emit('toggle')"
           color="grey lighten-3 black--text"
           elevation="0"
           rounded
+          style="position: absolute;right: 0px;top: 0px;z-index: 2"
+          @click="$emit('toggle')"
       >
         <v-icon>mdi-menu</v-icon>
       </v-btn>
@@ -277,6 +277,22 @@ export default {
               }
               if (result.length > 10) {
                 break
+              }
+            }
+            if (GlobalConfig.searchIncludesCode === '1' && result.length < 10) {
+              for (const d of list) {
+                if (!d.code.toLowerCase().startsWith(code.toLowerCase()) && d.code !== code && d.code.toLowerCase().includes(code)) {
+                  d.rank = 99999 + d.code.length
+                  result.push(d)
+                } else if (
+                  !d.dishName.toLowerCase().startsWith(code.toLowerCase()) && d.dishName.toLowerCase().includes(code)
+                ) {
+                  d.rank = 99999 + d.dishName.length
+                  result.push(d)
+                }
+                if (result.length > 10) {
+                  break
+                }
               }
             }
           }
