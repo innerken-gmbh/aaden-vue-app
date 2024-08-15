@@ -199,10 +199,6 @@ export async function changeOrderToBuffet (orderId, buffetDishes, buffetSetting)
   }))
 }
 
-export async function reportDeviceInfo () {
-
-}
-
 export async function changePayMethodForOrder (orderId, paymentLogs) {
   return (await hillo.post('Complex.php?op=changePayMethodForOrder', {
     orderId: orderId,

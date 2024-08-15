@@ -439,10 +439,7 @@ import {
   getOrderDetailInfo,
   previewZBon,
   printDailyCardTerminal,
-  printDeliveryBon,
-  printServantSummary,
-  printXBon,
-  printZBonUseDate
+  printServantSummary
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
@@ -597,30 +594,9 @@ export default {
       await this.loadData()
     },
     getNiceLabel,
-    async printXBon () {
-      IKUtils.showLoading()
-      await printXBon(...this.singleZBonDate)
-      IKUtils.toast('OK')
-    },
-    async printZBon () {
-      IKUtils.showConfirm(this.$t('PrintAllRecords'), this.$t('AreYouSure'), async () => {
-        IKUtils.showLoading(false)
-        await printZBonUseDate(...this.singleZBonDate)
-        IKUtils.toast('OK')
-        await this.loadData()
-      })
-    },
     async printSummaryBon () {
       IKUtils.showLoading(true)
       await printServantSummary(this.password, ...this.singleZBonDate)
-      IKUtils.toast('OK')
-    },
-    async printDelivery () {
-      IKUtils.showLoading()
-      const fromTime = this.singleZBonDate[0] + ' 04:00:00'
-      const toTime = dayjs(this.singleZBonDate[1]).add(1, 'day').format('YYYY-MM-DD') + ' 03:59:59'
-      const detailTime = [fromTime, toTime]
-      await printDeliveryBon(detailTime)
       IKUtils.toast('OK')
     },
 
