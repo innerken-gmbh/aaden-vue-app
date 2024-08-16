@@ -36,8 +36,9 @@
           {{ $t('SearchResult') }}
         </v-card>
         <!--                  需要监听键盘的地方-->
-        <template v-for="(dish, index) in searchDish">
-          <v-card
+        <div v-dragscroll style="height: 85vh;overflow-y: scroll">
+          <template v-for="(dish, index) in searchDish">
+            <v-card
               :key="dish.id"
               :class="index === 0 ? 'first' : ''"
               :style="{
@@ -53,27 +54,29 @@
                       "
               tile
               @click="searchDishClick(dish.code)"
-          >
-            <div class="name mr-2">
+            >
+              <div class="name mr-2">
                         <span>{{ dish.code }}.</span
                         >{{ dish.dishName }}
-            </div>
-            <v-spacer></v-spacer>
-            <div
+              </div>
+              <v-spacer></v-spacer>
+              <div
                 v-if="dish.isFree === '1'"
                 class="price d-flex align-center green lighten-3 white--text"
                 style="padding: 2px 4px; border-radius: 4px"
-            >
-              {{ $t('Free') }}
-            </div>
-            <div
+              >
+                {{ $t('Free') }}
+              </div>
+              <div
                 v-else
                 class="price d-flex align-center text-no-wrap text-truncate"
-            >
-              {{ dish.price | priceDisplay }}
-            </div>
-          </v-card>
-        </template>
+              >
+                {{ dish.price | priceDisplay }}
+              </div>
+            </v-card>
+          </template>
+        </div>
+
       </div>
       <div
           v-else
@@ -149,6 +152,7 @@ import { findDish } from '@/oldjs/StaticModel'
 import { debounce } from 'lodash-es'
 import { showTimedAlert } from '@/oldjs/common'
 import Swal from 'sweetalert2'
+import { dragscroll } from 'vue-dragscroll'
 
 const keyboardLayout = [
   '7',
@@ -185,6 +189,9 @@ export default {
   },
   mounted () {
     window.onkeydown = this.listenKeyDown
+  },
+  directives: {
+    dragscroll
   },
   props: {
     dishes: {}
@@ -275,11 +282,11 @@ export default {
                 d.rank = d.dishName.length
                 result.push(d)
               }
-              if (result.length > 10) {
+              if (result.length > 20) {
                 break
               }
             }
-            if (GlobalConfig.searchIncludesCode === '1' && result.length < 10) {
+            if (GlobalConfig.searchIncludesCode === '1' && result.length < 20) {
               for (const d of list) {
                 if (!d.code.toLowerCase().startsWith(code.toLowerCase()) && d.code !== code && d.code.toLowerCase().includes(code)) {
                   d.rank = 99999 + d.code.length
@@ -290,7 +297,7 @@ export default {
                   d.rank = 99999 + d.dishName.length
                   result.push(d)
                 }
-                if (result.length > 10) {
+                if (result.length > 20) {
                   break
                 }
               }
