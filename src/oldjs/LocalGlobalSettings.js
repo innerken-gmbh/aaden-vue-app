@@ -20,14 +20,17 @@ export async function loadConfig () {
       return location.protocol + '//' + GlobalConfig.Base + '/'
     }
     GlobalConfig.startUpTimestamp = dayjs().utcOffset()
-    GlobalConfig.searchIncludesCode = await getCurrentSearchStatus()
-    GlobalConfig.activeReservation = (await getCurrentReservationStatus()) === '1'
-    GlobalConfig.openCashBoxByPw = await openCashBoxByPw()
     refreshGetter()
     window.Config = GlobalConfig
   } catch (e) {
     console.log(e)
   }
+}
+
+export async function getAdminSetting () {
+  GlobalConfig.searchIncludesCode = await getCurrentSearchStatus()
+  GlobalConfig.activeReservation = (await getCurrentReservationStatus()) === '1'
+  GlobalConfig.openCashBoxByPw = await openCashBoxByPw()
 }
 
 export function refreshGetter () {

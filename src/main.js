@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 import i18n from './i18n'
 import vuetify from './plugins/vuetify'
-import GlobalConfig, { changeLanguage, loadConfig } from './oldjs/LocalGlobalSettings'
+import GlobalConfig, { changeLanguage, getAdminSetting, loadConfig } from './oldjs/LocalGlobalSettings'
 import './registerServiceWorker'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
 import 'vue-draggable-resizable-gorkys/dist/VueDraggableResizable.css'
@@ -93,13 +93,13 @@ export const realDeviceId = IKUtils.getQueryString('BaseId') || '-1'
 
 async function initial () {
   await loadConfig()
-
   if (realDeviceId !== '-1') {
     const realUrl = (await getBaseAndUrlForDeviceId(realDeviceId)).url
     GlobalConfig.DeviceId = ParseInt(realDeviceId)
     GlobalConfig.Base = realUrl.split('//')[1]
     hillo.initial(realUrl + '/PHP/')
   }
+  await getAdminSetting()
   if (!Remember.uuid) {
     Remember.uuid = uuidv4()
   }
