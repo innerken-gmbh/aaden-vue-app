@@ -259,6 +259,7 @@ export default {
       const list = this.dishes
       const searchWord = this.currentCodeBuffer || this.keyboardInput
       const codeOnly = !!this.currentCodeBuffer
+      console.log(searchWord, 'searchWord')
       if (searchWord) {
         if (searchWord !== '' && !searchWord.includes('/')) {
           const [code] = this.getCodeAndCountFromInput(searchWord)
@@ -288,11 +289,11 @@ export default {
             }
             if (GlobalConfig.searchIncludesCode === '1' && result.length < 20) {
               for (const d of list) {
-                if (!d.code.toLowerCase().startsWith(code.toLowerCase()) && d.code !== code && d.code.toLowerCase().includes(code)) {
+                if (!d.code.toLowerCase().startsWith(code.toLowerCase()) && d.code !== code && d.code.toLowerCase().includes(code.toLowerCase())) {
                   d.rank = 99999 + d.code.length
                   result.push(d)
                 } else if (
-                  !d.dishName.toLowerCase().startsWith(code.toLowerCase()) && d.dishName.toLowerCase().includes(code)
+                  !d.dishName.toLowerCase().startsWith(code.toLowerCase()) && d.dishName.toLowerCase().includes(code.toLowerCase())
                 ) {
                   d.rank = 99999 + d.dishName.length
                   result.push(d)
