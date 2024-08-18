@@ -63,7 +63,7 @@ export async function checkout (checkoutInfo) {
     if (paymentLog.length > 0) {
       checkOutData.paymentLog = JSON.stringify(paymentLog)
     }
-    if (GlobalConfig.overrideCardTerminalIp) {
+    if (GlobalConfig.overrideCardTerminalIp && paymentLog.some(it => parseInt(it.id) === 2)) {
       IKUtils.showLoading()
     }
 
