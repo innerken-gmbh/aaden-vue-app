@@ -938,6 +938,9 @@ export default {
           addToQueue('firstPageTables', this.refreshTables)
         } catch (e) {
           this.noNetwork = true
+          setTimeout(() => {
+            location.reload()
+          }, 5 * 1000)
         } finally {
           this.lock = false
         }

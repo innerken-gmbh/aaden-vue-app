@@ -339,9 +339,13 @@ export async function printDailyCardTerminal (info) {
 }
 
 export async function forceGetSystemSetting (item) {
-  return (await hillo.post('Restaurant.php?op=forceGetSystemSetting', {
-    systemSetting: JSON.stringify(item)
-  })).content
+  try {
+    return (await hillo.post('Restaurant.php?op=forceGetSystemSetting', {
+      systemSetting: JSON.stringify(item)
+    })).content
+  } catch (e) {
+    return item.defaultValue
+  }
 }
 
 export async function getCurrentLanguage () {
