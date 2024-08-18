@@ -31,5 +31,7 @@
   "servantShowHistoryBill": true,
   "frontEndLang": "de",
   "activeVip": false,
-  "useCustomerDisplay" : false
+  "useCustomerDisplay" : false,
+  "overrideCardTerminalIp": "",
+  "overrideCardTerminalPort": ""
 }

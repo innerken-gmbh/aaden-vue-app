@@ -256,7 +256,7 @@
         >
           <div
               class="d-flex "
-              style="max-width: 400px; width: 50vw;height: calc(100vh - 64px)"
+              style="width: 400px;height: calc(100vh - 64px)"
               @click.stop
           >
             <div
@@ -298,7 +298,7 @@
             <v-card
                 height="calc(100vh - 64px)"
                 tile
-                width="100%"
+                width="330"
             >
               <dish-card-list
                   :click-callback="removeFromSplitOrder"
@@ -955,6 +955,11 @@ export default {
     },
     async orderDish (order, print = true) {
       try {
+        if (GlobalConfig.jumpToHomeWhenOrder) {
+          this.$nextTick(async () => {
+            await goHome()
+          })
+        }
         this.isSendingRequest = true
         if (!this.haveOrder) {
           const password = await optionalAuthorizeAsync('', GlobalConfig.usePassword, null, false, this.id)
@@ -971,11 +976,6 @@ export default {
         this.cartListModel.clear()
         await this.initialUI()
         printNow()
-        if (GlobalConfig.jumpToHomeWhenOrder) {
-          this.$nextTick(async () => {
-            await goHome()
-          })
-        }
       } catch (res) {
         logError(this.$t('JSTableOrderFailed') + res.data.info)
       } finally {
@@ -987,9 +987,10 @@ export default {
     jumpToPayment (paymentType = 'checkOut') {
       const realCheckOut = async (pw) => {
         checkoutFactory.clear()
-        checkoutFactory.loadTTDishList(paymentType === 'checkOut'
-          ? this.orderListModel.list
-          : this.splitOrderListModel.list)
+        checkoutFactory.loadTTDishList(
+          paymentType === 'checkOut'
+            ? this.orderListModel.list
+            : this.splitOrderListModel.list)
         this.checkOutModel = {
           total: checkoutFactory.total(),
           count: checkoutFactory.count(),
@@ -998,6 +999,10 @@ export default {
         this.checkoutId = this.checkOutModel.list.map(it => it.code)
         const currentPrice = round(this.checkOutModel.total * (1 - this.discountRatio), 2)
         const checkoutInfo = await this.doCheckout(currentPrice)
+        console.log((checkoutInfo.paymentLog))
+        if (paymentType === 'checkOut' && !(GlobalConfig.overrideCardTerminalIp && checkoutInfo.paymentLog.some(it => parseInt(it.id) === 2))) {
+          await goHome()
+        }
         const res = await checkout(Object.assign({
           tableId: this.id,
           dishes: checkoutFactory.list,
@@ -1006,20 +1011,20 @@ export default {
         }, checkoutInfo))
         if (checkoutInfo.printType === 1) {
           IKUtils.showLoading()
-          console.log(this.currentOrderId, res.id, 'id')
           const uuid = await getUUidByOrderId(paymentType === 'checkOut'
             ? this.currentOrderId : res.id)
           IKUtils.toast()
-          console.log(uuid, 'uuid')
           await setUuidInFirebase(uuid)
           this.showBillDetailQRDialog({ code: uuid })
         }
-        await this.initialUI()
-        if (res.success && this.orderListModel.count() === 0) {
-          await goHome()
+        if (paymentType !== 'checkOut') {
+          await this.initialUI()
+          if (this.orderListModel.count() === 0) {
+            await goHome()
+          }
         }
+
         printNow()
-        console.log(res)
       }
       setTimeout(async () => {
         const pw = await optionalAuthorizeAsync(
@@ -1191,9 +1196,9 @@ export default {
           const result = {}
           Object.keys(dish).filter(key => {
             return (key !== 'change' && key !== 'edit' &&
-              key !== 'apply' &&
-              key !== 'langs' && key !== 'langsDesc' &&
-              key !== 'modInfo' && key !== 'options')
+                key !== 'apply' &&
+                key !== 'langs' && key !== 'langsDesc' &&
+                key !== 'modInfo' && key !== 'options')
           }).forEach(key => {
             result[key] = dish[key]
           })

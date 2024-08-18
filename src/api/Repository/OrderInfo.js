@@ -1,6 +1,7 @@
 import hillo from 'hillo'
 import IKUtils from 'innerken-js-utils'
 import { goHome } from '@/oldjs/StaticModel'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 export async function getCurrentOrderInfo (tableId) {
   const tableInfo = (await hillo.silentGet('Tables.php')).content.find(it => it.id === tableId)
@@ -38,7 +39,6 @@ export async function checkout (checkoutInfo) {
       password,
       checkOutType
     } = checkoutInfo
-    console.log(checkoutInfo, 'info')
     const print = parseInt(billType)
     let withTitle = 0
     let printCount = 1
@@ -56,12 +56,17 @@ export async function checkout (checkoutInfo) {
       payMethod: 1,
       discountStr: '',
       pw: password,
+      overrideCardTerminalIp: GlobalConfig.overrideCardTerminalIp,
+      overrideCardTerminalPort: GlobalConfig.overrideCardTerminalPort,
       notPrintingCheckOutBon: printType === 1 ? 1 : 0
     }
     if (paymentLog.length > 0) {
       checkOutData.paymentLog = JSON.stringify(paymentLog)
     }
-    IKUtils.showLoading()
+    if (GlobalConfig.overrideCardTerminalIp) {
+      IKUtils.showLoading()
+    }
+
     const res = await hillo.post(
       'Complex.php?op=' + checkOutType,
       checkOutData, { timeout: 15 * 60 * 1000 }

@@ -108,7 +108,7 @@ export async function showTableSelector (filter = null, requiredTableKey = 'tabl
   })
 }
 
-export async function openOrEnterTable (number, password) {
+export async function openOrEnterTable (number) {
   try {
     const table = (await hillo.silentGet('Tables.php', { name: number })).content[0]
     await optionalAuthorizeAsync('', GlobalConfig.useEnterTablePermissionCheck,
@@ -132,22 +132,15 @@ export async function forceOpenTable (tableName, pw) {
   })
 }
 
-export async function getFalsePrinterList () {
-  return (await hillo.get('PrintRecord.php', {
-    op: 'showAbnormalRecords'
-  })).content
-}
-
 export async function informOpenTable (password = '', tableId,
   personCount = 1, childCount = 0) {
   try {
-    const res = await hillo.post('Complex.php?op=openTable', {
+    await hillo.post('Complex.php?op=openTable', {
       tableId: tableId,
       pw: password,
       personCount: personCount,
       childCount: childCount
     })
-    jumpToTable(res.content.tableId, res.content.tableName)
   } catch (e) {
     console.log(e)
     logErrorAndPop(i18n.t('JSIndexRequestOutTableFailed') + e?.data?.info)

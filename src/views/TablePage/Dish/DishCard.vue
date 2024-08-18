@@ -7,7 +7,10 @@
       @click="$emit('click')"
   >
     <div class="px-1 py-1 pr-0">
-      <div class="flex-grow-1 d-flex align-baseline">
+      <div
+          class="d-flex align-baseline"
+          style="width: 100%"
+      >
         <div
             class="mr-2"
             style="min-width: 36px"
@@ -24,14 +27,12 @@
           </v-card>
         </div>
 
-        <div class="text-body-1 font-weight-bold flex-grow-1 mr-4">
-          <div class="d-flex">
-          <div class="mr-2">
-            <span>{{ dish.code }}.</span>
-          </div>
+        <div class="text-body-1 font-weight-bold mr-4">
           <div>
+            <div class="mr-1">
+              <span  class="text-body-2 font-weight-medium">{{ dish.code.replaceAll('.', '') }}.</span>
+            </div>
             <span>{{ dish.name }}</span>
-          </div>
           </div>
           <div
               v-show="dish.displayApply.length > 0"

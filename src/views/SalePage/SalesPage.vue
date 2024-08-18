@@ -18,13 +18,13 @@
             <div>
               <div class="d-flex justify-space-between align-center mt-8">
                 <div
-                  class="hideMore"
-                  style="max-width: 150px"
+                    class="hideMore"
+                    style="max-width: 150px"
                 >
                   <div>{{ $t('Sales') }}</div>
                 </div>
                 <div
-                  class="font-weight-bold"
+                    class="font-weight-bold"
                 >{{
                     billContent.total | priceDisplay
                   }}
@@ -51,9 +51,9 @@
             </template>
 
             <div
-              v-for="p in paidInfoList"
-              :key="p.id"
-              class="d-flex"
+                v-for="p in paidInfoList"
+                :key="p.id"
+                class="d-flex"
             >
               <div>
                 {{ p.paidName }}
@@ -66,68 +66,68 @@
 
             <v-divider class="my-4"></v-divider>
             <div
-              class="d-flex align-center  mt-2"
+                class="d-flex align-center  mt-2"
             >
               <div>刷卡</div>
               <v-spacer></v-spacer>
               <v-card
-                class="pa-2"
-                color="orange lighten-4 black--text"
-                elevation="0"
+                  class="pa-2"
+                  color="orange lighten-4 black--text"
+                  elevation="0"
               >{{
                   totalCardPay | priceDisplay
                 }} ({{ totalCardPaidCount }})
                 <v-icon
-                  class="mt-n1"
-                  color="black"
-                  size="18px"
+                    class="mt-n1"
+                    color="black"
+                    size="18px"
                 >mdi-chevron-right
                 </v-icon>
               </v-card>
             </div>
             <div
-              class="d-flex align-center mt-2"
-              @click="returnDishDialog=true"
+                class="d-flex align-center mt-2"
+                @click="returnDishDialog=true"
             >
               <div
-                class="hideMore"
-                style="max-width: 90px"
+                  class="hideMore"
+                  style="max-width: 90px"
               >
                 <div>{{ $t('CancelOrder') }}</div>
               </div>
               <v-spacer></v-spacer>
               <v-card
-                class="pa-2"
-                color="error lighten-4 black--text"
-                elevation="0"
+                  class="pa-2"
+                  color="error lighten-4 black--text"
+                  elevation="0"
               >{{
                   totalReturn | priceDisplay
                 }} ({{ returnList.length }})
                 <v-icon
-                  class="mt-n1"
-                  color="black"
-                  size="18px"
+                    class="mt-n1"
+                    color="black"
+                    size="18px"
                 >mdi-chevron-right
                 </v-icon>
               </v-card>
             </div>
             <div
-              class="d-flex align-center  mt-2"
-              @click="discountDialog=true"
+                class="d-flex align-center  mt-2"
+                @click="discountDialog=true"
             >
               <div>{{ $t('Discount') }}</div>
               <v-spacer></v-spacer>
               <v-card
-                class="pa-2"
-                color="orange lighten-4 black--text"
-                elevation="0"
+                  class="pa-2"
+                  color="orange lighten-4 black--text"
+                  elevation="0"
               >{{
                   totalDiscount | priceDisplay
                 }} ({{ discountList.length }})
                 <v-icon
-                  class="mt-n1"
-                  color="black"
-                  size="18px"
+                    class="mt-n1"
+                    color="black"
+                    size="18px"
                 >mdi-chevron-right
                 </v-icon>
               </v-card>
@@ -137,18 +137,34 @@
         </div>
         <v-spacer></v-spacer>
         <div class="pa-2 mb-2">
-          <v-btn class="amber lighten-4 black--text" elevation="0" width="100%" x-large
-                 @click="billsPrintDialog = true">
-            <v-icon class="mr-2" color="black">
+          <v-btn
+              class="amber lighten-4 black--text"
+              elevation="0"
+              width="100%"
+              x-large
+              @click="billsPrintDialog = true"
+          >
+            <v-icon
+                class="mr-2"
+                color="black"
+            >
               mdi-printer
             </v-icon>
             {{
               $t('PrintDailySummaryBon')
             }}
           </v-btn>
-          <v-btn class="amber lighten-4 black--text mt-2" elevation="0" width="100%" x-large
-                 @click="cardTerminalDialog = true">
-            <v-icon class="mr-2" color="black">
+          <v-btn
+              class="amber lighten-4 black--text mt-2"
+              elevation="0"
+              width="100%"
+              x-large
+              @click="cardTerminalDialog = true"
+          >
+            <v-icon
+                class="mr-2"
+                color="black"
+            >
               mdi-printer
             </v-icon>
             打印刷卡机日结单
@@ -156,14 +172,20 @@
         </div>
 
       </v-card>
-      <div class="flex-grow-1" style="height: calc(100vh - 8px)">
+      <div
+          class="flex-grow-1"
+          style="height: calc(100vh - 8px)"
+      >
         <v-app-bar
             color="transparent"
             dark
             flat
             height="56"
         >
-          <v-tabs v-model="tabIndex" color="white">
+          <v-tabs
+              v-model="tabIndex"
+              color="white"
+          >
             <template v-if="isBoss">
               <v-tab>{{ $t('Bill') }}</v-tab>
               <v-tab>{{ $t('Employees') }}</v-tab>
@@ -408,18 +430,24 @@
         </div>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="billsPrintDialog" max-width="600px">
+    <v-dialog
+        v-model="billsPrintDialog"
+        max-width="600px"
+    >
       <bills-printer-page
           :dialog-status="billsPrintDialog"
           :real-date="dateInput"
           @closeDialog="billsPrintDialog = false"
       />
     </v-dialog>
-    <v-dialog v-model="cardTerminalDialog" max-width="600px">
+    <v-dialog
+        v-model="cardTerminalDialog"
+        max-width="600px"
+    >
       <base-form
-        :schema="schemas"
-        @close="cardTerminalDialog=false"
-        @submit="savePrintInfo"
+          :schema="schemas"
+          @close="cardTerminalDialog=false"
+          @submit="savePrintInfo"
       >
         <div>刷卡机日结单</div>
         <template #subtitle>
@@ -451,7 +479,6 @@ import ServantList from '@/views/SalePage/Fragment/ServantList'
 import BillsPrinterPage from '@/views/SalePage/Fragment/BillsPrinterPage'
 import CashBookPage from '@/views/SalePage/CashBookPage'
 import BaseForm from '@/components/Base/Form/BaseForm'
-import { Remember } from '@/api/remember'
 import { dragscroll } from 'vue-dragscroll'
 
 const defaultDisplayData = {
@@ -519,13 +546,13 @@ export default {
           key: 'overrideCardTerminalIp',
           name: '刷卡机IP',
           required: false,
-          default: Remember.cardTerminalIP
+          default: GlobalConfig.overrideCardTerminalIp
         },
         {
           key: 'overrideCardTerminalPort',
           name: '刷卡机Port',
           required: false,
-          default: Remember.cardTerminalPort
+          default: GlobalConfig.overrideCardTerminalPort
         }
       ]
     },
@@ -582,8 +609,6 @@ export default {
   },
   methods: {
     async savePrintInfo (info) {
-      Remember.cardTerminalIP = info.overrideCardTerminalIp
-      Remember.cardTerminalPort = info.overrideCardTerminalPort
       await printDailyCardTerminal(info)
       this.cardTerminalDialog = false
     },

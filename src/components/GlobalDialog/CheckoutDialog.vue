@@ -466,10 +466,9 @@ export default {
       } catch (e) {
         console.log(e)
       }
-      setTimeout(() => {
-        this.loading = false
-        this.hideCheckoutDialog()
-      }, 1000)
+
+      this.loading = false
+      this.hideCheckoutDialog()
     },
     emptyCompanyInfoDialog () {
       this.reasonOfVisit = ''
