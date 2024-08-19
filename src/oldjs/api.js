@@ -2,6 +2,8 @@ import { popAuthorize } from './common'
 import hillo from 'hillo'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { getCurrentReservation } from '@/api/ReservationService'
+import IKUtils from 'innerken-js-utils'
+import dayjs from 'dayjs'
 
 export function splitOrder (discountStr = '', id, items, initialUI, print, payMethod, tipIncome, memberCardId) {
   print = parseInt(print)
@@ -33,10 +35,27 @@ export function openDrawer () {
   hillo.get('Printer.php?op=openDrawer')
 }
 
+const playSound = (count = 3) => {
+  count -= 1
+  if (count >= 0) {
+    setTimeout(() => {
+      IKUtils.play('/Resource/ding.m4a')
+      playSound(count)
+    }, 100)
+  }
+}
+
+let reservationCache = null
+let lastCacheAt = null
+
 export async function getTableListWithCells () {
   const reservationDict = {}
   if (GlobalConfig.activeReservation) {
-    const allReservation = await getCurrentReservation()
+    if (!reservationCache || (lastCacheAt === null || dayjs(lastCacheAt).isBefore(dayjs().subtract(10, 's')))) {
+      lastCacheAt = dayjs().valueOf()
+      reservationCache = await getCurrentReservation()
+    }
+    const allReservation = reservationCache
     allReservation.forEach(r => {
       r.seatPlan.forEach(s => {
         if (!reservationDict[s.tableId]) {
@@ -46,15 +65,23 @@ export async function getTableListWithCells () {
       })
     })
   }
-  return (await hillo.get('Tables.php?op=showAllTableWithCells')).content.map(t => {
+  let shouldSound = false
+  const tableList = (await hillo.get('Tables.php?op=showAllTableWithCells')).content.map(t => {
     t.cells = t.cells.map(p => {
       p.x = parseInt(p.x)
       p.y = parseInt(p.y)
       return p
     }) ?? []
+    if (!shouldSound && t.callService === '1' && t.usageStatus === '1') {
+      shouldSound = true
+    }
     t.reservations = reservationDict[t.tableId] || []
     return t
   })
+  if (shouldSound) {
+    playSound()
+  }
+  return tableList
 }
 
 export async function setTableLocation (table) {

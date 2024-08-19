@@ -27,7 +27,6 @@ const todayEnd = dayjs().startOf('d')
 
 export async function getCurrentReservation () {
   const nowMinus30 = dayjs().subtract(60, 'm').format(timestampTemplate)
-
   return (await loadAllReservation(nowMinus30, todayEnd)).filter(it => it.status !== 'Cancelled' && it.status !== 'Created')
 }
 
