@@ -86,7 +86,6 @@ export async function searchNfcCard () {
   })
   const localDict = keyBy(localInfo, 'uid')
   cloudInfo.forEach(it => {
-    console.log(it)
     if (localDict[it.uid]) {
       localDict[it.uid].cloudId = it.id
     } else {

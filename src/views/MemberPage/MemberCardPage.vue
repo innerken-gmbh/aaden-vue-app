@@ -3,12 +3,12 @@
     <template v-if="GlobalConfig.activeVip">
       <div style="display: grid;grid-template-columns:400px 1fr;grid-gap: 1px">
         <div
-            class="d-flex flex-column"
-            style="height: calc(100vh)"
+          class="d-flex flex-column"
+          style="height: calc(100vh)"
         >
           <v-sheet
-              class="pa-6"
-              color="white"
+            class="pa-6"
+            color="white"
           >
             <div class="d-flex align-center">
               <div class="text-h4 font-weight-black">
@@ -19,26 +19,26 @@
             </div>
             <div class="d-flex align-center mt-4">
               <v-text-field
-                  outlined
-                  dense
-                  v-model="cardSearch"
-                  hide-details
-                  filled
-                  autofocus
-                  clearable
-                  class="mr-2"
-                  :placeholder="$t('SearchVipNumber')"
-                  append-icon="mdi-magnify"
+                v-model="cardSearch"
+                :placeholder="$t('SearchVipNumber')"
+                append-icon="mdi-magnify"
+                autofocus
+                class="mr-2"
+                clearable
+                dense
+                filled
+                hide-details
+                outlined
               ></v-text-field>
               <v-btn
-                  @click="createNewMemberCard"
-                  height="42"
-                  elevation="0"
-                  color="amber lighten-4 black--text"
+                color="amber lighten-4 black--text"
+                elevation="0"
+                height="42"
+                @click="createNewMemberCard"
               >
                 <v-icon
-                    color="black"
-                    left
+                  color="black"
+                  left
                 >mdi-plus-circle-outline
                 </v-icon>
                 {{ $t('Add') }}
@@ -46,37 +46,26 @@
             </div>
           </v-sheet>
           <div
-              style="overflow-y: scroll"
-              class="flex-grow-1 grey lighten-5"
+            class="flex-grow-1 grey lighten-5"
+            style="overflow-y: scroll"
           >
             <v-sheet
-                class="pa-6"
-                :elevation="selectedCardId===member.id?1:0"
-                @click="selectMemberCard(member.id)"
-                :color="(selectedCardId===member.id?'primary lighten-5':'grey lighten-5')"
-                v-for="member in filteredList"
-                :key="member.id"
+              v-for="member in filteredList"
+              :key="member.id"
+              :color="(selectedCardId===member.simpleMemberUuid?'primary lighten-5':'grey lighten-5')"
+              :elevation="selectedCardId===member.simpleMemberUuid?1:0"
+              class="pa-6"
+              @click="selectMemberCard(member.simpleMemberUuid)"
             >
               <div class="d-flex align-center text-body-1">
-                <v-icon
-                    left
-                    v-if="member.cloudId"
-                    small
-                >mdi-cloud-check
-                </v-icon>
                 <div class="font-weight-bold">
                   {{ member.name }}
                 </div>
                 <v-spacer></v-spacer>
-                <div v-if="member.local">{{ member.voucherTotal | priceDisplay }}</div>
-                <div
-                    v-else
-                    class="text-body-2"
-                >{{ $t('CloudMember') }}: {{ member.deviceId }}
-                </div>
+                <div>余额:{{ member.currentVoucherAmount | priceDisplay }}</div>
               </div>
               <div class="d-flex align-center text-no-wrap text-body-2 text--secondary mt-2">
-                {{ member.uid }} | @{{ member.createdAt | age }}
+                {{ member.memberIdentity }} | @{{ member.memberLevel }}
               </div>
             </v-sheet>
           </div>
@@ -85,42 +74,42 @@
         <div>
           <template v-if="!selectedCardId">
             <div
-                class="pa-6 d-flex flex-column"
-                style="height: 100%"
+              class="pa-6 d-flex flex-column"
+              style="height: 100%"
             >
               <div class="flex-grow-1 d-flex align-center justify-center flex-column text-center">
                 <div class="text-h4 font-weight-bold">
                   {{ $t('ScanMemberCard') }}
                 </div>
                 <div
-                    class="text-body-1 mt-4"
-                    style="width: 400px"
+                  class="text-body-1 mt-4"
+                  style="width: 400px"
                 >
                   {{ $t('ManualUserModification') }}
                 </div>
                 <lottie-animation
-                    class="my-16"
-                    :animationData="require('@/assets/card.json')"
-                    style="height: 200px"
-                    :loop="true"
-                    :autoPlay="true"
+                  :animationData="require('@/assets/card.json')"
+                  :autoPlay="true"
+                  :loop="true"
+                  class="my-16"
+                  style="height: 200px"
                 ></lottie-animation>
               </div>
             </div>
           </template>
-          <template v-else-if="selectedCard">
+          <template v-else-if="selectedCard && VipDetailInfo">
             <div style="max-height: 100vh;overflow-y: scroll">
               <v-sheet class=" pt-6 px-6">
                 <div class="text-h4 font-weight-bold">
                   {{ selectedCard.name }}
                 </div>
                 <div class="text-body-2 text--secondary mt-2">
-                  {{ selectedCard.uid }} | {{ selectedCard.createdAt | age }} | {{ selectedCard.birthday }}
+                  {{ selectedCard.memberLevel }} | {{ selectedCard.simpleMemberUuid }}
                 </div>
                 <v-tabs
-                    v-model="currentTab"
-                    color="indigo"
-                    class="font-weight-black mt-2"
+                  v-model="currentTab"
+                  class="font-weight-black mt-2"
+                  color="indigo"
                 >
                   <v-tab>🔥 {{ $t('Overview') }}</v-tab>
                   <v-tab>🗂️ {{ $t('EditVipPoints') }}</v-tab>
@@ -130,74 +119,98 @@
               </v-sheet>
 
               <v-tabs-items
-                  style="background: transparent !important;"
-                  v-model="currentTab"
+                v-model="currentTab"
+                style="background: transparent !important;"
               >
                 <v-tab-item>
                   <div class="pa-6">
                     <div class="text-h5">{{ $t('VipMemberDetails') }}</div>
                     <div
-                        class="mt-4"
-                        style="display: grid;grid-template-columns: repeat(3,minmax(0,1fr));grid-gap: 24px"
+                      class="mt-4"
+                      style="display: grid;grid-template-columns: repeat(3,minmax(0,1fr));grid-gap: 24px"
                     >
                       <v-card
-                          style="border-radius: 24px !important;"
-                          elevation="0"
-                          color="grey lighten-3 black--text"
-                          class="pa-6"
+                        class="pa-6"
+                        color="grey lighten-3 black--text"
+                        elevation="0"
+                        style="border-radius: 24px !important;"
                       >
                         <div class="text-body-2">{{ $t('Balance') }}</div>
-                        <div class="d-flex mt-6">
-                          <div class="text-h4">{{ selectedCard.voucherTotal | priceDisplay }}</div>
-                        </div>
-                      </v-card>
-                      <v-card
-                          style="border-radius: 24px !important;"
-                          elevation="0"
-                          color="grey lighten-3 black--text"
-                          class="pa-6"
-                      >
-                        <div class="text-body-2">{{ $t('Integral') }}</div>
-                        <div class="d-flex mt-6">
-                          <div class="text-h4">{{ totalBonus }}
-                            <v-icon
-                                color="black"
-                                x-large
-                            >mdi-star-four-points-small
-                            </v-icon>
+                        <div v-if="!loadingBalance">
+                          <div class="d-flex mt-6">
+                            <div class="text-h4">{{ VipDetailInfo.currentVoucherAmount | priceDisplay }}</div>
                           </div>
                         </div>
+
+                        <div v-else>
+                          <div class="d-flex mt-6">
+                            <v-progress-circular
+                              indeterminate
+                              size="24"
+
+                            ></v-progress-circular>
+                          </div>
+
+                        </div>
                       </v-card>
                       <v-card
-                          style="border-radius: 24px !important;"
-                          elevation="0"
-                          color="grey lighten-3 black--text"
-                          class="pa-6"
+                        class="pa-6"
+                        color="grey lighten-3 black--text"
+                        elevation="0"
+                        style="border-radius: 24px !important;"
+                      >
+                        <div class="text-body-2">{{ $t('Integral') }}</div>
+                        <div v-if="!loadingPoint">
+                          <div class="d-flex mt-6">
+                            <div class="text-h4">{{ VipDetailInfo.merchantPoint }}
+                              <v-icon
+                                color="black"
+                                x-large
+                              >mdi-star-four-points-small
+                              </v-icon>
+                            </div>
+                          </div>
+                        </div>
+                        <div v-else>
+                          <div class="d-flex mt-6">
+                            <v-progress-circular
+                              indeterminate
+                              size="24"
+
+                            ></v-progress-circular>
+                          </div>
+
+                        </div>
+                      </v-card>
+                      <v-card
+                        class="pa-6"
+                        color="grey lighten-3 black--text"
+                        elevation="0"
+                        style="border-radius: 24px !important;"
                       >
                         <div class="text-body-2">{{ $t('CumulativeConsumption') }}</div>
                         <div class="d-flex mt-6">
-                          <div class="text-h4">{{ totalUsage | priceDisplay }}</div>
+                          <div class="text-h4">{{ totalCost | priceDisplay }}</div>
                         </div>
                       </v-card>
                     </div>
                     <div class="text-h5 mt-6">{{ $t('Work') }}</div>
                     <div
-                        style="display: grid;grid-auto-flow: column;grid-gap: 12px;grid-auto-columns: min-content"
-                        class="mt-4"
+                      class="mt-4"
+                      style="display: grid;grid-auto-flow: column;grid-gap: 12px;grid-auto-columns: min-content"
                     >
                       <div class="d-block overflow-hidden">
                         <v-card
-                            :disabled="!selectedCard.local"
-                            @click="startDeposit"
-                            color="grey lighten-3"
-                            width="96"
-                            style="border-radius: 12px !important;"
-                            elevation="0"
+                          color="grey lighten-3"
+                          elevation="0"
+                          style="border-radius: 12px !important;"
+                          width="96"
+                          @click="startDeposit"
                         >
                           <v-responsive :aspect-ratio="1">
                             <div
-                                style="height: 100%"
-                                class="pa-4 d-flex align-center justify-center flex-wrap"
+                              class="pa-4 d-flex align-center justify-center flex-wrap"
+                              style="height: 100%"
                             >
                               <v-icon style="width: 100%;">mdi-cash-refund</v-icon>
                               <div class="text-body-2 text-truncate">
@@ -209,16 +222,16 @@
                       </div>
                       <div class="d-block overflow-hidden">
                         <v-card
-                            @click="changeBonusPoint"
-                            color="grey lighten-3"
-                            width="96"
-                            style="border-radius: 12px !important;"
-                            elevation="0"
+                          color="grey lighten-3"
+                          elevation="0"
+                          style="border-radius: 12px !important;"
+                          width="96"
+                          @click="changeBonusPoint"
                         >
                           <v-responsive :aspect-ratio="1">
                             <div
-                                style="height: 100%"
-                                class="pa-4 d-flex align-center justify-center flex-wrap"
+                              class="pa-4 d-flex align-center justify-center flex-wrap"
+                              style="height: 100%"
                             >
                               <v-icon style="width: 100%;">mdi-plus-circle-multiple-outline</v-icon>
                               <div class="text-body-2 text-truncate">
@@ -230,81 +243,15 @@
                       </div>
                       <div class="d-block overflow-hidden">
                         <v-card
-                            :disabled="!selectedCard.local"
-                            @click="changeCard"
-                            color="grey lighten-3"
-                            width="96"
-                            style="border-radius: 12px !important;"
-                            elevation="0"
+                          color="grey lighten-3"
+                          elevation="0"
+                          style="border-radius: 12px !important;"
+                          width="96"
                         >
                           <v-responsive :aspect-ratio="1">
                             <div
-                                style="height: 100%"
-                                class="pa-4 d-flex align-center justify-center flex-wrap"
-                            >
-                              <v-icon style="width: 100%;">mdi-briefcase-arrow-left-right</v-icon>
-                              <div class="text-body-2 text-truncate">
-                                {{ $t('ReportLoss') }}
-                              </div>
-                            </div>
-                          </v-responsive>
-                        </v-card>
-                      </div>
-                      <div class="d-block overflow-hidden">
-                        <v-card
-                            :disabled="!selectedCard.local"
-                            @click="editCard"
-                            color="grey lighten-3"
-                            width="96"
-                            style="border-radius: 12px !important;"
-                            elevation="0"
-                        >
-                          <v-responsive :aspect-ratio="1">
-                            <div
-                                style="height: 100%"
-                                class="pa-4 d-flex align-center justify-center flex-wrap"
-                            >
-                              <v-icon style="width: 100%;">mdi-folder-edit</v-icon>
-                              <div class="text-body-2 text-truncate">
-                                {{ $t('EditInformation') }}
-                              </div>
-                            </div>
-                          </v-responsive>
-                        </v-card>
-                      </div>
-                      <div class="d-block overflow-hidden">
-                        <v-card
-                            @click="transferToCloud"
-                            v-if="selectedCard.local&&!selectedCard.cloudId"
-                            color="grey lighten-3"
-                            width="96"
-                            style="border-radius: 12px !important;"
-                            elevation="0"
-                        >
-                          <v-responsive :aspect-ratio="1">
-                            <div
-                                style="height: 100%"
-                                class="pa-4 d-flex align-center justify-center flex-wrap"
-                            >
-                              <v-icon style="width: 100%;">mdi-cloud-arrow-up</v-icon>
-                              <div class="text-body-2 text-truncate">
-                                {{ $t('SwitchToCloud') }}
-                              </div>
-                            </div>
-                          </v-responsive>
-                        </v-card>
-                      </div>
-                      <div class="d-block overflow-hidden">
-                        <v-card
-                            color="grey lighten-3"
-                            width="96"
-                            style="border-radius: 12px !important;"
-                            elevation="0"
-                        >
-                          <v-responsive :aspect-ratio="1">
-                            <div
-                                style="height: 100%"
-                                class="pa-4 d-flex align-center justify-center flex-wrap"
+                              class="pa-4 d-flex align-center justify-center flex-wrap"
+                              style="height: 100%"
                             >
                               <v-icon style="width: 100%;">mdi-dots-horizontal</v-icon>
                               <div class="text-body-2 text-truncate">
@@ -321,34 +268,37 @@
                 </v-tab-item>
                 <v-tab-item>
                   <div class="pa-6">
-                    <v-card
-                        v-for=" b in bonusList"
-                        :key="b.id"
-                        elevation="0"
-                        color="grey lighten-3"
-                        class="d-flex my-2 pa-4"
+                    <div
+                      v-if="usePointLog.length === 0"
+                      class="pa-4 d-flex align-center justify-center"
                     >
-                      <div class="text-h6">
-                        {{ b.createdAt | timeDisplay }}
+                      当前暂无数据！
+                    </div>
+                    <div
+                      v-for="item in usePointLog"
+                      :key="item.id"
+                      class="pa-4 d-flex align-center justify-center"
+                    >
+                      <div class="text-h4">
+                        {{ item.pointValue < 0 ? '+' + Math.abs(item.pointValue) : '-' + item.pointValue }}
                       </div>
-                      <v-spacer></v-spacer>
+                      <v-spacer/>
                       <div
-                          :class="b.bonusPointChange>0?'success--text':'error--text'"
-                          class="text-h6"
+                        class="text-h4"
                       >
-                        {{ b.bonusPointChange > 0 ? '+' + b.bonusPointChange : b.bonusPointChange }}
+                        {{ item.electronic_meta_createdAt?.seconds | beautifulTimeByStampTime }}
                       </div>
-                    </v-card>
+                    </div>
                   </div>
                 </v-tab-item>
                 <v-tab-item>
                   <div class="pa-6">
                     <v-card
-                        v-for=" b in usageInfo"
-                        :key="b.id"
-                        elevation="0"
-                        color="grey lighten-3"
-                        class="d-flex align-center my-4 pa-4"
+                      v-for=" b in usageInfo"
+                      :key="b.id"
+                      class="d-flex align-center my-4 pa-4"
+                      color="grey lighten-3"
+                      elevation="0"
                     >
                       <div>
                         <div class="text-body-1">
@@ -361,8 +311,8 @@
 
                       <v-spacer></v-spacer>
                       <div
-                          :class="b.sumPrice>0?'success--text':'error--text'"
-                          class="text-h6"
+                        :class="b.sumPrice>0?'success--text':'error--text'"
+                        class="text-h6"
                       >
                         <span v-if="b.sumPrice>0 ">+</span>{{ b.sumPrice | priceDisplay }}
                       </div>
@@ -379,106 +329,43 @@
     <template v-else>
       <div style="height: 100vh">
         <no-content-display
-            icon="mdi-lock"
-            :title="$t('FunctionNotActivated')"
-            :desc="$t('ContactSupportToActivate')"
+          :desc="$t('ContactSupportToActivate')"
+          :title="$t('FunctionNotActivated')"
+          icon="mdi-lock"
         ></no-content-display>
       </div>
     </template>
-
     <v-dialog
-        v-model="showCardInfoDialog"
-        max-width="400"
+      v-model="rechargeDialog"
+      max-width="600px"
+      persistent
     >
-      <v-card
-          class="pa-6"
-          style="border-radius: 24px !important;"
+      <base-form
+        :schema="schemas"
+        @close="rechargeDialog=false"
+        @submit="saveRecharge"
       >
-        <div class="text-h6">
-          {{ $t('VipMemberInformation') }}
-        </div>
-        <div class="mt-4">
-          <v-text-field
-              autofocus
-              v-model="name"
-              outlined
-              filled
-              :placeholder="$t('name')"
-          ></v-text-field>
-          <v-text-field
-              v-model="email"
-              outlined
-              filled
-              :placeholder="$t('emailAddress')"
-          ></v-text-field>
-          <v-dialog
-              ref="dialog"
-              v-model="modal"
-              :return-value.sync="date"
-              persistent
-              width="290px"
-          >
-            <template v-slot:activator="{ on, attrs }">
-              <v-text-field
-                  outlined
-                  filled
-                  :placeholder="$t('Birth')"
-                  append-icon="mdi-calendar"
-                  v-model="date"
-                  readonly
-                  v-bind="attrs"
-                  v-on="on"
-              />
-            </template>
-            <v-date-picker
-                v-model="date"
-                scrollable
-            >
-              <v-spacer></v-spacer>
-              <v-btn
-                  text
-                  color="primary"
-                  @click="modal = false"
-              >
-                {{ $t('Cancel') }}
-              </v-btn>
-              <v-btn
-                  text
-                  color="primary"
-                  @click="$refs.dialog.save(date)"
-              >
-                {{ $t('Confirm') }}
-              </v-btn>
-            </v-date-picker>
-          </v-dialog>
-        </div>
-        <v-btn
-            @click="saveCard"
-            large
-            color="amber lighten-4 black--text"
-            elevation="0"
-        >
-          <v-icon left>mdi-check</v-icon>
-          {{ $t('Save') }}
-        </v-btn>
-
-      </v-card>
+        <div>{{ $t('PlannedSettings') }}</div>
+        <template #subtitle>
+          {{ $t('PlannedSettingsHint') }}
+        </template>
+      </base-form>
     </v-dialog>
     <v-navigation-drawer
-        width="400"
-        right
-        app
-        temporary
-        v-model="checkOutDialog"
+      v-model="checkOutDialog"
+      app
+      right
+      temporary
+      width="400"
     >
       <v-card
-          width="100%"
-          height="100vh"
+        height="100vh"
+        width="100%"
       >
         <checkout-dialog
-            :total="depositTotal"
-            @payment-cancel="checkOutDialog=false"
-            @payment-submit="onDeposit"
+          :total="depositTotal"
+          @payment-cancel="checkOutDialog=false"
+          @payment-submit="onDeposit"
         ></checkout-dialog>
       </v-card>
     </v-navigation-drawer>
@@ -487,23 +374,31 @@
 
 <script>
 import LottieAnimation from 'lottie-web-vue'
-import {
-  addBonusPoint,
-  deposit,
-  editNfcCard,
-  getBonusRecord,
-  register,
-  searchNfcCard,
-  transferToCloud
-} from '@/api/VIPCard/VIPApi'
+import { deposit, editNfcCard, register, transferToCloud } from '@/api/VIPCard/VIPApi'
 import IKUtils from 'innerken-js-utils'
 import CheckoutDialog from '@/components/GlobalDialog/CheckoutDialog.vue'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import NoContentDisplay from '@/views/FirstPage/widget/NoContentDisplay.vue'
+import {
+  getAllPointLog,
+  getAllVipList,
+  getCashBoxList,
+  getMemberDetailInfo,
+  getNfcMenuList,
+  getPayMethodList,
+  memberRechargeFunc,
+  updateMemberDetailPoint
+} from '@/api/NewVipApi/Vip'
+import { sumBy } from 'lodash'
+import BaseForm from '@/components/Base/Form/BaseForm'
+import { VSelect } from 'vuetify/lib/components'
+import { loadAllServants } from '@/api/api'
+import { uuid } from 'uuidv4'
 
 export default {
   name: 'MemberCardPage',
   components: {
+    BaseForm,
     NoContentDisplay,
     CheckoutDialog,
     LottieAnimation
@@ -522,12 +417,80 @@ export default {
       modal: null,
       date: null,
       name: null,
-      email: null
+      email: null,
+      VipDetailInfo: null,
+      rechargeDialog: false,
+      paymentList: [],
+      nfcMenuList: [],
+      servantList: [],
+      cashBoxList: [],
+      loadingPoint: false,
+      VipInfo: null,
+      loadingBalance: false,
+      usePointLog: null
     }
   },
   computed: {
+    schemas () {
+      return [
+        {
+          key: 'nfcMenuId',
+          name: '充值类型',
+          component: VSelect,
+          componentProps: {
+            items: this.nfcMenuList.map(it => {
+              it.text = it.name
+              it.value = it.id
+              return it
+            })
+          }
+        },
+        {
+          key: 'payment',
+          name: '支付方式',
+          component: VSelect,
+          componentProps: {
+            items: this.paymentList.map(it => {
+              it.text = it.name
+              it.value = it.id
+              return it
+            })
+          }
+        },
+        {
+          key: 'pw',
+          name: '员工',
+          component: VSelect,
+          componentProps: {
+            items: this.servantList.map(it => {
+              it.text = it.name
+              it.value = it.password
+              return it
+            })
+          }
+        },
+        {
+          key: 'cashBoxId',
+          name: '钱箱',
+          component: VSelect,
+          componentProps: {
+            items: this.cashBoxList.map(it => {
+              it.text = it.name
+              it.value = it.id
+              return it
+            })
+          },
+          required: false
+        }
+      ]
+    },
+    totalCost () {
+      return sumBy(this.VipDetailInfo.orders, (o) => {
+        return parseFloat(o.billInfo.totalPrice)
+      })
+    },
     selectedCard () {
-      return this.memberCardList.find(it => it.id === this.selectedCardId)
+      return this.memberCardList.find(it => it.simpleMemberUuid === this.selectedCardId)
     },
     totalUsage () {
       return this.usageInfo?.reduce((sum, i) => sum + parseFloat(i.sumPrice), 0) ?? 0
@@ -550,15 +513,28 @@ export default {
     }
   },
   watch: {
-    async selectedCard () {
+    async selectedCard (val) {
       if (this.selectedCard) {
-        this.bonusList = await getBonusRecord(this.selectedCard.uid)
+        this.VipInfo = val
+        this.VipDetailInfo = await getMemberDetailInfo({ memberIdentity: this.VipInfo.memberIdentity })
+        this.usePointLog = await getAllPointLog(this.VipInfo.simpleMemberUuid)
+        console.log(this.usePointLog, 'log')
       }
     }
   },
   methods: {
+    async saveRecharge (info) {
+      this.loadingBalance = true
+      const price = this.nfcMenuList.find(it => it.id === info.nfcMenuId).amountToPay
+      info.uid = this.VipInfo.simpleMemberUuid
+      info.paymentLog = JSON.stringify([{ id: info.payment, price }])
+      await memberRechargeFunc(info)
+      this.VipDetailInfo = await getMemberDetailInfo({ memberIdentity: this.VipInfo.memberIdentity })
+      this.loadingBalance = false
+      this.rechargeDialog = false
+    },
     async loadMemberCardList () {
-      this.memberCardList = await searchNfcCard()
+      this.memberCardList = await getAllVipList()
     },
     async initPanel () {
       await this.loadMemberCardList()
@@ -612,21 +588,25 @@ export default {
       }
     },
     async changeBonusPoint () {
+      this.loadingPoint = true
       const newAmount = await IKUtils.showInput(this.$t('EnterNewScore'), 'number',
         this.$t('ActuallyScore') + ': ' + this.totalBonus)
+      console.log(newAmount, 'new')
       if (newAmount) {
-        const modify = (parseFloat(newAmount) - parseFloat(this.totalBonus)).toFixed(2)
-        await this.reloadAndGoBack(async () => {
-          await addBonusPoint(this.selectedCard.uid, modify)
+        await updateMemberDetailPoint({
+          customerId: this.VipDetailInfo?.simpleMemberUuid,
+          usePointEventId: uuid(),
+          pointSourceId: this.VipDetailInfo.deviceId,
+          pointType: 'Merchant',
+          pointValue: this.VipDetailInfo?.merchantPoint - newAmount,
+          note: 'adminEdit'
         })
+        this.VipDetailInfo = await getMemberDetailInfo({ memberIdentity: this.VipInfo.memberIdentity })
       }
+      this.loadingPoint = false
     },
     async startDeposit () {
-      const amount = await IKUtils.showInput(this.$t('EnterPrepaidAmount'))
-      if (!isNaN(amount)) {
-        this.depositTotal = amount
-        this.checkOutDialog = true
-      }
+      this.rechargeDialog = true
     },
     async reloadAndGoBack (action) {
       const id = this.selectedCardId
@@ -669,8 +649,12 @@ export default {
   activated () {
     this.initPanel()
   },
-  mounted () {
-    this.initPanel()
+  async mounted () {
+    await this.initPanel()
+    this.paymentList = await getPayMethodList()
+    this.servantList = await loadAllServants()
+    this.nfcMenuList = await getNfcMenuList()
+    this.cashBoxList = await getCashBoxList()
   }
 }
 </script>
