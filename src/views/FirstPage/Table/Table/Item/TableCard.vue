@@ -1,68 +1,110 @@
 <template>
-  <div :class="table.inUse?'':' notUsed'"
-       style="height: 100%;
+  <div
+      :class="table.inUse?'':' notUsed'"
+      style="height: 100%;
        width: 100%;
        position: relative"
-       class="pa-1">
+      class="pa-1"
+  >
     <v-card
         height="100%"
         elevation="0"
         class="tableCard d-flex flex-column align-center justify-center lighten-4"
         :color="tableColor"
-        @click='$emit("click",table.tableName)'>
+        @click='$emit("click",table.tableName)'
+    >
       <div class="d-flex align-center">
-        <div class="tableCardName d-flex align-center justify-center" :class="table.inUse?'mt-2':''">
+        <div
+            class="tableCardName d-flex align-center justify-center"
+            :class="table.inUse?'mt-2':''"
+        >
           <template v-if="table.inCall">
-            <v-icon class="mr-1" size="18">mdi-bell</v-icon>
+            <v-icon
+                class="mr-1"
+                size="18"
+            >mdi-bell
+            </v-icon>
           </template>
           {{ table.tableName }}
         </div>
       </div>
-
-      <div class="text-caption" v-if="table.inUse&&table?.h>100">
+      <template v-if="displayReservations.length>0&&table.inUse">
+        <v-chip
+            small
+            color="transparent"
+            label
+            @click.stop="showReservationDialog"
+        >
+          <v-icon
+              x-small
+              class="mr-1"
+          >mdi-calendar
+          </v-icon>
+          {{ displayReservations.length }}
+        </v-chip>
+      </template>
+      <div
+          class="text-caption"
+          v-else-if="table.inUse&&table?.h>100"
+      >
         {{ findConsumeTypeById(table.consumeType) }}
       </div>
       <template v-if="table.inUse">
-        <div class="personDot" style="position: absolute">
+        <div
+            class="personDot"
+            style="position: absolute"
+        >
           <template v-for="i in parseInt(table.seatCount)">
-            <div :key="i+table.tableName+'person'" class="dot"></div>
+            <div
+                :key="i+table.tableName+'person'"
+                class="dot"
+            ></div>
           </template>
           <template v-for="i in parseInt(table.childCount)">
-            <div :key="i+table.tableName+'child'" class="dot child"></div>
+            <div
+                :key="i+table.tableName+'child'"
+                class="dot child"
+            ></div>
           </template>
         </div>
 
-        <div class="d-flex align-center">
-          <template v-if="table.reservations.length>0">
-            <v-chip small color="transparent" label @click.stop="showReservationDialog" >
-              <v-icon x-small class="mr-1">mdi-calendar</v-icon>
-              {{ table.reservations.length }}
-            </v-chip>
-          </template>
-          <div v-else class="mt-0" style="display: grid;grid-auto-flow: column;grid-gap: 4px">
-            <div v-for="info in table.infos" :key="info">
-              <table-info-display :info-key="info" :table="table"/>
-            </div>
+        <div
+            class="mt-0"
+            style="display: grid;grid-auto-flow: column;grid-gap: 4px"
+        >
+          <div
+              v-for="info in table.infos"
+              :key="info"
+          >
+            <table-info-display
+                :info-key="info"
+                :table="table"
+            />
           </div>
         </div>
       </template>
-      <template v-if="!table.inUse&&table.reservations.length>0">
-        <v-btn color="grey"
-               x-small
-               text
-               style="font-size: 10px"
-               @click.stop="showReservationDialog"
-               class="py-1 pa-0 text-caption"
-               elevation="0"
+      <template v-if="!table.inUse&&displayReservations.length>0">
+        <v-btn
+            color="grey"
+            x-small
+            text
+            style="font-size: 10px"
+            @click.stop="showReservationDialog"
+            class="py-1 pa-0 text-caption"
+            elevation="0"
         >
-          <v-icon small class="mr-1">mdi-calendar</v-icon>
+          <v-icon
+              small
+              class="mr-1"
+          >mdi-calendar
+          </v-icon>
           <span class="font-weight-bold">
-              <template v-if="table.reservations.length>1">
-            {{ table.reservations.length }} |
+              <template v-if="displayReservations.length>1">
+            {{ displayReservations.length }} |
           </template>
           </span>
 
-          <template>{{ table.reservations[0].fromDateTime|onlyTime }}</template>
+          <template>{{ displayReservations[0].fromDateTime|onlyTime }}</template>
         </v-btn>
 
       </template>
@@ -98,8 +140,17 @@ export default {
     tableCardFontSize () {
       return '20px'
     },
+    displayReservations () {
+      return this.reservations.filter(it => it.status === 'Confirmed')
+    },
+    reservations () {
+      return this.table?.reservations ?? []
+    },
+    haveCheckIn () {
+      return this.reservations.some(it => it.status === 'CheckIn')
+    },
     tableColor () {
-      return this.table.inCall ? 'error' : this.table.inUse ? 'rgba(255,216,154,0.8)' : '#f6f6f6'
+      return this.table.inCall ? 'error' : this.table.inUse ? 'rgba(255,216,154,0.8)' : this.haveCheckIn ? 'green' : '#f6f6f6'
     },
     table () {
       const res = Object.assign({}, defaultTable, this.tableInfo)
@@ -118,7 +169,10 @@ export default {
 }
 </script>
 
-<style scoped lang="sass">
+<style
+    scoped
+    lang="sass"
+>
 @import '~vuetify/src/styles/styles.sass'
 
 .tableCard
