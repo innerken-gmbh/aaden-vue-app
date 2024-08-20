@@ -48,6 +48,9 @@ Vue.filter('onlyTime', function (str) {
 Vue.filter('timeDisplay', function (str) {
   return timeDisplay(str)
 })
+Vue.filter('beautifulTimeByStampTime', function (timeStamp) {
+  return dayjs.unix(timeStamp).format('DD.MM.YYYY/HH:mm')
+})
 
 const relativeTime = require('dayjs/plugin/relativeTime')
 dayjs.extend(relativeTime)

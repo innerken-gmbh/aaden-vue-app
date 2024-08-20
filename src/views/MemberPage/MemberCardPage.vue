@@ -113,7 +113,7 @@
                 >
                   <v-tab>🔥 {{ $t('Overview') }}</v-tab>
                   <v-tab>🗂️ {{ $t('EditVipPoints') }}</v-tab>
-                  <v-tab :disabled="!selectedCard.local">🧾 {{ $t('DishesRecord') }}</v-tab>
+                  <v-tab>🧾 {{ $t('DishesRecord') }}</v-tab>
                 </v-tabs>
 
               </v-sheet>
@@ -267,20 +267,25 @@
 
                 </v-tab-item>
                 <v-tab-item>
-                  <div class="pa-6">
+                    <div
+                      class="px-4"
+                      style="height: 85vh;overflow-y: scroll"
+                      v-dragscroll
+                    >
                     <div
                       v-if="usePointLog.length === 0"
                       class="pa-4 d-flex align-center justify-center"
                     >
                       当前暂无数据！
                     </div>
-                    <div
+                    <v-card
                       v-for="item in usePointLog"
                       :key="item.id"
-                      class="pa-4 d-flex align-center justify-center"
+                      class="pa-4 d-flex align-center justify-center my-2"
+                      elevation="0"
                     >
                       <div class="text-h4">
-                        {{ item.pointValue < 0 ? '+' + Math.abs(item.pointValue) : '-' + item.pointValue }}
+                        {{ getCurrentPoint(item.pointValue) }}
                       </div>
                       <v-spacer/>
                       <div
@@ -288,36 +293,64 @@
                       >
                         {{ item.electronic_meta_createdAt?.seconds | beautifulTimeByStampTime }}
                       </div>
-                    </div>
+                    </v-card>
                   </div>
                 </v-tab-item>
                 <v-tab-item>
-                  <div class="pa-6">
-                    <v-card
-                      v-for=" b in usageInfo"
-                      :key="b.id"
-                      class="d-flex align-center my-4 pa-4"
-                      color="grey lighten-3"
-                      elevation="0"
-                    >
-                      <div>
-                        <div class="text-body-1">
-                          {{ b.updateTimestamp }}
-                        </div>
-                        <div class="text-body-1">
-                          {{ b.dishesOrdersId }}/{{ b.name }}
-                        </div>
-                      </div>
-
-                      <v-spacer></v-spacer>
+                  <div
+                    class="px-4"
+                    style="height: 85vh;overflow-y: scroll"
+                    v-dragscroll
+                  >
                       <div
-                        :class="b.sumPrice>0?'success--text':'error--text'"
-                        class="text-h6"
+                        v-if="ordersInfo?.length === 0"
+                        class="pa-4 d-flex align-center justify-center"
                       >
-                        <span v-if="b.sumPrice>0 ">+</span>{{ b.sumPrice | priceDisplay }}
+                        当前暂无数据！
                       </div>
-                    </v-card>
-                  </div>
+                      <v-card
+                        v-for="item in ordersInfo"
+                        :key="item.billNr"
+                        class="my-2"
+                        elevation="0"
+                        outlined
+                        @click="openOrderDetail(item)"
+                      >
+                        <div class="pa-4 d-flex align-center justify-center">
+                          <div
+                            class="text-h4 "
+                          >
+                            {{ item.billNr }}
+                          </div>
+                          <v-spacer />
+                          <div
+                            v-for="(i,index) in item.pointInfo"
+                            :key="index"
+                          >
+                            <div class="d-flex flex-column">
+                              <div class="d-flex">
+                          <span>
+                            积分类型:
+                          </span>
+                                <v-spacer class="mx-4" />
+                                <div>
+                                  {{ i.pointType }}
+                                </div>
+                              </div>
+                              <div class="d-flex">
+                          <span>
+                            积分:
+                          </span>
+                                <v-spacer class="mx-2" />
+                                <div>
+                                  {{ i.pointValue }}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </v-card>
+                    </div>
                 </v-tab-item>
               </v-tabs-items>
             </div>
@@ -394,7 +427,7 @@ import BaseForm from '@/components/Base/Form/BaseForm'
 import { VSelect } from 'vuetify/lib/components'
 import { loadAllServants } from '@/api/api'
 import { uuid } from 'uuidv4'
-
+import { dragscroll } from 'vue-dragscroll/src/main'
 export default {
   name: 'MemberCardPage',
   components: {
@@ -430,7 +463,13 @@ export default {
       usePointLog: null
     }
   },
+  directives: {
+    dragscroll
+  },
   computed: {
+    ordersInfo () {
+      return this.VipDetailInfo.orders
+    },
     schemas () {
       return [
         {
@@ -523,6 +562,9 @@ export default {
     }
   },
   methods: {
+    getCurrentPoint (point) {
+      return point < 0 ? '+' + Math.abs(point) : '-' + point
+    },
     async saveRecharge (info) {
       this.loadingBalance = true
       const price = this.nfcMenuList.find(it => it.id === info.nfcMenuId).amountToPay
