@@ -400,6 +400,19 @@ export async function openCashBoxByPw () {
   })
 }
 
+export async function AcceptAllOrder () {
+  return await forceGetSystemSetting({
+    section: 'qrApp',
+    sKey: 'needAcceptAllOrder',
+    sValue: '0',
+    defaultValue: '0',
+    sType: 'boolean',
+    minimumVersion: '1.7.784',
+    sOptions: '',
+    tagList: 'basic,qrApp'
+  })
+}
+
 export async function updateNewSetting (items) {
   return (await hillo.post('Restaurant.php?op=updateSystemSettings', {
     systemSettings: JSON.stringify(items)
