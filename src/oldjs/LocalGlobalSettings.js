@@ -4,7 +4,7 @@ import i18n from '@/i18n'
 import dayjs from 'dayjs'
 import { LocalSettingManager } from 'biewangle'
 import { goHome } from '@/oldjs/StaticModel'
-import { AcceptAllOrder, getCurrentReservationStatus, getCurrentSearchStatus, openCashBoxByPw } from '@/api/api'
+import { getCurrentReservationStatus, getCurrentSearchStatus, openCashBoxByPw } from '@/api/api'
 
 const fix = require('@/assets/FixedConfig.json')
 const defaultConfig = require('@/assets/AadenConfig.json')
@@ -31,7 +31,6 @@ export async function getAdminSetting () {
   GlobalConfig.searchIncludesCode = await getCurrentSearchStatus()
   GlobalConfig.activeReservation = (await getCurrentReservationStatus()) === '1'
   GlobalConfig.openCashBoxByPw = await openCashBoxByPw()
-  GlobalConfig.needAcceptAllOrder = await AcceptAllOrder()
 }
 
 export function refreshGetter () {
