@@ -895,18 +895,23 @@ export default {
     cancel: function () {
       this.modificationShow = false
     },
-    async initialUI (forceReload = false) {
+    async initialUI () {
       this.discountModelShow = false
       this.buffetDialogShow = false
       this.overrideConsumeTypeId = null
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
       await this.getTableDetail()
-      if (this.consumeTypeStatusId < 2) {
-        this.currentView = this.menu[1].name
-      } else {
-        this.currentView = this.menu[0].name
+      try {
+        if (this.consumeTypeStatusId < 2 && this.consumeTypeId === 2) {
+          this.currentView = this.menu[1].name
+        } else {
+          this.currentView = this.menu[0].name
+        }
+      } catch (e) {
+
       }
+
       setGlobalTableId(this.id)
     },
     back () {
@@ -1405,15 +1410,27 @@ export default {
   },
   async activated () {
     this.globalLoading = true
-    await this.initialUI(true)
+    try {
+      await this.initialUI()
+    } catch (e) {
+      IKUtils.showError(e.message)
+      console.log(e)
+    }
+
     this.globalLoading = false
     this.currentMemberId = null
   },
   async mounted () {
     this.globalLoading = true
-    await getConsumeTypeList()
-    this.consumeTypeList = consumeTypeList
-    await this.initialUI(true)
+    try {
+      await getConsumeTypeList()
+      this.consumeTypeList = consumeTypeList
+      await this.initialUI()
+    } catch (e) {
+      IKUtils.showError(e.message)
+      console.log(e)
+    }
+
     this.globalLoading = false
   }
 }
