@@ -187,6 +187,9 @@ export default {
       currentCodeBuffer: ''
     }
   },
+  activated () {
+    window.onkeydown = this.listenKeyDown
+  },
   mounted () {
     window.onkeydown = this.listenKeyDown
   },
