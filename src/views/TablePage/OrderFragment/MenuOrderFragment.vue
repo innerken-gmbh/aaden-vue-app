@@ -17,7 +17,7 @@
             :dark="activeDCT===ct.id"
             :elevation="activeDCT===ct.id ? 4 : 0"
             :class="activeDCT===ct.id?'font-weight-black':''"
-            class="d-flex justify-center align-center px-6"
+            class="d-flex justify-center align-center px-6 mr-2"
             height="48"
             style="border-radius: 12px; font-size: 18px"
             @click="activeDCT=ct.id"
@@ -265,7 +265,7 @@ export default {
       return filterCache[this.activeCategoryId]
     }
   },
-  async mounted () {
+  async activated () {
     await this.initial()
   },
   watch: {
@@ -287,19 +287,21 @@ export default {
       })
     },
     async getDCT () {
-      this.dct = (await getCategoryTypeList())
-        .sort((a, b) => {
-          const rank = GlobalConfig.defaultSort.split(',')
-          const idToRank = (id) => {
-            const index = rank.indexOf(id.toString())
-            return 10 - (index === -1 ? 10 : index)
-          }
-          const [ra, rb] = [a.id, b.id].map(idToRank)
-          return ra > rb ? -1 : 1
-        })
-        .filter(
-          (i) => typeof i.childCount === 'undefined' || i.childCount > 0
-        )
+      if (this.dct.length === 0) {
+        this.dct = (await getCategoryTypeList())
+          .sort((a, b) => {
+            const rank = GlobalConfig.defaultSort.split(',')
+            const idToRank = (id) => {
+              const index = rank.indexOf(id.toString())
+              return 10 - (index === -1 ? 10 : index)
+            }
+            const [ra, rb] = [a.id, b.id].map(idToRank)
+            return ra > rb ? -1 : 1
+          })
+          .filter(
+            (i) => typeof i.childCount === 'undefined' || i.childCount > 0
+          )
+      }
     },
     async reloadDish () {
       this.activeCategoryId = null
