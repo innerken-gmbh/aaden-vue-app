@@ -946,8 +946,8 @@ export default {
             this.discountStr = this.tableDetailInfo.order.discountStr
           }
         }
+        this.refreshReservation()
         await this.getOrderedDish()
-        await this.refreshReservation()
       } catch (e) {
         console.log(e, 'error on table')
       }
@@ -975,16 +975,21 @@ export default {
             printingKitchenBon: print ? 1 : 0
           }
         )
-        this.cartListModel.clear()
-        await this.initialUI()
+        this.isSendingRequest = false
+        if (!GlobalConfig.jumpToHomeWhenOrder) {
+          await this.initialUI()
+        }
         printNow()
+        IKUtils.toast('ok')
       } catch (e) {
         logError(this.$t('JSTableOrderFailed') + e.data.info)
       } finally {
         this.isSendingRequest = false
       }
-      await setOrderListInFirebase({}, this.deviceId)
-      await setCartListInFirebase({}, this.deviceId)
+      if (GlobalConfig.useCustomerDisplay) {
+        await setOrderListInFirebase({}, this.deviceId)
+        await setCartListInFirebase({}, this.deviceId)
+      }
     },
     jumpToPayment (paymentType = 'checkOut') {
       const realCheckOut = async (pw) => {
