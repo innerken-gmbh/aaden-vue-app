@@ -13,7 +13,7 @@
         :color="tableColor"
         @click='$emit("click",table.tableName)'
     >
-      <div class="d-flex align-center">
+      <div class="d-flex flex-column align-center justify-center flex-grow-1">
         <div
             class="tableCardName d-flex align-center justify-center"
             :class="table.inUse?'mt-2':''"
@@ -27,29 +27,57 @@
           </template>
           {{ table.tableName }}
         </div>
-      </div>
-      <template v-if="displayReservations.length>0&&table.inUse">
-        <v-chip
-            small
-            color="transparent"
-            label
-            @click.stop="showReservationDialog"
-        >
-          <v-icon
+        <template v-if="!table.inUse&&displayReservations.length>0">
+          <v-btn
+              color="grey"
               x-small
-              class="mr-1"
-          >mdi-calendar
-          </v-icon>
-          {{ displayReservations.length }}
-        </v-chip>
-      </template>
-      <div
-          class="text-caption"
-          v-else-if="table.inUse&&table?.h>100"
-      >
-        {{ findConsumeTypeById(table.consumeType) }}
+              text
+              style="font-size: 10px"
+              @click.stop="showReservationDialog"
+              class="py-1 pa-0 text-caption"
+              elevation="0"
+          >
+            <v-icon
+                small
+                class="mr-1"
+            >mdi-calendar
+            </v-icon>
+            <span class="font-weight-bold">
+              <template v-if="displayReservations.length>1">
+            {{ displayReservations.length }} |
+          </template>
+          </span>
+
+            <template>{{ displayReservations[0].fromDateTime|onlyTime }}</template>
+          </v-btn>
+        </template>
+        <template v-if="table.inUse">
+          <template v-if="displayReservations.length>0">
+            <v-chip
+                small
+                color="transparent"
+                label
+                @click.stop="showReservationDialog"
+            >
+              <v-icon
+                  x-small
+                  class="mr-1"
+              >mdi-calendar
+              </v-icon>
+              {{ displayReservations.length }}
+            </v-chip>
+          </template>
+          <div
+              class="text-caption"
+              v-else-if="table?.h>100"
+          >
+            {{ findConsumeTypeById(table.consumeType) }}
+          </div>
+        </template>
       </div>
+
       <template v-if="table.inUse">
+
         <div
             class="personDot"
             style="position: absolute"
@@ -67,47 +95,19 @@
             ></div>
           </template>
         </div>
-
         <div
-            class="mt-0"
-            style="display: grid;grid-auto-flow: column;grid-gap: 4px"
+            v-for="info in table.infos"
+            :key="info"
+            style="width: 100%;"
         >
-          <div
-              v-for="info in table.infos"
-              :key="info"
-          >
-            <table-info-display
-                :info-key="info"
-                :table="table"
-            />
-          </div>
+          <table-info-display
+              :info-key="info"
+              :table="table"
+          />
         </div>
-      </template>
-      <template v-if="!table.inUse&&displayReservations.length>0">
-        <v-btn
-            color="grey"
-            x-small
-            text
-            style="font-size: 10px"
-            @click.stop="showReservationDialog"
-            class="py-1 pa-0 text-caption"
-            elevation="0"
-        >
-          <v-icon
-              small
-              class="mr-1"
-          >mdi-calendar
-          </v-icon>
-          <span class="font-weight-bold">
-              <template v-if="displayReservations.length>1">
-            {{ displayReservations.length }} |
-          </template>
-          </span>
-
-          <template>{{ displayReservations[0].fromDateTime|onlyTime }}</template>
-        </v-btn>
 
       </template>
+
     </v-card>
   </div>
 </template>
@@ -159,7 +159,7 @@ export default {
       res.childCount = res.childCount ?? 0
       res.seatCount = res.seatCount ?? 0
       let maxKeyCount = 1
-      if (res.w > 120) {
+      if (res.h > 120) {
         maxKeyCount = 2
       }
       res.infos = this.getKeys().filter((k, index) => index < maxKeyCount)

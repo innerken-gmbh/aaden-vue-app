@@ -40,7 +40,7 @@
               :draggable="editing"
               :grid="[10,10]"
               :h="i.h"
-              :max-height="180"
+              :max-height="240"
               :max-width="200"
               :min-height="60"
               :min-width="60"
@@ -444,7 +444,7 @@ export default {
       await refreshAllTablesPosition(this.tableInCurrentSection,
         this.height,
         this.width,
-        this.currentSection.id, 140, 140)
+        this.currentSection.id, 120, 140)
       this.$emit('need-refresh')
     },
     async smallView () {
