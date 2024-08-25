@@ -7,6 +7,7 @@ import store from './../store'
 import { clearAllTimer } from '@/oldjs/Timer'
 import dayjs from 'dayjs'
 import { optionalAuthorizeAsync } from '@/oldjs/api'
+import IKUtils from 'innerken-js-utils'
 
 const Config = GlobalConfig
 
@@ -292,12 +293,7 @@ export async function fastSweetAlertRequest (title, input, url, dataName, dataOb
 }
 
 export function toastError (str) {
-  Swal.fire({
-    icon: 'error',
-    title: str,
-    showConfirmButton: true
-
-  })
+  IKUtils.showError(str)
 }
 
 export function toManage () {
@@ -314,17 +310,6 @@ export function goodRequest (res) { // Return Res.status==good
 
 function timeStampNow () {
   return new Date().getTime()
-}
-
-export function AssginToStringClass (StringName, Value) {
-  // console.log(StringName);
-  for (const a of document.getElementsByClassName('S_' + StringName)) {
-    a.innerHTML = Value
-  }
-  for (const a of document.getElementsByClassName('String-' + StringName)) {
-    // console.log(a);
-    a.innerHTML = Value
-  }
 }
 
 export function remove (arr, index) {
