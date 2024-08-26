@@ -558,6 +558,6 @@
   "Add": "新增",
   "VIP": "VIP",
   "LoadPrepaid": "充值",
-  "userNoPower": "该用户没有权限！",
+  "userNoPower": "该用户没有权限!",
   "PleaseInputTheX": "请填写{configItem}"
 }
