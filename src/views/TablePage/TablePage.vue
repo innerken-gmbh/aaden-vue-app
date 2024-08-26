@@ -247,7 +247,7 @@
                     <v-btn
                       :loading="isSendingRequest"
                       block
-                      :disabled="consumeTypeStatusId > 1"
+                      :disabled="consumeTypeStatusId < 2"
                       color="amber lighten-4 black--text"
                       elevation="0"
                       height="64"
