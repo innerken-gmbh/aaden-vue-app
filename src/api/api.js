@@ -403,7 +403,7 @@ export async function openCashBoxByPw () {
 export async function deleteAllInput () {
   return await forceGetSystemSetting({
     section: 'FrontApp',
-    sKey: 'deleteAllKeys',
+    sKey: 'deleteOneKeys',
     sValue: '0',
     defaultValue: '0',
     sType: 'boolean',
