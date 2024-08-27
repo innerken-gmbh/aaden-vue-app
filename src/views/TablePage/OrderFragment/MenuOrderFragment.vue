@@ -268,6 +268,9 @@ export default {
   async activated () {
     await this.initial()
   },
+  async mounted () {
+    await this.initial()
+  },
   watch: {
     activeDCT: function () {
       this.keyboardInput = ''
