@@ -31,7 +31,7 @@ export async function getAdminSetting () {
   GlobalConfig.searchIncludesCode = await getCurrentSearchStatus()
   GlobalConfig.activeReservation = (await getCurrentReservationStatus()) === '1'
   GlobalConfig.openCashBoxByPw = await openCashBoxByPw()
-  GlobalConfig.deleteAllKeys = await deleteAllInput()
+  GlobalConfig.deleteOneKeys = await deleteAllInput()
 }
 
 export function refreshGetter () {
