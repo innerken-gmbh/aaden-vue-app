@@ -400,6 +400,19 @@ export async function openCashBoxByPw () {
   })
 }
 
+export async function deleteAllInput () {
+  return await forceGetSystemSetting({
+    section: 'FrontApp',
+    sKey: 'deleteAllKeys',
+    sValue: '0',
+    defaultValue: '0',
+    sType: 'boolean',
+    minimumVersion: '1.7.825',
+    sOptions: '',
+    tagList: 'basic,FrontApp'
+  })
+}
+
 export async function updateNewSetting (items) {
   return (await hillo.post('Restaurant.php?op=updateSystemSettings', {
     systemSettings: JSON.stringify(items)

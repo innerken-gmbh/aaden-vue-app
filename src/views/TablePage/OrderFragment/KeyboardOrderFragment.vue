@@ -207,7 +207,11 @@ export default {
       }
       switch (e.key) {
         case 'Backspace':
-          this.keyboardInput = ''
+          if (GlobalConfig.deleteAllKeys === '1') {
+            this.keyboardInput = this.keyboardInput.slice(0, this.keyboardInput.length - 1)
+          } else {
+            this.keyboardInput = ''
+          }
           break
         case 'Escape':
           this.keyboardInput = ''
