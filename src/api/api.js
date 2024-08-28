@@ -413,6 +413,19 @@ export async function deleteAllInput () {
   })
 }
 
+export async function closePlaySound () {
+  return await forceGetSystemSetting({
+    section: 'FrontApp',
+    sKey: 'closePlaySound',
+    sValue: '0',
+    defaultValue: '0',
+    sType: 'boolean',
+    minimumVersion: '1.7.825',
+    sOptions: '',
+    tagList: 'basic,FrontApp'
+  })
+}
+
 export async function updateNewSetting (items) {
   return (await hillo.post('Restaurant.php?op=updateSystemSettings', {
     systemSettings: JSON.stringify(items)

@@ -78,7 +78,7 @@ export async function getTableListWithCells () {
     t.reservations = reservationDict[t.tableId] || []
     return t
   })
-  if (shouldSound) {
+  if (shouldSound && GlobalConfig.closePlaySound !== '1') {
     playSound()
   }
   return tableList
