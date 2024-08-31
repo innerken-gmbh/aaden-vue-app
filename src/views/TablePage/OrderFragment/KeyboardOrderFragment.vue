@@ -189,6 +189,8 @@ export default {
   },
   activated () {
     window.onkeydown = this.listenKeyDown
+    this.keyboardInput = ''
+    this.currentCodeBuffer = ''
   },
   mounted () {
     window.onkeydown = this.listenKeyDown
