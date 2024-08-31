@@ -232,7 +232,7 @@
 </template>
 
 <script>
-import { Remember } from '@/oldjs/LocalGlobalSettings'
+
 import i18n from '@/i18n'
 import dayjs from 'dayjs'
 import {
@@ -249,6 +249,7 @@ import {
 import { printDeliveryBon, showSuccessMessage } from '@/api/api'
 import TabButton from '@/components/Base/TabButton'
 import { today } from '@/api/Repository/DateRepository'
+import { Remember } from '@/api/remember'
 
 export default {
   name: 'BillsPrinterPage',

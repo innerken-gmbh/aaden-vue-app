@@ -2,7 +2,6 @@ import { AadenBaseConfig } from 'aaden-base-model/lib/AadenSettingManager'
 import i18n from '@/i18n'
 
 import dayjs from 'dayjs'
-import { LocalSettingManager } from 'biewangle'
 import { goHome } from '@/oldjs/StaticModel'
 import {
   closePlaySound,
@@ -92,17 +91,5 @@ export function changeLanguage (lang) {
   }
   i18n.locale = l
 }
-
-export const Remember = LocalSettingManager.config({
-  activeZBon: false,
-  activeXBon: false,
-  deliveryList: false,
-  sendEmail: false,
-  mergeBills: false,
-  totalTime: false,
-  totalSales: false,
-  locale: 'zh',
-  lang: 'zh'
-})
 
 export default GlobalConfig

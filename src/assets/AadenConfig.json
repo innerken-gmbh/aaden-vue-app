@@ -32,6 +32,7 @@
   "frontEndLang": "de",
   "activeVip": false,
   "useCustomerDisplay" : false,
+  "fastCheckoutMode" : false,
   "overrideCardTerminalIp": "",
   "overrideCardTerminalPort": ""
 }

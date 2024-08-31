@@ -1006,8 +1006,11 @@ export default {
         this.checkoutId = this.checkOutModel.list.map(it => it.code)
         const currentPrice = round(this.checkOutModel.total * (1 - this.discountRatio), 2)
         const checkoutInfo = await this.doCheckout(currentPrice)
-        console.log((checkoutInfo.paymentLog))
-        if (paymentType === 'checkOut' && !(GlobalConfig.overrideCardTerminalIp && checkoutInfo.paymentLog.some(it => parseInt(it.id) === 2))) {
+        const shouldGoHome = paymentType === 'checkOut' &&
+            !(GlobalConfig.overrideCardTerminalIp &&
+                checkoutInfo.paymentLog.some(it => parseInt(it.id) === 2)) &&
+        checkoutInfo.returnHome
+        if (shouldGoHome) {
           await goHome()
         }
         const res = await checkout(Object.assign({
@@ -1024,10 +1027,10 @@ export default {
           await setUuidInFirebase(uuid)
           this.showBillDetailQRDialog({ code: uuid })
         }
-        if (paymentType !== 'checkOut') {
+        if (paymentType !== 'checkOut' || !checkoutInfo.returnHome) {
           await this.initialUI()
           if (this.orderListModel.count() === 0) {
-            await goHome()
+            if (checkoutInfo.returnHome) { await goHome() }
           }
         }
 

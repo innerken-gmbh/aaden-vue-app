@@ -103,7 +103,11 @@
                   </div>
                 </div>
               </template>
-
+              <div class="d-flex align-center">
+                <div class="text-body-2">{{ $t('结账后返回') }}</div>
+                <v-spacer></v-spacer>
+                <v-switch v-model="returnHome"></v-switch>
+              </div>
               <div>
                 <div class="text-body-2">{{ $t('PrintType') }}</div>
                 <div
@@ -282,6 +286,7 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import IKUtils from 'innerken-js-utils'
 import { getUserByUid } from '@/api/VIPCard/VIPApi'
 import { mapMutations, mapState } from 'vuex'
+import { Remember } from '@/api/remember'
 
 const includedPaymentMethods = [0, 1, 2, 9, 4, 10]
 const fixedNames = {
@@ -318,6 +323,7 @@ export default {
       companyOrPersonName: '',
       locationAndDate: '',
       billType: 0,
+      returnHome: Remember.returnHomeCheckout,
       printType: 0,
       show: false,
       paymentMethods: [],
@@ -333,6 +339,9 @@ export default {
       if (!val) {
         this.hideCheckoutDialog()
       }
+    },
+    returnHome (val) {
+      Remember.returnHomeCheckout = val
     },
     showCheckoutDialog (val) {
       this.show = val
@@ -454,6 +463,7 @@ export default {
           paymentLog: this.paymentLog,
           billType: this.billType,
           printType: this.printType,
+          returnHome: this.returnHome,
           companyBillInfo: {
             reasonOfVisit: this.reasonOfVisit,
             companyOrPersonName: this.companyOrPersonName,

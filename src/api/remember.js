@@ -9,5 +9,15 @@ export const Remember = LocalSettingManager.config({
   tableDisplayKeys: ['createTimestamp', 'servantName'],
   showFreeDish: false,
   cardTerminalIP: '',
-  cardTerminalPort: ''
+  cardTerminalPort: '',
+  activeZBon: false,
+  activeXBon: false,
+  deliveryList: false,
+  sendEmail: false,
+  mergeBills: false,
+  totalTime: false,
+  totalSales: false,
+  returnHomeCheckout: true,
+  locale: 'zh',
+  lang: 'zh'
 })
