@@ -1,4 +1,7 @@
 {
+  "PrintDailyStatementSubtitle" : "Drucken Sie die Tagesabrechnung des Kartenlesegerätes",
+  "PrintDailyStatementTitle" : "Kartenterminal-Auszug",
+  "PrintDailyStatement" : "Kartenterminal",
   "SelectEstimateTime" : "Wählen Sie die geschätzte Lieferzeit für diese Bestellung aus",
   "EnterReasonForRejection" : "Geben Sie den Grund für die Ablehnung ein",
   "DishesInBasket" : "Warenkorb",
@@ -577,7 +580,7 @@
   "Others": "Andere",
   "CardTerminalIP": "Kartenleser IP",
   "CardTerminalPort": "Kartenleser Port",
-  "closed": "Geschlossen",
+  "closed": "Schließen",
   "save": "Speichern",
   "Geladen": "Geladen",
   "RechargeType": "Auflade-Typ",

@@ -167,7 +167,7 @@
             >
               mdi-printer
             </v-icon>
-            打印刷卡机日结单
+            {{ $t('PrintDailyStatement') }}
           </v-btn>
         </div>
 
@@ -449,9 +449,9 @@
           @close="cardTerminalDialog=false"
           @submit="savePrintInfo"
       >
-        <div>刷卡机日结单</div>
+        <div>{{ $t('PrintDailyStatementTitle') }}</div>
         <template #subtitle>
-          打印您当前刷卡机的日结单
+          {{ $t('PrintDailyStatementSubtitle') }}
         </template>
       </base-form>
     </v-dialog>

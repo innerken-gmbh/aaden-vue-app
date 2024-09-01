@@ -1,4 +1,7 @@
 {
+  "PrintDailyStatementSubtitle" : "打印您当前刷卡机的日结单",
+  "PrintDailyStatementTitle" : "从证卡打印机打印每日报表",
+  "PrintDailyStatement" : "打印刷卡机日结单",
   "SelectEstimateTime" : "选择该订单的预计交货时间",
   "EnterReasonForRejection" : "请输入拒绝原因",
   "DishesInBasket" : "已点",
