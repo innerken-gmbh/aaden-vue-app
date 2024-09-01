@@ -474,7 +474,7 @@ export default {
       return [
         {
           key: 'nfcMenuId',
-          name: '充值类型',
+          name: 'RechargeType',
           component: VSelect,
           componentProps: {
             items: this.nfcMenuList.map(it => {
@@ -486,7 +486,7 @@ export default {
         },
         {
           key: 'payment',
-          name: '支付方式',
+          name: 'PaymentMethod',
           component: VSelect,
           componentProps: {
             items: this.paymentList.map(it => {
@@ -498,7 +498,7 @@ export default {
         },
         {
           key: 'pw',
-          name: '员工',
+          name: 'Employees',
           component: VSelect,
           componentProps: {
             items: this.servantList.map(it => {
@@ -510,7 +510,7 @@ export default {
         },
         {
           key: 'cashBoxId',
-          name: '钱箱',
+          name: 'CashBox',
           component: VSelect,
           componentProps: {
             items: this.cashBoxList.map(it => {

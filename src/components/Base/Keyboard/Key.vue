@@ -1,13 +1,11 @@
 <template>
   <v-card
-      flat
-      :color="color"
-      @click="$emit('click',keyName)"
-      :style="{fontSize:keyNameText.length<3?'22px':'14px'}"
-      style="height: 72px;font-size: 24px;
-       font-weight: 600;
-       ;border-radius: 8px"
-      class="d-flex justify-center align-center font-weight-black text-center"
+    flat
+    :color="color"
+    @click="$emit('click', keyName)"
+    :style="{ fontSize: keyNameText.length < 3 ? '22px' : '14px' }"
+    style="height: 72px; font-size: 24px; font-weight: 600; border-radius: 8px;"
+    class="d-flex justify-center align-center font-weight-black text-center"
   >
     <template v-if="keyName.startsWith('mdi')">
       <v-icon large>{{ keyName }}</v-icon>
@@ -22,17 +20,24 @@
 export default {
   name: 'Key',
   props: {
-    keyName: { default: '' },
-    color: { default: 'grey lighten-4' }
+    keyName: {
+      default: ''
+    },
+    color: {
+      default: 'grey lighten-4'
+    }
   },
   computed: {
     keyNameText () {
-      return !isNaN(this.keyName) ? this.keyName : this.$t(this.keyName)
+      const hasSpecialChar = /[^\w\s]/.test(this.keyName)
+      if (this.keyName.startsWith('mdi') || !isNaN(this.keyName) || hasSpecialChar) {
+        return this.keyName
+      }
+      return this.$t(this.keyName)
     }
   }
 }
 </script>
 
 <style scoped>
-
 </style>

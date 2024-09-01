@@ -544,13 +544,13 @@ export default {
       return [
         {
           key: 'overrideCardTerminalIp',
-          name: '刷卡机IP',
+          name: 'CardTerminalIP',
           required: false,
           default: GlobalConfig.overrideCardTerminalIp
         },
         {
           key: 'overrideCardTerminalPort',
-          name: '刷卡机Port',
+          name: 'CardTerminalPort',
           required: false,
           default: GlobalConfig.overrideCardTerminalPort
         }

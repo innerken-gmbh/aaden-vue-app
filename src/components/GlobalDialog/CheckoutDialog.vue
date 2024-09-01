@@ -104,7 +104,7 @@
                 </div>
               </template>
               <div class="d-flex align-center">
-                <div class="text-body-2">{{ $t('结账后返回') }}</div>
+                <div class="text-body-2">{{ $t('CheckoutReturn') }}</div>
                 <v-spacer></v-spacer>
                 <v-switch v-model="returnHome"></v-switch>
               </div>
