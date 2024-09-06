@@ -30,8 +30,8 @@ function createWindow () {
   createProtocol('app')
 
   win = new BrowserWindow({
-    width: 1920,
-    height: 1080,
+    width: 1368,
+    height: 768,
     show: false,
     titleBarStyle: 'hidden',
     webPreferences: {
