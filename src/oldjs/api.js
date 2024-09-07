@@ -79,7 +79,7 @@ export async function getTableListWithCells () {
     return t
   })
   if (shouldSound && GlobalConfig.closePlaySound !== '1') {
-    playSound()
+    if (dayjs().valueOf() % 2 === 0) { playSound() }
   }
   return tableList
 }
