@@ -2,8 +2,8 @@
   <v-navigation-drawer
       v-model="show"
       app
-
       width="400"
+      :stateless="lock"
       right
       temporary
   >
@@ -331,7 +331,8 @@ export default {
       inputBuffer: '',
       paymentLog: [],
       loading: false,
-      GlobalConfig
+      GlobalConfig,
+      lock: false
     }
   },
   watch: {
@@ -579,6 +580,7 @@ export default {
         }
       }
       if (parseInt(type) === 4) {
+        this.lock = true
         const res = await fastSweetAlertRequest(
           this.$t('EnterVoucherId'),
           'text',
@@ -587,7 +589,7 @@ export default {
           { amount: 0 },
           'GET'
         )
-
+        this.lock = false
         if (res.content) {
           const leftAmount = parseFloat(res.content.leftAmount)
           obj.price = leftAmount > price ? price : leftAmount
