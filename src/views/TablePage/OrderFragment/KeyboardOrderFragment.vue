@@ -191,9 +191,13 @@ export default {
     window.onkeydown = this.listenKeyDown
     this.keyboardInput = ''
     this.currentCodeBuffer = ''
+    this.searchDish = []
   },
   mounted () {
     window.onkeydown = this.listenKeyDown
+    this.keyboardInput = ''
+    this.currentCodeBuffer = ''
+    this.searchDish = []
   },
   directives: {
     dragscroll
