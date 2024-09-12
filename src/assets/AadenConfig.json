@@ -34,5 +34,6 @@
   "useCustomerDisplay" : false,
   "fastCheckoutMode" : false,
   "overrideCardTerminalIp": "",
-  "overrideCardTerminalPort": ""
+  "overrideCardTerminalPort": "",
+  "showCheckoutLoader": false
 }

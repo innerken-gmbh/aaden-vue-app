@@ -33,226 +33,226 @@
       </div>
     </v-navigation-drawer>
 
-      <v-main app>
-        <v-app-bar
-            color="transparent"
-            dark
-            elevation="0"
-            tile
-        >
-          <restaurant-logo-display></restaurant-logo-display>
-          <v-spacer/>
+    <v-main app>
+      <v-app-bar
+          color="transparent"
+          dark
+          elevation="0"
+          tile
+      >
+        <restaurant-logo-display></restaurant-logo-display>
+        <v-spacer/>
 
-          <template v-if="!globalLoading">
-            <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
-              <v-card
-                  v-for="m in menu"
-                  :key="m.name"
-                  :class="currentView===m.name?' active':''"
-                  :disabled="m.disable()"
-                  class="navigationPillItem"
-                  color="transparent"
-                  flat
-                  @click="currentView=m.name"
-              >
-                <v-icon left>{{ m.icon }}</v-icon>
-                {{ $t(m.name) }}
-              </v-card>
-            </div>
-            <v-spacer></v-spacer>
-            <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
-            <div class=" text-capitalize mr-6">
-              {{ currentTableName }}
-            </div>
-            <div class="text-body-2 d-flex align-center">
-
-              <template v-if="haveOrder">
-                <v-icon>mdi-office-building-marker</v-icon>
-                <div
-                    class="ml-2  text-truncate"
-                    @click="consumeTypeDialogShow=true"
-                >
-                  {{ findConsumeTypeById(realConsumeTypeId) }}
-                </div>
-
-                <v-icon class="mr-2 ml-6">mdi-account-circle</v-icon>
-                <div>
-                  {{ tableDetailInfo?.order?.servant }}
-                </div>
-              </template>
-            </div>
-          </template>
-          <template v-else>
-            <div style="width: 200px"></div>
-          </template>
-
-        </v-app-bar>
-        <div>
-          <v-card
-              v-cloak
-              class="flex-grow-1 flex-column"
-              color="grey lighten-4"
-              elevation="0"
-              rounded="lg"
-              style="height: calc(100vh - 64px);grid-template-columns: 1fr 330px;display: grid"
-          >
-            <div>
-              <template v-if="currentView==='Menu'">
-                <menu-fragement
-                    :consume-type-id="consumeTypeId"
-                    :override-consume-type-id="overrideConsumeTypeId"
-                    @dish-add="findAndOrderDish"
-                    @dish-detail="(dish)=>showModification(dish,1,null)"
-                />
-              </template>
-              <template v-else-if="currentView==='Delivery'">
-                <address-page
-                    v-if="consumeTypeId===2"
-                    :consume-type-status-id="consumeTypeStatusId"
-                    :raw-address-info="realAddressInfo"
-                    class="mr-2"
-                    @address-change="submitRawAddressInfo"
-                />
-              </template>
-              <template v-else-if="currentView==='Reservation'">
-                <reservation-list-page
-                    :id="id"
-                    :reservation-list="reservations"
-                    @need-refresh="refreshReservation"
-                />
-              </template>
-            </div>
+        <template v-if="!globalLoading">
+          <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
             <v-card
-                class="d-flex justify-space-between flex-shrink-0 flex-column fill-height"
-                color="grey lighten-5"
-                rounded="lg"
-                style="height: calc(100vh - 64px)"
+                v-for="m in menu"
+                :key="m.name"
+                :class="currentView===m.name?' active':''"
+                :disabled="m.disable()"
+                class="navigationPillItem"
+                color="transparent"
+                flat
+                @click="currentView=m.name"
             >
-              <template v-if="!globalLoading">
-                <keep-alive>
-                  <dish-card-list
-                      v-if="cartListModel.list.length === 0"
-                      :click-callback="addToSplit"
-                      :default-expand="cartListModel.list.length === 0"
-                      :discount-ratio="discountRatio"
-                      :dish-list-model="orderListModel"
-                      :source-marks="sourceMarks"
-                      :title="$t('DishesInBasket')"
-                      @removeAllFromSplit="removeAllFromSplitOrder"
-                      @discount-clear="discountClear"
-                  >
-                    <template
-                        v-if="canOperate"
-                        #action
-                    >
-                      <v-btn
-                          :loading="isSendingRequest"
-                          class="grey lighten-4 mr-2"
-                          elevation="0"
-                          icon
-                          @click="zwitchenBon"
-                      >
-                        <v-icon>mdi-receipt-text-clock</v-icon>
-                      </v-btn>
-                      <v-btn
-                          :loading="isSendingRequest"
-                          class="grey lighten-4 mr-2"
-                          elevation="0"
-                          icon
-                          @click="discountShow"
-                      >
-                        <v-icon>mdi-sale</v-icon>
-                      </v-btn>
-                    </template>
-                    <template v-slot:default="{ total }">
-                      <div class="pa-2">
-                        <v-btn
-                            :disabled="!canOperate"
-                            block
-                            color="green lighten-4 black--text"
-                            elevation="0"
-                            height="64"
-                            rounded
-                            @click="jumpToPayment()"
-                        >
-                          <v-icon
-                              class="mr-6"
-                              left
-                              size="28"
-                          >mdi-wallet
-                          </v-icon>
-                          <span class="text-h5">{{ total | priceDisplay }}</span>
-                        </v-btn>
-                      </div>
-                    </template>
-                  </dish-card-list>
-                </keep-alive>
+              <v-icon left>{{ m.icon }}</v-icon>
+              {{ $t(m.name) }}
+            </v-card>
+          </div>
+          <v-spacer></v-spacer>
+          <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
+          <div class=" text-capitalize mr-6">
+            {{ currentTableName }}
+          </div>
+          <div class="text-body-2 d-flex align-center">
+
+            <template v-if="haveOrder">
+              <v-icon>mdi-office-building-marker</v-icon>
+              <div
+                  class="ml-2  text-truncate"
+                  @click="consumeTypeDialogShow=true"
+              >
+                {{ findConsumeTypeById(realConsumeTypeId) }}
+              </div>
+
+              <v-icon class="mr-2 ml-6">mdi-account-circle</v-icon>
+              <div>
+                {{ tableDetailInfo?.order?.servant }}
+              </div>
+            </template>
+          </div>
+        </template>
+        <template v-else>
+          <div style="width: 200px"></div>
+        </template>
+
+      </v-app-bar>
+      <div>
+        <v-card
+            v-cloak
+            class="flex-grow-1 flex-column"
+            color="grey lighten-4"
+            elevation="0"
+            rounded="lg"
+            style="height: calc(100vh - 64px);grid-template-columns: 1fr 330px;display: grid"
+        >
+          <div>
+            <template v-if="currentView==='Menu'">
+              <menu-fragement
+                  :consume-type-id="consumeTypeId"
+                  :override-consume-type-id="overrideConsumeTypeId"
+                  @dish-add="findAndOrderDish"
+                  @dish-detail="(dish)=>showModification(dish,1,null)"
+              />
+            </template>
+            <template v-else-if="currentView==='Delivery'">
+              <address-page
+                  v-if="consumeTypeId===2"
+                  :consume-type-status-id="consumeTypeStatusId"
+                  :raw-address-info="realAddressInfo"
+                  class="mr-2"
+                  @address-change="submitRawAddressInfo"
+              />
+            </template>
+            <template v-else-if="currentView==='Reservation'">
+              <reservation-list-page
+                  :id="id"
+                  :reservation-list="reservations"
+                  @need-refresh="refreshReservation"
+              />
+            </template>
+          </div>
+          <v-card
+              class="d-flex justify-space-between flex-shrink-0 flex-column fill-height"
+              color="grey lighten-5"
+              rounded="lg"
+              style="height: calc(100vh - 64px)"
+          >
+            <template v-if="!globalLoading">
+              <keep-alive>
                 <dish-card-list
-                    v-if="cartListModel.list.length > 0"
-                    ref="cartList"
-                    :click-callback="removeDish"
-                    :default-expand="true"
-                    :dish-list-model="cartListModel"
-                    :reset-current-expand-index="true"
-                    :reverse="true"
-                    :show-edit="true"
-                    :show-number="true"
-                    :title="$t('New')"
-                    color="primary"
+                    v-if="cartListModel.list.length === 0"
+                    :click-callback="addToSplit"
+                    :default-expand="cartListModel.list.length === 0"
+                    :discount-ratio="discountRatio"
+                    :dish-list-model="orderListModel"
+                    :source-marks="sourceMarks"
+                    :title="$t('DishesInBasket')"
+                    @removeAllFromSplit="removeAllFromSplitOrder"
+                    @discount-clear="discountClear"
                 >
-                  <template #action>
+                  <template
+                      v-if="canOperate"
+                      #action
+                  >
                     <v-btn
-                        class="primary mr-2"
-                        dark
+                        :loading="isSendingRequest"
+                        class="grey lighten-4 mr-2"
                         elevation="0"
                         icon
-                        @click="orderDish(cartListModel.list,false)"
+                        @click="zwitchenBon"
                     >
-                      <v-icon> mdi-printer-off</v-icon>
+                      <v-icon>mdi-receipt-text-clock</v-icon>
                     </v-btn>
                     <v-btn
-                        class="error lighten-4 mr-2"
+                        :loading="isSendingRequest"
+                        class="grey lighten-4 mr-2"
                         elevation="0"
                         icon
-                        @click="cartListModelClear"
+                        @click="discountShow"
                     >
-                      <v-icon> mdi-trash-can</v-icon>
+                      <v-icon>mdi-sale</v-icon>
                     </v-btn>
                   </template>
                   <template v-slot:default="{ total }">
                     <div class="pa-2">
                       <v-btn
-                          :loading="isSendingRequest"
+                          :disabled="!canOperate"
                           block
-                          color="amber lighten-4 black--text"
+                          color="green lighten-4 black--text"
                           elevation="0"
                           height="64"
                           rounded
-                          @click="orderDish(cartListModel.list)"
+                          @click="jumpToPayment()"
                       >
                         <v-icon
                             class="mr-6"
                             left
                             size="28"
-                        >mdi-printer
+                        >mdi-wallet
                         </v-icon>
                         <span class="text-h5">{{ total | priceDisplay }}</span>
                       </v-btn>
                     </div>
                   </template>
                 </dish-card-list>
-              </template>
+              </keep-alive>
+              <dish-card-list
+                  v-if="cartListModel.list.length > 0"
+                  ref="cartList"
+                  :click-callback="removeDish"
+                  :default-expand="true"
+                  :dish-list-model="cartListModel"
+                  :reset-current-expand-index="true"
+                  :reverse="true"
+                  :show-edit="true"
+                  :show-number="true"
+                  :title="$t('New')"
+                  color="primary"
+              >
+                <template #action>
+                  <v-btn
+                      class="primary mr-2"
+                      dark
+                      elevation="0"
+                      icon
+                      @click="orderDish(cartListModel.list,false)"
+                  >
+                    <v-icon> mdi-printer-off</v-icon>
+                  </v-btn>
+                  <v-btn
+                      class="error lighten-4 mr-2"
+                      elevation="0"
+                      icon
+                      @click="cartListModelClear"
+                  >
+                    <v-icon> mdi-trash-can</v-icon>
+                  </v-btn>
+                </template>
+                <template v-slot:default="{ total }">
+                  <div class="pa-2">
+                    <v-btn
+                        :loading="isSendingRequest"
+                        block
+                        color="amber lighten-4 black--text"
+                        elevation="0"
+                        height="64"
+                        rounded
+                        @click="orderDish(cartListModel.list)"
+                    >
+                      <v-icon
+                          class="mr-6"
+                          left
+                          size="28"
+                      >mdi-printer
+                      </v-icon>
+                      <span class="text-h5">{{ total | priceDisplay }}</span>
+                    </v-btn>
+                  </div>
+                </template>
+              </dish-card-list>
+            </template>
 
-            </v-card>
           </v-card>
-        </div>
-      </v-main>
-      <template v-if="splitOrderListModel.list.length > 0">
-        <div
-            v-cloak
-            id="splitOrderContainer"
-            class="d-flex justify-end align-end"
-            style="
+        </v-card>
+      </div>
+    </v-main>
+    <template v-if="splitOrderListModel.list.length > 0">
+      <div
+          v-cloak
+          id="splitOrderContainer"
+          class="d-flex justify-end align-end"
+          style="
             position: fixed;
             background: rgba(0, 0, 0, 0.4);
             top: 0;
@@ -261,89 +261,89 @@
             left: 0;
             width: calc(100vw - 330px);
           "
-            @click="removeAllFromSplitOrder"
+          @click="removeAllFromSplitOrder"
+      >
+        <div
+            class="d-flex "
+            style="width: 400px;height: calc(100vh - 64px)"
+            @click.stop
         >
           <div
-              class="d-flex "
-              style="width: 400px;height: calc(100vh - 64px)"
-              @click.stop
-          >
-            <div
-                class="pa-2 pt-4 gradient"
-                style="display: grid;grid-auto-flow: row;grid-auto-rows: min-content;
+              class="pa-2 pt-4 gradient"
+              style="display: grid;grid-auto-flow: row;grid-auto-rows: min-content;
                 grid-gap: 24px"
-            >
-              <nav-button
-                  color="grey"
-                  icon="mdi-close"
-                  text="Cancel"
-                  @click="removeAllFromSplitOrder()"
-              ></nav-button>
-              <nav-button
-                  color="pink"
-                  icon="mdi-minus"
-                  text="DishCancel"
-                  @click="showDeleteDishDialog()"
-              ></nav-button>
-              <nav-button
-                  color="orange darken-3"
-                  icon="mdi-sale"
-                  text="GiveDishADiscount"
-                  @click="dishesSetDiscount()"
-              ></nav-button>
-              <nav-button
-                  color="indigo"
-                  icon="mdi-inbox-arrow-up"
-                  text="tableChange"
-                  @click="dishesChangeTable()"
-              ></nav-button>
-              <nav-button
-                  color="blue"
-                  icon="mdi-receipt-text-arrow-left"
-                  text="TemporaryBill"
-                  @click="printZwichenBon()"
-              ></nav-button>
-            </div>
-            <v-card
-                height="calc(100vh - 64px)"
-                tile
-                width="330"
-            >
-              <dish-card-list
-                  :click-callback="removeFromSplitOrder"
-                  :default-expand="true"
-                  :discount-ratio="discountRatio"
-                  :dish-list-model="splitOrderListModel"
-                  :title="$t('operation')"
-                  class="flex-grow-1"
-                  extra-height="48px"
-              >
-                <template v-slot:default="{ total }">
-                  <div class="pa-2">
-                    <v-btn
-                        :disabled="consumeTypeStatusId <= 1"
-                        block
-                        color="warning lighten-4 black--text"
-                        elevation="0"
-                        height="64"
-                        rounded
-                        @click="needSplitOrder()"
-                    >
-                      <v-icon
-                          class="mr-6"
-                          left
-                          size="28"
-                      >mdi-receipt-text-plus
-                      </v-icon>
-                      <span class="text-h5">{{ total | priceDisplay }}</span>
-                    </v-btn>
-                  </div>
-                </template>
-              </dish-card-list>
-            </v-card>
+          >
+            <nav-button
+                color="grey"
+                icon="mdi-close"
+                text="Cancel"
+                @click="removeAllFromSplitOrder()"
+            ></nav-button>
+            <nav-button
+                color="pink"
+                icon="mdi-minus"
+                text="DishCancel"
+                @click="showDeleteDishDialog()"
+            ></nav-button>
+            <nav-button
+                color="orange darken-3"
+                icon="mdi-sale"
+                text="GiveDishADiscount"
+                @click="dishesSetDiscount()"
+            ></nav-button>
+            <nav-button
+                color="indigo"
+                icon="mdi-inbox-arrow-up"
+                text="tableChange"
+                @click="dishesChangeTable()"
+            ></nav-button>
+            <nav-button
+                color="blue"
+                icon="mdi-receipt-text-arrow-left"
+                text="TemporaryBill"
+                @click="printZwichenBon()"
+            ></nav-button>
           </div>
+          <v-card
+              height="calc(100vh - 64px)"
+              tile
+              width="330"
+          >
+            <dish-card-list
+                :click-callback="removeFromSplitOrder"
+                :default-expand="true"
+                :discount-ratio="discountRatio"
+                :dish-list-model="splitOrderListModel"
+                :title="$t('operation')"
+                class="flex-grow-1"
+                extra-height="48px"
+            >
+              <template v-slot:default="{ total }">
+                <div class="pa-2">
+                  <v-btn
+                      :disabled="consumeTypeStatusId <= 1"
+                      block
+                      color="warning lighten-4 black--text"
+                      elevation="0"
+                      height="64"
+                      rounded
+                      @click="needSplitOrder()"
+                  >
+                    <v-icon
+                        class="mr-6"
+                        left
+                        size="28"
+                    >mdi-receipt-text-plus
+                    </v-icon>
+                    <span class="text-h5">{{ total | priceDisplay }}</span>
+                  </v-btn>
+                </div>
+              </template>
+            </dish-card-list>
+          </v-card>
         </div>
-      </template>
+      </div>
+    </template>
 
     <!--      right panel-->
 
@@ -957,12 +957,7 @@ export default {
     },
     async orderDish (order, print = true) {
       try {
-        if (GlobalConfig.jumpToHomeWhenOrder) {
-          this.$nextTick(async () => {
-            await goHome()
-          })
-        }
-        this.isSendingRequest = true
+        IKUtils.showLoading()
         if (!this.haveOrder) {
           const password = await optionalAuthorizeAsync('', GlobalConfig.usePassword, null, false, this.id)
           await informOpenTable(password, this.id)
@@ -975,12 +970,14 @@ export default {
             printingKitchenBon: print ? 1 : 0
           }
         )
+        IKUtils.toast()
+        printNow()
         this.isSendingRequest = false
         if (!GlobalConfig.jumpToHomeWhenOrder) {
           await this.initialUI()
+        } else {
+          await goHome()
         }
-        printNow()
-        IKUtils.toast('ok')
       } catch (e) {
         logError(this.$t('JSTableOrderFailed') + e.data.info)
       } finally {
@@ -1009,32 +1006,33 @@ export default {
         const shouldGoHome = paymentType === 'checkOut' &&
             !(GlobalConfig.overrideCardTerminalIp &&
                 checkoutInfo.paymentLog.some(it => parseInt(it.id) === 2)) &&
-        checkoutInfo.returnHome
-        if (shouldGoHome) {
-          await goHome()
-        }
+            checkoutInfo.returnHome
+        IKUtils.showLoading()
+
         const res = await checkout(Object.assign({
           tableId: this.id,
           dishes: checkoutFactory.list,
           password: pw,
           checkOutType: paymentType
         }, checkoutInfo))
-        if (checkoutInfo.printType === 1) {
-          IKUtils.showLoading()
-          const uuid = await getUUidByOrderId(paymentType === 'checkOut'
-            ? this.currentOrderId : res.id)
-          IKUtils.toast()
-          await setUuidInFirebase(uuid)
-          this.showBillDetailQRDialog({ code: uuid })
-        }
+        printNow()
         if (paymentType !== 'checkOut' || !checkoutInfo.returnHome) {
           await this.initialUI()
           if (this.orderListModel.count() === 0) {
-            if (checkoutInfo.returnHome) { await goHome() }
+            if (checkoutInfo.returnHome) {
+              await goHome()
+            }
           }
         }
-
-        printNow()
+        if (shouldGoHome) {
+          await goHome()
+        }
+        if (checkoutInfo.printType === 1) {
+          const uuid = await getUUidByOrderId(paymentType === 'checkOut'
+            ? this.currentOrderId : res.id)
+          await setUuidInFirebase(uuid)
+          this.showBillDetailQRDialog({ code: uuid })
+        }
       }
       setTimeout(async () => {
         const pw = await optionalAuthorizeAsync(
