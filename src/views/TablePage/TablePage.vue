@@ -957,10 +957,12 @@ export default {
     },
     async orderDish (order, print = true) {
       try {
-        IKUtils.showLoading()
         if (!this.haveOrder) {
           const password = await optionalAuthorizeAsync('', GlobalConfig.usePassword, null, false, this.id)
+          IKUtils.showLoading()
           await informOpenTable(password, this.id)
+        } else {
+          IKUtils.showLoading()
         }
         await hillo.post(
           'Complex.php?op=addDishesToTable&_servantPw=' + GlobalConfig.defaultPassword,
