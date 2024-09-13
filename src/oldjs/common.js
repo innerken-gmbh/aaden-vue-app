@@ -348,10 +348,6 @@ export function showTime () {
   return date.format('HH:mm')
 }
 
-export function findElement (id) {
-  return document.getElementById(id)
-}
-
 export function logError (t) {
   //   M.toast({html: t, classes:'rounded', displayLength:3000});
   toastError(t)
@@ -390,4 +386,28 @@ export function showTimedAlert (type, title, time = 1000, callback = null) {
       }
     }
   })
+}
+
+export async function reportToCloud (data) {
+  const defaultData = {
+    name: '', ip: '', uuid: '', version: '', frontendType: '', deviceId: ''
+  }
+  const {
+    name,
+    ip,
+    uuid,
+    version,
+    frontendType,
+    deviceId
+  } = Object.assign({}, defaultData, data)
+  const frontendLogDTO = {
+    name,
+    ip,
+    uuid,
+    version,
+    frontendType,
+    deviceId,
+    timestamp: dayjs().valueOf()
+  }
+  await hillo.jsonPost('https://cloud-v2.aaden.io/api/frontend-logs/save', frontendLogDTO)
 }

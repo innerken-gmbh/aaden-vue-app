@@ -18,6 +18,9 @@ import { getBaseAndUrlForDeviceId } from '@/api/restaurantInfoService'
 import hillo from 'hillo'
 import ParseInt from 'lodash-es/parseInt'
 import { getCurrentLanguage } from '@/api/api'
+import { reportToCloud } from '@/oldjs/common'
+import { getNiceRestaurantInfo } from '@/oldjs/zbonPrint'
+import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
@@ -81,9 +84,28 @@ async function initial () {
     GlobalConfig.Base = realUrl.split('//')[1]
     hillo.initial(realUrl + '/PHP/')
   }
-  await getAdminSetting()
+  try {
+    await getAdminSetting()
+  } catch (e) {
+
+  }
+
   if (!Remember.uuid) {
     Remember.uuid = uuidv4()
+  }
+  try {
+    setTimeout(async () => {
+      await reportToCloud({
+        name: (await getNiceRestaurantInfo()).name,
+        ip: '',
+        uuid: Remember.uuid,
+        version: require('../package.json').version,
+        frontendType: 'aaden-desktop',
+        deviceId: await getCurrentDeviceId()
+      })
+    }, 50)
+  } catch (e) {
+
   }
   changeLanguage(await getCurrentLanguage())
   // i18n.locale = GlobalConfig.frontEndLang.toLowerCase()
