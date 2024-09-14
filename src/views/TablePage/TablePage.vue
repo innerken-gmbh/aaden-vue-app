@@ -979,6 +979,7 @@ export default {
           await this.initialUI()
         } else {
           await goHome()
+          await this.initialUI()
         }
       } catch (e) {
         logError(this.$t('JSTableOrderFailed') + e.data.info)
@@ -1297,8 +1298,7 @@ export default {
       return parseInt(this.tableDetailInfo?.order?.consumeTypeId ?? 1)
     },
     realConsumeTypeId () {
-      return this.overrideConsumeTypeId &&
-      this.overrideConsumeTypeId !== this.consumeTypeId
+      return this.overrideConsumeTypeId && this.overrideConsumeTypeId !== this.consumeTypeId
         ? this.overrideConsumeTypeId
         : this.consumeTypeId ?? 1
     },
