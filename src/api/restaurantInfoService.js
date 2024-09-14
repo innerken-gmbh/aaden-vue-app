@@ -3,17 +3,14 @@ import dayjs from 'dayjs'
 import { loadRestaurantInfo } from '@/api/api'
 import hillo from 'hillo'
 
-const defaultRestaurantInfo = {
-  tableColor: '#ffffff',
-  callColor: '#f57f17'
-}
-let restaurantInfo = null
+// const defaultRestaurantInfo = {
+//   tableColor: '#ffffff',
+//   callColor: '#f57f17'
+// }
+// let restaurantInfo = null
 
 export async function getRestaurantInfo () {
-  if (!restaurantInfo) {
-    restaurantInfo = Object.assign(await loadRestaurantInfo(), defaultRestaurantInfo)
-  }
-  return restaurantInfo ?? defaultRestaurantInfo
+  return await loadRestaurantInfo()
 }
 
 export function beautifulTable (table) {

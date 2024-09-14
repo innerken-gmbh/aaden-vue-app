@@ -117,6 +117,8 @@ import { defaultTable } from '@/api/restaurantInfoService'
 import { findConsumeTypeById } from '@/oldjs/common'
 import TableInfoDisplay from '@/views/FirstPage/Table/Table/Widget/TableInfoDisplay'
 import { Remember } from '@/api/remember'
+import store from '@/store'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 export default {
   name: 'TableCard',
@@ -150,7 +152,7 @@ export default {
       return this.reservations.some(it => it.status === 'CheckIn')
     },
     tableColor () {
-      return this.table.inCall ? 'error' : this.table.inUse ? 'rgba(255,216,154,0.8)' : this.haveCheckIn ? 'green' : '#f6f6f6'
+      return this.table.inCall ? GlobalConfig.userTableColor === '1' ? store.state.tableColor : 'error' : this.table.inUse ? 'rgba(255,216,154,0.8)' : this.haveCheckIn ? 'green' : '#f6f6f6'
     },
     table () {
       const res = Object.assign({}, defaultTable, this.tableInfo)

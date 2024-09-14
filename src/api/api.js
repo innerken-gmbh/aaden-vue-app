@@ -426,6 +426,19 @@ export async function closePlaySound () {
   })
 }
 
+export async function useTableColorSetting () {
+  return await forceGetSystemSetting({
+    section: 'FrontApp',
+    sKey: 'useTableColorSetting',
+    sValue: '0',
+    defaultValue: '0',
+    sType: 'boolean',
+    minimumVersion: '1.7.825',
+    sOptions: '',
+    tagList: 'basic,FrontApp'
+  })
+}
+
 export async function updateNewSetting (items) {
   return (await hillo.post('Restaurant.php?op=updateSystemSettings', {
     systemSettings: JSON.stringify(items)

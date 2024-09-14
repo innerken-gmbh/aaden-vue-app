@@ -39,9 +39,13 @@ export default new Vuex.Store({
 
     showCheckoutDialog: false,
     checkoutTotal: 0,
-    checkoutResolve: null
+    checkoutResolve: null,
+    tableColor: ''
   },
   mutations: {
+    editTableColor (state, payload) {
+      state.tableColor = payload
+    },
     hideCheckoutDialog (state) {
       state.showCheckoutDialog = false
       state.checkoutResolve = null

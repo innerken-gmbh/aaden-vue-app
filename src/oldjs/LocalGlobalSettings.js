@@ -8,7 +8,7 @@ import {
   deleteAllInput,
   getCurrentReservationStatus,
   getCurrentSearchStatus,
-  openCashBoxByPw
+  openCashBoxByPw, useTableColorSetting
 } from '@/api/api'
 
 const fix = require('@/assets/FixedConfig.json')
@@ -38,6 +38,7 @@ export async function getAdminSetting () {
   GlobalConfig.openCashBoxByPw = await openCashBoxByPw()
   GlobalConfig.deleteOneKeys = await deleteAllInput()
   GlobalConfig.closePlaySound = await closePlaySound()
+  GlobalConfig.userTableColor = await useTableColorSetting()
 }
 
 export function refreshGetter () {

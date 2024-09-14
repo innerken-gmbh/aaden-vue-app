@@ -567,6 +567,7 @@ import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
 import { checkout } from '@/api/Repository/OrderInfo'
 import AddressesCard from '@/views/TablePage/Address/AddressesCard.vue'
 import { getRestaurantInfo } from '@/api/restaurantInfoService'
+import store from '@/store'
 
 const keyboardLayout =
     [
@@ -931,6 +932,7 @@ export default {
         this.lock = true
         try {
           this.restaurantInfo = await getRestaurantInfo()
+          store.commit('editTableColor', this.restaurantInfo.tableColor)
           this.takeawayEnabled = this.restaurantInfo.currentlyOpening === '1'
           this.servantList = await getServantList()
           await getConsumeTypeList()
