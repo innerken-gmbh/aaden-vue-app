@@ -53,7 +53,11 @@ export async function getTableListWithCells () {
   if (GlobalConfig.activeReservation) {
     if (!reservationCache || (lastCacheAt === null || dayjs(lastCacheAt).isBefore(dayjs().subtract(10, 's')))) {
       lastCacheAt = dayjs().valueOf()
-      reservationCache = await getCurrentReservation()
+      try {
+        reservationCache = await getCurrentReservation()
+      } catch (e) {
+
+      }
     }
     const allReservation = reservationCache
     allReservation.forEach(r => {
