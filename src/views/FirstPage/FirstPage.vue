@@ -932,7 +932,12 @@ export default {
         this.lock = true
         try {
           this.restaurantInfo = await getRestaurantInfo()
-          store.commit('editTableColor', this.restaurantInfo.tableColor)
+          try {
+            store.commit('editTableColor', this.restaurantInfo.tableColor)
+          } catch (e) {
+
+          }
+
           this.takeawayEnabled = this.restaurantInfo.currentlyOpening === '1'
           this.servantList = await getServantList()
           await getConsumeTypeList()
@@ -940,6 +945,8 @@ export default {
           addToQueue('firstPageTables', this.refreshTables)
         } catch (e) {
           this.noNetwork = true
+          console.log('No network detected!')
+          console.log(e)
           setTimeout(() => {
             location.reload()
           }, 5 * 1000)
