@@ -1011,14 +1011,16 @@ export default {
                 checkoutInfo.paymentLog.some(it => parseInt(it.id) === 2)) &&
             checkoutInfo.returnHome
         IKUtils.showLoading()
-
         const res = await checkout(Object.assign({
           tableId: this.id,
           dishes: checkoutFactory.list,
           password: pw,
           checkOutType: paymentType
         }, checkoutInfo))
-        printNow()
+        IKUtils.toast('ok')
+        if (shouldGoHome) {
+          await goHome()
+        }
         if (paymentType !== 'checkOut' || !checkoutInfo.returnHome) {
           await this.initialUI()
           if (this.orderListModel.count() === 0) {
@@ -1027,9 +1029,7 @@ export default {
             }
           }
         }
-        if (shouldGoHome) {
-          await goHome()
-        }
+        printNow()
         if (checkoutInfo.printType === 1) {
           const uuid = await getUUidByOrderId(paymentType === 'checkOut'
             ? this.currentOrderId : res.id)
