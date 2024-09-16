@@ -1,5 +1,5 @@
 <template>
-  <div style="height: calc(100vh - 64px)" >
+  <div style="height: calc(100vh - 64px)">
     <template v-if="!keyboardMode">
       <menu-order-fragment
           @dish-click="openDish"
@@ -59,6 +59,9 @@ export default {
   mounted () {
     this.initial()
   },
+  activated () {
+    this.initial()
+  },
   computed: {
     realConsumeTypeId () {
       return this.overrideConsumeTypeId ?? this.consumeTypeId ?? '1'
@@ -72,12 +75,14 @@ export default {
       this.$emit('dish-detail', dish)
     },
     async getCategory (consumeTypeId = 1, force = false) {
+      console.log('loading consumetpye', consumeTypeId)
       if (this.categories.length === 0 || force) {
         this.categories = await getCategoryListWithCache(consumeTypeId)
         this.dishes = processDishList(this.categories.reduce((arr, i) => {
           arr.push(...i.dishes)
           return arr
         }, []))
+        console.log(this.dishes.length)
         cartListFactory.setDishList(this.dishes)
       }
     },

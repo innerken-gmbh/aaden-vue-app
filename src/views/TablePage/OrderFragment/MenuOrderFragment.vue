@@ -211,7 +211,6 @@ import { dragscroll } from 'vue-dragscroll/src/main'
 import { getCategoryTypeList } from '@/api/aaden-base-model/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
-const filterCache = {}
 export default {
   name: 'MenuOrderFragment',
   components: { DishBlock },
@@ -257,12 +256,10 @@ export default {
       if (this.activeDCT === 0) {
         return list.filter(item => item.isFavorite === '1')
       }
-      if (!filterCache[this.activeCategoryId]) {
-        filterCache[this.activeCategoryId] = list.filter((item) => {
-          return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
-        })
-      }
-      return filterCache[this.activeCategoryId]
+
+      return list.filter((item) => {
+        return parseInt(item.categoryId) === parseInt(this.activeCategoryId)
+      })
     }
   },
   async activated () {
