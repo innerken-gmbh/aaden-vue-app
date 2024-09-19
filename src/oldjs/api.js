@@ -1,7 +1,7 @@
 import { popAuthorize } from './common'
 import hillo from 'hillo'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import { getCurrentReservation } from '@/api/ReservationService'
+import { getCurrentReservation, ReservationCache } from '@/api/ReservationService'
 import IKUtils from 'innerken-js-utils'
 import dayjs from 'dayjs'
 
@@ -45,21 +45,20 @@ const playSound = (count = 3) => {
   }
 }
 
-let reservationCache = null
-let lastCacheAt = null
-
 export async function getTableListWithCells () {
   const reservationDict = {}
   if (GlobalConfig.activeReservation) {
-    if (!reservationCache || (lastCacheAt === null || dayjs(lastCacheAt).isBefore(dayjs().subtract(10, 's')))) {
-      lastCacheAt = dayjs().valueOf()
+    if (!ReservationCache.reservationCache || (ReservationCache.lastCacheAt === null ||
+      dayjs(ReservationCache.lastCacheAt).isBefore(dayjs().subtract(10, 's')))) {
+      ReservationCache.lastCacheAt = dayjs().valueOf()
       try {
-        reservationCache = await getCurrentReservation()
+        ReservationCache.reservationCache = await getCurrentReservation()
+        console.log(ReservationCache.reservationCache, 'cache')
       } catch (e) {
 
       }
     }
-    const allReservation = reservationCache
+    const allReservation = ReservationCache.reservationCache
     allReservation.forEach(r => {
       r.seatPlan.forEach(s => {
         if (!reservationDict[s.tableId]) {

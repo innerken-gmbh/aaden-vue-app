@@ -13,11 +13,15 @@
         :color="tableColor"
         @click='$emit("click",table.tableName)'
     >
-      <div class="d-flex flex-column align-center justify-center flex-grow-1">
+      <div
+          class="d-flex align-center justify-center flex-grow-1"
+          :class="table.inUse?'mt-3':''"
+      >
         <div
-            class="tableCardName d-flex align-center justify-center"
-            :class="table.inUse?'mt-2':''"
+            class="tableCardName"
+
         >
+          {{ table.tableName }}
           <template v-if="table.inCall">
             <v-icon
                 class="mr-1"
@@ -25,88 +29,72 @@
             >mdi-bell
             </v-icon>
           </template>
-          {{ table.tableName }}
-        </div>
-        <template v-if="!table.inUse&&displayReservations.length>0">
-          <v-btn
-              color="grey"
-              x-small
-              text
-              style="font-size: 10px"
-              @click.stop="showReservationDialog"
-              class="py-1 pa-0 text-caption"
-              elevation="0"
-          >
-            <v-icon
-                small
-                class="mr-1"
-            >mdi-calendar
-            </v-icon>
-            <span class="font-weight-bold">
-              <template v-if="displayReservations.length>1">
-            {{ displayReservations.length }} |
-          </template>
-          </span>
 
-            <template>{{ displayReservations[0].fromDateTime|onlyTime }}</template>
-          </v-btn>
-        </template>
+        </div>
+      </div>
+
+      <div style="width: 100%">
         <template v-if="table.inUse">
-          <template v-if="displayReservations.length>0">
-            <v-chip
-                small
-                color="transparent"
-                label
-                @click.stop="showReservationDialog"
-            >
-              <v-icon
-                  x-small
-                  class="mr-1"
-              >mdi-calendar
-              </v-icon>
-              {{ displayReservations.length }}
-            </v-chip>
-          </template>
           <div
-              class="text-caption"
-              v-else-if="table?.h>100"
+              class="personDot"
+              style="position: absolute"
+          >
+            <template v-for="i in parseInt(table.seatCount)">
+              <div
+                  :key="i+table.tableName+'person'"
+                  class="dot"
+              ></div>
+            </template>
+            <template v-for="i in parseInt(table.childCount)">
+              <div
+                  :key="i+table.tableName+'child'"
+                  class="dot child"
+              ></div>
+            </template>
+          </div>
+          <div
+              style="font-size: 9px;text-align: right;width: 100%;"
+              class="pa-1 text-no-wrap text-truncate font-weight-black"
+              v-if="table?.h>100"
           >
             {{ findConsumeTypeById(table.consumeType) }}
           </div>
+          <div style="display: grid;grid-template-columns: repeat(2,minmax(0,1fr))">
+            <div
+                v-for="info in table.infos"
+                :key="info"
+                style="width: 100%;"
+            >
+              <table-info-display
+                  :info-key="info"
+                  :table="table"
+              />
+            </div>
+          </div>
+
+        </template>
+        <template v-if="displayReservations.length>0">
+          <v-card
+              @click.stop="showReservationDialog"
+              dark
+              class="d-flex px-2 py-1 align-center"
+
+              :color="haveNotConfirmed?'red':'rgba(0,0,0,.3)'"
+              width="100%"
+              elevation="0"
+          >
+            <v-icon
+                class="mt-1 mr-1"
+                size="14"
+            >mdi-calendar
+            </v-icon>
+            <div class="text-body-2">{{ displayReservations.length }}</div>
+            <v-spacer></v-spacer>
+            <div class="text-caption">@{{ displayReservations[0].fromDateTime|onlyTime }}</div>
+
+          </v-card>
         </template>
       </div>
-
-      <template v-if="table.inUse">
-
-        <div
-            class="personDot"
-            style="position: absolute"
-        >
-          <template v-for="i in parseInt(table.seatCount)">
-            <div
-                :key="i+table.tableName+'person'"
-                class="dot"
-            ></div>
-          </template>
-          <template v-for="i in parseInt(table.childCount)">
-            <div
-                :key="i+table.tableName+'child'"
-                class="dot child"
-            ></div>
-          </template>
-        </div>
-        <div
-            v-for="info in table.infos"
-            :key="info"
-            style="width: 100%;"
-        >
-          <table-info-display
-              :info-key="info"
-              :table="table"
-          />
-        </div>
-
-      </template>
 
     </v-card>
   </div>
@@ -132,7 +120,9 @@ export default {
       return findConsumeTypeById(id).name
     },
     showReservationDialog () {
-      this.$emit('reservation-clicked', this.tableInfo)
+      if (this.displayReservations.length > 0) {
+        this.$emit('reservation-clicked', this.tableInfo)
+      }
     },
     getKeys () {
       return Remember.tableDisplayKeys
@@ -143,16 +133,35 @@ export default {
       return '20px'
     },
     displayReservations () {
-      return this.reservations.filter(it => it.status === 'Confirmed')
+      return this.reservations.filter(it => it.status === 'Confirmed' || it.status === 'Created')
     },
     reservations () {
       return this.table?.reservations ?? []
+    },
+    haveNotConfirmed () {
+      return this.reservations.some(it => it.status === 'Created')
     },
     haveCheckIn () {
       return this.reservations.some(it => it.status === 'CheckIn')
     },
     tableColor () {
-      return this.table.inCall ? GlobalConfig.userTableColor === '1' ? store.state.tableColor : 'error' : this.table.inUse ? 'rgba(255,216,154,0.8)' : this.haveCheckIn ? 'green' : '#f6f6f6'
+      const defaultColor = '#f6f6f6'
+      const colorTableInUse = 'rgba(255,216,154,0.8)'
+      const colorTableHaveCheckIn = 'green'
+
+      if (this.table.inCall) {
+        return GlobalConfig.userTableColor === '1' ? store.state.tableColor : 'error'
+      }
+
+      if (this.table.inUse) {
+        return colorTableInUse
+      }
+
+      if (this.haveCheckIn) {
+        return colorTableHaveCheckIn
+      }
+
+      return defaultColor
     },
     table () {
       const res = Object.assign({}, defaultTable, this.tableInfo)
@@ -161,9 +170,9 @@ export default {
       res.childCount = res.childCount ?? 0
       res.seatCount = res.seatCount ?? 0
       let maxKeyCount = 1
-      if (res.h > 120) {
-        maxKeyCount = 2
-      }
+
+      maxKeyCount = 2
+
       res.infos = this.getKeys().filter((k, index) => index < maxKeyCount)
       return res
     }
@@ -202,13 +211,13 @@ export default {
   width: 100%
   z-index: 1
   font-family: "Axure Handwriting", sans-serif
-  font-weight: 600
+  font-weight: 900
   overflow: hidden
   text-overflow: ellipsis
   white-space: nowrap
 
 .notUsed .tableCard .tableCardName
-  font-weight: 600
+  font-weight: 900
   color: grey
 
 .chair

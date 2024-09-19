@@ -238,28 +238,43 @@
                   >
                     {{ $t('CancelReservation') }}
                   </v-btn>
-                  <div
-                      v-if="showChangeButton === 1"
-                      class="ml-2"
-                  >
+                  <template v-if="re.status==='Created'">
                     <v-btn
-                        color="warning"
+                        class="ml-2"
+                        color="success"
                         elevation="0"
                         small
-                        @click="moveReservation(re.id,activeTable.tableId)"
+                        @click="confirm(re.id)"
                     >
-                      {{ $t('ChangePosition') }}
+                      {{ $t('Confirm') }}
                     </v-btn>
-                  </div>
-                  <v-btn
-                      class="ml-2"
-                      color="success"
-                      elevation="0"
-                      small
-                      @click="checkIn(re.id)"
-                  >
-                    {{ $t('checkIn') }}
-                  </v-btn>
+                  </template>
+                  <template v-else>
+                    <div
+                        v-if="showChangeButton === 1"
+                        class="ml-2"
+                    >
+                      <v-btn
+                          color="warning"
+                          elevation="0"
+                          small
+                          @click="moveReservation(re.id,activeTable.tableId)"
+                      >
+                        {{ $t('ChangePosition') }}
+                      </v-btn>
+                    </div>
+                    <v-btn
+                        v-if="re.status==='Confirmed'"
+                        class="ml-2"
+                        color="success"
+                        elevation="0"
+                        small
+                        @click="checkIn(re.id)"
+                    >
+                      {{ $t('checkIn') }}
+                    </v-btn>
+
+                  </template>
 
                 </div>
 
@@ -283,7 +298,7 @@ import { defaultSection } from '@/oldjs/defaultConst'
 import { getSectionList, setTableLocation } from '@/oldjs/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import debounce from 'lodash-es/debounce'
-import { cancelReservation, checkIn, moveReservation } from '@/api/ReservationService'
+import { cancelReservation, checkIn, confirmReservation, moveReservation } from '@/api/ReservationService'
 import uniqBy from 'lodash-es/uniqBy'
 import IKUtils from 'innerken-js-utils'
 import TableCard from '@/views/FirstPage/Table/Table/Item/TableCard'
@@ -416,6 +431,11 @@ export default {
   methods: {
     async checkIn (id) {
       await checkIn(id)
+      this.reservationDialog = false
+      this.$emit('need-refresh')
+    },
+    async confirm (id) {
+      await confirmReservation(id)
       this.reservationDialog = false
       this.$emit('need-refresh')
     },

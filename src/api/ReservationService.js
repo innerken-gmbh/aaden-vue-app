@@ -27,7 +27,7 @@ const todayEnd = dayjs().startOf('d')
 
 export async function getCurrentReservation () {
   const nowMinus30 = dayjs().subtract(60, 'm').format(timestampTemplate)
-  return (await loadAllReservation(nowMinus30, todayEnd)).filter(it => it.status !== 'Cancelled' && it.status !== 'Created')
+  return (await loadAllReservation(nowMinus30, todayEnd)).filter(it => it.status !== 'Cancelled')
 }
 
 export async function loadAllReservation (fromDateTime, toDateTime) {
@@ -58,5 +58,17 @@ export async function cancelReservation (reservationId) {
 
 export async function checkIn (id) {
   return (await hillo.jsonPost(host + 'checkIn/' + id,
+    {}))
+}
+
+export const ReservationCache = {
+  lastCacheAt: null,
+  reservationCache: null
+}
+
+export async function confirmReservation (id) {
+  ReservationCache.lastCacheAt = null
+  ReservationCache.reservationCache = null
+  return (await hillo.jsonPost(host + 'confirmByMerchant/' + id,
     {}))
 }
