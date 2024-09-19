@@ -52,11 +52,15 @@ export async function cancelReservation (reservationId) {
     i18n.t('AreYouSureToCancelTheReservation')
   )
   if (res.isConfirmed) {
+    ReservationCache.lastCacheAt = null
+    ReservationCache.reservationCache = null
     return (await hillo.jsonPost(host + 'cancelInternal/' + reservationId))
   }
 }
 
 export async function checkIn (id) {
+  ReservationCache.lastCacheAt = null
+  ReservationCache.reservationCache = null
   return (await hillo.jsonPost(host + 'checkIn/' + id,
     {}))
 }
