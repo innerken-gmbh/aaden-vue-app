@@ -8,8 +8,10 @@ import {
   deleteAllInput,
   getCurrentReservationStatus,
   getCurrentSearchStatus,
-  openCashBoxByPw, useTableColorSetting
+  openCashBoxByPw,
+  useTableColorSetting
 } from '@/api/api'
+import IKUtils from 'innerken-js-utils'
 
 const fix = require('@/assets/FixedConfig.json')
 const defaultConfig = require('@/assets/AadenConfig.json')
@@ -27,6 +29,7 @@ export async function loadConfig () {
     GlobalConfig.startUpTimestamp = dayjs().utcOffset()
     refreshGetter()
     window.Config = GlobalConfig
+    console.log(GlobalConfig.lang)
   } catch (e) {
     console.log(e)
   }
@@ -82,7 +85,7 @@ export function setDeviceId (id) {
   reload()
 }
 
-export function changeLanguage (lang) {
+export async function changeLanguage (lang) {
   const l = lang.toLowerCase()
   const backServerLang = ['de', 'zh', 'en']
   if (backServerLang.includes(l)) {
@@ -91,6 +94,7 @@ export function changeLanguage (lang) {
     GlobalConfig.updateSettings('lang', 'de')
   }
   i18n.locale = l
+  await IKUtils.wait(50)
 }
 
 export default GlobalConfig

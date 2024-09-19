@@ -533,7 +533,7 @@ import { getConsumeTypeList, openOrEnterTable, popAuthorize, requestOutTable } f
 import Swal from 'sweetalert2'
 import { dragscroll } from 'vue-dragscroll'
 
-import GlobalConfig from '../../oldjs/LocalGlobalSettings'
+import GlobalConfig, { changeLanguage } from '../../oldjs/LocalGlobalSettings'
 import LanguageSwitcher from '@/views/Widget/LanguageSwitcher'
 
 import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
@@ -806,6 +806,7 @@ export default {
         sOptions: '',
         tagList: 'basic,FrontApp,language'
       }])
+      await changeLanguage(locale)
       location.reload()
     },
 
