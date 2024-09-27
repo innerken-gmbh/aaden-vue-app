@@ -88,7 +88,6 @@ async function initial () {
   } catch (e) {
 
   }
-
   if (!Remember.uuid) {
     Remember.uuid = uuidv4()
   }

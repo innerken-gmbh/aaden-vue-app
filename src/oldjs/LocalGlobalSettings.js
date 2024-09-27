@@ -8,6 +8,7 @@ import {
   deleteAllInput,
   getCurrentReservationStatus,
   getCurrentSearchStatus,
+  getReservationStatus,
   openCashBoxByPw,
   useTableColorSetting
 } from '@/api/api'
@@ -38,6 +39,10 @@ export async function loadConfig () {
 export async function getAdminSetting () {
   GlobalConfig.searchIncludesCode = await getCurrentSearchStatus()
   GlobalConfig.activeReservation = (await getCurrentReservationStatus()) === '1'
+  setTimeout(async () => {
+    GlobalConfig.activeReservation = await getReservationStatus()
+  }, 20)
+
   GlobalConfig.openCashBoxByPw = await openCashBoxByPw()
   GlobalConfig.deleteOneKeys = await deleteAllInput()
   GlobalConfig.closePlaySound = await closePlaySound()

@@ -4,6 +4,7 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
 import { fastSweetAlertRequest, resetTableStatus } from '@/oldjs/common'
 import i18n from '@/i18n'
+import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
 
 export async function previewZBon (startDate, endDate) {
   return (await hillo.get('ZBon.php?op=previewBySpan', {
@@ -443,4 +444,13 @@ export async function updateNewSetting (items) {
   return (await hillo.post('Restaurant.php?op=updateSystemSettings', {
     systemSettings: JSON.stringify(items)
   })).content
+}
+
+export async function getReservationStatus () {
+  const userId = parseInt(await getCurrentDeviceId())
+  try {
+    return (await hillo.get('https://reservation-api.aaden.io/user/getDetail/' + userId)).code === 200
+  } catch (e) {
+    return false
+  }
 }
