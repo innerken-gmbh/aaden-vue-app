@@ -640,7 +640,8 @@ export default {
       deviceId: -1,
       checkoutId: [],
       showMemberSelectionDialog: null,
-      reservations: []
+      reservations: [],
+      servantPw: ''
     }
   },
   created () {
@@ -651,13 +652,14 @@ export default {
       if (note) {
         saveReason(note)
       }
-      await deleteDish(this.id, this.splitOrderListModel.list, note)
+      await deleteDish(this.id, this.splitOrderListModel.list, note, this.servantPw)
     },
     async showDeleteDishDialog () {
-      await optionalAuthorizeAsync(
+      const res = await optionalAuthorizeAsync(
         'boss',
         !GlobalConfig.returnDishWithoutPassword
       )
+      this.servantPw = res
       this.reasons = getReason()
       this.deleteDishReason = ''
       this.deleteDishReasonDialog = true
@@ -740,7 +742,7 @@ export default {
       }
     },
     async discountShow () {
-      await optionalAuthorizeAsync('', !GlobalConfig.discountWithoutPassword)
+      await optionalAuthorizeAsync('boss', !GlobalConfig.discountWithoutPassword)
       this.discountModelShow = true
       this.useDishesDiscount = false
     },

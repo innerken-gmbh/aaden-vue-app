@@ -177,7 +177,7 @@ export default {
   components: { KeyboardLayout },
   data: function () {
     return {
-      keyboardLayout: GlobalConfig.topKeyboardKey
+      keyboardLayout: GlobalConfig.usefulKey
         .split(',')
         .concat(keyboardLayout),
       searchDish: [],

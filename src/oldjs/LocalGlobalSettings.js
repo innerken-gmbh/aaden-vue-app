@@ -9,7 +9,7 @@ import {
   getCurrentReservationStatus,
   getCurrentSearchStatus,
   getReservationStatus,
-  openCashBoxByPw,
+  openCashBoxByPw, usefulKeyInKeyboard,
   useTableColorSetting
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
@@ -47,6 +47,7 @@ export async function getAdminSetting () {
   GlobalConfig.deleteOneKeys = await deleteAllInput()
   GlobalConfig.closePlaySound = await closePlaySound()
   GlobalConfig.userTableColor = await useTableColorSetting()
+  GlobalConfig.usefulKey = await usefulKeyInKeyboard()
 }
 
 export function refreshGetter () {

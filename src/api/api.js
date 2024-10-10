@@ -241,8 +241,8 @@ export async function reprintOrder (orderId, type = 0) {
   })
 }
 
-export async function deleteDish (id, items, reason) {
-  return (await hillo.post('Complex.php?op=deleteDishes', {
+export async function deleteDish (id, items, reason, pw) {
+  return (await hillo.post('Complex.php?op=deleteDishes&_servantPw=' + pw, {
     tableId: id,
     dishes: JSON.stringify(items),
     reason: reason
@@ -434,6 +434,19 @@ export async function useTableColorSetting () {
     sValue: '0',
     defaultValue: '0',
     sType: 'boolean',
+    minimumVersion: '1.7.825',
+    sOptions: '',
+    tagList: 'basic,FrontApp'
+  })
+}
+
+export async function usefulKeyInKeyboard () {
+  return await forceGetSystemSetting({
+    section: 'FrontApp',
+    sKey: 'usefulKey',
+    sValue: 'E,F,B,R',
+    defaultValue: 'E,F,B,R',
+    sType: 'string',
     minimumVersion: '1.7.825',
     sOptions: '',
     tagList: 'basic,FrontApp'
