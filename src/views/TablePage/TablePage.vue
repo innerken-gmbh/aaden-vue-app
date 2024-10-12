@@ -742,7 +742,11 @@ export default {
       }
     },
     async discountShow () {
-      await optionalAuthorizeAsync('boss', !GlobalConfig.discountWithoutPassword)
+      if (GlobalConfig?.discountWithPassword === '1') {
+        await optionalAuthorizeAsync('boss', true)
+      } else {
+        await optionalAuthorizeAsync('', false)
+      }
       this.discountModelShow = true
       this.useDishesDiscount = false
     },

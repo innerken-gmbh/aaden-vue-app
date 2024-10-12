@@ -250,6 +250,7 @@ import { printDeliveryBon, showSuccessMessage } from '@/api/api'
 import TabButton from '@/components/Base/TabButton'
 import { today } from '@/api/Repository/DateRepository'
 import { Remember } from '@/api/remember'
+import { mapMutations } from 'vuex'
 
 export default {
   name: 'BillsPrinterPage',
@@ -380,6 +381,7 @@ export default {
 
   },
   methods: {
+    ...mapMutations(['showErrorDialog']),
     async backToSelectPrint () {
       this.isLoading = true
       await this.loadData()
@@ -402,6 +404,7 @@ export default {
         await this.reload()
       } catch (e) {
         this.isPrint = false
+        this.showErrorDialog(this.$t('PrintFailed'), e?.message)
       }
     },
     async ZbonPrintSelectedOptions (timeArray) {

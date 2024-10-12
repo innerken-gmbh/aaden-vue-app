@@ -453,6 +453,19 @@ export async function usefulKeyInKeyboard () {
   })
 }
 
+export async function getAdminSettingConfig (sKey, sValue, defaultValue, sType, sOptions, tagList) {
+  return await forceGetSystemSetting({
+    section: 'FrontApp',
+    sKey: sKey,
+    sValue: sValue,
+    defaultValue: defaultValue,
+    sType: sType,
+    minimumVersion: '1.7.825',
+    sOptions: sOptions,
+    tagList: tagList
+  })
+}
+
 export async function updateNewSetting (items) {
   return (await hillo.post('Restaurant.php?op=updateSystemSettings', {
     systemSettings: JSON.stringify(items)
