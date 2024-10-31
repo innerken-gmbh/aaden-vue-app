@@ -590,5 +590,8 @@
   "cantBeEmpty": "不能为空",
   "ElectronicBillReceiver": "电子账单接收者的电子邮件",
   "CheckoutReturn" : "结账后返回",
-  "servantShowHistoryBill" : "服务员查看历史账单"
+  "servantShowHistoryBill" : "服务员查看历史账单",
+  "workTimeMinHour": "工作时长",
+  "checkIn": "打卡上班",
+  "checkOut": "打卡下班"
 }

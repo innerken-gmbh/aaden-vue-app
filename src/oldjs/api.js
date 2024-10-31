@@ -4,6 +4,7 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { getCurrentReservation, ReservationCache } from '@/api/ReservationService'
 import IKUtils from 'innerken-js-utils'
 import dayjs from 'dayjs'
+import { servantWorkStatus } from '@/api/servantRecords'
 
 export function splitOrder (discountStr = '', id, items, initialUI, print, payMethod, tipIncome, memberCardId) {
   print = parseInt(print)
@@ -104,7 +105,15 @@ export function printZwichenBon (tableId, items) {
 }
 
 export async function getServantList () {
-  return (await hillo.get('Servant.php')).content
+  const res = (await hillo.get('Servant.php')).content
+  const promises = res.map(it => servantWorkStatus(it.id)
+    .then(s => {
+      it.clockedIn = s.clockedIn
+      it.lastRecord = s.lastRecord
+    }))
+
+  await Promise.all(promises)
+  return res
 }
 
 export async function getSectionList () {

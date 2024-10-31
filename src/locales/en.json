@@ -884,5 +884,8 @@
   "yesterday": "Yesterday",
   "zbonList": "ZBon history",
   "zoom": "Zoom",
-  "信用卡": "Credit Card"
+  "信用卡": "Credit Card",
+  "workTimeMinHour": "Working Hours",
+  "checkIn": "Check in to work",
+  "checkOut": "Check in after work"
 }

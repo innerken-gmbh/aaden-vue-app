@@ -884,5 +884,8 @@
   "yesterday": "gisteren",
   "zbonList": "ZbON-lijst",
   "zoom": "zoomt",
-  "信用卡": "Kredietkaart"
+  "信用卡": "Kredietkaart",
+  "workTimeMinHour": "Werkuren",
+  "checkIn": "Check in to work",
+  "checkOut": "Inchecken na het werk"
 }

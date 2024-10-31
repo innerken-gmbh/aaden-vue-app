@@ -884,5 +884,8 @@
   "yesterday": "ieri",
   "zbonList": "Elenco Zbon",
   "zoom": "ingrandisce",
-  "信用卡": "Carta"
+  "信用卡": "Carta",
+  "workTimeMinHour": "Orario di lavoro",
+  "checkIn": "Check in to work",
+  "checkOut": "Check in dopo il lavoro"
 }

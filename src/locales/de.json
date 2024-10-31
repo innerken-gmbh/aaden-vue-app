@@ -587,5 +587,8 @@
   "CashBox": "Geldkassette",
   "PlannedSettingsHint": "Hinweis zu geplanten Einstellungen",
   "cantBeEmpty": "Darf nicht leer sein",
-  "CheckoutReturn": "Nach dem Checkout zurückkehren"
+  "CheckoutReturn": "Nach dem Checkout zurückkehren",
+  "workTimeMinHour": "Arbeitszeiten",
+  "checkIn": "Check in to work",
+  "checkOut": "Check in after work"
 }
