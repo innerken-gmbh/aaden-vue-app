@@ -1027,6 +1027,12 @@ export default {
         if (shouldGoHome) {
           await goHome()
         }
+        if (checkoutInfo.printType === 1) {
+          const uuid = await getUUidByOrderId(paymentType === 'checkOut'
+            ? this.currentOrderId : res.id)
+          await setUuidInFirebase(uuid)
+          this.showBillDetailQRDialog({ code: uuid })
+        }
         if (paymentType !== 'checkOut' || !checkoutInfo.returnHome) {
           await this.initialUI()
           if (this.orderListModel.count() === 0) {
@@ -1036,12 +1042,6 @@ export default {
           }
         }
         printNow()
-        if (checkoutInfo.printType === 1) {
-          const uuid = await getUUidByOrderId(paymentType === 'checkOut'
-            ? this.currentOrderId : res.id)
-          await setUuidInFirebase(uuid)
-          this.showBillDetailQRDialog({ code: uuid })
-        }
       }
       setTimeout(async () => {
         const pw = await optionalAuthorizeAsync(
