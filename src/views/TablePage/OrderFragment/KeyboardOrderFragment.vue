@@ -380,7 +380,6 @@ export default {
     keyboardInput: function () {
       if (this.keyboardInput) {
         this.currentCodeBuffer = ''
-        this.indexActive = ''
       }
       this.debounce(this.updateSearchDish)
     }

@@ -4,6 +4,7 @@
       <menu-order-fragment
           @dish-click="openDish"
           @dish-tune="openDishDetail"
+          @dish-add="openDish"
           :categories="categories"
           :dishes="dishes"
           @toggle="keyboardMode=true"

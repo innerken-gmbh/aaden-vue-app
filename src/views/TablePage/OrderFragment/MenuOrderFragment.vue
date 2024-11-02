@@ -201,6 +201,116 @@
       </template>
       <div style="width: 100%; height: 160px"></div>
     </v-card>
+    <v-overlay
+        :retain-focus="false"
+        :value="keyboardInput||showFeedBack"
+
+    >
+      <v-card
+          light
+          max-width="500px"
+      >
+
+        <template v-if="!keyboardInput&&showFeedBack">
+          <div class="pa-4 white--text" style="width: 400px" :class="feedback.startsWith('❌')?'yellow darken-4':'green'">
+            {{ feedback }}
+          </div>
+        </template>
+        <template v-else>
+          <div class="pa-4 d-flex align-center grey lighten-3">
+            <v-icon
+                left
+                size="36"
+                class="mt-1 mr-4"
+            >mdi-magnify
+            </v-icon>
+            <div class="text-h4 font-weight-black">
+              {{ keyboardInput }}
+            </div>
+
+          </div>
+          <div
+              v-if="searchDish.length > 0"
+              class="flex-shrink-1"
+              style="overflow: hidden"
+          >
+            <v-card
+                class="px-4 py-3"
+                color="grey lighten-4"
+                elevation="0"
+                tile
+            >
+              {{ $t('SearchResult') }}
+            </v-card>
+            <!--                  需要监听键盘的地方-->
+            <div
+                v-dragscroll
+                style="height: 85vh;overflow-y: scroll"
+            >
+              <template v-for="(dish, index) in searchDish">
+                <v-card
+                    :key="dish.id"
+                    :class="index === 0 ? 'first' : ''"
+                    :style="{
+                        backgroundColor: '' + dish.displayColor,
+                        color: '' + dish.foreground,
+                      }"
+                    class="d-flex px-4 py-1 align-start"
+                    elevation="0"
+                    style="
+                        width: 100%;
+                        border-bottom: 2px dashed #e2e3e5;
+                        font-size: x-large;
+                      "
+                    tile
+                    @click="searchDishClick(dish.code)"
+                >
+                  <div class="name mr-2">
+                        <span>{{ dish.code }}.</span
+                        >{{ dish.dishName }}
+                  </div>
+                  <v-spacer></v-spacer>
+                  <div
+                      v-if="dish.isFree === '1'"
+                      class="price d-flex align-center green lighten-3 white--text"
+                      style="padding: 2px 4px; border-radius: 4px"
+                  >
+                    {{ $t('Free') }}
+                  </div>
+                  <div
+                      v-else
+                      class="price d-flex align-center text-no-wrap text-truncate"
+                  >
+                    {{ dish.price | priceDisplay }}
+                  </div>
+                </v-card>
+              </template>
+            </div>
+
+          </div>
+          <div
+              v-else
+              class="d-flex align-center justify-center pa-16"
+              style="height: 100%; width: 100%"
+          >
+            <div class="d-flex flex-column align-center">
+              <div>
+                <v-icon
+                    color="grey lighten-1"
+                    size="32"
+                >mdi-keyboard
+                </v-icon>
+              </div>
+              <div class="text--disabled text-body-2 mt-4">
+                {{ $t('PleaseUseKeyboardOrType') }}
+              </div>
+            </div>
+          </div>
+        </template>
+
+      </v-card>
+
+    </v-overlay>
   </div>
 
 </template>
@@ -210,6 +320,10 @@ import DishBlock from '@/views/TablePage/Dish/DishBlock.vue'
 import { dragscroll } from 'vue-dragscroll/src/main'
 import { getCategoryTypeList } from '@/api/aaden-base-model/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import Swal from 'sweetalert2'
+import { debounce } from 'lodash-es'
+import { findDish } from '@/oldjs/StaticModel'
+import { showTimedAlert } from '@/oldjs/common'
 
 export default {
   name: 'MenuOrderFragment',
@@ -219,7 +333,14 @@ export default {
       activeCategoryId: null,
       dct: [],
       activeDCT: 0,
-      loading: true
+      loading: true,
+
+      searchDish: [],
+      showFeedBack: false,
+      feedback: '',
+      keyboardInput: '',
+      Config: GlobalConfig,
+      currentCodeBuffer: ''
     }
   },
   props: {
@@ -269,6 +390,12 @@ export default {
     await this.initial()
   },
   watch: {
+    keyboardInput: function () {
+      if (this.keyboardInput) {
+        this.currentCodeBuffer = ''
+      }
+      this.debounce(this.updateSearchDish)
+    },
     activeDCT: function () {
       this.keyboardInput = ''
       this.activeCategoryId = null
@@ -280,8 +407,12 @@ export default {
   methods: {
     async initial () {
       this.loading = true
+      window.onkeydown = this.listenKeyDown
       await this.getDCT()
       await this.reloadDish()
+      this.keyboardInput = ''
+      this.currentCodeBuffer = ''
+      this.searchDish = []
       this.$nextTick(() => {
         this.loading = false
       })
@@ -318,6 +449,161 @@ export default {
     },
     tuneDish (dish) {
       this.$emit('dish-tune', dish)
+    },
+    listenKeyDown (e) {
+      if (Swal.isVisible()) {
+        return
+      }
+      switch (e.key) {
+        case 'Backspace':
+          if (GlobalConfig.deleteOneKeys === '1') {
+            this.keyboardInput = this.keyboardInput.slice(0, this.keyboardInput.length - 1)
+          } else {
+            this.keyboardInput = ''
+          }
+          break
+        case 'Escape':
+          this.keyboardInput = ''
+          break
+        case 'Enter':
+          this.submit(this.keyboardInput)
+          break
+        default:
+          if (e.target.nodeName === 'BODY') {
+            this.keyboardInput += e.key
+          }
+      }
+    },
+    resetInputAndBuffer () {
+      this.currentCodeBuffer = ''
+      this.keyboardInput = ''
+      this.updateSearchDish()
+    },
+    getCodeAndCountFromInput (string = '') {
+      let [code, count] = ['', 1]
+      if (string.includes('*')) {
+        [code, count] = string.split('*')
+        if (GlobalConfig.numberFirst) {
+          [code, count] = [count, code]
+        }
+        count = parseInt(count)
+      } else {
+        code = string
+      }
+      return [code, count]
+    },
+    debounce: debounce(
+      (f) => {
+        f()
+      },
+      200,
+      { trailing: true }
+    ),
+    async searchDishClick (code) {
+      this.currentCodeBuffer = code
+      this.$emit('dish-add', code)
+      this.keyboardInput = ''
+    },
+    updateSearchDish () {
+      if (this.keyboardInput || this.currentCodeBuffer) {
+        this.searchDish = this.searchDishes()
+      } else {
+        this.searchDish = []
+      }
+    },
+    displayFeedback (second = 3) {
+      this.showFeedBack = true
+      setTimeout(() => {
+        this.showFeedBack = false
+      }, second * 1000)
+    },
+    searchDishes () {
+      const list = this.dishes
+      const searchWord = this.currentCodeBuffer || this.keyboardInput
+      const codeOnly = !!this.currentCodeBuffer
+      console.log(searchWord, 'searchWord')
+      if (searchWord) {
+        if (searchWord !== '' && !searchWord.includes('/')) {
+          const [code] = this.getCodeAndCountFromInput(searchWord)
+          const result = []
+          const exactMatch = findDish(code)
+          if (exactMatch) {
+            exactMatch.rank = -999 + exactMatch.code.length
+            result.push(exactMatch)
+          }
+          if (!codeOnly) {
+            for (const d of list) {
+              if (
+                d.code.toLowerCase().startsWith(code.toLowerCase()) &&
+                  d.code !== code
+              ) {
+                d.rank = 999 + d.code.length
+                result.push(d)
+              } else if (
+                d.dishName.toLowerCase().startsWith(code.toLowerCase())
+              ) {
+                d.rank = d.dishName.length
+                result.push(d)
+              }
+              if (result.length > 20) {
+                break
+              }
+            }
+            if (GlobalConfig.searchIncludesCode === '1' && result.length < 20) {
+              for (const d of list) {
+                if (!d.code.toLowerCase().startsWith(code.toLowerCase()) && d.code !== code && d.code.toLowerCase().includes(code.toLowerCase())) {
+                  d.rank = 99999 + d.code.length
+                  result.push(d)
+                } else if (
+                  !d.dishName.toLowerCase().startsWith(code.toLowerCase()) && d.dishName.toLowerCase().includes(code.toLowerCase())
+                ) {
+                  d.rank = 99999 + d.dishName.length
+                  result.push(d)
+                }
+                if (result.length > 20) {
+                  break
+                }
+              }
+            }
+          }
+          return result.sort((a, b) => {
+            if (a.rank > b.rank) {
+              return 1
+            } else if (a.rank === b.rank) {
+              return 0
+            } else {
+              return -1
+            }
+          })
+        }
+      }
+      return []
+    },
+    async submit () {
+      const t = this.keyboardInput
+      const submit = (code, count = 1) => {
+        const dish = findDish(code)
+        if (!dish) {
+          this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
+        } else {
+          this.$emit('dish-add', code, count)
+          this.feedback = '✔'
+        }
+      }
+      if (t.indexOf('*') !== -1) {
+        let [code, count] = this.getCodeAndCountFromInput(t)
+        count = parseInt(count)
+        if (count < 1) {
+          this.feedback = '❌' + this.$t('CanNotAddNegativeDishes')
+          showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
+        } else {
+          submit(code, count)
+        }
+      } else {
+        submit(t)
+      }
+      this.displayFeedback()
+      this.resetInputAndBuffer()
     }
   }
 }
