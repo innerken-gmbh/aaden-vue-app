@@ -139,7 +139,9 @@ export default {
       this.$emit('removeAllFromSplit')
       if (val > -1) {
         for (const item of this.sliceDishBySourceMarks) {
-          this.clickCallback(item)
+          for (let i = 0; i < item.count; i++) {
+            this.clickCallback(item)
+          }
         }
       }
     },
