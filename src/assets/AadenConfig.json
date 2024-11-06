@@ -13,6 +13,7 @@
   "adminEndpoint": "AppCenter/Admin",
   "autoCompletePLZ": "",
   "topKeyboardKey": "E,F,B,R",
+  "bigDiscountRatio": 0.7,
   "numberFirst": false,
   "skipCartConfirm": false,
   "defaultCancelReason": "falsch Eingabe",
