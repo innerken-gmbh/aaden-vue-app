@@ -340,9 +340,10 @@ export default {
     },
     totalBillsCount () {
       let totalBills = 0
+      const ZBonLength = this.ZBonList.length > 0 ? this.ZBonList.length : 1
       if (!this.mergeBills) {
         if (this.activeZBon) {
-          totalBills += 1
+          totalBills += ZBonLength
         }
         if (this.activeXBon) {
           totalBills += this.billsCount
