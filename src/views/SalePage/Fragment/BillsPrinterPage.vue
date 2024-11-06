@@ -92,7 +92,6 @@
         <tab-button
             :active="activeZBon"
             :color="activeZBon ? '#F48FE2' : '#ffffff'"
-            :disabled="ZBonList.length !== 0"
             icon="mdi-calendar-text-outline"
             name="ZBon"
             @click="selectZBon"
@@ -238,7 +237,7 @@ import dayjs from 'dayjs'
 import {
   getAllTableList,
   getNiceRestaurantInfo,
-  newGetZBon,
+  newGetZBon, newPrintZBon,
   newSetZBon,
   printRealTimeSalesBon,
   printSalesBon,
@@ -306,9 +305,10 @@ export default {
     },
     showDetailPrintMessage () {
       let printMessage = ''
+      const ZBonLength = this.ZBonList.length > 0 ? this.ZBonList.length : 1
       if (!this.mergeBills) {
         if (this.activeZBon) {
-          printMessage += i18n.t('DailyStatement') + '(ZBon)' + ' ' + this.billsCount + ' ' + i18n.t('Pice') + '<br>'
+          printMessage += i18n.t('DailyStatement') + '(ZBon)' + ' ' + ZBonLength + ' ' + i18n.t('Pice') + '<br>'
         }
         if (this.activeXBon) {
           printMessage += i18n.t('PreviewSheet') + '(XBon)' + ' ' + this.billsCount + ' ' + i18n.t('Pice') + '<br>'
@@ -394,14 +394,21 @@ export default {
     async realPrintZbon () {
       try {
         if (this.sendEmail) {
-          await newSetZBon({ allowSameDay: 0 }, 1)
+          if (this.ZBonList.length > 0) {
+            for (const ZBonNumber of this.ZBonList) {
+              await newPrintZBon(ZBonNumber, 1, 1)
+            }
+          } else {
+            for (const ZBonNumber of this.ZBonList) {
+              await newPrintZBon(ZBonNumber, 0, 1)
+            }
+          }
         } else {
           await newSetZBon({ allowSameDay: 0 }, 0)
         }
         await this.ZbonPrintSelectedOptions(this.detailTime)
         showSuccessMessage(i18n.t('print_success'))
         this.printEnd = true
-        await this.reload()
       } catch (e) {
         this.isPrint = false
         this.showErrorDialog(this.$t('PrintFailed'), e?.message)
@@ -470,19 +477,24 @@ export default {
       this.printEnd = true
     },
     async printZBonWarn () {
-      this.unCheckTable = (await getAllTableList()).filter(x => x.usageStatus === '1').map(it => it.name)
-      Remember.sendZmail = this.sendZmail
-      Remember.sendXmail = this.sendXmail
-      Remember.sendEmail = this.sendEmail
-      Remember.totalSales = this.totalSales
-      Remember.totalTime = this.totalTime
-      Remember.deliveryList = this.deliveryList
-      Remember.mergeBills = this.mergeBills
-      this.isPrint = true
-      if (this.unCheckTable.length !== 0) {
-        this.showPrintWarn = true
-      } else {
+      if (this.ZBonList.length > 0) {
+        this.isPrint = true
         await this.realPrintZbon()
+      } else {
+        this.unCheckTable = (await getAllTableList()).filter(x => x.usageStatus === '1').map(it => it.name)
+        Remember.sendZmail = this.sendZmail
+        Remember.sendXmail = this.sendXmail
+        Remember.sendEmail = this.sendEmail
+        Remember.totalSales = this.totalSales
+        Remember.totalTime = this.totalTime
+        Remember.deliveryList = this.deliveryList
+        Remember.mergeBills = this.mergeBills
+        this.isPrint = true
+        if (this.unCheckTable.length !== 0) {
+          this.showPrintWarn = true
+        } else {
+          await this.realPrintZbon()
+        }
       }
     },
     selectPrintType () {
@@ -554,6 +566,9 @@ export default {
     selectZBon () {
       this.activeZBon = !this.activeZBon
       if (this.activeZBon) {
+        if (this.ZBonList.length > 0) {
+          this.showErrorDialog('所选时段已经打印过ZBon,是否重新打印' + this.ZBonList.join())
+        }
         this.activeXBon = false
       }
     },

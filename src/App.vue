@@ -18,11 +18,8 @@
         >
           mdi-alert-box
         </v-icon>
-        <div class="text-h4 mt-6">
+        <div class="text-body-2 mt-6">
           {{ errorDialogTitle }}
-        </div>
-        <div class="text-body-2 mt-2">
-          {{ errorDialogMessage }}
         </div>
         <v-btn
             class="amber lighten-4 black--text mt-4"
