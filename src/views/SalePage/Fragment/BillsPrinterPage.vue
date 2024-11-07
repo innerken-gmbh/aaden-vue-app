@@ -400,12 +400,16 @@ export default {
               await newPrintZBon(ZBonNumber, 1, 1)
             }
           } else {
-            for (const ZBonNumber of this.ZBonList) {
-              await newPrintZBon(ZBonNumber, 0, 1)
-            }
+            await newSetZBon({ allowSameDay: 0 }, 1)
           }
         } else {
-          await newSetZBon({ allowSameDay: 0 }, 0)
+          if (this.ZBonList.length > 0) {
+            for (const ZBonNumber of this.ZBonList) {
+              await newPrintZBon(ZBonNumber, 1, 1)
+            }
+          } else {
+            await newSetZBon({ allowSameDay: 0 }, 0)
+          }
         }
         await this.ZbonPrintSelectedOptions(this.detailTime)
         showSuccessMessage(i18n.t('print_success'))
