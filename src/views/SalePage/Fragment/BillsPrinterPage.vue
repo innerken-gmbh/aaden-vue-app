@@ -405,7 +405,7 @@ export default {
         } else {
           if (this.ZBonList.length > 0) {
             for (const ZBonNumber of this.ZBonList) {
-              await newPrintZBon(ZBonNumber, 1, 1)
+              await newPrintZBon(ZBonNumber, 0, 1)
             }
           } else {
             await newSetZBon({ allowSameDay: 0 }, 0)
