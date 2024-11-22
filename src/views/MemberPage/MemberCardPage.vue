@@ -62,7 +62,7 @@
                   {{ member.name }}
                 </div>
                 <v-spacer></v-spacer>
-                <div>余额:{{ member.currentVoucherAmount | priceDisplay }}</div>
+                <div>{{ $t('Balance') }}:{{ member.currentVoucherAmount | priceDisplay }}</div>
               </div>
               <div class="d-flex align-center text-no-wrap text-body-2 text--secondary mt-2">
                 {{ member.memberIdentity }} | @{{ member.memberLevel }}
@@ -276,7 +276,7 @@
                       v-if="usePointLog.length === 0"
                       class="pa-4 d-flex align-center justify-center"
                     >
-                      当前暂无数据！
+                      {{ $t('noDataNow') }}
                     </div>
                     <v-card
                       v-for="item in usePointLog"
@@ -306,7 +306,7 @@
                         v-if="ordersInfo?.length === 0"
                         class="pa-4 d-flex align-center justify-center"
                       >
-                        当前暂无数据！
+                        {{ $t('noDataNow') }}
                       </div>
                       <v-card
                         v-for="item in ordersInfo"
@@ -330,7 +330,7 @@
                             <div class="d-flex flex-column">
                               <div class="d-flex">
                           <span>
-                            积分类型:
+                            {{ $t('pointType') }}
                           </span>
                                 <v-spacer class="mx-4" />
                                 <div>
@@ -339,7 +339,7 @@
                               </div>
                               <div class="d-flex">
                           <span>
-                            积分:
+                            {{ $t('point') }}
                           </span>
                                 <v-spacer class="mx-2" />
                                 <div>

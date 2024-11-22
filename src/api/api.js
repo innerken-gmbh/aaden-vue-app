@@ -297,15 +297,15 @@ export async function getCashBookInfo (date) {
     toDate
   })).content.map(it => {
     if (it.cashAccountNote.toLowerCase() === 'umsatz' || it.cashAccountNote.toLowerCase() === 'trinkgeld') {
-      it.cashInCome = '营业收入'
+      it.cashInCome = i18n.t('OperatingIncome')
     } else {
-      it.cashInCome = '非营业收入'
+      it.cashInCome = i18n.t('NonOperatingIncome')
     }
     if (!it.name) {
       if (it.payLogAmount >= 0) {
-        it.name = '收入'
+        it.name = i18n.t('Revenue')
       } else {
-        it.name = '支出'
+        it.name = i18n.t('Expenditure')
       }
     }
     return it

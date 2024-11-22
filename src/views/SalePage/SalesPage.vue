@@ -68,7 +68,7 @@
             <div
                 class="d-flex align-center  mt-2"
             >
-              <div>刷卡</div>
+              <div>{{ $t('card') }}</div>
               <v-spacer></v-spacer>
               <v-card
                   class="pa-2"

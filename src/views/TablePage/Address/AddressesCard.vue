@@ -11,7 +11,7 @@
           color="black"
       >mdi-map-marker
       </v-icon>
-      Address Info
+      {{$t('Address')}}
     </div>
 
     <div class="text-body-1 mt-2 px-2">

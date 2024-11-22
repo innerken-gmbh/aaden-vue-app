@@ -5,7 +5,7 @@
       <h2 class="mr-4" style="color: black">{{ $t('OrderDetails') }}: {{ orderInfo.id }}</h2>
       <template v-if="order.orderMeta.length>0" class="text-subtitle-1">
         <div v-if="order.orderMeta[0].refCode !== 'returned'">
-          该订单的原始账单 #{{ order.orderMeta[0].refDOId }}
+          {{ $t('originalInvoice') }} #{{ order.orderMeta[0].refDOId }}
         </div>
       </template>
       </div>
@@ -72,7 +72,7 @@
                  small
                  @click="$emit('return-order', orderInfo.id)">
             <v-icon>mdi-file-cancel-outline</v-icon>
-            {{ isReturned ? $t('Refunded') : $t('CancelOrderAndRefundMoney') + ' ' + orderInfo.id }}
+            {{ isReturned ? $t('Refunded') : $t('Cancel') + ' ' + orderInfo.id }}
           </v-btn>
         </v-list-item-group>
       </v-list>

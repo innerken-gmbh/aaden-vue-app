@@ -17,10 +17,10 @@
           {{ r.title }} {{ r.firstName }} {{ r.lastName }}
         </div>
         <div class="text-body-1 mt-2">
-          Note: {{ r.note || '-' }}
+          {{ $t('note') }}: {{ r.note || '-' }}
         </div>
         <div class="text-body-1 mt-2">
-          Kinderwagen: {{r.useStroller===1?'Ja':'Nein'}}
+          {{ $t('Kinderwagen') }}: {{r.useStroller===1?'Ja':'Nein'}}
         </div>
       </div>
       <div class="d-flex mt-4">
@@ -30,7 +30,7 @@
             class="grey lighten-4"
         >
           <v-icon left>mdi-cancel</v-icon>
-          Cancel
+          {{ $t('Cancel') }}
         </v-btn>
         <v-btn
             @click="move(r.id)"
@@ -38,7 +38,7 @@
             class="grey lighten-4 ml-2"
         >
           <v-icon left>mdi-swap-horizontal</v-icon>
-          Move
+          {{ $t('move') }}
         </v-btn>
         <v-btn
             @click="checkIn(r.id)"
@@ -46,7 +46,7 @@
             class="grey lighten-4 ml-2"
         >
           <v-icon left>mdi-check</v-icon>
-          Check in
+          {{ $t('arrived') }}
         </v-btn>
       </div>
     </v-card>

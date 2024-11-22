@@ -887,5 +887,16 @@
   "信用卡": "Credit Card",
   "workTimeMinHour": "Working Hours",
   "checkIn": "Check in to work",
-  "checkOut": "Check in after work"
+  "checkOut": "Check in after work",
+  "noDataNow": "No data available at the moment!",
+  "pointType": "Point Type:",
+  "point": "Points:",
+  "originalInvoice": "Original invoice for this order",
+  "Kinderwagen": "Baby stroller",
+  "move": "Move",
+  "arrived": "Check in",
+  "OperatingIncome": "Operating income",
+  "NonOperatingIncome": "Non-operating income",
+  "Revenue": "Revenue",
+  "Expenditure": "Expenditure"
 }
