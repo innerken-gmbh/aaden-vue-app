@@ -18,7 +18,8 @@
     </v-card
     >
     <div
-        class="text-truncate text-body-2"
+        style="font-size: 20px !important;"
+        class="text-body-2 mb-1"
     >{{ code }}
     </div>
     <span
