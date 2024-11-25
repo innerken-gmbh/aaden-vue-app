@@ -61,8 +61,8 @@
           </div>
           <div style="display: grid;grid-template-columns: repeat(2,minmax(0,1fr))">
             <div
-                v-for="info in table.infos"
-                :key="info"
+                v-for="(info,index) in table.infos"
+                :key="info + index"
                 style="width: 100%;"
             >
               <table-info-display
