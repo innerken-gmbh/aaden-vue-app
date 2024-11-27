@@ -521,7 +521,15 @@ import GlobalConfig from '../../oldjs/LocalGlobalSettings'
 
 import IKUtils from 'innerken-js-utils'
 
-import { acceptOrder, deleteDish, getUUidByOrderId, reprintOrder, safeRequest, showSuccessMessage } from '@/api/api'
+import {
+  acceptOrder,
+  deleteDish,
+  getUUidByOrderId,
+  reprintOrder,
+  safeRequest,
+  showSuccessMessage,
+  writeCompanyInfo
+} from '@/api/api'
 
 import i18n from '../../i18n'
 import dayjs from 'dayjs'
@@ -671,7 +679,7 @@ export default {
         return
       }
       await this.deleteAndSaveReason(note)
-      showSuccessMessage()
+      showSuccessMessage(i18n.t('Success'))
       this.deleteDishReasonDialog = false
       await this.initialUI()
     },
@@ -1017,6 +1025,15 @@ export default {
                 checkoutInfo.paymentLog.some(it => parseInt(it.id) === 2)) &&
             checkoutInfo.returnHome
         IKUtils.showLoading()
+        if (checkoutInfo.billType === 1) {
+          await writeCompanyInfo({
+            orderId: this.currentOrderId,
+            reasonOfVisit: checkoutInfo.companyBillInfo.reasonOfVisit,
+            companyOrPersonName: checkoutInfo.companyBillInfo.companyOrPersonName,
+            locationAndDate: checkoutInfo.companyBillInfo.locationAndDate,
+            companyLocation: checkoutInfo.companyBillInfo.companyLocation
+          })
+        }
         const res = await checkout(Object.assign({
           tableId: this.id,
           dishes: checkoutFactory.list,

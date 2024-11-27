@@ -167,6 +167,13 @@
               outlined
               required
           />
+          <div>{{ $t('Address') }}:</div>
+          <v-text-field
+              v-model="companyLocation"
+              dense
+              outlined
+              required
+          />
         </v-form>
         <div class="d-flex">
           <v-spacer></v-spacer>
@@ -234,6 +241,7 @@ export default {
       reasonOfVisit: '',
       companyOrPersonName: '',
       locationAndDate: '',
+      companyLocation: '',
       checkCompanyInfo: false,
       orderDetailDialog: false,
       reprintOrderId: null,
@@ -253,6 +261,7 @@ export default {
         this.reasonOfVisit = ''
         this.companyOrPersonName = ''
         this.locationAndDate = ''
+        this.companyLocation = ''
       }
     }
   },
@@ -280,7 +289,8 @@ export default {
             orderId: this.reprintOrderId,
             reasonOfVisit: this.reasonOfVisit,
             companyOrPersonName: this.companyOrPersonName,
-            locationAndDate: this.locationAndDate
+            locationAndDate: this.locationAndDate,
+            companyLocation: this.companyLocation
           })
           await this.realReprintOrder()
           this.checkCompanyInfo = false

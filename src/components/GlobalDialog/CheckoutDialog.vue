@@ -202,6 +202,12 @@
                       filled
                       required
                   />
+                  <v-text-field
+                      v-model="companyLocation"
+                      :label="$t('Address')"
+                      filled
+                      required
+                  />
                 </div>
               </template>
               <v-spacer></v-spacer>
@@ -322,6 +328,7 @@ export default {
       reasonOfVisit: '',
       companyOrPersonName: '',
       locationAndDate: '',
+      companyLocation: '',
       billType: 0,
       returnHome: Remember.returnHomeCheckout,
       printType: 0,
@@ -468,7 +475,8 @@ export default {
           companyBillInfo: {
             reasonOfVisit: this.reasonOfVisit,
             companyOrPersonName: this.companyOrPersonName,
-            locationAndDate: this.locationAndDate
+            locationAndDate: this.locationAndDate,
+            companyLocation: this.companyLocation
           }
         })
         this.paymentLog = []
@@ -485,6 +493,7 @@ export default {
       this.reasonOfVisit = ''
       this.companyOrPersonName = ''
       this.locationAndDate = ''
+      this.companyLocation = ''
     },
     cancel () {
       this.clearBuffer()

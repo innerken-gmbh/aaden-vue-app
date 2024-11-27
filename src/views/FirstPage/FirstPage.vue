@@ -566,6 +566,7 @@ import { checkout } from '@/api/Repository/OrderInfo'
 import AddressesCard from '@/views/TablePage/Address/AddressesCard.vue'
 import { getRestaurantInfo } from '@/api/restaurantInfoService'
 import store from '@/store'
+import i18n from '@/i18n'
 
 const keyboardLayout =
     [
@@ -764,7 +765,7 @@ export default {
       } else {
         openDrawer()
       }
-      showSuccessMessage('打开成功')
+      showSuccessMessage(i18n.t('Success'))
     },
 
     async acceptOrder (reason = 'ok', id) {
