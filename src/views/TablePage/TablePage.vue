@@ -986,7 +986,7 @@ export default {
             printingKitchenBon: print ? 1 : 0
           }
         )
-        IKUtils.toast()
+        IKUtils.toast('Success')
         printNow()
         this.isSendingRequest = false
         if (!GlobalConfig.jumpToHomeWhenOrder) {
@@ -1020,10 +1020,7 @@ export default {
         this.checkoutId = this.checkOutModel.list.map(it => it.code)
         const currentPrice = round(this.checkOutModel.total * (1 - this.discountRatio), 2)
         const checkoutInfo = await this.doCheckout(currentPrice)
-        const shouldGoHome = paymentType === 'checkOut' &&
-            !(GlobalConfig.overrideCardTerminalIp &&
-                checkoutInfo.paymentLog.some(it => parseInt(it.id) === 2)) &&
-            checkoutInfo.returnHome
+        const shouldGoHome = paymentType === 'checkOut' && checkoutInfo.returnHome
         IKUtils.showLoading()
         if (checkoutInfo.billType === 1) {
           await writeCompanyInfo({
