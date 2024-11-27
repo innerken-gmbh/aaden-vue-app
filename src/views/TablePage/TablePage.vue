@@ -680,8 +680,8 @@ export default {
       }
       await this.deleteAndSaveReason(note)
       showSuccessMessage(i18n.t('Success'))
-      this.deleteDishReasonDialog = false
       await this.initialUI()
+      this.deleteDishReasonDialog = false
     },
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
