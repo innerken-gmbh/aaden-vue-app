@@ -303,6 +303,8 @@ import uniqBy from 'lodash-es/uniqBy'
 import IKUtils from 'innerken-js-utils'
 import TableCard from '@/views/FirstPage/Table/Table/Item/TableCard'
 import { Remember } from '@/api/remember'
+import { showSuccessMessage } from '@/api/api'
+import i18n from '@/i18n'
 
 async function refreshAllTablesPosition (listOfTable, containerHeight, containerWidth, sectionId, width, height) {
   IKUtils.showLoading(true)
@@ -322,7 +324,7 @@ async function refreshAllTablesPosition (listOfTable, containerHeight, container
     await submitTable(table, currentCol * defaultWidth, currentRow * defaultHeight, defaultWidth - 12, defaultHeight - 12, sectionId)
     count++
   }
-  IKUtils.toast()
+  showSuccessMessage(i18n.t('Success'))
 }
 
 async function submitTable (table, x, y, w, h, currentSectionId) {

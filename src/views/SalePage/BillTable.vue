@@ -228,6 +228,7 @@ import {
 
 import OrderDetailDialog from '@/components/GlobalDialog/OrderDetailDialog'
 import { mapActions, mapMutations } from 'vuex'
+import i18n from '@/i18n'
 
 export default {
   name: 'BillTable',
@@ -302,7 +303,7 @@ export default {
       IKUtils.showConfirm(this.$t('AreYouSure'), this.$t('CancelPrintSalesBon'), () => {
         IKUtils.showLoading()
         returnOrder(orderId).then(() => {
-          IKUtils.toast()
+          showSuccessMessage(i18n.t('Success'))
           this.$emit('need-refresh')
         })
       })
@@ -315,7 +316,7 @@ export default {
       IKUtils.showLoading()
       await reprintOrder(this.reprintOrderId, type)
       this.reprintDialog = false
-      IKUtils.toast()
+      showSuccessMessage(i18n.t('Success'))
     },
     ...mapActions(['doCheckout']),
     async startChangePaymentMethodForOrder (order) {
@@ -340,7 +341,7 @@ export default {
       IKUtils.showConfirm(this.$t('AreYouSure'), this.$t('CancelPrintSalesBon'), async () => {
         IKUtils.showLoading()
         await restoreOrder(orderId)
-        IKUtils.toast()
+        showSuccessMessage(i18n.t('Success'))
         this.$emit('need-refresh')
       })
     }

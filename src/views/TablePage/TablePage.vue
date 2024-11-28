@@ -986,7 +986,7 @@ export default {
             printingKitchenBon: print ? 1 : 0
           }
         )
-        IKUtils.toast('Success')
+        showSuccessMessage(i18n.t('Success'))
         printNow()
         this.isSendingRequest = false
         if (!GlobalConfig.jumpToHomeWhenOrder) {
@@ -1037,7 +1037,7 @@ export default {
           password: pw,
           checkOutType: paymentType
         }, checkoutInfo))
-        IKUtils.toast('ok')
+        showSuccessMessage(i18n.t('Success'))
         if (shouldGoHome) {
           await goHome()
         }

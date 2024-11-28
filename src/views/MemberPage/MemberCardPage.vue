@@ -425,9 +425,10 @@ import {
 import { sumBy } from 'lodash'
 import BaseForm from '@/components/Base/Form/BaseForm'
 import { VSelect } from 'vuetify/lib/components'
-import { loadAllServants } from '@/api/api'
+import { loadAllServants, showSuccessMessage } from '@/api/api'
 import { uuid } from 'uuidv4'
 import { dragscroll } from 'vue-dragscroll/src/main'
+import i18n from '@/i18n'
 export default {
   name: 'MemberCardPage',
   components: {
@@ -684,7 +685,7 @@ export default {
       await this.reloadAndGoBack(async () => {
         IKUtils.showLoading()
         await transferToCloud(this.selectedCardId)
-        IKUtils.toast()
+        showSuccessMessage(i18n.t('Success'))
       })
     }
   },
