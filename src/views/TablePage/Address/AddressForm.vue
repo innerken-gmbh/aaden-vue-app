@@ -78,7 +78,7 @@
                   outlined
                   autocomlete="off"
                   id="map"
-                  country="DE"
+                  :country="GlobalConfig.googleMapCountry"
                   :placeholder="$t('SearchAddress')"
                   clearable
                   :component-restrictions="
@@ -244,6 +244,7 @@ export default {
     await this.initialMenu()
   },
   methods: {
+    GlobalConfig,
     applyAddress (addressInfo) {
       this.rawAddressInfo = Object.assign({}, DefaultAddressInfo, addressInfo)
       if (!this.rawAddressInfo.date) {

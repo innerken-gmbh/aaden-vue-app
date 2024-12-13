@@ -44,6 +44,7 @@ export async function getAdminSetting () {
   GlobalConfig.usefulKey = await getAdminSettingConfig('usefulKey', 'E,F,B,R', 'E,F,B,R', 'string', '', 'basic,FrontApp')
   GlobalConfig.discountWithPassword = await getAdminSettingConfig('discountWithPassword', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.bigDiscountRatio = await getAdminSettingConfig('bigDiscountRatio', '0.7', '0.7', 'string', '', 'basic,FrontApp')
+  GlobalConfig.googleMapCountry = await getAdminSettingConfig('googleMapCountry', 'DE', 'DE', 'string', '', 'basic,FrontApp')
 }
 
 export function refreshGetter () {
