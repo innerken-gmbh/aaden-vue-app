@@ -866,7 +866,7 @@ export default {
         dish.currentPrice = 0
       }
       if (dish.currentName === '') {
-        dish.currentName = dish.name
+        dish.currentName = dish.langs.find(it => it.lang.toUpperCase() === 'DE').name
       }
       dish.originPrice = dish.currentPrice.toString().replace(',', '.')
       dish.price = dish.originPrice

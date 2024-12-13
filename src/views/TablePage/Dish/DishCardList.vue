@@ -169,7 +169,6 @@ export default {
       this.expandIndex = this.resetCurrentExpandIndex ? (this.reverse ? 0 : this.dishList.length - 1) : null
     },
     _clickCallBack (index, dish) {
-      console.log(index, 'index')
       if (dish.count === 0) {
         this.expandIndex = null
       }
