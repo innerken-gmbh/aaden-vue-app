@@ -887,5 +887,20 @@
   "信用卡": "Credit Card",
   "workTimeMinHour": "Working Hours",
   "checkIn": "Check in to work",
-  "checkOut": "Check in after work"
+  "checkOut": "Check in after work",
+  "purpose": "Purpose",
+  "file": "File",
+  "inOrOut": "deposit or withdrawal",
+  "cashAccount": "cash account",
+  "cashDeposit": "Deposit into the cash register (private)",
+  "moneyTransit": "cash transfer",
+  "inPayment": "deposit into the cash register",
+  "differenceTargetActual": "Customization",
+  "cashWithdraw": "Cash withdrawal from the cash register (private)",
+  "outPayment": "withdrawal from the cash register",
+  "paymentOfWages": "wage payment",
+  "deposit": "deposit",
+  "withdraw": "withdraw",
+  "Revenue": "Private deposit",
+  "Expenditure": "Private withdrawal"
 }

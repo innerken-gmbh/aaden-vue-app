@@ -18,21 +18,24 @@
         <template v-slot:default>
           <thead class="transparent">
           <tr>
-            <th class="text-left">{{ $t('OrderNumber') }}</th>
-            <th>{{ $t('TypeOfIncome') }}</th>
+            <th class="text-left">{{ $t('Date') }}</th>
+            <th>{{ $t('sum') }}</th>
+            <th class="text-left">{{ $t('purpose') }}</th>
             <th class="text-left">{{ $t('Details') }}</th>
-            <th class="text-left">{{ $t('note') }}</th>
-            <th class="text-left" style="width: max-content">{{ $t('MoneyAmount') }}</th>
-            <th class="text-left">{{ $t('Timestamp') }}</th>
+            <th class="text-left" style="width: max-content">{{ $t('note') }}</th>
+            <th class="text-left" style="width: max-content">{{ $t('file') }}</th>
           </tr>
           </thead>
           <tbody>
           <template v-for="item in cashBookInfo">
             <tr v-bind:key="item.id">
               <td>
-                <span class="font-weight-bold">{{ item.orderId }}</span>
+                <span class="font-weight-bold">{{ item.updateTimestamp }}</span>
               </td>
-              <td>{{ item.cashInCome }}</td>
+              <td>{{ item.payLogAmount | priceDisplay }}</td>
+              <td>
+                {{ item.usageName }}
+              </td>
               <td>
                 {{ item.name }}
               </td>
@@ -40,10 +43,9 @@
                 {{ item.cashAccountNote }}
               </td>
               <td>
-                {{ item.payLogAmount | priceDisplay }}
-              </td>
-              <td>
-                {{ item.updateTimestamp }}
+                <v-btn @click="downloadFiles(item)" outlined class="elevation-0" v-if="item.noteFile">
+                  {{ $t('file') }}
+                </v-btn>
               </td>
             </tr>
           </template>
@@ -85,62 +87,94 @@
             v-model="valid"
             lazy-validation
           >
-            <div
-              class="d-flex align-center justify-center my-4"
-            >
-              <div
-                class="text-h5"
-              >
-                {{ $t('note') }}
-              </div>
-              <v-spacer/>
-              <v-text-field
-                v-model="note"
+            <div class="text-overline">
+              {{ $t('inOrOut') }}
+            </div>
+            <v-select
+                v-model="cashbookType"
+                :items="lrType"
                 :rules="rules"
                 dense
                 hide-details
+                item-text="label"
+                item-value="value"
                 outlined
-                style="max-width: 300px"
-              />
+            />
+            <div class="text-overline">
+              {{ $t('purpose') }}
             </div>
-            <div
-              class="d-flex align-center justify-center my-4"
-            >
-              <div
-                class="text-h5"
-              >
-                {{ $t('MoneyAmount') }}
-              </div>
-              <v-spacer/>
-              <v-text-field
-                v-model="price"
+            <v-select
+                v-model="editItem.cashAccountUsageId"
+                :items="currentAccountList"
                 :rules="rules"
                 dense
                 hide-details
+                item-text="usageName"
+                item-value="id"
                 outlined
-                style="max-width: 300px"
+            />
+            <div class="text-overline">
+              {{ $t('TaxRate') }}
+            </div>
+            <v-select
+                v-model="taxRate"
+                :items="taxArray"
+                dense
+                hide-details
+                item-text="displayName"
+                item-value="rateValue"
+                outlined
+            />
+            <div
+                v-for="(item,index) in currentAmountList"
+                :key="index"
+            >
+              <div class="text-overline">
+                {{ item.displayName }}
+              </div>
+              <v-text-field
+                  v-model="item.amount"
+                  :rules="rules"
+                  dense
+                  hide-details
+                  outlined
               />
             </div>
             <div
-              class="d-flex align-center justify-center my-4"
+                v-if="showCashBoxInfo"
+                class="text-overline"
             >
-              <div
-                class="text-h5"
-              >
-                {{ $t('OperationType') }}
-              </div>
-              <v-spacer/>
-              <v-select
-                v-model="operateType"
-                :items="operateTypeList"
+              {{ $t('CashBox') }}
+            </div>
+            <v-select
+                v-if="showCashBoxInfo"
+                v-model="editItem.cashBoxId"
+                :items="cashBoxList"
+                :rules="rules"
                 dense
                 hide-details
                 item-text="name"
                 item-value="id"
                 outlined
-                style="max-width: 300px"
-              />
+            />
+            <div class="text-overline">
+              {{ $t('note') }}
             </div>
+            <v-text-field
+                v-model="editItem.note"
+                dense
+                hide-details
+                outlined
+            />
+            <div class="text-overline">
+              {{ $t('file') }}
+            </div>
+            <v-file-input
+                v-model="editItem.file"
+                dense
+                hide-details
+                outlined
+            />
           </v-form>
         </div>
         <v-btn :loading="btnLoading" class="amber lighten-4 black--text mt-8" elevation="0" width="100%" x-large
@@ -153,7 +187,17 @@
 </template>
 
 <script>
-import { addNewCashBookInfo, getAllCashAccount, getCashBookInfo } from '@/api/api'
+import {
+  addNewCshBook,
+  forceGetSystemSetting,
+  getAllCashAccount,
+  getCashAccount,
+  getCashBookList,
+  getCashBoxList, getLatestTaxRateNames
+} from '@/api/api'
+import { getBaseAndUrlForDeviceId } from '@/api/restaurantInfoService'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import i18n from '@/i18n'
 
 export default {
   name: 'CashBookPage',
@@ -163,6 +207,26 @@ export default {
   },
   data: function () {
     return {
+      cashbookType: '',
+      lrType: [{ label: i18n.t('deposit'), value: '1' },
+        { label: i18n.t('withdraw'), value: '2' }],
+      accountUsageList: [],
+      taxRate: '',
+      taxArray: [{ id: -1, name: 'Mix', displayName: 'Mix', rateValue: '' }],
+      showCashBoxInfo: false,
+      cashBoxList: [],
+      editItem: {},
+      defaultItem: {
+        amount: '',
+        note: '',
+        cashBoxId: '',
+        cashAccountUsageId: '',
+        amountA: '0',
+        amountB: '0',
+        amountC: '0',
+        file: null
+      },
+
       btnLoading: false,
       loading: false,
       price: '',
@@ -192,12 +256,39 @@ export default {
   mounted () {
     this.reload()
   },
+  computed: {
+    currentAccountList () {
+      return this.accountUsageList.filter(it => it.lrMark === this.cashbookType)
+    },
+    currentAmountList () {
+      const res = this.taxArray
+      if (this.taxRate) {
+        return res.filter(it => it.rateValue === this.taxRate)
+      } else {
+        return res.filter(it => it.id !== -1)
+      }
+    }
+  },
   methods: {
+    async downloadFiles (item) {
+      console.log(item, 'item')
+      const { url } = await getBaseAndUrlForDeviceId(GlobalConfig.DeviceId)
+      window.open(url + '/Resource/' + item.noteFile)
+    },
     async save () {
       this.btnLoading = true
-      const cashUseType = this.operateTypeList.find(it => it.id === this.operateType)
-      const res = { cashAccountNote: this.note, cashType: this.operateType, payLogAmount: this.price, cashUseType: cashUseType.lrMark }
-      await addNewCashBookInfo(res)
+      const currentAccount = this.accountUsageList.find(it => it.id === this.editItem.cashAccountUsageId)
+      this.editItem.amountA = this.currentAmountList.find(it => it.name === 'A')?.amount ?? 0
+      this.editItem.amountB = this.currentAmountList.find(it => it.name === 'B')?.amount ?? 0
+      this.editItem.amountC = this.currentAmountList.find(it => it.name === 'C')?.amount ?? 0
+      if (currentAccount.lrMark === '2') {
+        this.editItem.amount = parseFloat(this.editItem.amount) * -1
+        this.editItem.amountA = parseFloat(this.editItem.amountA) * -1
+        this.editItem.amountB = parseFloat(this.editItem.amountB) * -1
+        this.editItem.amountC = parseFloat(this.editItem.amountC) * -1
+      }
+      this.editItem.amount = parseFloat(this.editItem.amountA) + parseFloat(this.editItem.amountB) + parseFloat(this.editItem.amountC)
+      await addNewCshBook(this.editItem)
       this.btnLoading = false
       this.newCashBookDialog = false
       await this.reload()
@@ -205,7 +296,30 @@ export default {
     async reload () {
       this.loading = true
       this.operateTypeList = await getAllCashAccount()
-      this.cashBookInfo = await getCashBookInfo(this.date)
+      this.cashBookInfo = await getCashBookList(this.date)
+      console.log(this.cashBookInfo, 'info')
+      this.accountUsageList = await getCashAccount()
+      this.latestTaxRateNames = await getLatestTaxRateNames()
+      this.taxArray = this.taxArray.concat(this.latestTaxRateNames).map(it => {
+        if (it.rateValue) {
+          it.displayName = (parseFloat(it.rateValue) * 100).toFixed(0) + '%'
+        }
+        return it
+      })
+      const res = await forceGetSystemSetting({
+        section: 'CashBox',
+        sKey: 'enabled',
+        sValue: '0',
+        defaultValue: '0',
+        sType: 'boolean',
+        minimumVersion: '1.7.825',
+        sOptions: '',
+        tagList: 'basic,cash,box'
+      })
+      if (res === '1') {
+        this.showCashBoxInfo = true
+        this.cashBoxList = await getCashBoxList()
+      }
       this.loading = false
     }
   }

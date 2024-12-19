@@ -593,5 +593,20 @@
   "servantShowHistoryBill" : "服务员查看历史账单",
   "workTimeMinHour": "工作时长",
   "checkIn": "打卡上班",
-  "checkOut": "打卡下班"
+  "checkOut": "打卡下班",
+  "purpose": "用途",
+  "file": "文件",
+  "cashAccount": "现金账户",
+  "cashDeposit": "存入收银机(私人)",
+  "moneyTransit": "金钱转移",
+  "inPayment": "存入收银机",
+  "differenceTargetActual": "调整",
+  "cashWithdraw": "收银机取出(私人)",
+  "outPayment": "收银机取出",
+  "paymentOfWages": "支付工资",
+  "deposit": "存入",
+  "withdraw": "取出",
+  "inOrOut": "存入或取出",
+  "Revenue": "收入",
+  "Expenditure": "支出"
 }

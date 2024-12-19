@@ -887,5 +887,20 @@
   "信用卡": "Carta",
   "workTimeMinHour": "Orario di lavoro",
   "checkIn": "Check in to work",
-  "checkOut": "Check in dopo il lavoro"
+  "checkOut": "Check in dopo il lavoro",
+  "purpose": "Scopo",
+  "file": "File",
+  "inOrOut": "Deposito o ritiro",
+  "cashAccount": "Conto contanti",
+  "cashDeposit": "Deposito nel registratore di cassa (privato)",
+  "moneyTransit": "Trasferimento di contanti",
+  "inPayment": "Deposito nel registratore di cassa",
+  "differenceTargetActual": "Regolazione",
+  "cashWithdraw": "Prelievo contanti dal registratore di cassa (privato)",
+  "outPayment": "Prelievo dal registratore di cassa",
+  "paymentOfWages": "Pagamento degli stipendi",
+  "deposit": "Depositare",
+  "withdraw": "Ritiro",
+  "Revenue": "Deposito privato",
+  "Expenditure": "Ritiro privato"
 }

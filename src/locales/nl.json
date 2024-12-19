@@ -887,5 +887,20 @@
   "信用卡": "Kredietkaart",
   "workTimeMinHour": "Werkuren",
   "checkIn": "Check in to work",
-  "checkOut": "Inchecken na het werk"
+  "checkOut": "Inchecken na het werk",
+  "purpose": "Doel",
+  "file": "bestand",
+  "inOrOut": "Storting of opname",
+  "cashAccount": "Kasrekening",
+  "cashDeposit": "Stort in de kassa (privé)",
+  "moneyTransit": "Contante overdracht",
+  "inPayment": "Stort in de kassa",
+  "differenceTargetActual": "Aanpassing",
+  "cashWithdraw": "Geldopname aan de kassa (privé)",
+  "outPayment": "Opname uit de kassa",
+  "paymentOfWages": "Betaling van loon",
+  "deposit": "Borg",
+  "withdraw": "Opname",
+  "Revenue": "Particuliere aanbetaling",
+  "Expenditure": "Particuliere terugtrekking"
 }

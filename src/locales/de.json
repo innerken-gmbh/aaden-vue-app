@@ -590,5 +590,20 @@
   "CheckoutReturn": "Nach dem Checkout zurückkehren",
   "workTimeMinHour": "Arbeitszeiten",
   "checkIn": "Check in to work",
-  "checkOut": "Check in after work"
+  "checkOut": "Check in after work",
+  "purpose": "Zweck",
+  "file": "Datei",
+  "cashAccount": "Bargeldkonto",
+  "cashDeposit": "Einzahlung in die Kasse (privat)",
+  "moneyTransit": "Bargeldtransfer",
+  "inPayment": "Einzahlung in die Kasse",
+  "differenceTargetActual": "Anpassung",
+  "cashWithdraw": "Bargeldabhebung aus der Kasse (privat)",
+  "outPayment": "Abhebung aus der Kasse",
+  "paymentOfWages": "Lohnzahlung",
+  "deposit": "Einzahlung",
+  "withdraw": "Abhebung",
+  "inOrOut": "Einzahlung oder Abhebung",
+  "Revenue": "Privateinlage",
+  "Expenditure": "Privatentnahme"
 }

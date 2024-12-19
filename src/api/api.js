@@ -5,6 +5,8 @@ import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
 import { fastSweetAlertRequest, resetTableStatus } from '@/oldjs/common'
 import i18n from '@/i18n'
 import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
+import { groupBy, sumBy } from 'lodash'
+import dayjs from 'dayjs'
 
 export async function previewZBon (startDate, endDate) {
   return (await hillo.get('ZBon.php?op=previewBySpan', {
@@ -479,4 +481,102 @@ export async function getReservationStatus () {
   } catch (e) {
     return false
   }
+}
+
+export async function getCashAccount () {
+  return (await hillo.post('Complex.php?op=getCashAccountUsage', {})).content.map(it => {
+    it.lrMarkDisplay = it.lrMark.toString() === '1' ? i18n.t('deposit') : i18n.t('withdraw')
+    it.typeCodeDisplay = i18n.t(it.typeCode)
+    return it
+  })
+}
+
+export async function getCashBoxList () {
+  return (await hillo.get('CashBoxController.php?op=getCashBoxList', {}))
+    .content
+}
+
+export async function addNewCshBook (item) {
+  await hillo.postWithUploadFile('Complex.php?op=manageCashAccount', { ...item })
+}
+
+export async function getLatestTaxRateNames () {
+  return (await hillo.get('Complex.php?op=getLatestTaxRateNames', {})).content
+}
+
+export async function getCashBookList (date) {
+  const [fromDate, toDate] = date
+  const res = (await hillo.get('Complex.php?op=getCashInOutDetailV3', {
+    fromDate,
+    toDate
+  })).content.map(it => {
+    if (!it.name) {
+      if (it.payLogAmount >= 0) {
+        it.name = i18n.t('Revenue')
+      } else {
+        it.name = i18n.t('Expenditure')
+      }
+    }
+    it.displayDay = dayjs(it.updateTimestamp).format('YYYY-MM-DD')
+    return it
+  })
+  const arrUmsatz = (res.filter(it => it.cashAccountNote.toLowerCase() === 'umsatz'))
+  const arrTrinkgeld = (res.filter(it => it.cashAccountNote.toLowerCase() === 'trinkgeld'))
+  const groupUmsatz = groupBy(arrUmsatz, 'displayDay')
+  const groupTrinkgeld = groupBy(arrTrinkgeld, 'displayDay')
+  const arrOther = res.filter(it => it.cashAccountNote.toLowerCase() !== 'umsatz' && it.cashAccountNote.toLowerCase() !== 'trinkgeld')
+  const umsatzTotalList = groupUmsatz
+    ? Object.entries(groupUmsatz).map(it => {
+      return {
+        updateTimestamp: it[0],
+        displayDay: it[0],
+        payLogAmount: sumBy(it[1], (o) => {
+          return parseFloat(o.payLogAmount)
+        }),
+        name: 'umsatz',
+        cashAccountNote: '',
+        usageName: 'umsatz',
+        typeCode: '',
+        amountA: sumBy(it[1], (o) => {
+          if (o.amountA) {
+            return parseFloat(o.amountA)
+          } else {
+            return 0
+          }
+        }),
+        amountB: sumBy(it[1], (o) => {
+          if (o.amountB) {
+            return parseFloat(o.amountB)
+          } else {
+            return 0
+          }
+        }),
+        amountC: sumBy(it[1], (o) => {
+          if (o.amountC) {
+            return parseFloat(o.amountC)
+          } else {
+            return 0
+          }
+        })
+      }
+    })
+    : []
+  const trinkgeldTotalList = groupTrinkgeld
+    ? Object.entries(groupTrinkgeld).map(it => {
+      return {
+        updateTimestamp: it[0],
+        displayDay: it[0],
+        payLogAmount: sumBy(it[1], (o) => {
+          return parseFloat(o.payLogAmount)
+        }),
+        name: 'Trinkgeld',
+        cashAccountNote: '',
+        usageName: 'Trinkgeld',
+        typeCode: ''
+      }
+    })
+    : []
+  const currentList = umsatzTotalList.concat(trinkgeldTotalList.concat(arrOther)).sort((a, b) => new Date(b.displayDay) - new Date(a.displayDay))
+  console.log(currentList, 'list')
+  return currentList
 }
