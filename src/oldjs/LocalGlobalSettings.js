@@ -45,6 +45,8 @@ export async function getAdminSetting () {
   GlobalConfig.discountWithPassword = await getAdminSettingConfig('discountWithPassword', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.bigDiscountRatio = await getAdminSettingConfig('bigDiscountRatio', '0.7', '0.7', 'string', '', 'basic,FrontApp')
   GlobalConfig.googleMapCountry = await getAdminSettingConfig('googleMapCountry', 'DE', 'DE', 'string', '', 'basic,FrontApp')
+  GlobalConfig.escBackToHome = await getAdminSettingConfig('escBackToHome', '0', '0', 'boolean', '', 'basic,FrontApp')
+  GlobalConfig.enterToOrder = await getAdminSettingConfig('enterToOrder', '0', '0', 'boolean', '', 'basic,FrontApp')
 }
 
 export function refreshGetter () {

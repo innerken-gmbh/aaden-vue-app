@@ -5,6 +5,7 @@
           @dish-click="openDish"
           @dish-tune="openDishDetail"
           @dish-add="openDish"
+          @order-add="orderAdd"
           :categories="categories"
           :dishes="dishes"
           @toggle="keyboardMode=true"
@@ -13,6 +14,7 @@
     <template v-else>
       <keyboard-order-fragment
           @toggle="keyboardMode=false"
+          @order-add="orderAdd"
           @dish-add="openDish"
           :dishes="dishes"
       ></keyboard-order-fragment>
@@ -69,6 +71,9 @@ export default {
     }
   },
   methods: {
+    orderAdd () {
+      this.$emit('order-add')
+    },
     openDish (code, count = 1) {
       this.$emit('dish-add', code, count)
     },

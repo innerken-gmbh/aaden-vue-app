@@ -102,6 +102,7 @@
                   :consume-type-id="consumeTypeId"
                   :override-consume-type-id="overrideConsumeTypeId"
                   @dish-add="findAndOrderDish"
+                  @order-add="orderAdd"
                   @dish-detail="(dish)=>showModification(dish,1,null)"
               />
             </template>
@@ -559,6 +560,7 @@ import {
   setUuidInFirebase
 } from '@/api/customerDiaplay'
 import { round } from 'lodash-es'
+import router from '@/router'
 
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
@@ -656,6 +658,18 @@ export default {
     this.deviceId = GlobalConfig.DeviceId
   },
   methods: {
+    orderAdd () {
+      if (this.cartListModel.list.length > 0 && GlobalConfig.enterToOrder === '1') {
+        this.orderDish(this.cartListModel.list)
+      }
+    },
+    handleKeydown (event) {
+      if (event.key === 'Escape') {
+        if (location.hash.includes('table')) {
+          router.push({ path: '/' })
+        }
+      }
+    },
     async deleteAndSaveReason (note) {
       if (note) {
         saveReason(note)
@@ -1445,12 +1459,19 @@ export default {
     this.globalLoading = false
     this.currentMemberId = null
   },
+  beforeDestroy () {
+    // 移除事件监听器
+    window.removeEventListener('keydown', this.handleKeydown)
+  },
   async mounted () {
     this.globalLoading = true
     try {
       await getConsumeTypeList()
       this.consumeTypeList = consumeTypeList
       await this.initialUI()
+      if (GlobalConfig.escBackToHome === '1') {
+        window.addEventListener('keydown', this.handleKeydown)
+      }
     } catch (e) {
       IKUtils.showError(e.message)
       console.log(e)

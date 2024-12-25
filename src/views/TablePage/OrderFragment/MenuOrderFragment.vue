@@ -583,6 +583,9 @@ export default {
       const t = this.keyboardInput
       const submit = (code, count = 1) => {
         const dish = findDish(code)
+        if (code === '') {
+          this.$emit('order-add')
+        }
         if (!dish) {
           this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
         } else {
