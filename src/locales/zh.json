@@ -608,5 +608,6 @@
   "withdraw": "取出",
   "inOrOut": "存入或取出",
   "Revenue": "收入",
-  "Expenditure": "支出"
+  "Expenditure": "支出",
+  "quantity_x_dishNumber": "数量 * 菜号"
 }

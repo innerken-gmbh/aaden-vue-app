@@ -47,6 +47,8 @@ export async function getAdminSetting () {
   GlobalConfig.googleMapCountry = await getAdminSettingConfig('googleMapCountry', 'DE', 'DE', 'string', '', 'basic,FrontApp')
   GlobalConfig.escBackToHome = await getAdminSettingConfig('escBackToHome', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.enterToOrder = await getAdminSettingConfig('enterToOrder', '0', '0', 'boolean', '', 'basic,FrontApp')
+  GlobalConfig.defaultPassword = await getAdminSettingConfig('defaultPassword', '111', '111', 'string', '', 'basic,FrontApp')
+  GlobalConfig.numberFirst = await getAdminSettingConfig('numberFirst', '0', '0', 'boolean', '', 'basic,FrontApp')
 }
 
 export function refreshGetter () {

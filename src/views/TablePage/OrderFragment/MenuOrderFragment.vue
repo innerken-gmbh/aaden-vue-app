@@ -483,7 +483,7 @@ export default {
       let [code, count] = ['', 1]
       if (string.includes('*')) {
         [code, count] = string.split('*')
-        if (GlobalConfig.numberFirst) {
+        if (GlobalConfig.numberFirst === '1') {
           [code, count] = [count, code]
         }
         count = parseInt(count)

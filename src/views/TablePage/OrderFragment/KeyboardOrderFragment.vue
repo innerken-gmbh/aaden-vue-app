@@ -107,7 +107,7 @@
       >
         <template v-if="keyboardInput">
           {{
-            Config.numberFirst
+            Config.numberFirst === '1'
                 ? $t('QuantityDishNumber')
                 : $t('DishNumberQuantity')
           }}<br/>
@@ -131,7 +131,7 @@
           {{
             keyboardInput
                 ? keyboardInput
-                : Config.numberFirst
+                : Config.numberFirst === '1'
                     ? $t('quantity_x_dishNumber')
                     : $t('DishNumberQuantity')
           }}
@@ -240,7 +240,7 @@ export default {
       let [code, count] = ['', 1]
       if (string.includes('*')) {
         [code, count] = string.split('*')
-        if (GlobalConfig.numberFirst) {
+        if (GlobalConfig.numberFirst === '1') {
           [code, count] = [count, code]
         }
         count = parseInt(count)
