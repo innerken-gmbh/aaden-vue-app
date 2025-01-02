@@ -328,7 +328,7 @@ export default {
       this.rawAddressInfo.date = new Date().toISOString().substr(0, 10) + ' '
     },
     getAddressData (e) {
-      this.rawAddressInfo.addressLine1 = e.route + ' ' + e.street_number
+      this.rawAddressInfo.addressLine1 = (e.street_number ? e.route + ' ' + e.street_number : e.route) ?? ''
       this.rawAddressInfo.city = e.locality
       this.rawAddressInfo.plz = e.postal_code
     },
