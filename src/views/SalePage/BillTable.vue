@@ -61,17 +61,17 @@
                     mdi-qrcode-scan
                   </v-icon>
                 </v-btn>
+                <v-btn
+                    :disabled="shouldDisable(order)"
+                    class="ml-2"
+                    color="grey lighten-3 black--text"
+                    elevation="0"
+                    small
+                    @click.stop="startChangePaymentMethodForOrder(order)"
+                >
+                  <v-icon>mdi-cash-refund</v-icon>
+                </v-btn>
                 <template v-if="showOperation">
-                  <v-btn
-                      :disabled="shouldDisable(order)"
-                      class="ml-2"
-                      color="grey lighten-3 black--text"
-                      elevation="0"
-                      small
-                      @click.stop="startChangePaymentMethodForOrder(order)"
-                  >
-                    <v-icon>mdi-cash-refund</v-icon>
-                  </v-btn>
                   <v-btn
                       :disabled="shouldDisable(order)"
                       class="ml-2"
