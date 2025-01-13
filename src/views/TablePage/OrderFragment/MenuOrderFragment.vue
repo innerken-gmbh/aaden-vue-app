@@ -212,7 +212,11 @@
       >
 
         <template v-if="!keyboardInput&&showFeedBack">
-          <div class="pa-4 white--text" style="width: 400px" :class="feedback.startsWith('❌')?'yellow darken-4':'green'">
+          <div
+              class="pa-4 white--text"
+              style="width: 400px"
+              :class="feedback.startsWith('❌')?'yellow darken-4':'green'"
+          >
             {{ feedback }}
           </div>
         </template>
@@ -588,6 +592,7 @@ export default {
         }
         if (!dish) {
           this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
+          this.displayFeedback()
         } else {
           this.$emit('dish-add', code, count)
           this.feedback = '✔'
@@ -599,13 +604,14 @@ export default {
         if (count < 1) {
           this.feedback = '❌' + this.$t('CanNotAddNegativeDishes')
           showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
+          this.displayFeedback()
         } else {
           submit(code, count)
         }
       } else {
         submit(t)
       }
-      this.displayFeedback()
+
       this.resetInputAndBuffer()
     }
   }
