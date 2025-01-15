@@ -885,7 +885,7 @@ export default {
       dish.originPrice = dish.currentPrice.toString().replace(',', '.')
       dish.price = dish.originPrice
       dish.forceFormat = true
-      dish.name = dish.currentName || dish.langs.find(it => it.lang.toUpperCase() === 'DE').name
+      dish.name = dish.currentName ?? dish.langs.find(it => it.lang.toUpperCase() === 'DE').name
       this.extraDishShow = false
       this.currentDish = {
         currentName: '',
