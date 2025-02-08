@@ -273,6 +273,7 @@
                       <v-switch
                           v-model="takeawayEnabled"
                           class="mt-0"
+                          :disabled="switchDisabled"
                           hide-details
                       ></v-switch>
                     </div>
@@ -600,6 +601,7 @@ export default {
   },
   data: function () {
     return {
+      switchDisabled: false,
       staffBtnLoading: false,
       staffChangeWorkStatus: false,
       clockStatus: false,
@@ -650,9 +652,13 @@ export default {
       const info = Object.assign({}, this.restaurantInfo)
       info.currentlyOpening = val ? 1 : 0
       this.loading = true
+      this.switchDisabled = true
       await syncTakeawaySettingToCloud(info)
       await this.loadRestaurantInfo()
       this.loading = false
+      setTimeout(() => {
+        this.switchDisabled = false
+      }, 1000 * 10)
     }
   },
   computed: {
