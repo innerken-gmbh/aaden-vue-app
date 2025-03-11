@@ -104,6 +104,13 @@ export function printZwichenBon (tableId, items) {
   })
 }
 
+export function printZwichenBonPost (tableId, items) {
+  return hillo.post('Orders.php?op=printZwichenBonUseDishesList', {
+    tableId,
+    dishes: JSON.stringify(items)
+  })
+}
+
 export async function getServantList () {
   const res = (await hillo.get('Servant.php')).content
   const promises = res.map(it => servantWorkStatus(it.id)

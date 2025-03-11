@@ -513,7 +513,7 @@ import {
   toast
 } from '@/oldjs/common'
 import hillo from 'hillo'
-import { optionalAuthorizeAsync, printZwichenBon } from '@/oldjs/api'
+import { optionalAuthorizeAsync, printZwichenBonPost } from '@/oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
 
 import { findDish, goHome, setDefaultValueForApply } from '@/oldjs/StaticModel'
@@ -1194,7 +1194,7 @@ export default {
       }
     },
     printZwichenBon: function () {
-      printZwichenBon(this.id, this.splitOrderListModel.list)
+      printZwichenBonPost(this.id, this.splitOrderListModel.list)
     },
     async submitDiscount (discountStr = null) {
       if (this.$refs.discount) {
