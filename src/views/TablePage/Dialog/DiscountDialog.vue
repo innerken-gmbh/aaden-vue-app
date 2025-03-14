@@ -42,12 +42,12 @@
 <script>
 import hillo from 'hillo'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import IKUtils from 'innerken-js-utils'
 import { loadingComplete } from '@/oldjs/common'
 import KeyboardLayout from '@/components/Base/Keyboard/KeyboardLayout'
-import { optionalAuthorizeAsync } from '@/oldjs/api'
 import { sum } from 'lodash-es'
 import DishDocker from 'aaden-base-model/lib/Models/DishDocker'
+import IKUtils from 'innerken-js-utils'
+import { optionalAuthorizeAsync } from '@/oldjs/api'
 
 const keyboardLayout =
     [
@@ -77,6 +77,9 @@ export default {
     useDishesDiscount: {
       style: Boolean,
       default: false
+    },
+    discountRatio: {
+      default: 0
     }
   },
   data: function () {
@@ -143,7 +146,7 @@ export default {
         discountStr = this.localDiscountStr + (this.localDiscountType === 1 ? 'p' : '')
       }
       const discountPattern = /^([0-9]+(\.[0-9]+)?)?((p)+([kg])?)?$/
-      const priceBefore = this.dishesItems.length === 0 ? this.totalPriceWithSingle : this.totalPriceNoDiscount
+      const priceBefore = this.dishesItems.length === 0 ? this.totalPriceWithSingle : this.totalPriceWithDiscount
       let priceAfter = priceBefore
       if (this.dishesItems.length > 0) {
         const subPrice = sum(this.dishesItems.map(it => DishDocker.calculateDiscountPrice(it.count *
@@ -152,7 +155,6 @@ export default {
       } else {
         priceAfter = DishDocker.calculatePriceWithDiscount(priceBefore, discountStr)
       }
-      console.log(priceBefore, priceAfter)
       if (!discountPattern.test(discountStr)) {
         IKUtils.toast(this.$t('Error'), this.$t('error'))
         return
@@ -170,7 +172,7 @@ export default {
       }
       await optionalAuthorizeAsync('boss',
         GlobalConfig.bigDiscountRatio > 0 &&
-          ratio >= GlobalConfig.bigDiscountRatio,
+          ratio > GlobalConfig.bigDiscountRatio,
         '',
         true, this.id)
 
@@ -216,10 +218,13 @@ export default {
       }
     },
     totalPriceNoDiscount () {
-      return sum([...this.totalPriceWithoutAnyDiscount, ...this.dishesItems]
-        .map(it => parseFloat(it.price) * it.count))
+      return sum([...this.totalPriceWithoutAnyDiscount, ...this.dishesItems].map(it => parseFloat(it.price) * it.count))
+    },
+    totalPriceWithDiscount () {
+      return sum([...this.dishesItems].map(it => parseFloat(it.price) * it.count * (1 - this.discountRatio))).toFixed(2)
     },
     totalPriceWithSingle () {
+      console.log([...this.totalPriceWithoutAnyDiscount, ...this.dishesItems], '[...this.totalPriceWithoutAnyDiscount, ...this.dishesItems]')
       return sum([...this.totalPriceWithoutAnyDiscount, ...this.dishesItems]
         .map(it => parseFloat(it.realPrice) * it.count))
     }

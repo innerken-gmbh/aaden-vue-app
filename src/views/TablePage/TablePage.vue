@@ -387,6 +387,7 @@
         :discount-model-show="discountModelShow"
         :dishesItems="splitOrderListModel.list"
         :initial-u-i="initialUI"
+        :discount-ratio="discountRatio"
         :orderId="currentOrderId"
         :total-price="totalPrice"
         :total-price-without-any-discount="orderListModel.list"
