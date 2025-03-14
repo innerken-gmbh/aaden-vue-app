@@ -224,7 +224,6 @@ export default {
       return sum([...this.dishesItems].map(it => parseFloat(it.price) * it.count * (1 - this.discountRatio))).toFixed(2)
     },
     totalPriceWithSingle () {
-      console.log([...this.totalPriceWithoutAnyDiscount, ...this.dishesItems], '[...this.totalPriceWithoutAnyDiscount, ...this.dishesItems]')
       return sum([...this.totalPriceWithoutAnyDiscount, ...this.dishesItems]
         .map(it => parseFloat(it.realPrice) * it.count))
     }
