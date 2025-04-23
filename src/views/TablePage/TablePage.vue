@@ -381,6 +381,82 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog
+        v-model="depositListShow"
+        max-width="800"
+        scrollable
+    >
+      <v-card class="pa-0 deposit-list-dialog">
+        <v-card-title class="primary white--text py-4 px-6">
+          <span class="text-h5">{{ currentDish.name }}</span>
+          <v-spacer></v-spacer>
+          <v-btn
+            icon
+            dark
+            @click="depositListShow = false"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+
+        <v-card-text class="pa-6">
+          <v-text-field
+            v-model="depositNoteFilter"
+            label="Filter by Note"
+            prepend-icon="mdi-magnify"
+            clearable
+            class="mb-4"
+            hide-details
+          ></v-text-field>
+          <div class="deposit-grid">
+            <v-hover v-for="item in filteredDepositList" :key="item.id" v-slot="{ hover }">
+              <v-card
+                @click="addDeposit(item)"
+                :elevation="hover ? 8 : 2"
+                :class="{'on-hover': hover}"
+                class="deposit-card transition-swing"
+                outlined
+              >
+                <v-card-text class="pa-4">
+                  <div class="d-flex align-center mb-2">
+                    <v-chip color="primary" small label class="mr-2">ID: {{item.id}}</v-chip>
+                    <v-spacer></v-spacer>
+                    <div class="text-h6 primary--text font-weight-bold">{{item.totalPrice | priceDisplay}}</div>
+                  </div>
+
+                  <v-divider class="my-2"></v-divider>
+
+                  <div class="d-flex align-center my-2">
+                    <v-icon small color="grey darken-1" class="mr-1">mdi-note-text-outline</v-icon>
+                    <span class="grey--text text--darken-1 text-caption mr-2">Note:</span>
+                    <div class="text-body-2 text-truncate">{{ readJson(item.rawAddressInfo) }}</div>
+                  </div>
+
+                  <div class="d-flex align-center mt-2">
+                    <v-icon small color="grey darken-1" class="mr-1">mdi-clock-outline</v-icon>
+                    <div class="text-caption grey--text text--darken-1">
+                      {{item.createTimestamp | timeDisplay}}
+                    </div>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </v-hover>
+          </div>
+        </v-card-text>
+
+        <v-card-actions class="pa-4 grey lighten-4">
+          <v-spacer></v-spacer>
+          <v-btn
+            color="grey darken-1"
+            text
+            @click="depositListShow = false"
+          >
+            {{ $t('Cancel') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <discount-dialog
         :id="id"
         ref="discount"
@@ -411,6 +487,40 @@
         :initial-u-i="initialUI"
         @visibility-changed="(val) => (this.buffetDialogShow = val)"
     ></buffet-start-dialog>
+
+    <v-dialog
+        v-model="showConfirmDialog"
+        max-width="600"
+    >
+      <v-card class="pa-6 d-flex align-center justify-center flex-column">
+        <v-icon
+            color="error lighten-2"
+            size="64"
+        >
+          mdi-alert-box
+        </v-icon>
+        <div class="text-body-2 mt-6">
+          当前消费并没有到达定金消费金额！
+        </div>
+        <div class="d-flex align-center justify-center">
+          <v-btn
+              class="amber lighten-4 black--text mt-4"
+              elevation="0"
+              @click="confirmCheckout"
+          >
+            {{ $t('Confirm') }}
+          </v-btn>
+          <v-btn
+              class="primary mt-4 ml-4"
+              elevation="0"
+              @click="showConfirmDialog = false"
+          >
+            {{ $t('Cancel') }}
+          </v-btn>
+        </div>
+
+      </v-card>
+    </v-dialog>
 
     <v-dialog
         v-model="deleteDishReasonDialog"
@@ -543,7 +653,7 @@ import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
 import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import uniqBy from 'lodash-es/uniqBy'
 import MemberSelectionDialog from '@/views/TablePage/Dialog/MemberSelectionDialog.vue'
-import { checkout, getCurrentOrderInfo } from '@/api/Repository/OrderInfo'
+import { checkout, getAllDepositList, getCurrentOrderInfo } from '@/api/Repository/OrderInfo'
 import { DishDocker } from 'aaden-base-model/lib'
 import { getOrderInfo } from '@/api/aaden-base-model/api'
 import LogoDisplay from '@/components/LogoDisplay.vue'
@@ -619,6 +729,11 @@ export default {
   },
   data: function () {
     return {
+      addCurrentRfDish: false,
+      showConfirmDialog: false,
+      allDepositList: [],
+      depositNoteFilter: '',
+      depositListShow: false,
       globalLoading: true,
       reasons: getReason(),
       deleteDishReason: '',
@@ -659,6 +774,25 @@ export default {
     this.deviceId = GlobalConfig.DeviceId
   },
   methods: {
+    addDeposit (item) {
+      console.log(item, 'item')
+      const dish = IKUtils.deepCopy(this.currentDish)
+      dish.currentPrice = '-' + item.totalPrice
+      dish.originPrice = '-' + item.totalPrice
+      dish.price = dish.originPrice
+      dish.forceFormat = true
+      dish.name = this.readJson(item.rawAddressInfo)
+      dish.downPaymentRefId = item.id
+      this.depositListShow = false
+      this.currentDish = {
+        currentName: '',
+        originPrice: ''
+      }
+      this.addDish(dish)
+    },
+    readJson (item) {
+      return JSON.parse(item)?.note ?? ''
+    },
     orderAdd () {
       if (this.cartListModel.list.length > 0 && GlobalConfig.enterToOrder === '1') {
         this.orderDish(this.cartListModel.list)
@@ -835,9 +969,15 @@ export default {
         this.addDish(dish, parseInt(count))
       }
     },
-    showExtraDish (dish) {
-      this.currentDish = Object.assign({}, defaultCurrentDish, dish)
-      this.extraDishShow = true
+    async showExtraDish (dish) {
+      if (dish.code === 'eaDl') {
+        this.allDepositList = await getAllDepositList()
+        this.currentDish = Object.assign({}, defaultCurrentDish, dish)
+        this.depositListShow = true
+      } else {
+        this.currentDish = Object.assign({}, defaultCurrentDish, dish)
+        this.extraDishShow = true
+      }
     },
     showModification (dish, count, mod = null, overrideConsumeTypeId = null) {
       this.dish = dish
@@ -874,6 +1014,21 @@ export default {
       }
       this.orderListModel.add(item, -1)
       this.splitOrderListModel.add(item, 1)
+    },
+    addRfDish (dish) {
+      if (dish.currentPrice === '') {
+        dish.currentPrice = 0
+      }
+      dish.originPrice = dish.currentPrice.toString().replace(',', '.')
+      dish.price = dish.originPrice
+      dish.forceFormat = true
+      dish.name = dish.currentName
+      this.extraDishShow = false
+      this.currentDish = {
+        currentName: '',
+        originPrice: ''
+      }
+      this.addDish(dish)
     },
     addExtraDish () {
       const dish = IKUtils.deepCopy(this.currentDish)
@@ -1017,6 +1172,14 @@ export default {
         await setCartListInFirebase({}, this.deviceId)
       }
     },
+    ...mapMutations(['showErrorDialog']),
+    confirmCheckout () {
+      this.addCurrentRfDish = true
+      if (this.resolveConfirm) {
+        this.resolveConfirm() // 手动触发 resolve
+      }
+      this.showConfirmDialog = false
+    },
     jumpToPayment (paymentType = 'checkOut') {
       const realCheckOut = async (pw) => {
         checkoutFactory.clear()
@@ -1024,12 +1187,30 @@ export default {
           paymentType === 'checkOut'
             ? this.orderListModel.list
             : this.splitOrderListModel.list)
+        const includesEaDl = checkoutFactory.list.find(it => it.code === 'eaDl') ?? null
+        const priceTotal = round(checkoutFactory.total() * (1 - this.discountRatio), 2)
+        if (includesEaDl && priceTotal < 0) {
+          this.showConfirmDialog = true
+          this.confirmPromise = new Promise((resolve) => {
+            this.resolveConfirm = resolve // 存储 resolve
+          })
+          await this.confirmPromise
+          const dish = findDish('eaRf')
+          const dishDefault = IKUtils.deepCopy(dish)
+          dishDefault.currentPrice = -priceTotal
+          dishDefault.originPrice = dishDefault.currentPrice.toString().replace(',', '.')
+          dishDefault.price = dishDefault.originPrice
+          dishDefault.forceFormat = true
+          dishDefault.name = dishDefault.currentName
+          checkoutFactory.add(dishDefault, 1)
+        }
         this.checkOutModel = {
           total: checkoutFactory.total(),
           count: checkoutFactory.count(),
           list: checkoutFactory.list
         }
         this.checkoutId = this.checkOutModel.list.map(it => it.code)
+        const includesEaDp = this.checkOutModel.list.find(it => it.code === 'eaDp') ?? null
         const currentPrice = round(this.checkOutModel.total * (1 - this.discountRatio), 2)
         const checkoutInfo = await this.doCheckout(currentPrice)
         const shouldGoHome = paymentType === 'checkOut' && checkoutInfo.returnHome
@@ -1066,6 +1247,9 @@ export default {
               await goHome()
             }
           }
+        }
+        if (includesEaDp) {
+          await this.submitRawAddressInfo({ note: includesEaDp.currentName })
         }
         printNow()
       }
@@ -1428,6 +1612,15 @@ export default {
     },
     orderListModelList () {
       return this.orderListModel.list
+    },
+    filteredDepositList () {
+      if (!this.depositNoteFilter) {
+        return this.allDepositList
+      }
+      return this.allDepositList.filter(item => {
+        const note = this.readJson(item.rawAddressInfo).toLowerCase()
+        return note.includes(this.depositNoteFilter.toLowerCase())
+      })
     }
   },
   watch: {
@@ -1503,6 +1696,43 @@ export default {
 
 .v-navigation-drawer >>> .v-navigation-drawer__border {
   display: none
+}
+
+/* Deposit List Dialog Styles */
+.deposit-list-dialog {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.subtitle-background {
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.deposit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-gap: 16px;
+}
+
+.deposit-card {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid #e0e0e0;
+}
+
+.deposit-card.on-hover {
+  border-color: var(--v-primary-base);
+  transform: translateY(-4px);
+}
+
+.deposit-card .v-card__text {
+  padding: 16px !important;
+}
+
+.deposit-card:hover {
+  background-color: #fafafa;
 }
 
 </style>
