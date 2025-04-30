@@ -132,7 +132,7 @@
             <template v-if="!globalLoading">
               <keep-alive>
                 <dish-card-list
-                    v-if="cartListModel.list.length === 0"
+                    v-if="cartListModel.list.length === 0 && !showPendingDishes"
                     :click-callback="addToSplit"
                     :default-expand="cartListModel.list.length === 0"
                     :discount-ratio="discountRatio"
@@ -189,7 +189,7 @@
                 </dish-card-list>
               </keep-alive>
               <dish-card-list
-                  v-if="cartListModel.list.length > 0"
+                  v-if="cartListModel.list.length > 0 && !showPendingDishes"
                   ref="cartList"
                   :click-callback="removeDish"
                   :default-expand="true"
@@ -236,6 +236,38 @@
                           left
                           size="28"
                       >mdi-printer
+                      </v-icon>
+                      <span class="text-h5">{{ total | priceDisplay }}</span>
+                    </v-btn>
+                  </div>
+                </template>
+              </dish-card-list>
+              <dish-card-list
+                  v-if="showPendingDishes"
+                  :click-callback="addToDeny"
+                  :default-expand="true"
+                  :discount-ratio="discountRatio"
+                  :dish-list-model="pendingListModel"
+                  :source-marks="sourceMarks"
+                  :title="'待接受订单'"
+              >
+                <template v-slot:default="{ total }">
+                  <div class="pa-2">
+                    <v-btn
+                        :loading="isSendingRequest"
+                        block
+                        :disabled="consumeTypeStatusId > 1"
+                        color="amber lighten-4 black--text"
+                        elevation="0"
+                        height="64"
+                        rounded
+                        @click="acceptAllDishes()"
+                    >
+                      <v-icon
+                          class="mr-6"
+                          left
+                          size="28"
+                      >mdi-check
                       </v-icon>
                       <span class="text-h5">{{ total | priceDisplay }}</span>
                     </v-btn>
@@ -335,6 +367,78 @@
                         left
                         size="28"
                     >mdi-receipt-text-plus
+                    </v-icon>
+                    <span class="text-h5">{{ total | priceDisplay }}</span>
+                  </v-btn>
+                </div>
+              </template>
+            </dish-card-list>
+          </v-card>
+        </div>
+      </div>
+    </template>
+    <template v-if="denyPendingListModel.list.length > 0">
+      <div
+          v-cloak
+          id="splitOrderContainer"
+          class="d-flex justify-end align-end"
+          style="
+            position: fixed;
+            background: rgba(0, 0, 0, 0.4);
+            top: 0;
+            height: 100vh;
+            z-index: 1;
+            left: 0;
+            width: calc(100vw - 330px);
+          "
+          @click="removeAllFromSplitOrder"
+      >
+        <div
+            class="d-flex "
+            style="width: 400px;height: calc(100vh - 64px)"
+            @click.stop
+        >
+          <div
+              class="pa-2 pt-4 gradient"
+              style="display: grid;grid-auto-flow: row;grid-auto-rows: min-content;
+                grid-gap: 24px"
+          >
+            <nav-button
+                color="grey"
+                icon="mdi-close"
+                text="Cancel"
+                @click="removeAllFromDenyPendingOrder()"
+            ></nav-button>
+          </div>
+          <v-card
+              height="calc(100vh - 64px)"
+              tile
+              width="345"
+          >
+            <dish-card-list
+                :click-callback="removeFromDenyPendingDishes"
+                :default-expand="true"
+                :discount-ratio="discountRatio"
+                :dish-list-model="denyPendingListModel"
+                :title="$t('operation')"
+                class="flex-grow-1"
+                extra-height="48px"
+            >
+              <template v-slot:default="{ total }">
+                <div class="pa-2">
+                  <v-btn
+                      block
+                      color="warning lighten-4 black--text"
+                      elevation="0"
+                      height="64"
+                      rounded
+                      @click="needDenyDishes()"
+                  >
+                    <v-icon
+                        class="mr-6"
+                        left
+                        size="28"
+                    >mdi-cancel
                     </v-icon>
                     <span class="text-h5">{{ total | priceDisplay }}</span>
                   </v-btn>
@@ -516,7 +620,6 @@ import {
 import hillo from 'hillo'
 import { optionalAuthorizeAsync, printZwichenBonPost } from '@/oldjs/api'
 import { dragscroll } from 'vue-dragscroll'
-
 import { findDish, goHome, setDefaultValueForApply } from '@/oldjs/StaticModel'
 import { printNow } from '@/oldjs/Timer'
 import GlobalConfig from '../../oldjs/LocalGlobalSettings'
@@ -562,10 +665,12 @@ import {
 } from '@/api/customerDiaplay'
 import { round } from 'lodash-es'
 import router from '@/router'
-
+import { acceptPendingDishes, denyPendingDishes, getWaitAcceptDishes } from '@/api/AcceptDishes'
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
 const orderListFactory = DishDocker.StandardDishesListFactory()
+const pendingListFactory = DishDocker.StandardDishesListFactory()
+const denyPendingListFactory = DishDocker.StandardDishesListFactory()
 
 const defaultCurrentDish = {
   currentName: '',
@@ -642,6 +747,8 @@ export default {
       //* */
       splitOrderListModel: splitOrderFactory,
       orderListModel: orderListFactory,
+      pendingListModel: pendingListFactory,
+      denyPendingListModel: denyPendingListFactory,
       cartListModel: cartListFactory,
       tableDetailInfo: null,
       currentDish: defaultCurrentDish,
@@ -652,6 +759,8 @@ export default {
       checkoutId: [],
       showMemberSelectionDialog: null,
       reservations: [],
+      pendingDishesList: [],
+      showPendingDishes: false,
       servantPw: ''
     }
   },
@@ -659,6 +768,13 @@ export default {
     this.deviceId = GlobalConfig.DeviceId
   },
   methods: {
+    async getPendingDishes () {
+      try {
+        this.pendingDishesList = await getWaitAcceptDishes(this.currentOrderId) ?? []
+      } catch (e) {
+        console.log(e, 'e')
+      }
+    },
     orderAdd () {
       if (this.cartListModel.list.length > 0 && GlobalConfig.enterToOrder === '1') {
         this.orderDish(this.cartListModel.list)
@@ -855,6 +971,18 @@ export default {
       this.splitOrderListModel.add(realItem, -1)
       this.orderListModel.add(realItem, 1)
     },
+    removeFromDenyPendingDishes: function (dish) {
+      const lastIndex = dish.dodIds.length - 1
+      dish.dodId = dish.dodIds[lastIndex]
+      const realItem = IKUtils.deepCopy(dish)
+      this.denyPendingListModel.add(realItem, -1)
+      this.pendingListModel.add(realItem, 1)
+    },
+    removeAllFromDenyPendingOrder: function () {
+      while (this.denyPendingListModel.list.length > 0) {
+        this.removeFromDenyPendingDishes(this.denyPendingListModel.list[0])
+      }
+    },
     removeAllFromSplitOrder: function () {
       while (this.splitOrderListModel.list.length > 0) {
         this.removeFromSplitOrder(this.splitOrderListModel.list[0])
@@ -864,6 +992,17 @@ export default {
       await optionalAuthorizeAsync('', !GlobalConfig.discountWithoutPassword)
       this.discountModelShow = true
       this.useDishesDiscount = true
+    },
+    addToDeny: function (dish) {
+      const lastIndex = dish.dodIds.length - 1
+      dish.dodId = dish.dodIds[lastIndex]
+      const item = IKUtils.deepCopy(dish)
+      if (item.code === '-1') {
+        logErrorAndPop(this.$t('DiscountDishCanNotBeAddedIntoSplitBill'))
+        return
+      }
+      this.pendingListModel.add(item, -1)
+      this.denyPendingListModel.add(item, 1)
     },
     addToSplit: function (dish) {
       console.log(dish)
@@ -925,9 +1064,16 @@ export default {
       this.cartListModel.clear()
       this.removeAllFromSplitOrder()
       await this.getTableDetail()
+      await this.getPendingDishes()
       try {
         if (this.consumeTypeStatusId < 2 && this.consumeTypeId === 2) {
           this.currentView = this.menu[1].name
+          for (const dish of this.pendingDishesList) {
+            this.pendingListModel.add(dish, 1)
+          }
+          if (GlobalConfig.needAcceptAllOrder === '1') {
+            this.showPendingDishes = true
+          }
         } else {
           this.currentView = this.menu[0].name
         }
@@ -949,6 +1095,13 @@ export default {
       } else if (this.cartListModel.list.length > 0) {
         setCartListInFirebase({}, this.deviceId)
         this.cartListModel.clear()
+      } else if (this.showPendingDishes) {
+        this.showPendingDishes = false
+        this.pendingListModel.clear()
+        this.denyPendingListModel.clear()
+        if (this.consumeTypeStatusId < 2) {
+          goHome()
+        }
       } else {
         setCartListInFirebase({}, this.deviceId)
         setOrderListInFirebase({}, this.deviceId)
@@ -980,6 +1133,15 @@ export default {
     },
     async refreshReservation () {
       this.reservations = await getReservationsByTableId(this.id)
+    },
+    async acceptAllDishes () {
+      const ids = this.pendingListModel.list.map(it => it.dodIds).join(',')
+      await acceptPendingDishes(this.currentOrderId, ids)
+      this.pendingListModel.clear()
+      this.denyPendingListModel.clear()
+      this.showPendingDishes = false
+      printNow()
+      await goHome()
     },
     async orderDish (order, print = true) {
       try {
@@ -1154,6 +1316,7 @@ export default {
         timeReal = timeReal.add(t, 'm')
         time = timeReal.format('DD.MM.YYYY HH:mm')
       }
+      await this.acceptAllDishes()
       await acceptOrder(time ?? reason, this.id)
       await this.initialUI()
     },
@@ -1210,6 +1373,11 @@ export default {
       } else {
         this.jumpToPayment('splitOrder')
       }
+    },
+    needDenyDishes: async function () {
+      const ids = this.denyPendingListModel.list.map(it => it.dodIds).join(',')
+      await denyPendingDishes(this.currentOrderId, ids)
+      this.denyPendingListModel.clear()
     },
 
     async setOrderListByTableNameInFirebase (orderListModelList) {
@@ -1374,6 +1542,19 @@ export default {
             this.changeServant()
           }
         })
+        if (this.pendingDishesList.length > 0) {
+          normalActions.push({
+            title: '新订单菜品',
+            icon: 'mdi-food',
+            color: 'blue',
+            action: () => {
+              for (const dish of this.pendingDishesList) {
+                this.pendingListModel.add(dish, 1)
+              }
+              this.showPendingDishes = true
+            }
+          })
+        }
         if (this.consumeTypeId === 1 || this.consumeTypeId === 5) {
           normalActions.push({
             title: 'ChangeToBuffet',

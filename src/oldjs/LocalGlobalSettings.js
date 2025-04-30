@@ -6,6 +6,7 @@ import { goHome } from '@/oldjs/StaticModel'
 import {
   getAdminSettingConfig,
   getReservationStatus
+  , AcceptAllOrder, getCurrentReservationStatus, getCurrentSearchStatus, openCashBoxByPw
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 
@@ -49,6 +50,10 @@ export async function getAdminSetting () {
   GlobalConfig.enterToOrder = await getAdminSettingConfig('enterToOrder', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.defaultPassword = await getAdminSettingConfig('defaultPassword', '111', '111', 'string', '', 'basic,FrontApp')
   GlobalConfig.numberFirst = await getAdminSettingConfig('numberFirst', '0', '0', 'boolean', '', 'basic,FrontApp')
+  GlobalConfig.searchIncludesCode = await getCurrentSearchStatus()
+  GlobalConfig.activeReservation = (await getCurrentReservationStatus()) === '1'
+  GlobalConfig.openCashBoxByPw = await openCashBoxByPw()
+  GlobalConfig.needAcceptAllOrder = await AcceptAllOrder()
 }
 
 export function refreshGetter () {
