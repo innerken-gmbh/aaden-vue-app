@@ -770,6 +770,7 @@ export default {
   methods: {
     async getPendingDishes () {
       try {
+        this.pendingListModel.clear()
         this.pendingDishesList = await getWaitAcceptDishes(this.currentOrderId) ?? []
         for (const dish of this.pendingDishesList) {
           this.pendingListModel.add(dish, 1)
@@ -1548,12 +1549,8 @@ export default {
             title: 'newOrderDishes',
             icon: 'mdi-food',
             color: 'blue',
-            action: () => {
-              this.pendingListModel.clear()
-              for (const dish of this.pendingDishesList) {
-                this.pendingListModel.add(dish, 1)
-              }
-              this.showPendingDishes = true
+            action: async () => {
+              await this.getPendingDishes()
             }
           })
         }
