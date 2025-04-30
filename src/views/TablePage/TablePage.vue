@@ -1549,6 +1549,7 @@ export default {
             icon: 'mdi-food',
             color: 'blue',
             action: () => {
+              this.pendingListModel.clear()
               for (const dish of this.pendingDishesList) {
                 this.pendingListModel.add(dish, 1)
               }
