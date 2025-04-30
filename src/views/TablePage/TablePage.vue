@@ -256,11 +256,11 @@
                     <v-btn
                         :loading="isSendingRequest"
                         block
-                        :disabled="consumeTypeStatusId > 1"
                         color="amber lighten-4 black--text"
                         elevation="0"
                         height="64"
                         rounded
+                        :disabled="consumeTypeStatusId < 2"
                         @click="acceptAllDishes()"
                     >
                       <v-icon
@@ -771,6 +771,12 @@ export default {
     async getPendingDishes () {
       try {
         this.pendingDishesList = await getWaitAcceptDishes(this.currentOrderId) ?? []
+        for (const dish of this.pendingDishesList) {
+          this.pendingListModel.add(dish, 1)
+        }
+        if (GlobalConfig.needAcceptAllOrder === '1' && this.pendingDishesList.length > 0) {
+          this.showPendingDishes = true
+        }
       } catch (e) {
         console.log(e, 'error')
       }
@@ -1065,15 +1071,10 @@ export default {
       this.removeAllFromSplitOrder()
       await this.getTableDetail()
       await this.getPendingDishes()
+
       try {
         if (this.consumeTypeStatusId < 2 && this.consumeTypeId === 2) {
           this.currentView = this.menu[1].name
-          for (const dish of this.pendingDishesList) {
-            this.pendingListModel.add(dish, 1)
-          }
-          if (GlobalConfig.needAcceptAllOrder === '1') {
-            this.showPendingDishes = true
-          }
         } else {
           this.currentView = this.menu[0].name
         }
