@@ -772,7 +772,7 @@ export default {
       try {
         this.pendingDishesList = await getWaitAcceptDishes(this.currentOrderId) ?? []
       } catch (e) {
-        console.log(e, 'e')
+        console.log(e, 'error')
       }
     },
     orderAdd () {
