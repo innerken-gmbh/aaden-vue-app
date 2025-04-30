@@ -902,5 +902,7 @@
   "deposit": "deposit",
   "withdraw": "withdraw",
   "Revenue": "Private deposit",
-  "Expenditure": "Private withdrawal"
+  "Expenditure": "Private withdrawal",
+  "newOrderDishes": "New Order Dishes",
+  "pendingOrder": "Pending Order"
 }

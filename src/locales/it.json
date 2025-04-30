@@ -902,5 +902,7 @@
   "deposit": "Depositare",
   "withdraw": "Ritiro",
   "Revenue": "Deposito privato",
-  "Expenditure": "Ritiro privato"
+  "Expenditure": "Ritiro privato",
+  "newOrderDishes": "Piatti del nuovo ordine",
+  "pendingOrder": "Ordine in sospeso"
 }

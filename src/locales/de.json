@@ -605,5 +605,7 @@
   "withdraw": "Abhebung",
   "inOrOut": "Einzahlung oder Abhebung",
   "Revenue": "Privateinlage",
-  "Expenditure": "Privatentnahme"
+  "Expenditure": "Privatentnahme",
+  "newOrderDishes": "Neue Bestellgerichte",
+  "pendingOrder": "Ausstehende Bestellung"
 }

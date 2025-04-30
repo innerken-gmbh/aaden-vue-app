@@ -902,5 +902,7 @@
   "deposit": "Borg",
   "withdraw": "Opname",
   "Revenue": "Particuliere aanbetaling",
-  "Expenditure": "Particuliere terugtrekking"
+  "Expenditure": "Particuliere terugtrekking",
+  "newOrderDishes": "Nieuwe bestelgerechten",
+  "pendingOrder": "In behandeling order"
 }

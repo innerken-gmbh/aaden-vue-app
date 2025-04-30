@@ -249,7 +249,7 @@
                   :discount-ratio="discountRatio"
                   :dish-list-model="pendingListModel"
                   :source-marks="sourceMarks"
-                  :title="'待接受订单'"
+                  :title="$t('pendingOrder')"
               >
                 <template v-slot:default="{ total }">
                   <div class="pa-2">
@@ -1545,7 +1545,7 @@ export default {
         })
         if (this.pendingDishesList.length > 0) {
           normalActions.push({
-            title: '新订单菜品',
+            title: 'newOrderDishes',
             icon: 'mdi-food',
             color: 'blue',
             action: () => {
