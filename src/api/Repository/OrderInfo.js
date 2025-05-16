@@ -77,9 +77,8 @@ export async function checkout (checkoutInfo) {
       success: true
     }
   } catch (e) {
-    console.log(e, 'error')
     await new Promise(resolve => setTimeout(resolve, 3 * 1000))
-    const res = await getCurrentOrderInfo(this.tableId)
+    const res = await getCurrentOrderInfo(checkoutInfo.tableId)
     if (res.usageStatus === '0') {
       await goHome()
     }

@@ -1049,7 +1049,9 @@ export default {
           password: pw,
           checkOutType: paymentType
         }, checkoutInfo))
-        showSuccessMessage(i18n.t('Success'))
+        if (res.success) {
+          showSuccessMessage(i18n.t('Success'))
+        }
         if (shouldGoHome) {
           await goHome()
         }
