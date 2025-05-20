@@ -1,9 +1,9 @@
 <template>
   <div>
     <div
-        ref="blueprintContainer"
-        class="flex-grow-1 pa-2"
-        style="
+      ref="blueprintContainer"
+      class="flex-grow-1 pa-2"
+      style="
          height:calc(100vh - 64px);
          width: 100%;
        transform-origin: left top;
@@ -11,8 +11,8 @@
     >
       <template v-if="tableWithInfo.length===0">
         <div
-            style="height: calc(100vh - 72px);width: 100%"
-            class="d-flex align-center justify-center"
+          style="height: calc(100vh - 72px);width: 100%"
+          class="d-flex align-center justify-center"
         >
           <v-progress-circular indeterminate></v-progress-circular>
         </div>
@@ -21,46 +21,46 @@
         <template v-if="Config.showTableList">
           <div style="display: grid;grid-template-columns: repeat(auto-fill,minmax(0,100px));grid-auto-rows: 140px">
             <table-card
-                v-for="i in tableWithInfo"
-                :key="i.id"
-                :table-background-color-func="tableBackgroundColorFunc"
-                :table-color-is-dark="tableColorIsDark"
-                :table-info="i"
-                @click="selectTable(i)"
-                @reservation-clicked="showReservation"
+              v-for="i in tableWithInfo"
+              :key="i.id"
+              :table-background-color-func="tableBackgroundColorFunc"
+              :table-color-is-dark="tableColorIsDark"
+              :table-info="i"
+              @click="selectTable(i)"
+              @reservation-clicked="showReservation"
             ></table-card>
           </div>
         </template>
         <template
-            v-for="i in tableWithInfo"
-            v-else
+          v-for="i in tableWithInfo"
+          v-else
         >
           <vue-draggable-resizable
-              :key="i.id"
-              :draggable="editing"
-              :grid="[10,10]"
-              :h="i.h"
-              :max-height="240"
-              :max-width="200"
-              :min-height="60"
-              :min-width="60"
-              :parent="true"
-              :prevent-deactivation="false"
-              :resizable="editing"
-              :snap="true"
-              :w="i.w"
-              :x="i.x"
-              :y="i.y"
-              class-name-dragging="dragging"
-              @dragstop="(...args)=>onDrag(i,...args)"
-              @resizestop="(...args)=>onResize(i,...args)"
+            :key="i.id"
+            :draggable="editing"
+            :grid="[10,10]"
+            :h="i.h"
+            :max-height="240"
+            :max-width="200"
+            :min-height="60"
+            :min-width="60"
+            :parent="true"
+            :prevent-deactivation="false"
+            :resizable="editing"
+            :snap="true"
+            :w="i.w"
+            :x="i.x"
+            :y="i.y"
+            class-name-dragging="dragging"
+            @dragstop="(...args)=>onDrag(i,...args)"
+            @resizestop="(...args)=>onResize(i,...args)"
           >
             <table-card
-                :table-background-color-func="tableBackgroundColorFunc"
-                :table-color-is-dark="tableColorIsDark"
-                :table-info="i"
-                @click="selectTable(i)"
-                @reservation-clicked="showReservation"
+              :table-background-color-func="tableBackgroundColorFunc"
+              :table-color-is-dark="tableColorIsDark"
+              :table-info="i"
+              @click="selectTable(i)"
+              @reservation-clicked="showReservation"
             ></table-card>
           </vue-draggable-resizable>
         </template>
@@ -71,59 +71,61 @@
     <!--    工具栏-->
     <div style="position: absolute;left:24px;bottom: 36px">
       <v-card
-          v-if="editing&&showTableEditInfoCard"
-          class="pa-3 mb-1"
-          flat
-          style="z-index: 100; margin-left: 2px"
+        v-if="editing&&showTableEditInfoCard"
+        class="pa-3 mb-1"
+        flat
+        style="z-index: 100; margin-left: 2px"
       >
-        <h2>{{ $t('EditDisplayCardInfo') }}</h2>
+        <h2>{{ $t("EditDisplayCardInfo") }}</h2>
         <v-select
-            v-model="key1"
-            :items="allKeys"
-            return-object
+          v-model="key1"
+          :items="allKeys"
+          return-object
         ></v-select>
         <v-select
-            v-model="key2"
-            :items="allKeys"
-            return-object
+          v-model="key2"
+          :items="allKeys"
+          return-object
         ></v-select>
       </v-card>
       <div class="d-flex">
         <v-btn-toggle
-            class="mr-2"
-            dense
+          class="mr-2"
+          dense
         >
-
-          <v-btn @click="editing=!editing">
-            <template v-if="!editing">
+          <template v-if="!editing">
+            <v-btn @click="enterEditing">
               <v-icon>mdi-pencil-box-multiple</v-icon>
-            </template>
-            <template v-else>
+            </v-btn>
+          </template>
+          <template v-else>
+            <v-btn @click="saveLayoutAndLeave">
               <v-icon>mdi-content-save</v-icon>
-            </template>
+            </v-btn>
+          </template>
+
+          <v-btn
+            v-if="editing"
+            @click="largeView"
+          >
+            {{ $t("SizeBig") }}
           </v-btn>
           <v-btn
-              v-if="editing"
-              @click="largeView"
+            v-if="editing"
+            @click="refreshTables"
           >
-            {{ $t('SizeBig') }}
+            {{ $t("SizeMedium") }}
           </v-btn>
           <v-btn
-              v-if="editing"
-              @click="refreshTables"
+            v-if="editing"
+            @click="smallView"
           >
-            {{ $t('SizeMedium') }}
-          </v-btn>
-          <v-btn
-              v-if="editing"
-              @click="smallView"
-          >
-            {{ $t('SizeSmall') }}
+            {{ $t("SizeSmall") }}
           </v-btn>
 
           <v-btn
-              v-if="editing"
-              @click="showTableEditInfoCard=!showTableEditInfoCard"
+            v-if="editing"
+            @click="showTableEditInfoCard=!showTableEditInfoCard"
           >
             <v-icon>mdi-book-information-variant</v-icon>
           </v-btn>
@@ -132,9 +134,9 @@
 
     </div>
     <v-card
-        class="d-flex"
-        color="white"
-        style="position: absolute;bottom: 36px;
+      class="d-flex"
+      color="white"
+      style="position: absolute;bottom: 36px;
               box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.08);
                 right: 0;
                 margin: auto;
@@ -144,66 +146,66 @@
                "
     >
       <v-item-group
-          v-dragscroll
-          mandatory
-          style="display: grid;
+        v-dragscroll
+        mandatory
+        style="display: grid;
                           grid-auto-columns: max-content;
                           grid-gap: 8px;
                           grid-auto-flow: column;overflow-x: scroll"
       >
         <v-item v-slot="{active,toggle}">
           <v-card
-              v-if="Config.showAllTableButton"
-              :color="active?'primary':''"
-              :dark="active"
-              class="px-6 py-2 text-body-1"
-              elevation="0"
-              style="border-radius: 8px"
-              @click="activeSectionId=-1;toggle()"
-          >{{ $t('All') }}
+            v-if="Config.showAllTableButton"
+            :color="active?'primary':''"
+            :dark="active"
+            class="px-6 py-2 text-body-1"
+            elevation="0"
+            style="border-radius: 8px"
+            @click="activeSectionId=-1;toggle()"
+          >{{ $t("All") }}
           </v-card>
         </v-item>
         <v-item
-            v-for="section of notTakeawaySection"
-            :key="section.id+'categorytypes'"
-            v-slot="{active,toggle}"
+          v-for="section of notTakeawaySection"
+          :key="section.id+'categorytypes'"
+          v-slot="{active,toggle}"
         >
           <v-card
-              :color="active?'primary':''"
-              :dark="active"
-              :elevation="active?4:0"
-              class="px-6 py-2 text-body-1"
-              style="border-radius: 8px"
-              @click="activeSectionId=section.id;toggle()"
+            :color="active?'primary':''"
+            :dark="active"
+            :elevation="active?4:0"
+            class="px-6 py-2 text-body-1"
+            style="border-radius: 8px"
+            @click="activeSectionId=section.id;toggle()"
           >{{ section.name }}
           </v-card>
         </v-item>
       </v-item-group>
     </v-card>
     <v-dialog
-        v-model="reservationDialog"
-        max-width="600px"
+      v-model="reservationDialog"
+      max-width="600px"
     >
       <v-card color="#f6f6f6">
-        <v-card-title>{{ $t('FollowingTableReservation') }}</v-card-title>
+        <v-card-title>{{ $t("FollowingTableReservation") }}</v-card-title>
         <v-card-text>
           <template v-if="activeTable">
             <div
-                style="display: grid;grid-gap: 12px;overflow-y: scroll;
+              style="display: grid;grid-gap: 12px;overflow-y: scroll;
         grid-auto-flow: row;
                     max-height: calc(100vh - 150px)"
             >
               <v-card
-                  v-for="re in activeTable.reservations"
-                  :key="re.remoteId"
-                  class="pa-3 d-flex flex-column"
-                  elevation="0"
-                  height="100%"
+                v-for="re in activeTable.reservations"
+                :key="re.remoteId"
+                class="pa-3 d-flex flex-column"
+                elevation="0"
+                height="100%"
               >
                 <div class="d-flex align-center text-body-1">
                   <span
-                      class="text-truncate text-no-wrap d-flex"
-                      style="max-width: 200px"
+                    class="text-truncate text-no-wrap d-flex"
+                    style="max-width: 200px"
                   >
                     <div class="font-weight-black mr-2">{{ re.personCount }} P</div>
                     {{ re.title }}
@@ -213,12 +215,12 @@
                   </span>
                   <v-spacer></v-spacer>
                   <v-chip
-                      outlined
-                      small
+                    outlined
+                    small
                   >
                     <v-icon
-                        left
-                        small
+                      left
+                      small
                     >mdi-clock-outline
                     </v-icon>
                     {{ re.fromDateTime | onlyTime }} - {{ re.toDateTime | onlyTime }}
@@ -231,47 +233,47 @@
                 <div class="d-flex mt-2">
 
                   <v-btn
-                      color="error"
-                      elevation="0"
-                      small
-                      @click="cancelReservation(re.id)"
+                    color="error"
+                    elevation="0"
+                    small
+                    @click="cancelReservation(re.id)"
                   >
-                    {{ $t('CancelReservation') }}
+                    {{ $t("CancelReservation") }}
                   </v-btn>
                   <template v-if="re.status==='Created'">
                     <v-btn
-                        class="ml-2"
-                        color="success"
-                        elevation="0"
-                        small
-                        @click="confirm(re.id)"
+                      class="ml-2"
+                      color="success"
+                      elevation="0"
+                      small
+                      @click="confirm(re.id)"
                     >
-                      {{ $t('Confirm') }}
+                      {{ $t("Confirm") }}
                     </v-btn>
                   </template>
                   <template v-else>
                     <div
-                        v-if="showChangeButton === 1"
-                        class="ml-2"
+                      v-if="showChangeButton === 1"
+                      class="ml-2"
                     >
                       <v-btn
-                          color="warning"
-                          elevation="0"
-                          small
-                          @click="moveReservation(re.id,activeTable.tableId)"
+                        color="warning"
+                        elevation="0"
+                        small
+                        @click="moveReservation(re.id,activeTable.tableId)"
                       >
-                        {{ $t('ChangePosition') }}
+                        {{ $t("ChangePosition") }}
                       </v-btn>
                     </div>
                     <v-btn
-                        v-if="re.status==='Confirmed'"
-                        class="ml-2"
-                        color="success"
-                        elevation="0"
-                        small
-                        @click="checkIn(re.id)"
+                      v-if="re.status==='Confirmed'"
+                      class="ml-2"
+                      color="success"
+                      elevation="0"
+                      small
+                      @click="checkIn(re.id)"
                     >
-                      {{ $t('checkIn') }}
+                      {{ $t("checkIn") }}
                     </v-btn>
 
                   </template>
@@ -326,8 +328,11 @@ async function refreshAllTablesPosition (listOfTable, containerHeight, container
   }
   showSuccessMessage(i18n.t('Success'))
 }
+const tableChanges = {}
 
 async function submitTable (table, x, y, w, h, currentSectionId) {
+  console.log(table, x, y, w, h, currentSectionId)
+  console.log(table.x, table.y, table.w, table.h)
   w = w ?? (table.w ?? 50)
   h = h ?? (table.h ?? 50)
   currentSectionId = currentSectionId + ''
@@ -350,7 +355,6 @@ async function submitTable (table, x, y, w, h, currentSectionId) {
     return c.sectionId
   }
   )
-
   await setTableLocation(table)
 }
 
@@ -400,9 +404,6 @@ export default {
     }
   },
   watch: {
-    editing: function () {
-      this.refreshBlueprintSize()
-    },
     key1 (val) {
       Remember.tableDisplayKeys = [val, Remember.tableDisplayKeys[1]]
     },
@@ -434,6 +435,19 @@ export default {
     }
   },
   methods: {
+    enterEditing () {
+      this.refreshBlueprintSize()
+      this.editing = true
+    },
+    async saveLayoutAndLeave () {
+      IKUtils.showLoading()
+      for (const changes of Object.values(tableChanges)) {
+        await submitTable(changes.table, changes.x, changes.y, changes.w, changes.h, this.currentSection.id)
+      }
+      IKUtils.toast('ok')
+      this.editing = false
+      this.$emit('need-refresh')
+    },
     async checkIn (id) {
       await checkIn(id)
       this.reservationDialog = false
@@ -470,6 +484,7 @@ export default {
         this.height,
         this.width,
         this.currentSection.id, 120, 140)
+      this.editing = false
       this.$emit('need-refresh')
     },
     async smallView () {
@@ -477,22 +492,30 @@ export default {
         this.height,
         this.width,
         this.currentSection.id, 100, 100)
+      this.editing = false
       this.$emit('need-refresh')
     },
     async refreshTables () {
       await refreshAllTablesPosition(this.tableInCurrentSection, this.height, this.width, this.currentSection.id)
+      this.editing = false
       this.$emit('need-refresh')
     },
     debounce,
     onResize: function (table, x, y, width, height) {
-      this.shouldUpdateSize(table, x, y, width, height, this.currentSection.id)
+      tableChanges[table.tableId] = {
+        x, y, w: width, h: height, table
+      }
     },
     onDrag: function (table, x, y) {
-      this.shouldUpdateSize(table, x, y, table.w, table.h, this.currentSection.id)
+      const w = tableChanges?.[table.tableId]?.w ?? table.w
+      const h = tableChanges?.[table.tableId]?.h ?? table.h
+      tableChanges[table.tableId] = {
+        x, y, w, h, table
+      }
     },
     refreshBlueprintSize: function () {
       this.$nextTick(async () => {
-        await IKUtils.wait(500)
+        await IKUtils.wait(100)
         this.height = this.$refs.blueprintContainer.clientHeight
         this.width = this.$refs.blueprintContainer.clientWidth - 50
       })
@@ -531,8 +554,8 @@ export default {
 </script>
 
 <style
-    lang="sass"
-    scoped
+  lang="sass"
+  scoped
 >
 .vdr
   border: none
