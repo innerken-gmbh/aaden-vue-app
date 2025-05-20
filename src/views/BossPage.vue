@@ -1,6 +1,7 @@
 <template>
   <iframe
-      :src="'http://'+Config.Base+'/'+endPoint+'?Base='+base+'&chaos='+Config.startUpTimestamp+'&pw='+password"
+      :src="'http://'+Config.Base+'/'+endPoint+'?Base='+base
+      +'&chaos='+Config.startUpTimestamp+'&pw='+password"
       style="height: 100vh"
       width="100%"
   ></iframe>

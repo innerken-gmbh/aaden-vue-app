@@ -400,6 +400,9 @@ export default {
     }
   },
   watch: {
+    editing: function () {
+      this.refreshBlueprintSize()
+    },
     key1 (val) {
       Remember.tableDisplayKeys = [val, Remember.tableDisplayKeys[1]]
     },
@@ -487,6 +490,13 @@ export default {
     onDrag: function (table, x, y) {
       this.shouldUpdateSize(table, x, y, table.w, table.h, this.currentSection.id)
     },
+    refreshBlueprintSize: function () {
+      this.$nextTick(async () => {
+        await IKUtils.wait(500)
+        this.height = this.$refs.blueprintContainer.clientHeight
+        this.width = this.$refs.blueprintContainer.clientWidth - 50
+      })
+    },
     selectTable (table) {
       if (!this.editing) {
         this.$emit('table-clicked', table[this.returnTableKey])
@@ -514,11 +524,7 @@ export default {
     }
   },
   async mounted () {
-    this.$nextTick(async () => {
-      await IKUtils.wait(100)
-      this.height = this.$refs.blueprintContainer.clientHeight
-      this.width = this.$refs.blueprintContainer.clientWidth - 50
-    })
+    this.refreshBlueprintSize()
     await this.refreshSectionList()
   }
 }
