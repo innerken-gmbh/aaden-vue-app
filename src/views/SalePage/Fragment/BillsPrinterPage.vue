@@ -495,7 +495,7 @@ export default {
         Remember.deliveryList = this.deliveryList
         Remember.mergeBills = this.mergeBills
         this.errorMessage = ''
-        if (dayjs(this.realDate[0]).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) {
+        if (dayjs(this.realDate[0]).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD') || dayjs(this.realDate[0]).format('YYYY-MM-DD') === dayjs().subtract(4, 'hour').format('YYYY-MM-DD')) {
           if (this.ZBonList.length > 0) {
             const LocalZBonTime = dayjs(this.ZBonList[0]?.createTimestamp)
             const diffHours = dayjs().diff(LocalZBonTime, 'hour')
