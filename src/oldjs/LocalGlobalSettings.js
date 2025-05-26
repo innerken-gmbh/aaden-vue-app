@@ -49,6 +49,7 @@ export async function getAdminSetting () {
   GlobalConfig.enterToOrder = await getAdminSettingConfig('enterToOrder', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.defaultPassword = await getAdminSettingConfig('defaultPassword', '111', '111', 'string', '', 'basic,FrontApp')
   GlobalConfig.numberFirst = await getAdminSettingConfig('numberFirst', '0', '0', 'boolean', '', 'basic,FrontApp')
+  GlobalConfig.lang = await getAdminSettingConfig('language', 'de', 'de', 'string', '', 'basic,FrontApp')
 }
 
 export function refreshGetter () {
