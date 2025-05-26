@@ -902,5 +902,6 @@
   "deposit": "deposit",
   "withdraw": "withdraw",
   "Revenue": "Private deposit",
-  "Expenditure": "Private withdrawal"
+  "Expenditure": "Private withdrawal",
+  "lastPrint": "Last print time"
 }

@@ -1,232 +1,270 @@
 <template>
-  <div v-if="!isPrint">
-    <v-card
-        class="pa-4 d-flex flex-column"
-        color="white"
-        elevation="0"
-        min-height="550px"
-    >
-      <div class="d-flex align-center justify-center">
-        <div class="pa-4 font-weight-bold">{{ headerDateDisplay }}</div>
-        <v-spacer></v-spacer>
+  <div>
+    <div v-if="!isPrint">
+      <v-card
+          class="pa-4 d-flex flex-column"
+          color="white"
+          elevation="0"
+          min-height="400px"
+      >
+        <div class="d-flex align-center justify-center">
+          <div class="pa-4 font-weight-bold">{{ headerDateDisplay }}</div>
+          <v-spacer></v-spacer>
+          <div>
+            <v-btn icon @click="$emit('closeDialog')">
+              <v-icon>
+                mdi-close
+              </v-icon>
+            </v-btn>
+          </div>
+        </div>
+        <v-card
+            class="mt-2 px-4 d-flex flex-column"
+            color="#f6f5f6"
+            elevation="0"
+        >
+          <div
+              v-if="realDate[0] !== realDate[1]"
+              class="d-flex align-center justify-center"
+          >
+            <div>{{ $t('CombinedDocuments') }}</div>
+            <v-spacer/>
+            <v-switch
+                v-model="mergeBills"
+                dense
+                style="margin-right: -10px"
+            />
+          </div>
+        </v-card>
+        <v-card
+            class="mt-2 px-4 d-flex flex-column"
+            color="#f6f5f6"
+            elevation="0"
+        >
+          <div class="d-flex align-center justify-center">
+            <div>{{ $t('PasswordResetToEmail') }}</div>
+            <v-spacer/>
+            <v-switch
+                v-model="sendEmail"
+                dense
+                style="margin-right: -10px"
+                @click="checkZBonEmail"
+            />
+          </div>
+        </v-card>
+<!--        <div-->
+<!--            class="text-body-1 px-4 mt-2"-->
+<!--            v-html="showDetailPrintMessage"-->
+<!--        />-->
+<!--        <div class="d-flex text-body-1 px-4">-->
+<!--          <v-spacer/>-->
+<!--          <div>{{ $t('TotalOf') }} <span class="font-weight-bold">{{ totalBillsCount }}</span> {{ $t('Pice') }}</div>-->
+<!--        </div>-->
+        <v-spacer/>
+        <div class="mt-2" style="display: grid;grid-template-columns: repeat(6,minmax(0,1fr));grid-gap: 12px">
+          <tab-button
+              :active="totalSales"
+              :color="totalSales ? '#F48FE2' : '#ffffff'"
+              :name="$t('SalesStatistics')"
+              icon="mdi-chart-line"
+              @click="totalSales = !totalSales"
+          />
+          <tab-button
+              :active="totalTime"
+              :color="totalTime ? '#F48FE2' : '#ffffff'"
+              :name="$t('TotalPeriod')"
+              icon="mdi-clock-time-eight-outline"
+              @click="totalTime = !totalTime"
+          />
+          <tab-button
+              :active="deliveryList"
+              :color="deliveryList ? '#F48FE2' : '#ffffff'"
+              :name="$t('DeliveryList')"
+              icon="mdi-truck"
+              @click="deliveryList = !deliveryList"
+          />
+          <tab-button
+              :active="activeXBon"
+              :color="activeXBon ? '#F48FE2' : '#ffffff'"
+              icon="mdi-receipt-outline"
+              name="XBon"
+              @click="selectXBon"
+          />
+          <tab-button
+              :active="activeZBon"
+              :color="activeZBon ? '#F48FE2' : '#ffffff'"
+              icon="mdi-calendar-text-outline"
+              name="ZBon"
+              @click="selectZBon"
+          />
+        </div>
         <div>
-          <v-btn icon @click="$emit('closeDialog')">
-            <v-icon>
-              mdi-close
+          <v-btn
+              v-if="sendEmail"
+              :disabled="!disableSendEmail"
+              block
+              class="mt-2"
+              color="blue lighten-4 black--text"
+              elevation="0"
+              large
+              @click="selectSendEmail"
+          >
+            <div>{{ $t('OnlySentToMail') }}</div>
+            <v-icon right>
+              mdi-send
+            </v-icon>
+          </v-btn>
+          <v-btn
+              :disabled="!disablePrint"
+              block
+              class="mt-2"
+              color="amber lighten-4 black--text"
+              elevation="0"
+              large
+              @click="selectPrintType"
+          >
+            <div>{{ $t('IncomingPrint') }}</div>
+            <v-icon right>
+              mdi-send
             </v-icon>
           </v-btn>
         </div>
-      </div>
-      <v-card
-          class="mt-2 px-4 d-flex flex-column"
-          color="#f6f5f6"
-          elevation="0"
-      >
-        <div
-            v-if="realDate[0] !== realDate[1]"
-            class="d-flex align-center justify-center"
-        >
-          <div>{{ $t('CombinedDocuments') }}</div>
-          <v-spacer/>
-          <v-switch
-              v-model="mergeBills"
-              dense
-              style="margin-right: -10px"
-          />
-        </div>
       </v-card>
-      <v-card
-          class="mt-2 px-4 d-flex flex-column"
-          color="#f6f5f6"
-          elevation="0"
-      >
-        <div class="d-flex align-center justify-center">
-          <div>{{ $t('PasswordResetToEmail') }}</div>
-          <v-spacer/>
-          <v-switch
-              v-model="sendEmail"
-              dense
-              style="margin-right: -10px"
-              @click="checkZBonEmail"
-          />
-        </div>
-      </v-card>
-      <div
-          class="text-body-1 px-4 mt-2"
-          v-html="showDetailPrintMessage"
-      />
-      <div class="d-flex text-body-1 px-4">
-        <v-spacer/>
-        <div>{{ $t('TotalOf') }} <span class="font-weight-bold">{{ totalBillsCount }}</span> {{ $t('Pice') }}</div>
-      </div>
-      <v-spacer/>
-      <div style="display: grid;grid-template-columns: repeat(6,minmax(0,1fr));grid-gap: 12px">
-        <tab-button
-            :active="totalSales"
-            :color="totalSales ? '#F48FE2' : '#ffffff'"
-            :name="$t('SalesStatistics')"
-            icon="mdi-chart-line"
-            @click="totalSales = !totalSales"
-        />
-        <tab-button
-            :active="totalTime"
-            :color="totalTime ? '#F48FE2' : '#ffffff'"
-            :name="$t('TotalPeriod')"
-            icon="mdi-clock-time-eight-outline"
-            @click="totalTime = !totalTime"
-        />
-        <tab-button
-            :active="deliveryList"
-            :color="deliveryList ? '#F48FE2' : '#ffffff'"
-            :name="$t('DeliveryList')"
-            icon="mdi-truck"
-            @click="deliveryList = !deliveryList"
-        />
-        <tab-button
-            :active="activeXBon"
-            :color="activeXBon ? '#F48FE2' : '#ffffff'"
-            icon="mdi-receipt-outline"
-            name="XBon"
-            @click="selectXBon"
-        />
-        <tab-button
-            :active="activeZBon"
-            :color="activeZBon ? '#F48FE2' : '#ffffff'"
-            icon="mdi-calendar-text-outline"
-            name="ZBon"
-            @click="selectZBon"
-        />
-      </div>
-      <div>
-        <v-btn
-            v-if="sendEmail"
-            :disabled="!disableSendEmail"
-            block
-            class="mt-2"
-            color="blue lighten-4 black--text"
-            elevation="0"
-            large
-            @click="selectSendEmail"
-        >
-          <div>{{ $t('OnlySentToMail') }}</div>
-          <v-icon right>
-            mdi-send
-          </v-icon>
-        </v-btn>
-        <v-btn
-            :disabled="!disablePrint"
-            block
-            class="mt-2"
-            color="amber lighten-4 black--text"
-            elevation="0"
-            large
-            @click="selectPrintType"
-        >
-          <div>{{ $t('IncomingPrint') }}</div>
-          <v-icon right>
-            mdi-send
-          </v-icon>
-        </v-btn>
-      </div>
-    </v-card>
-  </div>
-  <div v-else>
-    <template v-if="!printEnd">
-      <template v-if="showPrintWarn">
-        <v-card
-            class="d-flex align-center justify-center flex-column text-center pa-8"
-            color="white"
-            elevation="0"
-            min-height="550px"
-        >
-          <v-icon
-              color="red"
-              size="64"
+    </div>
+    <div v-else>
+      <template v-if="!printEnd">
+        <template v-if="showPrintWarn">
+          <v-card
+              class="d-flex align-center justify-center flex-column text-center pa-8"
+              color="white"
+              elevation="0"
+              min-height="550px"
           >
-            mdi-alert-circle
-          </v-icon>
-          <div class="text-h5 font-weight-bold mt-4">
-            {{ $t('SureTablesCleared') }}
-          </div>
-          <div class="text-h5 font-weight-bold">
-            {{ $t('CurrentlyOpenTables') }}：{{ unCheckTableName }}
-          </div>
-          <div class="text-body-1">
-            {{ $t('DailyPrintTableHint') }}
-          </div>
-          <div class="mt-4 d-flex align-center justify-center">
-            <v-btn
-                color="grey lighten-2"
-                elevation="0"
-                width="80%"
-                @click="isPrint = false;showPrintWarn = false"
+            <v-icon
+                color="red"
+                size="64"
             >
-              {{ $t('Cancel') }}
-            </v-btn>
-            <v-btn
-                class="ml-4"
-                color="amber lighten-4 black--text"
-                elevation="0"
-                width="80%"
-                @click="realPrintZbon"
-            >
+              mdi-alert-circle
+            </v-icon>
+            <div class="text-h5 font-weight-bold mt-4">
+              {{ $t('SureTablesCleared') }}
+            </div>
+            <div class="text-h5 font-weight-bold">
+              {{ $t('CurrentlyOpenTables') }}：{{ unCheckTableName }}
+            </div>
+            <div class="text-body-1">
+              {{ $t('DailyPrintTableHint') }}
+            </div>
+            <div class="mt-4 d-flex align-center justify-center">
+              <v-btn
+                  color="grey lighten-2"
+                  elevation="0"
+                  width="80%"
+                  @click="isPrint = false;showPrintWarn = false"
+              >
+                {{ $t('Cancel') }}
+              </v-btn>
+              <v-btn
+                  class="ml-4"
+                  color="amber lighten-4 black--text"
+                  elevation="0"
+                  width="80%"
+                  @click="timeToPrintZBon(0)"
+              >
+                {{ $t('print') }}
+              </v-btn>
+            </div>
+          </v-card>
+        </template>
+        <template v-else>
+          <v-card
+              class="d-flex align-center justify-center flex-column"
+              color="white"
+              elevation="0"
+              min-height="550px"
+          >
+            <div class="mb-10 text-h4 font-weight-bold">
               {{ $t('print') }}
-            </v-btn>
-          </div>
-        </v-card>
+            </div>
+            <v-progress-circular
+                indeterminate
+                size="64"
+            />
+          </v-card>
+        </template>
       </template>
       <template v-else>
         <v-card
-            class="d-flex align-center justify-center flex-column"
+            class="pa-4 d-flex align-center justify-center flex-column"
             color="white"
             elevation="0"
             min-height="550px"
         >
-          <div class="mb-10 text-h4 font-weight-bold">
-            {{ $t('print') }}
+          <div
+              class="d-flex align-center justify-center flex-column"
+          >
+            <v-icon
+                color="green"
+                x-large
+            >
+              mdi-check-circle-outline
+            </v-icon>
+            <div class="mt-10 text-h4">
+              {{ $t('print_success') }}
+            </div>
+            <div class="text-body-2 text--secondary text-center mt-2">
+              {{ $t('need30secondcheckJunk') }}
+            </div>
+            <v-btn
+                :loading="isLoading"
+                class="mt-6"
+                color="amber lighten-4 black--text"
+                elevation="0"
+                width="100%"
+                @click="backToSelectPrint"
+            >
+              {{ $t('Zurück') }}
+            </v-btn>
           </div>
-          <v-progress-circular
-              indeterminate
-              size="64"
-          />
         </v-card>
       </template>
-    </template>
-    <template v-else>
-      <v-card
-          class="pa-4 d-flex align-center justify-center flex-column"
-          color="white"
-          elevation="0"
-          min-height="550px"
-      >
-        <div
-            class="d-flex align-center justify-center flex-column"
+    </div>
+    <v-dialog max-width="600" v-model="warnZBonPrinterDialog">
+      <v-card class="pa-6 d-flex align-center justify-center flex-column">
+        <v-icon
+            color="error lighten-2"
+            size="64"
         >
-          <v-icon
-              color="green"
-              x-large
-          >
-            mdi-check-circle-outline
-          </v-icon>
-          <div class="mt-10 text-h4">
-            {{ $t('print_success') }}
-          </div>
-          <div class="text-body-2 text--secondary text-center mt-2">
-            {{ $t('need30secondcheckJunk') }}
-          </div>
+          mdi-alert-box
+        </v-icon>
+        <div class="text-body-2 mt-6">
+          {{errorMessage}}
+        </div>
+        <div class="d-flex">
           <v-btn
-              :loading="isLoading"
-              class="mt-6"
-              color="amber lighten-4 black--text"
+              class="error lighten-4 black--text mt-4 mr-4"
               elevation="0"
-              width="100%"
-              @click="backToSelectPrint"
+              @click="timeToPrintZBon(1)"
           >
-            {{ $t('Zurück') }}
+            {{$t('reprint')}}
+          </v-btn>
+          <v-btn
+              class="amber lighten-4 black--text mt-4 mr-4"
+              elevation="0"
+              @click="checkTableStatus()"
+          >
+            {{$t('PrintZBon')}}
+          </v-btn>
+          <v-btn
+              class="blue lighten-4 black--text mt-4"
+              elevation="0"
+              @click="timeToPrintZBon(-1)"
+          >
+            {{$t('Cancel')}}
           </v-btn>
         </div>
       </v-card>
-    </template>
+    </v-dialog>
   </div>
 </template>
 
@@ -237,8 +275,7 @@ import dayjs from 'dayjs'
 import {
   getAllTableList,
   getNiceRestaurantInfo,
-  newGetZBon, newPrintZBon,
-  newSetZBon,
+  newGetZBon, newPrintZBon, newSetZBon,
   printRealTimeSalesBon,
   printSalesBon,
   printSummaryBon,
@@ -262,13 +299,17 @@ export default {
   },
   data: function () {
     return {
+      errorMessage: '',
+      warnZBonPrinterDialog: false,
+      ZBonList: [],
+      reprintZBon: false,
       isLoading: false,
       detailTime: [],
       unCheckTable: [],
       showPrintWarn: false,
       printEnd: false,
       isPrint: false,
-      ZBonList: [],
+      ZBonNumberList: [],
       billsCount: '',
       activeZBon: Remember.activeZBon,
       activeXBon: Remember.activeXBon,
@@ -305,7 +346,7 @@ export default {
     },
     showDetailPrintMessage () {
       let printMessage = ''
-      const ZBonLength = this.ZBonList.length > 0 ? this.ZBonList.length : 1
+      const ZBonLength = this.ZBonNumberList.length > 0 ? this.ZBonNumberList.length : 1
       if (!this.mergeBills) {
         if (this.activeZBon) {
           printMessage += i18n.t('DailyStatement') + '(ZBon)' + ' ' + ZBonLength + ' ' + i18n.t('Pice') + '<br>'
@@ -340,7 +381,7 @@ export default {
     },
     totalBillsCount () {
       let totalBills = 0
-      const ZBonLength = this.ZBonList.length > 0 ? this.ZBonList.length : 1
+      const ZBonLength = this.ZBonNumberList.length > 0 ? this.ZBonNumberList.length : 1
       if (!this.mergeBills) {
         if (this.activeZBon) {
           totalBills += ZBonLength
@@ -392,28 +433,70 @@ export default {
       this.isPrint = false
       this.isLoading = false
     },
-    async realPrintZbon () {
-      try {
+    async checkTableStatus () {
+      this.unCheckTable = (await getAllTableList()).filter(x => x.usageStatus === '1').map(it => it.name)
+      if (this.unCheckTable.length !== 0) {
+        this.warnZBonPrinterDialog = false
+        this.showPrintWarn = true
+      } else {
+        await this.timeToPrintZBon(0)
+      }
+    },
+    async timeToPrintZBon (mode) {
+      // 0表示打印新的 1表示打印之前的 -1无事发生
+      this.warnZBonPrinterDialog = false
+      if (mode === 0) {
+        this.isPrint = true
+        this.showPrintWarn = false
         if (this.sendEmail) {
-          if (this.ZBonList.length > 0) {
-            for (const ZBonNumber of this.ZBonList) {
-              await newPrintZBon(ZBonNumber, 1, 0)
-            }
-          } else {
-            await newSetZBon({ allowSameDay: 0 }, 1)
-          }
+          await newSetZBon({ allowSameDay: 1 }, 1)
         } else {
-          if (this.ZBonList.length > 0) {
-            for (const ZBonNumber of this.ZBonList) {
-              await newPrintZBon(ZBonNumber, 0, 0)
-            }
-          } else {
-            await newSetZBon({ allowSameDay: 0 }, 0)
-          }
+          await newSetZBon({ allowSameDay: 1 }, 0)
         }
         await this.ZbonPrintSelectedOptions(this.detailTime)
         showSuccessMessage(i18n.t('print_success'))
         this.printEnd = true
+      } else if (mode === 1) {
+        this.isPrint = true
+        if (this.sendEmail) {
+          await newPrintZBon(this.ZBonNumberList[0], 1, 0)
+        } else {
+          await newPrintZBon(this.ZBonNumberList[0], 0, 0)
+        }
+        await this.ZbonPrintSelectedOptions(this.detailTime)
+        showSuccessMessage(i18n.t('print_success'))
+        this.printEnd = true
+      } else {
+        this.isPrint = false
+      }
+    },
+    async realPrintZbon () {
+      try {
+        this.isPrint = true
+        Remember.activeZBon = this.activeZBon
+        Remember.activeXBon = this.activeXBon
+        Remember.sendEmail = this.sendEmail
+        Remember.totalSales = this.totalSales
+        Remember.totalTime = this.totalTime
+        Remember.deliveryList = this.deliveryList
+        Remember.mergeBills = this.mergeBills
+        this.errorMessage = ''
+        if (dayjs(this.realDate[0]).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) {
+          if (this.ZBonList.length > 0) {
+            const LocalZBonTime = dayjs(this.ZBonList[0]?.createTimestamp)
+            const diffHours = dayjs().diff(LocalZBonTime, 'hour')
+            if (diffHours <= 18) {
+              this.errorMessage = i18n.t('lastPrint') + '(ZBon):' + dayjs(this.ZBonList[0]?.createTimestamp).format('YYYY-MM-DD HH:mm:ss')
+              this.warnZBonPrinterDialog = true
+            } else if (diffHours > 18) {
+              await this.timeToPrintZBon(0)
+            }
+          } else {
+            await this.timeToPrintZBon(0)
+          }
+        } else {
+          await this.timeToPrintZBon(1)
+        }
       } catch (e) {
         this.isPrint = false
         this.showErrorDialog(this.$t('PrintFailed'), e?.message)
@@ -449,8 +532,8 @@ export default {
       }
     },
     async printBills () {
-      Remember.sendZmail = this.sendZmail
-      Remember.sendXmail = this.sendXmail
+      Remember.activeZBon = this.activeZBon
+      Remember.activeXBon = this.activeXBon
       Remember.sendEmail = this.sendEmail
       Remember.totalSales = this.totalSales
       Remember.totalTime = this.totalTime
@@ -481,30 +564,9 @@ export default {
       showSuccessMessage(i18n.t('print_success'))
       this.printEnd = true
     },
-    async printZBonWarn () {
-      if (this.ZBonList.length > 0) {
-        this.isPrint = true
-        await this.realPrintZbon()
-      } else {
-        this.unCheckTable = (await getAllTableList()).filter(x => x.usageStatus === '1').map(it => it.name)
-        Remember.sendZmail = this.sendZmail
-        Remember.sendXmail = this.sendXmail
-        Remember.sendEmail = this.sendEmail
-        Remember.totalSales = this.totalSales
-        Remember.totalTime = this.totalTime
-        Remember.deliveryList = this.deliveryList
-        Remember.mergeBills = this.mergeBills
-        this.isPrint = true
-        if (this.unCheckTable.length !== 0) {
-          this.showPrintWarn = true
-        } else {
-          await this.realPrintZbon()
-        }
-      }
-    },
     selectPrintType () {
       if (this.activeZBon) {
-        this.printZBonWarn()
+        this.realPrintZbon()
       } else {
         this.printBills()
       }
@@ -571,9 +633,6 @@ export default {
     selectZBon () {
       this.activeZBon = !this.activeZBon
       if (this.activeZBon) {
-        if (this.ZBonList.length > 0) {
-          this.showErrorDialog('所选时段已经打印过ZBon,是否重新打印' + this.ZBonList.join())
-        }
         this.activeXBon = false
       }
     },
@@ -600,8 +659,9 @@ export default {
       if (this.realDate[0] === today()) {
         this.mergeBills = false
       }
-      this.ZBonList = (await newGetZBon(ZbonPrintTime)).map(it => it.zbonNumber)
-      if (this.ZBonList.length !== 0) {
+      this.ZBonList = (await newGetZBon(ZbonPrintTime))
+      this.ZBonNumberList = this.ZBonList.map(it => it.zbonNumber)
+      if (this.ZBonNumberList.length !== 0) {
         this.activeZBon = false
       }
       this.billsCount = dayjs(this.realDate[1]).add(1, 'day').diff(dayjs(this.realDate[0]), 'day')

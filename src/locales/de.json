@@ -605,5 +605,6 @@
   "withdraw": "Abhebung",
   "inOrOut": "Einzahlung oder Abhebung",
   "Revenue": "Privateinlage",
-  "Expenditure": "Privatentnahme"
+  "Expenditure": "Privatentnahme",
+  "lastPrint": "Letzter Druckzeitpunkt"
 }

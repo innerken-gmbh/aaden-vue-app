@@ -902,5 +902,6 @@
   "deposit": "Depositare",
   "withdraw": "Ritiro",
   "Revenue": "Deposito privato",
-  "Expenditure": "Ritiro privato"
+  "Expenditure": "Ritiro privato",
+  "lastPrint": "Ora dell'ultima stampa"
 }
