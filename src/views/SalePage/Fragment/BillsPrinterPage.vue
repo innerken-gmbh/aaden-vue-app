@@ -443,7 +443,7 @@ export default {
       }
     },
     async timeToPrintZBon (mode) {
-      // 0表示打印新的 1表示打印之前的 -1无事发生
+      // 0表示打印新的 1表示打印之前的 -1无事发生 2表示打印每一张
       this.warnZBonPrinterDialog = false
       if (mode === 0) {
         this.isPrint = true
@@ -462,6 +462,20 @@ export default {
           await newPrintZBon(this.ZBonNumberList[0], 1, 0)
         } else {
           await newPrintZBon(this.ZBonNumberList[0], 0, 0)
+        }
+        await this.ZbonPrintSelectedOptions(this.detailTime)
+        showSuccessMessage(i18n.t('print_success'))
+        this.printEnd = true
+      } else if (mode === 2) {
+        this.isPrint = true
+        if (this.sendEmail) {
+          for (const ZBonNumber of this.ZBonNumberList) {
+            await newPrintZBon(ZBonNumber, 1, 0)
+          }
+        } else {
+          for (const ZBonNumber of this.ZBonNumberList) {
+            await newPrintZBon(ZBonNumber, 0, 0)
+          }
         }
         await this.ZbonPrintSelectedOptions(this.detailTime)
         showSuccessMessage(i18n.t('print_success'))
@@ -495,7 +509,7 @@ export default {
             await this.timeToPrintZBon(0)
           }
         } else {
-          await this.timeToPrintZBon(1)
+          await this.timeToPrintZBon(2)
         }
       } catch (e) {
         this.isPrint = false
