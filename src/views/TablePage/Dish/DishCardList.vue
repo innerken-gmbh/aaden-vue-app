@@ -88,6 +88,7 @@ import { dragscroll } from 'vue-dragscroll'
 import DishCard from './DishCard'
 import { Remember } from '@/api/remember'
 import i18n from '@/i18n'
+import IKUtils from 'innerken-js-utils'
 
 export default {
   name: 'DishCardList',
@@ -137,8 +138,9 @@ export default {
   watch: {
     currentSourceMark (val) {
       this.$emit('removeAllFromSplit')
+      const currentSliceDish = IKUtils.deepCopy(this.sliceDishBySourceMarks)
       if (val > -1) {
-        for (const item of this.sliceDishBySourceMarks) {
+        for (const item of currentSliceDish) {
           for (let i = 0; i < item.count; i++) {
             this.clickCallback(item)
           }
