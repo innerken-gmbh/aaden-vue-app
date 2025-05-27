@@ -962,7 +962,7 @@ export default {
     async getTableDetail () {
       try {
         this.tableDetailInfo = await getCurrentOrderInfo(this.id)
-        if (!this.tableDetailInfo.tableName) {
+        if (!this.tableDetailInfo.tableName && !this.tableDetailInfo.tableId) {
           await goHome()
           return
         }
