@@ -168,7 +168,7 @@
                   <template v-slot:default="{ total }">
                     <div class="pa-2">
                       <v-btn
-                          :disabled="!canOperate"
+                          :disabled="!canOperate || splitOrderListModel.list.length > 0"
                           block
                           color="green lighten-4 black--text"
                           elevation="0"
