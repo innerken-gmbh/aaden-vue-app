@@ -1,6 +1,6 @@
 <template>
   <iframe
-      :src="'http://'+Config.Base+'/'+endPoint+'?Base='+base
+      :src="host+Config.Base+'/'+endPoint+'?Base='+base
       +'&chaos='+Config.startUpTimestamp+'&pw='+password"
       style="height: 100vh"
       width="100%"
@@ -18,7 +18,8 @@ export default {
       Config: GlobalConfig,
       endPoint: GlobalConfig.adminEndpoint,
       deviceId: null,
-      base: null
+      base: null,
+      host: 'http://'
     }
   },
   props: {
@@ -26,6 +27,7 @@ export default {
   },
   async mounted () {
     this.base = GlobalConfig.Base
+    this.host = location.protocol + '//'
     this.deviceId = await getCurrentDeviceId()
   },
   async activated () {
