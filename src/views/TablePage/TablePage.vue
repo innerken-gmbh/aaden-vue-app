@@ -543,7 +543,7 @@ import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
 import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import uniqBy from 'lodash-es/uniqBy'
 import MemberSelectionDialog from '@/views/TablePage/Dialog/MemberSelectionDialog.vue'
-import { checkout, getCurrentOrderInfo } from '@/api/Repository/OrderInfo'
+import { checkout, getCurrentOrderInfo, setOrderAutoClaimCustomerId, trackAssetUsage } from '@/api/Repository/OrderInfo'
 import { DishDocker } from 'aaden-base-model/lib'
 import { getOrderInfo } from '@/api/aaden-base-model/api'
 import LogoDisplay from '@/components/LogoDisplay.vue'
@@ -959,6 +959,13 @@ export default {
       this.submitDiscount('')
     },
 
+    /**
+     * Gets the table details including order information and associated member.
+     * This method retrieves information about the current table and its order,
+     * and sets the currentMemberId if a member is associated with the order.
+     *
+     * @returns {Promise<void>}
+     */
     async getTableDetail () {
       try {
         this.tableDetailInfo = await getCurrentOrderInfo(this.id)
@@ -970,6 +977,11 @@ export default {
           this.tableDetailInfo.consumeTypeName = findConsumeTypeById(this.tableDetailInfo.consumeTypeId).name
           if (this.tableDetailInfo?.order?.discountStr) {
             this.discountStr = this.tableDetailInfo.order.discountStr
+          }
+
+          // Set currentMemberId if available in tableDetailInfo
+          if (this.tableDetailInfo?.member?.id) {
+            this.currentMemberId = this.tableDetailInfo.member.id
           }
         }
         this.refreshReservation()
@@ -1433,6 +1445,40 @@ export default {
     }
   },
   watch: {
+    /**
+     * Watches for changes to the currentMemberId and updates the order's associated member.
+     * When a member is selected, it associates the member with the current order and tracks asset usage.
+     * When a member is deselected, it clears the association.
+     *
+     * @param {string|null} newVal - The new member ID
+     * @param {string|null} oldVal - The previous member ID
+     * @returns {Promise<void>}
+     */
+    async currentMemberId (newVal, oldVal) {
+      if (newVal === oldVal) return
+
+      try {
+        if (newVal && this.tableDetailInfo?.order?.id) {
+          // Set the member for the current order
+          await setOrderAutoClaimCustomerId(this.tableDetailInfo.order.id, newVal)
+
+          // Track asset usage
+          await trackAssetUsage(newVal, this.tableDetailInfo.order.id)
+
+          // Show success message
+          IKUtils.toast(this.$t('MemberSelectedSuccessfully'))
+        } else if (oldVal && this.tableDetailInfo?.order?.id) {
+          // Clear the member for the current order
+          await setOrderAutoClaimCustomerId(this.tableDetailInfo.order.id, null)
+
+          // Show message
+          IKUtils.toast(this.$t('MemberDeselected'))
+        }
+      } catch (error) {
+        console.error('Error updating member selection:', error)
+        IKUtils.showError(this.$t('ErrorUpdatingMemberSelection'))
+      }
+    },
     async checkoutShow (val) {
       if (!val) {
         this.checkoutId = []
