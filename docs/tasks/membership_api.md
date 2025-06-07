@@ -8,9 +8,9 @@ This document provides information about the API endpoints available for the mem
 
 Ensures that a business layer exists for a given device ID. If no business layer exists, one will be created.
 
-**URL:** `/api/business-layers/ensure-for-device/{deviceId}`
+**URL:** `/common/businessLayer/assureShop/{deviceId}`
 
-**Method:** `GET`   
+**Method:** `GET`
 
 **URL Parameters:**
 - `deviceId` (required): The ID of the device
@@ -21,7 +21,7 @@ Ensures that a business layer exists for a given device ID. If no business layer
 
 **Example Request:**
 ```
-GET /api/business-layers/ensure-for-device/12345
+GET /common/businessLayer/assureShop/12345
 ```
 
 **Example Response:**
@@ -44,6 +44,192 @@ GET /api/business-layers/ensure-for-device/12345
   }
 }
 ```
+
+### Get Business Layer by ID
+
+Retrieves a business layer by its ID.
+
+**URL:** `/common/businessLayer/{id}`
+
+**Method:** `GET`
+
+**URL Parameters:**
+- `id` (required): The ID of the business layer
+
+**Success Response:**
+- **Code:** 200 OK
+- **Content:** A BusinessLayerResponseDTO object containing the business layer information
+
+**Error Response:**
+- **Code:** 404 Not Found
+- **Content:** No content
+
+### Get Business Layer by Device ID
+
+Retrieves a business layer by device ID.
+
+**URL:** `/common/businessLayer/byDeviceId/{deviceId}`
+
+**Method:** `GET`
+
+**URL Parameters:**
+- `deviceId` (required): The ID of the device
+
+**Success Response:**
+- **Code:** 200 OK
+- **Content:** A BusinessLayerResponseDTO object containing the business layer information
+
+**Error Response:**
+- **Code:** 404 Not Found
+- **Content:** No content
+
+### Get All Business Layers
+
+Retrieves all business layers.
+
+**URL:** `/common/businessLayer/all`
+
+**Method:** `GET`
+
+**Success Response:**
+- **Code:** 200 OK
+- **Content:** A list of BusinessLayerResponseDTO objects
+
+### Create Business Layer
+
+Creates a new business layer.
+
+**URL:** `/common/businessLayer/create`
+
+**Method:** `POST`
+
+**Request Body:**
+```json
+{
+  "type": "Shop",
+  "deviceId": 12345,
+  "public": true,
+  "displayInfo": {
+    "name": "Shop Name",
+    "description": "Shop Description",
+    "imageUrl": "https://example.com/image.jpg",
+    "color": ""
+  },
+  "contactInfo": {
+    "phone": "123-456-7890",
+    "email": "shop@example.com",
+    "address": "123 Main St"
+  },
+  "parentId": null
+}
+```
+
+**Success Response:**
+- **Code:** 200 OK
+- **Content:** The created BusinessLayerResponseDTO
+
+### Update Business Layer Display Info
+
+Updates the display information of a business layer.
+
+**URL:** `/common/businessLayer/updateDisplayInfo`
+
+**Method:** `POST`
+
+**Request Body:**
+```json
+{
+  "id": 1,
+  "displayInfo": {
+    "name": "Updated Shop Name",
+    "description": "Updated Shop Description",
+    "imageUrl": "https://example.com/updated-image.jpg",
+    "color": "#FF0000"
+  },
+  "public": true,
+  "contactInfo": {
+    "phone": "987-654-3210",
+    "email": "updated@example.com",
+    "address": "456 New St"
+  }
+}
+```
+
+**Success Response:**
+- **Code:** 200 OK
+- **Content:** The updated BusinessLayerResponseDTO
+
+### Update Business Layer Parent
+
+Updates the parent of a business layer.
+
+**URL:** `/common/businessLayer/updateParent`
+
+**Method:** `POST`
+
+**Request Body:**
+```json
+{
+  "id": 1,
+  "parentId": 2
+}
+```
+
+**Success Response:**
+- **Code:** 200 OK
+- **Content:** The updated BusinessLayerResponseDTO
+
+### Delete Business Layer
+
+Deletes a business layer.
+
+**URL:** `/common/businessLayer/delete/{id}`
+
+**Method:** `POST`
+
+**URL Parameters:**
+- `id` (required): The ID of the business layer to delete
+
+**Query Parameters:**
+- `deleteMode` (required): The deletion mode (MOVE_CHILDREN or DELETE_ALL)
+
+**Success Response:**
+- **Code:** 200 OK
+- **Content:** No content
+
+### Get Top Level Business Layer by Device ID
+
+Retrieves the top level business layer for a device ID.
+
+**URL:** `/common/businessLayer/byDeviceId/{deviceId}`
+
+**Method:** `GET`
+
+**URL Parameters:**
+- `deviceId` (required): The ID of the device
+
+**Success Response:**
+- **Code:** 200 OK
+- **Content:** A BusinessLayerResponseDTO object containing the top level business layer information
+
+**Error Response:**
+- **Code:** 404 Not Found
+- **Content:** No content
+
+### Get Related Business Layers by Device ID
+
+Retrieves all business layers related to a device ID.
+
+**URL:** `/common/businessLayer/relatedByDeviceId/{deviceId}`
+
+**Method:** `GET`
+
+**URL Parameters:**
+- `deviceId` (required): The ID of the device
+
+**Success Response:**
+- **Code:** 200 OK
+- **Content:** A list of BusinessLayerResponseDTO objects containing related business layers
 
 ## User Membership Endpoints
 
@@ -156,3 +342,5 @@ Gets a list of orders for a user.
 **Success Response:**
 - **Code:** 200 OK
 - **Content:** An OrderResponseDTO containing a paginated list of orders with details and a separate list of all related business layers
+
+

@@ -4,7 +4,8 @@ import router from './router'
 import store from './store'
 import i18n from './i18n'
 import vuetify from './plugins/vuetify'
-import GlobalConfig, { changeLanguage, getAdminSetting, loadConfig } from './oldjs/LocalGlobalSettings'
+import GlobalConfig, { changeLanguage, loadConfig } from './oldjs/LocalGlobalSettings'
+import { getAdminSetting } from './api/adminSettings'
 import VuetifyGoogleAutocomplete from 'vuetify-google-autocomplete-extend'
 import 'vue-draggable-resizable-gorkys/dist/VueDraggableResizable.css'
 import VueDraggableResizable from 'vue-draggable-resizable-gorkys'
@@ -20,6 +21,7 @@ import { getCurrentLanguage } from '@/api/api'
 import { reportToCloud } from '@/oldjs/common'
 import { getNiceRestaurantInfo } from '@/oldjs/zbonPrint'
 import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
+import { getCurrentBLID } from '@/api/MemberCloud/MemberCloudApi'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
@@ -84,29 +86,52 @@ async function initial () {
     GlobalConfig.Base = realUrl.split('//')[1]
     hillo.initial(realUrl + '/PHP/')
   }
-  try {
-    await getAdminSetting()
-  } catch (e) {
 
-  }
+  // Ensure UUID is set before any parallel operations
   if (!Remember.uuid) {
     Remember.uuid = uuidv4()
   }
+
+  // Run independent operations concurrently
+  const [, , languageResult] = await Promise.allSettled([
+    // Get admin settings
+    getAdminSetting().catch(e => console.error('Error getting admin settings:', e)),
+
+    // Ensure business layer exists and cache the BLID at startup
+    getCurrentBLID().catch(e => {
+      console.error('Error ensuring business layer at startup:', e)
+      // Non-blocking error - continue with initialization
+    }),
+
+    // Get current language
+    getCurrentLanguage()
+  ])
+
+  // Process language result
+  if (languageResult.status === 'fulfilled') {
+    changeLanguage(languageResult.value)
+  }
+
+  // Handle cloud reporting separately as it has internal async operations
   try {
     setTimeout(async () => {
+      const [restaurantInfo, deviceId] = await Promise.all([
+        getNiceRestaurantInfo(),
+        getCurrentDeviceId()
+      ])
+
       await reportToCloud({
-        name: (await getNiceRestaurantInfo()).name,
+        name: restaurantInfo.name,
         ip: '',
         uuid: Remember.uuid,
         version: require('../package.json').version,
         frontendType: 'aaden-desktop',
-        deviceId: await getCurrentDeviceId()
+        deviceId: deviceId
       })
     }, 50)
   } catch (e) {
-
+    console.error('Error in cloud reporting:', e)
   }
-  changeLanguage(await getCurrentLanguage())
   // i18n.locale = GlobalConfig.frontEndLang.toLowerCase()
   new Vue({
     router,

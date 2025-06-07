@@ -3,10 +3,7 @@ import i18n from '@/i18n'
 
 import dayjs from 'dayjs'
 import { goHome } from '@/oldjs/StaticModel'
-import {
-  getAdminSettingConfig,
-  getReservationStatus
-} from '@/api/api'
+// No API imports needed
 import IKUtils from 'innerken-js-utils'
 
 const fix = require('@/assets/FixedConfig.json')
@@ -31,26 +28,7 @@ export async function loadConfig () {
   }
 }
 
-export async function getAdminSetting () {
-  GlobalConfig.searchIncludesCode = await getAdminSettingConfig('searchIncludesCode', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.activeReservation = (await getAdminSettingConfig('activeReservation', '0', '0', 'boolean', '', 'basic,FrontApp,Reservation')) === '1'
-  setTimeout(async () => {
-    GlobalConfig.activeReservation = await getReservationStatus()
-  }, 20)
-  GlobalConfig.openCashBoxByPw = await getAdminSettingConfig('openCashBoxByPw', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.deleteOneKeys = await getAdminSettingConfig('deleteOneKeys', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.closePlaySound = await getAdminSettingConfig('closePlaySound', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.userTableColor = await getAdminSettingConfig('useTableColorSetting', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.usefulKey = await getAdminSettingConfig('usefulKey', 'E,F,B,R', 'E,F,B,R', 'string', '', 'basic,FrontApp')
-  GlobalConfig.discountWithPassword = await getAdminSettingConfig('discountWithPassword', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.bigDiscountRatio = await getAdminSettingConfig('bigDiscountRatio', '0.7', '0.7', 'string', '', 'basic,FrontApp')
-  GlobalConfig.googleMapCountry = await getAdminSettingConfig('googleMapCountry', 'DE', 'DE', 'string', '', 'basic,FrontApp')
-  GlobalConfig.escBackToHome = await getAdminSettingConfig('escBackToHome', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.enterToOrder = await getAdminSettingConfig('enterToOrder', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.defaultPassword = await getAdminSettingConfig('defaultPassword', '111', '111', 'string', '', 'basic,FrontApp')
-  GlobalConfig.numberFirst = await getAdminSettingConfig('numberFirst', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.lang = await getAdminSettingConfig('language', 'de', 'de', 'string', '', 'basic,FrontApp')
-}
+// getAdminSetting has been moved to src/api/adminSettings.js
 
 export function refreshGetter () {
   GlobalConfig.getTableInfoKeys = () => {

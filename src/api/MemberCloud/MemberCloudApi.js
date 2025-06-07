@@ -10,37 +10,8 @@ import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 // Cloud API base URL
 const CLOUD_API_BASE_URL = 'https://cloud-v2.aaden.io'
 
-// Simple caching mechanism
-const cache = new Map()
-const DEFAULT_TTL = 60000 // 1 minute
-
-/**
- * Gets cached data for a given key if it exists and is not expired.
- *
- * @param {string} key - The cache key.
- * @param {number} ttl - Time to live in milliseconds. Default is DEFAULT_TTL.
- * @returns {any|null} The cached data or null if not found or expired.
- */
-function getCachedData (key, ttl = DEFAULT_TTL) {
-  const cachedData = cache.get(key)
-  if (cachedData && Date.now() - cachedData.timestamp < ttl) {
-    return cachedData.data
-  }
-  return null
-}
-
-/**
- * Sets data in the cache with the current timestamp.
- *
- * @param {string} key - The cache key.
- * @param {any} data - The data to cache.
- */
-function setCachedData (key, data) {
-  cache.set(key, {
-    data,
-    timestamp: Date.now()
-  })
-}
+// Global variable to store the Business Layer ID (BLID)
+let cachedBLID = null
 
 /**
  * Gets the current device ID from GlobalConfig or from the API if not set.
@@ -51,7 +22,8 @@ function setCachedData (key, data) {
 export async function getCurrentDeviceId () {
   try {
     if (!GlobalConfig.DeviceId) {
-      GlobalConfig.DeviceId = (await hillo.get('AccessLog.php?op=deviceId')).content
+      const response = await hillo.get('AccessLog.php?op=deviceId')
+      GlobalConfig.DeviceId = response
     }
     return GlobalConfig.DeviceId
   } catch (error) {
@@ -62,6 +34,7 @@ export async function getCurrentDeviceId () {
 
 /**
  * Ensures a business layer exists for the given device ID.
+ * Uses the /common/businessLayer/assureShop/{deviceId} endpoint.
  *
  * @param {string} deviceId - The device ID.
  * @returns {Promise<any>} The business layer information.
@@ -69,15 +42,40 @@ export async function getCurrentDeviceId () {
  */
 export async function ensureBusinessLayerForDevice (deviceId) {
   try {
-    const cacheKey = `businessLayer_${deviceId}`
-    const cachedData = getCachedData(cacheKey)
-    if (cachedData) return cachedData
-
-    const response = await hillo.get(`${CLOUD_API_BASE_URL}/api/business-layers/ensure-for-device/${deviceId}`)
-    setCachedData(cacheKey, response.content)
-    return response.content
+    const response = await hillo.get(`${CLOUD_API_BASE_URL}/common/businessLayer/assureShop/${deviceId}`)
+    // Store the BLID in the global variable
+    if (response && response.id) {
+      cachedBLID = response.id
+    }
+    return response
   } catch (error) {
     console.error('Error ensuring business layer for device:', error)
+    throw error
+  }
+}
+
+/**
+ * Gets the current Business Layer ID (BLID).
+ * Returns the cached BLID if it exists, otherwise calls ensureBusinessLayerForDevice to get a new one.
+ *
+ * @returns {Promise<string>} The Business Layer ID.
+ * @throws {Error} If there is an error getting the BLID.
+ */
+export async function getCurrentBLID () {
+  try {
+    // If we already have a cached BLID, return it
+    if (cachedBLID) {
+      return cachedBLID
+    }
+
+    // Otherwise, ensure a business layer exists and get its ID
+    const deviceId = await getCurrentDeviceId()
+    await ensureBusinessLayerForDevice(deviceId)
+
+    // The BLID should now be cached by ensureBusinessLayerForDevice
+    return cachedBLID
+  } catch (error) {
+    console.error('Error getting current BLID:', error)
     throw error
   }
 }
@@ -91,13 +89,7 @@ export async function ensureBusinessLayerForDevice (deviceId) {
  */
 export async function getUserByShortCode (shortcode) {
   try {
-    const cacheKey = `user_shortcode_${shortcode}`
-    const cachedData = getCachedData(cacheKey)
-    if (cachedData) return cachedData
-
-    const response = await hillo.get(`${CLOUD_API_BASE_URL}/api/asset-records/shortcode/${shortcode}`)
-    setCachedData(cacheKey, response.content)
-    return response.content
+    return await hillo.get(`${CLOUD_API_BASE_URL}/api/asset-records/shortcode/${shortcode}`)
   } catch (error) {
     console.error('Error getting user by short code:', error)
     throw error
@@ -106,6 +98,7 @@ export async function getUserByShortCode (shortcode) {
 
 /**
  * Gets the list of members for a business layer.
+ * Uses the /business-layers/{blId}/members endpoint.
  *
  * @param {string} blId - The business layer ID.
  * @returns {Promise<any>} The list of members.
@@ -113,13 +106,7 @@ export async function getUserByShortCode (shortcode) {
  */
 export async function getBusinessLayerMembers (blId) {
   try {
-    const cacheKey = `bl_members_${blId}`
-    const cachedData = getCachedData(cacheKey)
-    if (cachedData) return cachedData
-
-    const response = await hillo.get(`${CLOUD_API_BASE_URL}/membership/user/getBusinessLayerMembers/${blId}`)
-    setCachedData(cacheKey, response.content)
-    return response.content
+    return await hillo.get(`${CLOUD_API_BASE_URL}/membership/user/business-layers/${blId}/members`)
   } catch (error) {
     console.error('Error getting business layer members:', error)
     throw error
@@ -128,6 +115,7 @@ export async function getBusinessLayerMembers (blId) {
 
 /**
  * Gets the details of a user in a business layer.
+ * Uses the /users/{userId}/business-layers/{blId}/details endpoint.
  *
  * @param {string} userId - The user ID.
  * @param {string} blId - The business layer ID.
@@ -136,13 +124,8 @@ export async function getBusinessLayerMembers (blId) {
  */
 export async function getUserBusinessLayerDetails (userId, blId) {
   try {
-    const cacheKey = `user_bl_details_${userId}_${blId}`
-    const cachedData = getCachedData(cacheKey)
-    if (cachedData) return cachedData
-
-    const response = await hillo.get(`${CLOUD_API_BASE_URL}/membership/user/getUserBusinessLayerDetails/${userId}/${blId}`)
-    setCachedData(cacheKey, response.content)
-    return response.content
+    const response = await hillo.get(`${CLOUD_API_BASE_URL}/membership/user/users/${userId}/business-layers/${blId}/details`)
+    return response
   } catch (error) {
     console.error('Error getting user business layer details:', error)
     throw error
@@ -168,15 +151,7 @@ export async function useAsset (recordId, usedBy, orderId, deviceId, note) {
       deviceId,
       note
     })
-
-    // Invalidate related caches
-    cache.forEach((value, key) => {
-      if (key.includes(recordId) || key.includes('user_') || key.includes('bl_members_')) {
-        cache.delete(key)
-      }
-    })
-
-    return response.content
+    return response
   } catch (error) {
     console.error('Error using asset:', error)
     throw error
@@ -194,15 +169,7 @@ export async function useAsset (recordId, usedBy, orderId, deviceId, note) {
 export async function claimAward (userId, awardProgressId) {
   try {
     const response = await hillo.post(`${CLOUD_API_BASE_URL}/membership/award/claim/${userId}/${awardProgressId}`)
-
-    // Invalidate related caches
-    cache.forEach((value, key) => {
-      if (key.includes(userId) || key.includes('user_') || key.includes('bl_members_')) {
-        cache.delete(key)
-      }
-    })
-
-    return response.content
+    return response
   } catch (error) {
     console.error('Error claiming award:', error)
     throw error
@@ -220,13 +187,8 @@ export async function claimAward (userId, awardProgressId) {
  */
 export async function getUserOrders (userId, page = 0, size = 20) {
   try {
-    const cacheKey = `user_orders_${userId}_${page}_${size}`
-    const cachedData = getCachedData(cacheKey, 30000) // shorter TTL for orders
-    if (cachedData) return cachedData
-
     const response = await hillo.get(`${CLOUD_API_BASE_URL}/cloudOrders/user-orders/${userId}?page=${page}&size=${size}`)
-    setCachedData(cacheKey, response.content)
-    return response.content
+    return response
   } catch (error) {
     console.error('Error getting user orders:', error)
     throw error
@@ -234,21 +196,17 @@ export async function getUserOrders (userId, page = 0, size = 20) {
 }
 
 /**
- * Clears the cache for a specific user.
+ * Gets the display name for a member from their member info object.
  *
- * @param {string} userId - The user ID.
+ * @param {Object} memberInfo - The member info object containing cloudUserInfo
+ * @param {string} fallback - The fallback text to use if no name is available
+ * @returns {string} The member's display name, name, email, or the fallback
  */
-export function clearUserCache (userId) {
-  cache.forEach((value, key) => {
-    if (key.includes(userId) || key.includes('user_') || key.includes('bl_members_')) {
-      cache.delete(key)
-    }
-  })
-}
+export function getMemberDisplayName (memberInfo, fallback = 'Member') {
+  if (!memberInfo || !memberInfo.cloudUserInfo) return fallback
 
-/**
- * Clears all cache.
- */
-export function clearAllCache () {
-  cache.clear()
+  return memberInfo.cloudUserInfo.displayName ||
+         memberInfo.cloudUserInfo.name ||
+         memberInfo.cloudUserInfo.email ||
+         fallback
 }

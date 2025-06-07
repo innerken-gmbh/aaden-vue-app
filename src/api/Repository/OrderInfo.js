@@ -2,7 +2,7 @@ import hillo from 'hillo'
 import IKUtils from 'innerken-js-utils'
 import { goHome } from '@/oldjs/StaticModel'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import { useAsset, getCurrentDeviceId } from '@/api/MemberCloud/MemberCloudApi'
+import { getCurrentDeviceId, useAsset } from '@/api/MemberCloud/MemberCloudApi'
 
 /**
  * Gets the current order information for a table.
@@ -65,7 +65,7 @@ export async function setOrderAutoClaimCustomerId (orderId, customerId) {
   try {
     const response = await hillo.post('Complex.php?op=setOrderAutoClaimCustomerId', {
       orderId,
-      customerId
+      autoClaimCustomerId: customerId
     })
     return response.content
   } catch (error) {

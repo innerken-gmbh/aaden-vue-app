@@ -1,59 +1,59 @@
 <template>
   <div
-      class="gradient"
+    class="gradient"
   >
     <v-navigation-drawer
-        app
-        color="transparent"
-        dark
-        mini-variant
-        mini-variant-width="72"
-        permanent
-        stateless
+      app
+      color="transparent"
+      dark
+      mini-variant
+      mini-variant-width="72"
+      permanent
+      stateless
     >
       <div
-          class="d-flex flex-column py-4 pt-3"
-          style="height: 100vh"
+        class="d-flex flex-column py-4 pt-3"
+        style="height: 100vh"
       >
         <div style="display: grid;grid-auto-flow: row;;grid-gap: 24px;align-content: center">
-          <logo-display/>
+          <logo-display />
           <nav-button
-              v-for="m in currentMenu"
-              :key="m.icon"
-              :color="m.color"
-              :icon="m.icon"
-              :is-active="false"
-              :loading="isSendingRequest"
-              :text="m.title"
-              @click="m.action"
+            v-for="m in currentMenu"
+            :key="m.icon"
+            :color="m.color"
+            :icon="m.icon"
+            :is-active="false"
+            :loading="isSendingRequest"
+            :text="m.title"
+            @click="m.action"
           >
           </nav-button>
         </div>
-        <v-spacer/>
+        <v-spacer />
       </div>
     </v-navigation-drawer>
 
     <v-main app>
       <v-app-bar
-          color="transparent"
-          dark
-          elevation="0"
-          tile
+        color="transparent"
+        dark
+        elevation="0"
+        tile
       >
         <restaurant-logo-display></restaurant-logo-display>
-        <v-spacer/>
+        <v-spacer />
 
         <template v-if="!globalLoading">
           <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
             <v-card
-                v-for="m in menu"
-                :key="m.name"
-                :class="currentView===m.name?' active':''"
-                :disabled="m.disable()"
-                class="navigationPillItem"
-                color="transparent"
-                flat
-                @click="currentView=m.name"
+              v-for="m in menu"
+              :key="m.name"
+              :class="currentView===m.name?' active':''"
+              :disabled="m.disable()"
+              class="navigationPillItem"
+              color="transparent"
+              flat
+              @click="currentView=m.name"
             >
               <v-icon left>{{ m.icon }}</v-icon>
               {{ $t(m.name) }}
@@ -69,8 +69,8 @@
             <template v-if="haveOrder">
               <v-icon>mdi-office-building-marker</v-icon>
               <div
-                  class="ml-2  text-truncate"
-                  @click="consumeTypeDialogShow=true"
+                class="ml-2  text-truncate"
+                @click="consumeTypeDialogShow=true"
               >
                 {{ findConsumeTypeById(realConsumeTypeId) }}
               </div>
@@ -78,6 +78,48 @@
               <v-icon class="mr-2 ml-6">mdi-account-circle</v-icon>
               <div>
                 {{ tableDetailInfo?.order?.servant }}
+              </div>
+
+              <!-- Member status indicator and selection button -->
+              <div
+                class="d-flex align-center ml-6"
+                @click="showMemberSelectionDialog = true"
+              >
+                <span
+                  v-if="currentMemberId"
+                  class="font-weight-bold d-flex align-center"
+                  style="color: #1565C0; background-color: #BBDEFB; padding: 4px 12px; border-radius: 20px;"
+                >
+                  <v-icon
+                    left
+                    size="18"
+                    class="mr-1"
+                    color="#1565C0"
+                  >mdi-account-card</v-icon>
+                  {{ currentMemberName || $t("MemberSelected") }}
+                </span>
+                <span
+                  v-else
+                  class="d-flex align-center"
+                >
+                  <v-icon
+                    left
+                    size="18"
+                    class="mr-1"
+                    color="grey darken-1"
+                  >mdi-account-card</v-icon>
+                  {{ $t("SelectMember") }}
+                </span>
+                <v-btn
+                  class="ml-2"
+                  icon
+                  small
+                  @click.stop="showMemberSelectionDialog = true"
+                >
+                  <v-icon :color="currentMemberId ? '#1565C0' : 'grey darken-1'">
+                    {{ currentMemberId ? "mdi-account-edit" : "mdi-account-plus" }}
+                  </v-icon>
+                </v-btn>
               </div>
             </template>
           </div>
@@ -89,78 +131,78 @@
       </v-app-bar>
       <div>
         <v-card
-            v-cloak
-            class="flex-grow-1 flex-column"
-            color="grey lighten-4"
-            elevation="0"
-            rounded="lg"
-            style="height: calc(100vh - 64px);grid-template-columns: 1fr 330px;display: grid"
+          v-cloak
+          class="flex-grow-1 flex-column"
+          color="grey lighten-4"
+          elevation="0"
+          rounded="lg"
+          style="height: calc(100vh - 64px);grid-template-columns: 1fr 330px;display: grid"
         >
           <div>
             <template v-if="currentView==='Menu'">
               <menu-fragement
-                  :consume-type-id="consumeTypeId"
-                  :override-consume-type-id="overrideConsumeTypeId"
-                  @dish-add="findAndOrderDish"
-                  @order-add="orderAdd"
-                  @dish-detail="(dish)=>showModification(dish,1,null)"
+                :consume-type-id="consumeTypeId"
+                :override-consume-type-id="overrideConsumeTypeId"
+                @dish-add="findAndOrderDish"
+                @order-add="orderAdd"
+                @dish-detail="(dish)=>showModification(dish,1,null)"
               />
             </template>
             <template v-else-if="currentView==='Delivery'">
               <address-page
-                  v-if="consumeTypeId===2"
-                  :consume-type-status-id="consumeTypeStatusId"
-                  :raw-address-info="realAddressInfo"
-                  class="mr-2"
-                  @address-change="submitRawAddressInfo"
+                v-if="consumeTypeId===2"
+                :consume-type-status-id="consumeTypeStatusId"
+                :raw-address-info="realAddressInfo"
+                class="mr-2"
+                @address-change="submitRawAddressInfo"
               />
             </template>
             <template v-else-if="currentView==='Reservation'">
               <reservation-list-page
-                  :id="id"
-                  :reservation-list="reservations"
-                  @need-refresh="refreshReservation"
+                :id="id"
+                :reservation-list="reservations"
+                @need-refresh="refreshReservation"
               />
             </template>
           </div>
           <v-card
-              class="d-flex justify-space-between flex-shrink-0 flex-column fill-height"
-              color="grey lighten-5"
-              rounded="lg"
-              style="height: calc(100vh - 64px)"
+            class="d-flex justify-space-between flex-shrink-0 flex-column fill-height"
+            color="grey lighten-5"
+            rounded="lg"
+            style="height: calc(100vh - 64px)"
           >
             <template v-if="!globalLoading">
               <keep-alive>
                 <dish-card-list
-                    v-if="cartListModel.list.length === 0"
-                    :click-callback="addToSplit"
-                    :default-expand="cartListModel.list.length === 0"
-                    :discount-ratio="discountRatio"
-                    :dish-list-model="orderListModel"
-                    :source-marks="sourceMarks"
-                    :title="$t('DishesInBasket')"
-                    @removeAllFromSplit="removeAllFromSplitOrder"
-                    @discount-clear="discountClear"
+                  v-if="cartListModel.list.length === 0"
+                  :click-callback="addToSplit"
+                  :default-expand="cartListModel.list.length === 0"
+                  :discount-ratio="discountRatio"
+                  :dish-list-model="orderListModel"
+                  :source-marks="sourceMarks"
+                  :title="$t('DishesInBasket')"
+                  @removeAllFromSplit="removeAllFromSplitOrder"
+                  @discount-clear="discountClear"
                 >
                   <template
-                      v-if="canOperate"
-                      #action
+                    v-if="canOperate"
+                    #action
                   >
                     <v-btn
-                        :loading="isSendingRequest"
-                        class="grey lighten-4 mr-2"
-                        elevation="0"
-                        icon
-                        @click="zwitchenBon"
+                      :loading="isSendingRequest"
+                      class="grey lighten-4 mr-2"
+                      elevation="0"
+                      icon
+                      @click="zwitchenBon"
                     >
                       <v-icon>mdi-receipt-text-clock</v-icon>
                     </v-btn>
                     <v-btn
-                        :loading="isSendingRequest"
-                        class="grey lighten-4 mr-2"
-                        elevation="0"
-                        icon
-                        @click="discountShow"
+                      :loading="isSendingRequest"
+                      class="grey lighten-4 mr-2"
+                      elevation="0"
+                      icon
+                      @click="discountShow"
                     >
                       <v-icon>mdi-sale</v-icon>
                     </v-btn>
@@ -168,18 +210,18 @@
                   <template v-slot:default="{ total }">
                     <div class="pa-2">
                       <v-btn
-                          :disabled="!canOperate || splitOrderListModel.list.length > 0"
-                          block
-                          color="green lighten-4 black--text"
-                          elevation="0"
-                          height="64"
-                          rounded
-                          @click="jumpToPayment()"
+                        :disabled="!canOperate || splitOrderListModel.list.length > 0"
+                        block
+                        color="green lighten-4 black--text"
+                        elevation="0"
+                        height="64"
+                        rounded
+                        @click="jumpToPayment()"
                       >
                         <v-icon
-                            class="mr-6"
-                            left
-                            size="28"
+                          class="mr-6"
+                          left
+                          size="28"
                         >mdi-wallet
                         </v-icon>
                         <span class="text-h5">{{ total | priceDisplay }}</span>
@@ -189,33 +231,33 @@
                 </dish-card-list>
               </keep-alive>
               <dish-card-list
-                  v-if="cartListModel.list.length > 0"
-                  ref="cartList"
-                  :click-callback="removeDish"
-                  :default-expand="true"
-                  :dish-list-model="cartListModel"
-                  :reset-current-expand-index="true"
-                  :reverse="true"
-                  :show-edit="true"
-                  :show-number="true"
-                  :title="$t('New')"
-                  color="primary"
+                v-if="cartListModel.list.length > 0"
+                ref="cartList"
+                :click-callback="removeDish"
+                :default-expand="true"
+                :dish-list-model="cartListModel"
+                :reset-current-expand-index="true"
+                :reverse="true"
+                :show-edit="true"
+                :show-number="true"
+                :title="$t('New')"
+                color="primary"
               >
                 <template #action>
                   <v-btn
-                      class="primary mr-2"
-                      dark
-                      elevation="0"
-                      icon
-                      @click="orderDish(cartListModel.list,false)"
+                    class="primary mr-2"
+                    dark
+                    elevation="0"
+                    icon
+                    @click="orderDish(cartListModel.list,false)"
                   >
                     <v-icon> mdi-printer-off</v-icon>
                   </v-btn>
                   <v-btn
-                      class="error lighten-4 mr-2"
-                      elevation="0"
-                      icon
-                      @click="cartListModelClear"
+                    class="error lighten-4 mr-2"
+                    elevation="0"
+                    icon
+                    @click="cartListModelClear"
                   >
                     <v-icon> mdi-trash-can</v-icon>
                   </v-btn>
@@ -223,18 +265,18 @@
                 <template v-slot:default="{ total }">
                   <div class="pa-2">
                     <v-btn
-                        :loading="isSendingRequest"
-                        block
-                        color="amber lighten-4 black--text"
-                        elevation="0"
-                        height="64"
-                        rounded
-                        @click="orderDish(cartListModel.list)"
+                      :loading="isSendingRequest"
+                      block
+                      color="amber lighten-4 black--text"
+                      elevation="0"
+                      height="64"
+                      rounded
+                      @click="orderDish(cartListModel.list)"
                     >
                       <v-icon
-                          class="mr-6"
-                          left
-                          size="28"
+                        class="mr-6"
+                        left
+                        size="28"
                       >mdi-printer
                       </v-icon>
                       <span class="text-h5">{{ total | priceDisplay }}</span>
@@ -250,10 +292,10 @@
     </v-main>
     <template v-if="splitOrderListModel.list.length > 0">
       <div
-          v-cloak
-          id="splitOrderContainer"
-          class="d-flex justify-end align-end"
-          style="
+        v-cloak
+        id="splitOrderContainer"
+        class="d-flex justify-end align-end"
+        style="
             position: fixed;
             background: rgba(0, 0, 0, 0.4);
             top: 0;
@@ -262,78 +304,78 @@
             left: 0;
             width: calc(100vw - 330px);
           "
-          @click="removeAllFromSplitOrder"
+        @click="removeAllFromSplitOrder"
       >
         <div
-            class="d-flex "
-            style="width: 400px;height: calc(100vh - 64px)"
-            @click.stop
+          class="d-flex "
+          style="width: 400px;height: calc(100vh - 64px)"
+          @click.stop
         >
           <div
-              class="pa-2 pt-4 gradient"
-              style="display: grid;grid-auto-flow: row;grid-auto-rows: min-content;
+            class="pa-2 pt-4 gradient"
+            style="display: grid;grid-auto-flow: row;grid-auto-rows: min-content;
                 grid-gap: 24px"
           >
             <nav-button
-                color="grey"
-                icon="mdi-close"
-                text="Cancel"
-                @click="removeAllFromSplitOrder()"
+              color="grey"
+              icon="mdi-close"
+              text="Cancel"
+              @click="removeAllFromSplitOrder()"
             ></nav-button>
             <nav-button
-                color="pink"
-                icon="mdi-minus"
-                text="DishCancel"
-                @click="showDeleteDishDialog()"
+              color="pink"
+              icon="mdi-minus"
+              text="DishCancel"
+              @click="showDeleteDishDialog()"
             ></nav-button>
             <nav-button
-                color="orange darken-3"
-                icon="mdi-sale"
-                text="GiveDishADiscount"
-                @click="dishesSetDiscount()"
+              color="orange darken-3"
+              icon="mdi-sale"
+              text="GiveDishADiscount"
+              @click="dishesSetDiscount()"
             ></nav-button>
             <nav-button
-                color="indigo"
-                icon="mdi-inbox-arrow-up"
-                text="tableChange"
-                @click="dishesChangeTable()"
+              color="indigo"
+              icon="mdi-inbox-arrow-up"
+              text="tableChange"
+              @click="dishesChangeTable()"
             ></nav-button>
             <nav-button
-                color="blue"
-                icon="mdi-receipt-text-arrow-left"
-                text="TemporaryBill"
-                @click="printZwichenBon()"
+              color="blue"
+              icon="mdi-receipt-text-arrow-left"
+              text="TemporaryBill"
+              @click="printZwichenBon()"
             ></nav-button>
           </div>
           <v-card
-              height="calc(100vh - 64px)"
-              tile
-              width="330"
+            height="calc(100vh - 64px)"
+            tile
+            width="330"
           >
             <dish-card-list
-                :click-callback="removeFromSplitOrder"
-                :default-expand="true"
-                :discount-ratio="discountRatio"
-                :dish-list-model="splitOrderListModel"
-                :title="$t('operation')"
-                class="flex-grow-1"
-                extra-height="48px"
+              :click-callback="removeFromSplitOrder"
+              :default-expand="true"
+              :discount-ratio="discountRatio"
+              :dish-list-model="splitOrderListModel"
+              :title="$t('operation')"
+              class="flex-grow-1"
+              extra-height="48px"
             >
               <template v-slot:default="{ total }">
                 <div class="pa-2">
                   <v-btn
-                      :disabled="consumeTypeStatusId <= 1"
-                      block
-                      color="warning lighten-4 black--text"
-                      elevation="0"
-                      height="64"
-                      rounded
-                      @click="needSplitOrder()"
+                    :disabled="consumeTypeStatusId <= 1"
+                    block
+                    color="warning lighten-4 black--text"
+                    elevation="0"
+                    height="64"
+                    rounded
+                    @click="needSplitOrder()"
                   >
                     <v-icon
-                        class="mr-6"
-                        left
-                        size="28"
+                      class="mr-6"
+                      left
+                      size="28"
                     >mdi-receipt-text-plus
                     </v-icon>
                     <span class="text-h5">{{ total | priceDisplay }}</span>
@@ -349,8 +391,8 @@
     <!--      right panel-->
 
     <v-dialog
-        v-model="extraDishShow"
-        max-width="400"
+      v-model="extraDishShow"
+      max-width="400"
     >
       <v-card>
         <v-card-title class="font-weight-bold">
@@ -358,23 +400,23 @@
         </v-card-title>
         <v-card-text class="mt-4">
           <v-text-field
-              v-model="currentDish.currentPrice"
-              :label="$t('Price')"
-              autofocus
-              outlined
+            v-model="currentDish.currentPrice"
+            :label="$t('Price')"
+            autofocus
+            outlined
           />
           <v-text-field
-              v-model="currentDish.currentName"
-              :label="$t('name')"
-              outlined
+            v-model="currentDish.currentName"
+            :label="$t('name')"
+            outlined
           />
           <v-btn
-              block
-              class="amber lighten-4 black--text"
-              elevation="0"
-              large
-              @click="addExtraDish"
-          >{{ $t('submit') }}
+            block
+            class="amber lighten-4 black--text"
+            elevation="0"
+            large
+            @click="addExtraDish"
+          >{{ $t("submit") }}
           </v-btn>
         </v-card-text>
 
@@ -382,70 +424,70 @@
     </v-dialog>
 
     <discount-dialog
-        :id="id"
-        ref="discount"
-        :discount-model-show="discountModelShow"
-        :dishesItems="splitOrderListModel.list"
-        :initial-u-i="initialUI"
-        :discount-ratio="discountRatio"
-        :orderId="currentOrderId"
-        :total-price="totalPrice"
-        :total-price-without-any-discount="orderListModel.list"
-        :useDishesDiscount="useDishesDiscount"
-        @visibility-changed="(val) => (this.discountModelShow = val)"
+      :id="id"
+      ref="discount"
+      :discount-model-show="discountModelShow"
+      :dishesItems="splitOrderListModel.list"
+      :initial-u-i="initialUI"
+      :discount-ratio="discountRatio"
+      :orderId="currentOrderId"
+      :total-price="totalPrice"
+      :total-price-without-any-discount="orderListModel.list"
+      :useDishesDiscount="useDishesDiscount"
+      @visibility-changed="(val) => (this.discountModelShow = val)"
     />
 
     <modification-drawer
-        ref="modification"
-        :dish="dish"
-        :mod="submitModification"
-        :modification-show="modificationShow"
-        :old-mod="oldMod"
-        :password="password"
-        @visibility-changed="changeModification"
+      ref="modification"
+      :dish="dish"
+      :mod="submitModification"
+      :modification-show="modificationShow"
+      :old-mod="oldMod"
+      :password="password"
+      @visibility-changed="changeModification"
     />
 
     <buffet-start-dialog
-        :id="currentOrderId"
-        :buffet-dialog-show="buffetDialogShow"
-        :initial-u-i="initialUI"
-        @visibility-changed="(val) => (this.buffetDialogShow = val)"
+      :id="currentOrderId"
+      :buffet-dialog-show="buffetDialogShow"
+      :initial-u-i="initialUI"
+      @visibility-changed="(val) => (this.buffetDialogShow = val)"
     ></buffet-start-dialog>
 
     <v-dialog
-        v-model="deleteDishReasonDialog"
-        max-width="600px"
+      v-model="deleteDishReasonDialog"
+      max-width="600px"
     >
       <v-card class="pa-4">
         <div class="text-body-1 font-weight-bold">
-          {{ $t('RevocationDishReason') }}
+          {{ $t("RevocationDishReason") }}
         </div>
         <v-text-field
-            v-model="deleteDishReason"
-            :placeholder="
+          v-model="deleteDishReason"
+          :placeholder="
               reasons.length > 0 ? reasons[0] : $t('RevocationDishReason')
             "
-            autofocus
-            class="mt-4"
-            hide-details
-            outlined
+          autofocus
+          class="mt-4"
+          hide-details
+          outlined
         />
         <div
-            class="mt-2"
-            style="
+          class="mt-2"
+          style="
               display: grid;
               grid-template-columns: repeat(4, minmax(0, 1fr));
               grid-gap: 4px;
             "
         >
           <v-card
-              v-for="r in reasons"
-              :key="r"
-              class="d-flex align-center justify-center"
-              color="#f6f6f6"
-              elevation="0"
-              style="height: 48px"
-              @click="submitReason(r)"
+            v-for="r in reasons"
+            :key="r"
+            class="d-flex align-center justify-center"
+            color="#f6f6f6"
+            elevation="0"
+            style="height: 48px"
+            @click="submitReason(r)"
           >
             {{ r }}
           </v-card>
@@ -453,35 +495,35 @@
         <div class="d-flex">
           <v-spacer></v-spacer>
           <v-btn
-              block
-              class="primary mt-4 lighten-4 black--text"
-              elevation="0"
-              large
-              rounded
-              @click="submitReason()"
+            block
+            class="primary mt-4 lighten-4 black--text"
+            elevation="0"
+            large
+            rounded
+            @click="submitReason()"
           >
-            {{ $t('Confirm') }}
+            {{ $t("Confirm") }}
           </v-btn>
         </div>
       </v-card>
     </v-dialog>
     <v-dialog
-        v-model="consumeTypeDialogShow"
-        max-width="600"
+      v-model="consumeTypeDialogShow"
+      max-width="600"
     >
       <v-card class="pa-4">
         <div class="text-h5 font-weight-black">
-          {{ $t('SelectConsumeType') }}
+          {{ $t("SelectConsumeType") }}
         </div>
         <v-card
-            v-for="ct of consumeTypeList"
-            :key="ct.id + 'consumeType'"
-            :class="realConsumeTypeId===ct.id?'active':''"
-            class="mt-2 pa-4 text-body-1"
-            color="grey lighten-4"
-            flat
-            rounded="lg"
-            @click="overrideConsumeTypeId = ct.id;consumeTypeDialogShow=false"
+          v-for="ct of consumeTypeList"
+          :key="ct.id + 'consumeType'"
+          :class="realConsumeTypeId===ct.id?'active':''"
+          class="mt-2 pa-4 text-body-1"
+          color="grey lighten-4"
+          flat
+          rounded="lg"
+          @click="overrideConsumeTypeId = ct.id;consumeTypeDialogShow=false"
         >
           {{ ct.name }}
         </v-card>
@@ -489,9 +531,9 @@
     </v-dialog>
 
     <member-selection-dialog
-        v-model="showMemberSelectionDialog"
-        :current-member-id="currentMemberId"
-        @update="e=>currentMemberId=e"
+      v-model="showMemberSelectionDialog"
+      :current-member-id="currentMemberId"
+      @update="handleMemberUpdate"
     />
   </div>
 </template>
@@ -543,7 +585,8 @@ import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
 import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import uniqBy from 'lodash-es/uniqBy'
 import MemberSelectionDialog from '@/views/TablePage/Dialog/MemberSelectionDialog.vue'
-import { checkout, getCurrentOrderInfo, setOrderAutoClaimCustomerId, trackAssetUsage } from '@/api/Repository/OrderInfo'
+import { checkout, getCurrentOrderInfo, setOrderAutoClaimCustomerId } from '@/api/Repository/OrderInfo'
+import { getUserBusinessLayerDetails, getCurrentBLID, getMemberDisplayName } from '@/api/MemberCloud/MemberCloudApi'
 import { DishDocker } from 'aaden-base-model/lib'
 import { getOrderInfo } from '@/api/aaden-base-model/api'
 import LogoDisplay from '@/components/LogoDisplay.vue'
@@ -647,10 +690,12 @@ export default {
       currentDish: defaultCurrentDish,
       password: '',
       /* new input */
-      currentMemberId: null,
+      // currentMemberId is now a computed property based on tableDetailInfo
+      // currentMemberName is now a computed property based on currentMemberInfo
+      currentMemberInfo: null, // Stores the current member's detailed information
       deviceId: -1,
       checkoutId: [],
-      showMemberSelectionDialog: null,
+      showMemberSelectionDialog: false,
       reservations: [],
       servantPw: ''
     }
@@ -659,6 +704,23 @@ export default {
     this.deviceId = GlobalConfig.DeviceId
   },
   methods: {
+    /**
+     * Handles the update event from the MemberSelectionDialog component.
+     * Updates the member ID in the backend and refreshes the table details.
+     *
+     * @param {Object} memberData - The member data object containing id and name
+     */
+    async handleMemberUpdate (memberData) {
+      try {
+        const id = memberData?.id ?? ''
+        await setOrderAutoClaimCustomerId(this.currentOrderId, id)
+        await this.getTableDetail()
+      } catch (error) {
+        console.error('Error updating member selection:', error)
+        IKUtils.showError(this.$t('ErrorUpdatingMemberSelection'))
+      }
+    },
+
     orderAdd () {
       if (this.cartListModel.list.length > 0 && GlobalConfig.enterToOrder === '1') {
         this.orderDish(this.cartListModel.list)
@@ -730,7 +792,7 @@ export default {
       try {
         if (
           this.splitOrderListModel.count() === 0 &&
-            this.cartListModel.count() === 0
+          this.cartListModel.count() === 0
         ) {
           let discountRatio = 0
           const result = await getOrderInfo(
@@ -750,8 +812,8 @@ export default {
           if (discountInfo.length > 0) {
             const [discount] = discountInfo
             discountRatio =
-                Math.abs(parseFloat(discount.price)) /
-                this.orderListModel.total()
+              Math.abs(parseFloat(discount.price)) /
+              this.orderListModel.total()
           }
           this.discountRatio = discountRatio
           await this.setOrderListByTableNameInFirebase(
@@ -781,7 +843,7 @@ export default {
       if (dish) {
         if (
           parseInt(GlobalConfig.oneStepOrderNumber) !== -1 &&
-            count > GlobalConfig.oneStepOrderNumber
+          count > GlobalConfig.oneStepOrderNumber
         ) {
           const res = await showConfirmAsyn(
             this.$t('AreYouSure'),
@@ -793,9 +855,9 @@ export default {
         }
         dish.name = dish.dishName
         dish.name =
-            dish.name.length > 28
-              ? dish.name.substring(0, 28) + '...'
-              : dish.name
+          dish.name.length > 28
+            ? dish.name.substring(0, 28) + '...'
+            : dish.name
         if (dish.haveMod > 0) {
           const apply = setDefaultValueForApply(dish.modInfo, [])
           this.submitModification(apply, dish, count)
@@ -979,10 +1041,7 @@ export default {
             this.discountStr = this.tableDetailInfo.order.discountStr
           }
 
-          // Set currentMemberId if available in tableDetailInfo
-          if (this.tableDetailInfo?.member?.id) {
-            this.currentMemberId = this.tableDetailInfo.member.id
-          }
+          // currentMemberId is now a computed property based on tableDetailInfo.order.autoClaimCustomerId
         }
         this.refreshReservation()
         await this.getOrderedDish()
@@ -1253,9 +1312,9 @@ export default {
           const result = {}
           Object.keys(dish).filter(key => {
             return (key !== 'change' && key !== 'edit' &&
-                key !== 'apply' &&
-                key !== 'langs' && key !== 'langsDesc' &&
-                key !== 'modInfo' && key !== 'options')
+              key !== 'apply' &&
+              key !== 'langs' && key !== 'langsDesc' &&
+              key !== 'modInfo' && key !== 'options')
           }).forEach(key => {
             result[key] = dish[key]
           })
@@ -1287,6 +1346,33 @@ export default {
 
   },
   computed: {
+    /**
+     * Gets the current member ID from the tableDetailInfo.
+     * This computed property ensures that currentMemberId is always in sync with the backend.
+     *
+     * @returns {string|null} The current member ID or null if no member is selected
+     */
+    currentMemberId () {
+      return this.tableDetailInfo?.order?.autoClaimCustomerId || null
+    },
+
+    /**
+     * Gets the current member name from currentMemberInfo.
+     * This computed property ensures that currentMemberName is always in sync with the currentMemberId.
+     *
+     * @returns {string|null} The current member name or null if no member is selected
+     */
+    currentMemberName () {
+      if (!this.currentMemberId) return null
+
+      // If we have currentMemberInfo, use it to get the name
+      if (this.currentMemberInfo) {
+        return getMemberDisplayName(this.currentMemberInfo, this.$t('MemberSelected'))
+      }
+
+      // Fallback if currentMemberInfo is not available yet
+      return this.$t('MemberSelected')
+    },
     menu () {
       const menu = [{
         icon: 'mdi-book-open',
@@ -1446,9 +1532,8 @@ export default {
   },
   watch: {
     /**
-     * Watches for changes to the currentMemberId and updates the order's associated member.
-     * When a member is selected, it associates the member with the current order and tracks asset usage.
-     * When a member is deselected, it clears the association.
+     * Watches for changes to the currentMemberId and updates currentMemberInfo.
+     * When currentMemberId changes, it fetches the member's details using getUserBusinessLayerDetails.
      *
      * @param {string|null} newVal - The new member ID
      * @param {string|null} oldVal - The previous member ID
@@ -1458,27 +1543,22 @@ export default {
       if (newVal === oldVal) return
 
       try {
-        if (newVal && this.tableDetailInfo?.order?.id) {
-          // Set the member for the current order
-          await setOrderAutoClaimCustomerId(this.tableDetailInfo.order.id, newVal)
+        if (newVal) {
+          // Get the business layer ID
+          const blId = await getCurrentBLID()
 
-          // Track asset usage
-          await trackAssetUsage(newVal, this.tableDetailInfo.order.id)
-
-          // Show success message
-          IKUtils.toast(this.$t('MemberSelectedSuccessfully'))
-        } else if (oldVal && this.tableDetailInfo?.order?.id) {
-          // Clear the member for the current order
-          await setOrderAutoClaimCustomerId(this.tableDetailInfo.order.id, null)
-
-          // Show message
-          IKUtils.toast(this.$t('MemberDeselected'))
+          // Get the user's business layer details
+          this.currentMemberInfo = await getUserBusinessLayerDetails(newVal, blId)
+        } else {
+          // Clear currentMemberInfo when no member is selected
+          this.currentMemberInfo = null
         }
       } catch (error) {
-        console.error('Error updating member selection:', error)
-        IKUtils.showError(this.$t('ErrorUpdatingMemberSelection'))
+        console.error('Error updating member info:', error)
+        this.currentMemberInfo = null
       }
     },
+
     async checkoutShow (val) {
       if (!val) {
         this.checkoutId = []
@@ -1503,7 +1583,7 @@ export default {
     }
 
     this.globalLoading = false
-    this.currentMemberId = null
+    // No need to reset currentMemberId as it's now a computed property based on tableDetailInfo
   },
   beforeDestroy () {
     // 移除事件监听器

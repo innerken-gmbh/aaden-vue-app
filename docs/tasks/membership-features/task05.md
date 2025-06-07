@@ -34,6 +34,15 @@ We need to add success feedback for successful API calls. This will involve disp
 
 ### API Function for Member Selected State
 ```javascript
+/**
+ * Sets the order auto claim customer ID.
+ * This function associates a customer (member) with an order.
+ *
+ * @param {string} orderId - The ID of the order.
+ * @param {string|null} customerId - The ID of the customer, or null to clear the association.
+ * @returns {Promise<any>} The response content.
+ * @throws {Error} If there is an error setting the order auto claim customer ID.
+ */
 export async function setOrderAutoClaimCustomerId(orderId, customerId) {
   try {
     const response = await hillo.post('Complex.php?op=setOrderAutoClaimCustomerId', {
@@ -52,23 +61,65 @@ export async function setOrderAutoClaimCustomerId(orderId, customerId) {
 We should use the `useAsset` function from Task 1 for asset usage tracking:
 
 ```javascript
-// Import the useAsset function from Task 1
-import { useAsset } from '../api/MemberCloud/MemberCloudApi'
-
-// Example usage in OrderInfo.js
+/**
+ * Tracks the usage of an asset for an order.
+ * This function records that a member's asset (e.g., membership card) was used for an order.
+ *
+ * @param {string} recordId - The ID of the asset record (usually the member ID).
+ * @param {string} orderId - The ID of the order.
+ * @returns {Promise<any>} The response content.
+ * @throws {Error} If there is an error tracking the asset usage.
+ */
 export async function trackAssetUsage(recordId, orderId) {
   try {
-    const deviceId = await getCurrentDeviceId() // Function to get current device ID
-    return await useAsset(recordId, 'user', orderId, deviceId, 'Used for order')
+    const deviceId = await getCurrentDeviceId(); // Function to get current device ID
+    return await useAsset(recordId, 'user', orderId, deviceId, 'Used for order');
   } catch (error) {
-    console.error('Error tracking asset usage:', error)
-    throw error
+    console.error('Error tracking asset usage:', error);
+    throw error;
   }
 }
 ```
 
 ### Updates to TablePage.vue
-We need to update the `currentMemberId` watcher in TablePage.vue to call the new API functions when a member is selected.
+We need to update the `currentMemberId` watcher in TablePage.vue to call the new API functions when a member is selected:
+
+```javascript
+// In the Vue component
+export default {
+  // ... other component options
+
+  watch: {
+    // ... other watchers
+
+    /**
+     * Watches for changes to the currentMemberId and updates the order's associated member.
+     */
+    async currentMemberId(newVal, oldVal) {
+      if (!this.tableDetailInfo?.order?.id) return;
+
+      try {
+        if (newVal) {
+          // Associate the member with the order
+          await setOrderAutoClaimCustomerId(this.tableDetailInfo.order.id, newVal);
+
+          // Track asset usage
+          await trackAssetUsage(newVal, this.tableDetailInfo.order.id);
+
+          // Show success message
+          IKUtils.toast(this.$t('MemberAssociatedWithOrder'));
+        } else if (oldVal) {
+          // Clear the member association
+          await setOrderAutoClaimCustomerId(this.tableDetailInfo.order.id, null);
+        }
+      } catch (error) {
+        console.error('Error updating member association:', error);
+        IKUtils.toast(this.$t('ErrorUpdatingMemberAssociation'), 'error');
+      }
+    }
+  }
+}
+```
 
 ## Status
 - [x] Analysis of current code
@@ -77,4 +128,4 @@ We need to update the `currentMemberId` watcher in TablePage.vue to call the new
 - [x] Implementing asset usage tracking
 - [x] Adding error handling
 - [x] Adding success feedback
-- [ ] Testing and verification
+- [x] Testing and verification

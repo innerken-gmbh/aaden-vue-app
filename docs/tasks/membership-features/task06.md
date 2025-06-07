@@ -90,4 +90,4 @@ export default {
 - [x] Updating getCurrentOrderInfo
 - [x] Updating TablePage.vue
 - [x] Handling tables without selected members
-- [ ] Testing and verification
+- [x] Testing and verification

@@ -154,4 +154,4 @@ function setCachedData(key, data) {
 - [x] Implementing API functions
 - [x] Adding error handling
 - [x] Adding caching
-- [ ] Testing and verification
+- [x] Testing and verification

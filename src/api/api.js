@@ -343,129 +343,241 @@ export async function printDailyCardTerminal (info) {
 
 export async function forceGetSystemSetting (item) {
   try {
-    return (await hillo.post('Restaurant.php?op=forceGetSystemSetting', {
-      systemSetting: JSON.stringify(item)
-    })).content
+    // Ensure section parameter is always present and not null
+    const params = {
+      ...item,
+      section: item.section || 'FrontApp', // Default to 'FrontApp' if section is not provided or null
+      debug: true
+    }
+    return (await hillo.post('Restaurant.php?op=forceGetSystemSetting', params)).content
   } catch (e) {
     return item.defaultValue
   }
 }
 
+/**
+ * Get multiple system settings at once using Promise.all
+ * @param {Array} items - Array of setting objects
+ * @returns {Promise<Array>} - Array of setting values
+ */
+export async function getMultipleSystemSettings (items) {
+  try {
+    // Create an array of promises for all settings
+    const settingPromises = items.map(item => forceGetSystemSetting(item))
+
+    // Wait for all promises to resolve
+    return await Promise.all(settingPromises)
+  } catch (e) {
+    console.error('Error getting multiple system settings:', e)
+    // Return default values if there's an error
+    return items.map(item => item.defaultValue)
+  }
+}
+
+// Common settings configuration
+const commonSettingConfig = {
+  section: 'FrontApp',
+  minimumVersion: '1.7.825',
+  sOptions: ''
+}
+
 export async function getCurrentLanguage () {
   return await forceGetSystemSetting({
-    section: 'FrontApp',
+    ...commonSettingConfig,
     sKey: 'language',
     sValue: 'de',
     defaultValue: 'de',
     sType: 'string',
-    minimumVersion: '1.7.825',
-    sOptions: '',
     tagList: 'basic,FrontApp,language'
   })
 }
 
 export async function getCurrentReservationStatus () {
   return await forceGetSystemSetting({
-    section: 'FrontApp',
+    ...commonSettingConfig,
     sKey: 'activeReservation',
     sValue: '0',
     defaultValue: '0',
     sType: 'boolean',
-    minimumVersion: '1.7.825',
-    sOptions: '',
     tagList: 'basic,FrontApp,Reservation'
   })
 }
 
 export async function getCurrentSearchStatus () {
   return await forceGetSystemSetting({
-    section: 'FrontApp',
+    ...commonSettingConfig,
     sKey: 'searchIncludesCode',
     sValue: '0',
     defaultValue: '0',
     sType: 'boolean',
-    minimumVersion: '1.7.825',
-    sOptions: '',
     tagList: 'basic,FrontApp'
   })
 }
 
 export async function openCashBoxByPw () {
   return await forceGetSystemSetting({
-    section: 'FrontApp',
+    ...commonSettingConfig,
     sKey: 'openCashBoxByPw',
     sValue: '0',
     defaultValue: '0',
     sType: 'boolean',
-    minimumVersion: '1.7.825',
-    sOptions: '',
     tagList: 'basic,FrontApp'
   })
 }
 
 export async function deleteAllInput () {
   return await forceGetSystemSetting({
-    section: 'FrontApp',
+    ...commonSettingConfig,
     sKey: 'deleteOneKeys',
     sValue: '0',
     defaultValue: '0',
     sType: 'boolean',
-    minimumVersion: '1.7.825',
-    sOptions: '',
     tagList: 'basic,FrontApp'
   })
 }
 
 export async function closePlaySound () {
   return await forceGetSystemSetting({
-    section: 'FrontApp',
+    ...commonSettingConfig,
     sKey: 'closePlaySound',
     sValue: '0',
     defaultValue: '0',
     sType: 'boolean',
-    minimumVersion: '1.7.825',
-    sOptions: '',
     tagList: 'basic,FrontApp'
   })
 }
 
 export async function useTableColorSetting () {
   return await forceGetSystemSetting({
-    section: 'FrontApp',
+    ...commonSettingConfig,
     sKey: 'useTableColorSetting',
     sValue: '0',
     defaultValue: '0',
     sType: 'boolean',
-    minimumVersion: '1.7.825',
-    sOptions: '',
     tagList: 'basic,FrontApp'
   })
 }
 
 export async function usefulKeyInKeyboard () {
   return await forceGetSystemSetting({
-    section: 'FrontApp',
+    ...commonSettingConfig,
     sKey: 'usefulKey',
     sValue: 'E,F,B,R',
     defaultValue: 'E,F,B,R',
     sType: 'string',
-    minimumVersion: '1.7.825',
-    sOptions: '',
     tagList: 'basic,FrontApp'
   })
 }
 
 export async function getAdminSettingConfig (sKey, sValue, defaultValue, sType, sOptions, tagList) {
   return await forceGetSystemSetting({
-    section: 'FrontApp',
+    ...commonSettingConfig,
     sKey: sKey,
     sValue: sValue,
     defaultValue: defaultValue,
     sType: sType,
-    minimumVersion: '1.7.825',
     sOptions: sOptions,
     tagList: tagList
   })
+}
+
+export async function getAllCommonSettings () {
+  try {
+    // Define all settings to fetch
+    const settingsToFetch = [
+      {
+        ...commonSettingConfig,
+        sKey: 'language',
+        sValue: 'de',
+        defaultValue: 'de',
+        sType: 'string',
+        tagList: 'basic,FrontApp,language'
+      },
+      {
+        ...commonSettingConfig,
+        sKey: 'activeReservation',
+        sValue: '0',
+        defaultValue: '0',
+        sType: 'boolean',
+        tagList: 'basic,FrontApp,Reservation'
+      },
+      {
+        ...commonSettingConfig,
+        sKey: 'searchIncludesCode',
+        sValue: '0',
+        defaultValue: '0',
+        sType: 'boolean',
+        tagList: 'basic,FrontApp'
+      },
+      {
+        ...commonSettingConfig,
+        sKey: 'openCashBoxByPw',
+        sValue: '0',
+        defaultValue: '0',
+        sType: 'boolean',
+        tagList: 'basic,FrontApp'
+      },
+      {
+        ...commonSettingConfig,
+        sKey: 'deleteOneKeys',
+        sValue: '0',
+        defaultValue: '0',
+        sType: 'boolean',
+        tagList: 'basic,FrontApp'
+      },
+      {
+        ...commonSettingConfig,
+        sKey: 'closePlaySound',
+        sValue: '0',
+        defaultValue: '0',
+        sType: 'boolean',
+        tagList: 'basic,FrontApp'
+      },
+      {
+        ...commonSettingConfig,
+        sKey: 'useTableColorSetting',
+        sValue: '0',
+        defaultValue: '0',
+        sType: 'boolean',
+        tagList: 'basic,FrontApp'
+      },
+      {
+        ...commonSettingConfig,
+        sKey: 'usefulKey',
+        sValue: 'E,F,B,R',
+        defaultValue: 'E,F,B,R',
+        sType: 'string',
+        tagList: 'basic,FrontApp'
+      }
+    ]
+
+    // Get all settings concurrently
+    const results = await getMultipleSystemSettings(settingsToFetch)
+
+    // Return as an object with named properties
+    return {
+      language: results[0],
+      activeReservation: results[1] === '1', // Convert to boolean
+      searchIncludesCode: results[2],
+      openCashBoxByPw: results[3],
+      deleteOneKeys: results[4],
+      closePlaySound: results[5],
+      useTableColorSetting: results[6],
+      usefulKey: results[7]
+    }
+  } catch (e) {
+    console.error('Error getting all common settings:', e)
+    return {
+      language: 'de',
+      activeReservation: false,
+      searchIncludesCode: '0',
+      openCashBoxByPw: '0',
+      deleteOneKeys: '0',
+      closePlaySound: '0',
+      useTableColorSetting: '0',
+      usefulKey: 'E,F,B,R'
+    }
+  }
 }
 
 export async function updateNewSetting (items) {

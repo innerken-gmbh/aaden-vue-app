@@ -54,7 +54,6 @@ export async function getTableListWithCells () {
       ReservationCache.lastCacheAt = dayjs().valueOf()
       try {
         ReservationCache.reservationCache = await getCurrentReservation()
-        console.log(ReservationCache.reservationCache, 'cache')
       } catch (e) {
 
       }

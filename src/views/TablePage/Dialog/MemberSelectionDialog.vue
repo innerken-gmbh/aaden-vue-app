@@ -3,10 +3,16 @@
  * @component MemberSelectionDialog
  * @description A dialog for selecting members. Supports searching by name, ID, or NFC input.
  * Enhanced to handle NFC input format (aaden:member:shortCode) and improved error handling.
+ * Uses only the new membership API as documented in membership_api.md.
  */
-import { addBonusPoint, getBonusRecord, searchNfcCard } from '@/api/VIPCard/VIPApi'
-import { getUserByShortCode } from '@/api/MemberCloud/MemberCloudApi'
-import IKUtils from 'innerken-js-utils'
+import {
+  getBusinessLayerMembers,
+  getCurrentBLID,
+  getUserByShortCode,
+  getMemberDisplayName
+} from '@/api/MemberCloud/MemberCloudApi'
+import dayjs from 'dayjs'
+import MemberDetailDialog from './MemberDetailDialog.vue'
 
 export default {
   name: 'MemberSelectionDialog',
@@ -24,45 +30,93 @@ export default {
     return {
       show: null,
       memberList: [],
-      bonusList: [],
       selectedMemberId: null,
       searchText: null,
       loading: false,
-      error: null
+      error: null,
+      businessLayerId: null,
+      showDetailDialog: false,
+      detailMemberId: null
     }
   },
+  components: {
+    MemberDetailDialog
+  },
   computed: {
-    totalBonus () {
-      return this.bonusList?.reduce((sum, i) => sum + parseInt(i.bonusPointChange), 0) ?? 0
-    },
     selectedMember () {
-      return this.memberList.find(it => it.id === this.selectedMemberId)
+      return this.memberList.find(it => it.userId === this.selectedMemberId)
     },
     filteredList () {
       return this.memberList.filter(it => {
         if (!this.searchText) {
           return true
         } else {
-          const str = [it.name, it.birthday, it.uid, it.email].join(',')
-          return str.includes(this.searchText)
+          // Adapt to the new API data structure (UserBusinessLayerListDTO)
+          const cloudUser = it.cloudUserInfo || {}
+          const str = [
+            cloudUser.name,
+            it.userId,
+            cloudUser.email,
+            cloudUser.displayName
+          ].filter(Boolean).join(',')
+          return str.toLowerCase().includes(this.searchText.toLowerCase())
         }
       }).slice(0, 10)
     }
   },
   methods: {
     /**
-     * Confirms the member selection and closes the dialog
+     * Formats a date string to a user-friendly format
+     *
+     * @param {string} dateString - The date string to format
+     * @returns {string} The formatted date string
      */
-    submitSelection () {
-      this.show = false
+    formatDate (dateString) {
+      if (!dateString) return this.$t('NoConsumption')
+      return dayjs(dateString).format('YYYY-MM-DD HH:mm')
     },
 
     /**
-     * Cancels the member selection, emits null, and closes the dialog
+     * Formats a currency value to a user-friendly format
+     *
+     * @param {number|string} value - The currency value to format
+     * @returns {string} The formatted currency string
      */
-    cancelSelection () {
-      this.$emit('update', null)
-      this.show = false
+    formatCurrency (value) {
+      if (!value) return '0.00'
+      return parseFloat(value).toFixed(2)
+    },
+
+    /**
+     * Gets the display name for a member
+     *
+     * @param {Object} member - The member object
+     * @returns {string} The member's display name
+     */
+    getDisplayName (member) {
+      return getMemberDisplayName(member, this.$t('NoName'))
+    },
+
+    // These methods are no longer needed as we close the dialog immediately after selection
+
+    /**
+     * Gets the business layer ID for the current device
+     *
+     * @returns {Promise<string>} The business layer ID
+     */
+    async getBusinessLayerId () {
+      if (this.businessLayerId) {
+        return this.businessLayerId
+      }
+
+      try {
+        // Get the current Business Layer ID (BLID)
+        this.businessLayerId = await getCurrentBLID()
+        return this.businessLayerId
+      } catch (error) {
+        console.error('Error getting business layer ID:', error)
+        throw error
+      }
     },
 
     /**
@@ -93,8 +147,24 @@ export default {
         this.error = null
         const member = await getUserByShortCode(shortCode)
         if (member) {
-          this.memberList = [member]
-          this.selectedMemberId = member.id
+          // Transform the member to match the UserBusinessLayerListDTO structure
+          // This is a temporary solution until the API is fully updated
+          const transformedMember = {
+            userId: member.id,
+            cloudUserInfo: {
+              name: member.name,
+              displayName: member.displayName,
+              email: member.email
+            },
+            currentMembership: {
+              points: member.points,
+              balance: member.balance,
+              userTotalConsume: member.totalConsume || 0,
+              userLastConsumeAt: member.lastConsumeAt || null
+            }
+          }
+          this.memberList = [transformedMember]
+          this.selectedMemberId = transformedMember.userId
         } else {
           this.error = this.$t('MemberNotFound')
         }
@@ -105,11 +175,22 @@ export default {
         this.loading = false
       }
     },
+
+    /**
+     * Initializes the component by loading the member list
+     */
     async init () {
       try {
         this.loading = true
         this.error = null
-        this.memberList = await searchNfcCard()
+
+        // Get the business layer ID
+        const blId = await this.getBusinessLayerId()
+
+        // Get the members for the business layer
+        const members = await getBusinessLayerMembers(blId)
+        this.memberList = members || []
+
         this.searchText = ''
         this.selectedMemberId = null
         if (this.currentMemberId) {
@@ -122,47 +203,53 @@ export default {
         this.loading = false
       }
     },
-    async reloadAndGoBack (action) {
-      const id = this.selectedMemberId
-      try {
-        await action()
-        await this.init()
-        this.selectedMemberId = id
-      } catch (e) {
 
-      }
+    /**
+     * Opens the member detail dialog for the specified member
+     *
+     * @param {string} memberId - The ID of the member to show details for
+     */
+    openMemberDetail (memberId) {
+      this.detailMemberId = memberId
+      this.showDetailDialog = true
     },
-    async changeBonusPoint () {
-      this.show = false
-      const newAmount = await IKUtils.showInput(this.$t('EnterNewPointAmount'), 'number',
-        this.$t('ActuallyScore') + ': ' + this.totalBonus)
-      if (newAmount) {
-        const modify = (parseFloat(newAmount) -
-            parseFloat(this.totalBonus)).toFixed(2)
-        await this.reloadAndGoBack(async () => {
-          await addBonusPoint(this.selectedMember.uid, modify)
-          await this.init()
+
+    /**
+     * Handles the back event from the detail dialog
+     */
+    handleDetailBack () {
+      this.showDetailDialog = false
+    },
+
+    /**
+     * Handles the select event from the detail dialog
+     *
+     * @param {string} memberId - The ID of the selected member
+     */
+    handleDetailSelect (memberId) {
+      this.selectedMemberId = memberId
+      this.showDetailDialog = false
+    },
+
+    /**
+     * Confirms the selection of the current member and closes the dialog
+     * This is called when the user explicitly clicks the "Select" button
+     */
+    confirmSelection () {
+      if (this.selectedMember) {
+        // Get the member's display name using our method
+        const memberName = this.getDisplayName(this.selectedMember)
+
+        // Emit both the member ID and the member's name
+        this.$emit('update', {
+          id: this.selectedMemberId,
+          name: memberName
         })
       }
-      this.show = true
+      this.show = false
     }
   },
   watch: {
-    async selectedMember () {
-      if (this.selectedMember) {
-        this.$emit('update', this.selectedMemberId)
-        try {
-          this.loading = true
-          this.error = null
-          this.bonusList = await getBonusRecord(this.selectedMember.uid)
-        } catch (error) {
-          console.error('Error getting bonus record:', error)
-          this.error = this.$t('ErrorLoadingBonusRecord')
-        } finally {
-          this.loading = false
-        }
-      }
-    },
     value (val) {
       this.show = val
       if (val) {
@@ -191,94 +278,117 @@ export default {
 <template>
   <v-dialog max-width="400" v-model="show">
     <v-card class="pa-6">
-      <template v-if="!selectedMemberId">
-        <div class="text-h5">
-          {{ $t('SelectVipMemberReferToOrder') }}
-        </div>
-        <v-text-field
-            @focus="searchText=''"
-            v-model="searchText"
-            class="mt-4"
-            autofocus
-            filled
-            hide-details
-            outlined
-            append-icon="mdi-magnify"
-            :loading="loading"
-            :disabled="loading"
-        />
-        <v-alert
-            v-if="error"
-            type="error"
-            class="mt-4"
-            dismissible
-            @input="error = null"
+      <!-- Member detail dialog -->
+      <member-detail-dialog
+        v-model="showDetailDialog"
+        :member-id="detailMemberId"
+        @back="handleDetailBack"
+        @select="handleDetailSelect"
+      ></member-detail-dialog>
+      <div class="text-h5">
+        {{ $t('SelectVipMemberReferToOrder') }}
+      </div>
+      <v-text-field
+          @focus="searchText=''"
+          v-model="searchText"
+          class="mt-4"
+          autofocus
+          filled
+          hide-details
+          outlined
+          append-icon="mdi-magnify"
+          :loading="loading"
+          :disabled="loading"
+      />
+      <v-alert
+          v-if="error"
+          type="error"
+          class="mt-4"
+          dismissible
+          @input="error = null"
+      >
+        {{ error }}
+      </v-alert>
+      <div v-if="loading" class="d-flex justify-center my-4">
+        <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      </div>
+      <div v-else style="max-height: 40vh;overflow-y: scroll">
+        <v-card
+          elevation="0"
+          class="my-4 pa-4"
+          color="grey lighten-4"
+          v-for="member in filteredList"
+          :key="member.userId"
         >
-          {{ error }}
-        </v-alert>
-        <div v-if="loading" class="d-flex justify-center my-4">
-          <v-progress-circular indeterminate color="primary"></v-progress-circular>
-        </div>
-        <div v-else style="max-height: 40vh;overflow-y: scroll">
-          <v-card @click="selectedMemberId=member.id" elevation="0" class="my-4 pa-4 d-flex align-center" color="grey lighten-4"
-                  v-for="member in filteredList" :key="member.id">
-            <div class="text-body-1">{{ member.name }}</div>
+          <!-- Top row with name or email -->
+          <div class="d-flex align-center mb-2">
+            <div
+              class="text-body-1"
+              :class="{'font-weight-bold black--text': member.userId === currentMemberId, 'font-weight-medium': member.userId !== currentMemberId}"
+            >
+              {{ getDisplayName(member) }}
+            </div>
             <v-spacer></v-spacer>
-            <div class="text-body-2 text--secondary">{{ member.uid }}</div>
-          </v-card>
-        </div>
-      </template>
-      <template v-else>
-        <v-btn @click="selectedMemberId=null" elevation="0" color="grey lighten-4" :disabled="loading">
-          <v-icon left
-          >mdi-arrow-left</v-icon>
-          {{ $t('Return') }}
-        </v-btn>
-        <v-alert
-            v-if="error"
-            type="error"
-            class="mt-4"
-            dismissible
-            @input="error = null"
-        >
-          {{ error }}
-        </v-alert>
-        <div v-if="loading" class="d-flex justify-center my-4">
-          <v-progress-circular indeterminate color="primary"></v-progress-circular>
-        </div>
-        <template v-else>
-          <div class="text-h5 mt-4">
-            {{selectedMember.name}}
+            <v-chip
+              v-if="member.userId === currentMemberId"
+              color="primary"
+              small
+              class="px-2 font-weight-medium white--text"
+            >
+              {{ $t('Selected') }}
+            </v-chip>
           </div>
-          <div class="text-body-2 text--secondary mt-4">
-            {{selectedMember.uid}}
-          </div>
-          <v-divider class="my-4"></v-divider>
-          <div class="mt-2" style="display: grid;grid-template-columns: repeat(2,minmax(0,1fr))">
-            <div >
-              <div class="text-body-2">{{ $t('Balance') }}</div>
-              <div class="text-h5">{{ selectedMember.voucherTotal | priceDisplay }}</div>
+
+          <!-- Middle row with email and shortcode -->
+          <div class="d-flex align-center mb-2">
+            <div class="text-caption text--secondary">
+              <v-icon small class="mr-1">mdi-email</v-icon>
+              {{ member.cloudUserInfo?.email || $t('NoEmail') }}
             </div>
-            <div @click="changeBonusPoint" class="d-flex align-center pr-4">
-              <div>
-                <div class="text-body-2">{{ $t('Integral') }}</div>
-                <div class="text-h5">{{ totalBonus }}</div>
-              </div>
-              <v-spacer></v-spacer>
-              <v-icon>mdi-swap-horizontal</v-icon>
+            <v-spacer></v-spacer>
+            <div class="text-caption text--secondary">
+              <v-icon small class="mr-1">mdi-card-account-details</v-icon>
+              {{ member.cloudUserInfo?.shortcode || $t('NoShortCode') }}
             </div>
           </div>
-          <v-divider class="my-4"></v-divider>
-          <div class="d-flex mt-4">
-            <v-btn @click="submitSelection" elevation="0" color="amber lighten-4 black--text">
-              {{ $t('Confirm') }}
+
+          <!-- Bottom row with last consumption and total consumption -->
+          <div class="d-flex align-center">
+            <div class="text-caption text--secondary">
+              <v-icon small class="mr-1">mdi-clock-outline</v-icon>
+              {{ member.currentMembership?.userLastConsumeAt ? formatDate(member.currentMembership.userLastConsumeAt) : $t('NoConsumption') }}
+            </div>
+            <v-spacer></v-spacer>
+            <div class="text-caption text--secondary">
+              <v-icon small class="mr-1">mdi-cash-multiple</v-icon>
+              {{ member.currentMembership?.userTotalConsume ? formatCurrency(member.currentMembership.userTotalConsume) : '0.00' }}
+            </div>
+          </div>
+
+          <!-- Action buttons -->
+          <div class="d-flex justify-end mt-2">
+            <v-btn
+              small
+              text
+              color="primary"
+              class="mr-2"
+              @click.stop="openMemberDetail(member.userId)"
+            >
+              <v-icon left small>mdi-information</v-icon>
+              {{ $t('Details') }}
             </v-btn>
-            <v-btn @click="cancelSelection"  elevation="0" class="ml-4" color="grey lighten-4 black--text">
-              {{ $t('Cancel') }}
+            <v-btn
+              small
+              text
+              :color="member.userId === currentMemberId ? 'success' : 'primary'"
+              @click.stop="selectedMemberId=member.userId; confirmSelection()"
+            >
+              <v-icon left small>{{ member.userId === currentMemberId ? 'mdi-check-circle' : 'mdi-check' }}</v-icon>
+              {{ $t('Select') }}
             </v-btn>
           </div>
-        </template>
-      </template>
+        </v-card>
+      </div>
     </v-card>
   </v-dialog>
 </template>
