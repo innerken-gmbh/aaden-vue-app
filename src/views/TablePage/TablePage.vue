@@ -25,6 +25,7 @@
             :is-active="false"
             :loading="isSendingRequest"
             :text="m.title"
+            :badge-count="m.badgeCount || 0"
             @click="m.action"
           >
           </nav-button>
@@ -88,7 +89,7 @@
                 <span
                   v-if="currentMemberId"
                   class="font-weight-bold d-flex align-center"
-                  style="color: #1565C0; background-color: #BBDEFB; padding: 4px 12px; border-radius: 20px;"
+                  style="color: #1565C0; background-color: #BBDEFB; padding:8px 12px; border-radius: 4px;"
                 >
                   <v-icon
                     left
@@ -110,16 +111,6 @@
                   >mdi-account-card</v-icon>
                   {{ $t("SelectMember") }}
                 </span>
-                <v-btn
-                  class="ml-2"
-                  icon
-                  small
-                  @click.stop="showMemberSelectionDialog = true"
-                >
-                  <v-icon :color="currentMemberId ? '#1565C0' : 'grey darken-1'">
-                    {{ currentMemberId ? "mdi-account-edit" : "mdi-account-plus" }}
-                  </v-icon>
-                </v-btn>
               </div>
             </template>
           </div>
@@ -540,6 +531,7 @@
     <asset-selection-dialog
       v-model="showAssetSelectionDialog"
       :initial-assets="selectedAssets"
+      :total-price="totalPrice"
       @save="handleAssetSelection"
     />
   </div>
@@ -593,8 +585,13 @@ import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import uniqBy from 'lodash-es/uniqBy'
 import MemberSelectionDialog from '@/views/TablePage/Dialog/MemberSelectionDialog.vue'
 import AssetSelectionDialog from '@/views/TablePage/Dialog/AssetSelectionDialog.vue'
-import { checkout, getCurrentOrderInfo, setOrderAutoClaimCustomerId, trackAssetUsage } from '@/api/Repository/OrderInfo'
-import { getUserBusinessLayerDetails, getCurrentBLID, getMemberDisplayName } from '@/api/MemberCloud/MemberCloudApi'
+import {
+  checkout,
+  getCurrentOrderInfo,
+  setOrderAutoClaimCustomerId,
+  trackAssetUsage
+} from '@/api/Repository/OrderInfo'
+import { getCurrentBLID, getMemberDisplayName, getUserBusinessLayerDetails } from '@/api/MemberCloud/MemberCloudApi'
 import { DishDocker } from 'aaden-base-model/lib'
 import { getOrderInfo } from '@/api/aaden-base-model/api'
 import LogoDisplay from '@/components/LogoDisplay.vue'
@@ -704,7 +701,6 @@ export default {
       showMemberSelectionDialog: false,
       showAssetSelectionDialog: false,
       selectedAssets: [],
-      assetDiscount: 0,
       currentMemberInfo: null, // Stores the current member's detailed information
       deviceId: -1,
       checkoutId: [],
@@ -729,6 +725,20 @@ export default {
         // Explicitly update the Vuex store with the selected member ID
         this.updateCurrentMemberId(id)
 
+        // Reset selected assets when member changes
+        this.selectedAssets = []
+
+        // Update rawAddressInfo to remove any previously selected assets
+        if (this.realAddressInfo) {
+          const currentAddressInfo = { ...this.realAddressInfo }
+          // Remove asset-related properties
+          delete currentAddressInfo.selectedAssetIds
+          delete currentAddressInfo.assetDiscount
+
+          // Save updated rawAddressInfo
+          await this.submitRawAddressInfo(currentAddressInfo)
+        }
+
         await setOrderAutoClaimCustomerId(this.currentOrderId, id)
         await this.getTableDetail()
       } catch (error) {
@@ -739,16 +749,15 @@ export default {
 
     /**
      * Handles the save event from the AssetSelectionDialog component.
-     * Updates the selected assets and discount in the component's data and saves them to rawAddressInfo.
-     * Only saves asset IDs instead of entire asset objects to simplify the data structure.
+     * Updates the selected assets in the component's data, saves them to rawAddressInfo,
+     * and applies any discount directly by calling the setDiscount endpoint.
      *
      * @param {Object} data - The data object containing selectedAssets and discount
      */
     async handleAssetSelection (data) {
       try {
-        // Update the selected assets and discount in the component's data
+        // Update the selected assets in the component's data
         this.selectedAssets = data.selectedAssets
-        this.assetDiscount = data.discount
 
         // Get current rawAddressInfo or initialize empty object
         const currentAddressInfo = this.realAddressInfo || {}
@@ -759,12 +768,29 @@ export default {
         // Add selected asset IDs to rawAddressInfo
         const updatedAddressInfo = {
           ...currentAddressInfo,
-          selectedAssetIds: selectedAssetIds,
-          assetDiscount: this.assetDiscount
+          selectedAssetIds: selectedAssetIds
         }
 
         // Save updated rawAddressInfo
         await this.submitRawAddressInfo(updatedAddressInfo)
+
+        // If there's a discount string, apply it directly by calling the setDiscount endpoint
+        if (data.discount && data.discount.trim() !== '') {
+          console.log(data.discount, 'discount here')
+
+          // Call the setDiscount endpoint directly with the discount string
+          await hillo.post('Complex.php?op=setDiscount', {
+            tableId: this.id,
+            discountStr: data.discount
+          })
+        } else {
+          // If no discount, clear any existing discount by calling the setDiscount endpoint with an empty string
+          await hillo.post('Complex.php?op=setDiscount', {
+            tableId: this.id,
+            discountStr: ''
+          })
+        }
+        await this.initialUI()
 
         // Show success message
         IKUtils.toast(this.$t('AssetSelectionSaved'))
@@ -1109,10 +1135,8 @@ export default {
               // Old format: full assets are stored
               this.selectedAssets = this.realAddressInfo.selectedAssets || []
             }
-            this.assetDiscount = this.realAddressInfo.assetDiscount || 0
           } else {
             this.selectedAssets = []
-            this.assetDiscount = 0
           }
         }
         this.refreshReservation()
@@ -1174,13 +1198,8 @@ export default {
         }
         this.checkoutId = this.checkOutModel.list.map(it => it.code)
 
-        // Apply both regular discount and asset discount if available
-        let currentPrice = round(this.checkOutModel.total * (1 - this.discountRatio), 2)
-
-        // Apply asset discount if any
-        if (this.assetDiscount > 0) {
-          currentPrice = round(currentPrice * (1 - this.assetDiscount), 2)
-        }
+        // Apply regular discount
+        const currentPrice = round(this.checkOutModel.total * (1 - this.discountRatio), 2)
 
         const checkoutInfo = await this.doCheckout(currentPrice)
 
@@ -1219,14 +1238,12 @@ export default {
 
               // Clear selected assets after successful checkout
               this.selectedAssets = []
-              this.assetDiscount = 0
 
               // Update rawAddressInfo to remove used assets
               const currentAddressInfo = this.realAddressInfo || {}
               const updatedAddressInfo = {
                 ...currentAddressInfo,
-                selectedAssetIds: [],
-                assetDiscount: 0
+                selectedAssetIds: []
               }
               await this.submitRawAddressInfo(updatedAddressInfo)
             } catch (error) {
@@ -1551,15 +1568,18 @@ export default {
     currentMenu () {
       const normalActions = []
       if (this.canOperate) {
-        // Add asset selection button
-        normalActions.push({
-          title: 'SelectAssets',
-          icon: 'mdi-package-variant-closed',
-          color: 'blue',
-          action: () => {
-            this.showAssetSelectionDialog = true
-          }
-        })
+        // Add asset selection button - only show when a member is selected
+        if (this.currentMemberId) {
+          normalActions.push({
+            title: 'SelectAssets',
+            icon: 'mdi-package-variant-closed',
+            color: 'blue',
+            badgeCount: this.selectedAssets.length,
+            action: () => {
+              this.showAssetSelectionDialog = true
+            }
+          })
+        }
 
         normalActions.push({
           title: 'reprint',

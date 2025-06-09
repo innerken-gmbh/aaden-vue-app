@@ -1,17 +1,43 @@
 <template>
   <v-dialog v-model="show" max-width="800" persistent>
-    <v-card class="pa-4 asset-dialog">
-      <v-card-title class="headline d-flex justify-space-between align-center primary lighten-5 pa-4 rounded-t">
-        <div class="d-flex align-center">
-          <v-icon left color="primary" size="28">mdi-package-variant-closed</v-icon>
-          <span class="primary--text font-weight-bold">{{ $t('SelectAssets') }}</span>
-        </div>
-        <v-btn icon @click="close">
-          <v-icon>mdi-close</v-icon>
-        </v-btn>
-      </v-card-title>
+    <v-card class="asset-dialog">
+      <div class="fixed-header">
+        <v-card-title class="headline d-flex justify-space-between align-center pa-4 rounded-t">
+          <div class="d-flex align-center">
+            <v-icon left color="primary" size="28">mdi-package-variant-closed</v-icon>
+            <span class="primary--text font-weight-bold">{{ $t('SelectAssets') }}</span>
+            <!-- Selection count chip moved to header -->
+            <v-chip
+              v-if="selectedAssets.length > 0"
+              color="primary"
+              outlined
+              small
+              class="ml-4 font-weight-medium"
+            >
+              <v-icon left x-small>mdi-check-circle</v-icon>
+              {{ $t('SelectedCount', { count: selectedAssets.length }) }}
+            </v-chip>
+          </div>
+          <div class="d-flex align-center">
+            <v-btn
+              color="primary"
+              :disabled="!currentMemberId"
+              depressed
+              small
+              class="mr-2"
+              @click="save"
+            >
+              <v-icon left small>mdi-content-save</v-icon>
+              {{ $t('Save') }}
+            </v-btn>
+            <v-btn icon @click="close">
+              <v-icon>mdi-close</v-icon>
+            </v-btn>
+          </div>
+        </v-card-title>
+      </div>
 
-      <v-card-text>
+      <div class="scrollable-content">
         <v-card
           v-if="!currentMemberId"
           class="mb-4 pa-4 rounded-lg"
@@ -150,7 +176,29 @@
                           <v-divider class="my-2"></v-divider>
 
                           <div class="d-flex justify-end mt-2">
+                            <v-tooltip
+                              v-if="asset.assetInfo?.assetType === 'VOUCHER' && !isVoucherSelectable(asset) && !isAssetSelected(asset.id)"
+                              bottom
+                            >
+                              <template v-slot:activator="{ on, attrs }">
+                                <v-btn
+                                  small
+                                  :color="isAssetSelected(asset.id) ? 'error' : 'grey'"
+                                  :outlined="!isAssetSelected(asset.id)"
+                                  :depressed="isAssetSelected(asset.id)"
+                                  rounded
+                                  disabled
+                                  v-bind="attrs"
+                                  v-on="on"
+                                >
+                                  <v-icon left small>mdi-block-helper</v-icon>
+                                  {{ $t('CannotSelect') }}
+                                </v-btn>
+                              </template>
+                              <span>{{ voucherReasons[asset.id] || $t('VoucherCannotBeSelected') }}</span>
+                            </v-tooltip>
                             <v-btn
+                              v-else
                               small
                               :color="isAssetSelected(asset.id) ? 'error' : 'primary'"
                               :outlined="!isAssetSelected(asset.id)"
@@ -171,47 +219,7 @@
             </v-tab-item>
           </v-tabs-items>
         </div>
-      </v-card-text>
-
-      <v-divider class="mt-4"></v-divider>
-
-      <v-card-actions class="pa-4">
-        <div v-if="selectedAssets.length > 0" class="d-flex align-center mr-4">
-          <v-chip
-            color="primary"
-            outlined
-            class="font-weight-medium"
-          >
-            <v-icon left small>mdi-check-circle</v-icon>
-            {{ $t('SelectedCount', { count: selectedAssets.length }) }}
-          </v-chip>
-        </div>
-
-        <v-spacer></v-spacer>
-
-        <v-btn
-          color="primary"
-          outlined
-          rounded
-          class="px-6"
-          @click="close"
-        >
-          <v-icon left>mdi-close</v-icon>
-          {{ $t('Cancel') }}
-        </v-btn>
-
-        <v-btn
-          color="primary"
-          :disabled="!currentMemberId"
-          depressed
-          rounded
-          class="ml-4 px-6"
-          @click="save"
-        >
-          <v-icon left>mdi-content-save</v-icon>
-          {{ $t('Save') }}
-        </v-btn>
-      </v-card-actions>
+      </div>
     </v-card>
   </v-dialog>
 </template>
@@ -219,6 +227,7 @@
 <script>
 import { getCurrentBLID, getUserBusinessLayerDetails } from '@/api/MemberCloud/MemberCloudApi'
 import { mapState } from 'vuex'
+import IKUtils from 'innerken-js-utils'
 
 export default {
   name: 'AssetSelectionDialog',
@@ -231,6 +240,11 @@ export default {
     initialAssets: {
       type: Array,
       default: () => []
+    },
+    // Current order total price for checking voucher conditions
+    totalPrice: {
+      type: Number,
+      default: 0
     }
   },
   data () {
@@ -241,7 +255,8 @@ export default {
       selectedAssets: [],
       businessLayerId: null,
       activeTab: 0,
-      initialAssetIds: [] // Temporary storage for initial asset IDs
+      initialAssetIds: [], // Temporary storage for initial asset IDs
+      voucherReasons: {} // Reasons why vouchers are not selectable, keyed by asset ID
     }
   },
   computed: {
@@ -278,15 +293,15 @@ export default {
     /**
      * Calculates the discount based on selected voucher assets
      *
-     * @returns {number} The discount ratio (0-1)
+     * @returns {string} The discount string
      */
     calculatedDiscount () {
       // Find voucher assets
       const voucher = this.selectedAssets.find(asset => asset.assetInfo?.assetType === 'VOUCHER')
       if (voucher) {
-        return this.calculateDiscount(voucher.assetInfo.assetConfig)
+        return this.calculateDiscount(voucher)
       }
-      return 0
+      return ''
     }
   },
   watch: {
@@ -342,6 +357,7 @@ export default {
       try {
         this.loading = true
         this.error = null
+        this.voucherReasons = {} // Reset voucher reasons
 
         // Get the current Business Layer ID (BLID)
         this.businessLayerId = await getCurrentBLID()
@@ -353,6 +369,16 @@ export default {
         this.memberAssets = (memberDetails.assetRecords || []).filter(asset =>
           asset.status === 'DISTRIBUTED'
         )
+
+        // Check all vouchers for selectability
+        this.memberAssets.forEach(asset => {
+          if (asset.assetInfo?.assetType === 'VOUCHER') {
+            const reason = this.getVoucherReason(asset)
+            if (reason) {
+              this.voucherReasons[asset.id] = reason
+            }
+          }
+        })
 
         // If we have initialAssetIds, match them with the loaded assets
         if (this.initialAssetIds && this.initialAssetIds.length > 0) {
@@ -369,6 +395,53 @@ export default {
         this.error = this.$t('ErrorLoadingAssets')
       } finally {
         this.loading = false
+      }
+    },
+
+    /**
+     * Checks if a voucher is selectable based on its conditions
+     *
+     * @param {Object} asset - The asset to check
+     * @returns {boolean} True if the voucher is selectable
+     */
+    isVoucherSelectable (asset) {
+      return !this.getVoucherReason(asset)
+    },
+
+    /**
+     * Gets the reason why a voucher is not selectable
+     *
+     * @param {Object} asset - The asset to check
+     * @returns {string|null} The reason why the voucher is not selectable, or null if it is selectable
+     */
+    getVoucherReason (asset) {
+      if (!asset || !asset.assetInfo || asset.assetInfo.assetType !== 'VOUCHER') {
+        return null
+      }
+
+      const assetConfig = asset.assetInfo.assetConfig
+      if (!assetConfig) {
+        return this.$t('InvalidVoucherConfig')
+      }
+
+      try {
+        const config = JSON.parse(assetConfig)
+
+        // Check usageMinAmount condition
+        if (config.usageMinAmount && parseFloat(config.usageMinAmount) > 0) {
+          const minAmount = parseFloat(config.usageMinAmount)
+          if (this.totalPrice < minAmount) {
+            return this.$t('MinimumOrderAmountNotMet', { amount: minAmount })
+          }
+        }
+
+        // Add more condition checks here if needed
+        // For example, check productCodes if implemented
+
+        return null // Voucher is selectable
+      } catch (error) {
+        console.error('Error checking voucher selectability:', error)
+        return this.$t('InvalidVoucherConfig')
       }
     },
 
@@ -392,18 +465,33 @@ export default {
      */
     toggleAssetSelection (asset) {
       const isSelected = this.isAssetSelected(asset.id)
+      const isVoucher = asset.assetInfo?.assetType === 'VOUCHER'
 
       if (isSelected) {
         // Remove the asset from selection
         this.selectedAssets = this.selectedAssets.filter(a => a.id !== asset.id)
-      } else {
-        // Check if this is a voucher type asset
-        const isVoucher = asset.assetInfo?.assetType === 'VOUCHER'
 
-        // If it's a voucher and we already have a voucher selected, replace it
+        // If it was a voucher, update the discount to empty string
         if (isVoucher) {
+          this.$emit('discount-updated', '')
+        }
+      } else {
+        // For vouchers, check if it's selectable based on conditions
+        if (isVoucher) {
+          // Check if the voucher is selectable
+          if (!this.isVoucherSelectable(asset)) {
+            // Show error message with the reason
+            const reason = this.voucherReasons[asset.id] || this.$t('VoucherCannotBeSelected')
+            IKUtils.showError(reason)
+            return
+          }
+
           // Remove any existing voucher
           this.selectedAssets = this.selectedAssets.filter(a => a.assetInfo?.assetType !== 'VOUCHER')
+
+          // Calculate and emit the discount string immediately
+          const discountStr = this.calculateDiscount(asset)
+          this.$emit('discount-updated', discountStr)
         }
 
         // Add the asset to selection
@@ -504,7 +592,6 @@ export default {
 
       try {
         const config = JSON.parse(assetConfig)
-        if (config.type !== 'VOUCHER') return this.$t('NoDiscount')
 
         if (config.discountStr) {
           // If it's a percentage discount
@@ -528,34 +615,28 @@ export default {
     },
 
     /**
-     * Calculates the discount ratio from a voucher AssetConfig
+     * Calculates and returns the discount string from a voucher asset
      *
-     * @param {string} assetConfig - The asset configuration JSON string
-     * @returns {number} The discount ratio (0-1)
+     * @param {Object} asset - The asset object
+     * @returns {string} The processed discount string
      */
-    calculateDiscount (assetConfig) {
-      if (!assetConfig) return 0
+    calculateDiscount (asset) {
+      if (!asset || !asset.assetInfo || asset.assetInfo.assetType !== 'VOUCHER') return ''
+
+      const assetConfig = asset.assetInfo.assetConfig
+      if (!assetConfig) return ''
 
       try {
         const config = JSON.parse(assetConfig)
-        if (config.type !== 'VOUCHER') return 0
 
         if (config.discountStr) {
-          // If it's a percentage discount
-          if (config.discountStr.includes('%')) {
-            const percentage = parseFloat(config.discountStr)
-            return percentage / 100
-          }
-
-          // For fixed amount discounts, we'll need to handle this differently
-          // This will be handled in the checkout process
-          return 0
+          return config.discountStr
         }
 
-        return 0
+        return ''
       } catch (error) {
         console.error('Error calculating discount:', error)
-        return 0
+        return ''
       }
     },
 
@@ -586,6 +667,25 @@ export default {
   border-radius: 8px;
   overflow: hidden;
   background-color: #f8f9ff;
+  display: flex;
+  flex-direction: column;
+  height: 80vh; /* Set a fixed height for the dialog */
+}
+
+/* Fixed header styles */
+.fixed-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #f8f9ff;
+  border-bottom: 1px solid rgba(25, 118, 210, 0.1);
+}
+
+/* Scrollable content styles */
+.scrollable-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 16px;
 }
 
 .asset-card {

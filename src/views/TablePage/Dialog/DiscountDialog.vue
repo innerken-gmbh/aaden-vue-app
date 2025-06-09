@@ -190,11 +190,14 @@ export default {
           this.initialUI()
         }
       } else {
-        await hillo.post('Complex.php?op=setDiscount', {
+        const res = await hillo.post('Complex.php?op=setDiscount', {
           tableId: this.id,
           discountStr
         })
-        this.initialUI()
+        if (res) {
+          // Wait for the discount to be applied on the server before updating the table information
+          await this.initialUI()
+        }
       }
     }
   },

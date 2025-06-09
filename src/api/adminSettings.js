@@ -1,5 +1,5 @@
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import { getReservationStatus, getMultipleSystemSettings, commonSettingConfig } from '@/api/api'
+import { commonSettingConfig, getMultipleSystemSettings, getReservationStatus } from '@/api/api'
 
 /**
  * Fetches all admin settings concurrently and assigns them to GlobalConfig

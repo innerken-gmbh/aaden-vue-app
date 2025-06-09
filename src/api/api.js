@@ -378,7 +378,7 @@ export async function getMultipleSystemSettings (items) {
 }
 
 // Common settings configuration
-const commonSettingConfig = {
+export const commonSettingConfig = {
   section: 'FrontApp',
   minimumVersion: '1.7.825',
   sOptions: ''
