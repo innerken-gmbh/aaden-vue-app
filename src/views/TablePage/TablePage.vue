@@ -716,6 +716,9 @@ export default {
       try {
         const id = memberData?.id ?? ''
 
+        // Clear any existing discount when switching members
+        this.discountClear()
+
         // Explicitly update the Vuex store with the selected member ID
         this.updateCurrentMemberId(id)
 
