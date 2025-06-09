@@ -1,11 +1,20 @@
 <template>
-  <v-dialog v-model="show" max-width="800" persistent>
+  <v-dialog
+    v-model="show"
+    max-width="800"
+    persistent
+  >
     <v-card class="asset-dialog">
       <div class="fixed-header">
         <v-card-title class="headline d-flex justify-space-between align-center pa-4 rounded-t">
           <div class="d-flex align-center">
-            <v-icon left color="primary" size="28">mdi-package-variant-closed</v-icon>
-            <span class="primary--text font-weight-bold">{{ $t('SelectAssets') }}</span>
+            <v-icon
+              left
+              color="primary"
+              size="28"
+            >mdi-package-variant-closed
+            </v-icon>
+            <span class="primary--text font-weight-bold">{{ $t("SelectAssets") }}</span>
             <!-- Selection count chip moved to header -->
             <v-chip
               v-if="selectedAssets.length > 0"
@@ -14,8 +23,12 @@
               small
               class="ml-4 font-weight-medium"
             >
-              <v-icon left x-small>mdi-check-circle</v-icon>
-              {{ $t('SelectedCount', { count: selectedAssets.length }) }}
+              <v-icon
+                left
+                x-small
+              >mdi-check-circle
+              </v-icon>
+              {{ $t("SelectedCount", { count: selectedAssets.length }) }}
             </v-chip>
           </div>
           <div class="d-flex align-center">
@@ -27,10 +40,17 @@
               class="mr-2"
               @click="save"
             >
-              <v-icon left small>mdi-content-save</v-icon>
-              {{ $t('Save') }}
+              <v-icon
+                left
+                small
+              >mdi-content-save
+              </v-icon>
+              {{ $t("Save") }}
             </v-btn>
-            <v-btn icon @click="close">
+            <v-btn
+              icon
+              @click="close"
+            >
               <v-icon>mdi-close</v-icon>
             </v-btn>
           </div>
@@ -45,19 +65,33 @@
           elevation="0"
         >
           <div class="d-flex align-center">
-            <v-avatar size="48" color="blue lighten-4" class="mr-4">
-              <v-icon color="blue darken-1" size="32">mdi-account-question</v-icon>
+            <v-avatar
+              size="48"
+              color="blue lighten-4"
+              class="mr-4"
+            >
+              <v-icon
+                color="blue darken-1"
+                size="32"
+              >mdi-account-question
+              </v-icon>
             </v-avatar>
             <div>
-              <div class="text-subtitle-1 font-weight-bold blue--text text--darken-1">{{ $t('SelectMemberFirst') }}</div>
-              <div class="text-body-2 blue--text text--darken-2">{{ $t('SelectMemberToSeeAssets') }}</div>
+              <div class="text-subtitle-1 font-weight-bold blue--text text--darken-1">{{
+                  $t("SelectMemberFirst")
+                }}
+              </div>
+              <div class="text-body-2 blue--text text--darken-2">{{ $t("SelectMemberToSeeAssets") }}</div>
             </div>
           </div>
         </v-card>
 
         <div v-else>
           <!-- Group assets by type -->
-          <v-card class="mb-4 rounded-lg" elevation="0">
+          <v-card
+            class="mb-4 rounded-lg"
+            elevation="0"
+          >
             <v-tabs
               v-model="activeTab"
               background-color="white"
@@ -71,7 +105,12 @@
                 :key="type"
                 class="text-capitalize font-weight-medium"
               >
-                <v-icon left small class="mr-1">{{ getAssetTypeIcon(type) }}</v-icon>
+                <v-icon
+                  left
+                  small
+                  class="mr-1"
+                >{{ getAssetTypeIcon(type) }}
+                </v-icon>
                 {{ $t(type) }}
                 <v-chip
                   class="ml-2"
@@ -87,23 +126,36 @@
           </v-card>
 
           <v-tabs-items v-model="activeTab">
-            <v-tab-item v-for="(group, type) in groupedAssets" :key="type">
+            <v-tab-item
+              v-for="(group, type) in groupedAssets"
+              :key="type"
+            >
               <v-card flat>
-                <v-card-text v-if="loading" class="text-center py-8">
+                <v-card-text
+                  v-if="loading"
+                  class="text-center py-8"
+                >
                   <v-progress-circular
                     indeterminate
                     color="primary"
                     size="64"
                     width="5"
                   ></v-progress-circular>
-                  <div class="mt-4 text-h6 primary--text">{{ $t('LoadingAssets') }}</div>
+                  <div class="mt-4 text-h6 primary--text">{{ $t("LoadingAssets") }}</div>
                 </v-card-text>
 
-                <v-card-text v-else-if="group.length === 0" class="text-center py-8">
-                  <v-icon size="64" color="primary lighten-4">{{ getAssetTypeIcon(type) }}</v-icon>
-                  <div class="mt-4 text-h6 primary--text">{{ $t('NoAssetsOfType') }}</div>
+                <v-card-text
+                  v-else-if="group.length === 0"
+                  class="text-center py-8"
+                >
+                  <v-icon
+                    size="64"
+                    color="primary lighten-4"
+                  >{{ getAssetTypeIcon(type) }}
+                  </v-icon>
+                  <div class="mt-4 text-h6 primary--text">{{ $t("NoAssetsOfType") }}</div>
                   <div class="text-body-2 primary--text text--darken-1">
-                    {{ $t('NoAssetsOfTypeDescription') }}
+                    {{ $t("NoAssetsOfTypeDescription") }}
                   </div>
                 </v-card-text>
 
@@ -112,7 +164,9 @@
                     <v-col
                       v-for="asset in group"
                       :key="asset.id"
-                      cols="12" sm="6" md="4"
+                      cols="12"
+                      sm="6"
+                      md="4"
                     >
                       <v-card
                         class="mx-auto rounded-lg asset-card transition-swing"
@@ -122,8 +176,15 @@
                           'asset-card-hover': !isAssetSelected(asset.id)
                         }"
                       >
-                        <div class="asset-card-ribbon" v-if="isAssetSelected(asset.id)">
-                          <v-icon color="white" small>mdi-check</v-icon>
+                        <div
+                          class="asset-card-ribbon"
+                          v-if="isAssetSelected(asset.id)"
+                        >
+                          <v-icon
+                            color="white"
+                            small
+                          >mdi-check
+                          </v-icon>
                         </div>
 
                         <v-img
@@ -137,16 +198,26 @@
                             {{ asset.assetInfo?.displayInfo?.name }}
                           </v-card-title>
                         </v-img>
-                        <v-card-title v-else class="text-subtitle-1 primary lighten-5 font-weight-bold">
-                          <v-icon left color="primary" class="mr-2">
-                            {{ getAssetTypeIcon(asset.assetInfo?.assetType || 'OTHER') }}
+                        <v-card-title
+                          v-else
+                          class="text-subtitle-1 primary lighten-5 font-weight-bold"
+                        >
+                          <v-icon
+                            left
+                            color="primary"
+                            class="mr-2"
+                          >
+                            {{ getAssetTypeIcon(asset.assetInfo?.assetType || "OTHER") }}
                           </v-icon>
                           {{ asset.assetInfo?.displayInfo?.name }}
                         </v-card-title>
 
                         <v-card-text class="pt-3">
-                          <div class="text-body-2 primary--text text--lighten-1 mb-3" style="min-height: 40px;">
-                            {{ asset.assetInfo?.displayInfo?.description || $t('NoDescription') }}
+                          <div
+                            class="text-body-2 primary--text text--lighten-1 mb-3"
+                            style="min-height: 40px;"
+                          >
+                            {{ asset.assetInfo?.displayInfo?.description || $t("NoDescription") }}
                           </div>
 
                           <div class="d-flex align-center mb-2">
@@ -157,7 +228,11 @@
                               class="mr-2"
                               pill
                             >
-                              <v-icon left x-small>{{ getAssetStatusIcon(asset.status) }}</v-icon>
+                              <v-icon
+                                left
+                                x-small
+                              >{{ getAssetStatusIcon(asset.status) }}
+                              </v-icon>
                               {{ formatAssetStatus(asset.status) }}
                             </v-chip>
 
@@ -168,7 +243,11 @@
                               text-color="white"
                               pill
                             >
-                              <v-icon left x-small>mdi-sale</v-icon>
+                              <v-icon
+                                left
+                                x-small
+                              >mdi-sale
+                              </v-icon>
                               {{ getDiscountText(asset.assetInfo?.assetConfig) }}
                             </v-chip>
                           </div>
@@ -191,11 +270,15 @@
                                   v-bind="attrs"
                                   v-on="on"
                                 >
-                                  <v-icon left small>mdi-block-helper</v-icon>
-                                  {{ $t('CannotSelect') }}
+                                  <v-icon
+                                    left
+                                    small
+                                  >mdi-block-helper
+                                  </v-icon>
+                                  {{ $t("CannotSelect") }}
                                 </v-btn>
                               </template>
-                              <span>{{ voucherReasons[asset.id] || $t('VoucherCannotBeSelected') }}</span>
+                              <span>{{ voucherReasons[asset.id] || $t("VoucherCannotBeSelected") }}</span>
                             </v-tooltip>
                             <v-btn
                               v-else
@@ -206,8 +289,12 @@
                               rounded
                               @click="toggleAssetSelection(asset)"
                             >
-                              <v-icon left small>{{ isAssetSelected(asset.id) ? 'mdi-minus-circle' : 'mdi-plus-circle' }}</v-icon>
-                              {{ isAssetSelected(asset.id) ? $t('Remove') : $t('Select') }}
+                              <v-icon
+                                left
+                                small
+                              >{{ isAssetSelected(asset.id) ? "mdi-minus-circle" : "mdi-plus-circle" }}
+                              </v-icon>
+                              {{ isAssetSelected(asset.id) ? $t("Remove") : $t("Select") }}
                             </v-btn>
                           </div>
                         </v-card-text>
@@ -236,7 +323,7 @@ export default {
       type: Boolean,
       default: false
     },
-    // Previously selected assets (from rawAddressInfo)
+    // Previously selected asset IDs (from rawAddressInfo)
     initialAssets: {
       type: Array,
       default: () => []
@@ -307,6 +394,15 @@ export default {
   watch: {
     value (newVal) {
       if (newVal) {
+        // When dialog opens, reset selected assets based on initialAssets
+        console.log('initialAssets', this.initialAssets)
+        if (this.initialAssets && this.initialAssets.length > 0) {
+          // Store the IDs temporarily
+          this.initialAssetIds = this.initialAssets.map(asset => asset.id)
+        } else {
+          this.selectedAssetIds = []
+        }
+
         this.loadMemberAssets()
       }
     },
@@ -327,21 +423,12 @@ export default {
       immediate: true,
       handler (newVal) {
         if (newVal && newVal.length > 0) {
-          // Check if we have full asset objects or just IDs
-          const hasFullAssets = newVal.some(asset => asset.assetInfo)
+          // Store the IDs temporarily
+          this.initialAssetIds = newVal.map(asset => asset.id)
 
-          if (hasFullAssets) {
-            // Initialize selected assets from props (full asset objects)
-            this.selectedAssets = [...newVal]
-          } else {
-            // We only have IDs, we'll match them with loaded assets when they're available
-            // Store the IDs temporarily
-            this.initialAssetIds = newVal.map(asset => asset.id)
-
-            // If we already have loaded assets, match them now
-            if (this.memberAssets.length > 0) {
-              this.matchAssetIdsWithLoadedAssets()
-            }
+          // If we already have loaded assets, match them now
+          if (this.memberAssets.length > 0) {
+            this.matchAssetIdsWithLoadedAssets()
           }
         }
       }
@@ -383,12 +470,6 @@ export default {
         // If we have initialAssetIds, match them with the loaded assets
         if (this.initialAssetIds && this.initialAssetIds.length > 0) {
           this.matchAssetIdsWithLoadedAssets()
-        } else if (this.initialAssets && this.initialAssets.length > 0) {
-          // If we have initialAssets (full objects), match them with the loaded assets
-          // Find the matching assets in the loaded assets
-          this.selectedAssets = this.initialAssets.filter(initialAsset =>
-            this.memberAssets.some(asset => asset.id === initialAsset.id)
-          )
         }
       } catch (error) {
         console.error('Error loading member assets:', error)
@@ -649,11 +730,14 @@ export default {
 
     /**
      * Saves the selected assets and closes the dialog
-     * Emits the full asset objects for backward compatibility
+     * Emits only the asset IDs instead of full objects for efficiency
      */
     save () {
+      // Extract just the asset IDs from the selected assets
+      const selectedAssetIds = this.selectedAssets.map(asset => ({ id: asset.id }))
+
       this.$emit('save', {
-        selectedAssets: this.selectedAssets,
+        selectedAssets: selectedAssetIds,
         discount: this.calculatedDiscount
       })
       this.show = false

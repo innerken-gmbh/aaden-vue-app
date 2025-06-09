@@ -585,12 +585,7 @@ import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import uniqBy from 'lodash-es/uniqBy'
 import MemberSelectionDialog from '@/views/TablePage/Dialog/MemberSelectionDialog.vue'
 import AssetSelectionDialog from '@/views/TablePage/Dialog/AssetSelectionDialog.vue'
-import {
-  checkout,
-  getCurrentOrderInfo,
-  setOrderAutoClaimCustomerId,
-  trackAssetUsage
-} from '@/api/Repository/OrderInfo'
+import { checkout, getCurrentOrderInfo, setOrderAutoClaimCustomerId } from '@/api/Repository/OrderInfo'
 import { getCurrentBLID, getMemberDisplayName, getUserBusinessLayerDetails } from '@/api/MemberCloud/MemberCloudApi'
 import { DishDocker } from 'aaden-base-model/lib'
 import { getOrderInfo } from '@/api/aaden-base-model/api'
@@ -700,7 +695,6 @@ export default {
       // currentMemberName is now a computed property based on currentMemberInfo
       showMemberSelectionDialog: false,
       showAssetSelectionDialog: false,
-      selectedAssets: [],
       currentMemberInfo: null, // Stores the current member's detailed information
       deviceId: -1,
       checkoutId: [],
@@ -725,14 +719,12 @@ export default {
         // Explicitly update the Vuex store with the selected member ID
         this.updateCurrentMemberId(id)
 
-        // Reset selected assets when member changes
-        this.selectedAssets = []
-
         // Update rawAddressInfo to remove any previously selected assets
         if (this.realAddressInfo) {
           const currentAddressInfo = { ...this.realAddressInfo }
           // Remove asset-related properties
           delete currentAddressInfo.selectedAssetIds
+          delete currentAddressInfo.selectedAssets // For backward compatibility
           delete currentAddressInfo.assetDiscount
 
           // Save updated rawAddressInfo
@@ -749,26 +741,21 @@ export default {
 
     /**
      * Handles the save event from the AssetSelectionDialog component.
-     * Updates the selected assets in the component's data, saves them to rawAddressInfo,
-     * and applies any discount directly by calling the setDiscount endpoint.
+     * Saves the selected assets to rawAddressInfo and applies any discount
+     * directly by calling the setDiscount endpoint.
      *
      * @param {Object} data - The data object containing selectedAssets and discount
      */
     async handleAssetSelection (data) {
       try {
-        // Update the selected assets in the component's data
-        this.selectedAssets = data.selectedAssets
-
         // Get current rawAddressInfo or initialize empty object
         const currentAddressInfo = this.realAddressInfo || {}
 
-        // Extract only the asset IDs from the selected assets
-        const selectedAssetIds = this.selectedAssets.map(asset => asset.id)
-
+        // The selectedAssets array now contains objects with just the id property
         // Add selected asset IDs to rawAddressInfo
         const updatedAddressInfo = {
           ...currentAddressInfo,
-          selectedAssetIds: selectedAssetIds
+          selectedAssetIds: data.selectedAssets.map(asset => asset.id)
         }
 
         // Save updated rawAddressInfo
@@ -1124,20 +1111,6 @@ export default {
           // currentMemberId is now a computed property based on tableDetailInfo.order.autoClaimCustomerId
           // Explicitly update the Vuex store with the current member ID
           this.updateCurrentMemberId(this.tableDetailInfo?.order?.autoClaimCustomerId || null)
-
-          // Load previously selected assets from rawAddressInfo
-          if (this.realAddressInfo) {
-            // Check if we have selectedAssetIds (new format) or selectedAssets (old format)
-            if (this.realAddressInfo.selectedAssetIds) {
-              // New format: only IDs are stored
-              this.selectedAssets = this.realAddressInfo.selectedAssetIds.map(id => ({ id }))
-            } else {
-              // Old format: full assets are stored
-              this.selectedAssets = this.realAddressInfo.selectedAssets || []
-            }
-          } else {
-            this.selectedAssets = []
-          }
         }
         this.refreshReservation()
         await this.getOrderedDish()
@@ -1222,34 +1195,6 @@ export default {
         }, checkoutInfo))
         if (res.success) {
           showSuccessMessage(i18n.t('Success'))
-
-          // Use selected assets if any
-          if (this.selectedAssets && this.selectedAssets.length > 0) {
-            try {
-              // Get the order ID from the response or use the current order ID
-              const orderId = res.id || this.currentOrderId
-
-              // Call useAsset API for each selected asset
-              for (const asset of this.selectedAssets) {
-                await trackAssetUsage(asset.id, orderId)
-              }
-
-              console.log('Assets used successfully')
-
-              // Clear selected assets after successful checkout
-              this.selectedAssets = []
-
-              // Update rawAddressInfo to remove used assets
-              const currentAddressInfo = this.realAddressInfo || {}
-              const updatedAddressInfo = {
-                ...currentAddressInfo,
-                selectedAssetIds: []
-              }
-              await this.submitRawAddressInfo(updatedAddressInfo)
-            } catch (error) {
-              console.error('Error using assets:', error)
-            }
-          }
         }
         if (shouldGoHome) {
           await goHome()
@@ -1541,10 +1486,11 @@ export default {
       return this.tableDetailInfo?.order?.sourceMarks ?? []
     },
     totalPrice: function () {
-      return this.tableDetailInfo?.order?.totalPrice ?? 0
+      // Convert to number to ensure it's not a string
+      return parseFloat(this.tableDetailInfo?.order?.totalPrice) || 0
     },
     realAddressInfo () {
-      if (this.tableDetailInfo?.order.rawAddressInfo?.length > 0) {
+      if (this.tableDetailInfo?.order?.rawAddressInfo?.length > 0) {
         try {
           return JSON.parse(this.tableDetailInfo.order.rawAddressInfo)
         } catch (e) {
@@ -1553,6 +1499,20 @@ export default {
       } else {
         return null
       }
+    },
+    /**
+     * Gets the selected assets from realAddressInfo.
+     * This computed property ensures that selectedAssets is always derived from rawAddressInfo.
+     *
+     * @returns {Array} The selected assets array
+     */
+    selectedAssets () {
+      if (!this.realAddressInfo || !this.realAddressInfo.selectedAssetIds) {
+        return []
+      }
+
+      // Only IDs are stored
+      return this.realAddressInfo.selectedAssetIds.map(id => ({ id }))
     },
     consumeTypeId () {
       return parseInt(this.tableDetailInfo?.order?.consumeTypeId ?? 1)
