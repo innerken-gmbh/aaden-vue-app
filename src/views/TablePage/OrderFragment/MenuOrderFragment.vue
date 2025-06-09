@@ -591,8 +591,10 @@ export default {
           this.$emit('order-add')
         }
         if (!dish) {
-          this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
-          this.displayFeedback()
+          if (t !== '') {
+            this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
+            this.displayFeedback()
+          }
         } else {
           this.$emit('dish-add', code, count)
           this.feedback = '✔'
