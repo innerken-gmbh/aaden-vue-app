@@ -345,11 +345,14 @@ export async function forceGetSystemSetting (item) {
   try {
     // Ensure section parameter is always present and not null
     const params = {
+      ...commonSettingConfig,
       ...item,
       section: item.section || 'FrontApp', // Default to 'FrontApp' if section is not provided or null
       debug: true
     }
-    return (await hillo.post('Restaurant.php?op=forceGetSystemSetting', params)).content
+    return (await hillo.post('Restaurant.php?op=forceGetSystemSetting', {
+      systemSetting: JSON.stringify(params)
+    })).content
   } catch (e) {
     return item.defaultValue
   }

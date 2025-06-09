@@ -535,6 +535,13 @@
       :current-member-id="currentMemberId"
       @update="handleMemberUpdate"
     />
+
+    <!-- Asset Selection Dialog -->
+    <asset-selection-dialog
+      v-model="showAssetSelectionDialog"
+      :initial-assets="selectedAssets"
+      @save="handleAssetSelection"
+    />
   </div>
 </template>
 
@@ -585,7 +592,8 @@ import ModificationDrawer from '@/views/TablePage/Dialog/ModificationDrawer'
 import DishCardList from '@/views/TablePage/Dish/DishCardList'
 import uniqBy from 'lodash-es/uniqBy'
 import MemberSelectionDialog from '@/views/TablePage/Dialog/MemberSelectionDialog.vue'
-import { checkout, getCurrentOrderInfo, setOrderAutoClaimCustomerId } from '@/api/Repository/OrderInfo'
+import AssetSelectionDialog from '@/views/TablePage/Dialog/AssetSelectionDialog.vue'
+import { checkout, getCurrentOrderInfo, setOrderAutoClaimCustomerId, trackAssetUsage } from '@/api/Repository/OrderInfo'
 import { getUserBusinessLayerDetails, getCurrentBLID, getMemberDisplayName } from '@/api/MemberCloud/MemberCloudApi'
 import { DishDocker } from 'aaden-base-model/lib'
 import { getOrderInfo } from '@/api/aaden-base-model/api'
@@ -649,6 +657,7 @@ export default {
     MenuFragement,
     LogoDisplay,
     MemberSelectionDialog,
+    AssetSelectionDialog,
     BuffetStartDialog,
     AddressPage,
     DiscountDialog,
@@ -692,10 +701,13 @@ export default {
       /* new input */
       // currentMemberId is now a computed property based on tableDetailInfo
       // currentMemberName is now a computed property based on currentMemberInfo
+      showMemberSelectionDialog: false,
+      showAssetSelectionDialog: false,
+      selectedAssets: [],
+      assetDiscount: 0,
       currentMemberInfo: null, // Stores the current member's detailed information
       deviceId: -1,
       checkoutId: [],
-      showMemberSelectionDialog: false,
       reservations: [],
       servantPw: ''
     }
@@ -713,11 +725,52 @@ export default {
     async handleMemberUpdate (memberData) {
       try {
         const id = memberData?.id ?? ''
+
+        // Explicitly update the Vuex store with the selected member ID
+        this.updateCurrentMemberId(id)
+
         await setOrderAutoClaimCustomerId(this.currentOrderId, id)
         await this.getTableDetail()
       } catch (error) {
         console.error('Error updating member selection:', error)
         IKUtils.showError(this.$t('ErrorUpdatingMemberSelection'))
+      }
+    },
+
+    /**
+     * Handles the save event from the AssetSelectionDialog component.
+     * Updates the selected assets and discount in the component's data and saves them to rawAddressInfo.
+     * Only saves asset IDs instead of entire asset objects to simplify the data structure.
+     *
+     * @param {Object} data - The data object containing selectedAssets and discount
+     */
+    async handleAssetSelection (data) {
+      try {
+        // Update the selected assets and discount in the component's data
+        this.selectedAssets = data.selectedAssets
+        this.assetDiscount = data.discount
+
+        // Get current rawAddressInfo or initialize empty object
+        const currentAddressInfo = this.realAddressInfo || {}
+
+        // Extract only the asset IDs from the selected assets
+        const selectedAssetIds = this.selectedAssets.map(asset => asset.id)
+
+        // Add selected asset IDs to rawAddressInfo
+        const updatedAddressInfo = {
+          ...currentAddressInfo,
+          selectedAssetIds: selectedAssetIds,
+          assetDiscount: this.assetDiscount
+        }
+
+        // Save updated rawAddressInfo
+        await this.submitRawAddressInfo(updatedAddressInfo)
+
+        // Show success message
+        IKUtils.toast(this.$t('AssetSelectionSaved'))
+      } catch (error) {
+        console.error('Error saving asset selection:', error)
+        IKUtils.showError(this.$t('ErrorSavingAssetSelection'))
       }
     },
 
@@ -1025,6 +1078,7 @@ export default {
      * Gets the table details including order information and associated member.
      * This method retrieves information about the current table and its order,
      * and sets the currentMemberId if a member is associated with the order.
+     * It also loads any previously selected assets from rawAddressInfo.
      *
      * @returns {Promise<void>}
      */
@@ -1042,6 +1096,24 @@ export default {
           }
 
           // currentMemberId is now a computed property based on tableDetailInfo.order.autoClaimCustomerId
+          // Explicitly update the Vuex store with the current member ID
+          this.updateCurrentMemberId(this.tableDetailInfo?.order?.autoClaimCustomerId || null)
+
+          // Load previously selected assets from rawAddressInfo
+          if (this.realAddressInfo) {
+            // Check if we have selectedAssetIds (new format) or selectedAssets (old format)
+            if (this.realAddressInfo.selectedAssetIds) {
+              // New format: only IDs are stored
+              this.selectedAssets = this.realAddressInfo.selectedAssetIds.map(id => ({ id }))
+            } else {
+              // Old format: full assets are stored
+              this.selectedAssets = this.realAddressInfo.selectedAssets || []
+            }
+            this.assetDiscount = this.realAddressInfo.assetDiscount || 0
+          } else {
+            this.selectedAssets = []
+            this.assetDiscount = 0
+          }
         }
         this.refreshReservation()
         await this.getOrderedDish()
@@ -1101,8 +1173,17 @@ export default {
           list: checkoutFactory.list
         }
         this.checkoutId = this.checkOutModel.list.map(it => it.code)
-        const currentPrice = round(this.checkOutModel.total * (1 - this.discountRatio), 2)
+
+        // Apply both regular discount and asset discount if available
+        let currentPrice = round(this.checkOutModel.total * (1 - this.discountRatio), 2)
+
+        // Apply asset discount if any
+        if (this.assetDiscount > 0) {
+          currentPrice = round(currentPrice * (1 - this.assetDiscount), 2)
+        }
+
         const checkoutInfo = await this.doCheckout(currentPrice)
+
         const shouldGoHome = paymentType === 'checkOut' && checkoutInfo.returnHome
         IKUtils.showLoading()
         if (checkoutInfo.billType === 1) {
@@ -1122,6 +1203,36 @@ export default {
         }, checkoutInfo))
         if (res.success) {
           showSuccessMessage(i18n.t('Success'))
+
+          // Use selected assets if any
+          if (this.selectedAssets && this.selectedAssets.length > 0) {
+            try {
+              // Get the order ID from the response or use the current order ID
+              const orderId = res.id || this.currentOrderId
+
+              // Call useAsset API for each selected asset
+              for (const asset of this.selectedAssets) {
+                await trackAssetUsage(asset.id, orderId)
+              }
+
+              console.log('Assets used successfully')
+
+              // Clear selected assets after successful checkout
+              this.selectedAssets = []
+              this.assetDiscount = 0
+
+              // Update rawAddressInfo to remove used assets
+              const currentAddressInfo = this.realAddressInfo || {}
+              const updatedAddressInfo = {
+                ...currentAddressInfo,
+                selectedAssetIds: [],
+                assetDiscount: 0
+              }
+              await this.submitRawAddressInfo(updatedAddressInfo)
+            } catch (error) {
+              console.error('Error using assets:', error)
+            }
+          }
         }
         if (shouldGoHome) {
           await goHome()
@@ -1154,7 +1265,7 @@ export default {
       }, 20)
     },
     ...mapActions(['doCheckout']),
-    ...mapMutations(['showBillDetailQRDialog']),
+    ...mapMutations(['showBillDetailQRDialog', 'updateCurrentMemberId']),
     async cartListModelClear () {
       this.cartListModel.clear()
     },
@@ -1440,6 +1551,16 @@ export default {
     currentMenu () {
       const normalActions = []
       if (this.canOperate) {
+        // Add asset selection button
+        normalActions.push({
+          title: 'SelectAssets',
+          icon: 'mdi-package-variant-closed',
+          color: 'blue',
+          action: () => {
+            this.showAssetSelectionDialog = true
+          }
+        })
+
         normalActions.push({
           title: 'reprint',
           icon: 'mdi-printer',
@@ -1543,6 +1664,9 @@ export default {
       if (newVal === oldVal) return
 
       try {
+        // Update the Vuex store with the new member ID
+        this.updateCurrentMemberId(newVal)
+
         if (newVal) {
           // Get the business layer ID
           const blId = await getCurrentBLID()

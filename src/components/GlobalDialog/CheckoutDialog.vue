@@ -103,6 +103,7 @@
                   </div>
                 </div>
               </template>
+
               <div class="d-flex align-center">
                 <div class="text-body-2">{{ $t('CheckoutReturn') }}</div>
                 <v-spacer></v-spacer>
@@ -248,6 +249,7 @@
               style="width: 100%; height: 100%"
               tile
           >
+
             <v-card
                 v-if="remainTotal !== 0"
                 class="pa-4 mt-1 d-flex align-center"
@@ -356,7 +358,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['showCheckoutDialog', 'checkoutTotal', 'checkoutResolve']),
+    ...mapState(['showCheckoutDialog', 'checkoutTotal', 'checkoutResolve', 'currentMemberId']),
     keyArr: function () {
       if (this.remainTotal >= 0) {
         return [
@@ -432,6 +434,7 @@ export default {
         cry += parseFloat(i.price)
         return cry
       }, 0)
+
       return this.checkoutTotal - logTotal
     },
     readyToCheckOut: function () {
@@ -443,6 +446,7 @@ export default {
   },
   methods: {
     ...mapMutations(['hideCheckoutDialog']),
+
     async loadPaymentMethods () {
       this.electronicBillStatus = await checkElectronicBillingStatus()
       this.paymentMethods = (await hillo.get('PayMethod.php')).content

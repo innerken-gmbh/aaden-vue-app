@@ -16,14 +16,13 @@ let cachedBLID = null
 /**
  * Gets the current device ID from GlobalConfig or from the API if not set.
  *
- * @returns {Promise<string>} The device ID.
+ * @returns {Promise<number>} The device ID.
  * @throws {Error} If there is an error getting the device ID.
  */
 export async function getCurrentDeviceId () {
   try {
     if (!GlobalConfig.DeviceId) {
-      const response = await hillo.get('AccessLog.php?op=deviceId')
-      GlobalConfig.DeviceId = response
+      GlobalConfig.DeviceId = await hillo.get('AccessLog.php?op=deviceId')
     }
     return GlobalConfig.DeviceId
   } catch (error) {
@@ -124,8 +123,7 @@ export async function getBusinessLayerMembers (blId) {
  */
 export async function getUserBusinessLayerDetails (userId, blId) {
   try {
-    const response = await hillo.get(`${CLOUD_API_BASE_URL}/membership/user/users/${userId}/business-layers/${blId}/details`)
-    return response
+    return await hillo.get(`${CLOUD_API_BASE_URL}/membership/user/users/${userId}/business-layers/${blId}/details`)
   } catch (error) {
     console.error('Error getting user business layer details:', error)
     throw error
@@ -145,13 +143,12 @@ export async function getUserBusinessLayerDetails (userId, blId) {
  */
 export async function useAsset (recordId, usedBy, orderId, deviceId, note) {
   try {
-    const response = await hillo.post(`${CLOUD_API_BASE_URL}/api/asset-records/${recordId}/use`, {
+    return await hillo.post(`${CLOUD_API_BASE_URL}/api/asset-records/${recordId}/use`, {
       usedBy,
       orderId,
       deviceId,
       note
     })
-    return response
   } catch (error) {
     console.error('Error using asset:', error)
     throw error
@@ -168,8 +165,7 @@ export async function useAsset (recordId, usedBy, orderId, deviceId, note) {
  */
 export async function claimAward (userId, awardProgressId) {
   try {
-    const response = await hillo.post(`${CLOUD_API_BASE_URL}/membership/award/claim/${userId}/${awardProgressId}`)
-    return response
+    return await hillo.post(`${CLOUD_API_BASE_URL}/membership/award/claim/${userId}/${awardProgressId}`)
   } catch (error) {
     console.error('Error claiming award:', error)
     throw error
@@ -187,8 +183,7 @@ export async function claimAward (userId, awardProgressId) {
  */
 export async function getUserOrders (userId, page = 0, size = 20) {
   try {
-    const response = await hillo.get(`${CLOUD_API_BASE_URL}/cloudOrders/user-orders/${userId}?page=${page}&size=${size}`)
-    return response
+    return await hillo.get(`${CLOUD_API_BASE_URL}/cloudOrders/user-orders/${userId}?page=${page}&size=${size}`)
   } catch (error) {
     console.error('Error getting user orders:', error)
     throw error
