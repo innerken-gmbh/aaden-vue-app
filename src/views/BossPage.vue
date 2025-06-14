@@ -18,7 +18,7 @@ export default {
       endPoint: GlobalConfig.adminEndpoint,
       deviceId: null,
       base: GlobalConfig.Base,
-      host: location.protocol + '//'
+      host: 'http://'
     }
   },
   props: {
@@ -34,6 +34,7 @@ export default {
   },
   async mounted () {
     this.base = GlobalConfig.Base
+    this.host = location?.protocol === 'https:' ? 'https:' : 'http:' + '//'
     this.deviceId = await getCurrentDeviceId()
   },
   async activated () {
