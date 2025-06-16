@@ -606,5 +606,6 @@
   "inOrOut": "Einzahlung oder Abhebung",
   "Revenue": "Privateinlage",
   "Expenditure": "Privatentnahme",
-  "lastPrint": "Letzter Druckzeitpunkt"
+  "lastPrint": "Letzter Druckzeitpunkt",
+  "Cashless Payment": "Bargeldlose Zahlung"
 }

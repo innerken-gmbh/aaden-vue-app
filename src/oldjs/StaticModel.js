@@ -13,11 +13,20 @@ export function resetCache () {
   categoryCache = {}
 }
 
+export function getCurrentLang () {
+  const supported = ['en', 'de', 'zh']
+  if (supported.includes(GlobalConfig.lang.toLowerCase())) {
+    return GlobalConfig.lang
+  } else {
+    return 'de'
+  }
+}
+
 export async function getCategoryListWithCache (consumeTypeId) {
   if (!categoryCache[consumeTypeId]) {
     const res = await hillo.get('Category.php?op=withConsumeType', {
       consumeTypeId: consumeTypeId,
-      lang: GlobalConfig.lang
+      lang: getCurrentLang()
     })
     for (const i of res.content) {
       if (!i.isActive) {

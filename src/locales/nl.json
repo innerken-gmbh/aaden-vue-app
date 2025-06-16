@@ -903,5 +903,6 @@
   "withdraw": "Opname",
   "Revenue": "Particuliere aanbetaling",
   "Expenditure": "Particuliere terugtrekking",
-  "lastPrint": "Laatste afdruktijd"
+  "lastPrint": "Laatste afdruktijd",
+  "Cashless Payment": "Contantloze betaling"
 }

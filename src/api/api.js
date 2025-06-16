@@ -1,7 +1,6 @@
 import hillo from 'hillo'
 import IKUtils from 'innerken-js-utils'
-import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import { DefaultBuffetSetting } from '@/oldjs/StaticModel'
+import { DefaultBuffetSetting, getCurrentLang } from '@/oldjs/StaticModel'
 import { fastSweetAlertRequest, resetTableStatus } from '@/oldjs/common'
 import i18n from '@/i18n'
 import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
@@ -53,13 +52,13 @@ export async function loadAllConsumeType () {
 
 export async function loadCategory () {
   return (await hillo.get('Category.php', {
-    lang: GlobalConfig.lang
+    lang: getCurrentLang()
   })).content
 }
 
 export async function loadCategoryType () {
   return (await hillo.get('CategoryType.php', {
-    lang: GlobalConfig.lang
+    lang: getCurrentLang()
   })).content
 }
 
@@ -159,14 +158,14 @@ export async function getBillListForServant (pw = null, date, endDate = null) {
     pw,
     date,
     endDate,
-    lang: GlobalConfig.lang
+    lang: getCurrentLang()
   })).content
 }
 
 export async function loadDishStatistic (startDate, endDate) {
   return (await hillo.get('BackendData.php', {
     op: 'dishStatistic',
-    lang: GlobalConfig.lang,
+    lang: getCurrentLang(),
     start: startDate,
     end: endDate
   })).content
@@ -176,7 +175,7 @@ export async function loadDetailOrder (id) {
   return hillo.get('BackendData.php', {
     // params: {
     op: 'billDetail',
-    lang: GlobalConfig.lang.toUpperCase(),
+    lang: getCurrentLang().toUpperCase(),
     id: id
     // },
   })
@@ -191,7 +190,7 @@ export async function getOrderDetailInfo (dateRange) {
 }
 
 export async function getBuffetPriceDishes () {
-  return (await hillo.get('ConsumeType.php?op=showBuffetPriceDishToConsumeType', { lang: GlobalConfig.lang })).content
+  return (await hillo.get('ConsumeType.php?op=showBuffetPriceDishToConsumeType', { lang: getCurrentLang() })).content
 }
 
 export async function changeOrderToBuffet (orderId, buffetDishes, buffetSetting) {

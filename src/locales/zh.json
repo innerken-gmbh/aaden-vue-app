@@ -610,5 +610,6 @@
   "Revenue": "收入",
   "Expenditure": "支出",
   "quantity_x_dishNumber": "数量 * 菜号",
-  "lastPrint": "上次打印时间"
+  "lastPrint": "上次打印时间",
+  "Cashless Payment": "非现金支付"
 }
