@@ -72,7 +72,7 @@ export async function resetTableStatus (tableId) {
 export function jumpToTable (tableId, tableName) {
   resetTableStatus(tableId)
   const params = Object.assign({
-    id: tableId,
+    id: tableId.toString(),
     tableId,
     tableName
   })
