@@ -102,7 +102,8 @@ export async function checkout (checkoutInfo) {
       tableId,
       dishes,
       password,
-      checkOutType
+      checkOutType,
+      autoClaimCustomerId
     } = checkoutInfo
     const print = parseInt(billType)
     let withTitle = 0
@@ -123,7 +124,8 @@ export async function checkout (checkoutInfo) {
       pw: password,
       overrideCardTerminalIp: GlobalConfig.overrideCardTerminalIp,
       overrideCardTerminalPort: GlobalConfig.overrideCardTerminalPort,
-      notPrintingCheckOutBon: printType === 1 ? 1 : 0
+      notPrintingCheckOutBon: printType === 1 ? 1 : 0,
+      autoClaimCustomerId: autoClaimCustomerId
     }
     if (paymentLog.length > 0) {
       checkOutData.paymentLog = JSON.stringify(paymentLog)

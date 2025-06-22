@@ -240,10 +240,11 @@ export default {
         // Get the member's display name using our method
         const memberName = this.getDisplayName(this.selectedMember)
 
-        // Emit both the member ID and the member's name
+        // Emit both the member ID, name, and balance
         this.$emit('update', {
           id: this.selectedMemberId,
-          name: memberName
+          name: memberName,
+          balance: this.selectedMember.balance || 0
         })
       }
       this.show = false

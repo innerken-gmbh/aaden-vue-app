@@ -105,6 +105,16 @@
 
           <v-card class="stat-card ma-2 elevation-2" outlined>
             <v-card-text class="text-center">
+              <div class="text-overline grey--text">{{ $t('OrderCount') }}</div>
+              <div class="text-h4 font-weight-bold orange--text">
+                {{ memberDetails.orderCount || 0 }}
+              </div>
+              <v-icon color="orange" class="mt-2">mdi-receipt</v-icon>
+            </v-card-text>
+          </v-card>
+
+          <v-card class="stat-card ma-2 elevation-2" outlined>
+            <v-card-text class="text-center">
               <div class="text-overline grey--text">{{ $t('LastConsumption') }}</div>
               <div class="text-subtitle-1 font-weight-medium">
                 {{ formatDate(memberDetails.currentMembership?.userLastConsumeAt) }}

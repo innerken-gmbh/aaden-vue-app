@@ -41,7 +41,8 @@ export default new Vuex.Store({
     checkoutTotal: 0,
     checkoutResolve: null,
     tableColor: '',
-    currentMemberId: null
+    currentMemberId: null,
+    currentMemberBalance: 0
   },
   mutations: {
     editTableColor (state, payload) {
@@ -49,6 +50,9 @@ export default new Vuex.Store({
     },
     updateCurrentMemberId (state, memberId) {
       state.currentMemberId = memberId
+    },
+    updateCurrentMemberBalance (state, balance) {
+      state.currentMemberBalance = balance
     },
     hideCheckoutDialog (state) {
       state.showCheckoutDialog = false

@@ -98,6 +98,9 @@
                     color="#1565C0"
                   >mdi-account-card</v-icon>
                   {{ currentMemberName || $t("MemberSelected") }}
+                  <span v-if="currentMemberBalance > 0" class="ml-2 font-weight-bold" style="color: #2E7D32;">
+                    ({{ $t('Balance') }}: {{ formattedMemberBalance }})
+                  </span>
                 </span>
                 <span
                   v-else
@@ -594,7 +597,7 @@ import { cartListFactory } from '@/views/TablePage/cart'
 import MenuFragement from '@/views/TablePage/OrderFragment/MenuFragement.vue'
 import NavButton from '@/components/navigation/NavButton.vue'
 import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
-import { mapActions, mapMutations } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 import { getReservationsByTableId } from '@/api/ReservationService'
 import ReservationListPage from '@/views/TablePage/ReservationList/ReservationListPage.vue'
 import {
@@ -715,12 +718,14 @@ export default {
     async handleMemberUpdate (memberData) {
       try {
         const id = memberData?.id ?? ''
+        const balance = memberData?.balance ?? 0
 
         // Clear any existing discount when switching members
         this.discountClear()
 
-        // Explicitly update the Vuex store with the selected member ID
+        // Explicitly update the Vuex store with the selected member ID and balance
         this.updateCurrentMemberId(id)
+        this.updateCurrentMemberBalance(balance)
 
         // Update rawAddressInfo to remove any previously selected assets
         if (this.realAddressInfo) {
@@ -1194,7 +1199,8 @@ export default {
           tableId: this.id,
           dishes: checkoutFactory.list,
           password: pw,
-          checkOutType: paymentType
+          checkOutType: paymentType,
+          autoClaimCustomerId: this.currentMemberId
         }, checkoutInfo))
         if (res.success) {
           showSuccessMessage(i18n.t('Success'))
@@ -1230,7 +1236,7 @@ export default {
       }, 20)
     },
     ...mapActions(['doCheckout']),
-    ...mapMutations(['showBillDetailQRDialog', 'updateCurrentMemberId']),
+    ...mapMutations(['showBillDetailQRDialog', 'updateCurrentMemberId', 'updateCurrentMemberBalance']),
     async cartListModelClear () {
       this.cartListModel.clear()
     },
@@ -1422,6 +1428,18 @@ export default {
 
   },
   computed: {
+    ...mapState(['currentMemberBalance']),
+
+    /**
+     * Formats a currency value to a user-friendly format
+     *
+     * @param {number|string} value - The currency value to format
+     * @returns {string} The formatted currency string
+     */
+    formattedMemberBalance () {
+      if (!this.currentMemberBalance) return '0.00'
+      return parseFloat(this.currentMemberBalance).toFixed(2)
+    },
     /**
      * Gets the current member ID from the tableDetailInfo.
      * This computed property ensures that currentMemberId is always in sync with the backend.

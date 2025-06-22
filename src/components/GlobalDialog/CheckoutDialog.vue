@@ -48,6 +48,13 @@
               <v-icon>mdi-close</v-icon>
             </v-btn>
           </div>
+          <!-- Member balance display -->
+          <div v-if="hasMemberBalance" class="d-flex align-center mt-2">
+            <v-icon small color="light-green accent-3" class="mr-2">mdi-account-cash</v-icon>
+            <div class="text-caption light-green--text text--accent-3">
+              {{ $t('MemberBalance') }}: {{ currentMemberBalance | priceDisplay }}
+            </div>
+          </div>
           <div
               class="mt-4"
               v-if="Math.abs(remainTotal - checkoutTotal) > 0.001 && remainTotal !== 0"
@@ -302,7 +309,8 @@ const fixedNames = {
   card: 'card',
   return: 'returnMoney',
   tip: 'tip',
-  vip: 'coupon'
+  vip: 'coupon',
+  memberBalance: 'memberBalance'
 }
 const defaultRealName = {
   'mdi-minus': 'reverse',
@@ -317,6 +325,7 @@ defaultRealName[fixedNames.card] = '2'
 defaultRealName[fixedNames.tip] = '9'
 defaultRealName[fixedNames.return] = '1'
 defaultRealName[fixedNames.vip] = '4'
+defaultRealName[fixedNames.memberBalance] = '-4'
 
 export default {
   name: 'CheckoutDialog',
@@ -358,10 +367,13 @@ export default {
     }
   },
   computed: {
-    ...mapState(['showCheckoutDialog', 'checkoutTotal', 'checkoutResolve', 'currentMemberId']),
+    ...mapState(['showCheckoutDialog', 'checkoutTotal', 'checkoutResolve', 'currentMemberId', 'currentMemberBalance']),
+    hasMemberBalance () {
+      return this.currentMemberId && this.currentMemberBalance > 0
+    },
     keyArr: function () {
       if (this.remainTotal >= 0) {
-        return [
+        const buttons = [
           '1',
           '2',
           '3',
@@ -389,12 +401,24 @@ export default {
           {
             name: fixedNames.cash,
             color: 'amber lighten-4'
-          },
-          ...this.realExtraPaymentMethodName.map(it => ({
-            name: it,
-            color: 'grey lighten-2'
-          }))
+          }
         ]
+
+        // Add member balance payment method if applicable
+        if (this.hasMemberBalance) {
+          buttons.push({
+            name: fixedNames.memberBalance,
+            color: 'blue lighten-4'
+          })
+        }
+
+        // Add other payment methods
+        buttons.push(...this.realExtraPaymentMethodName.map(it => ({
+          name: it,
+          color: 'grey lighten-2'
+        })))
+
+        return buttons
       } else {
         return ['1',
           '2',
@@ -576,7 +600,21 @@ export default {
         icon,
         hash
       }
-      if (parseInt(type) === -2) {
+      if (parseInt(type) === -4) {
+        // Member balance payment method
+        if (this.currentMemberId && this.currentMemberBalance > 0) {
+          const leftAmount = parseFloat(this.currentMemberBalance)
+          if (parseFloat(leftAmount) === 0) {
+            IKUtils.showError(this.$t('NoMemberBalance'))
+            return
+          }
+          obj.price = leftAmount > price ? price : leftAmount
+          obj.memberId = this.currentMemberId
+        } else {
+          IKUtils.showError(this.$t('NoMemberSelected'))
+          return
+        }
+      } else if (parseInt(type) === -2) {
         const uid = await IKUtils.showInput(this.$t('ScanNfcCard'))
         const card = await getUserByUid(uid)
         if (card?.local) {
