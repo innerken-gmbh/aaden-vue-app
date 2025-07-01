@@ -503,10 +503,10 @@ export default {
               this.errorMessage = i18n.t('lastPrint') + '(ZBon):' + dayjs(this.ZBonList[0]?.createTimestamp).format('YYYY-MM-DD HH:mm:ss')
               this.warnZBonPrinterDialog = true
             } else if (diffHours > 18) {
-              await this.timeToPrintZBon(0)
+              await this.checkTableStatus()
             }
           } else {
-            await this.timeToPrintZBon(0)
+            await this.checkTableStatus()
           }
         } else {
           await this.timeToPrintZBon(2)
