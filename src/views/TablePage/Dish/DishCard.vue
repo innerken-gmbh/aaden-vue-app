@@ -32,7 +32,7 @@
             <div class="mr-1">
               <span  class="text-body-2 font-weight-medium">{{ dish.code.replaceAll('.', '') }}.</span>
             </div>
-            <span>{{ dish.name }}</span>
+            <span>{{ dish.name ? dish.name : dish.dishName }}</span>
           </div>
           <div
               v-show="dish.displayApply.length > 0"
