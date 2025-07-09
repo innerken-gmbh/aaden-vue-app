@@ -209,7 +209,12 @@ export default {
       const note = await Swal.fire({
         title: this.$t('note'),
         input: 'text',
-        inputValue: this.dish.note
+        inputValue: this.dish.note,
+        didClose: () => {
+          setTimeout(() => {
+            document.activeElement.blur()
+          }, 10)
+        }
       })
       this.$set(this.dish, 'note', note.value)
       // dish.note = note.value
