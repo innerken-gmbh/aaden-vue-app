@@ -579,3 +579,10 @@ export async function getCashBookList (date) {
   console.log(currentList, 'list')
   return currentList
 }
+
+export async function removeDiscountStr (tableId) {
+  await hillo.post('Complex.php?op=setDiscount', {
+    tableId: tableId,
+    discountStr: 0
+  })
+}

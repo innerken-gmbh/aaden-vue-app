@@ -526,7 +526,7 @@ import IKUtils from 'innerken-js-utils'
 import {
   acceptOrder,
   deleteDish,
-  getUUidByOrderId,
+  getUUidByOrderId, removeDiscountStr,
   reprintOrder,
   safeRequest,
   showSuccessMessage,
@@ -693,6 +693,7 @@ export default {
         IKUtils.showError('')
         return
       }
+      await removeDiscountStr(this.id)
       await this.deleteAndSaveReason(note)
       showSuccessMessage(i18n.t('Success'))
       await this.initialUI()
