@@ -20,7 +20,7 @@
             class="d-flex justify-center align-center px-6 mr-2"
             height="48"
             style="border-radius: 12px; font-size: 18px"
-            @click="activeDCT=ct.id"
+            @click="changeDCT(ct.id)"
         >{{ ct.name }}
         </v-card>
 
@@ -409,6 +409,12 @@ export default {
     }
   },
   methods: {
+    changeDCT (id) {
+      this.activeDCT = id
+      setTimeout(() => {
+        document.activeElement.blur()
+      }, 10)
+    },
     async initial () {
       this.loading = true
       window.onkeydown = this.listenKeyDown
