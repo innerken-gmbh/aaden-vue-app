@@ -100,12 +100,12 @@
             <v-icon
                 class="mr-2"
                 large
-                @click.stop="dish.change(-1)"
+                @click.stop="changeDish(-1)"
             > mdi-minus-circle
             </v-icon>
             <v-icon
                 large
-                @click.stop="dish.change(1)"
+                @click.stop="changeDish(1)"
             > mdi-plus-circle
             </v-icon>
             <v-spacer></v-spacer>
@@ -188,6 +188,12 @@ export default {
     }
   },
   methods: {
+    changeDish (count) {
+      this.dish.change(count)
+      setTimeout(() => {
+        document.activeElement.blur()
+      }, 10)
+    },
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
     },

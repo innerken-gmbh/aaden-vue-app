@@ -775,6 +775,9 @@ export default {
       this.useDishesDiscount = false
     },
     async findAndOrderDish (code, count = 1) {
+      setTimeout(() => {
+        document.activeElement.blur()
+      }, 10)
       if (count < 1) {
         return
       }
@@ -848,6 +851,9 @@ export default {
       } else {
         this.oldMod = null
       }
+      setTimeout(() => {
+        document.activeElement.blur()
+      }, 10)
       // this.overrideConsumeTypeId = overrideConsumeTypeId
       this.modificationShow = true
     },
