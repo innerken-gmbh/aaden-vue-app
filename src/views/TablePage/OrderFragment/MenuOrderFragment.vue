@@ -328,7 +328,6 @@ import Swal from 'sweetalert2'
 import { debounce } from 'lodash-es'
 import { findDish } from '@/oldjs/StaticModel'
 import { showTimedAlert } from '@/oldjs/common'
-import { sortBy } from 'lodash'
 
 export default {
   name: 'MenuOrderFragment',
@@ -381,9 +380,32 @@ export default {
       const list = this.dishes
       if (this.activeDCT === 0) {
         const currentList = list.filter(item => item.isFavorite === '1')
-        return sortBy(currentList, (dish) => {
-          const numericPart = dish.code ? dish.code.match(/\d+/) : null
-          return numericPart ? parseInt(numericPart[0]) : dish.code
+        return currentList.sort((a, b) => {
+          const aIsNum = /^\d+$/.test(a.code)
+          const bIsNum = /^\d+$/.test(b.code)
+          if (aIsNum && bIsNum) {
+            // 如果都是数字，按数字大小排序
+            return parseInt(a.code) - parseInt(b.code)
+          } else if (aIsNum) {
+            // 如果a是数字，b不是，a排在前面
+            return -1
+          } else if (bIsNum) {
+            // 如果b是数字，a不是，b排在前面
+            return 1
+          } else {
+            // 都不是数字的情况
+            const aLetter = a.code[0]
+            const bLetter = b.code[0]
+            const aNum = parseInt(a.code.slice(1))
+            const bNum = parseInt(b.code.slice(1))
+            if (aLetter !== bLetter) {
+              // 先按字母排序
+              return aLetter.localeCompare(bLetter)
+            } else {
+              // 字母相同则按数字排序
+              return aNum - bNum
+            }
+          }
         })
       }
 
