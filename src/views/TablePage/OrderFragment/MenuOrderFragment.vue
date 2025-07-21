@@ -328,6 +328,7 @@ import Swal from 'sweetalert2'
 import { debounce } from 'lodash-es'
 import { findDish } from '@/oldjs/StaticModel'
 import { showTimedAlert } from '@/oldjs/common'
+import { sortBy } from 'lodash'
 
 export default {
   name: 'MenuOrderFragment',
@@ -379,7 +380,11 @@ export default {
     filteredDish () {
       const list = this.dishes
       if (this.activeDCT === 0) {
-        return list.filter(item => item.isFavorite === '1')
+        const currentList = list.filter(item => item.isFavorite === '1')
+        return sortBy(currentList, (dish) => {
+          const numericPart = dish.code ? dish.code.match(/\d+/) : null
+          return numericPart ? parseInt(numericPart[0]) : dish.code
+        })
       }
 
       return list.filter((item) => {
