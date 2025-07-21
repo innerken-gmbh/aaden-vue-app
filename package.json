@@ -22,7 +22,6 @@
   },
   "main": "background.js",
   "dependencies": {
-    "@vue/composition-api": "^1.7.2",
     "aaden-base-model": "1.0.14",
     "biewangle": "^1.0.11",
     "core-js": "^3.19.2",
