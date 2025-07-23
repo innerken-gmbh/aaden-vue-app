@@ -99,20 +99,11 @@
 
           <!--        堂食-->
           <v-tab-item style="position: relative">
-            <div
-                style="
-        background: #e8e8e8;
-          height: calc(100vh - 64px);
-          width: 100%;
-          overflow: scroll
-"
-            >
-              <table-blue-print
-                  :out-side-table-list="tableList"
-                  @need-refresh="slowRefreshTable"
-                  @table-clicked="openOrEnterTable"
-              />
-            </div>
+            <table-blue-print
+                :out-side-table-list="tableList"
+                @need-refresh="slowRefreshTable"
+                @table-clicked="openOrEnterTable"
+            />
           </v-tab-item>
           <!--      外卖-->
           <v-tab-item>

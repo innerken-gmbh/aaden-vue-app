@@ -1,13 +1,14 @@
 <template>
-  <div>
+  <v-card       style="
+         background: #e8e8e8;
+         height:calc(100vh - 64px);
+         width: 100%;
+        overflow: scroll
+     ">
     <div
       ref="blueprintContainer"
       class="flex-grow-1 pa-2"
-      style="
-         height:calc(100vh - 64px);
-         width: 100%;
-       transform-origin: left top;
-     "
+      style="height: 100vh"
     >
       <template v-if="tableWithInfo.length===0">
         <div
@@ -44,7 +45,6 @@
             :max-width="200"
             :min-height="60"
             :min-width="60"
-            :parent="true"
             :prevent-deactivation="false"
             :resizable="editing"
             :snap="true"
@@ -65,11 +65,10 @@
           </vue-draggable-resizable>
         </template>
       </template>
-
     </div>
 
     <!--    工具栏-->
-    <div style="position: absolute;left:24px;bottom: 36px">
+    <div style="position: fixed;left:96px;bottom: 36px;z-index: 100">
       <v-card
         v-if="editing&&showTableEditInfoCard"
         class="pa-3 mb-1"
@@ -136,13 +135,14 @@
     <v-card
       class="d-flex"
       color="white"
-      style="position: absolute;bottom: 36px;
+      style="position: fixed;bottom: 36px;
               box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.08);
                 right: 0;
                 margin: auto;
                 width: min-content;
                 border-radius: 8px;
                           left: 0;max-width: calc(100vw - 684px);
+                z-index: 99;
                "
     >
       <v-item-group
@@ -290,7 +290,7 @@
       </v-card>
 
     </v-dialog>
-  </div>
+  </v-card>
 
 </template>
 
@@ -331,8 +331,6 @@ async function refreshAllTablesPosition (listOfTable, containerHeight, container
 const tableChanges = {}
 
 async function submitTable (table, x, y, w, h, currentSectionId) {
-  console.log(table, x, y, w, h, currentSectionId)
-  console.log(table.x, table.y, table.w, table.h)
   w = w ?? (table.w ?? 50)
   h = h ?? (table.h ?? 50)
   currentSectionId = currentSectionId + ''
