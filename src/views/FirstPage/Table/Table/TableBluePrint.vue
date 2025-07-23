@@ -4,7 +4,7 @@
          height:calc(100vh - 64px);
          width: 100%;
         overflow: scroll
-     ">
+     "      v-dragscroll="!editing">
     <div
       ref="blueprintContainer"
       class="flex-grow-1 pa-2"
