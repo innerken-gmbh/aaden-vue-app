@@ -1,6 +1,6 @@
 {
   "name": "aaden",
-  "version": "1.2.117",
+  "version": "1.2.118",
   "private": true,
   "description": "科学管店，化繁为简",
   "author": "juhaodong@gmail.com",
@@ -22,7 +22,7 @@
   },
   "main": "background.js",
   "dependencies": {
-    "aaden-base-model": "1.0.14",
+    "aaden-base-model": "1.0.24",
     "biewangle": "^1.0.11",
     "core-js": "^3.19.2",
     "dayjs": "^1.10.7",
@@ -62,8 +62,8 @@
     "@vue/eslint-config-standard": "^5.1.2",
     "babel-eslint": "^10.1.0",
     "dotenv-cli": "^3.2.0",
-    "electron": "30.0.9",
-    "electron-builder": "^24.13.3",
+    "electron": "37.2.5",
+    "electron-builder": "^26.0.12",
     "eslint": "^6.8.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
