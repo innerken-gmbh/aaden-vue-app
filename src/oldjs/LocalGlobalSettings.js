@@ -8,6 +8,7 @@ import {
   getReservationStatus
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
+import hillo from 'hillo'
 
 const fix = require('@/assets/FixedConfig.json')
 const defaultConfig = require('@/assets/AadenConfig.json')
@@ -20,8 +21,9 @@ export async function loadConfig () {
     GlobalConfig = Object.assign(GlobalConfig, await AadenBaseConfig(defaultConfig), fix)
     NeededKeys = GlobalConfig.neededKeys
     GlobalConfig.getBaseUrl = function () {
-      return (location.protocol === 'https' ? 'https' : 'http') + '//' + GlobalConfig.Base + '/'
+      return (location.protocol === 'https' ? 'https' : 'http') + '://' + GlobalConfig.Base + '/'
     }
+    hillo.initial(GlobalConfig.getBaseUrl() + 'PHP/')
     GlobalConfig.startUpTimestamp = dayjs().utcOffset()
     refreshGetter()
     window.Config = GlobalConfig
