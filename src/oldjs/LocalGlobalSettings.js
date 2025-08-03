@@ -20,7 +20,7 @@ export async function loadConfig () {
     GlobalConfig = Object.assign(GlobalConfig, await AadenBaseConfig(defaultConfig), fix)
     NeededKeys = GlobalConfig.neededKeys
     GlobalConfig.getBaseUrl = function () {
-      return location.protocol + '//' + GlobalConfig.Base + '/'
+      return (location.protocol === 'https' ? 'https' : 'http') + '//' + GlobalConfig.Base + '/'
     }
     GlobalConfig.startUpTimestamp = dayjs().utcOffset()
     refreshGetter()
