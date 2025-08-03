@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <v-app-bar
         class="pt-1"
         color="transparent"
@@ -412,7 +411,7 @@
           <div class="text-h5 font-weight-bold">
             {{ restaurantInfo?.displayName }}
           </div>
-          <v-spacer />
+          <v-spacer/>
           <div>
             <v-btn
                 icon
@@ -434,8 +433,10 @@
                   color="grey lighten-2"
                   elevation="0" outlined @click="changeWorkStatus(item)">
             <v-img :src="checkStaffPhoto(item.photo) ? photoPath(item.photo) : defaultStaffImg"></v-img>
-            <div v-if="item.clockedIn" class="d-flex justify-center align-center text-h5" style="background-color: green; color: white">{{item.name}}</div>
-            <div v-else class="d-flex justify-center align-center text-h5">{{item.name}}</div>
+            <div v-if="item.clockedIn" class="d-flex justify-center align-center text-h5"
+                 style="background-color: green; color: white">{{ item.name }}
+            </div>
+            <div v-else class="d-flex justify-center align-center text-h5">{{ item.name }}</div>
           </v-card>
         </div>
       </v-card>
@@ -444,7 +445,9 @@
       <v-card class="pa-4">
         <div class="d-flex align-center justify-center">
           <v-spacer></v-spacer>
-          <v-btn icon @click="staffChangeWorkStatus = false"><v-icon>mdi-close</v-icon></v-btn>
+          <v-btn icon @click="staffChangeWorkStatus = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
         </div>
         <template v-if="!servant?.clockedIn">
           <div class="d-flex mt-4 justify-center align-center">
@@ -457,16 +460,19 @@
         <template v-else>
           <div v-for="item in servantWorkInfo" :key="item.id">
             <div class="d-flex mt-2">
-              <div>{{item.display}}:</div>
+              <div>{{ item.display }}:</div>
               <v-spacer></v-spacer>
-              <div>{{item.value}}</div>
+              <div>{{ item.value }}</div>
             </div>
           </div>
           <div class="d-flex mt-4 justify-center align-center">
             <v-text-field v-model="note" :placeholder="$t('note')" hide-details outlined/>
           </div>
           <div class="d-flex align-center justify-center mt-8">
-            <v-btn :loading="staffBtnLoading" class="success" width="100%" @click="endWorks">{{ $t('checkOut') }}</v-btn>
+            <v-btn :loading="staffBtnLoading" class="success" width="100%" @click="endWorks">{{
+                $t('checkOut')
+              }}
+            </v-btn>
           </div>
         </template>
       </v-card>
@@ -556,10 +562,12 @@ import IKUtils from 'innerken-js-utils'
 import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
 import { checkout } from '@/api/Repository/OrderInfo'
 import AddressesCard from '@/views/TablePage/Address/AddressesCard.vue'
-import { getRestaurantInfo } from '@/api/restaurantInfoService'
+import { getNgrokUrl, getRestaurantInfo } from '@/api/restaurantInfoService'
 import store from '@/store'
 import i18n from '@/i18n'
+import hillo from 'hillo'
 
+let switchToNgrok = false
 const keyboardLayout =
     [
       '7', '8', '9', 'C',
@@ -663,12 +671,31 @@ export default {
       return dayjs(dayjs().format('YYYY-MM-DD HH:mm:ss')).diff(dayjs(this.servant.lastRecord?.fromDateTime), 'minute') ?? 0
     },
     servantWorkInfo () {
-      console.log(this.servantWorkMinutes, 'minutes')
-      return [{ value: this.servant?.name, display: this.$t('Employees'), id: 1 },
-        { value: this.servant.lastRecord?.fromDateTime, display: this.$t('StartsWorkingAt'), id: 2 },
-        { value: this.servantWorkMinutes + '/' + this.servantWorkHour, display: this.$t('workTimeMinHour'), id: 3 },
-        { value: this.servant.lastRecord?.currentHourlyWage, display: this.$t('HourlyWage'), id: 4 },
-        { value: this.servant?.lastRecord?.correction === '1' ? this.$t('yes') : this.$t('No'), display: this.$t('IsThisReplacementCard'), id: 5 }]
+      return [{
+        value: this.servant?.name,
+        display: this.$t('Employees'),
+        id: 1
+      },
+      {
+        value: this.servant.lastRecord?.fromDateTime,
+        display: this.$t('StartsWorkingAt'),
+        id: 2
+      },
+      {
+        value: this.servantWorkMinutes + '/' + this.servantWorkHour,
+        display: this.$t('workTimeMinHour'),
+        id: 3
+      },
+      {
+        value: this.servant.lastRecord?.currentHourlyWage,
+        display: this.$t('HourlyWage'),
+        id: 4
+      },
+      {
+        value: this.servant?.lastRecord?.correction === '1' ? this.$t('yes') : this.$t('No'),
+        display: this.$t('IsThisReplacementCard'),
+        id: 5
+      }]
     },
     activeTables () {
       return this.tableList.filter(t => t.usageStatus === '1')
@@ -930,17 +957,22 @@ export default {
 
           this.takeawayEnabled = this.restaurantInfo.currentlyOpening === '1'
           this.servantList = await getServantList()
-          console.log(this.servantList, 'list')
           await getConsumeTypeList()
           await this.refreshTables()
           addToQueue('firstPageTables', this.refreshTables)
+          switchToNgrok = false
         } catch (e) {
-          this.noNetwork = true
-          console.log('No network detected!')
-          console.log(e)
-          setTimeout(() => {
-            location.reload()
-          }, 5 * 1000)
+          if (!switchToNgrok) {
+            hillo.initial(getNgrokUrl(GlobalConfig.DeviceId))
+            switchToNgrok = true
+          } else {
+            this.noNetwork = true
+            console.log('No network detected!')
+            console.log(e)
+            setTimeout(() => {
+              location.reload()
+            }, 5 * 1000)
+          }
         } finally {
           this.lock = false
         }
