@@ -14,7 +14,7 @@
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps",
-    "release": "sudo snap install snapcraft --classic && snapcraft login --with log && npm run electron:build",
+    "release": "sudo snap install snapcraft --classic && export SNAPCRAFT_STORE_CREDENTIALS=$(cat log) && npm run electron:build",
     "update": "dotenv -e .env.local -- release-it --ci --no-npm-publish"
   },
   "main": "background.js",
