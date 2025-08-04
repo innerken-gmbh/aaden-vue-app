@@ -1,7 +1,7 @@
 <template>
   <v-card :disabled="disabled" :color="color" class="gridButton elevation-0"
           @click="!loading?$emit('click'):''">
-    <div class="mt-7">
+    <div class="my-4">
       <template v-if="loading">
         <v-progress-circular indeterminate color="white"></v-progress-circular>
       </template>
@@ -14,7 +14,6 @@
           {{ text }}
         </div>
       </template>
-
     </div>
 
   </v-card>
@@ -43,7 +42,6 @@ export default {
 .gridButton {
   display: flex;
   width: 100%;
-  height: 88px;
   justify-content: center;
 
 }

@@ -19,7 +19,8 @@
   },
   "main": "background.js",
   "dependencies": {
-    "aaden-base-model": "^0.1.115",
+    "aaden-base-model": "0.1.115",
+    "browser-image-compression": "^2.0.2",
     "core-js": "^3.19.2",
     "dayjs": "^1.10.7",
     "electron-settings": "^4.0.2",
@@ -62,7 +63,6 @@
     "eslint-plugin-promise": "^4.3.1",
     "eslint-plugin-standard": "^4.1.0",
     "eslint-plugin-vue": "^6.2.2",
-    "node-sass": "^6.0.1",
     "release-it": "^13.7.1",
     "sass": "^1.43.5",
     "sass-loader": "^8.0.2",
