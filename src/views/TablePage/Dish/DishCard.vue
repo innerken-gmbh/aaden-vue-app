@@ -59,7 +59,7 @@
             >
               {{ findConsumeTypeById(dish.overrideConsumeTypeId) }}
             </v-card>
-            <span v-if="dish.isFree === '1'">{{ $t('Free') }}</span>
+            <span v-if="dish.isFree === '1' || dish.isFree === true">{{ $t('Free') }}</span>
             <template v-else>
               <span
                   v-if="dish.tempDiscountMod && Math.abs(parseFloat(dish.tempDiscountMod)) > 0"
