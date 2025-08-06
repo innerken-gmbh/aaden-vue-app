@@ -562,12 +562,9 @@ import IKUtils from 'innerken-js-utils'
 import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
 import { checkout } from '@/api/Repository/OrderInfo'
 import AddressesCard from '@/views/TablePage/Address/AddressesCard.vue'
-import { getNgrokUrl, getRestaurantInfo } from '@/api/restaurantInfoService'
+import { getRestaurantInfo } from '@/api/restaurantInfoService'
 import store from '@/store'
 import i18n from '@/i18n'
-import hillo from 'hillo'
-
-let switchToNgrok = false
 const keyboardLayout =
     [
       '7', '8', '9', 'C',
@@ -867,7 +864,16 @@ export default {
       this.HIDE_AUTHORIZE_DIALOG()
     },
     async refreshTables () {
-      this.tableList = await getTableListWithCells()
+      try {
+        this.tableList = await getTableListWithCells()
+      } catch (e) {
+        this.noNetwork = true
+        console.log('No network detected!')
+        console.log(e)
+        setTimeout(() => {
+          location.reload()
+        }, 5 * 1000)
+      }
     },
     async slowRefreshTable () {
       this.tableList = []
@@ -960,19 +966,13 @@ export default {
           await getConsumeTypeList()
           await this.refreshTables()
           addToQueue('firstPageTables', this.refreshTables)
-          switchToNgrok = false
         } catch (e) {
-          if (!switchToNgrok) {
-            hillo.initial(getNgrokUrl(GlobalConfig.DeviceId))
-            switchToNgrok = true
-          } else {
-            this.noNetwork = true
-            console.log('No network detected!')
-            console.log(e)
-            setTimeout(() => {
-              location.reload()
-            }, 5 * 1000)
-          }
+          this.noNetwork = true
+          console.log('No network detected!')
+          console.log(e)
+          setTimeout(() => {
+            location.reload()
+          }, 5 * 1000)
         } finally {
           this.lock = false
         }
