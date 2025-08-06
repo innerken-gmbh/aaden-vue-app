@@ -22,7 +22,7 @@
   },
   "main": "background.js",
   "dependencies": {
-    "aaden-base-model": "1.0.24",
+    "aaden-base-model": "1.0.25",
     "biewangle": "^1.0.11",
     "core-js": "^3.19.2",
     "dayjs": "^1.10.7",
