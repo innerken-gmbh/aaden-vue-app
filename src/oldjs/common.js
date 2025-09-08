@@ -345,7 +345,7 @@ export function oldJumpTo (url, params) {
 export function showTime () {
   const date = dayjs()
 
-  return date.format('HH:mm')
+  return date.format('YYYY-MM-DD HH:mm')
 }
 
 export function logError (t) {
