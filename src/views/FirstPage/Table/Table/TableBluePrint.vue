@@ -390,7 +390,6 @@ export default {
       return this.tableList.filter(filter)
     },
     currentSection () {
-      console.log(this.activeSectionId)
       if (GlobalConfig.showAllTableButton) {
         return (this.activeSectionId !== -1) ? this.notTakeawaySection.find(it => it.id === this.activeSectionId) ?? defaultSection : { id: 0 }
       } else {
