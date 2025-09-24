@@ -4,8 +4,7 @@ import i18n from '@/i18n'
 import dayjs from 'dayjs'
 import { goHome } from '@/oldjs/StaticModel'
 import {
-  getAdminSettingConfig,
-  getReservationStatus
+  getAdminSettingConfig
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 import hillo from 'hillo'
@@ -35,10 +34,6 @@ export async function loadConfig () {
 
 export async function getAdminSetting () {
   GlobalConfig.searchIncludesCode = await getAdminSettingConfig('searchIncludesCode', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.activeReservation = (await getAdminSettingConfig('activeReservation', '0', '0', 'boolean', '', 'basic,FrontApp,Reservation')) === '1'
-  setTimeout(async () => {
-    GlobalConfig.activeReservation = await getReservationStatus()
-  }, 20)
   GlobalConfig.openCashBoxByPw = await getAdminSettingConfig('openCashBoxByPw', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.deleteOneKeys = await getAdminSettingConfig('deleteOneKeys', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.closePlaySound = await getAdminSettingConfig('closePlaySound', '0', '0', 'boolean', '', 'basic,FrontApp')
