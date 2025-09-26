@@ -26,7 +26,7 @@
     "biewangle": "^1.0.11",
     "core-js": "^3.19.2",
     "dayjs": "^1.10.7",
-    "electron-updater": "^6.2.1",
+    "electron-updater": "^6.6.2",
     "firebase": "^10.1.0",
     "flag-icons": "^6.7.0",
     "hillo": "^1.1.23",
