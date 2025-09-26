@@ -19,7 +19,6 @@ import dayjs from 'dayjs'
 import { onlyTimeFormat } from '@/api/dateUtils'
 import { Remember } from '@/api/remember'
 import _ from 'lodash'
-import { listenFireStoreOrders } from '@/api/fireStore'
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
@@ -104,7 +103,6 @@ async function initial () {
   } catch (e) {
 
   }
-  await listenFireStoreOrders()
   new Vue({
     router,
     store,
