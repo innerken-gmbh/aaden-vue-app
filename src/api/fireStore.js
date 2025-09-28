@@ -2,7 +2,6 @@ import { sendFireStoreOrder } from '@/api/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { initializeApp } from 'firebase/app'
 import { collection, doc, getFirestore, onSnapshot, query, updateDoc, where } from 'firebase/firestore'
-import dayjs from 'dayjs'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDnlXhMVxLIIWPAt3zqrC1bdrhP1ZMxwWE',
@@ -17,37 +16,30 @@ export const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)
 const path = 'order'
 export async function listenFireStoreOrders () {
-  const localStorageFirebaseTime = localStorage.getItem('firebaseOrderTime')
-  const diffTime = dayjs().diff(localStorageFirebaseTime, 'm')
-  console.log(diffTime, 'diffTime')
-  if (diffTime > 3 || !localStorageFirebaseTime) {
-    console.log('开始抓Firebase数据')
-    localStorage.setItem('firebaseOrderTime', dayjs().format('YYYY-MM-DD HH:mm:ss'))
-    const q = query(collection(db, path), where('confirmed', '==', false),
-      where('deviceId', '==', GlobalConfig.DeviceId))
-    const doSend = async (orderList) => {
-      if (orderList.length > 0) {
-        const res = await sendFireStoreOrder(orderList)
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        for (const e of orderList) {
-          if (res[e.cloudId]) {
-            await confirmFireBaseOrder(e.cloudId, res[e.cloudId].tableName)
-          }
+  const q = query(collection(db, path), where('confirmed', '==', false),
+    where('deviceId', '==', GlobalConfig.DeviceId))
+  const doSend = async (orderList) => {
+    if (orderList.length > 0) {
+      const res = await sendFireStoreOrder(orderList)
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      for (const e of orderList) {
+        if (res[e.cloudId]) {
+          await confirmFireBaseOrder(e.cloudId, res[e.cloudId].tableName)
         }
       }
     }
-    return onSnapshot(q, (querySnapshot) => {
-      const toSend = []
-      querySnapshot.forEach(doc => {
-        const order = doc.data()
-        order.cloudId = doc.id
-        toSend.push(order)
-      })
-      doSend(toSend).then(r => {
-
-      })
-    })
   }
+  return onSnapshot(q, (querySnapshot) => {
+    const toSend = []
+    querySnapshot.forEach(doc => {
+      const order = doc.data()
+      order.cloudId = doc.id
+      toSend.push(order)
+    })
+    doSend(toSend).then(r => {
+
+    })
+  })
 }
 
 export async function confirmFireBaseOrder (cloudId, tableName) {
