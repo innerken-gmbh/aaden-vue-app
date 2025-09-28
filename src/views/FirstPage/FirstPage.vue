@@ -543,7 +543,6 @@ import TableGridItem from '@/views/FirstPage/Table/Table/Item/TableGridItem'
 import TableListItem from '@/views/FirstPage/Table/Table/Item/TableListItem'
 import { loadTransLangs } from '@/i18n'
 import PickUpItem from '@/views/FirstPage/Table/Table/Item/PickUpItem.vue'
-import { listenFireStoreOrders } from '@/api/fireStore'
 
 const keyboardLayout =
   [
@@ -807,16 +806,11 @@ export default {
       await getAllDishes()
       await getConsumeTypeList()
       await this.refreshTables()
-      await listenFireStoreOrders()
 
       const list = [
         setInterval(this.refreshTables, 5000)
       ]
-      const firebaseList = [
-        setInterval(listenFireStoreOrders, 300000)
-      ]
       list.map(addToTimerList)
-      firebaseList.map(addToTimerList)
     }
 
   },
