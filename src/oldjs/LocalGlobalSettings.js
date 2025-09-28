@@ -36,6 +36,7 @@ export async function getAdminSetting () {
   GlobalConfig.searchIncludesCode = await getAdminSettingConfig('searchIncludesCode', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.openCashBoxByPw = await getAdminSettingConfig('openCashBoxByPw', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.deleteOneKeys = await getAdminSettingConfig('deleteOneKeys', '0', '0', 'boolean', '', 'basic,FrontApp')
+  GlobalConfig.activeReservation = (await getAdminSettingConfig('activeReservation', '0', '0', 'boolean', '', 'basic,FrontApp,Reservation')) === '1'
   GlobalConfig.closePlaySound = await getAdminSettingConfig('closePlaySound', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.userTableColor = await getAdminSettingConfig('useTableColorSetting', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.usefulKey = await getAdminSettingConfig('usefulKey', 'E,F,B,R', 'E,F,B,R', 'string', '', 'basic,FrontApp')
