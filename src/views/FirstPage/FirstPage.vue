@@ -500,6 +500,20 @@
               <v-icon left>mdi-refresh</v-icon>
               {{ $t('reload') }}
             </v-btn>
+            <div class="mt-4 text-body-2">
+              Current setting IP: {{ Config && Config.Base ? Config.Base : 'N/A' }}
+            </div>
+            <v-btn
+                class="mt-2"
+                elevation="0"
+                text
+                small
+                color="grey darken-1"
+                @click="openResetIpDialog"
+            >
+              <v-icon left small>mdi-cog-refresh</v-icon>
+              Reset IP
+            </v-btn>
           </no-content-display>
         </v-card>
       </v-card>
@@ -518,6 +532,29 @@
         ></addresses-card>
       </v-card>
 
+    </v-dialog>
+
+    <!-- Reset IP Dialog -->
+    <v-dialog
+        v-model="showResetIpDialog"
+        max-width="420"
+    >
+      <v-card class="pa-4" rounded="lg">
+        <div class="text-h6 mb-2">Reset IP</div>
+        <div class="text-body-2 mb-2">Enter the server IP or host (optionally with port), e.g. 192.168.1.100 or example.com:8080</div>
+        <v-text-field
+            v-model="newBaseInput"
+            label="Server IP / Host"
+            :error-messages="newBaseError ? [newBaseError] : []"
+            hide-details="auto"
+            outlined
+            dense
+        />
+        <div class="d-flex justify-end mt-4">
+          <v-btn text class="mr-2" @click="cancelResetIpDialog">Cancel</v-btn>
+          <v-btn color="primary" @click="saveNewBase">Save</v-btn>
+        </div>
+      </v-card>
     </v-dialog>
 
   </div>
@@ -565,6 +602,7 @@ import AddressesCard from '@/views/TablePage/Address/AddressesCard.vue'
 import { getRestaurantInfo } from '@/api/restaurantInfoService'
 import store from '@/store'
 import i18n from '@/i18n'
+
 const keyboardLayout =
     [
       '7', '8', '9', 'C',
@@ -627,7 +665,12 @@ export default {
       lock: false,
 
       currentAddress: null,
-      showAddressDialog: false
+      showAddressDialog: false,
+
+      // Reset IP dialog states
+      showResetIpDialog: false,
+      newBaseInput: '',
+      newBaseError: ''
 
     }
   },
@@ -871,7 +914,9 @@ export default {
         console.log('No network detected!')
         console.log(e)
         setTimeout(() => {
-          location.reload()
+          if (!this.showResetIpDialog) {
+            location.reload()
+          }
         }, 5 * 1000)
       }
     },
@@ -971,11 +1016,55 @@ export default {
           console.log('No network detected!')
           console.log(e)
           setTimeout(() => {
-            location.reload()
-          }, 5 * 1000)
+            if (!this.showResetIpDialog) {
+              location.reload()
+            }
+          }, 15 * 1000)
         } finally {
           this.lock = false
         }
+      }
+    },
+    // Open Reset IP dialog
+    openResetIpDialog () {
+      this.newBaseError = ''
+      this.newBaseInput = this.Config && this.Config.Base ? String(this.Config.Base) : ''
+      this.showResetIpDialog = true
+    },
+    // Cancel Reset IP dialog
+    cancelResetIpDialog () {
+      this.showResetIpDialog = false
+      this.newBaseError = ''
+    },
+    // Basic host/IP validation
+    validateHost (v) {
+      if (!v || !v.trim()) {
+        return 'Please enter a valid host/IP'
+      }
+      // very light validation: disallow spaces
+      if (v.includes(' ')) {
+        return 'Host/IP should not contain spaces'
+      }
+      return ''
+    },
+    // Save new Base (IP/host)
+    saveNewBase () {
+      const v = (this.newBaseInput || '').trim()
+      const err = this.validateHost(v)
+      if (err) {
+        this.newBaseError = err
+        return
+      }
+      try {
+        GlobalConfig.updateSettings('Base', v)
+        IKUtils.toast(this.$t ? this.$t('Success') : 'Saved')
+        this.showResetIpDialog = false
+        setTimeout(() => {
+          location.reload()
+        }, 300)
+      } catch (e) {
+        console.error(e)
+        this.newBaseError = 'Failed to save. Try again.'
       }
     },
     reload () {
