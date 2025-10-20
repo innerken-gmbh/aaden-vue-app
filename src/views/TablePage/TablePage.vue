@@ -1005,6 +1005,9 @@ export default {
             printingKitchenBon: print ? 1 : 0
           }
         )
+        if (GlobalConfig.printZwichenBonWithTakeawayOrder === '1' && this.consumeTypeId === 2) {
+          await reprintOrder(this.currentOrderId, 0)
+        }
         showSuccessMessage(i18n.t('Success'))
         printNow()
         this.isSendingRequest = false
