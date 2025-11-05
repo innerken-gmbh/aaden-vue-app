@@ -72,7 +72,7 @@ export async function resetTableStatus (tableId) {
 export function jumpToTable (tableId, tableName) {
   resetTableStatus(tableId)
   const params = Object.assign({
-    id: tableId,
+    id: tableId.toString(),
     tableId,
     tableName
   })
@@ -345,7 +345,7 @@ export function oldJumpTo (url, params) {
 export function showTime () {
   const date = dayjs()
 
-  return date.format('HH:mm')
+  return date.format('MM-DD HH:mm')
 }
 
 export function logError (t) {

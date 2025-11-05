@@ -105,7 +105,7 @@ export function printZwichenBon (tableId, items) {
 }
 
 export function printZwichenBonPost (tableId, items) {
-  return hillo.post('Orders.php?op=printZwichenBonUseDishesList', {
+  return hillo.post('Orders.php?op=printZwichenBonUseDishesListPost', {
     tableId,
     dishes: JSON.stringify(items)
   })

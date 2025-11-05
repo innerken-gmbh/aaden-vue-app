@@ -54,8 +54,8 @@
 <script>
 import { getBillListForServant, loadAllServants, loadPaymentMethods, previewZBon } from '@/api/api'
 import BillTable from '@/views/SalePage/BillTable'
-import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { dragscroll } from 'vue-dragscroll/src/main'
+import { getCurrentLang } from '@/oldjs/StaticModel'
 
 const defaultRealFilter = {
   servant: '',
@@ -158,7 +158,7 @@ export default {
     this.payMethodList = await loadPaymentMethods()
     this.payMethodList.forEach(i => {
       i.value = i.id
-      i.langPayMethodName = i.langs.filter(l => l.lang.toLowerCase() === GlobalConfig.lang.toLowerCase())[0].name
+      i.langPayMethodName = i.langs.filter(l => l.lang.toLowerCase() === getCurrentLang().toLowerCase())[0].name
     })
   }
 }

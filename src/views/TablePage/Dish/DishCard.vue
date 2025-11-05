@@ -32,7 +32,7 @@
             <div class="mr-1">
               <span  class="text-body-2 font-weight-medium">{{ dish.code.replaceAll('.', '') }}.</span>
             </div>
-            <span>{{ dish.name }}</span>
+            <span>{{ dish.name ? dish.name : dish.dishName }}</span>
           </div>
           <div
               v-show="dish.displayApply.length > 0"
@@ -59,7 +59,7 @@
             >
               {{ findConsumeTypeById(dish.overrideConsumeTypeId) }}
             </v-card>
-            <span v-if="dish.isFree === '1'">{{ $t('Free') }}</span>
+            <span v-if="dish.isFree === '1' || dish.isFree === true">{{ $t('Free') }}</span>
             <template v-else>
               <span
                   v-if="dish.tempDiscountMod && Math.abs(parseFloat(dish.tempDiscountMod)) > 0"
@@ -100,12 +100,12 @@
             <v-icon
                 class="mr-2"
                 large
-                @click.stop="dish.change(-1)"
+                @click.stop="changeDish(-1)"
             > mdi-minus-circle
             </v-icon>
             <v-icon
                 large
-                @click.stop="dish.change(1)"
+                @click.stop="changeDish(1)"
             > mdi-plus-circle
             </v-icon>
             <v-spacer></v-spacer>
@@ -188,6 +188,12 @@ export default {
     }
   },
   methods: {
+    changeDish (count) {
+      this.dish.change(count)
+      setTimeout(() => {
+        document.activeElement.blur()
+      }, 10)
+    },
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
     },
@@ -209,7 +215,12 @@ export default {
       const note = await Swal.fire({
         title: this.$t('note'),
         input: 'text',
-        inputValue: this.dish.note
+        inputValue: this.dish.note,
+        didClose: () => {
+          setTimeout(() => {
+            document.activeElement.blur()
+          }, 10)
+        }
       })
       this.$set(this.dish, 'note', note.value)
       // dish.note = note.value

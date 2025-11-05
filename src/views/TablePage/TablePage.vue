@@ -168,7 +168,7 @@
                   <template v-slot:default="{ total }">
                     <div class="pa-2">
                       <v-btn
-                          :disabled="!canOperate"
+                          :disabled="!canOperate || splitOrderListModel.list.length > 0"
                           block
                           color="green lighten-4 black--text"
                           elevation="0"
@@ -636,7 +636,7 @@ import IKUtils from 'innerken-js-utils'
 import {
   acceptOrder,
   deleteDish,
-  getUUidByOrderId,
+  getUUidByOrderId, removeDiscountStr,
   reprintOrder,
   safeRequest,
   showSuccessMessage,
@@ -827,6 +827,7 @@ export default {
         IKUtils.showError('')
         return
       }
+      await removeDiscountStr(this.id)
       await this.deleteAndSaveReason(note)
       showSuccessMessage(i18n.t('Success'))
       await this.initialUI()
@@ -908,6 +909,9 @@ export default {
       this.useDishesDiscount = false
     },
     async findAndOrderDish (code, count = 1) {
+      setTimeout(() => {
+        document.activeElement.blur()
+      }, 10)
       if (count < 1) {
         return
       }
@@ -987,6 +991,9 @@ export default {
       } else {
         this.oldMod = null
       }
+      setTimeout(() => {
+        document.activeElement.blur()
+      }, 10)
       // this.overrideConsumeTypeId = overrideConsumeTypeId
       this.modificationShow = true
     },
@@ -1117,7 +1124,7 @@ export default {
     async getTableDetail () {
       try {
         this.tableDetailInfo = await getCurrentOrderInfo(this.id)
-        if (!this.tableDetailInfo.tableName) {
+        if (!this.tableDetailInfo.tableName && !this.tableDetailInfo.tableId) {
           await goHome()
           return
         }
@@ -1153,6 +1160,9 @@ export default {
             printingKitchenBon: print ? 1 : 0
           }
         )
+        if (GlobalConfig.printZwichenBonWithTakeawayOrder === '1' && this.consumeTypeId === 2) {
+          await reprintOrder(this.currentOrderId, 0)
+        }
         showSuccessMessage(i18n.t('Success'))
         printNow()
         this.isSendingRequest = false
@@ -1230,7 +1240,9 @@ export default {
           password: pw,
           checkOutType: paymentType
         }, checkoutInfo))
-        showSuccessMessage(i18n.t('Success'))
+        if (res.success) {
+          showSuccessMessage(i18n.t('Success'))
+        }
         if (shouldGoHome) {
           await goHome()
         }

@@ -20,7 +20,7 @@
             class="d-flex justify-center align-center px-6 mr-2"
             height="48"
             style="border-radius: 12px; font-size: 18px"
-            @click="activeDCT=ct.id"
+            @click="changeDCT(ct.id)"
         >{{ ct.name }}
         </v-card>
 
@@ -379,7 +379,34 @@ export default {
     filteredDish () {
       const list = this.dishes
       if (this.activeDCT === 0) {
-        return list.filter(item => item.isFavorite === '1')
+        const currentList = list.filter(item => item.isFavorite === '1')
+        return currentList.sort((a, b) => {
+          const aIsNum = /^\d+$/.test(a.code)
+          const bIsNum = /^\d+$/.test(b.code)
+          if (aIsNum && bIsNum) {
+            // 如果都是数字，按数字大小排序
+            return parseInt(a.code) - parseInt(b.code)
+          } else if (aIsNum) {
+            // 如果a是数字，b不是，a排在前面
+            return -1
+          } else if (bIsNum) {
+            // 如果b是数字，a不是，b排在前面
+            return 1
+          } else {
+            // 都不是数字的情况
+            const aLetter = a.code[0]
+            const bLetter = b.code[0]
+            const aNum = parseInt(a.code.slice(1))
+            const bNum = parseInt(b.code.slice(1))
+            if (aLetter !== bLetter) {
+              // 先按字母排序
+              return aLetter.localeCompare(bLetter)
+            } else {
+              // 字母相同则按数字排序
+              return aNum - bNum
+            }
+          }
+        })
       }
 
       return list.filter((item) => {
@@ -409,6 +436,12 @@ export default {
     }
   },
   methods: {
+    changeDCT (id) {
+      this.activeDCT = id
+      setTimeout(() => {
+        document.activeElement.blur()
+      }, 10)
+    },
     async initial () {
       this.loading = true
       window.onkeydown = this.listenKeyDown
@@ -591,8 +624,10 @@ export default {
           this.$emit('order-add')
         }
         if (!dish) {
-          this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
-          this.displayFeedback()
+          if (t !== '') {
+            this.feedback = '❌' + this.$t('DishNumberNotFound', { n: code })
+            this.displayFeedback()
+          }
         } else {
           this.$emit('dish-add', code, count)
           this.feedback = '✔'

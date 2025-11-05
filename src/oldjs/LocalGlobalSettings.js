@@ -4,10 +4,10 @@ import i18n from '@/i18n'
 import dayjs from 'dayjs'
 import { goHome } from '@/oldjs/StaticModel'
 import {
-  getAdminSettingConfig,
-  getReservationStatus
+  getAdminSettingConfig
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
+import hillo from 'hillo'
 
 const fix = require('@/assets/FixedConfig.json')
 const defaultConfig = require('@/assets/AadenConfig.json')
@@ -20,8 +20,9 @@ export async function loadConfig () {
     GlobalConfig = Object.assign(GlobalConfig, await AadenBaseConfig(defaultConfig), fix)
     NeededKeys = GlobalConfig.neededKeys
     GlobalConfig.getBaseUrl = function () {
-      return location.protocol + '//' + GlobalConfig.Base + '/'
+      return (location.protocol === 'https' ? 'https' : 'http') + '://' + GlobalConfig.Base + '/'
     }
+    hillo.initial(GlobalConfig.getBaseUrl() + 'PHP/')
     GlobalConfig.startUpTimestamp = dayjs().utcOffset()
     refreshGetter()
     window.Config = GlobalConfig
@@ -33,12 +34,9 @@ export async function loadConfig () {
 
 export async function getAdminSetting () {
   GlobalConfig.searchIncludesCode = await getAdminSettingConfig('searchIncludesCode', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.activeReservation = (await getAdminSettingConfig('activeReservation', '0', '0', 'boolean', '', 'basic,FrontApp,Reservation')) === '1'
-  setTimeout(async () => {
-    GlobalConfig.activeReservation = await getReservationStatus()
-  }, 20)
   GlobalConfig.openCashBoxByPw = await getAdminSettingConfig('openCashBoxByPw', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.deleteOneKeys = await getAdminSettingConfig('deleteOneKeys', '0', '0', 'boolean', '', 'basic,FrontApp')
+  GlobalConfig.activeReservation = (await getAdminSettingConfig('activeReservation', '0', '0', 'boolean', '', 'basic,FrontApp,Reservation')) === '1'
   GlobalConfig.closePlaySound = await getAdminSettingConfig('closePlaySound', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.userTableColor = await getAdminSettingConfig('useTableColorSetting', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.usefulKey = await getAdminSettingConfig('usefulKey', 'E,F,B,R', 'E,F,B,R', 'string', '', 'basic,FrontApp')
@@ -49,6 +47,8 @@ export async function getAdminSetting () {
   GlobalConfig.enterToOrder = await getAdminSettingConfig('enterToOrder', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.defaultPassword = await getAdminSettingConfig('defaultPassword', '111', '111', 'string', '', 'basic,FrontApp')
   GlobalConfig.numberFirst = await getAdminSettingConfig('numberFirst', '0', '0', 'boolean', '', 'basic,FrontApp')
+  GlobalConfig.lang = await getAdminSettingConfig('language', 'de', 'de', 'string', '', 'basic,FrontApp')
+  GlobalConfig.printZwichenBonWithTakeawayOrder = await getAdminSettingConfig('printZwichenBonWithTakeawayOrder', '0', '0', 'boolean', '', 'basic,FrontApp')
 }
 
 export function refreshGetter () {

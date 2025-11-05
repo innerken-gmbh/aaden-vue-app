@@ -902,5 +902,7 @@
   "deposit": "Borg",
   "withdraw": "Opname",
   "Revenue": "Particuliere aanbetaling",
-  "Expenditure": "Particuliere terugtrekking"
+  "Expenditure": "Particuliere terugtrekking",
+  "lastPrint": "Laatste afdruktijd",
+  "Cashless Payment": "Contantloze betaling"
 }

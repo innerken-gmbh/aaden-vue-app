@@ -13,6 +13,13 @@
         :color="tableColor"
         @click='$emit("click",table.tableName)'
     >
+      <v-icon
+          v-if="table.consumeTypeStatusId === '1'"
+          class="alert-icon"
+          color="error"
+          size="18"
+      >mdi-alert-circle
+      </v-icon>
       <div
           class="d-flex align-center justify-center flex-grow-1"
           :class="table.inUse?'mt-3':''"
@@ -293,5 +300,11 @@ export default {
   align-items: center
   font-size: 16px
   font-weight: 400
+
+.alert-icon
+  position: absolute
+  top: 5px
+  right: 5px
+  z-index: 2
 
 </style>
