@@ -14,6 +14,15 @@ export async function previewZBon (startDate, endDate) {
   })).content
 }
 
+export async function getFullStornoList (startDate, endDate) {
+  const [fromDateTime, toDateTime] = [dayjs(startDate).format('YYYY-MM-DD') + ' 04:00:00', dayjs(endDate).add(1, 'day').format('YYYY-MM-DD') + ' 03:59:59']
+  return (await hillo.get('BackendData.php?op=getFullStornoList', {
+    fromDateTime,
+    toDateTime,
+    lang: i18n.locale
+  })).content
+}
+
 export async function printXBon (startDate, endDate) {
   return (await hillo.post('Complex.php?op=printSummary', {
     timespan: startDate + ' - ' + endDate
