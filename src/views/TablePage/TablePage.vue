@@ -680,7 +680,7 @@ export default {
     async showDeleteDishDialog () {
       const res = await optionalAuthorizeAsync(
         'boss',
-        !GlobalConfig.returnDishWithoutPassword
+        GlobalConfig.returnDishWithoutPassword !== '1'
       )
       this.servantPw = res
       this.reasons = getReason()
@@ -868,7 +868,7 @@ export default {
       }
     },
     dishesSetDiscount: async function () {
-      await optionalAuthorizeAsync('', !GlobalConfig.discountWithoutPassword)
+      await optionalAuthorizeAsync('', GlobalConfig.discountWithPassword === '1')
       this.discountModelShow = true
       this.useDishesDiscount = true
     },
@@ -1011,7 +1011,7 @@ export default {
         showSuccessMessage(i18n.t('Success'))
         printNow()
         this.isSendingRequest = false
-        if (!GlobalConfig.jumpToHomeWhenOrder) {
+        if (GlobalConfig.jumpToHomeWhenOrder !== '1') {
           await this.initialUI()
         } else {
           await goHome()
