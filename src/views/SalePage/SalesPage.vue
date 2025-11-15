@@ -582,8 +582,9 @@ export default {
     },
     totalCardPay () {
       return this.cardPaymentList.reduce((arr, i) => {
-        const currentPaidTotal = this.numToFixed(i.paidTotal, 2)
-        arr += parseFloat(currentPaidTotal.replace(',', '.'))
+        arr += parseFloat(i.paidTotal.replace(',', '.'))
+        // const currentPaidTotal = this.numToFixed(i.paidTotal, 2)
+        // arr += parseFloat(currentPaidTotal.replace(',', '.'))
         return arr
       }, 0)
     },
