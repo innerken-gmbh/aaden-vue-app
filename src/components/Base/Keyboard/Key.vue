@@ -4,14 +4,14 @@
     :color="color"
     @click="$emit('click', keyName)"
     :style="{ fontSize: keyNameText.length < 3 ? '22px' : '14px' }"
-    style="height: 72px; font-size: 24px; font-weight: 600; border-radius: 8px;"
+    style="min-height: 72px; font-size: 24px; font-weight: 600; border-radius: 8px"
     class="d-flex justify-center align-center font-weight-black text-center"
   >
     <template v-if="keyName.startsWith('mdi')">
       <v-icon large>{{ keyName }}</v-icon>
     </template>
     <template v-else>
-      {{ keyNameText }}
+      <span class="text-break pa-1">{{ keyNameText }}</span>
     </template>
   </v-card>
 </template>
