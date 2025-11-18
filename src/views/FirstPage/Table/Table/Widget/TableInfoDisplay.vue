@@ -8,7 +8,7 @@
         style="width:100%;overflow: hidden;padding: 2px 4px;border-radius: 4px;"
     >
       <div
-          class="text-no-wrap text-truncate" style="font-size: 9px">{{ info.length > 5 ? info.slice(0, 5) : info }}
+          class="text-no-wrap text-truncate" style="font-size: 9px">{{ info.length > 6 ? info.slice(0, 6) : info }}
       </div>
     </v-card>
 
