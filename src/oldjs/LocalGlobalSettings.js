@@ -49,6 +49,8 @@ export async function getAdminSetting () {
   GlobalConfig.numberFirst = await getAdminSettingConfig('numberFirst', '0', '0', 'boolean', '', 'basic,FrontApp')
   GlobalConfig.lang = await getAdminSettingConfig('language', 'de', 'de', 'string', '', 'basic,FrontApp')
   GlobalConfig.printZwichenBonWithTakeawayOrder = await getAdminSettingConfig('printZwichenBonWithTakeawayOrder', '0', '0', 'boolean', '', 'basic,FrontApp')
+  GlobalConfig.jumpToHomeWhenOrder = await getAdminSettingConfig('jumpToHomeWhenOrder', '1', '1', 'boolean', '', 'basic,FrontApp')
+  GlobalConfig.returnDishWithoutPassword = await getAdminSettingConfig('returnDishWithoutPassword', '0', '0', 'boolean', '', 'basic,FrontApp')
 }
 
 export function refreshGetter () {

@@ -33,7 +33,7 @@
               {{ order.updatedAt }}
             </td>
             <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
-              {{ order.paymentLabel }}<b v-if="order.discountStr">/
+              {{ order.paymentLabel }}<b v-if="order.discountStr && order.discountStr !== '0'">/
               {{ '-' + order.discountStr.replace('p', '%') }}</b>
             </td>
             <td>

@@ -114,6 +114,7 @@ import TableInfoDisplay from '@/views/FirstPage/Table/Table/Widget/TableInfoDisp
 import { Remember } from '@/api/remember'
 import store from '@/store'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import dayjs from 'dayjs'
 
 export default {
   name: 'TableCard',
@@ -176,10 +177,14 @@ export default {
       res.inCall = res.callService === '1'
       res.childCount = res.childCount ?? 0
       res.seatCount = res.seatCount ?? 0
+      if (res.createTimestamp) {
+        const currentCreateTimestamp = dayjs().format('YYYY-MM-DD') + ' ' + res.createTimestamp
+        res.mealTime = dayjs().diff(dayjs(currentCreateTimestamp), 'minute') + 'min'
+      } else {
+        res.mealTime = '-'
+      }
       let maxKeyCount = 1
-
       maxKeyCount = 2
-
       res.infos = this.getKeys().filter((k, index) => index < maxKeyCount)
       return res
     }

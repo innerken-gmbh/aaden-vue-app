@@ -31,7 +31,8 @@ const TableInfoMetaDataSetting = {
   buffetRound: { icon: 'mdi-animation-outline' },
   childCount: { icon: 'mdi-human-child' },
   drinkCount: { icon: 'mdi-beer' },
-  seatCount: { icon: 'mdi-account-outline' }
+  seatCount: { icon: 'mdi-account-outline' },
+  mealTime: { icon: 'mdi-clock' }
 }
 
 const defaultMetaData = {

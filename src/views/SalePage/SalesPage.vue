@@ -102,7 +102,7 @@
                   elevation="0"
               >{{
                   totalReturn | priceDisplay
-                }} ({{ returnList.length }})
+                }} ({{ stornoList.length }})
                 <v-icon
                     class="mt-n1"
                     color="black"
@@ -335,7 +335,7 @@
           </tr>
           </thead>
           <tbody>
-          <template v-for="order in returnList">
+          <template v-for="order in stornoList">
             <tr v-bind:key="order.orderId+order.Dname">
               <td style="width: 200px">
                 <span class="font-weight-bold">{{ order.name }}</span>/{{ order.orderId }}
@@ -463,7 +463,7 @@
 
 import dayjs from 'dayjs'
 import {
-  getBillListForServant,
+  getBillListForServant, getFullStornoList,
   getOrderDetailInfo,
   previewZBon,
   printDailyCardTerminal,
@@ -522,7 +522,7 @@ export default {
       dateInput: [today(), today()],
       singleZBonDate: [today(), today()],
       loaded: false,
-
+      stornoList: [],
       billData: {
         content: {
           taxInfos: [],
@@ -583,6 +583,8 @@ export default {
     totalCardPay () {
       return this.cardPaymentList.reduce((arr, i) => {
         arr += parseFloat(i.paidTotal.replace(',', '.'))
+        // const currentPaidTotal = this.numToFixed(i.paidTotal, 2)
+        // arr += parseFloat(currentPaidTotal.replace(',', '.'))
         return arr
       }, 0)
     },
@@ -608,6 +610,11 @@ export default {
 
   },
   methods: {
+    numToFixed (num, fixed = 2) {
+      const str = parseFloat(Math.abs(num).toFixed(fixed)) === 0 ? '0.00' : num.toFixed(fixed)
+      if (str === '-0.00') return '0.00'
+      return str
+    },
     async savePrintInfo (info) {
       await printDailyCardTerminal(info)
       this.cardTerminalDialog = false
@@ -633,6 +640,7 @@ export default {
       this.displayData = Object.assign({}, defaultDisplayData,
         await getBillListForServant(this.password ?? GlobalConfig.defaultPassword,
           ...this.singleZBonDate), { orderMeta: await getOrderDetailInfo(this.singleZBonDate) })
+      this.stornoList = await getFullStornoList(...this.singleZBonDate)
     },
     initial () {
       this.singleZBonDate = [getToday(), getToday()]

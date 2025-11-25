@@ -11,6 +11,7 @@
           <span class="text-h4 font-weight-black">{{ currentTitle }}</span>
           <v-spacer/>
           <v-btn
+              :disabled="loading"
               class="black lighten-3"
               icon
               @click="saveAddClose"
@@ -217,6 +218,7 @@ export default {
   },
   data: function () {
     return {
+      loading: false,
       rawAddressInfo: DefaultAddressInfo,
       Config: GlobalConfig,
       userInfo: [],
@@ -263,6 +265,7 @@ export default {
       this.clearAddressInfo()
     },
     async initialMenu () {
+      this.loading = true
       await this.getUserInfo()
       this.clearAddressInfo()
       const now = dayjs()
@@ -274,6 +277,7 @@ export default {
         })
       ]
       this.searchTel = ''
+      this.loading = false
     },
     async getUserInfo () {
       this.userInfo = (await hillo.get('Takeaway.php?op=showAllUsers')).content.map(u => {

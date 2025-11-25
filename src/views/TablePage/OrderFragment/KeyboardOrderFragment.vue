@@ -158,7 +158,7 @@ const keyboardLayout = [
   '7',
   '8',
   '9',
-  'C',
+  'mdi-keyboard-backspace',
   '4',
   '5',
   '6',
@@ -338,7 +338,7 @@ export default {
         case 'mdi-close':
           this.keyboardInput += '*'
           break
-        case 'C':
+        case 'mdi-keyboard-backspace':
           this.keyboardInput = ''
           break
         case 'OK':
