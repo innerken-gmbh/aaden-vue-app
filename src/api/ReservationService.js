@@ -21,6 +21,7 @@ export async function getReservationsByTableId (tableId) {
 }
 
 const host = 'https://reservation-api.aaden.io/reservation/'
+const newHost = 'https://cloud-v2.aaden.io/reservation/'
 const todayEnd = dayjs().startOf('d')
   .add(1, 'd').add('3', 'h')
   .add(59, 'm').format(timestampTemplate)
@@ -36,11 +37,19 @@ export async function loadAllReservation (fromDateTime, toDateTime) {
   }
   try {
     const deviceId = parseInt(await getCurrentDeviceId())
-    return (await hillo.get(host + 'getList/' + deviceId,
-      {
-        fromDateTime,
-        toDateTime
-      })).data
+    if (deviceId === 1750) {
+      return (await hillo.get(newHost + 'getList/' + deviceId,
+        {
+          fromDateTime,
+          toDateTime
+        })).data
+    } else {
+      return (await hillo.get(host + 'getList/' + deviceId,
+        {
+          fromDateTime,
+          toDateTime
+        })).data
+    }
   } catch (e) {
     return []
   }
