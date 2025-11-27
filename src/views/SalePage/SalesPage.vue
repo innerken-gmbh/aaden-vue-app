@@ -102,7 +102,7 @@
                   elevation="0"
               >{{
                   totalReturn | priceDisplay
-                }} ({{ stornoList.length }})
+                }} ({{ stornoList?.length }})
                 <v-icon
                     class="mt-n1"
                     color="black"
