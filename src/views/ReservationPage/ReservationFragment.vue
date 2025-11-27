@@ -2,8 +2,7 @@
   <div>
     <iframe
         v-if="id!=null"
-        :src="'https://aaden-vue3-reservation.vercel.app/?userId='+id+'&chaos='
-        +GlobalConfig.startUpTimestamp"
+        :src="iframeSrc"
         style="height: 98vh"
         width="100%"
     ></iframe>
@@ -21,6 +20,15 @@ export default {
     return {
       GlobalConfig,
       id: null
+    }
+  },
+  computed: {
+    iframeSrc () {
+      if (this.id && this.id.toString() === '1750') {
+        return 'https://aaden-vue3-reservation-zlas.vercel.app/?userId=' + this.id + '&chaos=' + GlobalConfig.startUpTimestamp
+      } else {
+        return 'https://aaden-vue3-reservation.vercel.app/?userId=' + this.id + '&chaos=' + GlobalConfig.startUpTimestamp
+      }
     }
   },
   async mounted () {

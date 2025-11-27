@@ -87,3 +87,7 @@ export async function checkout (checkoutInfo) {
     }
   }
 }
+
+export async function getAllDepositList () {
+  return (await hillo.get('Complex.php?op=showAllUsableDownPayments', {})).content
+}
