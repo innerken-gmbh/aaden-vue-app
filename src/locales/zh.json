@@ -95,7 +95,7 @@
   "C": "C",
   "CS": "捷克语",
   "CanBePickedUp": "可取走",
-  "CanNotAddNegativeDishes": "不能加入负数菜品",
+  "CanNotAddNegativeDishes": "不能加入错误数量菜品",
   "Cancel": "取消",
   "CancelOrder": "退单",
   "CancelReservation": "取消预定",

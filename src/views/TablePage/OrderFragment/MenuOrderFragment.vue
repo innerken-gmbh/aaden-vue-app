@@ -636,7 +636,7 @@ export default {
       if (t.indexOf('*') !== -1) {
         let [code, count] = this.getCodeAndCountFromInput(t)
         count = parseInt(count)
-        if (count < 1) {
+        if (count < 1 || !count) {
           this.feedback = '❌' + this.$t('CanNotAddNegativeDishes')
           showTimedAlert('warning', this.$t('JSTableCodeNotFound'), 500)
           this.displayFeedback()
