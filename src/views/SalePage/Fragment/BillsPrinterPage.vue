@@ -285,7 +285,6 @@ import {
 import { printDeliveryBon, showSuccessMessage } from '@/api/api'
 import TabButton from '@/components/Base/TabButton'
 import { today } from '@/api/Repository/DateRepository'
-import { Remember } from '@/api/remember'
 import { mapMutations } from 'vuex'
 
 export default {
@@ -311,13 +310,13 @@ export default {
       isPrint: false,
       ZBonNumberList: [],
       billsCount: '',
-      activeZBon: Remember.activeZBon,
-      activeXBon: Remember.activeXBon,
-      deliveryList: Remember.deliveryList,
-      sendEmail: Remember.sendEmail,
-      mergeBills: Remember.mergeBills,
-      totalTime: Remember.totalTime,
-      totalSales: Remember.totalSales
+      activeZBon: false,
+      activeXBon: false,
+      deliveryList: false,
+      sendEmail: false,
+      mergeBills: false,
+      totalTime: false,
+      totalSales: false
     }
   },
   watch: {
@@ -487,13 +486,6 @@ export default {
     async realPrintZbon () {
       try {
         this.isPrint = true
-        Remember.activeZBon = this.activeZBon
-        Remember.activeXBon = this.activeXBon
-        Remember.sendEmail = this.sendEmail
-        Remember.totalSales = this.totalSales
-        Remember.totalTime = this.totalTime
-        Remember.deliveryList = this.deliveryList
-        Remember.mergeBills = this.mergeBills
         this.errorMessage = ''
         if (dayjs(this.realDate[0]).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD') || dayjs(this.realDate[0]).format('YYYY-MM-DD') === dayjs().subtract(4, 'hour').format('YYYY-MM-DD')) {
           if (this.ZBonList.length > 0) {
@@ -546,13 +538,6 @@ export default {
       }
     },
     async printBills () {
-      Remember.activeZBon = this.activeZBon
-      Remember.activeXBon = this.activeXBon
-      Remember.sendEmail = this.sendEmail
-      Remember.totalSales = this.totalSales
-      Remember.totalTime = this.totalTime
-      Remember.deliveryList = this.deliveryList
-      Remember.mergeBills = this.mergeBills
       this.isPrint = true
       if (this.mergeBills) {
         await this.printSelectedOptions(this.detailTime)

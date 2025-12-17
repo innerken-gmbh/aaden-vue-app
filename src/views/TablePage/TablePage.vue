@@ -203,6 +203,7 @@
               >
                 <template #action>
                   <v-btn
+                      v-if="Config.hideOrderWithoutPrintBtn !== '1'"
                       class="primary mr-2"
                       dark
                       elevation="0"
