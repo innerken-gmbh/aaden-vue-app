@@ -11,8 +11,12 @@ export async function moveReservation (reservationId, tableId) {
   const newTableId = await showTableSelector(null, 'tableId')
   const reservation = (await getCurrentReservation()).find(it => it.id === parseInt(reservationId))
   reservation.seatPlan.find(it => it.tableId === parseInt(tableId)).tableId = newTableId
-
-  return (await hillo.jsonPost(host + 'changeSeatPlan/' + reservationId, reservation.seatPlan))
+  const deviceId = parseInt(await getCurrentDeviceId())
+  if (deviceId === 1750 || deviceId === 1) {
+    return (await hillo.jsonPost(newHost + 'changeSeatPlan/' + reservationId, reservation.seatPlan))
+  } else {
+    return (await hillo.jsonPost(host + 'changeSeatPlan/' + reservationId, reservation.seatPlan))
+  }
 }
 
 export async function getReservationsByTableId (tableId) {
@@ -31,18 +35,28 @@ export async function getCurrentReservation () {
   return (await loadAllReservation(nowMinus30, todayEnd)).filter(it => it.status !== 'Cancelled')
 }
 
+export async function getNewReservationSetting (deviceId) {
+  return (await hillo.post('https://cloud-v2.aaden.io/cloudUser/reservationUser/getList')).data.find(it => it.deviceId === deviceId)
+}
+
 export async function loadAllReservation (fromDateTime, toDateTime) {
   if (!GlobalConfig.activeReservation) {
     return []
   }
   try {
     const deviceId = parseInt(await getCurrentDeviceId())
-    if (deviceId === 1750) {
+    if (deviceId === 1750 || deviceId === 1) {
+      const settings = await getNewReservationSetting(deviceId)
+      const currentDate = dayjs(fromDateTime).subtract(settings.businessHourOffset, 'hour')
       return (await hillo.get(newHost + 'getList/' + deviceId,
         {
-          fromDateTime,
-          toDateTime
-        })).data
+          fromDateTime: currentDate.startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+          toDateTime: currentDate.endOf('day').format('YYYY-MM-DD HH:mm:ss')
+        })).data.map(it => {
+        it.fromDateTime = dayjs(it.fromDateTime).add(it.currentBusinessHourOffset, 'hour').format('YYYY-MM-DDTHH:mm:ss')
+        it.toDateTime = dayjs(it.toDateTime).add(it.currentBusinessHourOffset, 'hour').format('YYYY-MM-DDTHH:mm:ss')
+        return it
+      })
     } else {
       return (await hillo.get(host + 'getList/' + deviceId,
         {
@@ -63,15 +77,26 @@ export async function cancelReservation (reservationId) {
   if (res.isConfirmed) {
     ReservationCache.lastCacheAt = null
     ReservationCache.reservationCache = null
-    return (await hillo.jsonPost(host + 'cancelInternal/' + reservationId))
+    const deviceId = parseInt(await getCurrentDeviceId())
+    if (deviceId === 1750 || deviceId === 1) {
+      return (await hillo.jsonPost(newHost + 'cancelInternal/' + reservationId))
+    } else {
+      return (await hillo.jsonPost(host + 'cancelInternal/' + reservationId))
+    }
   }
 }
 
 export async function checkIn (id) {
   ReservationCache.lastCacheAt = null
   ReservationCache.reservationCache = null
-  return (await hillo.jsonPost(host + 'checkIn/' + id,
-    {}))
+  const deviceId = parseInt(await getCurrentDeviceId())
+  if (deviceId === 1750 || deviceId === 1) {
+    return (await hillo.jsonPost(newHost + 'checkIn/' + id,
+      {}))
+  } else {
+    return (await hillo.jsonPost(host + 'checkIn/' + id,
+      {}))
+  }
 }
 
 export const ReservationCache = {
@@ -80,8 +105,14 @@ export const ReservationCache = {
 }
 
 export async function confirmReservation (id) {
+  const deviceId = parseInt(await getCurrentDeviceId())
   ReservationCache.lastCacheAt = null
   ReservationCache.reservationCache = null
-  return (await hillo.jsonPost(host + 'confirmByMerchant/' + id,
-    {}))
+  if (deviceId === 1750 || deviceId === 1) {
+    return (await hillo.jsonPost(newHost + 'confirmByMerchant/' + id,
+      {}))
+  } else {
+    return (await hillo.jsonPost(host + 'confirmByMerchant/' + id,
+      {}))
+  }
 }
