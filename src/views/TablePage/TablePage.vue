@@ -636,7 +636,7 @@ import IKUtils from 'innerken-js-utils'
 
 import {
   acceptOrder,
-  deleteDish,
+  deleteDish, getOrderPaymentStatusDetail,
   getUUidByOrderId, removeDiscountStr,
   reprintOrder,
   safeRequest,
@@ -1150,6 +1150,23 @@ export default {
           IKUtils.showLoading()
           await informOpenTable(password, this.id)
         } else {
+          try {
+            const paymentStatus = await getOrderPaymentStatusDetail(this.currentOrderId)
+            if (paymentStatus === '1') {
+              const res = await IKUtils.showConfirmAsyn(i18n.t('alreadyCheckOutOpenTableAgain'), 'Ooops！')
+              if (res.isConfirmed) {
+                const password = await optionalAuthorizeAsync('', GlobalConfig.usePassword, null, false, this.id)
+                await informOpenTable(password, this.id)
+              } else {
+                await goHome()
+                await this.initialUI()
+                return
+              }
+            }
+          } catch (e) {
+            console.log(e, 'e')
+          }
+
           IKUtils.showLoading()
         }
         await hillo.post(
@@ -1190,7 +1207,25 @@ export default {
       }
       this.showConfirmDialog = false
     },
-    jumpToPayment (paymentType = 'checkOut') {
+    async jumpToPayment (paymentType = 'checkOut') {
+      try {
+        const paymentStatus = await getOrderPaymentStatusDetail(this.currentOrderId)
+        if (paymentStatus === '1') {
+          const res = await IKUtils.showConfirmAsyn(i18n.t('alreadyCheckOut'), 'Ooops！')
+          if (res.isConfirmed) {
+            await goHome()
+            await this.initialUI()
+            return
+          } else {
+            await goHome()
+            await this.initialUI()
+            return
+          }
+        }
+      } catch (e) {
+        console.log('e', e)
+      }
+
       const realCheckOut = async (pw) => {
         checkoutFactory.clear()
         checkoutFactory.loadTTDishList(

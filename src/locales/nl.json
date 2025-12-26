@@ -904,5 +904,7 @@
   "Revenue": "Particuliere aanbetaling",
   "Expenditure": "Particuliere terugtrekking",
   "lastPrint": "Laatste afdruktijd",
-  "Cashless Payment": "Contantloze betaling"
+  "Cashless Payment": "Contantloze betaling",
+  "alreadyCheckOutOpenTableAgain": "De huidige bestelling is afgerekend. Wilt u de tafel heropenen?",
+  "alreadyCheckOut": "De huidige bestelling is afgerekend!"
 }

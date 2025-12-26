@@ -904,5 +904,7 @@
   "Revenue": "Deposito privato",
   "Expenditure": "Ritiro privato",
   "lastPrint": "Ora dell'ultima stampa",
-  "Cashless Payment": "Pagamento senza contanti"
+  "Cashless Payment": "Pagamento senza contanti",
+  "alreadyCheckOutOpenTableAgain": "L'ordine corrente è stato chiuso. Desideri riaprire il tavolo?",
+  "alreadyCheckOut": "L'ordine corrente è stato chiuso!"
 }

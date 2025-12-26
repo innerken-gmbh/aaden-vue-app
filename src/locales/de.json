@@ -607,5 +607,7 @@
   "Revenue": "Privateinlage",
   "Expenditure": "Privatentnahme",
   "lastPrint": "Letzter Druckzeitpunkt",
-  "Cashless Payment": "Bargeldlose Zahlung"
+  "Cashless Payment": "Bargeldlose Zahlung",
+  "alreadyCheckOutOpenTableAgain": "Die aktuelle Bestellung wurde abgeschlossen. Möchten Sie den Tisch neu eröffnen?",
+  "alreadyCheckOut": "Die aktuelle Bestellung wurde abgeschlossen!"
 }

@@ -92,6 +92,12 @@ export async function getUUidByOrderId (orderId) {
   })).content[0]?.electronicUuid ?? ''
 }
 
+export async function getOrderPaymentStatusDetail (orderId) {
+  return (await hillo.get('Orders.php?op=showOne', {
+    id: orderId
+  })).content[0].paymentStatus ?? '0'
+}
+
 export async function getPointCode (id) {
   let res = null
   let counter = 0

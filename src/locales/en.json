@@ -904,5 +904,7 @@
   "Revenue": "Private deposit",
   "Expenditure": "Private withdrawal",
   "lastPrint": "Last print time",
-  "Cashless Payment": "Cashless Payment"
+  "Cashless Payment": "Cashless Payment",
+  "alreadyCheckOutOpenTableAgain": "The current order has been settled. Would you like to reopen the table?",
+  "alreadyCheckOut": "The current order has been settled!"
 }
