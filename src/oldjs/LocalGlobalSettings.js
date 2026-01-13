@@ -33,25 +33,53 @@ export async function loadConfig () {
 }
 
 export async function getAdminSetting () {
-  GlobalConfig.searchIncludesCode = await getAdminSettingConfig('searchIncludesCode', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.openCashBoxByPw = await getAdminSettingConfig('openCashBoxByPw', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.deleteOneKeys = await getAdminSettingConfig('deleteOneKeys', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.activeReservation = (await getAdminSettingConfig('activeReservation', '0', '0', 'boolean', '', 'basic,FrontApp,Reservation')) === '1'
-  GlobalConfig.closePlaySound = await getAdminSettingConfig('closePlaySound', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.userTableColor = await getAdminSettingConfig('useTableColorSetting', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.usefulKey = await getAdminSettingConfig('usefulKey', 'E,F,B,R', 'E,F,B,R', 'string', '', 'basic,FrontApp')
-  GlobalConfig.discountWithPassword = await getAdminSettingConfig('discountWithPassword', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.bigDiscountRatio = await getAdminSettingConfig('bigDiscountRatio', '0.7', '0.7', 'string', '', 'basic,FrontApp')
-  GlobalConfig.googleMapCountry = await getAdminSettingConfig('googleMapCountry', 'DE', 'DE', 'string', '', 'basic,FrontApp')
-  GlobalConfig.escBackToHome = await getAdminSettingConfig('escBackToHome', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.enterToOrder = await getAdminSettingConfig('enterToOrder', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.defaultPassword = await getAdminSettingConfig('defaultPassword', '111', '111', 'string', '', 'basic,FrontApp')
-  GlobalConfig.numberFirst = await getAdminSettingConfig('numberFirst', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.lang = await getAdminSettingConfig('language', 'de', 'de', 'string', '', 'basic,FrontApp')
-  GlobalConfig.printZwichenBonWithTakeawayOrder = await getAdminSettingConfig('printZwichenBonWithTakeawayOrder', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.jumpToHomeWhenOrder = await getAdminSettingConfig('jumpToHomeWhenOrder', '1', '1', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.returnDishWithoutPassword = await getAdminSettingConfig('returnDishWithoutPassword', '0', '0', 'boolean', '', 'basic,FrontApp')
-  GlobalConfig.hideOrderWithoutPrintBtn = await getAdminSettingConfig('hideOrderWithoutPrintBtn', '0', '0', 'boolean', '', 'basic,FrontApp')
+  const settingsConfig = [
+    { key: 'searchIncludesCode', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
+    { key: 'openCashBoxByPw', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
+    { key: 'deleteOneKeys', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
+    { key: 'activeReservation', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp,Reservation' },
+    { key: 'closePlaySound', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
+    { key: 'useTableColorSetting', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp', configKey: 'userTableColor' },
+    { key: 'usefulKey', defaultValue: 'E,F,B,R', value: 'E,F,B,R', type: 'string', options: '', tagList: 'basic,FrontApp' },
+    { key: 'discountWithPassword', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
+    { key: 'bigDiscountRatio', defaultValue: '0.7', value: '0.7', type: 'string', options: '', tagList: 'basic,FrontApp' },
+    { key: 'googleMapCountry', defaultValue: 'DE', value: 'DE', type: 'string', options: '', tagList: 'basic,FrontApp' },
+    { key: 'escBackToHome', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
+    { key: 'enterToOrder', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
+    { key: 'defaultPassword', defaultValue: '111', value: '111', type: 'string', options: '', tagList: 'basic,FrontApp' },
+    { key: 'numberFirst', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
+    { key: 'language', defaultValue: 'de', value: 'de', type: 'string', options: '', tagList: 'basic,FrontApp', configKey: 'lang' },
+    { key: 'printZwichenBonWithTakeawayOrder', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
+    { key: 'jumpToHomeWhenOrder', defaultValue: '1', value: '1', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
+    { key: 'returnDishWithoutPassword', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
+    { key: 'hideOrderWithoutPrintBtn', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
+    { key: 'tableDisplayKeys', defaultValue: 'createTimestamp|servantName', value: 'createTimestamp|servantName', type: 'string', options: '', tagList: 'basic,FrontApp' }
+  ]
+
+  const results = await Promise.all(
+    settingsConfig.map(setting =>
+      getAdminSettingConfig(
+        setting.key,
+        setting.value,
+        setting.defaultValue,
+        setting.type,
+        setting.options,
+        setting.tagList
+      )
+    )
+  )
+  results.forEach((result, index) => {
+    const setting = settingsConfig[index]
+    const configKey = setting.configKey || setting.key
+
+    if (setting.key === 'activeReservation') {
+      GlobalConfig[configKey] = result === '1'
+    } else if (setting.key === 'tableDisplayKeys') {
+      GlobalConfig[configKey] = result.split('|')
+    } else {
+      GlobalConfig[configKey] = result
+    }
+  })
 }
 
 export function refreshGetter () {

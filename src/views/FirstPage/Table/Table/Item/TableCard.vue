@@ -111,7 +111,6 @@
 import { defaultTable } from '@/api/restaurantInfoService'
 import { findConsumeTypeById } from '@/oldjs/common'
 import TableInfoDisplay from '@/views/FirstPage/Table/Table/Widget/TableInfoDisplay'
-import { Remember } from '@/api/remember'
 import store from '@/store'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import dayjs from 'dayjs'
@@ -133,7 +132,7 @@ export default {
       }
     },
     getKeys () {
-      return Remember.tableDisplayKeys
+      return GlobalConfig.tableDisplayKeys
     }
   },
   computed: {

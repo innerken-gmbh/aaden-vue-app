@@ -304,8 +304,7 @@ import { cancelReservation, checkIn, confirmReservation, moveReservation } from 
 import uniqBy from 'lodash-es/uniqBy'
 import IKUtils from 'innerken-js-utils'
 import TableCard from '@/views/FirstPage/Table/Table/Item/TableCard'
-import { Remember } from '@/api/remember'
-import { showSuccessMessage } from '@/api/api'
+import { showSuccessMessage, updateNewSetting } from '@/api/api'
 import i18n from '@/i18n'
 
 async function refreshAllTablesPosition (listOfTable, containerHeight, containerWidth, sectionId, width, height) {
@@ -402,10 +401,10 @@ export default {
   },
   watch: {
     key1 (val) {
-      Remember.tableDisplayKeys = [val, Remember.tableDisplayKeys[1]]
+      GlobalConfig.tableDisplayKeys = [val, GlobalConfig.tableDisplayKeys[1]]
     },
     key2 (val) {
-      Remember.tableDisplayKeys = [Remember.tableDisplayKeys[0], val]
+      GlobalConfig.tableDisplayKeys = [GlobalConfig.tableDisplayKeys[0], val]
     },
     async outSideTableList (val) {
       this.tableList = val.map(t => {
@@ -440,6 +439,20 @@ export default {
       IKUtils.showLoading()
       for (const changes of Object.values(tableChanges)) {
         await submitTable(changes.table, changes.x, changes.y, changes.w, changes.h, this.currentSection.id)
+      }
+      try {
+        await updateNewSetting([{
+          section: 'FrontApp',
+          sKey: 'tableDisplayKeys',
+          sValue: GlobalConfig.tableDisplayKeys.join('|'),
+          defaultValue: 'createTimestamp|servantName',
+          sType: 'string',
+          minimumVersion: '1.7.825',
+          sOptions: '',
+          tagList: 'basic,FrontApp'
+        }])
+      } catch (e) {
+
       }
       IKUtils.toast('ok')
       this.editing = false
@@ -539,8 +552,8 @@ export default {
       activeSectionId: -1,
       sectionList: [],
       allKeys: GlobalConfig.tableInfoKeys,
-      key1: Remember.tableDisplayKeys[0],
-      key2: Remember.tableDisplayKeys[1]
+      key1: GlobalConfig.tableDisplayKeys[0],
+      key2: GlobalConfig.tableDisplayKeys[1]
     }
   },
   async mounted () {
