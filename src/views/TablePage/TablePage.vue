@@ -1269,6 +1269,9 @@ export default {
             companyLocation: checkoutInfo.companyBillInfo.companyLocation
           })
         }
+        if (includesEaDp) {
+          await this.submitRawAddressInfo({ note: includesEaDp.currentName })
+        }
         const res = await checkout(Object.assign({
           tableId: this.id,
           dishes: checkoutFactory.list,
@@ -1295,9 +1298,7 @@ export default {
             }
           }
         }
-        if (includesEaDp) {
-          await this.submitRawAddressInfo({ note: includesEaDp.currentName })
-        }
+
         printNow()
       }
       setTimeout(async () => {
