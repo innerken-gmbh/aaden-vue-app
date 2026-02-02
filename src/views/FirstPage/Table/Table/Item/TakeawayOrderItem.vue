@@ -97,10 +97,11 @@ export default {
       }
       timeReal = timeReal.add(time, 'm')
       console.log(this.table)
-
       this.$emit('accept', timeReal.format('DD.MM.YYYY HH:mm'), this.tableInfo.tableId)
-      await changeFireBaseOrderDeliveryTime(this.table.externalId,
-        Timestamp.fromDate(timeReal.toDate()))
+      if (this.table?.externalId.length === 20) {
+        await changeFireBaseOrderDeliveryTime(this.table.externalId,
+          Timestamp.fromDate(timeReal.toDate()))
+      }
     }
   }
 }

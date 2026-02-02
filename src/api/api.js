@@ -82,7 +82,7 @@ export async function acceptOrder (reason, tableId) {
   await hillo.post('Orders.php?op=acceptTakeawayOrder', {
     tableId: tableId, reason: reason
   })
-  if (parseInt(externalId) !== 0) {
+  if (parseInt(externalId) !== 0 && externalId.length === 20) {
     await acceptFireBaseOrder(externalId, true)
   }
 
@@ -97,7 +97,7 @@ export async function rejectOrder (id) {
     'text',
     'Orders.php?op=rejectTakeAwayOrder',
     'reason', { tableId: id })
-  if (res) {
+  if (res && externalId.length === 20) {
     await acceptFireBaseOrder(externalId, false)
   }
   IKUtils.toast('ok')
@@ -111,7 +111,7 @@ export async function readyToPick (id) {
   const externalId = await hillo.post('Orders.php?op=getExternalId', {
     orderId: id
   })
-  if (parseInt(externalId) !== 0) {
+  if (parseInt(externalId) !== 0 && externalId.length === 20) {
     await changeFireBaseOrderToReadyToPick(externalId)
   }
   IKUtils.toast('ok')
