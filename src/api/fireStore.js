@@ -1,7 +1,7 @@
 import { sendFireStoreOrder } from '@/api/api'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { initializeApp } from 'firebase/app'
-import { collection, doc, getFirestore, onSnapshot, query, updateDoc, where } from 'firebase/firestore'
+import { collection, doc, getFirestore, onSnapshot, query, Timestamp, updateDoc, where } from 'firebase/firestore'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDnlXhMVxLIIWPAt3zqrC1bdrhP1ZMxwWE',
@@ -15,9 +15,14 @@ const firebaseConfig = {
 export const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)
 const path = 'order'
+
 export async function listenFireStoreOrders () {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const startOfDay = Timestamp.fromDate(today)
   const q = query(collection(db, path), where('confirmed', '==', false),
-    where('deviceId', '==', GlobalConfig.DeviceId))
+    where('deviceId', '==', GlobalConfig.DeviceId),
+    where('deliveryTime', '>=', startOfDay))
   const doSend = async (orderList) => {
     if (orderList.length > 0) {
       const res = await sendFireStoreOrder(orderList)
