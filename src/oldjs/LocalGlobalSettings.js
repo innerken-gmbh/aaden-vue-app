@@ -8,6 +8,7 @@ import {
 } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 import hillo from 'hillo'
+import { getBlId } from '@/api/SuperVipApi/SuperVip'
 
 const fix = require('@/assets/FixedConfig.json')
 const defaultConfig = require('@/assets/AadenConfig.json')
@@ -26,6 +27,7 @@ export async function loadConfig () {
     GlobalConfig.startUpTimestamp = dayjs().utcOffset()
     refreshGetter()
     window.Config = GlobalConfig
+    GlobalConfig.blId = await getBlId()
     console.log(GlobalConfig.lang)
   } catch (e) {
     console.log(e)

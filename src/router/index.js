@@ -10,6 +10,7 @@ import TablePage from '@/views/TablePage/TablePage'
 import ReservationPage from '@/views/ReservationPage/ReservationPage.vue'
 import SettingPage from '@/views/SettingPage.vue'
 import MemberCardPage from '@/views/MemberPage/MemberCardPage.vue'
+import SuperVipPage from '@/views/SuperVipPage/SuperVipPage.vue'
 
 Vue.use(VueRouter)
 
@@ -20,7 +21,6 @@ const routes = [
     props: true,
     component: IndexPage,
     children: [
-
       {
         path: 'boss/:password',
         name: 'boss',
@@ -43,6 +43,12 @@ const routes = [
         path: '',
         name: 'member',
         component: MemberCardPage,
+        props: true
+      },
+      {
+        path: '',
+        name: 'superVip',
+        component: SuperVipPage,
         props: true
       },
       {

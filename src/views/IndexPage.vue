@@ -103,6 +103,14 @@ export default {
           path: 'member'
         },
         {
+          icon: 'mdi-wallet-giftcard',
+          text: 'Super',
+          beforeEnter () {
+            return true
+          },
+          path: 'superVip'
+        },
+        {
           icon: 'mdi-view-dashboard',
           text: 'Admin',
           beforeEnter: async () => {
