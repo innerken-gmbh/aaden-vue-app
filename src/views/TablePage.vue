@@ -197,7 +197,8 @@
             </v-btn>
             <template v-for="(dish,index) in searchDish">
               <v-card :key="dish.id" :class="index===0?'first':''"
-                      :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}" class="d-flex  px-1 py-1 align-start"
+                      :style="{backgroundColor:''+dish.displayColor,color:''+dish.foreground}"
+                      class="d-flex  px-1 py-1 align-start"
                       elevation="0"
                       style="width: 100%;  border-bottom: 2px dashed #e2e3e5; font-size: x-large" tile
                       @click="searchDishClick(dish.code)">
@@ -1296,6 +1297,7 @@ export default {
         order.forEach(o => {
           o.guestNumber = 1
         })
+        order = order.filter(o => o.count || o.sumCount)
         await hillo.post('Complex.php?op=addDishesToTable', {
           params: JSON.stringify(order),
           tableId: this.id,
