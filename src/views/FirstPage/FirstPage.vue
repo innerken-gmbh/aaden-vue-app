@@ -267,6 +267,7 @@
                           hide-details
                       ></v-switch>
                     </div>
+                    <v-btn :loading="loading" @click="saveTakeawayInfo" elevation="0" width="100%">保存</v-btn>
                   </div>
 
                 </v-card>
@@ -541,7 +542,9 @@
     >
       <v-card class="pa-4" rounded="lg">
         <div class="text-h6 mb-2">Reset IP</div>
-        <div class="text-body-2 mb-2">Enter the server IP or host (optionally with port), e.g. 192.168.1.100 or example.com:8080</div>
+        <div class="text-body-2 mb-2">Enter the server IP or host (optionally with port), e.g. 192.168.1.100 or
+          example.com:8080
+        </div>
         <v-text-field
             v-model="newBaseInput"
             label="Server IP / Host"
@@ -686,18 +689,6 @@ export default {
     showOtherOrder: function (val) {
       Remember.showOtherOrder = val
       this.refreshTables()
-    },
-    takeawayEnabled: async function (val) {
-      const info = Object.assign({}, this.restaurantInfo)
-      info.currentlyOpening = val ? 1 : 0
-      this.loading = true
-      this.switchDisabled = true
-      await syncTakeawaySettingToCloud(info)
-      await this.loadRestaurantInfo()
-      this.loading = false
-      setTimeout(() => {
-        this.switchDisabled = false
-      }, 1000 * 10)
     }
   },
   computed: {
@@ -771,6 +762,18 @@ export default {
     ...mapState(['showOrderAcceptDialog'])
   },
   methods: {
+    async saveTakeawayInfo () {
+      const info = await loadRestaurantInfo()
+      info.currentlyOpening = this.takeawayEnabled ? 1 : 0
+      this.loading = true
+      this.switchDisabled = true
+      await syncTakeawaySettingToCloud(info)
+      await this.loadRestaurantInfo()
+      this.loading = false
+      setTimeout(() => {
+        this.switchDisabled = false
+      }, 1000 * 10)
+    },
     photoPath (item) {
       return location.protocol + '//' + GlobalConfig.Base + '/Resource/servantImg/' + item
     },
