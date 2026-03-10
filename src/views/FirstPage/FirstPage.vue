@@ -9,9 +9,9 @@
         <div style="display: grid;grid-gap: 8px;grid-auto-flow: column">
           <v-item #default="{active,toggle}">
             <div
-              :class="active?' active':' text--disabled'"
-              class="navigationPillItem"
-              @click="toggle"
+                :class="active?' active':' text--disabled'"
+                class="navigationPillItem"
+                @click="toggle"
             >
               <v-icon left>mdi-silverware</v-icon>
               {{ $t('DineIn') }}
@@ -22,9 +22,9 @@
           </v-item>
           <v-item #default="{active,toggle}">
             <div
-              :class="active?' active':' text--disabled'"
-              class="navigationPillItem"
-              @click="toggle"
+                :class="active?' active':' text--disabled'"
+                class="navigationPillItem"
+                @click="toggle"
             >
               <v-icon left>mdi-truck-fast</v-icon>
               {{ $t('togo') }}
@@ -35,9 +35,9 @@
           </v-item>
           <v-item #default="{active,toggle}">
             <div
-              :class="active?' active':' text--disabled'"
-              class="navigationPillItem"
-              @click="toggle"
+                :class="active?' active':' text--disabled'"
+                class="navigationPillItem"
+                @click="toggle"
             >
               <v-icon left>mdi-account</v-icon>
               <span style="padding: 2px 4px">{{ $t('ServerOrder') }}</span>
@@ -45,9 +45,9 @@
           </v-item>
           <v-item v-if="Config.activeReservation" #default="{active,toggle}">
             <div
-              :class="active?' active':' text--disabled'"
-              class="navigationPillItem"
-              @click="toggle"
+                :class="active?' active':' text--disabled'"
+                class="navigationPillItem"
+                @click="toggle"
             >
               <v-icon left>mdi-calendar</v-icon>
               {{ $t('Reservation') }}
@@ -71,11 +71,11 @@
             </v-icon>
           </v-btn>
           <v-dialog
-            v-model="menu"
-            :close-on-content-click="false"
-            :max-height="600"
-            :nudge-width="300"
-            max-width="400"
+              v-model="menu"
+              :close-on-content-click="false"
+              :max-height="600"
+              :nudge-width="300"
+              max-width="400"
           >
             <v-card color="white">
               <v-list>
@@ -119,8 +119,8 @@
             </v-card>
           </v-dialog>
           <v-menu
-            bottom
-            left
+              bottom
+              left
           >
             <template v-slot:activator="{ on, attrs }">
               <v-btn icon
@@ -156,16 +156,16 @@
           overflow: scroll
 ">
           <table-blue-print
-            :out-side-table-list="tableList"
-            @need-refresh="refreshTables"
-            @edit-table-clicked="showEditTableDialog"
-            @table-clicked="openOrEnterTable"
+              :out-side-table-list="tableList"
+              @need-refresh="refreshTables"
+              @edit-table-clicked="showEditTableDialog"
+              @table-clicked="openOrEnterTable"
           />
         </div>
         <div style="position: absolute;right: 0;top: 8px;max-height: calc(100%);z-index: 3;">
           <div
-            v-dragscroll
-            style="display: grid;grid-template-rows: auto;grid-gap: 4px;overflow-y: hidden;max-height: calc(100vh - 72px)">
+              v-dragscroll
+              style="display: grid;grid-template-rows: auto;grid-gap: 4px;overflow-y: hidden;max-height: calc(100vh - 72px)">
             <v-card class="head pa-2 d-flex align-center" elevation="0"
                     style="writing-mode: vertical-lr;text-align: center"
                     @click="togoClick">
@@ -222,10 +222,10 @@
                 </template>
               </v-card>
               <div
-                v-if="showOtherOrder"
-                v-dragscroll
-                class="flex-shrink-0 mt-2 pb-2"
-                style="
+                  v-if="showOtherOrder"
+                  v-dragscroll
+                  class="flex-shrink-0 mt-2 pb-2"
+                  style="
                      display: grid;
                      max-height: calc(100vh - 120px);
                      grid-auto-columns: auto;
@@ -233,16 +233,17 @@
                      grid-gap: 8px;
                      width: 100%;
                 ">
-                <v-card v-if="takeawayList.length>0" class="pa-2 d-flex align-center" color="grey lighten-4" elevation="0"
+                <v-card v-if="takeawayList.length>0" class="pa-2 d-flex align-center" color="grey lighten-4"
+                        elevation="0"
                         height="72px"
                         @click="takeawayClicked">
                   <v-icon left>mdi-plus</v-icon>
                   <h4>{{ $t('New') }}</h4>
                 </v-card>
                 <table-grid-item
-                  v-for="table in takeawayList"
-                  :key="table.id"
-                  :table-info="table" @click="openOrEnterTable(table.tableName)"
+                    v-for="table in takeawayList"
+                    :key="table.id"
+                    :table-info="table" @click="openOrEnterTable(table.tableName)"
                 >
                 </table-grid-item>
               </div>
@@ -268,20 +269,20 @@
               </trailing-number>
             </div>
             <div
-              v-dragscroll
-              style="height: 95%;width: 100%;position: relative;overflow-y: hidden"
+                v-dragscroll
+                style="height: 95%;width: 100%;position: relative;overflow-y: hidden"
             >
-            <div class="mt-4"
-                 style="display: grid;grid-gap: 12px;overflow-y: scroll;max-height:calc(100vh - 150px) ;">
-              <takeaway-order-item
-                v-for="t in notAccepted"
-                :key="t.tableName"
-                :big-card="true"
-                :table-info="t"
-                @accept="acceptOrder"
-                @click="openOrEnterTable(t.tableName)"
-                @reject="rejectOrder"/>
-            </div>
+              <div class="mt-4"
+                   style="display: grid;grid-gap: 12px;overflow-y: scroll;max-height:calc(100vh - 150px) ;">
+                <takeaway-order-item
+                    v-for="t in notAccepted"
+                    :key="t.tableName"
+                    :big-card="true"
+                    :table-info="t"
+                    @accept="acceptOrder"
+                    @click="openOrEnterTable(t.tableName)"
+                    @reject="rejectOrder"/>
+              </div>
             </div>
 
           </v-card>
@@ -296,18 +297,18 @@
               </trailing-number>
             </div>
             <div
-              v-dragscroll
-              style="height: 95%;width: 100%;position: relative;overflow-y: hidden"
+                v-dragscroll
+                style="height: 95%;width: 100%;position: relative;overflow-y: hidden"
             >
-            <div class="mt-4" style="display: grid;grid-gap: 12px;overflow-y: scroll;">
-              <table-grid-item
-                v-for="t in accepted"
-                :key="t.tableName"
-                :big-card="true"
-                :table-info="t"
-                @click="openOrEnterTable(t.tableName)"
-                @click-ok="updateStatus(t.id)"/>
-            </div>
+              <div class="mt-4" style="display: grid;grid-gap: 12px;overflow-y: scroll;">
+                <table-grid-item
+                    v-for="t in accepted"
+                    :key="t.tableName"
+                    :big-card="true"
+                    :table-info="t"
+                    @click="openOrEnterTable(t.tableName)"
+                    @click-ok="updateStatus(t.id)"/>
+              </div>
             </div>
 
           </v-card>
@@ -320,18 +321,19 @@
               <trailing-number>{{ picked.length }}</trailing-number>
             </div>
             <div
-              v-dragscroll
-              style="height: 95%;width: 100%;position: relative;overflow-y: hidden"
+                v-dragscroll
+                style="height: 95%;width: 100%;position: relative;overflow-y: hidden"
             >
-            <div class="mt-4 d-flex align-center justify-center flex-column" style="display: grid;grid-gap: 12px;overflow-y: scroll;">
-              <pick-up-item
-                v-for="t in picked"
-                :key="t.tableName"
-                :big-card="true"
-                :table-info="t"
-                @click="openOrEnterTable(t.tableName)"
-              />
-            </div>
+              <div class="mt-4 d-flex align-center justify-center flex-column"
+                   style="display: grid;grid-gap: 12px;overflow-y: scroll;">
+                <pick-up-item
+                    v-for="t in picked"
+                    :key="t.tableName"
+                    :big-card="true"
+                    :table-info="t"
+                    @click="openOrEnterTable(t.tableName)"
+                />
+              </div>
             </div>
 
           </v-card>
@@ -380,6 +382,7 @@
                   <v-spacer></v-spacer>
                   <v-switch v-model="takeawayEnabled" class="mt-0" hide-details></v-switch>
                 </div>
+                <v-btn @click="saveTakeawayInfo" width="100%" elevation="0">保存</v-btn>
                 <!--                <div class="py-2 d-flex align-center">-->
                 <!--                  自动接单-->
                 <!--                  <v-spacer></v-spacer>-->
@@ -451,14 +454,14 @@
         <v-card class="pa-2"
                 style="position: fixed;right: 0;bottom:0;width: 320px;z-index: 15">
           <v-text-field
-            v-model="buffer"
-            :append-icon="showKeyboard?'mdi-keyboard-close':'mdi-keyboard'"
-            :autofocus="Config.getFocus"
-            :placeholder=" $t('EnterTableNumber')"
-            class="ma-2 pt-1"
-            hide-details
-            style="font-size: 24px"
-            @click:append="showKeyboard=!showKeyboard"
+              v-model="buffer"
+              :append-icon="showKeyboard?'mdi-keyboard-close':'mdi-keyboard'"
+              :autofocus="Config.getFocus"
+              :placeholder=" $t('EnterTableNumber')"
+              class="ma-2 pt-1"
+              hide-details
+              style="font-size: 24px"
+              @click:append="showKeyboard=!showKeyboard"
           />
           <keyboard-layout v-if="showKeyboard" :keys="keyboardLayout" @input="numberInput"/>
         </v-card>
@@ -545,12 +548,12 @@ import { loadTransLangs } from '@/i18n'
 import PickUpItem from '@/views/FirstPage/Table/Table/Item/PickUpItem.vue'
 
 const keyboardLayout =
-  [
-    '7', '8', '9', 'C',
-    '4', '5', '6', 'mdi-cash-lock-open',
-    '1', '2', '3', '',
-    'W', '0', '.', 'OK'
-  ]
+    [
+      '7', '8', '9', 'C',
+      '4', '5', '6', 'mdi-cash-lock-open',
+      '1', '2', '3', '',
+      'W', '0', '.', 'OK'
+    ]
 
 export default {
   name: 'FirstPage',
@@ -612,14 +615,6 @@ export default {
     },
     refresh: function () {
       this.initPage()
-    },
-    takeawayEnabled: async function (val) {
-      const info = Object.assign({}, this.restaurantInfo)
-      info.currentlyOpening = val ? 1 : 0
-      this.loading = true
-      await syncTakeawaySettingToCloud(info)
-      await this.loadRestaurantInfo()
-      this.loading = false
     }
   },
   computed: {
@@ -644,11 +639,11 @@ export default {
     },
     picked: function () {
       return this.takeawayList.filter(it => it.consumeTypeStatusId >= 2 &&
-        it.pickStatus !== '0')
+          it.pickStatus !== '0')
     },
     accepted: function () {
       return this.takeawayList.filter(it => it.consumeTypeStatusId >= 2 &&
-        it.pickStatus === '0')
+          it.pickStatus === '0')
     },
     notAccepted: function () {
       return this.takeawayList.filter(it => it.consumeTypeStatusId < 2)
@@ -659,6 +654,14 @@ export default {
 
   },
   methods: {
+    async saveTakeawayInfo () {
+      const info = await loadRestaurantInfo()
+      info.currentlyOpening = this.takeawayEnabled ? '1' : '0'
+      this.loading = true
+      await syncTakeawaySettingToCloud(info)
+      await this.loadRestaurantInfo()
+      this.loading = false
+    },
     async updateStatus (orderId) {
       await readyToPick(orderId)
       await this.refreshTables()
