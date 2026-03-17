@@ -267,7 +267,8 @@
                           hide-details
                       ></v-switch>
                     </div>
-                    <v-btn :loading="loading" @click="saveTakeawayInfo" elevation="0" width="100%">保存</v-btn>
+                    <v-btn :loading="loading" @click="saveTakeawayInfo" elevation="0" width="100%">{{ $t('save') }}
+                    </v-btn>
                   </div>
 
                 </v-card>
