@@ -3,9 +3,7 @@ import i18n from '@/i18n'
 
 import dayjs from 'dayjs'
 import { goHome } from '@/oldjs/StaticModel'
-import {
-  getAdminSettingConfig
-} from '@/api/api'
+import { getAdminSettingConfig } from '@/api/api'
 import IKUtils from 'innerken-js-utils'
 import hillo from 'hillo'
 
@@ -37,23 +35,103 @@ export async function getAdminSetting () {
     { key: 'searchIncludesCode', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
     { key: 'openCashBoxByPw', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
     { key: 'deleteOneKeys', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
-    { key: 'activeReservation', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp,Reservation' },
+    {
+      key: 'activeReservation',
+      defaultValue: '0',
+      value: '0',
+      type: 'boolean',
+      options: '',
+      tagList: 'basic,FrontApp,Reservation'
+    },
     { key: 'closePlaySound', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
-    { key: 'useTableColorSetting', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp', configKey: 'userTableColor' },
-    { key: 'usefulKey', defaultValue: 'E,F,B,R', value: 'E,F,B,R', type: 'string', options: '', tagList: 'basic,FrontApp' },
-    { key: 'discountWithPassword', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
-    { key: 'bigDiscountRatio', defaultValue: '0.7', value: '0.7', type: 'string', options: '', tagList: 'basic,FrontApp' },
+    {
+      key: 'useTableColorSetting',
+      defaultValue: '0',
+      value: '0',
+      type: 'boolean',
+      options: '',
+      tagList: 'basic,FrontApp',
+      configKey: 'userTableColor'
+    },
+    {
+      key: 'usefulKey',
+      defaultValue: 'E,F,B,R',
+      value: 'E,F,B,R',
+      type: 'string',
+      options: '',
+      tagList: 'basic,FrontApp'
+    },
+    {
+      key: 'discountWithPassword',
+      defaultValue: '0',
+      value: '0',
+      type: 'boolean',
+      options: '',
+      tagList: 'basic,FrontApp'
+    },
+    { key: 'hideDiscountBtn', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
+    {
+      key: 'bigDiscountRatio',
+      defaultValue: '0.7',
+      value: '0.7',
+      type: 'string',
+      options: '',
+      tagList: 'basic,FrontApp'
+    },
     { key: 'googleMapCountry', defaultValue: 'DE', value: 'DE', type: 'string', options: '', tagList: 'basic,FrontApp' },
     { key: 'escBackToHome', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
     { key: 'enterToOrder', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
     { key: 'defaultPassword', defaultValue: '111', value: '111', type: 'string', options: '', tagList: 'basic,FrontApp' },
     { key: 'numberFirst', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
-    { key: 'language', defaultValue: 'de', value: 'de', type: 'string', options: '', tagList: 'basic,FrontApp', configKey: 'lang' },
-    { key: 'printZwichenBonWithTakeawayOrder', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
-    { key: 'jumpToHomeWhenOrder', defaultValue: '1', value: '1', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
-    { key: 'returnDishWithoutPassword', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
-    { key: 'hideOrderWithoutPrintBtn', defaultValue: '0', value: '0', type: 'boolean', options: '', tagList: 'basic,FrontApp' },
-    { key: 'tableDisplayKeys', defaultValue: 'createTimestamp|servantName', value: 'createTimestamp|servantName', type: 'string', options: '', tagList: 'basic,FrontApp' }
+    {
+      key: 'language',
+      defaultValue: 'de',
+      value: 'de',
+      type: 'string',
+      options: '',
+      tagList: 'basic,FrontApp',
+      configKey: 'lang'
+    },
+    {
+      key: 'printZwichenBonWithTakeawayOrder',
+      defaultValue: '0',
+      value: '0',
+      type: 'boolean',
+      options: '',
+      tagList: 'basic,FrontApp'
+    },
+    {
+      key: 'jumpToHomeWhenOrder',
+      defaultValue: '1',
+      value: '1',
+      type: 'boolean',
+      options: '',
+      tagList: 'basic,FrontApp'
+    },
+    {
+      key: 'returnDishWithoutPassword',
+      defaultValue: '0',
+      value: '0',
+      type: 'boolean',
+      options: '',
+      tagList: 'basic,FrontApp'
+    },
+    {
+      key: 'hideOrderWithoutPrintBtn',
+      defaultValue: '0',
+      value: '0',
+      type: 'boolean',
+      options: '',
+      tagList: 'basic,FrontApp'
+    },
+    {
+      key: 'tableDisplayKeys',
+      defaultValue: 'createTimestamp|servantName',
+      value: 'createTimestamp|servantName',
+      type: 'string',
+      options: '',
+      tagList: 'basic,FrontApp'
+    }
   ]
 
   const results = await Promise.all(
@@ -80,6 +158,7 @@ export async function getAdminSetting () {
       GlobalConfig[configKey] = result
     }
   })
+  console.log(GlobalConfig, 'config')
 }
 
 export function refreshGetter () {

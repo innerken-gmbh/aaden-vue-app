@@ -160,6 +160,7 @@
                         class="grey lighten-4 mr-2"
                         elevation="0"
                         icon
+                        v-if="showDiscountBtn"
                         @click="discountShow"
                     >
                       <v-icon>mdi-sale</v-icon>
@@ -271,7 +272,7 @@
             @click.stop
         >
           <div
-              class="pa-2 pt-4 gradient"
+              class="pa-4 pt-4 gradient"
               style="display: grid;grid-auto-flow: row;grid-auto-rows: min-content;
                 grid-gap: 24px"
           >
@@ -288,6 +289,7 @@
                 @click="showDeleteDishDialog()"
             ></nav-button>
             <nav-button
+                v-if="showDiscountBtn"
                 color="orange darken-3"
                 icon="mdi-sale"
                 text="GiveDishADiscount"
@@ -392,9 +394,9 @@
           <span class="text-h5">{{ currentDish.name }}</span>
           <v-spacer></v-spacer>
           <v-btn
-            icon
-            dark
-            @click="depositListShow = false"
+              icon
+              dark
+              @click="depositListShow = false"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn>
@@ -402,27 +404,27 @@
 
         <v-card-text class="pa-6">
           <v-text-field
-            v-model="depositNoteFilter"
-            label="Filter by Note"
-            prepend-icon="mdi-magnify"
-            clearable
-            class="mb-4"
-            hide-details
+              v-model="depositNoteFilter"
+              label="Filter by Note"
+              prepend-icon="mdi-magnify"
+              clearable
+              class="mb-4"
+              hide-details
           ></v-text-field>
           <div class="deposit-grid">
             <v-hover v-for="item in filteredDepositList" :key="item.id" v-slot="{ hover }">
               <v-card
-                @click="addDeposit(item)"
-                :elevation="hover ? 8 : 2"
-                :class="{'on-hover': hover}"
-                class="deposit-card transition-swing"
-                outlined
+                  @click="addDeposit(item)"
+                  :elevation="hover ? 8 : 2"
+                  :class="{'on-hover': hover}"
+                  class="deposit-card transition-swing"
+                  outlined
               >
                 <v-card-text class="pa-4">
                   <div class="d-flex align-center mb-2">
-                    <v-chip color="primary" small label class="mr-2">ID: {{item.id}}</v-chip>
+                    <v-chip color="primary" small label class="mr-2">ID: {{ item.id }}</v-chip>
                     <v-spacer></v-spacer>
-                    <div class="text-h6 primary--text font-weight-bold">{{item.totalPrice | priceDisplay}}</div>
+                    <div class="text-h6 primary--text font-weight-bold">{{ item.totalPrice | priceDisplay }}</div>
                   </div>
 
                   <v-divider class="my-2"></v-divider>
@@ -436,7 +438,7 @@
                   <div class="d-flex align-center mt-2">
                     <v-icon small color="grey darken-1" class="mr-1">mdi-clock-outline</v-icon>
                     <div class="text-caption grey--text text--darken-1">
-                      {{item.createTimestamp | timeDisplay}}
+                      {{ item.createTimestamp | timeDisplay }}
                     </div>
                   </div>
                 </v-card-text>
@@ -448,9 +450,9 @@
         <v-card-actions class="pa-4 grey lighten-4">
           <v-spacer></v-spacer>
           <v-btn
-            color="grey darken-1"
-            text
-            @click="depositListShow = false"
+              color="grey darken-1"
+              text
+              @click="depositListShow = false"
           >
             {{ $t('Cancel') }}
           </v-btn>
@@ -636,8 +638,10 @@ import IKUtils from 'innerken-js-utils'
 
 import {
   acceptOrder,
-  deleteDish, getOrderPaymentStatusDetail,
-  getUUidByOrderId, removeDiscountStr,
+  deleteDish,
+  getOrderPaymentStatusDetail,
+  getUUidByOrderId,
+  removeDiscountStr,
   reprintOrder,
   safeRequest,
   showSuccessMessage,
@@ -1505,6 +1509,9 @@ export default {
 
   },
   computed: {
+    showDiscountBtn () {
+      return this.Config.hideDiscountBtn !== '1'
+    },
     menu () {
       const menu = [{
         icon: 'mdi-book-open',
