@@ -368,7 +368,7 @@
           />
           <v-text-field
               v-model="currentDish.currentName"
-              :label="$t('name')"
+              :label="currentDish?.code?.startsWith('eag') ? 'Code' : $t('name')"
               outlined
           />
           <v-btn
