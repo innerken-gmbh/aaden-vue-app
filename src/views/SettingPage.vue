@@ -17,7 +17,7 @@
           <v-subheader>
             {{ $t('Config') }}
           </v-subheader>
-          <template v-for="key in NeededKeys">
+          <template v-for="key in currentKeys">
             <v-list-item
                 dense
                 :key="'config'+key"
@@ -76,6 +76,12 @@ export default {
     return {
       NeededKeys,
       Config: GlobalConfig
+    }
+  },
+  computed: {
+    currentKeys () {
+      const ignoreKeys = ['endPoint', 'Protocol', 'Dir', 'Port', 'defaultTileHeight', 'defaultTileWidth', 'lang', 'DefaultLocale']
+      return NeededKeys.filter(it => !ignoreKeys.includes(it))
     }
   },
   methods: {
