@@ -677,6 +677,7 @@ import {
 } from '@/api/customerDiaplay'
 import { round } from 'lodash-es'
 import router from '@/router'
+import { clearGlobalCart, getActiveCodes } from '@/api/scanQr'
 
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
@@ -1282,6 +1283,13 @@ export default {
           password: pw,
           checkOutType: paymentType
         }, checkoutInfo))
+        try {
+          const activeCodes = await getActiveCodes() ?? []
+          if (activeCodes.includes('scanToOrder')) {
+            await clearGlobalCart(this.tableDetailInfo.tableName)
+          }
+        } catch (error) {
+        }
         if (res.success) {
           showSuccessMessage(i18n.t('Success'))
         }
