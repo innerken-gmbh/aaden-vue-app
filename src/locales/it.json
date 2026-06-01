@@ -906,5 +906,8 @@
   "lastPrint": "Ora dell'ultima stampa",
   "Cashless Payment": "Pagamento senza contanti",
   "alreadyCheckOutOpenTableAgain": "L'ordine corrente è stato chiuso. Desideri riaprire il tavolo?",
-  "alreadyCheckOut": "L'ordine corrente è stato chiuso!"
+  "alreadyCheckOut": "L'ordine corrente è stato chiuso!",
+  "dateTooLong": "Il periodo selezionato è troppo lungo. I dettagli dell'ordine non possono essere visualizzati!",
+  "select3Month": "Seleziona un periodo entro 3 mesi!",
+  "goAdminCheck": "Per visualizzare tutti gli ordini storici, controlla la fattura nel pannello di amministrazione."
 }

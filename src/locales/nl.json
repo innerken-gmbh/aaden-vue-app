@@ -906,5 +906,8 @@
   "lastPrint": "Laatste afdruktijd",
   "Cashless Payment": "Contantloze betaling",
   "alreadyCheckOutOpenTableAgain": "De huidige bestelling is afgerekend. Wilt u de tafel heropenen?",
-  "alreadyCheckOut": "De huidige bestelling is afgerekend!"
+  "alreadyCheckOut": "De huidige bestelling is afgerekend!",
+  "dateTooLong": "De geselecteerde periode is te lang. Bestelgegevens kunnen niet worden weergegeven!",
+  "select3Month": "Selecteer een periode binnen 3 maanden!",
+  "goAdminCheck": "Bekijk het factuur in het beheerderspaneel om alle historische bestellingen te zien."
 }

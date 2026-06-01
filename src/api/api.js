@@ -177,6 +177,19 @@ export async function getBillListForServant (pw = null, date, endDate = null) {
   })).content
 }
 
+export async function getBillListForServantWithoutOrders (pw = null, date, endDate = null) {
+  if (!endDate) {
+    endDate = date
+  }
+  return (await hillo.get('BackendData.php?op=mobileV3StatWithLang', {
+    pw,
+    date,
+    endDate,
+    lang: getCurrentLang(),
+    withoutOrders: 1
+  })).content
+}
+
 export async function loadDishStatistic (startDate, endDate) {
   return (await hillo.get('BackendData.php', {
     op: 'dishStatistic',
@@ -600,4 +613,12 @@ export async function removeDiscountStr (tableId) {
     tableId: tableId,
     discountStr: 0
   })
+}
+
+export async function loadDashboardDataByDeviceId (dateRange, deviceIdUrl) {
+  const [startDate, endDate] = dateRange
+  return await hillo.get(deviceIdUrl + '/PHP/' + 'DashboardData.php', {
+    startDate,
+    endDate
+  }, { timeout: 1000 * 60 * 2 })
 }

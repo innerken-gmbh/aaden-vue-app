@@ -1,52 +1,67 @@
 <template>
   <v-card color="#f6f6f6" elevation="0" style="position: relative">
+    <template v-if="showAllOrders">
+      <div class="flex-grow-1">
+        <bill-table :is-boss="isBoss" :orders="displayOrder" :show-operation="true" @need-refresh="loadData"/>
+      </div>
 
-    <div class="flex-grow-1">
-      <bill-table :is-boss="isBoss" :orders="displayOrder" :show-operation="true" @need-refresh="loadData"/>
-    </div>
-
-    <div style="position: fixed;bottom: 0;right:4px;width: calc(100vw - 380px)" class="pa-2">
-      <v-card color="grey lighten-3" class="d-flex px-4 py-4 " elevation="0">
-        <div style="width: 100%; display: grid;grid-auto-flow: column;grid-gap: 16px;align-items: center">
-          <v-text-field
-              dense
-              outlined
-              hide-details
-              v-model="search"
-              :placeholder="$t('SearchOrderTable')"
-              prepend-inner-icon="mdi-magnify">
-          </v-text-field>
-          <v-select
-              dense
-              outlined
-              hide-details
-              v-model="appliedFilter.payment"
-              :item-text="item => item.langPayMethodName"
-              :items="payMethodList"
-              :label="$t('PaymentMethod')"
-              multiple
-              @change="updateFilter"
-          >
-          </v-select>
-          <v-select
-              dense
-              outlined
-              hide-details
-              v-model="appliedFilter.servant"
-              :item-text="item => item.name"
-              :items="servantList"
-              :label="$t('WaiterInfo')"
-              @change="updateFilter"
-          >
-          </v-select>
-          <v-btn elevation="0" color="grey lighten-2" v-if="showClearButton" @click="clearFilter">
-            <v-icon left>mdi-close-circle</v-icon>
-            {{ $t('Clear') }}
-          </v-btn>
+      <div style="position: fixed;bottom: 0;right:4px;width: calc(100vw - 380px)" class="pa-2">
+        <v-card color="grey lighten-3" class="d-flex px-4 py-4 " elevation="0">
+          <div style="width: 100%; display: grid;grid-auto-flow: column;grid-gap: 16px;align-items: center">
+            <v-text-field
+                dense
+                outlined
+                hide-details
+                v-model="search"
+                :placeholder="$t('SearchOrderTable')"
+                prepend-inner-icon="mdi-magnify">
+            </v-text-field>
+            <v-select
+                dense
+                outlined
+                hide-details
+                v-model="appliedFilter.payment"
+                :item-text="item => item.langPayMethodName"
+                :items="payMethodList"
+                :label="$t('PaymentMethod')"
+                multiple
+                @change="updateFilter"
+            >
+            </v-select>
+            <v-select
+                dense
+                outlined
+                hide-details
+                v-model="appliedFilter.servant"
+                :item-text="item => item.name"
+                :items="servantList"
+                :label="$t('WaiterInfo')"
+                @change="updateFilter"
+            >
+            </v-select>
+            <v-btn elevation="0" color="grey lighten-2" v-if="showClearButton" @click="clearFilter">
+              <v-icon left>mdi-close-circle</v-icon>
+              {{ $t('Clear') }}
+            </v-btn>
+          </div>
+          <v-spacer></v-spacer>
+        </v-card>
+      </div>
+    </template>
+    <template v-else>
+      <v-card class="d-flex align-center justify-center" height="92vh">
+        <div class="d-flex flex-column align-center justify-center">
+          <span class="text-h5">{{ $t('dateTooLong') }}</span>
+          <span class="text-h5">
+           {{ $t('select3Month') }}
+          </span>
+          <span class="font-weight-bold">
+         {{ $t('goAdminCheck') }}
+          </span>
         </div>
-        <v-spacer></v-spacer>
+
       </v-card>
-    </div>
+    </template>
 
   </v-card>
 </template>
@@ -56,6 +71,7 @@ import { getBillListForServant, loadAllServants, loadPaymentMethods, previewZBon
 import BillTable from '@/views/SalePage/BillTable'
 import { dragscroll } from 'vue-dragscroll/src/main'
 import { getCurrentLang } from '@/oldjs/StaticModel'
+import dayjs from 'dayjs'
 
 const defaultRealFilter = {
   servant: '',
@@ -114,6 +130,11 @@ export default {
           return i
         }
       })
+    },
+    showAllOrders () {
+      const [startDate, endDate] = this.singleZBonDate
+      const daysDiff = dayjs(endDate).diff(dayjs(startDate), 'day')
+      return daysDiff < 99
     }
 
   },
@@ -142,8 +163,8 @@ export default {
     },
 
     async loadData () {
-      this.clearFilter()
-      if (this.singleZBonDate != null) {
+      if (this.singleZBonDate != null && this.showAllOrders) {
+        this.clearFilter()
         this.billData = await previewZBon(...this.singleZBonDate)
         this.bills = (await getBillListForServant(null, ...this.singleZBonDate)).orders
       }

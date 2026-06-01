@@ -300,6 +300,7 @@
                   <v-btn
                       block
                       class="mt-4"
+                      :loading="btnLoading"
                       color="primary"
                       @click="printSummaryBon"
                   >
@@ -463,13 +464,13 @@
 
 import dayjs from 'dayjs'
 import {
-  getBillListForServant, getFullStornoList,
+  getBillListForServant,
+  getFullStornoList,
   getOrderDetailInfo,
   previewZBon,
   printDailyCardTerminal,
   printServantSummary
 } from '@/api/api'
-import IKUtils from 'innerken-js-utils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import Calendar from '@/views/SalePage/Fragment/Calendar'
 import BillTable from '@/views/SalePage/BillTable'
@@ -480,6 +481,9 @@ import BillsPrinterPage from '@/views/SalePage/Fragment/BillsPrinterPage'
 import CashBookPage from '@/views/SalePage/CashBookPage'
 import BaseForm from '@/components/Base/Form/BaseForm'
 import { dragscroll } from 'vue-dragscroll'
+import { getAllTableList } from '@/oldjs/zbonPrint'
+import IKUtils from 'innerken-js-utils'
+import i18n from '@/i18n'
 
 const defaultDisplayData = {
   orders: [],
@@ -535,8 +539,8 @@ export default {
         }
       },
       returnDishDialog: null,
-      discountDialog: null
-
+      discountDialog: null,
+      btnLoading: false
     }
   },
   computed: {
@@ -627,9 +631,17 @@ export default {
     },
     getNiceLabel,
     async printSummaryBon () {
-      IKUtils.showLoading(true)
-      await printServantSummary(this.password, ...this.singleZBonDate)
-      IKUtils.toast('OK')
+      this.btnLoading = true
+      const unCheckTable = (await getAllTableList()).filter(x => x.usageStatus === '1').map(it => it.name)
+      if (unCheckTable.length !== 0) {
+        const message = i18n.t('TableNumber') + unCheckTable.join(',') + i18n.t('CheckoutPending')
+        IKUtils.showError(message)
+      } else {
+        IKUtils.showLoading(true)
+        await printServantSummary(this.password, ...this.singleZBonDate)
+        IKUtils.toast('OK')
+      }
+      this.btnLoading = false
     },
 
     async loadData () {
@@ -637,9 +649,11 @@ export default {
         return
       }
       this.billData = await previewZBon(...this.singleZBonDate)
-      this.displayData = Object.assign({}, defaultDisplayData,
-        await getBillListForServant(this.password ?? GlobalConfig.defaultPassword,
-          ...this.singleZBonDate), { orderMeta: await getOrderDetailInfo(this.singleZBonDate) })
+      if (!this.isBoss) {
+        this.displayData = Object.assign({}, defaultDisplayData,
+          await getBillListForServant(this.password ?? GlobalConfig.defaultPassword,
+            ...this.singleZBonDate), { orderMeta: await getOrderDetailInfo(this.singleZBonDate) })
+      }
       this.stornoList = await getFullStornoList(...this.singleZBonDate)
     },
     initial () {
