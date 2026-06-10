@@ -320,17 +320,6 @@
                         style="width: 100%"
                     >
                       <div>{{ servant.name }}</div>
-                      <v-spacer></v-spacer>
-                      <div
-                          class="d-flex align-center"
-                          style="font-size: small"
-                      >
-                        <v-icon small>mdi-food</v-icon>
-                        /
-                        <v-icon small>mdi-cup-water</v-icon>
-                        /
-                        <v-icon small>mdi-cash-multiple</v-icon>
-                      </div>
                     </v-toolbar-title>
                   </v-toolbar>
                   <div

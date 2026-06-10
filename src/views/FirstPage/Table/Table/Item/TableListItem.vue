@@ -19,16 +19,45 @@
     <div style="text-align: right">
       <div
           class="caption"
-          v-if="table.consumeType==='1'||table.consumeType==='2'||table.consumeType==='5'"
+          v-if="!allBuffetConsumeTypeIds.includes(table.consumeType)"
       >
-        {{ table.dishCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
+        <div class="d-flex flex-column align-end justify-end">
+          <div
+              class="d-flex"
+              style="font-size: small"
+          >
+            <v-icon small>mdi-food</v-icon>
+            /
+            <v-icon small>mdi-cup-water</v-icon>
+            /
+            <v-icon small>mdi-cash-multiple</v-icon>
+          </div>
+          <div> {{ table.dishCount }}/{{ table.drinkCount }}/€{{ table.totalPrice }}</div>
+        </div>
       </div>
       <div
           class="caption d-flex align-center justify-end"
           v-else
       >
-        <v-icon x-small>mdi-account</v-icon>
-        {{ parseInt(table.seatCount) + parseInt(table.childCount) }}/{{ table.drinkCount }}/€{{ table.totalPrice }}
+        <div class="d-flex flex-column align-end justify-end">
+          <div
+              class="d-flex"
+              style="font-size: small"
+          >
+            <v-icon small>mdi-human-male-female</v-icon>
+            /
+            <v-icon small>mdi-human-child</v-icon>
+            /
+            <v-icon small>mdi-cup-water</v-icon>
+            /
+            <v-icon small>mdi-cash-multiple</v-icon>
+          </div>
+          {{ parseInt(table.buffetCount) - parseInt(table.childCount) }}/{{
+            parseInt(table.childCount)
+          }}/{{ table.drinkCount }}/€{{
+            table.totalPrice
+          }}
+        </div>
       </div>
       <div class="caption text-right d-flex align-center">
         {{ table.createTimestamp }}/
@@ -49,6 +78,8 @@
 import { findConsumeTypeById } from '@/oldjs/common'
 import { getColorLightness } from '@/oldjs/api'
 import { defaultTable } from '@/api/restaurantInfoService'
+import { getBuffetPriceDishes } from '@/api/api'
+import { uniq } from 'lodash'
 
 export default {
   name: 'TableListItem',
@@ -61,6 +92,11 @@ export default {
       res.inUse = res.usageStatus === '1'
       res.inCall = res.callService === '1'
       return res
+    }
+  },
+  data: function () {
+    return {
+      allBuffetConsumeTypeIds: []
     }
   },
   methods: {
@@ -79,6 +115,9 @@ export default {
     colorIsDark (color) {
       return getColorLightness(color) < 128
     }
+  },
+  async mounted () {
+    this.allBuffetConsumeTypeIds = uniq((await getBuffetPriceDishes()).map(it => it.consumeTypeId))
   }
 }
 </script>

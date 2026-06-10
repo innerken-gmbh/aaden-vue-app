@@ -467,6 +467,7 @@ import {
   getBillListForServant,
   getFullStornoList,
   getOrderDetailInfo,
+  loadAllServants,
   previewZBon,
   printDailyCardTerminal,
   printServantSummary
@@ -632,9 +633,11 @@ export default {
     getNiceLabel,
     async printSummaryBon () {
       this.btnLoading = true
-      const unCheckTable = (await getAllTableList()).filter(x => x.usageStatus === '1').map(it => it.name)
+      const currentServant = (await loadAllServants()).find(it => it.password === this.password)
+      const unCheckTable = (await getAllTableList()).filter(x => x.usageStatus === '1').filter(s => s.servantName === currentServant.name)
+      const unCheckTableName = unCheckTable.map(it => it.name)
       if (unCheckTable.length !== 0) {
-        const message = i18n.t('TableNumber') + unCheckTable.join(',') + i18n.t('CheckoutPending')
+        const message = i18n.t('TableNumber') + unCheckTableName.join(',') + i18n.t('CheckoutPending')
         IKUtils.showError(message)
       } else {
         IKUtils.showLoading(true)
