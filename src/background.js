@@ -1,7 +1,7 @@
 'use strict'
 import { app, BrowserWindow, ipcMain, protocol } from 'electron'
 import { autoUpdater } from 'electron-updater'
-import { createProtocol } from '@matthijsburgh/vue-cli-plugin-electron-builder/lib'
+import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
