@@ -20,5 +20,6 @@
   "activeVip": false,
   "useCustomerDisplay": false,
   "overrideCardTerminalIp": "",
-  "overrideCardTerminalPort": ""
+  "overrideCardTerminalPort": "",
+  "autoCompletePLZ": ""
 }

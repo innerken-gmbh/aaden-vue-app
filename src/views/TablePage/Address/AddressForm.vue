@@ -83,7 +83,7 @@
                   :placeholder="$t('SearchAddress')"
                   clearable
                   :component-restrictions="
-                          Config.autoCompletePLZ.split(',').length>0?Config.autoCompletePLZ.split(','):
+                          Config?.autoCompletePLZ.split(',').length>0?Config?.autoCompletePLZ.split(','):
                            false"
                   v-on:placechanged="getAddressData"
               />
@@ -100,7 +100,7 @@
                   v-model="rawAddressInfo.tel"
               ></v-text-field>
             </v-col>
-            <v-col >
+            <v-col>
               <v-text-field
                   outlined
                   autocomlete="off"
