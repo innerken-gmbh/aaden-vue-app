@@ -14,13 +14,13 @@ jobs:
     steps:
 
       - name: Commit File
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - uses: olegtarasov/get-tag@v2.1.3
         id: tagName
-      - name: Use Node.js 16.x
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v4
         with:
-          node-version: 16.x
+          node-version: 22.x
           cache: 'npm'
       - name: Create Draft Release
         id: create_release
