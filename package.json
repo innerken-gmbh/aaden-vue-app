@@ -51,6 +51,7 @@
   },
   "devDependencies": {
     "@intlify/vue-i18n-loader": "^1.1.0",
+    "@matthijsburgh/vue-cli-plugin-electron-builder": "^3.0.2",
     "@mdi/font": "^7.2.96",
     "@vue/cli-plugin-babel": "^4.5.13",
     "@vue/cli-plugin-eslint": "^4.5.13",
@@ -72,7 +73,6 @@
     "release-it": "^13.7.1",
     "sass": "^1.43.5",
     "sass-loader": "^10.2.1",
-    "vue-cli-plugin-electron-builder": "^2.1.1",
     "vue-cli-plugin-i18n": "~1.0.1",
     "vue-cli-plugin-vuetify": "~2.4.4",
     "vue-template-compiler": "^2.6.14",
