@@ -107,13 +107,15 @@
               />
             </template>
             <template v-else-if="currentView==='Delivery'">
-              <address-page
-                  v-if="consumeTypeId===2"
-                  :consume-type-status-id="consumeTypeStatusId"
-                  :raw-address-info="realAddressInfo"
-                  class="mr-2"
-                  @address-change="submitRawAddressInfo"
-              />
+              <loading-provider :loading="takeawayShow">
+                <address-page
+                    v-if="consumeTypeId===2"
+                    :consume-type-status-id="consumeTypeStatusId"
+                    :raw-address-info="realAddressInfo"
+                    class="mr-2"
+                    @address-change="submitRawAddressInfo"
+                />
+              </loading-provider>
             </template>
             <template v-else-if="currentView==='Reservation'">
               <reservation-list-page
@@ -678,6 +680,7 @@ import {
 import { round } from 'lodash-es'
 import router from '@/router'
 import { clearGlobalCart, getActiveCodes } from '@/api/scanQr'
+import LoadingProvider from '@/views/Widget/LoadingProvider.vue'
 
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
@@ -716,6 +719,7 @@ export default {
     dragscroll
   },
   components: {
+    LoadingProvider,
     ReservationListPage,
     RestaurantLogoDisplay,
     NavButton,
@@ -735,6 +739,7 @@ export default {
   },
   data: function () {
     return {
+      takeawayShow: false,
       addCurrentRfDish: false,
       showConfirmDialog: false,
       allDepositList: [],
@@ -1086,6 +1091,7 @@ export default {
       this.modificationShow = false
     },
     async initialUI () {
+      this.takeawayShow = true
       this.discountModelShow = false
       this.buffetDialogShow = false
       this.overrideConsumeTypeId = null
@@ -1101,7 +1107,7 @@ export default {
       } catch (e) {
 
       }
-
+      this.takeawayShow = false
       setGlobalTableId(this.id)
     },
     back () {
