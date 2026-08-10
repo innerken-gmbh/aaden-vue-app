@@ -200,10 +200,9 @@
                           {{ $t('IfThisOptionIsTurnedOffTheTakeawaySiteWillBeTemporarilyClosed') }}
                         </div>
                       </div>
-
-                      <v-spacer></v-spacer>
                       <v-switch v-model="takeawayEnabled" class="mt-0" hide-details></v-switch>
                     </div>
+                    <v-btn @click="updateTakeawayInfo" rounded outlined width="100%">{{ $t('save') }}</v-btn>
                     <!--                <div class="py-2 d-flex align-center">-->
                     <!--                  自动接单-->
                     <!--                  <v-spacer></v-spacer>-->
@@ -330,18 +329,18 @@
     </v-card>
     <v-dialog v-model="showServantStatus" max-width="800px">
       <v-card
-        class="text-body-1 pa-6"
-        elevation="0"
-        style="overflow: visible;">
+          class="text-body-1 pa-6"
+          elevation="0"
+          style="overflow: visible;">
         <div class="d-flex  mb-4">
           <div class="text-h5 font-weight-bold">
             {{ restaurantInfo?.displayName }}
           </div>
-          <v-spacer />
+          <v-spacer/>
           <div>
             <v-btn
-              icon
-              @click="showServantStatus = false"
+                icon
+                @click="showServantStatus = false"
             >
               <v-icon large>
                 mdi-close
@@ -359,8 +358,10 @@
                   color="grey lighten-2"
                   elevation="0" outlined @click="changeWorkStatus(item)">
             <v-img :src="checkStaffPhoto(item.photo) ? photoPath(item.photo) : defaultStaffImg"></v-img>
-            <div v-if="item.clockedIn" class="d-flex justify-center align-center text-h5" style="background-color: green; color: white">{{item.name}}</div>
-            <div v-else class="d-flex justify-center align-center text-h5">{{item.name}}</div>
+            <div v-if="item.clockedIn" class="d-flex justify-center align-center text-h5"
+                 style="background-color: green; color: white">{{ item.name }}
+            </div>
+            <div v-else class="d-flex justify-center align-center text-h5">{{ item.name }}</div>
           </v-card>
         </div>
       </v-card>
@@ -369,31 +370,38 @@
     <v-dialog v-model="staffChangeWorkStatus" max-width="400px">
       <v-card class="pa-4">
         <div class="d-flex align-center justify-center">
-        <div class="text-subtitle-1 font-weight-bold">{{servant?.clockedIn ? $t('wannaCheckOut') : $t('wannaCheckIn')}}</div>
+          <div class="text-subtitle-1 font-weight-bold">
+            {{ servant?.clockedIn ? $t('wannaCheckOut') : $t('wannaCheckIn') }}
+          </div>
           <v-spacer></v-spacer>
-          <v-btn icon @click="staffChangeWorkStatus = false"><v-icon>mdi-close</v-icon></v-btn>
+          <v-btn icon @click="staffChangeWorkStatus = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
         </div>
         <template v-if="!servant?.clockedIn">
           <div class="d-flex mt-4 justify-center align-center">
             <v-text-field v-model="note" :placeholder="$t('note')" hide-details outlined/>
           </div>
-        <div class="d-flex align-center justify-center mt-4">
-          <v-btn :loading="staffBtnLoading" class="success" width="100%" @click="gotoWork">{{ $t('checkIn') }}</v-btn>
-        </div>
+          <div class="d-flex align-center justify-center mt-4">
+            <v-btn :loading="staffBtnLoading" class="success" width="100%" @click="gotoWork">{{ $t('checkIn') }}</v-btn>
+          </div>
         </template>
         <template v-else>
-                    <div v-for="item in servantWorkInfo" :key="item.id">
-                      <div class="d-flex mt-2">
-                        <div>{{item.display}}:</div>
-                        <v-spacer></v-spacer>
-                        <div>{{item.value}}</div>
-                      </div>
-                    </div>
+          <div v-for="item in servantWorkInfo" :key="item.id">
+            <div class="d-flex mt-2">
+              <div>{{ item.display }}:</div>
+              <v-spacer></v-spacer>
+              <div>{{ item.value }}</div>
+            </div>
+          </div>
           <div class="d-flex mt-4 justify-center align-center">
             <v-text-field v-model="note" :placeholder="$t('note')" hide-details outlined/>
           </div>
           <div class="d-flex align-center justify-center mt-8">
-            <v-btn :loading="staffBtnLoading" class="success" width="100%" @click="endWorks">{{ $t('checkOut') }}</v-btn>
+            <v-btn :loading="staffBtnLoading" class="success" width="100%" @click="endWorks">{{
+                $t('checkOut')
+              }}
+            </v-btn>
           </div>
         </template>
       </v-card>
@@ -518,14 +526,6 @@ export default {
     showOtherOrder: function (val) {
       Remember.showOtherOrder = val
       this.refreshTables()
-    },
-    takeawayEnabled: async function (val) {
-      const info = Object.assign({}, this.restaurantInfo)
-      info.currentlyOpening = val ? 1 : 0
-      this.loading = true
-      await syncTakeawaySettingToCloud(info)
-      await this.loadRestaurantInfo()
-      this.loading = false
     }
   },
   computed: {
@@ -543,7 +543,11 @@ export default {
         { value: this.servant.lastRecord?.fromDateTime, display: this.$t('StartsWorkingAt'), id: 2 },
         { value: this.servantWorkMinutes + '/' + this.servantWorkHour, display: this.$t('workTimeMinHour'), id: 3 },
         { value: this.servant.lastRecord?.currentHourlyWage, display: this.$t('HourlyWage'), id: 4 },
-        { value: this.servant?.lastRecord?.correction === '1' ? this.$t('yes') : this.$t('No'), display: this.$t('IsThisReplacementCard'), id: 5 }]
+        {
+          value: this.servant?.lastRecord?.correction === '1' ? this.$t('yes') : this.$t('No'),
+          display: this.$t('IsThisReplacementCard'),
+          id: 5
+        }]
     },
     ...mapGetters(['systemDialogShow']),
     activeTables () {
@@ -579,6 +583,14 @@ export default {
     }
   },
   methods: {
+    async updateTakeawayInfo () {
+      const info = Object.assign({}, this.restaurantInfo)
+      info.currentlyOpening = this.takeawayEnabled ? 1 : 0
+      this.loading = true
+      await syncTakeawaySettingToCloud(info)
+      await this.loadRestaurantInfo()
+      this.loading = false
+    },
     async reloadStaffInfo () {
       this.note = ''
       this.servant = {}

@@ -1,218 +1,222 @@
 <template>
   <v-dialog
-    v-model="realShow"
-    max-width="600px"
+      v-model="realShow"
+      max-width="600px"
   >
+
     <v-card>
-      <div>
-        <div v-if="!editingAddress">
-          <div style="display: grid;grid-template-columns: repeat(2,minmax(0,1fr))">
+      <loading-provider :loading="loading">
+        <div>
+          <div v-if="!editingAddress">
+            <v-card class="d-flex align-center justify-center">
 
-            <addresses-card
-              @change="editingAddress=true"
-              :raw-address-info="currentAddress"
-            />
+              <addresses-card
+                  v-if="rawAddressInfo.deliveryMethod === 'Delivery'"
+                  @change="editingAddress=true"
+                  :raw-address-info="currentAddress"
+              />
+              <div class="pa-2 py-6 ml-4">
+                <v-select
+                    :items="deliveryMethods"
+                    filled
+                    :menu-props="{offsetY:true}"
+                    v-model="rawAddressInfo.deliveryMethod"
+                    :label="$t('DeliveryMethod')"
+                ></v-select>
+                <v-select
+                    v-model="rawAddressInfo.time"
+                    filled
+                    :menu-props="{offsetY:true}"
+                    :items="timeOption"
+                    :label="$t('time')"
+                ></v-select>
+                <v-text-field
+                    v-model="rawAddressInfo.note"
+                    filled
+                    :label="$t('OrderHint')"
+                ></v-text-field>
+                <v-btn
+                    elevation="0"
+                    color="primary lighten-4 black--text"
+                    block
+                    @click="saveAddClose"
 
-            <div class="pa-2 py-6">
-              <v-select
-                :items="deliveryMethods"
-                filled
-                :menu-props="{offsetY:true}"
-                v-model="rawAddressInfo.deliveryMethod"
-                :label="$t('DeliveryMethod')"
-              ></v-select>
-              <v-select
-                v-model="rawAddressInfo.time"
-                filled
-                :menu-props="{offsetY:true}"
-                :items="timeOption"
-                :label="$t('time')"
-              ></v-select>
-              <v-text-field
-                v-model="rawAddressInfo.note"
-                filled
-                :label="$t('OrderHint')"
-              ></v-text-field>
+                    large
+                >
+                  {{ $t('Confirm') }}
+                </v-btn>
+              </div>
+            </v-card>
+
+          </div>
+
+          <div
+              class="pa-4"
+              v-else
+          >
+            <div class="d-flex">
+              <span>{{ currentTitle }}</span>
+              <v-spacer/>
               <v-btn
-                elevation="0"
-                color="primary lighten-4 black--text"
-                block
-                @click="saveAddClose"
-
-                large
+                  icon
+                  @click="realShow=false"
               >
-                {{ $t('Confirm') }}
+                <v-icon>mdi-close</v-icon>
               </v-btn>
             </div>
-          </div>
-
-        </div>
-
-        <div
-          class="pa-4"
-          v-else
-        >
-          <div class="d-flex">
-            <span>{{ currentTitle }}</span>
-            <v-spacer/>
-            <v-btn
-              icon
-              @click="realShow=false"
-            >
-              <v-icon>mdi-close</v-icon>
-            </v-btn>
-          </div>
-          <div class="mt-4">
-            <v-autocomplete
-              v-if="!createNewUser"
-              clearable
-              filled
-              :items="userInfo"
-              v-model="searchTel"
-              :label="$t('SearchByTelefon')"
-              autocomplete="off"
-              @change="change"
-              auto-select-first
-              item-value="rawInfo.tel"
-              item-text="rawInfo.tel"
-              autofocus
-              @update:search-input="inputUpdate"
-              type="search"
-            >
-              <template #no-data>
-                <v-btn
-                  elevation="0"
-                  text
-                  color="primary"
-                  block
-                  @click="startCreateUser"
-                >{{ $t('NewUser') }}
-                </v-btn>
-              </template>
-              <template #item="{item}">
-                <div
-                  @click="applyAddress(item)"
-                  class="d-flex align-center"
-                  style="width: 100%"
-                >
-                  <div class="text-body-1">{{ item.rawInfo.tel }}</div>
-                  <v-spacer></v-spacer>
-                  <div class="text-body-2 text--secondary">{{ item.rawInfo.firstName }} {{
-                      item.rawInfo.lastName
-                    }}
+            <div class="mt-4">
+              <v-autocomplete
+                  v-if="!createNewUser"
+                  clearable
+                  filled
+                  :items="userInfo"
+                  v-model="searchTel"
+                  :label="$t('SearchByTelefon')"
+                  autocomplete="off"
+                  @change="change"
+                  auto-select-first
+                  item-value="rawInfo.tel"
+                  item-text="rawInfo.tel"
+                  autofocus
+                  @update:search-input="inputUpdate"
+                  type="search"
+              >
+                <template #no-data>
+                  <v-btn
+                      elevation="0"
+                      text
+                      color="primary"
+                      block
+                      @click="startCreateUser"
+                  >{{ $t('NewUser') }}
+                  </v-btn>
+                </template>
+                <template #item="{item}">
+                  <div
+                      @click="applyAddress(item.rawInfo)"
+                      class="d-flex align-center"
+                      style="width: 100%"
+                  >
+                    <div class="text-body-1">{{ item.rawInfo.tel }}</div>
+                    <v-spacer></v-spacer>
+                    <div class="text-body-2 text--secondary">{{ item.rawInfo.firstName }} {{
+                        item.rawInfo.lastName
+                      }}
+                    </div>
                   </div>
-                </div>
-              </template>
-            </v-autocomplete>
+                </template>
+              </v-autocomplete>
 
-            <v-text-field
-              v-else
-              filled
-              autocomlete="off"
-              type="search"
-              :label="$t('telefon')"
-              v-model="telInput"
-            />
-            <v-row dense>
-              <v-col cols="6">
-                <v-text-field
+              <v-text-field
+                  v-else
                   filled
                   autocomlete="off"
                   type="search"
-                  :label="$t('FirstName')"
-                  v-model="rawAddressInfo.firstName"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
+                  :label="$t('telefon')"
+                  v-model="telInput"
+              />
+              <v-row dense>
+                <v-col cols="6">
+                  <v-text-field
+                      filled
+                      autocomlete="off"
+                      type="search"
+                      :label="$t('FirstName')"
+                      v-model="rawAddressInfo.firstName"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field
+                      filled
+                      autocomlete="off"
+                      type="search"
+                      :label="$t('last_name')"
+                      v-model="rawAddressInfo.lastName"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <vuetify-google-autocomplete
+                  browser-autocomplete="off"
+                  type="search"
                   filled
                   autocomlete="off"
-                  type="search"
-                  :label="$t('last_name')"
-                  v-model="rawAddressInfo.lastName"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <vuetify-google-autocomplete
-              browser-autocomplete="off"
-              type="search"
-              filled
-              autocomlete="off"
-              id="map"
-              country="DE"
-              :placeholder="$t('SearchAddress')"
-              clearable
-              :component-restrictions="
+                  id="map"
+                  country="DE"
+                  :placeholder="$t('SearchAddress')"
+                  clearable
+                  :component-restrictions="
                           Config.autoCompletePLZ.split(',').length>0?Config.autoCompletePLZ.split(','):
                            false"
-              v-on:placechanged="getAddressData"
-            />
-            <v-row dense>
-              <v-col cols="6">
-                <v-text-field
+                  v-on:placechanged="getAddressData"
+              />
+              <v-row dense>
+                <v-col cols="6">
+                  <v-text-field
+                      filled
+                      :label="$t('AddressLine01')"
+                      autocomlete="off"
+                      type="search"
+                      v-model="rawAddressInfo.addressLine1"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field
+                      filled
+                      :label="$t('AddressLine02')"
+                      autocomlete="off"
+                      type="search"
+                      v-model="rawAddressInfo.addressLine2"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field
+                      filled
+                      :label="$t('City')"
+                      autocomlete="off"
+                      type="search"
+                      v-model="rawAddressInfo.city"
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="6">
+                  <v-text-field
+                      filled
+                      :label="$t('postcode')"
+                      autocomlete="off"
+                      type="search"
+                      v-model="rawAddressInfo.plz"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+              <v-text-field
                   filled
-                  :label="$t('AddressLine01')"
+                  :label="$t('Email')"
                   autocomlete="off"
                   type="search"
-                  v-model="rawAddressInfo.addressLine1"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
-                  filled
-                  :label="$t('AddressLine02')"
-                  autocomlete="off"
-                  type="search"
-                  v-model="rawAddressInfo.addressline2"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
-                  filled
-                  :label="$t('City')"
-                  autocomlete="off"
-                  type="search"
-                  v-model="rawAddressInfo.city"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="6">
-                <v-text-field
-                  filled
-                  :label="$t('postcode')"
-                  autocomlete="off"
-                  type="search"
-                  v-model="rawAddressInfo.plz"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-text-field
-              filled
-              :label="$t('Email')"
-              autocomlete="off"
-              type="search"
-              v-model="rawAddressInfo.email"
-            ></v-text-field>
-            <v-row
-              dense
-            >
-              <v-col>
-                <v-btn
-                  x-large
-                  elevation="0"
-                  color="primary"
-                  @click="saveAddress"
-                  block
-                >{{ $t('Confirm') }}
-                </v-btn>
-              </v-col>
-            </v-row>
+                  v-model="rawAddressInfo.email"
+              ></v-text-field>
+              <v-row
+                  dense
+              >
+                <v-col>
+                  <v-btn
+                      x-large
+                      elevation="0"
+                      color="primary"
+                      @click="saveAddress"
+                      block
+                  >{{ $t('Confirm') }}
+                  </v-btn>
+                </v-col>
+              </v-row>
+
+            </div>
 
           </div>
-
         </div>
-      </div>
+      </loading-provider>
 
     </v-card>
+
   </v-dialog>
 </template>
 
@@ -224,10 +228,12 @@ import { dragscroll } from 'vue-dragscroll/src/main'
 import { DefaultAddressInfo } from '@/oldjs/StaticModel'
 import AddressesCard from '@/views/TablePage/Address/AddressesCard'
 import dayjs from 'dayjs'
+import LoadingProvider from '@/views/Widget/LoadingProvider.vue'
 
 export default {
   name: 'AddressForm',
   components: {
+    LoadingProvider,
     AddressesCard
   },
   directives: {
@@ -242,6 +248,7 @@ export default {
   },
   data: function () {
     return {
+      loading: false,
       editingAddress: false,
       rawAddressInfo: DefaultAddressInfo,
       Config: GlobalConfig,
@@ -305,6 +312,7 @@ export default {
       this.clearAddressInfo()
     },
     async initialMenu () {
+      this.loading = true
       await this.getUserInfo()
       this.clearAddressInfo()
       const now = dayjs()
@@ -313,7 +321,11 @@ export default {
       this.timeOption = ['ASAP', ...Array.from(Array(100).keys()).map(it => {
         return first.add(it * 15, 'm').format('HH:mm')
       })]
+      if (this.haveAddress) {
+        this.applyAddress(this.currentAddress)
+      }
       this.searchTel = ''
+      this.loading = false
     },
     async getUserInfo () {
       this.userInfo = (await hillo.get('Takeaway.php?op=showAllUsers')).content.map(u => {
@@ -389,7 +401,7 @@ export default {
       return !this.userInfo.some(d => d.email === this.searchTel)
     },
     haveAddress: function () {
-      return this.currentAddress.addressLine1.length > 0
+      return this.currentAddress.addressLine1.length > 0 || this.currentAddress.deliveryMethod !== 'Delivery'
     }
   }
 }
