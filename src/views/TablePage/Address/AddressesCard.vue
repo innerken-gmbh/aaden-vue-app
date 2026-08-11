@@ -1,10 +1,11 @@
 <template>
   <v-card
-    class="pa-4 d-flex flex-column justify-center align-start"
-    color="grey lighten-4"
-    elevation="0"
+      class="pa-4 d-flex flex-column justify-center align-start"
+      color="grey lighten-4"
+      elevation="0"
   >
-    <div class="text-subtitle-2">{{ $t('CurrentAddress') }}</div>
+    <div v-if="address.deliveryMethod === 'Delivery'" class="text-subtitle-2">{{ $t('CurrentAddress') }}</div>
+    <div v-else class="text-subtitle-2"> {{ $t('basicInfo') }}</div>
     <div class="text-body-1 mt-2">
       <div class="text-h6 font-weight-bold text-capitalize">
         {{ address.firstName }} {{ address.lastName }}
@@ -27,12 +28,15 @@
       <div class="text-body-1 ">
         {{ address.date }}
       </div>
+      <div v-if="address.deliveryMethod !== 'Delivery'" class="text-body-1 ">
+        {{ address.time }}
+      </div>
     </div>
     <v-btn
-      @click="$emit('change')"
-      color="grey lighten-2"
-      elevation="0"
-      class="mt-4"
+        @click="$emit('change')"
+        color="grey lighten-2"
+        elevation="0"
+        class="mt-4"
     >
       <v-icon left>mdi-swap-horizontal</v-icon>
       {{ $t('ChangeAdress') }}

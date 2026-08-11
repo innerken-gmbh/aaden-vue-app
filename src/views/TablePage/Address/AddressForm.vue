@@ -11,7 +11,6 @@
             <v-card class="d-flex align-center justify-center">
 
               <addresses-card
-                  v-if="rawAddressInfo.deliveryMethod === 'Delivery'"
                   @change="editingAddress=true"
                   :raw-address-info="currentAddress"
               />
