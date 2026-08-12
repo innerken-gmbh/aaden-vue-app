@@ -200,6 +200,7 @@
                           {{ $t('IfThisOptionIsTurnedOffTheTakeawaySiteWillBeTemporarilyClosed') }}
                         </div>
                       </div>
+                      <v-spacer></v-spacer>
                       <v-switch v-model="takeawayEnabled" class="mt-0" hide-details></v-switch>
                     </div>
                     <v-btn @click="updateTakeawayInfo" rounded outlined width="100%">{{ $t('save') }}</v-btn>
