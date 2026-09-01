@@ -131,6 +131,7 @@ import {
   printServantSummaryByDate
 } from '@/api/api'
 import i18n from '@/i18n'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 const defaultDisplayData = {
   orders: [],
@@ -189,7 +190,7 @@ export default {
         const res = included.map(p => {
           const r = payMethod.find(t => parseInt(t.payMethodId) === parseInt(p.id))
           return {
-            name: p.name,
+            name: p?.langs.find(it => it.lang.toLowerCase() === GlobalConfig.lang.toLowerCase())?.name,
             amount: r?.sumTotal ?? 0,
             id: p.id
           }
@@ -209,7 +210,7 @@ export default {
         return this.paymentMethodList.filter(p => p.id > 0 && p.id !== 9).map(p => {
           const r = payMethod.find(t => parseInt(t.payMethodId) === parseInt(p.id))
           return {
-            name: p.langs[0].name,
+            name: p?.langs.find(it => it.lang.toLowerCase() === GlobalConfig.lang.toLowerCase())?.name,
             amount: r?.sumTotal ?? 0,
             id: p.id
           }
