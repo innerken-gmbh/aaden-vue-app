@@ -351,7 +351,7 @@ export default {
       return this.steps[0]
     },
     userIsNew: function () {
-      return !this.userInfo.some(d => d.email === this.searchTel)
+      return !this.userInfo.some(d => d.email === this.telInput)
     }
   }
 }
