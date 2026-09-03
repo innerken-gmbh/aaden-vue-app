@@ -329,6 +329,7 @@
                   >
                     <template v-for="table in servant.tables">
                       <table-list-item
+                          :consume-type-ids="consumeTypeIds"
                           :key="table.id"
                           :table-info="table"
                           @click="openOrEnterTable(table.tableName)"
@@ -570,6 +571,7 @@ import { TableFixedSectionId } from '@/api/tableService'
 import {
   acceptOrder,
   forceGetSystemSetting,
+  getBuffetPriceDishes,
   loadRestaurantInfo,
   readyToPick,
   rejectOrder,
@@ -595,6 +597,7 @@ import AddressesCard from '@/views/TablePage/Address/AddressesCard.vue'
 import { getRestaurantInfo } from '@/api/restaurantInfoService'
 import store from '@/store'
 import i18n from '@/i18n'
+import { uniq } from 'lodash'
 
 const keyboardLayout =
     [
@@ -663,7 +666,8 @@ export default {
       // Reset IP dialog states
       showResetIpDialog: false,
       newBaseInput: '',
-      newBaseError: ''
+      newBaseError: '',
+      consumeTypeIds: []
 
     }
   },
@@ -1070,6 +1074,7 @@ export default {
   },
   mounted: async function () {
     await this.initPage()
+    this.consumeTypeIds = uniq((await getBuffetPriceDishes()).map(it => it.consumeTypeId))
   }
 }
 </script>

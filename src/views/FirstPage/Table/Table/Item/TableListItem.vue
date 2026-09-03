@@ -19,7 +19,7 @@
     <div style="text-align: right">
       <div
           class="caption"
-          v-if="!allBuffetConsumeTypeIds.includes(table.consumeType)"
+          v-if="!consumeTypeIds.includes(table.consumeType)"
       >
         <div class="d-flex flex-column align-end justify-end">
           <div
@@ -78,13 +78,12 @@
 import { findConsumeTypeById } from '@/oldjs/common'
 import { getColorLightness } from '@/oldjs/api'
 import { defaultTable } from '@/api/restaurantInfoService'
-import { getBuffetPriceDishes } from '@/api/api'
-import { uniq } from 'lodash'
 
 export default {
   name: 'TableListItem',
   props: {
-    tableInfo: {}
+    tableInfo: {},
+    consumeTypeIds: {}
   },
   computed: {
     table () {
@@ -92,11 +91,6 @@ export default {
       res.inUse = res.usageStatus === '1'
       res.inCall = res.callService === '1'
       return res
-    }
-  },
-  data: function () {
-    return {
-      allBuffetConsumeTypeIds: []
     }
   },
   methods: {
@@ -115,9 +109,6 @@ export default {
     colorIsDark (color) {
       return getColorLightness(color) < 128
     }
-  },
-  async mounted () {
-    this.allBuffetConsumeTypeIds = uniq((await getBuffetPriceDishes()).map(it => it.consumeTypeId))
   }
 }
 </script>

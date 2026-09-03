@@ -263,6 +263,7 @@ export default {
     startCreateUser () {
       this.createNewUser = true
       this.clearAddressInfo()
+      this.rawAddressInfo.tel = this.telInput
     },
     async initialMenu () {
       this.loading = true
@@ -277,6 +278,7 @@ export default {
         })
       ]
       this.searchTel = ''
+      this.telInput = ''
       this.loading = false
     },
     async getUserInfo () {

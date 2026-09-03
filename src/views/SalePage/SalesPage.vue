@@ -634,6 +634,11 @@ export default {
     async printSummaryBon () {
       this.btnLoading = true
       const currentServant = (await loadAllServants()).find(it => it.password === this.password)
+      if (!currentServant) {
+        IKUtils.showError('当前密码不适用！')
+        this.btnLoading = false
+        return
+      }
       const unCheckTable = (await getAllTableList()).filter(x => x.usageStatus === '1').filter(s => s.servantName === currentServant.name)
       const unCheckTableName = unCheckTable.map(it => it.name)
       if (unCheckTable.length !== 0) {
