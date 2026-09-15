@@ -10,11 +10,11 @@
       <v-spacer></v-spacer>
       <slot name="action"></slot>
       <v-btn
-          :class="onlyPaid ? 'grey lighten-4' : ''"
+          :class="onlyPaid === '1' ? 'grey lighten-4' : ''"
           icon
-          @click="onlyPaid = !onlyPaid"
+          @click="editFreeDishDisplay"
       >
-        <v-icon>{{ onlyPaid ? 'mdi-filter-check' : 'mdi-filter-off' }}</v-icon>
+        <v-icon>{{ onlyPaid === '1' ? 'mdi-filter-check' : 'mdi-filter-off' }}</v-icon>
       </v-btn>
     </div>
 
@@ -28,7 +28,7 @@
             active-class="primary--text"
         >
           <v-chip
-            v-for="mark in sourceMarks"
+              v-for="mark in sourceMarks"
               :key="mark"
               filter
           >
@@ -86,9 +86,9 @@
 <script>
 import { dragscroll } from 'vue-dragscroll'
 import DishCard from './DishCard'
-import { Remember } from '@/api/remember'
 import i18n from '@/i18n'
 import IKUtils from 'innerken-js-utils'
+import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 
 export default {
   name: 'DishCardList',
@@ -132,7 +132,7 @@ export default {
       expand: this.defaultExpand,
       expandIndex: null,
       currentSourceMark: null,
-      onlyPaid: !Remember.showFreeDish
+      onlyPaid: '0'
     }
   },
   watch: {
@@ -159,14 +159,14 @@ export default {
       },
       immediate: true
     },
-    onlyPaid (val) {
-      Remember.showFreeDish = val
-    },
     defaultExpand: function (val) {
       this.expand = val
     }
   },
   methods: {
+    editFreeDishDisplay () {
+      this.onlyPaid = this.onlyPaid === '0' ? '1' : '0'
+    },
     resetExpandIndex () {
       this.expandIndex = this.resetCurrentExpandIndex ? (this.reverse ? 0 : this.dishList.length - 1) : null
     },
@@ -203,7 +203,7 @@ export default {
       const list = [...this.dishListModel.list].filter((it) => {
         return (
           (this.activeSourceMark === '' || it.sourceMark === this.activeSourceMark) &&
-          (!this.onlyPaid || it.realPrice !== 0)
+            (this.onlyPaid === '1' || it.realPrice !== 0)
         )
       })
       if (this.reverse) {
@@ -215,7 +215,7 @@ export default {
       const list = [...this.dishListModel.list].filter((it) => {
         return (
           (this.activeSourceMark === '' || it.sourceMark !== this.activeSourceMark) &&
-            (!this.onlyPaid || it.realPrice !== 0)
+            (this.onlyPaid === '1' || it.realPrice !== 0)
         )
       })
       if (this.reverse) {
@@ -253,6 +253,7 @@ export default {
   activated () {
     this.currentSourceMark = null
     this.resetExpandIndex()
+    this.onlyPaid = GlobalConfig.showFreeDish
   }
 }
 </script>

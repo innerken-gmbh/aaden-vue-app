@@ -131,6 +131,14 @@ export async function getAdminSetting () {
       type: 'string',
       options: '',
       tagList: 'basic,FrontApp'
+    },
+    {
+      key: 'showFreeDish',
+      defaultValue: '0',
+      value: '0',
+      type: 'boolean',
+      options: '',
+      tagList: 'basic,FrontApp'
     }
   ]
 
