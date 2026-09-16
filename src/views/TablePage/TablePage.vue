@@ -1156,6 +1156,7 @@ export default {
     },
     async orderDish (order, print = true) {
       try {
+        this.isSendingRequest = true
         if (!this.haveOrder) {
           const password = await optionalAuthorizeAsync('', GlobalConfig.usePassword, null, false, this.id)
           IKUtils.showLoading()
