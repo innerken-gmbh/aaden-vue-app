@@ -131,8 +131,7 @@ export default {
     return {
       expand: this.defaultExpand,
       expandIndex: null,
-      currentSourceMark: null,
-      onlyPaid: '0'
+      currentSourceMark: null
     }
   },
   watch: {
@@ -191,6 +190,9 @@ export default {
     }
   },
   computed: {
+    onlyPaid () {
+      return GlobalConfig.showFreeDish
+    },
     activeSourceMark () {
       return this.currentSourceMark === null || typeof this.currentSourceMark === 'undefined'
         ? ''
@@ -253,7 +255,6 @@ export default {
   activated () {
     this.currentSourceMark = null
     this.resetExpandIndex()
-    this.onlyPaid = GlobalConfig.showFreeDish
   }
 }
 </script>
