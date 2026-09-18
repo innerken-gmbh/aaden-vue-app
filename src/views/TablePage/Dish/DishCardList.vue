@@ -7,6 +7,7 @@
   >
     <div class="pa-4 pb-3 text-h5 d-flex align-center font-weight-black grey lighten-4">
       {{ title }}
+      <div>({{ dishLength }})</div>
       <v-spacer></v-spacer>
       <slot name="action"></slot>
       <v-btn
@@ -89,6 +90,7 @@ import DishCard from './DishCard'
 import i18n from '@/i18n'
 import IKUtils from 'innerken-js-utils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
+import { sumBy } from 'lodash'
 
 export default {
   name: 'DishCardList',
@@ -224,6 +226,9 @@ export default {
         list.reverse()
       }
       return list
+    },
+    dishLength () {
+      return sumBy(this.dishList, 'count')
     },
     originTotal: function () {
       return this.dishListModel.list.length > 0 ? this.dishListModel.total() : 0
