@@ -207,6 +207,7 @@
                 <template #action>
                   <v-btn
                       v-if="Config.hideOrderWithoutPrintBtn !== '1'"
+                      :loading="isSendingRequest"
                       class="primary mr-2"
                       dark
                       elevation="0"
