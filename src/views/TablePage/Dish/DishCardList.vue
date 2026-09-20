@@ -166,7 +166,7 @@ export default {
   },
   methods: {
     editFreeDishDisplay () {
-      this.onlyPaid = this.onlyPaid === '0' ? '1' : '0'
+      GlobalConfig.showFreeDish = this.onlyPaid === '0' ? '1' : '0'
     },
     resetExpandIndex () {
       this.expandIndex = this.resetCurrentExpandIndex ? (this.reverse ? 0 : this.dishList.length - 1) : null
