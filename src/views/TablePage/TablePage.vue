@@ -1156,6 +1156,7 @@ export default {
       this.reservations = await getReservationsByTableId(this.id)
     },
     async orderDish (order, print = true) {
+      if (this.isSendingRequest) return
       try {
         this.isSendingRequest = true
         if (!this.haveOrder) {
