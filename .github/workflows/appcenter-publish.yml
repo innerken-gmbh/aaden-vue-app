@@ -1,0 +1,41 @@
+# 合并到 master 后自动构建 web 版，发布到门店 docroot 根目录的 /App（AppCenter 的 rootApps）。
+# 门店设备由 aaden-cli appcenter-sync 每天拉取（要 aaden-cli >= 1.6.120 才认 rootApps）。
+# 自动灰度：先给 ik0001 + deviceId%100<10，满 24 小时由 innerken-gmbh/workflows 的 appcenter-promote 自动全量；
+# 这一天内可以在 innerken-gmbh/workflows 手动跑 appcenter-rollback（app=App，kind=rootApps）回滚。PR 只构建打包，不发布。
+name: appcenter-publish
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: appcenter-publish-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # master 依赖 node-sass，Node 22 装不上，要 Node 16
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16
+      # 按 yarn.lock 装；跳过根目录 postinstall（electron-builder install-app-deps，web 构建用不到），
+      # electron 和 node-sass 自己的安装脚本单独跑（vue-cli 的 electron 插件在 web 构建时也会检查 electron）
+      - run: yarn install --frozen-lockfile --ignore-scripts --network-timeout 600000 && npm rebuild electron node-sass
+      - run: npx vue-cli-service build
+      - uses: innerken-gmbh/workflows/appcenter-publish@main
+        with:
+          app: App
+          kind: rootApps
+          dist: dist
+          dry-run: ${{ github.event_name == 'pull_request' }}
+          role-to-assume: ${{ vars.AWS_OIDC_ROLE_ARN }}
