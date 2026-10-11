@@ -45,6 +45,7 @@
                     :component-restrictions="
                           Config.autoCompletePLZ.split(',').length>0?Config.autoCompletePLZ.split(','):
                            false"
+                    :fields="googlePlaceFields"
                     v-on:placechanged="getAddressData"
                 />
                 <v-row dense>
@@ -238,6 +239,8 @@ export default {
   },
   data: function () {
     return {
+      // 只取基础字段：不指定 fields 时 Google 会按全部字段（含 Atmosphere 数据）计费
+      googlePlaceFields: ['address_components', 'geometry', 'formatted_address', 'name', 'place_id'],
       step: null,
       rawAddressInfo: DefaultAddressInfo,
       Config: GlobalConfig,
