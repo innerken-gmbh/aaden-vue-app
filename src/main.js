@@ -24,7 +24,7 @@ import { listenFireStoreOrders } from '@/api/fireStore'
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
 Vue.use(VuetifyGoogleAutocomplete, {
-  apiKey: 'AIzaSyB5lIPQQUJjjY6M-BoqUaZhF21oBbYkd9E',
+  apiKey: 'AIzaSyCrvWf3YHZlvbXj3BuF3pfHmsYUjL4AgKc',
   language: 'de'
 })
 
