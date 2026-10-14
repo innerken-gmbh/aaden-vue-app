@@ -19,6 +19,26 @@ let win
 //   - 任何时间，电脑 10 分钟没人操作就自动装（和设备命令 DESKTOP_UPDATE 同一个门槛）
 //   - 下次打开收银程序时，如果上次已经下载好了，先装好再打开（每天关电脑的店靠这一条）
 // Linux 走 snap 自动刷新，不用 electron-updater。
+//
+// 更新源（POS-36）：先读 S3（desktop/win，发版 workflow 上传）；S3 上没有 latest.yml（404/403）才退回 GitHub Releases。
+// 全部 Windows 机器都换到这一版以后，GitHub Releases 停发，aaden-vue-app 改成私有仓库。
+const S3_FEED = { provider: 'generic', url: 'https://aaden-backend.s3.eu-central-1.amazonaws.com/desktop/win' }
+const GITHUB_FEED = { provider: 'github', owner: 'innerken-gmbh', repo: 'aaden-vue-app' }
+let usingGithubFeed = false
+
+function useS3Feed () {
+  autoUpdater.setFeedURL(S3_FEED)
+}
+
+/** S3 上还没有这个文件时，这次运行改用 GitHub Releases；只退一次 */
+function fallBackToGithubFeed (message) {
+  if (usingGithubFeed || !/latest\.yml/.test(message) || !/\b40[34]\b/.test(message)) {
+    return false
+  }
+  usingGithubFeed = true
+  autoUpdater.setFeedURL(GITHUB_FEED)
+  return true
+}
 const UPDATE_CHECK_INTERVAL_MS = 4 * 60 * 60 * 1000
 const IDLE_INSTALL_POLL_MS = 60 * 1000
 const IDLE_INSTALL_MIN_IDLE_SECONDS = 10 * 60
@@ -85,6 +105,11 @@ function setupAutoUpdate () {
   })
   autoUpdater.on('error', (e) => {
     const message = String((e && e.message) || e).slice(0, 300)
+    if (fallBackToGithubFeed(message)) {
+      emitUpdateEvent(`DESKTOP_UPDATE_FEED_FALLBACK ${app.getVersion()} S3 -> GitHub: ${message}`)
+      autoUpdater.checkForUpdates().catch(() => {})
+      return
+    }
     if (message === lastUpdateError) {
       return
     }
@@ -255,6 +280,9 @@ if (!gotTheLock) {
 
   // 创建 myWindow, 加载应用的其余部分, etc...
   app.whenReady().then(async () => {
+    if (process.platform === 'win32' && !isDevelopment) {
+      useS3Feed()
+    }
     if (await installCachedUpdateOnStartup()) {
       return
     }

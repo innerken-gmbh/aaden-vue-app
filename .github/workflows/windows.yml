@@ -11,6 +11,9 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
 
       - name: Commit File
@@ -36,6 +39,22 @@ jobs:
       - run: npm run win:build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # 更新源（POS-36）：安装包同时传到 S3 desktop/win（公开可读），客户端先读这里。
+      # latest.yml 最后传，免得客户端读到新版本时安装包还没到。传失败的话 GitHub Release 留在草稿，不会发出去。
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::866730148977:role/github-appcenter-publish
+          aws-region: eu-central-1
+      - name: Upload to S3 desktop/win
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd dist_electron
+          ls -la *.exe *.blockmap latest.yml
+          for f in *.exe *.blockmap; do
+            aws s3 cp "$f" "s3://aaden-backend/desktop/win/$f" --acl public-read
+          done
+          aws s3 cp latest.yml s3://aaden-backend/desktop/win/latest.yml --acl public-read --cache-control no-cache
       - uses: eregon/publish-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
