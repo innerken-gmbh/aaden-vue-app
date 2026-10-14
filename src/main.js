@@ -17,7 +17,7 @@ import { getBaseAndUrlForDeviceId } from '@/api/restaurantInfoService'
 import hillo from 'hillo'
 import ParseInt from 'lodash-es/parseInt'
 import { getCurrentLanguage } from '@/api/api'
-import { reportToCloud } from '@/oldjs/common'
+import { forwardDesktopUpdateEvents, reportToCloud } from '@/oldjs/common'
 import { getNiceRestaurantInfo } from '@/oldjs/zbonPrint'
 import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
 
@@ -92,20 +92,22 @@ async function initial () {
   if (!Remember.uuid) {
     Remember.uuid = uuidv4()
   }
-  try {
-    setTimeout(async () => {
+  setTimeout(async () => {
+    try {
+      const deviceId = await getCurrentDeviceId()
+      forwardDesktopUpdateEvents(deviceId)
       await reportToCloud({
         name: (await getNiceRestaurantInfo()).name,
         ip: '',
         uuid: Remember.uuid,
         version: require('../package.json').version,
         frontendType: 'aaden-desktop',
-        deviceId: await getCurrentDeviceId()
+        deviceId
       })
-    }, 50)
-  } catch (e) {
+    } catch (e) {
 
-  }
+    }
+  }, 50)
   changeLanguage(await getCurrentLanguage())
   // i18n.locale = GlobalConfig.frontEndLang.toLowerCase()
   new Vue({

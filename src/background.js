@@ -1,5 +1,5 @@
 'use strict'
-import { app, BrowserWindow, ipcMain, protocol } from 'electron'
+import { app, BrowserWindow, ipcMain, powerMonitor, protocol } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
@@ -9,8 +9,87 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
+// Windows 自动更新（POS-129 / POS-130）
+// 以前只在启动时检查一次、只在正常退出时安装；收银机全屏没人正常退出，
+// 「重新加载」又是 relaunch + quit，会和安装器抢跑，所以大部分 Windows 机器装不上新版。
+// 现在：每 4 小时检查一次；下载好之后，「重新加载」或夜里 4 点空闲时静默安装并重启。
+// Linux 走 snap 自动刷新，不用 electron-updater。
+const UPDATE_CHECK_INTERVAL_MS = 4 * 60 * 60 * 1000
+const NIGHT_INSTALL_POLL_MS = 10 * 60 * 1000
+const NIGHT_INSTALL_HOUR = 4
+const NIGHT_INSTALL_MIN_IDLE_SECONDS = 30 * 60
+
+let downloadedVersion = null
+let installingUpdate = false
+let lastUpdateError = null
+let updateEventsReady = false
+const pendingUpdateEvents = []
+
+// 更新状态交给页面上报到云端（页面才知道设备号）
+function emitUpdateEvent (content) {
+  if (updateEventsReady && win) {
+    win.webContents.send('update-event', content)
+  } else {
+    pendingUpdateEvents.push(content)
+  }
+}
+
+ipcMain.on('update-event-ready', () => {
+  updateEventsReady = true
+  pendingUpdateEvents.splice(0).forEach(emitUpdateEvent)
+})
+
+function installDownloadedUpdate (reason) {
+  if (installingUpdate) {
+    return
+  }
+  installingUpdate = true
+  emitUpdateEvent(`DESKTOP_UPDATE_INSTALL ${app.getVersion()} -> ${downloadedVersion} ${reason}`)
+  // 留几秒给页面把事件发出去
+  setTimeout(() => autoUpdater.quitAndInstall(true, true), 3000)
+}
+
+function setupAutoUpdate () {
+  if (process.platform !== 'win32' || isDevelopment) {
+    return
+  }
+  autoUpdater.autoInstallOnAppQuit = true
+  autoUpdater.on('update-downloaded', (info) => {
+    if (downloadedVersion === info.version) {
+      return
+    }
+    downloadedVersion = info.version
+    emitUpdateEvent(`DESKTOP_UPDATE_DOWNLOADED ${app.getVersion()} -> ${info.version}`)
+  })
+  autoUpdater.on('error', (e) => {
+    const message = String((e && e.message) || e).slice(0, 300)
+    if (message === lastUpdateError) {
+      return
+    }
+    lastUpdateError = message
+    emitUpdateEvent(`DESKTOP_UPDATE_ERROR ${app.getVersion()} ${message}`)
+  })
+  // 错误统一走上面的 error 事件，这里只防止未处理的 rejection
+  const check = () => autoUpdater.checkForUpdates().catch(() => {})
+  check()
+  setInterval(check, UPDATE_CHECK_INTERVAL_MS)
+  setInterval(() => {
+    if (!downloadedVersion || new Date().getHours() !== NIGHT_INSTALL_HOUR) {
+      return
+    }
+    if (powerMonitor.getSystemIdleTime() < NIGHT_INSTALL_MIN_IDLE_SECONDS) {
+      return
+    }
+    installDownloadedUpdate('night')
+  }, NIGHT_INSTALL_POLL_MS)
+}
+
 ipcMain.on('reload', () => {
   console.log('get reload')
+  if (downloadedVersion) {
+    installDownloadedUpdate('reload')
+    return
+  }
   app.relaunch()
   app.quit()
 })
@@ -45,11 +124,6 @@ function createWindow () {
   })
   win.setFullScreen(true)
 
-  try {
-    autoUpdater.checkForUpdatesAndNotify()
-  } catch (e) {
-    console.error(e)
-  }
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
@@ -98,6 +172,7 @@ if (!gotTheLock) {
   // 创建 myWindow, 加载应用的其余部分, etc...
   app.whenReady().then(async () => {
     createWindow()
+    setupAutoUpdate()
   })
 }
 
