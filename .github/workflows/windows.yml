@@ -51,9 +51,13 @@ jobs:
           set -euo pipefail
           cd dist_electron
           ls -la *.exe *.blockmap latest.yml
+          # 本地文件名带空格（Aaden Desktop Setup x.exe），latest.yml 里写的是短横线（和 GitHub 上一样），按 latest.yml 的名字传
           for f in *.exe *.blockmap; do
-            aws s3 cp "$f" "s3://aaden-backend/desktop/win/$f" --acl public-read
+            aws s3 cp "$f" "s3://aaden-backend/desktop/win/${f// /-}" --acl public-read
           done
+          # latest.yml 指向的安装包必须已经在 S3 上，否则不传 latest.yml（客户端会读到下载不了的新版本）
+          key=$(sed -n 's/^path: //p' latest.yml | tr -d '\r')
+          aws s3api head-object --bucket aaden-backend --key "desktop/win/$key" > /dev/null
           aws s3 cp latest.yml s3://aaden-backend/desktop/win/latest.yml --acl public-read --cache-control no-cache
       - uses: eregon/publish-release@v1
         env:
