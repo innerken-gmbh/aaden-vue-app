@@ -612,5 +612,8 @@
   "alreadyCheckOut": "Die aktuelle Bestellung wurde abgeschlossen!",
   "dateTooLong": "Der ausgewählte Zeitraum ist zu lang. Alle Bestelldetails können nicht angezeigt werden!",
   "select3Month": "Bitte wählen Sie einen Zeitraum von weniger als 3 Monaten!",
-  "goAdminCheck": "Um alle historischen Bestellungen einzusehen, rufen Sie bitte die Rechnungsübersicht im Administrationsbereich auf!"
+  "goAdminCheck": "Um alle historischen Bestellungen einzusehen, rufen Sie bitte die Rechnungsübersicht im Administrationsbereich auf!",
+  "DesktopUpdateReady": "Neue Version {version} ist bereit",
+  "DesktopUpdateNow": "Jetzt aktualisieren",
+  "DesktopUpdateConfirmHint": "Die Kasse wird geschlossen und öffnet sich nach etwa 30 Sekunden automatisch wieder. Bitte nur aktualisieren, wenn gerade nicht kassiert wird."
 }

@@ -616,5 +616,8 @@
   "alreadyCheckOut": "当前订单已经结账!",
   "dateTooLong": "所选日期过长,所有订单详情无法显示!",
   "select3Month": "请选择3个月以内的时间！",
-  "goAdminCheck": "如需查看所有历史订单,请去中台账单查看！"
+  "goAdminCheck": "如需查看所有历史订单,请去中台账单查看！",
+  "DesktopUpdateReady": "新版本 {version} 已准备好",
+  "DesktopUpdateNow": "立即更新",
+  "DesktopUpdateConfirmHint": "收银程序会关闭，约半分钟后自动重新打开。请在没有正在结账的订单时更新。"
 }

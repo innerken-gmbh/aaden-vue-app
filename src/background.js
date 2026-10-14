@@ -1,6 +1,8 @@
 'use strict'
 import { app, BrowserWindow, ipcMain, powerMonitor, protocol } from 'electron'
 import { autoUpdater } from 'electron-updater'
+import fs from 'fs'
+import path from 'path'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -10,14 +12,18 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 let win
 
 // Windows 自动更新（POS-129 / POS-130）
-// 以前只在启动时检查一次、只在正常退出时安装；收银机全屏没人正常退出，
-// 「重新加载」又是 relaunch + quit，会和安装器抢跑，所以大部分 Windows 机器装不上新版。
-// 现在：每 4 小时检查一次；下载好之后，「重新加载」或夜里 4 点空闲时静默安装并重启。
+// 以前只在启动时检查一次、只在正常退出时安装；收银机全屏、一直开着（1914 连开了两周），没人正常退出，
+// 所以大部分 Windows 机器装不上新版。
+// 现在：每 4 小时检查一次；下载好之后：
+//   - 页面右下角提示「新版本已准备好」，店员点「立即更新」就装（约半分钟后自动重新打开）
+//   - 任何时间，电脑 10 分钟没人操作就自动装（和设备命令 DESKTOP_UPDATE 同一个门槛）
+//   - 下次打开收银程序时，如果上次已经下载好了，先装好再打开（每天关电脑的店靠这一条）
 // Linux 走 snap 自动刷新，不用 electron-updater。
 const UPDATE_CHECK_INTERVAL_MS = 4 * 60 * 60 * 1000
-const NIGHT_INSTALL_POLL_MS = 10 * 60 * 1000
-const NIGHT_INSTALL_HOUR = 4
-const NIGHT_INSTALL_MIN_IDLE_SECONDS = 30 * 60
+const IDLE_INSTALL_POLL_MS = 60 * 1000
+const IDLE_INSTALL_MIN_IDLE_SECONDS = 10 * 60
+/** 启动时发现已下载好的更新：最多等这么久让 electron-updater 校验缓存，等不到就照常打开 */
+const STARTUP_INSTALL_WAIT_MS = 30 * 1000
 
 let downloadedVersion = null
 let installingUpdate = false
@@ -37,6 +43,21 @@ function emitUpdateEvent (content) {
 ipcMain.on('update-event-ready', () => {
   updateEventsReady = true
   pendingUpdateEvents.splice(0).forEach(emitUpdateEvent)
+})
+
+// 页面上的「新版本已准备好」提示
+function notifyUpdateReady () {
+  if (downloadedVersion && win) {
+    win.webContents.send('update-ready', downloadedVersion)
+  }
+}
+
+ipcMain.on('update-ui-ready', notifyUpdateReady)
+
+ipcMain.on('install-update', () => {
+  if (downloadedVersion) {
+    installDownloadedUpdate('user')
+  }
 })
 
 function installDownloadedUpdate (reason) {
@@ -60,6 +81,7 @@ function setupAutoUpdate () {
     }
     downloadedVersion = info.version
     emitUpdateEvent(`DESKTOP_UPDATE_DOWNLOADED ${app.getVersion()} -> ${info.version}`)
+    notifyUpdateReady()
   })
   autoUpdater.on('error', (e) => {
     const message = String((e && e.message) || e).slice(0, 300)
@@ -74,14 +96,76 @@ function setupAutoUpdate () {
   check()
   setInterval(check, UPDATE_CHECK_INTERVAL_MS)
   setInterval(() => {
-    if (!downloadedVersion || new Date().getHours() !== NIGHT_INSTALL_HOUR) {
+    if (!downloadedVersion || powerMonitor.getSystemIdleTime() < IDLE_INSTALL_MIN_IDLE_SECONDS) {
       return
     }
-    if (powerMonitor.getSystemIdleTime() < NIGHT_INSTALL_MIN_IDLE_SECONDS) {
-      return
+    installDownloadedUpdate('idle')
+  }, IDLE_INSTALL_POLL_MS)
+}
+
+function newerVersion (a, b) {
+  const pa = String(a).split('.').map(n => parseInt(n, 10) || 0)
+  const pb = String(b).split('.').map(n => parseInt(n, 10) || 0)
+  for (let i = 0; i < 3; i++) {
+    if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) > (pb[i] || 0)
+  }
+  return false
+}
+
+// electron-updater 的缓存：%LOCALAPPDATA%\aaden-updater\pending\update-info.json 记着已下载好的安装包
+function cachedUpdateVersion () {
+  try {
+    const dir = path.join(process.env.LOCALAPPDATA || '', 'aaden-updater', 'pending')
+    const info = JSON.parse(fs.readFileSync(path.join(dir, 'update-info.json'), 'utf8'))
+    const match = /(\d+\.\d+\.\d+)/.exec(info.fileName || '')
+    if (!match || !fs.existsSync(path.join(dir, info.fileName))) return null
+    return newerVersion(match[1], app.getVersion()) ? match[1] : null
+  } catch (e) {
+    return null
+  }
+}
+
+// 同一个版本启动时只试装一次：装失败了不能每次开机都卡 30 秒再失败
+function startupInstallAttempted (version) {
+  const marker = path.join(app.getPath('userData'), 'startup-install-attempt.json')
+  try {
+    const last = JSON.parse(fs.readFileSync(marker, 'utf8'))
+    if (last.version === version && Date.now() - last.at < 24 * 3600 * 1000) return true
+  } catch (e) { /* 没试过 */ }
+  try {
+    fs.writeFileSync(marker, JSON.stringify({ version, at: Date.now() }))
+  } catch (e) { /* 写不了就当没试过 */ }
+  return false
+}
+
+/** 刚打开、还没人用：上次已经下载好更新的话先装好再开窗口。装了返回 true（程序会退出、装完自动重新打开） */
+function installCachedUpdateOnStartup () {
+  if (process.platform !== 'win32' || isDevelopment) return Promise.resolve(false)
+  const version = cachedUpdateVersion()
+  if (!version || startupInstallAttempted(version)) return Promise.resolve(false)
+  return new Promise(resolve => {
+    let done = false
+    const finish = (installed) => {
+      if (done) return
+      done = true
+      autoUpdater.removeListener('update-downloaded', onDownloaded)
+      autoUpdater.removeListener('error', onError)
+      resolve(installed)
     }
-    installDownloadedUpdate('night')
-  }, NIGHT_INSTALL_POLL_MS)
+    const onDownloaded = (info) => {
+      finish(true)
+      downloadedVersion = info.version
+      autoUpdater.quitAndInstall(true, true)
+    }
+    const onError = () => finish(false)
+    autoUpdater.once('update-downloaded', onDownloaded)
+    autoUpdater.once('error', onError)
+    setTimeout(() => finish(false), STARTUP_INSTALL_WAIT_MS)
+    autoUpdater.checkForUpdates().then(result => {
+      // 没有比当前更新的版本（缓存过期了）就照常打开
+      if (!result || !result.downloadPromise) finish(false)
+    }).catch(() => finish(false))
+  })
 }
 
 ipcMain.on('reload', () => {
@@ -171,6 +255,9 @@ if (!gotTheLock) {
 
   // 创建 myWindow, 加载应用的其余部分, etc...
   app.whenReady().then(async () => {
+    if (await installCachedUpdateOnStartup()) {
+      return
+    }
     createWindow()
     setupAutoUpdate()
   })
