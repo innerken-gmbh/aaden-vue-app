@@ -32,7 +32,9 @@
             <td>
               {{ order.updatedAt }}
             </td>
-            <td :style="{background:order.backGroundColor,color:order.foreGroundColor}">
+            <td
+                :style="{background:order.backGroundColor,color:order.foreGroundColor, maxWidth: '400px'}"
+            >
               {{ order.paymentLabel }}<b
                 v-if="order.discountStr && order.discountStr !== '0' && order.discountStr !== '0.00'">/
               {{ '-' + order.discountStr.replace('p', '%') }}</b>
