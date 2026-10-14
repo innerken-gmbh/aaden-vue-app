@@ -909,5 +909,8 @@
   "alreadyCheckOut": "The current order has been settled!",
   "dateTooLong": "The selected date range is too long. Order details cannot be displayed!",
   "select3Month": "Please select a period within 3 months!",
-  "goAdminCheck": "To view all historical orders, please check the bill in the admin panel."
+  "goAdminCheck": "To view all historical orders, please check the bill in the admin panel.",
+  "DesktopUpdateReady": "New version {version} is ready",
+  "DesktopUpdateNow": "Update now",
+  "DesktopUpdateConfirmHint": "The POS will close and reopen automatically in about 30 seconds. Please update when no checkout is in progress."
 }

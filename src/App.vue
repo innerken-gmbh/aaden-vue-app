@@ -4,6 +4,7 @@
       <router-view/>
     </keep-alive>
     <pin-dialog></pin-dialog>
+    <desktop-update-banner/>
     <table-selector></table-selector>
     <order-accept-dialog/>
     <checkout-dialog/>
@@ -103,10 +104,12 @@ import { mapMutations, mapState } from 'vuex'
 import { sendMailTo } from '@/api/api'
 import OrderAcceptDialog from '@/components/GlobalDialog/OrderAcceptDialog.vue'
 import CheckoutDialog from '@/components/GlobalDialog/CheckoutDialog.vue'
+import DesktopUpdateBanner from '@/components/GlobalDialog/DesktopUpdateBanner.vue'
 
 export default {
   name: 'App',
   components: {
+    DesktopUpdateBanner,
     CheckoutDialog,
     OrderAcceptDialog,
     TableSelector,
