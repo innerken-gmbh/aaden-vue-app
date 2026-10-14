@@ -407,7 +407,36 @@ export async function reportToCloud (data) {
     version,
     frontendType,
     deviceId,
-    timestamp: dayjs().valueOf()
+    timestamp: dayjs().valueOf(),
+    ...electronPlatformAndChannel()
   }
   await hillo.jsonPost('https://cloud-v2.aaden.io/api/frontend-logs/save', frontendLogDTO)
+}
+
+// 桌面版在 Electron 里运行：Linux 是 snap，Windows 是 GitHub Releases 安装包
+function electronPlatformAndChannel () {
+  const nodeProcess = window.process
+  if (!nodeProcess?.versions?.electron) {
+    return { platform: 'web' }
+  }
+  if (nodeProcess.platform === 'win32') {
+    return { platform: 'electron-win', channel: 'win-releases' }
+  }
+  return { platform: 'electron-linux', channel: nodeProcess.env?.SNAP ? 'snap-stable' : undefined }
+}
+
+// 桌面版主进程的自动更新状态（POS-130），写进云端设备事件
+export function forwardDesktopUpdateEvents (deviceId) {
+  if (!window.process?.versions?.electron || !deviceId) {
+    return
+  }
+  const { ipcRenderer } = require('electron')
+  ipcRenderer.on('update-event', (event, content) => {
+    fetch('https://cloud-v2.aaden.io/deviceLog/createEvent', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deviceId, content, type: '系统生成', operator: 'aaden-desktop' })
+    }).catch(() => {})
+  })
+  ipcRenderer.send('update-event-ready')
 }
