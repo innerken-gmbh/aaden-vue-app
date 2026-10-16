@@ -14,6 +14,8 @@ name: appcenter-publish
 on:
   push:
     branches: [master]
+    # 只改 CI 的提交不重发：version.json 里有 commit，内容没变也会算成新包，重新开灰度、顶掉回滚位
+    paths-ignore: ['.github/**']
   pull_request:
     branches: [master]
   workflow_dispatch:
