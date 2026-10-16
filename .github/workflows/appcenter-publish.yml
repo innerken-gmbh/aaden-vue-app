@@ -2,6 +2,13 @@
 # 门店设备由 aaden-cli appcenter-sync 每天拉取（要 aaden-cli >= 1.6.120 才认 rootApps）。
 # 自动灰度：先给 ik0001 + deviceId%100<10，满 24 小时由 innerken-gmbh/workflows 的 appcenter-promote 自动全量；
 # 这一天内可以在 innerken-gmbh/workflows 手动跑 appcenter-rollback（app=App，kind=rootApps）回滚。PR 只构建打包，不发布。
+#
+# 手动按 tag 发布（publish-tag）：master 早已不是版本线（v1.2.x 的 tag 都在 base1.0-rc 上），
+# 所以在 master 上 Run workflow，填 tag（只认 v1.2.<数字>）和目标：
+#   apps     = 门店 /AppCenter/App（网页收银），manifest 的 apps.App
+#   rootApps = 门店 docroot 根的 /App，manifest 的 rootApps.App
+# 构建 checkout 的是那个 tag 的代码（Node 22 + npm ci，和 tag 那条线的桌面版 CI 一致）；AWS 角色只信任 master，所以 workflow 必须从 master 跑。
+# 同样自动灰度 ik0001 + 10%，满 24 小时 appcenter-promote 全量；回滚在 innerken-gmbh/workflows 跑 appcenter-rollback（app=App，kind=对应目标）。
 name: appcenter-publish
 
 on:
@@ -10,6 +17,16 @@ on:
   pull_request:
     branches: [master]
   workflow_dispatch:
+    inputs:
+      ref:
+        description: '要发布的 tag，例如 v1.2.162（留空 = 按 master 的老方式发 rootApps）'
+        required: false
+        default: ''
+      target:
+        description: 'apps = /AppCenter/App（网页收银）；rootApps = 根目录 /App'
+        type: choice
+        options: [apps, rootApps]
+        default: apps
 
 concurrency:
   group: appcenter-publish-${{ github.event_name }}-${{ github.ref }}
@@ -21,6 +38,8 @@ permissions:
 
 jobs:
   publish:
+    # 按 tag 发布走下面的 publish-tag
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.ref == '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,4 +57,40 @@ jobs:
           kind: rootApps
           dist: dist
           dry-run: ${{ github.event_name == 'pull_request' }}
+          role-to-assume: ${{ vars.AWS_OIDC_ROLE_ARN }}
+
+  publish-tag:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.ref != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 校验输入
+        env:
+          REF: ${{ inputs.ref }}
+          TARGET: ${{ inputs.target }}
+        run: |
+          [[ "$REF" =~ ^v1\.2\.[0-9]+$ ]] || { echo "::error::ref 只接受 v1.2.<数字> 这样的 tag，收到「$REF」"; exit 1; }
+          [[ "$TARGET" == apps || "$TARGET" == rootApps ]] || { echo "::error::target 只能是 apps 或 rootApps"; exit 1; }
+          [ "$GITHUB_REF" = refs/heads/master ] || { echo "::error::要从 master 运行（AWS 角色只信任 master）"; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          ref: refs/tags/${{ inputs.ref }}
+      - name: 核对 tag 和 package.json 版本一致
+        env:
+          REF: ${{ inputs.ref }}
+        run: |
+          V=$(node -p "require('./package.json').version")
+          [ "v$V" = "$REF" ] || { echo "::error::tag $REF 里的 package.json 版本是 $V"; exit 1; }
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # 跳过 postinstall（electron-builder install-app-deps）；electron 自己的安装脚本单独跑：web 构建时 vue-cli 的 electron 插件也会检查它
+      - run: npm ci --ignore-scripts --no-audit --no-fund && npm rebuild electron
+      - run: npx vue-cli-service build
+        env:
+          NODE_OPTIONS: --openssl-legacy-provider
+      - uses: innerken-gmbh/workflows/appcenter-publish@main
+        with:
+          app: App
+          kind: ${{ inputs.target }}
+          dist: dist
           role-to-assume: ${{ vars.AWS_OIDC_ROLE_ARN }}
