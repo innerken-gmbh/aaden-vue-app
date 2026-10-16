@@ -26,7 +26,8 @@ export default {
   },
   computed: {
     iframeSrc () {
-      return this.host + this.base + '/' + this.endPoint +
+      // 结尾带 /：不带的话 Apache 先回 301 跳到带 / 的地址
+      return this.host + this.base + '/' + this.endPoint + '/' +
           '?Base=' + this.base +
           '&chaos=' + this.Config.startUpTimestamp +
           '&pw=' + this.password
@@ -34,7 +35,7 @@ export default {
   },
   async mounted () {
     this.base = GlobalConfig.Base
-    this.host = location?.protocol === 'https:' ? 'https:' : 'http:' + '//'
+    this.host = (location?.protocol === 'https:' ? 'https:' : 'http:') + '//'
     this.deviceId = await getCurrentDeviceId()
   },
   async activated () {
