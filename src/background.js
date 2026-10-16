@@ -1,5 +1,5 @@
 'use strict'
-import { app, BrowserWindow, ipcMain, powerMonitor, protocol } from 'electron'
+import { app, BrowserWindow, ipcMain, powerMonitor, protocol, session } from 'electron'
 import { autoUpdater } from 'electron-updater'
 import fs from 'fs'
 import path from 'path'
@@ -280,6 +280,15 @@ if (!gotTheLock) {
 
   // 创建 myWindow, 加载应用的其余部分, etc...
   app.whenReady().then(async () => {
+    // POS-182：「行政」页嵌的门店后台（http://<Base>/AppCenter/Admin）会被内嵌浏览器缓存住，
+    // 后台换了新构建以后整页空白，重启无效、卸载重装才好（1948、1466）。收银页面本身从安装包加载、不走这些缓存，
+    // 所以每次启动清掉 HTTP 缓存、Service Worker 和 Cache Storage；后台的登录状态（localStorage）不动
+    try {
+      await session.defaultSession.clearCache()
+      await session.defaultSession.clearStorageData({ storages: ['serviceworkers', 'cachestorage'] })
+    } catch (e) {
+      console.error('clear cache failed', e)
+    }
     if (process.platform === 'win32' && !isDevelopment) {
       useS3Feed()
     }
