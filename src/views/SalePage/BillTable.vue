@@ -328,7 +328,9 @@ export default {
       try {
         await changePayMethodForOrder(order.orderId, paymentLog)
       } catch (e) {
-
+        // POS-121：门店拒绝改支付方式（比如快餐单）时把原因显示出来，不再假装成功
+        IKUtils.showError(e?.data?.info ?? e?.message ?? String(e))
+        return
       }
 
       IKUtils.toast('OK')
