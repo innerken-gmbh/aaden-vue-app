@@ -50,6 +50,12 @@ jobs:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.ref == '' }}
     runs-on: ubuntu-latest
     steps:
+      # 这条路径（ref 留空 = 按 master 发 rootApps）不支持只放指定设备；填了就报错，免得静默走默认 10%
+      - name: 不支持 rollout-devices
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.rollout-devices != '' }}
+        run: |
+          echo "::error::rollout-devices 只在按 tag 发布（填了 ref）时有效；ref 留空的老方式不支持，没有发布"
+          exit 1
       - uses: actions/checkout@v4
       # master 依赖 node-sass，Node 22 装不上，要 Node 16
       - uses: actions/setup-node@v4
@@ -75,8 +81,16 @@ jobs:
         env:
           REF: ${{ inputs.ref }}
           TARGET: ${{ inputs.target }}
+          ROLLOUT_DEVICES: ${{ inputs.rollout-devices }}
         run: |
           [[ "$REF" =~ ^v1\.2\.[0-9]+$ ]] || { echo "::error::ref 只接受 v1.2.<数字> 这样的 tag，收到「$REF」"; exit 1; }
+          if [ -n "$ROLLOUT_DEVICES" ]; then
+            [[ "$ROLLOUT_DEVICES" =~ ^[0-9]+(,[0-9]+)*$ ]] || { echo "::error::rollout-devices 只能是逗号分隔的设备号（例如 9020），收到「$ROLLOUT_DEVICES」"; exit 1; }
+            # 下面用的是 innerken-gmbh/workflows@main：那边还不认 rollout-devices 时，composite action 只会警告、静默忽略，
+            # 结果会按默认 10% 发出去、24 小时后自动全量。所以先确认 main 上的 action 已经有这个输入
+            curl -fsSL https://raw.githubusercontent.com/innerken-gmbh/workflows/main/appcenter-publish/action.yml | grep -q '^  rollout-devices:' \
+              || { echo "::error::innerken-gmbh/workflows main 上的 appcenter-publish 还不支持 rollout-devices（workflows#4 没合并？），没有发布"; exit 1; }
+          fi
           [[ "$TARGET" == apps || "$TARGET" == rootApps ]] || { echo "::error::target 只能是 apps 或 rootApps"; exit 1; }
           [ "$GITHUB_REF" = refs/heads/master ] || { echo "::error::要从 master 运行（AWS 角色只信任 master）"; exit 1; }
       - uses: actions/checkout@v4
