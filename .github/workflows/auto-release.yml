@@ -2,32 +2,37 @@
 #   1. 版本号 patch +1（和手动 `npm run update`（release-it）一样：提交「[VersionChange]:: release vX」+ tag vX）；
 #   2. 触发桌面版：Release App To Snap Store（nodejs.yml）、Release App To Github（windows.yml）；
 #   3. 触发网页收银发到门店 /AppCenter/App：master 上 appcenter-publish 的 publish-tag（ref=vX，target=apps），
-#      默认灰度 ik0001 + deviceId%100<10，满 24 小时自动全量；回滚见那个文件的说明。
+#      默认灰度 ik0001 + deviceId%100<10，满 24 小时自动全量。
+#      AppCenter/App 还有没满 24 小时（或手动设的、不计时）的灰度时，跳过这一步只发桌面版：
+#      不然 previousApps 会被换成没验证完的那版、灰度重新计时；事后可在 master 上手动 Run appcenter-publish 补发。
 # 为什么用触发而不是等 tag 的 push 事件：GITHUB_TOKEN 推的提交和 tag 不会再触发任何 workflow（防循环），
-# 只有 workflow_dispatch 例外。所以打完 tag 在这里直接 dispatch 那三个 workflow；本 workflow 自己推的版本号提交也不会再触发自己。
-# 有人照旧在本地 `npm run update` 推 tag 时：桌面版照旧由 tag push 触发，这里只补发 AppCenter/App。
+# 只有 workflow_dispatch 例外。所以打完 tag 在这里直接 dispatch；本 workflow 自己推的版本号提交也不会再触发自己。
+# 有人照旧在本地 `npm run update` 推 tag 时：桌面版照旧由 tag push 触发，这里只补发 AppCenter/App（要求是当前最大版本）。
 name: auto-release
 
 on:
   push:
     branches: [base1.0-rc]
-    # 只改 CI 的合并不发版
-    paths-ignore: ['.github/**']
+    # 只改 CI 或文档的合并不发版（package.json 不能排除）
+    paths-ignore: ['.github/**', '**.md']
     tags: ['v1.2.*']
-
-concurrency:
-  group: auto-release
-  cancel-in-progress: false
 
 permissions:
   contents: write # 推版本号提交和 tag
   actions: write  # dispatch 桌面版和 appcenter-publish
+
+env:
+  MANIFEST_URL: https://aaden-backend.s3.eu-central-1.amazonaws.com/appcenter/stable/manifest.json
 
 jobs:
   release:
     # 手动 release-it 推上来的版本号提交（[VersionChange]）不再加一次
     if: ${{ github.ref == 'refs/heads/base1.0-rc' && !startsWith(github.event.head_commit.message, '[VersionChange]') }}
     runs-on: ubuntu-latest
+    # 只串行分支上的发版；手动 tag 的补发在另一个 job，不会被挤掉
+    concurrency:
+      group: auto-release-branch
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,6 +47,17 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          # 连续合并时，后一次运行 checkout 到的可能已经包含上一次 bump 的结果：
+          # 上一个 tag 之后除了版本号提交、.github 和文档以外没有别的改动，就不再发一个内容一样的版本
+          LAST=$(git describe --tags --abbrev=0 --match 'v1.2.*' 2>/dev/null || true)
+          if [ -n "$LAST" ]; then
+            CHANGED=$(git log "$LAST"..HEAD --format=%H --invert-grep --grep='^\[VersionChange\]' -- . ':(exclude).github' ':(exclude)**/*.md' ':(exclude)*.md' | head -n 1)
+            if [ -z "$CHANGED" ]; then
+              echo "上一个 tag $LAST 之后没有需要发版的改动，跳过"
+              echo "tag=" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          fi
           npm version patch --no-git-tag-version --ignore-scripts >/dev/null
           V=$(node -p "require('./package.json').version")
           [[ "$V" =~ ^1\.2\.[0-9]+$ ]] || { echo "::error::新版本号 $V 不是 1.2.x，停下"; exit 1; }
@@ -49,27 +65,91 @@ jobs:
           git add package.json package-lock.json
           git commit -q -m "[VersionChange]:: release v$V"
           git tag "v$V"
-          # 期间又有人合并的话这里会被拒，整个 workflow 失败、什么都不发；下一次合并会接着 +1
-          git push origin HEAD:base1.0-rc
-          git push origin "v$V"
+          # 提交和 tag 一起推（atomic）：期间又有人合并的话两样都推不上去，整个 workflow 失败、什么都不发；下一次合并会接着 +1
+          git push --atomic origin HEAD:base1.0-rc "v$V"
           echo "tag=v$V" >> "$GITHUB_OUTPUT"
+      - name: AppCenter/App 还在灰度吗
+        id: gray
+        if: ${{ steps.bump.outputs.tag != '' }}
+        run: |
+          set -euo pipefail
+          curl -fsS "$MANIFEST_URL" -o manifest.json
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, datetime
+          e = (json.load(open('manifest.json')).get('apps') or {}).get('App') or {}
+          r, started = e.get('rollout'), e.get('rolloutStartedAt')
+          skip = ''
+          if r is not None:
+              if not started:
+                  skip = '手动设的灰度（不计时）还没放完'
+              else:
+                  h = (datetime.datetime.now(datetime.timezone.utc) - datetime.datetime.fromisoformat(started)).total_seconds() / 3600
+                  if h < 24:
+                      skip = '灰度才 %.1f 小时（不满 24 小时）' % h
+          print('skip=' + skip)
+          PY
       - name: 触发桌面版和 AppCenter/App
+        if: ${{ steps.bump.outputs.tag != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.bump.outputs.tag }}
+          SKIP_APPCENTER: ${{ steps.gray.outputs.skip }}
         run: |
-          set -euo pipefail
-          gh workflow run nodejs.yml --ref "$TAG" -R "$GITHUB_REPOSITORY"
-          gh workflow run windows.yml --ref "$TAG" -R "$GITHUB_REPOSITORY"
-          gh workflow run appcenter-publish.yml --ref master -R "$GITHUB_REPOSITORY" -f ref="$TAG" -f target=apps
-          echo "已触发：Snap、Windows（$TAG），appcenter-publish（master，ref=$TAG，target=apps）"
+          set -uo pipefail
+          failed=()
+          gh workflow run nodejs.yml --ref "$TAG" -R "$GITHUB_REPOSITORY" || failed+=("Snap：在 Actions 里对 $TAG 运行 Release App To Snap Store")
+          gh workflow run windows.yml --ref "$TAG" -R "$GITHUB_REPOSITORY" || failed+=("Windows：在 Actions 里对 $TAG 运行 Release App To Github")
+          if [ -n "$SKIP_APPCENTER" ]; then
+            echo "::warning::AppCenter/App 跳过：$SKIP_APPCENTER。要补发就在 master 上 Run appcenter-publish（ref=$TAG，target=apps）"
+          else
+            gh workflow run appcenter-publish.yml --ref master -R "$GITHUB_REPOSITORY" -f ref="$TAG" -f target=apps \
+              || failed+=("AppCenter/App：在 master 上 Run appcenter-publish（ref=$TAG，target=apps）")
+          fi
+          if [ ${#failed[@]} -gt 0 ]; then
+            for f in "${failed[@]}"; do echo "::error::没触发成功，要手动补：$f"; done
+            exit 1
+          fi
+          echo "已触发：Snap、Windows（$TAG）${SKIP_APPCENTER:+；AppCenter/App 跳过}${SKIP_APPCENTER:-、appcenter-publish（master，ref=$TAG，target=apps）}"
 
   # 有人手动推了 v1.2.x tag（本地 npm run update）：桌面版由 tag push 自己触发，这里只补发 AppCenter/App
   appcenter-for-manual-tag:
     if: ${{ startsWith(github.ref, 'refs/tags/v1.2.') }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: 要求是当前最大版本、AppCenter/App 不在灰度里
+        id: check
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          git fetch -q --tags --force
+          MAX=$(git tag -l 'v1.2.*' | sort -V | tail -n 1)
+          [ "$TAG" = "$MAX" ] || { echo "::error::$TAG 不是当前最大的版本（最大是 $MAX），不发 AppCenter/App，免得把门店降级"; exit 1; }
+          curl -fsS "$MANIFEST_URL" -o manifest.json
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json, datetime
+          e = (json.load(open('manifest.json')).get('apps') or {}).get('App') or {}
+          r, started = e.get('rollout'), e.get('rolloutStartedAt')
+          skip = ''
+          if r is not None:
+              if not started:
+                  skip = '手动设的灰度（不计时）还没放完'
+              else:
+                  h = (datetime.datetime.now(datetime.timezone.utc) - datetime.datetime.fromisoformat(started)).total_seconds() / 3600
+                  if h < 24:
+                      skip = '灰度才 %.1f 小时（不满 24 小时）' % h
+          print('skip=' + skip)
+          PY
       - name: 触发 AppCenter/App
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh workflow run appcenter-publish.yml --ref master -R "$GITHUB_REPOSITORY" -f ref="$GITHUB_REF_NAME" -f target=apps
+          SKIP_APPCENTER: ${{ steps.check.outputs.skip }}
+        run: |
+          if [ -n "$SKIP_APPCENTER" ]; then
+            echo "::warning::AppCenter/App 跳过：$SKIP_APPCENTER。要补发就在 master 上 Run appcenter-publish（ref=$GITHUB_REF_NAME，target=apps）"
+            exit 0
+          fi
+          gh workflow run appcenter-publish.yml --ref master -R "$GITHUB_REPOSITORY" -f ref="$GITHUB_REF_NAME" -f target=apps
