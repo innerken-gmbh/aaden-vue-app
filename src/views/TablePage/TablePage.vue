@@ -1083,7 +1083,11 @@ export default {
       dish.apply = _mod
       dish.forceFormat = true
 
-      this.addDish(dish, count ?? parseInt(this.count))
+      if (dish.code.toLowerCase().includes('ea')) {
+        this.showExtraDish(dish)
+      } else {
+        this.addDish(dish, count ?? parseInt(this.count))
+      }
       dish.edit = () => {
         this.showModification(dish, 1, saveInfo)
       }
