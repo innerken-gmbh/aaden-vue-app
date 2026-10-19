@@ -71,15 +71,19 @@ jobs:
       - name: AppCenter/App 还在灰度吗
         id: gray
         if: ${{ steps.bump.outputs.tag != '' }}
+        # 这一步出任何问题都不能拦住桌面版：失败时下一步只跳过 AppCenter/App
+        continue-on-error: true
         run: |
-          set -euo pipefail
-          curl -fsS "$MANIFEST_URL" -o manifest.json
-          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          set -uo pipefail
+          # 读不到清单时只跳过 AppCenter/App，桌面版照常发
+          if ! curl -fsS "$MANIFEST_URL" -o manifest.json; then echo "skip=读不到 AppCenter 清单" >> "$GITHUB_OUTPUT"; exit 0; fi
+          python3 - <<'PY' >> "$GITHUB_OUTPUT" || echo "skip=清单解析失败" >> "$GITHUB_OUTPUT"
           import json, datetime
           e = (json.load(open('manifest.json')).get('apps') or {}).get('App') or {}
           r, started = e.get('rollout'), e.get('rolloutStartedAt')
           skip = ''
-          if r is not None:
+          # percent >= 100 等于全量（widen 填了 100 + 不计时）
+          if r is not None and int(r.get('percent') or 0) < 100:
               if not started:
                   skip = '手动设的灰度（不计时）还没放完'
               else:
@@ -94,8 +98,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.bump.outputs.tag }}
           SKIP_APPCENTER: ${{ steps.gray.outputs.skip }}
+          GRAY_OUTCOME: ${{ steps.gray.outcome }}
         run: |
           set -uo pipefail
+          [ "$GRAY_OUTCOME" = success ] || SKIP_APPCENTER="读灰度那一步失败（$GRAY_OUTCOME）"
           failed=()
           gh workflow run nodejs.yml --ref "$TAG" -R "$GITHUB_REPOSITORY" || failed+=("Snap：在 Actions 里对 $TAG 运行 Release App To Snap Store")
           gh workflow run windows.yml --ref "$TAG" -R "$GITHUB_REPOSITORY" || failed+=("Windows：在 Actions 里对 $TAG 运行 Release App To Github")
@@ -126,15 +132,16 @@ jobs:
         run: |
           set -euo pipefail
           git fetch -q --tags --force
-          MAX=$(git tag -l 'v1.2.*' | sort -V | tail -n 1)
+          MAX=$(git tag -l 'v1.2.*' | grep -E '^v1\.2\.[0-9]+$' | sort -V | tail -n 1)
           [ "$TAG" = "$MAX" ] || { echo "::error::$TAG 不是当前最大的版本（最大是 $MAX），不发 AppCenter/App，免得把门店降级"; exit 1; }
-          curl -fsS "$MANIFEST_URL" -o manifest.json
-          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          if ! curl -fsS "$MANIFEST_URL" -o manifest.json; then echo "skip=读不到 AppCenter 清单" >> "$GITHUB_OUTPUT"; exit 0; fi
+          python3 - <<'PY' >> "$GITHUB_OUTPUT" || echo "skip=清单解析失败" >> "$GITHUB_OUTPUT"
           import json, datetime
           e = (json.load(open('manifest.json')).get('apps') or {}).get('App') or {}
           r, started = e.get('rollout'), e.get('rolloutStartedAt')
           skip = ''
-          if r is not None:
+          # percent >= 100 等于全量（widen 填了 100 + 不计时）
+          if r is not None and int(r.get('percent') or 0) < 100:
               if not started:
                   skip = '手动设的灰度（不计时）还没放完'
               else:
