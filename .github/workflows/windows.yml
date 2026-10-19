@@ -7,6 +7,8 @@ on:
   push:
     tags:
       - v**
+  # auto-release 打完 tag 用 workflow_dispatch 触发（GITHUB_TOKEN 推的 tag 不会触发 push 事件）
+  workflow_dispatch:
 
 jobs:
   build:

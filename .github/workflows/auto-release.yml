@@ -1,0 +1,75 @@
+# 合并到 base1.0-rc 就自动发版（用户 10-19 定「一合并就自动发布：自动打 tag，自动发布」）：
+#   1. 版本号 patch +1（和手动 `npm run update`（release-it）一样：提交「[VersionChange]:: release vX」+ tag vX）；
+#   2. 触发桌面版：Release App To Snap Store（nodejs.yml）、Release App To Github（windows.yml）；
+#   3. 触发网页收银发到门店 /AppCenter/App：master 上 appcenter-publish 的 publish-tag（ref=vX，target=apps），
+#      默认灰度 ik0001 + deviceId%100<10，满 24 小时自动全量；回滚见那个文件的说明。
+# 为什么用触发而不是等 tag 的 push 事件：GITHUB_TOKEN 推的提交和 tag 不会再触发任何 workflow（防循环），
+# 只有 workflow_dispatch 例外。所以打完 tag 在这里直接 dispatch 那三个 workflow；本 workflow 自己推的版本号提交也不会再触发自己。
+# 有人照旧在本地 `npm run update` 推 tag 时：桌面版照旧由 tag push 触发，这里只补发 AppCenter/App。
+name: auto-release
+
+on:
+  push:
+    branches: [base1.0-rc]
+    # 只改 CI 的合并不发版
+    paths-ignore: ['.github/**']
+    tags: ['v1.2.*']
+
+concurrency:
+  group: auto-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write # 推版本号提交和 tag
+  actions: write  # dispatch 桌面版和 appcenter-publish
+
+jobs:
+  release:
+    # 手动 release-it 推上来的版本号提交（[VersionChange]）不再加一次
+    if: ${{ github.ref == 'refs/heads/base1.0-rc' && !startsWith(github.event.head_commit.message, '[VersionChange]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: base1.0-rc
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 版本号 +1、提交、打 tag
+        id: bump
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          npm version patch --no-git-tag-version --ignore-scripts >/dev/null
+          V=$(node -p "require('./package.json').version")
+          [[ "$V" =~ ^1\.2\.[0-9]+$ ]] || { echo "::error::新版本号 $V 不是 1.2.x，停下"; exit 1; }
+          git rev-parse -q --verify "refs/tags/v$V" >/dev/null && { echo "::error::tag v$V 已经存在，停下"; exit 1; }
+          git add package.json package-lock.json
+          git commit -q -m "[VersionChange]:: release v$V"
+          git tag "v$V"
+          # 期间又有人合并的话这里会被拒，整个 workflow 失败、什么都不发；下一次合并会接着 +1
+          git push origin HEAD:base1.0-rc
+          git push origin "v$V"
+          echo "tag=v$V" >> "$GITHUB_OUTPUT"
+      - name: 触发桌面版和 AppCenter/App
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.bump.outputs.tag }}
+        run: |
+          set -euo pipefail
+          gh workflow run nodejs.yml --ref "$TAG" -R "$GITHUB_REPOSITORY"
+          gh workflow run windows.yml --ref "$TAG" -R "$GITHUB_REPOSITORY"
+          gh workflow run appcenter-publish.yml --ref master -R "$GITHUB_REPOSITORY" -f ref="$TAG" -f target=apps
+          echo "已触发：Snap、Windows（$TAG），appcenter-publish（master，ref=$TAG，target=apps）"
+
+  # 有人手动推了 v1.2.x tag（本地 npm run update）：桌面版由 tag push 自己触发，这里只补发 AppCenter/App
+  appcenter-for-manual-tag:
+    if: ${{ startsWith(github.ref, 'refs/tags/v1.2.') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 触发 AppCenter/App
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run appcenter-publish.yml --ref master -R "$GITHUB_REPOSITORY" -f ref="$GITHUB_REF_NAME" -f target=apps
