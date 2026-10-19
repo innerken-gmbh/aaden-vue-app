@@ -9,6 +9,8 @@
 #   rootApps = 门店 docroot 根的 /App，manifest 的 rootApps.App
 # 构建 checkout 的是那个 tag 的代码（Node 22 + npm ci，和 tag 那条线的桌面版 CI 一致）；AWS 角色只信任 master，所以 workflow 必须从 master 跑。
 # 同样自动灰度 ik0001 + 10%，满 24 小时 appcenter-promote 全量；回滚在 innerken-gmbh/workflows 跑 appcenter-rollback（app=App，kind=对应目标）。
+# 填了 rollout-devices（例如 9020）就只放这些设备、不自动全量，之后在 innerken-gmbh/workflows 跑 appcenter-widen 扩大并开始计 24 小时。
+# 第一次发布 apps.App 时清单里没有上一版，appcenter-rollback 用不了：要退回就用这里再发一个旧 tag。
 name: appcenter-publish
 
 on:
@@ -29,6 +31,10 @@ on:
         type: choice
         options: [apps, rootApps]
         default: apps
+      rollout-devices:
+        description: '只放这些设备（逗号分隔，例如 9020）：不自动全量，之后在 innerken-gmbh/workflows 跑 appcenter-widen 扩大。留空 = 默认 ik0001 + 10%，24 小时后全量'
+        required: false
+        default: ''
 
 concurrency:
   group: appcenter-publish-${{ github.event_name }}-${{ github.ref }}
@@ -44,6 +50,12 @@ jobs:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.ref == '' }}
     runs-on: ubuntu-latest
     steps:
+      # 这条路径（ref 留空 = 按 master 发 rootApps）不支持只放指定设备；填了就报错，免得静默走默认 10%
+      - name: 不支持 rollout-devices
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.rollout-devices != '' }}
+        run: |
+          echo "::error::rollout-devices 只在按 tag 发布（填了 ref）时有效；ref 留空的老方式不支持，没有发布"
+          exit 1
       - uses: actions/checkout@v4
       # master 依赖 node-sass，Node 22 装不上，要 Node 16
       - uses: actions/setup-node@v4
@@ -69,8 +81,16 @@ jobs:
         env:
           REF: ${{ inputs.ref }}
           TARGET: ${{ inputs.target }}
+          ROLLOUT_DEVICES: ${{ inputs.rollout-devices }}
         run: |
           [[ "$REF" =~ ^v1\.2\.[0-9]+$ ]] || { echo "::error::ref 只接受 v1.2.<数字> 这样的 tag，收到「$REF」"; exit 1; }
+          if [ -n "$ROLLOUT_DEVICES" ]; then
+            [[ "$ROLLOUT_DEVICES" =~ ^[0-9]+(,[0-9]+)*$ ]] || { echo "::error::rollout-devices 只能是逗号分隔的设备号（例如 9020），收到「$ROLLOUT_DEVICES」"; exit 1; }
+            # 下面用的是 innerken-gmbh/workflows@main：那边还不认 rollout-devices 时，composite action 只会警告、静默忽略，
+            # 结果会按默认 10% 发出去、24 小时后自动全量。所以先确认 main 上的 action 已经有这个输入
+            curl -fsSL https://raw.githubusercontent.com/innerken-gmbh/workflows/main/appcenter-publish/action.yml | grep -q '^  rollout-devices:' \
+              || { echo "::error::innerken-gmbh/workflows main 上的 appcenter-publish 还不支持 rollout-devices（workflows#4 没合并？），没有发布"; exit 1; }
+          fi
           [[ "$TARGET" == apps || "$TARGET" == rootApps ]] || { echo "::error::target 只能是 apps 或 rootApps"; exit 1; }
           [ "$GITHUB_REF" = refs/heads/master ] || { echo "::error::要从 master 运行（AWS 角色只信任 master）"; exit 1; }
       - uses: actions/checkout@v4
@@ -94,5 +114,6 @@ jobs:
         with:
           app: App
           kind: ${{ inputs.target }}
+          rollout-devices: ${{ inputs.rollout-devices }}
           dist: dist
           role-to-assume: ${{ vars.AWS_OIDC_ROLE_ARN }}
