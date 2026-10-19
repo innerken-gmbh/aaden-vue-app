@@ -1,4 +1,7 @@
-# 合并到 master 后自动构建 web 版，发布到门店 docroot 根目录的 /App（AppCenter 的 rootApps）。
+# 发布网页收银到门店（AppCenter）。10-19 起不再随 push 自动发布：master 已经不是版本线，
+# 合进 master 的改动会把 0.10.x 发到全网根目录 /App（用户 10-19 定关掉）。两种发布都改成手动 Run workflow：
+#   ref 留空 = 按 master 的代码发根目录 /App（rootApps，老方式）；
+#   ref 填 v1.2.x tag = 发 /AppCenter/App 或 rootApps（见下面 publish-tag）。base1.0-rc 合并后由那边的 auto-release 自动触发这一条。
 # 门店设备由 aaden-cli appcenter-sync 每天拉取（要 aaden-cli >= 1.6.120 才认 rootApps）。
 # 自动灰度：先给 ik0001 + deviceId%100<10，满 24 小时由 innerken-gmbh/workflows 的 appcenter-promote 自动全量；
 # 这一天内可以在 innerken-gmbh/workflows 手动跑 appcenter-rollback（app=App，kind=rootApps）回滚。PR 只构建打包，不发布。
@@ -14,10 +17,6 @@
 name: appcenter-publish
 
 on:
-  push:
-    branches: [master]
-    # 只改 CI 的提交不重发：version.json 里有 commit，内容没变也会算成新包，重新开灰度、顶掉回滚位
-    paths-ignore: ['.github/**']
   pull_request:
     branches: [master]
   workflow_dispatch:
