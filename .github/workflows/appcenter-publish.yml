@@ -9,6 +9,8 @@
 #   rootApps = 门店 docroot 根的 /App，manifest 的 rootApps.App
 # 构建 checkout 的是那个 tag 的代码（Node 22 + npm ci，和 tag 那条线的桌面版 CI 一致）；AWS 角色只信任 master，所以 workflow 必须从 master 跑。
 # 同样自动灰度 ik0001 + 10%，满 24 小时 appcenter-promote 全量；回滚在 innerken-gmbh/workflows 跑 appcenter-rollback（app=App，kind=对应目标）。
+# 填了 rollout-devices（例如 9020）就只放这些设备、不自动全量，之后在 innerken-gmbh/workflows 跑 appcenter-widen 扩大并开始计 24 小时。
+# 第一次发布 apps.App 时清单里没有上一版，appcenter-rollback 用不了：要退回就用这里再发一个旧 tag。
 name: appcenter-publish
 
 on:
@@ -29,6 +31,10 @@ on:
         type: choice
         options: [apps, rootApps]
         default: apps
+      rollout-devices:
+        description: '只放这些设备（逗号分隔，例如 9020）：不自动全量，之后在 innerken-gmbh/workflows 跑 appcenter-widen 扩大。留空 = 默认 ik0001 + 10%，24 小时后全量'
+        required: false
+        default: ''
 
 concurrency:
   group: appcenter-publish-${{ github.event_name }}-${{ github.ref }}
@@ -94,5 +100,6 @@ jobs:
         with:
           app: App
           kind: ${{ inputs.target }}
+          rollout-devices: ${{ inputs.rollout-devices }}
           dist: dist
           role-to-assume: ${{ vars.AWS_OIDC_ROLE_ARN }}
