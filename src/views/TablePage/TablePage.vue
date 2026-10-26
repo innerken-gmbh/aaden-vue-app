@@ -388,6 +388,34 @@
     </v-dialog>
 
     <v-dialog
+        v-model="extraWeighingDishShow"
+        max-width="400"
+    >
+      <v-card>
+        <v-card-title class="font-weight-bold">
+          {{ currentDish.name }}
+        </v-card-title>
+        <v-card-text class="mt-4">
+          <v-text-field
+              v-model="currentDish.currentWeight"
+              :label="$t('Weight')"
+              autofocus
+              outlined
+          />
+          <v-btn
+              block
+              class="amber lighten-4 black--text"
+              elevation="0"
+              large
+              @click="addExtraWeighingDish"
+          >{{ $t('submit') }}
+          </v-btn>
+        </v-card-text>
+
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
         v-model="depositListShow"
         max-width="800"
         scrollable
@@ -689,7 +717,8 @@ const orderListFactory = DishDocker.StandardDishesListFactory()
 
 const defaultCurrentDish = {
   currentName: '',
-  currentPrice: ''
+  currentPrice: '',
+  currentWeight: ''
 }
 
 const key = 'reason'
@@ -740,6 +769,7 @@ export default {
   },
   data: function () {
     return {
+      extraWeighingDishShow: false,
       takeawayShow: false,
       addCurrentRfDish: false,
       showConfirmDialog: false,
@@ -994,6 +1024,10 @@ export default {
         this.extraDishShow = true
       }
     },
+    async showExtraWeighingDish (dish) {
+      this.currentDish = Object.assign({}, defaultCurrentDish, dish)
+      this.extraWeighingDishShow = true
+    },
     showModification (dish, count, mod = null, overrideConsumeTypeId = null) {
       this.dish = dish
       this.count = count
@@ -1064,6 +1098,26 @@ export default {
       }
       this.addDish(dish)
     },
+    addExtraWeighingDish () {
+      const dish = IKUtils.deepCopy(this.currentDish)
+      if (dish.currentWeight === '') {
+        dish.currentPrice = 0
+      } else {
+        const unitPrice = dish.name.replace(',', '.').match(/(\d+(?:\.\d+)?)\s*\/\s*\d+(?:\.\d+)?\s*kg/)[1]
+        dish.currentPrice = parseFloat(unitPrice) * parseFloat(dish.currentWeight)
+        dish.currentName = dish.name + ' | ' + dish.currentWeight + 'kg'
+      }
+      dish.originPrice = dish.currentPrice.toString().replace(',', '.')
+      dish.price = dish.originPrice
+      dish.forceFormat = true
+      this.extraWeighingDishShow = false
+      this.currentDish = {
+        currentName: '',
+        originPrice: '',
+        currentWeight: ''
+      }
+      this.addDish(dish)
+    },
     addDish: async function (dish, count = 1) {
       if (parseInt(this.realConsumeTypeId) !== parseInt(this.consumeTypeId)) {
         dish.overrideConsumeTypeId = this.realConsumeTypeId
@@ -1084,7 +1138,12 @@ export default {
       dish.forceFormat = true
 
       if (dish.code.toLowerCase().includes('ea')) {
-        this.showExtraDish(dish)
+        const rule = dish.name.match(/(\d+(?:\.\d+)?)\s*\/\s*\d+(?:\.\d+)?\s*kg/)
+        if (rule) {
+          this.showExtraWeighingDish(dish)
+        } else {
+          this.showExtraDish(dish)
+        }
       } else {
         this.addDish(dish, count ?? parseInt(this.count))
       }

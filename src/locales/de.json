@@ -615,5 +615,6 @@
   "goAdminCheck": "Um alle historischen Bestellungen einzusehen, rufen Sie bitte die Rechnungsübersicht im Administrationsbereich auf!",
   "DesktopUpdateReady": "Neue Version {version} ist bereit",
   "DesktopUpdateNow": "Jetzt aktualisieren",
-  "DesktopUpdateConfirmHint": "Die Kasse wird geschlossen und öffnet sich nach etwa 30 Sekunden automatisch wieder. Bitte nur aktualisieren, wenn gerade nicht kassiert wird."
+  "DesktopUpdateConfirmHint": "Die Kasse wird geschlossen und öffnet sich nach etwa 30 Sekunden automatisch wieder. Bitte nur aktualisieren, wenn gerade nicht kassiert wird.",
+  "Weight": "Gewicht"
 }
