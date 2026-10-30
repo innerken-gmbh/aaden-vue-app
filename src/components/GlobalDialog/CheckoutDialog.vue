@@ -3,7 +3,7 @@
       v-model="show"
       app
       width="400"
-      :stateless="lock"
+      :stateless="lock || loading"
       right
       temporary
   >
@@ -53,7 +53,7 @@
               v-if="Math.abs(remainTotal - checkoutTotal) > 0.001 && remainTotal !== 0"
           >
             <div
-                @click="paymentLog=[]"
+                @click="clearDraft()"
 
                 class="d-flex align-center text-body-1"
             >
@@ -216,7 +216,7 @@
                     class="mb-2"
                     elevation="0"
                     rounded
-                    @click="paymentLog = []"
+                    @click="clearDraft()"
                 >
                   <v-icon left>mdi-arrow-left</v-icon>
                   {{ $t('Previous') }}
@@ -345,13 +345,17 @@ export default {
   watch: {
     show (val) {
       if (!val) {
-        this.hideCheckoutDialog()
+        this.cancel()
       }
     },
     returnHome (val) {
       Remember.returnHomeCheckout = val
     },
     showCheckoutDialog (val) {
+      if (val) {
+        // 每次打开结账弹窗都从干净状态开始，不再只依赖点 X 按钮清理
+        this.clearDraft()
+      }
       this.show = val
     }
   },
@@ -479,9 +483,7 @@ export default {
             companyLocation: this.companyLocation
           }
         })
-        this.paymentLog = []
-        this.clearBuffer()
-        this.emptyCompanyInfoDialog()
+        this.clearDraft()
       } catch (e) {
         console.log(e)
       }
@@ -496,9 +498,14 @@ export default {
       this.companyLocation = ''
     },
     cancel () {
-      this.clearBuffer()
-      this.paymentLog = []
+      this.clearDraft()
       this.hideCheckoutDialog()
+    },
+    clearDraft () {
+      // 清空一单的支付草稿：已录入的支付方式、键盘输入、公司账单信息
+      this.paymentLog = []
+      this.clearBuffer()
+      this.emptyCompanyInfoDialog()
     },
     clearBuffer () {
       this.inputBuffer = ''
