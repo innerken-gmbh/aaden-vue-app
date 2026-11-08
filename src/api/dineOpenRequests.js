@@ -1,40 +1,58 @@
-import hillo from 'hillo'
-
-/** 错误不弹全局提示，由确认框自己按错误码显示 */
-const SILENT = { silent: true }
+import IKUtils from 'innerken-js-utils'
+import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
 
 /**
  * 堂食扫码的「待开桌」（POS-275）：客人扫桌码后请服务员开桌，这里在收银机上确认或拒绝。
- * 都走门店 PHP（QuickOrder.php），PHP 先核对服务员密码再转给云端，开桌逻辑和服务员确认网页是同一套。
- * 失败时 hillo 抛出 axios 响应，data 是 PHP 回包 { status: 'bad', info, content: { code } }。
+ * 直接调云端 /dine-in/device/{deviceId}/open-requests，开桌逻辑和服务员确认网页是同一套，服务员密码由云端拿门店核对。
+ * 云端地址默认 cloud-v2.aaden.io，本机联调时可以用地址栏 ?CloudBase=http://localhost:8096 覆盖。
+ * 失败时抛出带 code / info 的 Error：code 是云端的错误码（data.errorCode），比如 DINE_WAITER_PW_WRONG。
  */
+const CLOUD_BASE = (IKUtils.getQueryString('CloudBase') || 'https://cloud-v2.aaden.io').replace(/\/$/, '')
+
+function fail (code, info) {
+  return Object.assign(new Error(info || code), { code, info })
+}
+
+async function base () {
+  const deviceId = await getCurrentDeviceId()
+  if (!deviceId || deviceId === '-1') throw fail('NO_DEVICE_ID', 'no device id')
+  return `${CLOUD_BASE}/dine-in/device/${deviceId}/open-requests`
+}
+
+async function request (path, body) {
+  const url = (await base()) + path
+  let res
+  try {
+    res = await fetch(url, body
+      ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+      : { method: 'GET' })
+  } catch (e) {
+    throw fail('CLOUD_UNREACHABLE', e?.message ?? '')
+  }
+  const json = await res.json().catch(() => null)
+  if (res.ok && json?.code === 200) return json.data
+  throw fail(json?.data?.errorCode ?? (res.ok ? 'CLOUD_ERROR' : `HTTP_${res.status}`), json?.message ?? '')
+}
 
 /** @returns {Promise<{requests: Array, nextPollSeconds: number}>} */
-export async function loadDineOpenRequests () {
-  return (await hillo.silentGet('QuickOrder.php?op=dineOpenRequests')).content
+export function loadDineOpenRequests () {
+  return request('')
 }
 
 /** 打开确认框：占住这一桌，返回人数、自助类型候选（candidates / alternatives）和等待的轮次 */
-export async function claimDineOpenRequest (sessionId, pw, lang) {
-  return (await hillo.post('QuickOrder.php?op=dineClaimOpen', { sessionId, pw, lang }, SILENT)).content
+export function claimDineOpenRequest (sessionId, pw, lang) {
+  return request(`/${sessionId}/claim`, { pw, lang })
 }
 
-export async function confirmDineOpenRequest (sessionId, pw, { mode, consumeTypeId, adults, children }) {
-  return (await hillo.post('QuickOrder.php?op=dineConfirmOpen', {
-    sessionId,
-    pw,
-    mode: mode ?? '',
-    consumeTypeId: consumeTypeId ?? '',
-    adults,
-    children
-  }, SILENT)).content
+export function confirmDineOpenRequest (sessionId, pw, { mode, consumeTypeId, adults, children }) {
+  return request(`/${sessionId}/open`, { pw, mode: mode || null, consumeTypeId: consumeTypeId || null, adults, children })
 }
 
-export async function rejectDineOpenRequest (sessionId, pw, lang) {
-  return (await hillo.post('QuickOrder.php?op=dineRejectOpen', { sessionId, pw, lang }, SILENT)).content
+export function rejectDineOpenRequest (sessionId, pw, lang) {
+  return request(`/${sessionId}/reject`, { pw, lang })
 }
 
-/** 云端的错误码（PHP 放在 content.code），没有时用 info */
+/** 错误码和说明 */
 export function dineOpenErrorOf (e) {
-  return { code: e?.data?.content?.code ?? null, info: e?.data?.info ?? e?.message ?? '' }
+  return { code: e?.code ?? null, info: e?.info ?? e?.message ?? '' }
 }
