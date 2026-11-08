@@ -9,8 +9,8 @@ import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
  */
 const CLOUD_BASE = (IKUtils.getQueryString('CloudBase') || 'https://cloud-v2.aaden.io').replace(/\/$/, '')
 
-function fail (code, info) {
-  return Object.assign(new Error(info || code), { code, info })
+function fail (code, info, params = {}) {
+  return Object.assign(new Error(info || code), { code, info, params })
 }
 
 async function base () {
@@ -31,7 +31,7 @@ async function request (path, body) {
   }
   const json = await res.json().catch(() => null)
   if (res.ok && json?.code === 200) return json.data
-  throw fail(json?.data?.errorCode ?? (res.ok ? 'CLOUD_ERROR' : `HTTP_${res.status}`), json?.message ?? '')
+  throw fail(json?.data?.errorCode ?? (res.ok ? 'CLOUD_ERROR' : `HTTP_${res.status}`), json?.message ?? '', json?.data?.params ?? {})
 }
 
 /** @returns {Promise<{requests: Array, nextPollSeconds: number}>} */
@@ -54,5 +54,5 @@ export function rejectDineOpenRequest (sessionId, pw, lang) {
 
 /** 错误码和说明 */
 export function dineOpenErrorOf (e) {
-  return { code: e?.code ?? null, info: e?.info ?? e?.message ?? '' }
+  return { code: e?.code ?? null, info: e?.info ?? e?.message ?? '', params: e?.params ?? {} }
 }

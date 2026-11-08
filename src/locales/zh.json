@@ -648,5 +648,6 @@
   "DineOpenErrorGone": "这个开桌请求已经没有了",
   "DineOpenErrorUnreachable": "暂时连不上云端，请稍后再试",
   "DineOpenErrorUnknown": "没有成功，请再试一次",
-  "DineOpenWasRejected": "已拒绝过，客人可以再请求"
+  "DineOpenWasRejected": "已拒绝过，客人可以再请求",
+  "DineOpenErrorLockedMinutes": "密码错太多次，请 {minutes} 分钟后再试"
 }

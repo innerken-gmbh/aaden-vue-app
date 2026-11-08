@@ -941,5 +941,6 @@
   "DineOpenErrorGone": "This request no longer exists",
   "DineOpenErrorUnreachable": "Can't reach the cloud right now. Please try again later.",
   "DineOpenErrorUnknown": "That didn't work. Please try again.",
-  "DineOpenWasRejected": "declined before, guest can ask again"
+  "DineOpenWasRejected": "declined before, guest can ask again",
+  "DineOpenErrorLockedMinutes": "Too many wrong attempts. Try again in {minutes} min."
 }

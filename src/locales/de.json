@@ -644,5 +644,6 @@
   "DineOpenErrorGone": "Diese Anfrage gibt es nicht mehr",
   "DineOpenErrorUnreachable": "Cloud gerade nicht erreichbar. Bitte später erneut versuchen.",
   "DineOpenErrorUnknown": "Hat nicht geklappt. Bitte erneut versuchen.",
-  "DineOpenWasRejected": "schon abgelehnt, Gast kann erneut anfragen"
+  "DineOpenWasRejected": "schon abgelehnt, Gast kann erneut anfragen",
+  "DineOpenErrorLockedMinutes": "Zu viele falsche Versuche. Bitte in {minutes} Min. erneut versuchen."
 }

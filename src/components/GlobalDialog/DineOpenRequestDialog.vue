@@ -309,7 +309,9 @@ export default {
       this.CLOSE_DINE_REQUEST()
     },
     describe (e) {
-      const { code, info } = dineOpenErrorOf(e)
+      const { code, info, params } = dineOpenErrorOf(e)
+      // 锁住时云端带上还要等几分钟
+      if (code === 'DINE_WAITER_LOCKED' && params?.minutes) return this.$t('DineOpenErrorLockedMinutes', { minutes: params.minutes })
       const known = {
         DINE_WAITER_PW_WRONG: 'DineOpenErrorPassword',
         DINE_WAITER_LOCKED: 'DineOpenErrorLocked',
