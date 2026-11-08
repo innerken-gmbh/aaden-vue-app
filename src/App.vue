@@ -7,6 +7,7 @@
     <desktop-update-banner/>
     <table-selector></table-selector>
     <order-accept-dialog/>
+    <dine-open-request-dialog/>
     <checkout-dialog/>
     <v-dialog
         v-model="showErrorDialog"
@@ -103,6 +104,7 @@ import PinDialog from '@/components/GlobalDialog/PinDialog'
 import { mapMutations, mapState } from 'vuex'
 import { sendMailTo } from '@/api/api'
 import OrderAcceptDialog from '@/components/GlobalDialog/OrderAcceptDialog.vue'
+import DineOpenRequestDialog from '@/components/GlobalDialog/DineOpenRequestDialog.vue'
 import CheckoutDialog from '@/components/GlobalDialog/CheckoutDialog.vue'
 import DesktopUpdateBanner from '@/components/GlobalDialog/DesktopUpdateBanner.vue'
 
@@ -112,6 +114,7 @@ export default {
     DesktopUpdateBanner,
     CheckoutDialog,
     OrderAcceptDialog,
+    DineOpenRequestDialog,
     TableSelector,
     PinDialog
   },

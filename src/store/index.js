@@ -40,9 +40,27 @@ export default new Vuex.Store({
     showCheckoutDialog: false,
     checkoutTotal: 0,
     checkoutResolve: null,
-    tableColor: ''
+    tableColor: '',
+
+    // 堂食扫码的待开桌（POS-275）：DineOpenRequestDialog 轮询写入；dineOpenTarget 是正在确认的那一桌
+    dineOpenRequests: [],
+    dineOpenTarget: null,
+    dineOpenListShow: false
   },
   mutations: {
+    SET_DINE_OPEN_REQUESTS (state, list) {
+      state.dineOpenRequests = list
+    },
+    OPEN_DINE_REQUEST (state, request) {
+      state.dineOpenListShow = false
+      state.dineOpenTarget = request
+    },
+    CLOSE_DINE_REQUEST (state) {
+      state.dineOpenTarget = null
+    },
+    SHOW_DINE_OPEN_LIST (state, show) {
+      state.dineOpenListShow = show
+    },
     editTableColor (state, payload) {
       state.tableColor = payload
     },

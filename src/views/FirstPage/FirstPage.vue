@@ -59,6 +59,18 @@
           class="d-flex align-center justify-end"
           style="min-width: 200px"
       >
+        <v-btn
+            v-if="activeDineOpenRequests.length > 0"
+            class="mr-2 dineOpenPill"
+            color="amber darken-2"
+            depressed
+            rounded
+            small
+            @click="SHOW_DINE_OPEN_LIST(true)"
+        >
+          <v-icon left small>mdi-table-chair</v-icon>
+          {{ $t('DineOpenRequests') }} {{ activeDineOpenRequests.length }}
+        </v-btn>
         <div>
           <time-display></time-display>
         </div>
@@ -101,7 +113,7 @@
             <table-blue-print
                 :out-side-table-list="tableList"
                 @need-refresh="slowRefreshTable"
-                @table-clicked="openOrEnterTable"
+                @table-clicked="tableClicked"
             />
           </v-tab-item>
           <!--      外卖-->
@@ -753,7 +765,11 @@ export default {
     notAccepted: function () {
       return this.takeawayList.filter(it => it.consumeTypeStatusId < 2)
     },
-    ...mapState(['showOrderAcceptDialog'])
+    ...mapState(['showOrderAcceptDialog', 'dineOpenRequests']),
+    /** 待开桌里服务员还没拒绝过的（被拒绝过的点桌子仍能确认，但不提醒） */
+    activeDineOpenRequests () {
+      return this.dineOpenRequests.filter(r => !r.rejectedAt)
+    }
   },
   methods: {
     async saveTakeawayInfo () {
@@ -895,7 +911,16 @@ export default {
       }
     },
     openOrEnterTable: openOrEnterTable,
-    ...mapMutations(['HIDE_AUTHORIZE_DIALOG']),
+    /** 客人在这一桌请服务员开桌（POS-275）：点桌子先弹确认框，不直接进桌 */
+    tableClicked (tableName) {
+      const request = this.dineOpenRequests.find(r => r.tableName === tableName)
+      if (request) {
+        this.OPEN_DINE_REQUEST(request)
+      } else {
+        this.openOrEnterTable(tableName)
+      }
+    },
+    ...mapMutations(['HIDE_AUTHORIZE_DIALOG', 'OPEN_DINE_REQUEST', 'SHOW_DINE_OPEN_LIST']),
     initialUI () {
       if (this.$refs.ins) {
         this.$refs.ins.focus()
