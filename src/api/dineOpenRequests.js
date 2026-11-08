@@ -2,7 +2,7 @@ import IKUtils from 'innerken-js-utils'
 import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
 
 /**
- * 堂食扫码的「待开桌」（POS-275）：客人扫桌码后请服务员开桌，这里在收银机上确认或拒绝。
+ * 扫码点餐 / 堂食版的「待开桌」（POS-275）：客人扫桌码后请服务员开桌，这里在收银机上确认或拒绝。
  * 直接调云端 /dine-in/device/{deviceId}/open-requests，开桌逻辑和服务员确认网页是同一套，服务员密码由云端拿门店核对。
  * 云端地址默认 cloud-v2.aaden.io，本机联调时可以用地址栏 ?CloudBase=http://localhost:8096 覆盖。
  * 失败时抛出带 code / info 的 Error：code 是云端的错误码（data.errorCode），比如 DINE_WAITER_PW_WRONG。

@@ -639,7 +639,7 @@
   "DineOpenDone": "Tisch {table} ist offen",
   "DineOpenRejected": "Anfrage für Tisch {table} abgelehnt",
   "DineOpenErrorPassword": "Kellner-PIN falsch",
-  "DineOpenErrorLocked": "Zu viele falsche Versuche. Bitte in 5 Minuten erneut versuchen.",
+  "DineOpenErrorLocked": "Zu viele falsche Versuche. Bitte später erneut versuchen.",
   "DineOpenErrorAlreadyOpen": "Dieser Tisch ist schon offen",
   "DineOpenErrorGone": "Diese Anfrage gibt es nicht mehr",
   "DineOpenErrorUnreachable": "Cloud gerade nicht erreichbar. Bitte später erneut versuchen.",

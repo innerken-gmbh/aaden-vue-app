@@ -936,7 +936,7 @@
   "DineOpenDone": "Table {table} is open",
   "DineOpenRejected": "Declined the request for table {table}",
   "DineOpenErrorPassword": "Wrong staff PIN",
-  "DineOpenErrorLocked": "Too many wrong attempts. Try again in 5 minutes.",
+  "DineOpenErrorLocked": "Too many wrong attempts. Please try again later.",
   "DineOpenErrorAlreadyOpen": "This table is already open",
   "DineOpenErrorGone": "This request no longer exists",
   "DineOpenErrorUnreachable": "Can't reach the cloud right now. Please try again later.",

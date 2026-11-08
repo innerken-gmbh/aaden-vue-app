@@ -643,7 +643,7 @@
   "DineOpenDone": "{table} 号桌已开桌",
   "DineOpenRejected": "已拒绝 {table} 号桌的开桌请求",
   "DineOpenErrorPassword": "服务员密码不对",
-  "DineOpenErrorLocked": "密码错太多次，请 5 分钟后再试",
+  "DineOpenErrorLocked": "密码错太多次，请稍后再试",
   "DineOpenErrorAlreadyOpen": "这一桌已经开了",
   "DineOpenErrorGone": "这个开桌请求已经没有了",
   "DineOpenErrorUnreachable": "暂时连不上云端，请稍后再试",
