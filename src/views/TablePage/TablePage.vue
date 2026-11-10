@@ -1251,7 +1251,10 @@ export default {
           {
             params: JSON.stringify(order),
             tableId: this.id,
-            printingKitchenBon: print ? 1 : 0
+            printingKitchenBon: print ? 1 : 0,
+            // POS-659：显式传出单意图。下单 = 现在出（now），「下单不打印」= 永远不出（never）。
+            // 老门店后端不读这个字段，仍按上面的 printingKitchenBon 走。
+            kitchenBon: print ? 'now' : 'never'
           }
         )
         if (GlobalConfig.printZwichenBonWithTakeawayOrder === '1' && this.consumeTypeId === 2) {
