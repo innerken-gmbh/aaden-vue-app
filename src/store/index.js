@@ -3,11 +3,9 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
-let resolve = () => {
-}
+let resolve = null
 
-let tablePickResolve = () => {
-}
+let tablePickResolve = null
 
 const basePayloadParam = {
   typeIsBoss: false,
@@ -74,6 +72,11 @@ export default new Vuex.Store({
       state.showErrorDialog = false
     },
     START_TABLE_PICK (state, payload) {
+      // 若上一次选桌还没结束，先以 null 结算，避免调用方 await 永远挂住
+      if (tablePickResolve) {
+        tablePickResolve(null)
+        tablePickResolve = null
+      }
       state.tableFilter = payload.tableFilter
       state.requiredTableKey = payload.requiredTableKey
       state.tableSelectDialogShow = true
@@ -83,16 +86,27 @@ export default new Vuex.Store({
     TABLE_PICKED (state, payload) {
       if (tablePickResolve) {
         tablePickResolve(payload)
+        tablePickResolve = null
       }
       state.tableSelectDialogShow = false
     },
 
     HIDE_TABLE_PICK_DIALOG (state) {
+      // 取消选桌时必须 resolve，否则调用方 await 永远不返回
+      if (tablePickResolve) {
+        tablePickResolve(null)
+        tablePickResolve = null
+      }
       state.tableSelectDialogShow = false
     },
 
     START_AUTHORIZE (state, payload) {
       const args = Object.assign({}, basePayloadParam, payload)
+      // 若上一次授权还没结束，先以 null 结算，避免调用方 await 永远挂住
+      if (resolve) {
+        resolve(null)
+        resolve = null
+      }
       state.tableId = args.tableId
       state.isAuthorizeTypeSuper = args.typeIsBoss
       state.pinDialogShow = true
@@ -102,11 +116,17 @@ export default new Vuex.Store({
     AUTHORIZE_OK (state, payload) {
       if (resolve) {
         resolve(payload)
+        resolve = null
       }
 
       state.pinDialogShow = false
     },
     HIDE_AUTHORIZE_DIALOG (state) {
+      // 用户取消（X / 点击遮罩 / ESC）时必须 resolve，否则 await 永不返回
+      if (resolve) {
+        resolve(null)
+        resolve = null
+      }
       state.pinDialogShow = false
     }
 

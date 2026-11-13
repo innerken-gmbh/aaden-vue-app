@@ -78,6 +78,7 @@ export default {
           text: ('Bill'),
           beforeEnter: async () => {
             const pw = await popAuthorize('', true)
+            if (pw == null) return false
             const servant = this.findServant(pw)
             return {
               isBoss: parseInt(servant.permission) === 1,
@@ -107,6 +108,7 @@ export default {
           text: 'Admin',
           beforeEnter: async () => {
             const pw = await popAuthorize('', true)
+            if (pw == null) return false
             const servant = this.findServant(pw)
             return {
               isBoss: parseInt(servant.permission) === 1,

@@ -118,6 +118,7 @@ export async function openOrEnterTable (number) {
   } catch (e) {
     if (number.includes('.')) {
       const pw = await popAuthorize('')
+      if (pw == null) return
       const res = (await forceOpenTable(number, pw)).content
       jumpToTable('' + res.tableId, res.tableName)
     } else {
