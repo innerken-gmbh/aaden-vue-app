@@ -77,7 +77,7 @@
         <language-switcher
             :active="changeLanguage"
             :current-locale-code="currentLocaleCode"
-            :locales="$i18n.messages"
+            :locales="localeList"
             @language-change="changeLanguage"
         />
       </div>
@@ -596,7 +596,7 @@ import { checkout } from '@/api/Repository/OrderInfo'
 import AddressesCard from '@/views/TablePage/Address/AddressesCard.vue'
 import { getRestaurantInfo } from '@/api/restaurantInfoService'
 import store from '@/store'
-import i18n from '@/i18n'
+import i18n, { localeMetaList } from '@/i18n'
 import { uniq } from 'lodash'
 
 const keyboardLayout =
@@ -686,6 +686,10 @@ export default {
     }
   },
   computed: {
+    // 固定引用：LanguageSwitcher 里用 `currentLocale === item` 做身份比较，不能每次返回新数组
+    localeList () {
+      return localeMetaList
+    },
     servantWorkHour () {
       return parseFloat(this.servantWorkMinutes / 60).toFixed(2)
     },
