@@ -54,7 +54,8 @@
 <script>
 // 桌面版（Electron）主进程下载好新版本后通知这里（POS-130）：
 // 店员点「立即更新」→ 收银程序关闭、静默安装、约半分钟后自动重新打开。
-// 不点也会在电脑 10 分钟没人操作时自动装。
+// POS-798：主进程只在夜里 03:00–06:00、这个版本失败不到 2 次时发版本号过来；其他时候发 null，提示条收起。
+// 不点也会在夜里电脑 10 分钟没人操作时自动装。
 export default {
   name: 'DesktopUpdateBanner',
   data: () => ({
@@ -69,7 +70,10 @@ export default {
     const { ipcRenderer } = require('electron')
     this.ipc = ipcRenderer
     ipcRenderer.on('update-ready', (event, version) => {
-      this.version = version
+      this.version = version || null
+      if (!this.version) {
+        this.confirm = false
+      }
     })
     ipcRenderer.send('update-ui-ready')
   },
