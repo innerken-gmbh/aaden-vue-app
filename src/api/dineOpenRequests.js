@@ -21,14 +21,19 @@ async function base () {
 
 async function request (path, body) {
   const url = (await base()) + path
+  // 开桌要等云端写门店，最多等 40 秒；超时当连不上，不让确认框一直转圈挡住收银界面
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), 40 * 1000)
   let res
   try {
     res = await fetch(url, body
-      ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
-      : { method: 'GET' })
+      ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal }
+      : { method: 'GET', signal: controller.signal })
   } catch (e) {
+    clearTimeout(timer)
     throw fail('CLOUD_UNREACHABLE', e?.message ?? '')
   }
+  clearTimeout(timer)
   const json = await res.json().catch(() => null)
   if (res.ok && json?.code === 200) return json.data
   throw fail(json?.data?.errorCode ?? (res.ok ? 'CLOUD_ERROR' : `HTTP_${res.status}`), json?.message ?? '', json?.data?.params ?? {})

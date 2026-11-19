@@ -648,5 +648,8 @@
   "DineOpenErrorLockedMinutes": "Zu viele falsche Versuche. Bitte in {minutes} Min. erneut versuchen.",
   "DineOpenErrorInProgress": "Der Tisch wird gerade geöffnet. Bitte kurz warten.",
   "DineOpenErrorRefused": "Die Kasse hat den Tisch nicht geöffnet. Bitte den Tisch prüfen.",
-  "DineOpenErrorBuffetType": "Bitte eine Buffet-Art wählen"
+  "DineOpenErrorBuffetType": "Bitte eine Buffet-Art wählen",
+  "DineOpenErrorStoreUnreachable": "Die Cloud erreicht die Kasse gerade nicht. Bitte Internetverbindung der Kasse prüfen und erneut versuchen.",
+  "DineOpenErrorBuffetUnavailable": "Diese Buffet-Art kann gerade nicht geöffnet werden. Bitte eine andere wählen oder à la carte öffnen.",
+  "DineOpenErrorPeople": "Personenzahl passt nicht. Bitte Erwachsene und Kinder prüfen."
 }

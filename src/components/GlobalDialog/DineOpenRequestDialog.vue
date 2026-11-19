@@ -177,11 +177,14 @@ export default {
   data: () => ({
     nextPollAt: 0,
     polling: false,
+    audio: null,
     seen: new Set(),
     pw: null,
     detail: null,
     loading: false,
     busy: false,
+    // 每打开一次确认框加一：关掉再开别的桌时，上一桌迟到的结果不写进来
+    seq: 0,
     error: '',
     form: { mode: 'A_LA_CARTE', consumeTypeId: null, adults: 1, children: 0 }
   }),
@@ -191,6 +194,7 @@ export default {
       return [...(this.detail?.candidates ?? []), ...(this.detail?.alternatives ?? [])]
     },
     canOpen () {
+      if (!this.detail) return false
       if (this.form.adults + this.form.children < 1) return false
       return this.form.mode !== 'BUFFET' || !!this.form.consumeTypeId
     }
@@ -218,7 +222,9 @@ export default {
         this.SET_DINE_OPEN_REQUESTS(list)
         this.nextPollAt = Date.now() + (res?.nextPollSeconds ?? 30) * 1000
       } catch (e) {
-        // 门店后台没有这个接口（老版本）或云端连不上：一分钟后再试，不打扰收银
+        // 拿不到设备号或云端连不上：一分钟后再试，不打扰收银。
+        // 清掉旧列表：不然断网时点有角标的桌还会被拦到确认框里，进不了桌
+        this.SET_DINE_OPEN_REQUESTS([])
         this.nextPollAt = Date.now() + 60 * 1000
       } finally {
         this.polling = false
@@ -226,7 +232,9 @@ export default {
     },
     beep () {
       try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)()
+        // 一直用同一个 AudioContext：每次新建不关，长时间开着会撞上浏览器的数量上限
+        if (!this.audio) this.audio = new (window.AudioContext || window.webkitAudioContext)()
+        const ctx = this.audio
         const osc = ctx.createOscillator()
         osc.frequency.value = 880
         osc.connect(ctx.destination)
@@ -249,28 +257,39 @@ export default {
       return r.requestedAt ? Math.max(0, Math.floor((Date.now() - new Date(r.requestedAt).getTime()) / 60000)) : 0
     },
     async start (target) {
+      const seq = ++this.seq
       this.detail = null
       this.error = ''
       this.loading = true
       this.form = { mode: target.mode || 'A_LA_CARTE', consumeTypeId: target.consumeTypeId, adults: target.adults, children: target.children }
       try {
-        this.pw = await popAuthorize('')
+        const pw = await popAuthorize('')
+        if (seq !== this.seq) return
         // 服务员没输 PIN 就点了外面：不占桌，直接关掉
-        if (this.pw == null) {
+        if (pw == null) {
           this.close()
           return
         }
-        this.detail = await claimDineOpenRequest(target.sessionId, this.pw, this.lang())
+        this.pw = pw
+        const detail = await claimDineOpenRequest(target.sessionId, pw, this.lang())
+        if (seq !== this.seq) return
+        this.detail = detail
+        const types = this.buffetTypes
+        // 客人选的类型现在还能开就沿用；只有一种能开时默认选它；多种时让服务员自己选（和确认网页一样）
+        const typeId = types.some(t => t.id === detail.consumeTypeId)
+          ? detail.consumeTypeId
+          : (detail.candidates?.length === 1 ? detail.candidates[0].id : null)
         this.form = {
-          mode: this.detail.mode || this.form.mode,
-          consumeTypeId: this.detail.consumeTypeId ?? this.detail.candidates?.[0]?.id ?? null,
-          adults: this.detail.adults,
-          children: this.detail.children
+          // 现在没有能开的自助类型（比如自助时段刚过）：只能单点，切换也不显示
+          mode: types.length > 0 && detail.buffetLicensed ? (detail.mode || this.form.mode) : 'A_LA_CARTE',
+          consumeTypeId: typeId,
+          adults: detail.adults,
+          children: detail.children
         }
       } catch (e) {
-        this.error = this.describe(e)
+        if (seq === this.seq) this.error = this.describe(e)
       } finally {
-        this.loading = false
+        if (seq === this.seq) this.loading = false
       }
     },
     async open () {
@@ -309,6 +328,8 @@ export default {
       this.nextPollAt = 0
     },
     close () {
+      this.seq++
+      this.loading = false
       this.pw = null
       this.detail = null
       this.CLOSE_DINE_REQUEST()
@@ -324,8 +345,15 @@ export default {
         DINE_TABLE_ALREADY_OPEN: 'DineOpenErrorAlreadyOpen',
         DINE_OPEN_CODE_EXPIRED: 'DineOpenErrorGone',
         DINE_SESSION_NOT_FOUND: 'DineOpenErrorGone',
-        STORE_UNREACHABLE: 'DineOpenErrorUnreachable',
+        STORE_UNREACHABLE: 'DineOpenErrorStoreUnreachable',
+        STORE_UNAVAILABLE: 'DineOpenErrorStoreUnreachable',
         CLOUD_UNREACHABLE: 'DineOpenErrorUnreachable',
+        DINE_BUFFET_TYPE_UNAVAILABLE: 'DineOpenErrorBuffetUnavailable',
+        DINE_OUTSIDE_SERVICE: 'DineOpenErrorBuffetUnavailable',
+        DINE_BUFFET_NOT_LICENSED: 'DineOpenErrorBuffetUnavailable',
+        DINE_TIER_MISMATCH: 'DineOpenErrorPeople',
+        DINE_TIER_REQUIRED: 'DineOpenErrorPeople',
+        DINE_PEOPLE_INVALID: 'DineOpenErrorPeople',
         DINE_OPEN_IN_PROGRESS: 'DineOpenErrorInProgress',
         DINE_SESSION_BUSY: 'DineOpenErrorInProgress',
         DINE_OPEN_UNCONFIRMED: 'DineOpenErrorInProgress',

@@ -913,7 +913,8 @@ export default {
     openOrEnterTable: openOrEnterTable,
     /** 客人在这一桌请服务员开桌（POS-275）：点桌子先弹确认框，不直接进桌 */
     tableClicked (tableName) {
-      const request = this.dineOpenRequests.find(r => r.tableName === tableName)
+      // 服务员拒绝过的不拦（和角标一样）：拒绝后会话还挂着，不排除的话这张桌好几个小时都进不去。要再确认从列表里点
+      const request = this.activeDineOpenRequests.find(r => r.tableName === tableName)
       if (request) {
         this.OPEN_DINE_REQUEST(request)
       } else {

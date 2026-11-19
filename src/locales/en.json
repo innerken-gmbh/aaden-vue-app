@@ -945,5 +945,8 @@
   "DineOpenErrorLockedMinutes": "Too many wrong attempts. Try again in {minutes} min.",
   "DineOpenErrorInProgress": "This table is being opened. Please wait a moment.",
   "DineOpenErrorRefused": "The POS did not open the table. Please check the table.",
-  "DineOpenErrorBuffetType": "Please choose a buffet type"
+  "DineOpenErrorBuffetType": "Please choose a buffet type",
+  "DineOpenErrorStoreUnreachable": "The cloud can't reach this POS right now. Check the POS internet connection and try again.",
+  "DineOpenErrorBuffetUnavailable": "This buffet type can't be opened right now. Choose another one or open à la carte.",
+  "DineOpenErrorPeople": "The number of guests doesn't fit. Please check adults and children."
 }

@@ -652,5 +652,8 @@
   "DineOpenErrorLockedMinutes": "密码错太多次，请 {minutes} 分钟后再试",
   "DineOpenErrorInProgress": "这一桌正在开桌，请稍等",
   "DineOpenErrorRefused": "收银机没有开桌，请检查这一桌",
-  "DineOpenErrorBuffetType": "请选择自助类型"
+  "DineOpenErrorBuffetType": "请选择自助类型",
+  "DineOpenErrorStoreUnreachable": "云端暂时连不上本店收银机，请检查收银机网络后再试",
+  "DineOpenErrorBuffetUnavailable": "这个自助类型现在不能开，请换一个或按单点开桌",
+  "DineOpenErrorPeople": "人数不对，请检查成人和儿童人数"
 }
