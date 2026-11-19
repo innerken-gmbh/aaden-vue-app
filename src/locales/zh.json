@@ -649,5 +649,8 @@
   "DineOpenErrorUnreachable": "暂时连不上云端，请稍后再试",
   "DineOpenErrorUnknown": "没有成功，请再试一次",
   "DineOpenWasRejected": "已拒绝过，客人可以再请求",
-  "DineOpenErrorLockedMinutes": "密码错太多次，请 {minutes} 分钟后再试"
+  "DineOpenErrorLockedMinutes": "密码错太多次，请 {minutes} 分钟后再试",
+  "DineOpenErrorInProgress": "这一桌正在开桌，请稍等",
+  "DineOpenErrorRefused": "收银机没有开桌，请检查这一桌",
+  "DineOpenErrorBuffetType": "请选择自助类型"
 }

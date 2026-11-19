@@ -255,6 +255,11 @@ export default {
       this.form = { mode: target.mode || 'A_LA_CARTE', consumeTypeId: target.consumeTypeId, adults: target.adults, children: target.children }
       try {
         this.pw = await popAuthorize('')
+        // 服务员没输 PIN 就点了外面：不占桌，直接关掉
+        if (this.pw == null) {
+          this.close()
+          return
+        }
         this.detail = await claimDineOpenRequest(target.sessionId, this.pw, this.lang())
         this.form = {
           mode: this.detail.mode || this.form.mode,
@@ -314,15 +319,23 @@ export default {
       if (code === 'DINE_WAITER_LOCKED' && params?.minutes) return this.$t('DineOpenErrorLockedMinutes', { minutes: params.minutes })
       const known = {
         DINE_WAITER_PW_WRONG: 'DineOpenErrorPassword',
+        DINE_WAITER_SIGN_IN: 'DineOpenErrorPassword',
         DINE_WAITER_LOCKED: 'DineOpenErrorLocked',
         DINE_TABLE_ALREADY_OPEN: 'DineOpenErrorAlreadyOpen',
         DINE_OPEN_CODE_EXPIRED: 'DineOpenErrorGone',
         DINE_SESSION_NOT_FOUND: 'DineOpenErrorGone',
         STORE_UNREACHABLE: 'DineOpenErrorUnreachable',
-        CLOUD_UNREACHABLE: 'DineOpenErrorUnreachable'
+        CLOUD_UNREACHABLE: 'DineOpenErrorUnreachable',
+        DINE_OPEN_IN_PROGRESS: 'DineOpenErrorInProgress',
+        DINE_SESSION_BUSY: 'DineOpenErrorInProgress',
+        DINE_OPEN_UNCONFIRMED: 'DineOpenErrorInProgress',
+        DINE_OPEN_REFUSED: 'DineOpenErrorRefused',
+        DINE_BUFFET_TYPE_REQUIRED: 'DineOpenErrorBuffetType'
       }
       if (code === 'DINE_TABLE_ALREADY_OPEN' || code === 'DINE_SESSION_NOT_FOUND') this.nextPollAt = 0
-      return known[code] ? this.$t(known[code]) : (info || this.$t('DineOpenErrorUnknown'))
+      if (known[code]) return this.$t(known[code])
+      // 云端的 message 是中文，不给店员看；只带上错误码方便排查
+      return code ? `${this.$t('DineOpenErrorUnknown')} (${code})` : (info || this.$t('DineOpenErrorUnknown'))
     }
   }
 }

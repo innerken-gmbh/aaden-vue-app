@@ -645,5 +645,8 @@
   "DineOpenErrorUnreachable": "Cloud gerade nicht erreichbar. Bitte später erneut versuchen.",
   "DineOpenErrorUnknown": "Hat nicht geklappt. Bitte erneut versuchen.",
   "DineOpenWasRejected": "schon abgelehnt, Gast kann erneut anfragen",
-  "DineOpenErrorLockedMinutes": "Zu viele falsche Versuche. Bitte in {minutes} Min. erneut versuchen."
+  "DineOpenErrorLockedMinutes": "Zu viele falsche Versuche. Bitte in {minutes} Min. erneut versuchen.",
+  "DineOpenErrorInProgress": "Der Tisch wird gerade geöffnet. Bitte kurz warten.",
+  "DineOpenErrorRefused": "Die Kasse hat den Tisch nicht geöffnet. Bitte den Tisch prüfen.",
+  "DineOpenErrorBuffetType": "Bitte eine Buffet-Art wählen"
 }
