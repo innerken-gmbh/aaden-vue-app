@@ -1053,7 +1053,8 @@ export default {
       }
     },
     dishesSetDiscount: async function () {
-      await optionalAuthorizeAsync('', GlobalConfig.discountWithPassword === '1')
+      const password = await optionalAuthorizeAsync('', GlobalConfig.discountWithPassword === '1')
+      if (password == null) return
       this.discountModelShow = true
       this.useDishesDiscount = true
     },
@@ -1220,10 +1221,12 @@ export default {
     },
     async orderDish (order, print = true) {
       if (this.isSendingRequest) return
+      this.isSendingRequest = true
       try {
-        this.isSendingRequest = true
         if (!this.haveOrder) {
           const password = await optionalAuthorizeAsync('', GlobalConfig.usePassword, null, false, this.id)
+          // 用户取消了密码输入，直接终止下单
+          if (password == null) return
           IKUtils.showLoading()
           await informOpenTable(password, this.id)
         } else {
@@ -1233,6 +1236,7 @@ export default {
               const res = await IKUtils.showConfirmAsyn(i18n.t('alreadyCheckOutOpenTableAgain'), 'Ooops！')
               if (res.isConfirmed) {
                 const password = await optionalAuthorizeAsync('', GlobalConfig.usePassword, null, false, this.id)
+                if (password == null) return
                 await informOpenTable(password, this.id)
               } else {
                 await goHome()
@@ -1393,6 +1397,11 @@ export default {
           true,
           this.id
         )
+        console.log(pw, 'pw')
+        // 用户取消密码输入，放弃结账
+        if (pw == null) {
+          return
+        }
         await realCheckOut(pw)
       }, 20)
     },
@@ -1407,6 +1416,7 @@ export default {
       )
       if (password) {
         const tableName = await showTableSelector((t) => TableFilter.activeFilter(t, this.tableDetailInfo.tableName))
+        if (!tableName) return
         await safeRequest(async () => {
           const res = await hillo.post('Tables.php?op=mergeTables', {
             oldTableName: this.tableDetailInfo.tableName,
@@ -1425,6 +1435,7 @@ export default {
       )
       if (password) {
         const tableName = await showTableSelector(TableFilter.notActiveFilter)
+        if (!tableName) return
         console.log(this.tableDetailInfo.tableName)
         const res = await hillo.post('Tables.php?op=change', {
           oldTableName: this.tableDetailInfo.tableName,
@@ -1441,6 +1452,7 @@ export default {
       )
       if (password) {
         const tableName = await showTableSelector()
+        if (!tableName) return
         const res = await hillo.post('Complex.php?op=dishesChangeTable', {
           oldTableName: this.tableDetailInfo.tableName,
           newTableName: tableName,
@@ -1774,6 +1786,8 @@ export default {
     }
   },
   async activated () {
+    // keep-alive 缓存后重新进入时，清除可能残留的请求中状态
+    this.isSendingRequest = false
     this.globalLoading = true
     try {
       await this.initialUI()

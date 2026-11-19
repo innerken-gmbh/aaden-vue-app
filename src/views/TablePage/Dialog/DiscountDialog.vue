@@ -170,11 +170,15 @@ export default {
         IKUtils.showError(this.$t('DiscountShouldNotGreaterThanOriginalPrice'))
         return
       }
-      await optionalAuthorizeAsync('boss',
+      const password = await optionalAuthorizeAsync('boss',
         GlobalConfig.bigDiscountRatio > 0 &&
           ratio > GlobalConfig.bigDiscountRatio,
         '',
         true, this.id)
+      // 用户取消密码输入，不提交折扣
+      if (password == null) {
+        return
+      }
 
       await realSubmitDiscount()
     },
