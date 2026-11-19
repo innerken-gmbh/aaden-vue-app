@@ -52,10 +52,12 @@
 </template>
 
 <script>
+import hillo from 'hillo'
+
 // 桌面版（Electron）主进程下载好新版本后通知这里（POS-130）：
 // 店员点「立即更新」→ 收银程序关闭、静默安装、约半分钟后自动重新打开。
-// POS-798：主进程只在夜里 03:00–06:00、这个版本失败不到 2 次时发版本号过来；其他时候发 null，提示条收起。
-// 不点也会在夜里电脑 10 分钟没人操作时自动装。
+// POS-798：主进程在这个版本失败不到 2 次时发版本号过来；失败 2 次以后发 null，提示条收起（主进程还会退避着空闲自动装）。
+// 不点也会在店里空闲时自动装：主进程每分钟（电脑 10 分钟没人碰时）发 update-idle-check 来问这里店里空不空。
 export default {
   name: 'DesktopUpdateBanner',
   data: () => ({
@@ -75,12 +77,43 @@ export default {
         this.confirm = false
       }
     })
+    ipcRenderer.on('update-idle-check', async (event, id) => {
+      let answer = null
+      try {
+        answer = await this.posIdleState()
+      } catch (e) {
+        answer = null
+      }
+      ipcRenderer.send('update-idle-state', id, answer)
+    })
     ipcRenderer.send('update-ui-ready')
   },
   methods: {
     install () {
       this.installing = true
       this.ipc.send('install-update')
+    },
+    /**
+     * 店里空不空：busy = 在点单页（/table，可能有没送出的菜、正在结账），或者结账框 / 接单框 / 密码框开着；
+     * openTables = 门店服务器上未结的桌数，问不到是 null（主进程白天就不装）
+     */
+    async posIdleState () {
+      const s = this.$store.state
+      const busy = this.$route?.name === 'table' || !!s.showCheckoutDialog || !!s.showOrderAcceptDialog ||
+        !!s.pinDialogShow || this.confirm
+      if (busy) {
+        return { busy, openTables: null }
+      }
+      let openTables = null
+      try {
+        const tables = (await hillo.silentGet('Tables.php')).content
+        if (Array.isArray(tables)) {
+          openTables = tables.filter(t => t.usageStatus === '1').length
+        }
+      } catch (e) {
+        openTables = null
+      }
+      return { busy: false, openTables }
     }
   }
 }
