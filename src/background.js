@@ -6,8 +6,10 @@ import fs from 'fs'
 import path from 'path'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import {
+  ATTEMPT_IN_PROGRESS_MS,
   INSTALL_HELPER_SCRIPT,
   canAutoInstall,
+  canInstallOnQuit,
   canInstallOnRequest,
   canInstallOnRestart,
   canPrompt,
@@ -32,11 +34,11 @@ let win
 // POS-798：1920 在营业时间里「装 → 没装上 → 重开 → 再提示 → 再装」循环了 12 次，每次都关一次收银，云端也看不到为什么失败。现在：
 //   - 白天不弹提示、不自动装、不关收银。下载照常在后台进行
 //   - 夜里 03:00–06:00、电脑 10 分钟没人操作就自动装，每晚最多试一次；右下角提示条也只在这个时段出现
-//   - 下次打开收银程序时，如果上次已经下载好了，先装好再打开（每天关电脑的店靠这一条）；这个版本失败过就不再这样装
-//   - 同一个版本失败 2 次就不再提示，只在夜里再自动试一次；失败 3 次就不装这个版本了，等下一个版本
-//   - 安装器交给一个安装助手启动：先等收银程序完全退出（20 秒不退就强制结束），装完记下退出码；
+//   - 下次打开收银程序时，如果上次已经下载好了，先装好再打开（每天关电脑的店靠这一条）
+//   - 同一个版本失败 2 次就不再提示、开机也不装，只在夜里再自动试一次；失败 3 次就不装这个版本了，等下一个版本
+//   - 安装器交给一个安装助手启动：按进程号等收银程序完全退出（20 秒不退就强制结束；程序又被店员打开了就这次不装），装完记下退出码；
 //     没装上就把原来的程序重新打开，不让收银一直关着
-//   - 下次启动时对一下版本，把「装上了 / 没装上 + 原因」报到云端设备事件
+//   - 下次启动时对一下版本，把「装上了 / 没装上 + 原因」报到云端设备事件（先存文件，程序又退出了下次补发）
 // 规则本身在 desktopUpdatePolicy.js。Linux 走 snap 自动刷新，不用 electron-updater。
 //
 // 更新源（POS-36）：先读 S3（desktop/win，发版 workflow 上传）；S3 上没有 latest.yml（404/403）才退回 GitHub Releases。
@@ -90,6 +92,10 @@ function emitUpdateEvent (content) {
 ipcMain.on('update-event-ready', () => {
   updateEventsReady = true
   pendingUpdateEvents.splice(0).forEach(emitUpdateEvent)
+  // 存着等补发的安装结果已经交给页面了
+  if (process.platform === 'win32' && !isDevelopment) {
+    writeJsonFile(REPORTS_FILE, null)
+  }
 })
 
 // 页面上的「新版本已准备好」提示：只在夜里、这个版本失败不到 2 次时显示；version 为 null 时页面收起提示条
@@ -125,30 +131,50 @@ function installDownloadedUpdate (reason) {
 
 // ---------- 安装记录和安装助手（POS-798） ----------
 
-function updateStatePath () {
-  return path.join(app.getPath('userData'), 'desktop-update-state.json')
+function userDataFile (name) {
+  return path.join(app.getPath('userData'), name)
 }
 
-function installResultPath () {
-  return path.join(app.getPath('userData'), 'desktop-update-result.txt')
-}
-
-function readUpdateState () {
+function readJsonFile (name) {
   try {
-    return JSON.parse(fs.readFileSync(updateStatePath(), 'utf8'))
+    return JSON.parse(fs.readFileSync(userDataFile(name), 'utf8'))
   } catch (e) {
     return null
   }
 }
 
-function writeUpdateState (state) {
+/** 写 JSON；value 为 null 时删掉文件。写不了返回 false */
+function writeJsonFile (name, value) {
   try {
-    if (state) {
-      fs.writeFileSync(updateStatePath(), JSON.stringify(state))
-    } else if (fs.existsSync(updateStatePath())) {
-      fs.unlinkSync(updateStatePath())
+    if (value != null) {
+      fs.writeFileSync(userDataFile(name), JSON.stringify(value))
+    } else if (fs.existsSync(userDataFile(name))) {
+      fs.unlinkSync(userDataFile(name))
     }
-  } catch (e) { /* 写不了就算了：最多多试几次 */ }
+    return true
+  } catch (e) {
+    return false
+  }
+}
+
+const STATE_FILE = 'desktop-update-state.json'
+const REPORTS_FILE = 'desktop-update-reports.json'
+const RESULT_FILE = 'desktop-update-result.txt'
+const HELPER_FILE = 'desktop-update-helper.cmd'
+/** 状态文件写不进去时不夜里自动装：记不住失败次数，会一整夜反复装 */
+let updateStateWritable = true
+
+function saveUpdateState () {
+  updateStateWritable = writeJsonFile(STATE_FILE, updateState)
+}
+
+/** 安装结果事件先存进文件再发：发之前程序可能又退出了（比如开机先装），下次启动补发 */
+function queueReport (content) {
+  if (!updateEventsReady) {
+    const saved = readJsonFile(REPORTS_FILE) || []
+    writeJsonFile(REPORTS_FILE, saved.concat(content).slice(-20))
+  }
+  emitUpdateEvent(content)
 }
 
 /** 程序装在哪：user = %LOCALAPPDATA%（正常），machine = Program Files，other = 别处。装了两份时能看出来 */
@@ -162,42 +188,69 @@ function installLocation () {
   return programFiles.some(p => exe.startsWith(p)) ? 'machine' : 'other'
 }
 
-/** 安装助手的结果文件：等它出现（最多 INSTALL_RESULT_WAIT_MS），读完删掉 */
-function readInstallResult (callback) {
-  const started = Date.now()
-  const poll = () => {
-    let text = null
-    try {
-      text = fs.readFileSync(installResultPath(), 'utf8')
-    } catch (e) { /* 还没写 */ }
-    if (text || Date.now() - started >= INSTALL_RESULT_WAIT_MS) {
-      try {
-        fs.unlinkSync(installResultPath())
-      } catch (e) { /* 本来就没有 */ }
-      callback(text)
-      return
-    }
-    setTimeout(poll, 2000)
+/** 读安装助手的结果，读到就删掉文件 */
+function takeInstallResult () {
+  try {
+    const text = fs.readFileSync(userDataFile(RESULT_FILE), 'utf8')
+    fs.unlinkSync(userDataFile(RESULT_FILE))
+    return parseInstallResult(text)
+  } catch (e) {
+    return null
   }
-  poll()
+}
+
+/** 等安装助手的结果，最晚等到 deadline */
+function waitForInstallResult (deadline, callback) {
+  const result = takeInstallResult()
+  if (result || Date.now() >= deadline) {
+    callback(result)
+    return
+  }
+  setTimeout(() => waitForInstallResult(deadline, callback), 2000)
+}
+
+/** 关程序时让 electron-updater 顺带装：没放弃这个版本、也没有正在进行的安装 */
+function refreshInstallOnQuit () {
+  if (process.platform === 'win32' && !isDevelopment) {
+    autoUpdater.autoInstallOnAppQuit = canInstallOnQuit(updateState, downloadedVersion)
+  }
 }
 
 /** 启动时对一下上次的安装：装上了还是没装上，报到云端设备事件 */
 function checkLastInstall () {
-  updateState = readUpdateState()
-  const { state, outcome } = resolveAttempt(updateState, app.getVersion(), new Date())
+  pendingUpdateEvents.push(...(readJsonFile(REPORTS_FILE) || []))
+  updateState = readJsonFile(STATE_FILE)
+  // 试写一次，写不进去就不在夜里自动装
+  saveUpdateState()
+  settleLastInstall(takeInstallResult(), false)
+}
+
+function settleLastInstall (result, final) {
+  const { state, outcome, pending } = resolveAttempt(updateState, app.getVersion(), result, new Date(), final)
+  if (pending) {
+    // 版本没变、还没结果：安装助手可能还在跑（比如店员关了程序马上又打开）。等它的结果，这期间不开始新的安装
+    const deadline = updateState.attempt.at + ATTEMPT_IN_PROGRESS_MS
+    waitForInstallResult(deadline, r => settleLastInstall(r, true))
+    return
+  }
   if (!outcome) {
     return
   }
   updateState = state
-  writeUpdateState(state)
-  const extra = outcome.ok ? '' : ` loc=${installLocation()}`
-  readInstallResult(text => {
-    emitUpdateEvent(formatOutcome(outcome, parseInstallResult(text), extra))
+  saveUpdateState()
+  refreshInstallOnQuit()
+  const report = (r) => {
+    queueReport(formatOutcome(outcome, r, outcome.ok ? '' : ` loc=${installLocation()}`))
     if (!outcome.ok && gaveUp(state, outcome.to)) {
-      emitUpdateEvent(`DESKTOP_UPDATE_GIVE_UP ${app.getVersion()} -> ${outcome.to} failed ${outcome.failures} times, wait for next version`)
+      queueReport(`DESKTOP_UPDATE_GIVE_UP ${app.getVersion()} -> ${outcome.to} failed ${outcome.failures} times, wait for next version`)
     }
-  })
+  }
+  if (outcome.ok && !result) {
+    // 装上了，新版本可能是安装器打开的，比结果文件先起来：等一会儿拿退出码
+    waitForInstallResult(Date.now() + INSTALL_RESULT_WAIT_MS, report)
+    return
+  }
+  report(result)
 }
 
 /**
@@ -215,14 +268,16 @@ function routeInstallerThroughHelper () {
     const match = /(\d+\.\d+\.\d+)/.exec(path.basename(String(installer)))
     const to = downloadedVersion || (match && match[1]) || 'unknown'
     updateState = recordAttempt(updateState, { from: app.getVersion(), to, reason: installReason, at: Date.now() })
-    writeUpdateState(updateState)
+    saveUpdateState()
     try {
-      const script = path.join(app.getPath('userData'), 'desktop-update-helper.cmd')
+      const userData = app.getPath('userData')
+      const script = userDataFile(HELPER_FILE)
       fs.writeFileSync(script, INSTALL_HELPER_SCRIPT)
       try {
-        fs.unlinkSync(installResultPath())
+        fs.unlinkSync(userDataFile(RESULT_FILE))
       } catch (e) { /* 没有旧结果 */ }
       const child = spawn(process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', `""${script}""`], {
+        cwd: userData,
         detached: true,
         stdio: 'ignore',
         windowsHide: true,
@@ -230,12 +285,13 @@ function routeInstallerThroughHelper () {
         env: {
           ...process.env,
           ...(env || {}),
+          AADEN_PID: String(process.pid),
           AADEN_EXE: path.basename(process.execPath),
           AADEN_APP: process.execPath,
           AADEN_CMD: String(cmd),
           AADEN_ARGS: args.map(quoteArg).join(' '),
           AADEN_FORCE_RUN: args.includes('--force-run') ? '1' : '0',
-          AADEN_RESULT: installResultPath()
+          AADEN_RESULT: userDataFile(RESULT_FILE)
         }
       })
       return new Promise((resolve, reject) => {
@@ -255,14 +311,14 @@ function setupAutoUpdate () {
   if (process.platform !== 'win32' || isDevelopment) {
     return
   }
-  autoUpdater.autoInstallOnAppQuit = true
+  refreshInstallOnQuit()
   autoUpdater.on('update-downloaded', (info) => {
     if (downloadedVersion === info.version) {
       return
     }
     downloadedVersion = info.version
     // 这个版本已经放弃了：关程序时也不装，也不再报「下载好了」
-    autoUpdater.autoInstallOnAppQuit = !gaveUp(updateState, info.version)
+    refreshInstallOnQuit()
     if (gaveUp(updateState, info.version)) {
       return
     }
@@ -289,7 +345,7 @@ function setupAutoUpdate () {
   // 每分钟：到点了显示 / 收起提示条；夜里没人操作就装
   setInterval(() => {
     notifyUpdateReady()
-    if (!canAutoInstall(updateState, downloadedVersion, new Date()) ||
+    if (!updateStateWritable || !canAutoInstall(updateState, downloadedVersion, new Date()) ||
       powerMonitor.getSystemIdleTime() < IDLE_INSTALL_MIN_IDLE_SECONDS) {
       return
     }
@@ -327,7 +383,7 @@ function startupInstallAttempted (version) {
 function installCachedUpdateOnStartup () {
   if (process.platform !== 'win32' || isDevelopment) return Promise.resolve(false)
   const version = cachedUpdateVersion()
-  // 这个版本失败过就不在开机时装了（只在夜里试），免得每次开机都多等
+  // 这个版本失败 2 次以后、或者上一次安装还没结果时，开机不装
   if (!version || !canInstallOnRestart(updateState, version) || startupInstallAttempted(version)) {
     return Promise.resolve(false)
   }
@@ -359,13 +415,15 @@ function installCachedUpdateOnStartup () {
 
 ipcMain.on('reload', () => {
   console.log('get reload')
-  // 改设备号时程序本来就要重开，顺便装；这个版本失败过就不顺便装了
+  // 改设备号时程序本来就要重开，顺便装；这个版本失败 2 次以后就不顺便装了
   if (downloadedVersion && canInstallOnRestart(updateState, downloadedVersion)) {
     installDownloadedUpdate('reload')
     return
   }
   // 不装就别让 electron-updater 在退出时顺便装：程序马上会重开，安装助手会等不到程序退出
-  autoUpdater.autoInstallOnAppQuit = false
+  if (process.platform === 'win32' && !isDevelopment) {
+    autoUpdater.autoInstallOnAppQuit = false
+  }
   app.relaunch()
   app.quit()
 })
