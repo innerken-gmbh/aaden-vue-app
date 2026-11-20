@@ -39,18 +39,33 @@ async function request (path, body) {
   throw fail(json?.data?.errorCode ?? (res.ok ? 'CLOUD_ERROR' : `HTTP_${res.status}`), json?.message ?? '', json?.data?.params ?? {})
 }
 
-/** @returns {Promise<{requests: Array, nextPollSeconds: number}>} */
+/**
+ * openTables=1：收银机已经开了的桌上还挂着的请求也要（POS-897，带 tableOpen / tablePeople / tableConsumeTypeId）。
+ * adjustments：确认时按服务员改门店单、门店还在处理的，和要在收银机上人工核对的（POS-901）
+ * @returns {Promise<{requests: Array, nextPollSeconds: number, adjustments: Array}>}
+ */
 export function loadDineOpenRequests () {
-  return request('')
+  return request('?openTables=1')
 }
 
-/** 打开确认框：占住这一桌，返回人数、自助类型候选（candidates / alternatives）和等待的轮次 */
+/**
+ * 打开确认框：占住这一桌，返回人数、自助类型候选（candidates / alternatives）和等待的轮次。
+ * adjust=true（POS-901）：已开的桌上云端现读门店，回 canAdjust、tableAdults / tableChildren / tableMode / tableHasDishes / tablePaying / tableType
+ */
 export function claimDineOpenRequest (sessionId, pw, lang) {
-  return request(`/${sessionId}/claim`, { pw, lang })
+  return request(`/${sessionId}/claim`, { pw, lang, adjust: true })
 }
 
-export function confirmDineOpenRequest (sessionId, pw, { mode, consumeTypeId, adults, children }) {
-  return request(`/${sessionId}/open`, { pw, mode: mode || null, consumeTypeId: consumeTypeId || null, adults, children })
+/**
+ * 确认。没开的桌传全部人数和类型；已开的桌由调用方决定：门店能改时带 adjust: true、只传服务员动过的项，
+ * 不能改时什么都不传（人数和类型以收银机为准）。没传的项不放进请求
+ */
+export function confirmDineOpenRequest (sessionId, pw, fields = {}) {
+  const body = { pw }
+  for (const k of ['mode', 'consumeTypeId', 'adults', 'children', 'adjust']) {
+    if (fields[k] !== undefined) body[k] = fields[k]
+  }
+  return request(`/${sessionId}/open`, body)
 }
 
 export function rejectDineOpenRequest (sessionId, pw, lang) {
