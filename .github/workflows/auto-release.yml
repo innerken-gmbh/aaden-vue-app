@@ -34,6 +34,11 @@ jobs:
       group: auto-release-branch
       cancel-in-progress: false
     steps:
+      - name: 只能在 base1.0-rc 上点 Run workflow
+        if: ${{ github.ref != 'refs/heads/base1.0-rc' }}
+        run: |
+          echo "::error::Run workflow 要选 base1.0-rc（现在选的是 $GITHUB_REF）。这里总是在 base1.0-rc 上 +1 版本发新版，不会重发选中的 tag。要重发某个 tag：对该 tag 运行 Release App To Snap Store / Release App To Github，或在 master 上 Run appcenter-publish（ref=该 tag，target=apps）"
+          exit 1
       - uses: actions/checkout@v4
         with:
           ref: base1.0-rc
