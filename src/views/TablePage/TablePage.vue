@@ -60,6 +60,10 @@
             </v-card>
           </div>
           <v-spacer></v-spacer>
+          <dine-open-strip
+              :table-name="currentTableName"
+              :table-open="haveOrder"
+          />
           <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
           <div class=" text-capitalize mr-6">
             {{ currentTableName }}
@@ -697,7 +701,8 @@ import { cartListFactory } from '@/views/TablePage/cart'
 import MenuFragement from '@/views/TablePage/OrderFragment/MenuFragement.vue'
 import NavButton from '@/components/navigation/NavButton.vue'
 import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
-import { mapActions, mapMutations } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
+import DineOpenStrip from '@/views/TablePage/DineOpenStrip.vue'
 import { getReservationsByTableId } from '@/api/ReservationService'
 import ReservationListPage from '@/views/TablePage/ReservationList/ReservationListPage.vue'
 import {
@@ -757,6 +762,7 @@ export default {
     LogoDisplay,
     MemberSelectionDialog,
     BuffetStartDialog,
+    DineOpenStrip,
     AddressPage,
     DiscountDialog,
     ModificationDrawer,
@@ -1604,6 +1610,7 @@ export default {
 
   },
   computed: {
+    ...mapState(['dineOpenDoneSeq']),
     showDiscountBtn () {
       return this.Config.hideDiscountBtn !== '1'
     },
@@ -1774,6 +1781,10 @@ export default {
     }
   },
   watch: {
+    /** 在这一桌上确认了扫码请求（POS-883）：云端可能开了桌、改了人数和类型，重新读这一桌 */
+    dineOpenDoneSeq () {
+      if (this.$route.name === 'table') this.getTableDetail()
+    },
     async checkoutShow (val) {
       if (!val) {
         this.checkoutId = []

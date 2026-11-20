@@ -21,9 +21,9 @@
       >mdi-alert-circle
       </v-icon>
       <div
-          v-if="dineOpenRequested"
-          class="dineOpenBadge"
-      >{{ $t('DineOpenBadge') }}
+          v-if="dineOpenRequest"
+          :class="dineOpenRequest.open ? 'dineOpenBadge dineOpenBadgeOpen' : 'dineOpenBadge'"
+      >{{ $t(dineOpenRequest.open ? 'DineOpenBadgeOpenTable' : 'DineOpenBadge') }}
       </div>
       <div
           class="d-flex align-center justify-center flex-grow-1"
@@ -141,9 +141,12 @@ export default {
     }
   },
   computed: {
-    /** 客人在这一桌请服务员开桌（POS-275，堂食扫码），点桌子会弹确认框 */
-    dineOpenRequested () {
-      return store.state.dineOpenRequests.some(r => !r.rejectedAt && r.tableName === this.table?.tableName)
+    /**
+     * 客人在这一桌请服务员开桌（POS-275，堂食扫码）。没开的桌沿用原来的角标，点桌子弹三选一；
+     * 已开的桌（POS-883）换一个颜色写「扫码待确认」，点桌子照常进单，单页顶上确认
+     */
+    dineOpenRequest () {
+      return store.getters.dineOpenVisible.find(r => r.tableName === this.table?.tableName) ?? null
     },
     tableCardFontSize () {
       return '20px'
@@ -333,5 +336,13 @@ export default {
   font-weight: 900;
   color: white;
   background: #f57c00;
+}
+
+/* 已开的桌左上角是人数圆点，小标放右上角 */
+.dineOpenBadgeOpen {
+  left: auto;
+  right: 4px;
+  z-index: 3;
+  background: #00897b;
 }
 </style>
