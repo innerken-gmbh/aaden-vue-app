@@ -21,6 +21,11 @@
       >mdi-alert-circle
       </v-icon>
       <div
+          v-if="dineOpenRequested"
+          class="dineOpenBadge"
+      >{{ $t('DineOpenBadge') }}
+      </div>
+      <div
           class="d-flex align-center justify-center flex-grow-1"
           :class="table.inUse?'mt-3':''"
       >
@@ -136,6 +141,10 @@ export default {
     }
   },
   computed: {
+    /** 客人在这一桌请服务员开桌（POS-275，堂食扫码），点桌子会弹确认框 */
+    dineOpenRequested () {
+      return store.state.dineOpenRequests.some(r => !r.rejectedAt && r.tableName === this.table?.tableName)
+    },
     tableCardFontSize () {
       return '20px'
     },
@@ -311,4 +320,18 @@ export default {
   right: 5px
   z-index: 2
 
+</style>
+
+<style scoped>
+.dineOpenBadge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  padding: 0 6px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 900;
+  color: white;
+  background: #f57c00;
+}
 </style>
