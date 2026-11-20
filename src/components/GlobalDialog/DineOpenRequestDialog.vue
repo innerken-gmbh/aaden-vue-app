@@ -344,7 +344,8 @@
                   </v-btn>
                 </div>
               </div>
-              <div>
+              <!-- 选的自助类型没有儿童价档：不填儿童，和确认网页一样 -->
+              <div v-if="hasChildTier">
                 <div class="text-subtitle-2 mb-1">{{ $t('DineOpenChildren') }}</div>
                 <div class="d-flex align-center">
                   <v-btn
@@ -373,7 +374,7 @@
                 dense
                 text
                 type="warning"
-            >{{ $t('DineOpenOverQuota', { people: form.adults + form.children, send: freePerRound, back: overQuota }) }}
+            >{{ $t('DineOpenOverQuota', { people: partyCount, send: freePerRound, back: overQuota }) }}
             </v-alert>
             <v-alert
                 v-if="editable && hasBuffet && form.mode !== 'BUFFET' && queuedLines.length > 0"
@@ -429,11 +430,12 @@
 import { mapGetters, mapMutations, mapState } from 'vuex'
 import { addToQueue } from '@/oldjs/poolJobs'
 import { findConsumeTypeById, openOrEnterTable, popAuthorize, showConfirmAsyn, toast } from '@/oldjs/common'
-import { dineRequestMinutesLeft } from '@/store'
 import {
   claimDineOpenRequest,
   confirmDineOpenRequest,
   dineOpenErrorOf,
+  dineRequestMinutesLeft,
+  dineRequestWaitedMinutes,
   loadDineOpenRequests,
   rejectDineOpenRequest
 } from '@/api/dineOpenRequests'
@@ -491,7 +493,14 @@ export default {
       return this.dineOpenAdjustments.filter(a => !a.manualCheck && a.status === 'PENDING')
     },
     tableOpen () {
-      return !!this.detail?.tableOpen
+      return !!this.detail?.tableOpen || this.justOpened
+    },
+    /**
+     * 收银机上刚开了这一桌（「只开桌」后马上在单页顶条上点确认），云端还没看到：claim 按没开的桌回，
+     * 但确认时云端会并进已开的单、不管这里填的人数和类型。按已开、只读处理，要改请在收银机上改或者稍后重开确认框
+     */
+    justOpened () {
+      return !!this.detail && !this.detail.tableOpen && !!this.dineOpenTarget?.open
     },
     /** 已开的桌上按确认改门店单：门店能改、没人在线上付款（和确认网页一样） */
     adjusting () {
@@ -535,6 +544,7 @@ export default {
         people ? this.$t('DineOpenParty', { adults: people }) : null].filter(Boolean).join(' · ')
     },
     tableOpenHint () {
+      if (this.justOpened) return 'DineOpenTableJustOpenedHint'
       if (this.adjusting) return 'DineOpenTableOpenAdjustHint'
       if (this.detail?.tablePaying) return 'DineOpenTableOpenPayingHint'
       return 'DineOpenTableOpenReadOnlyHint'
@@ -546,9 +556,21 @@ export default {
     queuedLines () {
       return (this.detail?.queued ?? []).flatMap(r => r.lines ?? [])
     },
+    /** 选的自助类型有没有儿童价档；没有档位的（常见的是火锅）和单点都能填儿童 */
+    hasChildTier () {
+      const t = this.pickedType
+      return !t || !t.tiers?.length || t.tiers.some(x => !x.isForAdult)
+    },
+    /** 实际确认的儿童数：没有儿童档时算 0 */
+    partyChildren () {
+      return this.hasChildTier ? this.form.children : 0
+    },
+    partyCount () {
+      return this.form.adults + this.partyChildren
+    },
     freePerRound () {
       const t = this.pickedType
-      return t ? (t.perAdult ?? 0) * this.form.adults + (t.perChild ?? 0) * this.form.children : 0
+      return t ? (t.perAdult ?? 0) * this.form.adults + (t.perChild ?? 0) * this.partyChildren : 0
     },
     /** 等着的一轮按确认人数算超出的免费菜：确认后退回客人购物车 */
     overQuota () {
@@ -558,7 +580,7 @@ export default {
     canOpen () {
       if (!this.detail) return false
       if (!this.editable) return true
-      if (this.form.adults + this.form.children < 1) return false
+      if (this.partyCount < 1) return false
       return this.form.mode !== 'BUFFET' || !!this.form.consumeTypeId
     },
     /** 改单的结论：门店还在处理时按列表 adjustments 里的最新状态写 */
@@ -649,8 +671,8 @@ export default {
       } catch (e) {
         // 拿不到设备号或云端连不上：一分钟后再试，不打扰收银。
         // 清掉旧列表：不然断网时点有角标的桌还会被拦到三选一里
+        // adjustments 留着上一次的：清掉会把「门店还在处理」当成处理完了，人工核对的红条也会跟着没了
         this.SET_DINE_OPEN_REQUESTS([])
-        this.SET_DINE_OPEN_ADJUSTMENTS([])
         this.nextPollAt = Date.now() + 60 * 1000
       } finally {
         this.polling = false
@@ -688,14 +710,16 @@ export default {
     waitText (r) {
       const parts = []
       if (r.queuedRounds > 0) {
-        // 云端列表现在只给轮数；带上 queuedDishes 时写几道菜
+        // 云端带 queuedDishes 时写一共几道菜，老云端只有轮数
         parts.push(r.queuedDishes > 0
           ? this.$t('DineOpenQueuedDishes', { count: r.queuedDishes })
           : this.$t('DineOpenQueuedShort', { count: r.queuedRounds }))
       }
-      const waited = r.requestedAt ? Math.max(0, Math.floor((this.dineOpenNow - new Date(r.requestedAt).getTime()) / 60000)) : 0
-      parts.push(this.$t('DineOpenWaitingMinutes', { minutes: waited }))
-      parts.push(this.$t('DineOpenExpiresIn', { minutes: Math.max(1, dineRequestMinutesLeft(r, this.dineOpenNow)) }))
+      // 时间都只用来显示：云端时间按柏林解析，到期优先用云端给的
+      const waited = dineRequestWaitedMinutes(r, this.dineOpenNow)
+      if (waited != null) parts.push(this.$t('DineOpenWaitingMinutes', { minutes: waited }))
+      const left = dineRequestMinutesLeft(r, this.dineOpenNow)
+      if (left != null) parts.push(this.$t('DineOpenExpiresIn', { minutes: left }))
       if (r.claimedBy) parts.push(this.$t('DineOpenClaimedBy', { name: r.claimedBy }))
       return parts.join(' · ')
     },
@@ -782,7 +806,7 @@ export default {
         }
         if (this.touched.party) {
           fields.adults = this.form.adults
-          fields.children = this.form.children
+          fields.children = this.partyChildren
         }
         return fields
       }
@@ -790,7 +814,7 @@ export default {
         mode: this.form.mode,
         consumeTypeId: buffet ? this.form.consumeTypeId : null,
         adults: this.form.adults,
-        children: this.form.children
+        children: this.partyChildren
       }
     },
     async open () {

@@ -7,15 +7,8 @@ let resolve = null
 
 let tablePickResolve = null
 
-/** 开桌请求从客人提交起多久没人确认就过期（云端 dine-in.request-ttl-minutes，默认 30，POS-897）。列表不带到期时间，按这个算 */
-export const DINE_REQUEST_TTL_MINUTES = 30
 /** 首页桌台列表多久以内算新的：只有新的才拿来判断桌开没开（进了单页首页不刷新，旧的会把刚开的桌当成没开） */
 const POS_TABLES_FRESH_MS = 10 * 1000
-
-export function dineRequestMinutesLeft (r, now = Date.now()) {
-  if (!r?.requestedAt) return DINE_REQUEST_TTL_MINUTES
-  return Math.ceil((new Date(r.requestedAt).getTime() + DINE_REQUEST_TTL_MINUTES * 60000 - now) / 60000)
-}
 
 const basePayloadParam = {
   typeIsBoss: false,
@@ -60,7 +53,7 @@ export default new Vuex.Store({
     dineOpenHidden: {},
     // 首页桌台列表里哪些桌开着（tableName → inUse）和读到的时间：结账后马上把已开桌上的请求去掉，刚开的桌马上归到「已开桌」
     dinePosTables: { at: 0, inUse: {} },
-    // 每秒走一次，过期和剩余分钟按它算
+    // 每秒走一次，等了几分钟、还剩几分钟按它算（只用来显示）
     dineOpenNow: Date.now(),
     // 点了没开、挂着请求的桌：弹三选一（确认并开桌 / 只开桌 / 拒绝）
     dineOpenChoice: null,
@@ -71,7 +64,9 @@ export default new Vuex.Store({
   },
   mutations: {
     SET_DINE_OPEN_REQUESTS (state, list) {
-      state.dineOpenRequests = list
+      // 记下收到的时间：云端的 expiresInSeconds 从这一刻算，不用对收银机的时钟
+      const receivedAt = Date.now()
+      state.dineOpenRequests = list.map(r => ({ ...r, receivedAt }))
     },
     SET_DINE_OPEN_ADJUSTMENTS (state, list) {
       state.dineOpenAdjustments = list
@@ -216,13 +211,14 @@ export default new Vuex.Store({
     },
     /**
      * 要提醒服务员的开桌请求（POS-883），两组都在里面，open 为 true 的是「已开桌 · 待确认」。
-     * 去掉：服务员拒绝过的、刚拒绝或确认过的、到时间过期的、收银机上已经结账的（云端还没跟上时按首页桌台列表判断）
+     * 去掉：服务员拒绝过的、刚拒绝或确认过的、收银机上已经结账的（云端还没跟上时按首页桌台列表判断）。
+     * 过期不在这里判断，以云端列表为准：收银机的时区、时钟不一定对，自己算会把还在的请求全藏掉
      */
     dineOpenVisible (state) {
       const now = state.dineOpenNow
       const pos = now - state.dinePosTables.at < POS_TABLES_FRESH_MS ? state.dinePosTables.inUse : {}
       return state.dineOpenRequests
-        .filter(r => !r.rejectedAt && !(state.dineOpenHidden[r.sessionId] > now) && dineRequestMinutesLeft(r, now) > 0)
+        .filter(r => !r.rejectedAt && !(state.dineOpenHidden[r.sessionId] > now))
         .filter(r => !(r.tableOpen && pos[r.tableName] === false))
         .map(r => ({ ...r, open: !!r.tableOpen || pos[r.tableName] === true }))
     }

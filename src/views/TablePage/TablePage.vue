@@ -60,7 +60,10 @@
             </v-card>
           </div>
           <v-spacer></v-spacer>
-          <dine-open-strip :table-name="currentTableName"/>
+          <dine-open-strip
+              :table-name="currentTableName"
+              :table-open="haveOrder"
+          />
           <v-icon class="mr-2">mdi-map-marker-radius</v-icon>
           <div class=" text-capitalize mr-6">
             {{ currentTableName }}

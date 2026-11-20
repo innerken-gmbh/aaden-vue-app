@@ -660,7 +660,7 @@
   "DineOpenGroupNotOpen": "待开桌",
   "DineOpenGroupOpen": "已开桌 · 待确认",
   "DineOpenExpiresIn": "还剩 {minutes} 分钟过期",
-  "DineOpenQueuedDishes": "等着的一轮 {count} 道",
+  "DineOpenQueuedDishes": "{count} 道等着送",
   "DineOpenRejectTitle": "拒绝 {table} 号桌的开桌请求？",
   "DineOpenChoiceConfirm": "确认并开桌",
   "DineOpenChoiceOpenOnly": "只开桌（请求继续挂着）",
@@ -711,5 +711,6 @@
   "DineOpenNotApplied_TILL_CHANGED": "收银机上后来又改过，这次修改没有覆盖它，请在收银机上核对",
   "DineOpenNotApplied_TABLE_UNAVAILABLE": "这一桌正在核对或刚结束，请在收银机上改",
   "DineOpenErrorOrderEnded": "这张桌已经是另一张单，原来的请求已结束，请客人重新扫码",
-  "DineOpenErrorClaimed": "别的服务员正在确认这一桌，请稍后再试"
+  "DineOpenErrorClaimed": "别的服务员正在确认这一桌，请稍后再试",
+  "DineOpenTableJustOpenedHint": "收银机上刚开了这一桌，云端还没读到这张单：人数和类型以收银机为准，这里不能改。要改请先在收银机上改，或者稍等一会儿关掉再打开确认框；确认后客人的手机加入这一桌，等着的一轮送出"
 }

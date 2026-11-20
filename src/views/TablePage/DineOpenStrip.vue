@@ -41,14 +41,17 @@ import { findConsumeTypeById } from '@/oldjs/common'
 export default {
   name: 'DineOpenStrip',
   props: {
-    tableName: { type: String, default: null }
+    tableName: { type: String, default: null },
+    // 单页上这一桌已经有单了：首页桌台列表这时不刷新，云端也可能还没看到，按这里的算已开桌
+    tableOpen: { type: Boolean, default: false }
   },
   computed: {
     ...mapGetters(['dineOpenVisible']),
     request () {
-      return this.tableName ? this.dineOpenVisible.find(r => r.tableName === this.tableName) ?? null : null
+      const r = this.tableName ? this.dineOpenVisible.find(r => r.tableName === this.tableName) : null
+      return r ? { ...r, open: r.open || this.tableOpen } : null
     },
-    /** 几位 · 自助（类型名）或单点 · 几轮等着送 */
+    /** 几位 · 自助（类型名）或单点 · 几道（老云端几轮）等着送 */
     text () {
       const r = this.request
       if (!r) return ''
@@ -58,7 +61,10 @@ export default {
       const mode = r.mode === 'BUFFET'
         ? [this.$t('DineOpenModeBuffet'), r.consumeTypeId ? findConsumeTypeById(r.consumeTypeId).name : ''].filter(Boolean).join(' · ')
         : this.$t('DineOpenModeAlaCarte')
-      return [people, mode, r.queuedRounds > 0 ? this.$t('DineOpenQueuedShort', { count: r.queuedRounds }) : null].filter(Boolean).join(' · ')
+      const queued = r.queuedDishes > 0
+        ? this.$t('DineOpenQueuedDishes', { count: r.queuedDishes })
+        : (r.queuedRounds > 0 ? this.$t('DineOpenQueuedShort', { count: r.queuedRounds }) : null)
+      return [people, mode, queued].filter(Boolean).join(' · ')
     }
   },
   methods: {

@@ -707,5 +707,6 @@
   "DineOpenNotApplied_TILL_CHANGED": "An der Kasse wurde inzwischen etwas geändert, die Änderung von hier wurde nicht übernommen. Bitte an der Kasse prüfen.",
   "DineOpenNotApplied_TABLE_UNAVAILABLE": "Der Tisch wird gerade abgeglichen oder ist schon beendet. Bitte an der Kasse ändern.",
   "DineOpenErrorOrderEnded": "An diesem Tisch läuft schon eine andere Bestellung. Die Anfrage der Gäste ist beendet, bitte den Tischcode neu scannen lassen.",
-  "DineOpenErrorClaimed": "Ein anderer Kellner bestätigt diesen Tisch gerade. Bitte gleich noch einmal versuchen."
+  "DineOpenErrorClaimed": "Ein anderer Kellner bestätigt diesen Tisch gerade. Bitte gleich noch einmal versuchen.",
+  "DineOpenTableJustOpenedHint": "Der Tisch wurde gerade an der Kasse geöffnet, die Cloud kennt die Bestellung noch nicht: Personen und Art wie an der Kasse, hier nicht änderbar. Bitte zuerst an der Kasse ändern oder diesen Dialog gleich noch einmal öffnen. Beim Bestätigen kommen die Handys des Gastes an den Tisch und die wartende Runde geht raus."
 }
