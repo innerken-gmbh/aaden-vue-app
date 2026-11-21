@@ -290,7 +290,13 @@ export default {
           children: detail.children
         }
       } catch (e) {
-        if (seq === this.seq) this.error = this.describe(e)
+        if (seq !== this.seq) return
+        // 还没拿到密码就出错：确认框跟着 pw 显示，不关掉的话请求挂着却什么都看不见
+        if (this.pw == null) {
+          this.close()
+          return
+        }
+        this.error = this.describe(e)
       } finally {
         if (seq === this.seq) this.loading = false
       }
