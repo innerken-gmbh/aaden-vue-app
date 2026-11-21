@@ -39,9 +39,10 @@
       </v-card>
     </v-dialog>
 
-    <!-- 确认开桌：可改人数、单点 / 自助、自助类型，或拒绝 -->
+    <!-- 确认开桌：可改人数、单点 / 自助、自助类型，或拒绝。
+         拿到服务员密码以后才显示：开着「使用跑堂密码」时先弹密码框，确认框要是先出来会盖住密码键盘，密码输不进去 -->
     <v-dialog
-        :value="!!dineOpenTarget"
+        :value="!!dineOpenTarget && pw != null"
         max-width="520px"
         persistent
     >
@@ -258,6 +259,8 @@ export default {
     },
     async start (target) {
       const seq = ++this.seq
+      // 确认框跟着 pw 显示：先清掉上一桌的，等这一桌的密码
+      this.pw = null
       this.detail = null
       this.error = ''
       this.loading = true
