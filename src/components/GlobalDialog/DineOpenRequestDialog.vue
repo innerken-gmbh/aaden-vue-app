@@ -138,9 +138,10 @@
       </v-card>
     </v-dialog>
 
-    <!-- 确认：可改人数、单点 / 自助、自助类型，或拒绝；确认后在这里写结果 -->
+    <!-- 确认：可改人数、单点 / 自助、自助类型，或拒绝；确认后在这里写结果。
+         拿到服务员密码以后才显示：开着「使用跑堂密码」时先弹密码框，确认框要是先出来会盖住密码键盘，密码输不进去（#80） -->
     <v-dialog
-        :value="!!dineOpenTarget"
+        :value="!!dineOpenTarget && pw != null"
         max-width="560px"
         persistent
         scrollable
@@ -743,6 +744,8 @@ export default {
     },
     async start (target) {
       const seq = ++this.seq
+      // 确认框跟着 pw 显示：先清掉上一桌的，等这一桌的密码
+      this.pw = null
       this.detail = null
       this.result = null
       this.adjustSeen = false
@@ -764,7 +767,13 @@ export default {
         this.detail = detail
         this.form = this.initialForm(detail)
       } catch (e) {
-        if (seq === this.seq) this.error = this.describe(e)
+        if (seq !== this.seq) return
+        // 还没拿到密码就出错：确认框跟着 pw 显示，不关掉的话请求挂着却什么都看不见
+        if (this.pw == null) {
+          this.close()
+          return
+        }
+        this.error = this.describe(e)
       } finally {
         if (seq === this.seq) this.loading = false
       }
