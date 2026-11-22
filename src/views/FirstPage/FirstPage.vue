@@ -60,16 +60,16 @@
           style="min-width: 200px"
       >
         <v-btn
-            v-if="activeDineOpenRequests.length > 0"
+            v-if="dineOpenVisible.length > 0 || dineManualChecks.length > 0"
+            :color="dineOpenVisible.length > 0 ? 'amber darken-2' : 'error'"
             class="mr-2 dineOpenPill"
-            color="amber darken-2"
             depressed
             rounded
             small
             @click="SHOW_DINE_OPEN_LIST(true)"
         >
-          <v-icon left small>mdi-table-chair</v-icon>
-          {{ $t('DineOpenRequests') }} {{ activeDineOpenRequests.length }}
+          <v-icon left small>{{ dineManualChecks.length > 0 ? 'mdi-alert-circle' : 'mdi-table-chair' }}</v-icon>
+          {{ $t('DineOpenRequests') }} {{ dineOpenVisible.length }}
         </v-btn>
         <div>
           <time-display></time-display>
@@ -577,7 +577,7 @@ import LanguageSwitcher from '@/views/Widget/LanguageSwitcher'
 
 import { getServantList, getTableListWithCells, openDrawer } from '@/oldjs/api'
 
-import { mapActions, mapMutations, mapState } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import { TableFixedSectionId } from '@/api/tableService'
 
 import {
@@ -765,10 +765,12 @@ export default {
     notAccepted: function () {
       return this.takeawayList.filter(it => it.consumeTypeStatusId < 2)
     },
-    ...mapState(['showOrderAcceptDialog', 'dineOpenRequests']),
-    /** 待开桌里服务员还没拒绝过的（被拒绝过的点桌子仍能确认，但不提醒） */
-    activeDineOpenRequests () {
-      return this.dineOpenRequests.filter(r => !r.rejectedAt)
+    ...mapState(['showOrderAcceptDialog', 'dineOpenAdjustments']),
+    /** 待开桌和已开桌上待确认的请求（POS-883），去掉了拒绝过、过期、已结账的 */
+    ...mapGetters(['dineOpenVisible']),
+    /** 按确认改单后要在收银机上人工核对的桌（POS-901）：只有这些时角标也要露出来 */
+    dineManualChecks () {
+      return this.dineOpenAdjustments.filter(a => a.manualCheck)
     }
   },
   methods: {
@@ -911,17 +913,21 @@ export default {
       }
     },
     openOrEnterTable: openOrEnterTable,
-    /** 客人在这一桌请服务员开桌（POS-275）：点桌子先弹确认框，不直接进桌 */
+    /**
+     * 客人在这一桌请服务员开桌（POS-275 / POS-883）：
+     * 没开的桌先弹三选一（确认并开桌 / 只开桌、请求继续挂着 / 拒绝）；已开的桌照常进单，不打断加菜，单页顶上有一条确认 / 拒绝
+     */
     tableClicked (tableName) {
-      // 服务员拒绝过的不拦（和角标一样）：拒绝后会话还挂着，不排除的话这张桌好几个小时都进不去。要再确认从列表里点
-      const request = this.activeDineOpenRequests.find(r => r.tableName === tableName)
-      if (request) {
-        this.OPEN_DINE_REQUEST(request)
+      // 服务员拒绝过的、过期的不拦（和角标一样）：不排除的话这张桌进不去
+      const request = this.dineOpenVisible.find(r => r.tableName === tableName)
+      const inUse = this.tableList.find(t => t.tableName === tableName)?.usageStatus === '1'
+      if (request && !request.open && !inUse) {
+        this.SHOW_DINE_OPEN_CHOICE(request)
       } else {
         this.openOrEnterTable(tableName)
       }
     },
-    ...mapMutations(['HIDE_AUTHORIZE_DIALOG', 'OPEN_DINE_REQUEST', 'SHOW_DINE_OPEN_LIST']),
+    ...mapMutations(['HIDE_AUTHORIZE_DIALOG', 'SHOW_DINE_OPEN_CHOICE', 'SHOW_DINE_OPEN_LIST', 'SET_DINE_POS_TABLES']),
     initialUI () {
       if (this.$refs.ins) {
         this.$refs.ins.focus()
@@ -932,6 +938,7 @@ export default {
     async refreshTables () {
       try {
         this.tableList = await getTableListWithCells()
+        this.SET_DINE_POS_TABLES(this.tableList)
       } catch (e) {
         this.noNetwork = true
         console.log('No network detected!')

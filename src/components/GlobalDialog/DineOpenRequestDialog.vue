@@ -1,9 +1,10 @@
 <template>
   <div>
-    <!-- 待开桌列表（顶栏「待开桌 N」点开） -->
+    <!-- 请求列表（顶栏「待开桌 N」点开）：分「待开桌」和「已开桌 · 待确认」两组（POS-883） -->
     <v-dialog
         :value="dineOpenListShow"
-        max-width="460px"
+        max-width="560px"
+        scrollable
         @input="SHOW_DINE_OPEN_LIST($event)"
     >
       <v-card
@@ -11,40 +12,139 @@
           rounded="lg"
       >
         <div class="text-h6 font-weight-black mb-3">{{ $t('DineOpenRequests') }}</div>
-        <div
-            v-if="dineOpenRequests.length === 0"
-            class="text-body-2 grey--text py-6 text-center"
-        >{{ $t('DineOpenEmpty') }}
-        </div>
-        <v-card
-            v-for="r in dineOpenRequests"
-            :key="r.sessionId"
-            :class="r.rejectedAt ? 'grey lighten-3 grey--text' : 'amber lighten-5'"
-            class="pa-3 mb-2 d-flex align-center"
-            flat
-            @click="OPEN_DINE_REQUEST(r)"
-        >
-          <div class="text-h6 font-weight-black mr-4">{{ r.tableName }}</div>
-          <div class="flex-grow-1">
-            <div class="text-body-2">{{ partyText(r) }}</div>
-            <div class="text-caption grey--text">
-              {{ $t('DineOpenWaitingMinutes', { minutes: waitedMinutes(r) }) }}
-              <template v-if="r.queuedRounds > 0"> · {{ $t('DineOpenQueuedShort', { count: r.queuedRounds }) }}</template>
-              <template v-if="r.claimedBy"> · {{ $t('DineOpenClaimedBy', { name: r.claimedBy }) }}</template>
-              <template v-if="r.rejectedAt"> · {{ $t('DineOpenWasRejected') }}</template>
-            </div>
+        <div style="max-height: 70vh;overflow-y: auto">
+          <!-- 按确认改单后要在收银机上人工核对的（POS-901），醒目放最上面 -->
+          <v-alert
+              v-for="a in manualChecks"
+              :key="'m' + a.sessionId + '-' + a.orderId"
+              class="mb-2"
+              dense
+              text
+              type="error"
+          >
+            <div class="font-weight-bold">{{ $t('DineOpenManualCheckTable', { table: a.tableName }) }}</div>
+            <div class="text-body-2">{{ $t('DineOpenManualCheckHint') }}</div>
+          </v-alert>
+          <div
+              v-for="a in pendingAdjustments"
+              :key="'p' + a.sessionId + '-' + a.orderId"
+              class="text-body-2 grey--text text--darken-1 mb-2 d-flex align-center"
+          >
+            <v-progress-circular
+                class="mr-2"
+                indeterminate
+                size="14"
+                width="2"
+            />
+            {{ $t('DineOpenAdjustPendingTable', { table: a.tableName }) }}
           </div>
-          <v-icon>mdi-chevron-right</v-icon>
-        </v-card>
+
+          <div
+              v-if="dineOpenVisible.length === 0"
+              class="text-body-2 grey--text py-6 text-center"
+          >{{ $t('DineOpenEmpty') }}
+          </div>
+          <template v-for="group in groups">
+            <div
+                v-if="group.list.length > 0"
+                :key="group.key"
+                class="mb-2"
+            >
+              <div class="text-subtitle-2 font-weight-bold mb-1">{{ $t(group.title) }} · {{ group.list.length }}</div>
+              <v-card
+                  v-for="r in group.list"
+                  :key="r.sessionId"
+                  :class="r.open ? 'teal lighten-5' : 'amber lighten-5'"
+                  class="pa-3 mb-2 d-flex align-center"
+                  flat
+              >
+                <div class="text-h6 font-weight-black mr-4">{{ r.tableName }}</div>
+                <div class="flex-grow-1">
+                  <div class="text-body-2">{{ partyText(r) }}</div>
+                  <div class="text-caption grey--text text--darken-1">{{ waitText(r) }}</div>
+                </div>
+                <v-btn
+                    class="ml-2"
+                    color="error"
+                    outlined
+                    small
+                    @click="REJECT_DINE_REQUEST(r)"
+                >{{ $t('DineOpenReject') }}
+                </v-btn>
+                <v-btn
+                    class="ml-2"
+                    color="primary"
+                    depressed
+                    small
+                    @click="OPEN_DINE_REQUEST(r)"
+                >{{ $t('DineOpenConfirmShort') }}
+                </v-btn>
+              </v-card>
+            </div>
+          </template>
+        </div>
       </v-card>
     </v-dialog>
 
-    <!-- 确认开桌：可改人数、单点 / 自助、自助类型，或拒绝。
-         拿到服务员密码以后才显示：开着「使用跑堂密码」时先弹密码框，确认框要是先出来会盖住密码键盘，密码输不进去 -->
+    <!-- 点了没开、挂着请求的桌：三选一（POS-883） -->
+    <v-dialog
+        :value="!!dineOpenChoice"
+        max-width="420px"
+        @input="!$event && SHOW_DINE_OPEN_CHOICE(null)"
+    >
+      <v-card
+          v-if="dineOpenChoice"
+          class="pa-4"
+          rounded="lg"
+      >
+        <div class="d-flex align-center mb-1">
+          <div class="text-h5 font-weight-black">{{ dineOpenChoice.tableName }}</div>
+          <v-spacer/>
+          <v-btn
+              icon
+              @click="SHOW_DINE_OPEN_CHOICE(null)"
+          >
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </div>
+        <div class="text-body-2">{{ $t('DineOpenGuestAsked', { party: partyText(dineOpenChoice) }) }}</div>
+        <div class="text-caption grey--text text--darken-1 mb-4">{{ waitText(dineOpenChoice) }}</div>
+        <v-btn
+            block
+            class="mb-2"
+            color="primary"
+            depressed
+            large
+            @click="OPEN_DINE_REQUEST(dineOpenChoice)"
+        >{{ $t('DineOpenChoiceConfirm') }}
+        </v-btn>
+        <v-btn
+            block
+            class="mb-1"
+            large
+            outlined
+            @click="openOnly(dineOpenChoice)"
+        >{{ $t('DineOpenChoiceOpenOnly') }}
+        </v-btn>
+        <div class="text-caption grey--text text-center mb-3">{{ $t('DineOpenChoiceOpenOnlyHint') }}</div>
+        <v-btn
+            block
+            color="error"
+            large
+            text
+            @click="REJECT_DINE_REQUEST(dineOpenChoice)"
+        >{{ $t('DineOpenReject') }}
+        </v-btn>
+      </v-card>
+    </v-dialog>
+
+    <!-- 确认：可改人数、单点 / 自助、自助类型，或拒绝；确认后在这里写结果。
+         拿到服务员密码以后才显示：开着「使用跑堂密码」时先弹密码框，确认框要是先出来会盖住密码键盘，密码输不进去（#80） -->
     <v-dialog
         :value="!!dineOpenTarget && pw != null"
-        max-width="520px"
+        max-width="560px"
         persistent
+        scrollable
     >
       <v-card
           v-if="dineOpenTarget"
@@ -53,124 +153,308 @@
       >
         <div class="d-flex align-center mb-2">
           <div class="text-h5 font-weight-black">{{ dineOpenTarget.tableName }}</div>
+          <v-chip
+              v-if="tableOpen"
+              class="ml-3"
+              color="teal"
+              small
+              text-color="white"
+          >{{ $t('DineOpenTableOpenChip') }}
+          </v-chip>
           <v-spacer/>
           <v-btn
               :disabled="busy"
               icon
-              @click="close"
+              @click="result ? finish() : close()"
           >
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </div>
-        <div class="text-body-2 grey--text mb-4">{{ $t('DineOpenGuestAsked', { party: partyText(dineOpenTarget) }) }}</div>
 
-        <div
-            v-if="loading"
-            class="py-8 d-flex justify-center"
-        >
-          <v-progress-circular indeterminate/>
-        </div>
-        <template v-else-if="detail">
-          <!-- 有自助许可、现在也有能开的自助类型时才能选自助；没有时只能单点（和服务员确认网页一样） -->
-          <template v-if="detail.buffetLicensed && buffetTypes.length > 0">
-            <div class="text-subtitle-2 mb-1">{{ $t('DineOpenMode') }}</div>
-            <v-btn-toggle
-                v-model="form.mode"
-                class="mb-3"
-                color="primary"
-                mandatory
-            >
-              <v-btn value="A_LA_CARTE">{{ $t('DineOpenModeAlaCarte') }}</v-btn>
-              <v-btn value="BUFFET">{{ $t('DineOpenModeBuffet') }}</v-btn>
-            </v-btn-toggle>
-            <template v-if="form.mode === 'BUFFET'">
-              <div class="text-subtitle-2 mb-1">{{ $t('DineOpenBuffetType') }}</div>
-              <div style="display: grid;grid-template-columns: repeat(2,minmax(0,1fr));grid-gap: 8px" class="mb-3">
-                <v-card
-                    v-for="t in buffetTypes"
-                    :key="t.id"
-                    :class="form.consumeTypeId === t.id ? 'primary white--text' : 'grey lighten-4'"
-                    class="pa-3 text-center"
-                    flat
-                    @click="form.consumeTypeId = t.id"
-                >
-                  {{ t.name }}
-                </v-card>
-              </div>
-            </template>
-          </template>
-
-          <div style="display: grid;grid-template-columns: 1fr 1fr;grid-gap: 16px" class="mb-3">
-            <div>
-              <div class="text-subtitle-2 mb-1">{{ $t('DineOpenAdults') }}</div>
-              <div class="d-flex align-center">
-                <v-btn icon outlined @click="form.adults = Math.max(0, form.adults - 1)"><v-icon>mdi-minus</v-icon></v-btn>
-                <div class="text-h6 mx-4">{{ form.adults }}</div>
-                <v-btn icon outlined @click="form.adults++"><v-icon>mdi-plus</v-icon></v-btn>
-              </div>
-            </div>
-            <div>
-              <div class="text-subtitle-2 mb-1">{{ $t('DineOpenChildren') }}</div>
-              <div class="d-flex align-center">
-                <v-btn icon outlined @click="form.children = Math.max(0, form.children - 1)"><v-icon>mdi-minus</v-icon></v-btn>
-                <div class="text-h6 mx-4">{{ form.children }}</div>
-                <v-btn icon outlined @click="form.children++"><v-icon>mdi-plus</v-icon></v-btn>
-              </div>
-            </div>
+        <!-- 确认结果（POS-902 / POS-901） -->
+        <template v-if="result">
+          <div class="text-h6 font-weight-bold mb-1">
+            <v-icon
+                class="mr-1"
+                color="success"
+            >mdi-check-circle
+            </v-icon>
+            {{ $t(result.alreadyOpen ? 'DineOpenJoined' : 'DineOpenDone', { table: result.tableName || dineOpenTarget.tableName }) }}
           </div>
-
           <div
-              v-if="detail.queued && detail.queued.length"
-              class="text-body-2 mb-3"
-          >{{ $t('DineOpenQueued', { count: detail.queued.length }) }}
+              v-if="resultPeople > 0"
+              class="text-body-1 mb-2"
+          >{{ [resultTypeName, $t('DineOpenParty', { adults: resultPeople })].filter(Boolean).join(' · ') }}
+          </div>
+          <div
+              v-for="(line, i) in resultLines"
+              :key="i"
+              class="text-body-2 mb-1"
+          >{{ line }}
+          </div>
+          <v-alert
+              v-if="shownAdjust.status === 'PENDING'"
+              class="mt-3 mb-0"
+              dense
+              text
+              type="info"
+          >
+            <div class="font-weight-bold">{{ $t('DineOpenAdjustPending') }}</div>
+            <div class="text-body-2">{{ $t('DineOpenAdjustPendingHint') }}</div>
+          </v-alert>
+          <v-alert
+              v-if="shownAdjust.manualCheck"
+              class="mt-3 mb-0"
+              prominent
+              type="error"
+          >
+            <div class="font-weight-bold">{{ $t('DineOpenManualCheck') }}</div>
+            <div class="text-body-2">{{ $t('DineOpenManualCheckHint') }}</div>
+          </v-alert>
+          <div class="d-flex mt-4">
+            <v-spacer/>
+            <v-btn
+                color="primary"
+                depressed
+                @click="finish"
+            >{{ $t('DineOpenGotIt') }}
+            </v-btn>
           </div>
         </template>
 
-        <div
-            v-if="error"
-            class="error--text text-body-2 mb-3"
-        >{{ error }}
-        </div>
+        <template v-else>
+          <div
+              v-if="loading"
+              class="py-8 d-flex justify-center"
+          >
+            <v-progress-circular indeterminate/>
+          </div>
+          <template v-else-if="detail">
+            <div class="text-body-2 grey--text text--darken-1 mb-3">{{ $t('DineOpenGuestAsked', { party: partyText(guestChoice) }) }}</div>
 
-        <div class="d-flex">
-          <v-btn
-              :disabled="busy || loading"
-              color="error"
-              outlined
-              @click="reject"
-          >{{ $t('DineOpenReject') }}
-          </v-btn>
-          <v-spacer/>
-          <v-btn
-              :disabled="busy || loading || !canOpen"
-              :loading="busy"
-              color="primary"
-              depressed
-              @click="open"
-          >{{ $t('DineOpenConfirm') }}
-          </v-btn>
-        </div>
+            <!-- 收银机已经开了这一桌（POS-897）：门店现在的样子，和能不能在这里改 -->
+            <v-alert
+                v-if="tableOpen"
+                :type="editable ? 'info' : 'warning'"
+                class="mb-3"
+                dense
+                text
+            >
+              <div class="font-weight-bold">{{ $t('DineOpenTableOpenTitle') }}
+                <template v-if="tableNow"> · {{ tableNow }}</template>
+              </div>
+              <div class="text-body-2">{{ $t(tableOpenHint) }}</div>
+            </v-alert>
+            <!-- 这张单上一次按确认改单还在处理、或者要人工核对（POS-901） -->
+            <v-alert
+                v-if="tableOpen && detail.adjust"
+                :type="detail.adjust.manualCheck ? 'error' : 'info'"
+                class="mb-3"
+                dense
+                text
+            >
+              <div class="font-weight-bold">{{ $t(detail.adjust.status === 'PENDING' ? 'DineOpenEarlierAdjustPending' : 'DineOpenManualCheck') }}</div>
+              <div
+                  v-if="detail.adjust.manualCheck"
+                  class="text-body-2"
+              >{{ $t('DineOpenManualCheckHint') }}
+              </div>
+            </v-alert>
+
+            <!-- 有自助许可、现在也有能开的自助类型时才能选自助；没有时只能单点（和服务员确认网页一样） -->
+            <template v-if="editable && hasBuffet && !typeLocked">
+              <div class="text-subtitle-2 mb-1">{{ $t('DineOpenMode') }}</div>
+              <v-btn-toggle
+                  :value="form.mode"
+                  class="mb-1"
+                  color="primary"
+                  mandatory
+                  @change="setMode"
+              >
+                <v-btn value="A_LA_CARTE">{{ $t('DineOpenModeAlaCarte') }}</v-btn>
+                <v-btn value="BUFFET">{{ $t('DineOpenModeBuffet') }}</v-btn>
+              </v-btn-toggle>
+              <div
+                  v-if="guestChoice.mode && guestChoice.mode !== form.mode"
+                  class="text-caption grey--text text--darken-1 mb-2"
+              >{{ $t(guestChoice.mode === 'BUFFET' ? 'DineOpenGuestBuffet' : 'DineOpenGuestAlaCarte') }}
+              </div>
+              <template v-if="form.mode === 'BUFFET'">
+                <div class="text-subtitle-2 mb-1 mt-2">{{ $t('DineOpenBuffetType') }}</div>
+                <div
+                    v-if="detail.reason"
+                    class="text-caption grey--text text--darken-1 mb-1"
+                >{{ $t('DineOpenHolidayPrice', { name: detail.reason }) }}
+                </div>
+                <div
+                    class="mb-1"
+                    style="display: grid;grid-template-columns: repeat(2,minmax(0,1fr));grid-gap: 8px"
+                >
+                  <v-card
+                      v-for="t in buffetTypes"
+                      :key="t.id"
+                      :class="form.consumeTypeId === t.id ? 'primary white--text' : 'grey lighten-4'"
+                      class="pa-3 text-center"
+                      flat
+                      @click="setType(t.id)"
+                  >
+                    {{ t.name }}
+                  </v-card>
+                </div>
+                <div
+                    v-if="guestType && guestType.id !== form.consumeTypeId"
+                    class="text-caption grey--text text--darken-1 mb-2"
+                >{{ $t('DineOpenGuestType', { name: guestType.name }) }}
+                </div>
+              </template>
+            </template>
+            <!-- 门店不能改单、有人在线上付款，或这桌已经点过菜：类型只读，请先在收银机上改（POS-901） -->
+            <v-alert
+                v-if="typeLocked"
+                class="mb-3"
+                dense
+                outlined
+                type="warning"
+            >
+              <div class="font-weight-bold">{{ lockedTypeText }}</div>
+              <div class="text-body-2">{{ $t('DineOpenTypeLocked') }}</div>
+            </v-alert>
+
+            <div
+                v-if="editable"
+                class="mb-3 mt-2"
+                style="display: grid;grid-template-columns: 1fr 1fr;grid-gap: 16px"
+            >
+              <div>
+                <div class="text-subtitle-2 mb-1">{{ $t('DineOpenAdults') }}</div>
+                <div class="d-flex align-center">
+                  <v-btn
+                      icon
+                      outlined
+                      @click="setParty('adults', form.adults - 1)"
+                  >
+                    <v-icon>mdi-minus</v-icon>
+                  </v-btn>
+                  <div class="text-h6 mx-4">{{ form.adults }}</div>
+                  <v-btn
+                      icon
+                      outlined
+                      @click="setParty('adults', form.adults + 1)"
+                  >
+                    <v-icon>mdi-plus</v-icon>
+                  </v-btn>
+                </div>
+              </div>
+              <!-- 选的自助类型没有儿童价档：不填儿童，和确认网页一样 -->
+              <div v-if="hasChildTier">
+                <div class="text-subtitle-2 mb-1">{{ $t('DineOpenChildren') }}</div>
+                <div class="d-flex align-center">
+                  <v-btn
+                      icon
+                      outlined
+                      @click="setParty('children', form.children - 1)"
+                  >
+                    <v-icon>mdi-minus</v-icon>
+                  </v-btn>
+                  <div class="text-h6 mx-4">{{ form.children }}</div>
+                  <v-btn
+                      icon
+                      outlined
+                      @click="setParty('children', form.children + 1)"
+                  >
+                    <v-icon>mdi-plus</v-icon>
+                  </v-btn>
+                </div>
+              </div>
+            </div>
+
+            <!-- 等着的一轮按确认的人数算额度，超出的退回客人购物车（POS-897 / POS-902） -->
+            <v-alert
+                v-if="overQuota > 0"
+                class="mb-3"
+                dense
+                text
+                type="warning"
+            >{{ $t('DineOpenOverQuota', { people: partyCount, send: freePerRound, back: overQuota }) }}
+            </v-alert>
+            <v-alert
+                v-if="editable && hasBuffet && form.mode !== 'BUFFET' && queuedLines.length > 0"
+                class="mb-3"
+                dense
+                text
+                type="warning"
+            >{{ $t('DineOpenAllAlaCarte') }}
+            </v-alert>
+
+            <div
+                v-if="detail.queued && detail.queued.length"
+                class="mb-3"
+            >
+              <div class="text-body-2 font-weight-bold">
+                {{ $t(tableOpen ? 'DineOpenQueuedOpenTable' : 'DineOpenQueued', { count: detail.queued.length }) }}
+              </div>
+              <div class="text-caption grey--text text--darken-1">{{ queuedLines.map(l => l.qty + '× ' + l.name).join(' · ') }}</div>
+            </div>
+          </template>
+
+          <div
+              v-if="error"
+              class="error--text text-body-2 mb-3"
+          >{{ error }}
+          </div>
+
+          <div class="d-flex">
+            <v-btn
+                :disabled="busy || loading"
+                color="error"
+                outlined
+                @click="REJECT_DINE_REQUEST(dineOpenTarget)"
+            >{{ $t('DineOpenReject') }}
+            </v-btn>
+            <v-spacer/>
+            <v-btn
+                :disabled="busy || loading || !canOpen"
+                :loading="busy"
+                color="primary"
+                depressed
+                @click="open"
+            >{{ $t(tableOpen ? 'DineOpenConfirmShort' : 'DineOpenConfirm') }}
+            </v-btn>
+          </div>
+        </template>
       </v-card>
     </v-dialog>
   </div>
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import { mapGetters, mapMutations, mapState } from 'vuex'
 import { addToQueue } from '@/oldjs/poolJobs'
-import { popAuthorize, showConfirmAsyn, toast } from '@/oldjs/common'
+import { findConsumeTypeById, openOrEnterTable, popAuthorize, showConfirmAsyn, toast } from '@/oldjs/common'
 import {
   claimDineOpenRequest,
   confirmDineOpenRequest,
   dineOpenErrorOf,
+  dineRequestMinutesLeft,
+  dineRequestWaitedMinutes,
   loadDineOpenRequests,
   rejectDineOpenRequest
 } from '@/api/dineOpenRequests'
 
+/** 改单没改成的原因（POS-901），每个有一句文案；不认识的按「收银机没有接受」写，和确认网页一样 */
+const KNOWN_REASONS = ['STORE_CANNOT_ADJUST', 'PAYMENT_IN_PROGRESS', 'ORDER_HAS_DISHES', 'NEED_BOSS', 'NO_PERMISSION', 'ORDER_PAID',
+  'ORDER_DOWN_PAYMENT', 'ORDER_SPLIT', 'STORE_UNREACHABLE', 'STORE_REFUSED', 'TYPE_UNKNOWN', 'ADJUST_PENDING', 'ORDER_MISMATCH',
+  'TILL_CHANGED', 'TABLE_UNAVAILABLE']
+
+/** 这些错误说明请求已经没了：列表里马上去掉 */
+const GONE_CODES = ['DINE_SESSION_NOT_FOUND', 'DINE_OPEN_CODE_EXPIRED', 'DINE_SESSION_CLOSED', 'DINE_OPEN_NOT_REQUESTED', 'DINE_REQUEST_ORDER_ENDED']
+
 /**
- * 扫码点餐 / 堂食版的待开桌（POS-275）。挂在 App 上：
- * - 每秒的任务队列里按云端给的 nextPollSeconds 拉列表（有堂食的店 3 秒，没有的 5 分钟），有新请求时响一声；
- * - 确认框：打开时用服务员密码占住这一桌（客人页显示谁在确认），确认开桌或拒绝。
+ * 扫码点餐 / 堂食版的开桌请求（POS-275，POS-883 跟云端 POS-897 / 899 / 901 / 902 对齐）。挂在 App 上：
+ * - 每秒的任务队列里按云端给的 nextPollSeconds 拉列表（有堂食的店 3 秒，没有的 5 分钟），带 openTables=1，已开桌上挂着的请求也要；
+ *   有新请求时响一声，按会话算，桌开了（请求从「待开桌」挪到「已开桌」）不再响；
+ * - 列表分「待开桌」和「已开桌 · 待确认」两组；点没开、挂着请求的桌弹三选一；
+ * - 确认框：打开时用服务员密码占住这一桌（带 adjust，已开的桌云端现读门店），确认开桌或拒绝，确认后在框里写结果。
  * 服务员密码按这台收银机的规矩取（popAuthorize：关了「用密码」就是默认服务员，开着就弹 PIN）。
  */
 export default {
@@ -182,49 +466,213 @@ export default {
     seen: new Set(),
     pw: null,
     detail: null,
+    result: null,
+    // 门店还在处理的改单在列表 adjustments 里见过：消失了就是处理完了（没要人工核对）
+    adjustSeen: false,
     loading: false,
     busy: false,
     // 每打开一次确认框加一：关掉再开别的桌时，上一桌迟到的结果不写进来
     seq: 0,
     error: '',
-    form: { mode: 'A_LA_CARTE', consumeTypeId: null, adults: 1, children: 0 }
+    form: { mode: 'A_LA_CARTE', consumeTypeId: null, adults: 1, children: 0 },
+    // 服务员动过哪几项：已开的桌只传动过的（POS-901），没动的云端沿用门店现在的，不把收银机刚改的又改回去
+    touched: { mode: false, type: false, party: false }
   }),
   computed: {
-    ...mapState(['dineOpenRequests', 'dineOpenTarget', 'dineOpenListShow']),
+    ...mapState(['dineOpenTarget', 'dineOpenListShow', 'dineOpenChoice', 'dineOpenRejectTarget', 'dineOpenAdjustments', 'dineOpenNow']),
+    ...mapGetters(['dineOpenVisible']),
+    groups () {
+      return [
+        { key: 'closed', title: 'DineOpenGroupNotOpen', list: this.dineOpenVisible.filter(r => !r.open) },
+        { key: 'open', title: 'DineOpenGroupOpen', list: this.dineOpenVisible.filter(r => r.open) }
+      ]
+    },
+    manualChecks () {
+      return this.dineOpenAdjustments.filter(a => a.manualCheck)
+    },
+    pendingAdjustments () {
+      return this.dineOpenAdjustments.filter(a => !a.manualCheck && a.status === 'PENDING')
+    },
+    tableOpen () {
+      return !!this.detail?.tableOpen || this.justOpened
+    },
+    /**
+     * 收银机上刚开了这一桌（「只开桌」后马上在单页顶条上点确认），云端还没看到：claim 按没开的桌回，
+     * 但确认时云端会并进已开的单、不管这里填的人数和类型。按已开、只读处理，要改请在收银机上改或者稍后重开确认框
+     */
+    justOpened () {
+      return !!this.detail && !this.detail.tableOpen && !!this.dineOpenTarget?.open
+    },
+    /** 已开的桌上按确认改门店单：门店能改、没人在线上付款（和确认网页一样） */
+    adjusting () {
+      return this.tableOpen && !!this.detail?.canAdjust && !this.detail?.tablePaying
+    },
+    editable () {
+      return !this.tableOpen || this.adjusting
+    },
+    /** 这桌已经点过菜：类型只能在收银机上改，人数照样能改 */
+    typeLocked () {
+      return this.adjusting && !!this.detail?.tableHasDishes
+    },
+    storeBuffet () {
+      return this.adjusting && this.detail?.tableMode === 'BUFFET'
+    },
     buffetTypes () {
-      return [...(this.detail?.candidates ?? []), ...(this.detail?.alternatives ?? [])]
+      const types = [...(this.detail?.candidates ?? []), ...(this.detail?.alternatives ?? [])]
+      // 门店现在的类型不在能开的里（比如过了时段）：也列出来，默认就是它
+      const store = this.storeBuffet ? this.detail?.tableType : null
+      return store && !types.some(t => t.id === store.id) ? [...types, store] : types
+    },
+    hasBuffet () {
+      return !!this.detail?.buffetLicensed && this.buffetTypes.length > 0
+    },
+    guestChoice () {
+      const d = this.detail ?? this.dineOpenTarget ?? {}
+      return { mode: d.mode, consumeTypeId: d.consumeTypeId, adults: d.adults ?? 0, children: d.children ?? 0 }
+    },
+    guestType () {
+      return this.buffetTypes.find(t => t.id === this.guestChoice.consumeTypeId) ?? null
+    },
+    pickedType () {
+      return this.form.mode === 'BUFFET' ? this.buffetTypes.find(t => t.id === this.form.consumeTypeId) ?? null : null
+    },
+    /** 收银机上这桌现在的样子：类型 · 几位 */
+    tableNow () {
+      const d = this.detail
+      if (!d) return ''
+      const people = d.tableAdults != null ? d.tableAdults + (d.tableChildren ?? 0) : d.tablePeople
+      return [d.tableTypeName || (d.tableMode === 'A_LA_CARTE' ? this.$t('DineOpenModeAlaCarte') : null),
+        people ? this.$t('DineOpenParty', { adults: people }) : null].filter(Boolean).join(' · ')
+    },
+    tableOpenHint () {
+      if (this.justOpened) return 'DineOpenTableJustOpenedHint'
+      if (this.adjusting) return 'DineOpenTableOpenAdjustHint'
+      if (this.detail?.tablePaying) return 'DineOpenTableOpenPayingHint'
+      return 'DineOpenTableOpenReadOnlyHint'
+    },
+    lockedTypeText () {
+      const d = this.detail
+      return d?.tableMode === 'BUFFET' ? (d.tableType?.name || d.tableTypeName || this.$t('DineOpenModeBuffet')) : this.$t('DineOpenModeAlaCarte')
+    },
+    queuedLines () {
+      return (this.detail?.queued ?? []).flatMap(r => r.lines ?? [])
+    },
+    /** 选的自助类型有没有儿童价档；没有档位的（常见的是火锅）和单点都能填儿童 */
+    hasChildTier () {
+      const t = this.pickedType
+      return !t || !t.tiers?.length || t.tiers.some(x => !x.isForAdult)
+    },
+    /** 实际确认的儿童数：没有儿童档时算 0 */
+    partyChildren () {
+      return this.hasChildTier ? this.form.children : 0
+    },
+    partyCount () {
+      return this.form.adults + this.partyChildren
+    },
+    freePerRound () {
+      const t = this.pickedType
+      return t ? (t.perAdult ?? 0) * this.form.adults + (t.perChild ?? 0) * this.partyChildren : 0
+    },
+    /** 等着的一轮按确认人数算超出的免费菜：确认后退回客人购物车 */
+    overQuota () {
+      if (!this.editable || !this.pickedType || this.freePerRound <= 0) return 0
+      return Math.max(0, (this.pickedType.queuedFree ?? 0) - this.freePerRound)
     },
     canOpen () {
       if (!this.detail) return false
-      if (this.form.adults + this.form.children < 1) return false
+      if (!this.editable) return true
+      if (this.partyCount < 1) return false
       return this.form.mode !== 'BUFFET' || !!this.form.consumeTypeId
+    },
+    /** 改单的结论：门店还在处理时按列表 adjustments 里的最新状态写 */
+    shownAdjust () {
+      const r = this.result ?? {}
+      const base = { status: r.adjustStatus ?? null, manualCheck: !!r.manualCheck, adjustedFields: r.adjustedFields ?? [], ignoredReasons: r.ignoredReasons ?? {} }
+      if (base.status !== 'PENDING') return base
+      const live = this.dineOpenAdjustments.find(a => a.sessionId === this.dineOpenTarget?.sessionId)
+      if (live) return { ...base, ...live }
+      // 见过、现在不在了：门店处理完了，也不用人工核对
+      return this.adjustSeen ? { ...base, status: 'DONE' } : base
+    },
+    resultPeople () {
+      const r = this.result
+      if (!r) return 0
+      const live = this.shownAdjust
+      if (live.storeAdults != null) return live.storeAdults + (live.storeChildren ?? 0)
+      if (r.storeAdults != null) return r.storeAdults + (r.storeChildren ?? 0)
+      return r.people ?? 0
+    },
+    resultTypeName () {
+      const r = this.result
+      if (!r) return ''
+      const id = this.shownAdjust.storeConsumeTypeId ?? r.storeConsumeTypeId
+      if (r.storeTypeName || id) return r.storeTypeName || findConsumeTypeById(id).name
+      // 没开的桌按确认框里选的开：结果里没有类型，写服务员确认的
+      if (r.alreadyOpen) return ''
+      return this.pickedType?.name ?? this.$t('DineOpenModeAlaCarte')
+    },
+    resultLines () {
+      const r = this.result
+      if (!r) return []
+      const a = this.shownAdjust
+      const lines = []
+      if (r.sentRounds > 0) lines.push(this.$t('DineOpenResultSent', { count: r.sentRounds }))
+      if (r.returnedDishes > 0) lines.push(this.$t('DineOpenResultReturned', { count: r.returnedDishes }))
+      if (r.droppedDishes > 0) lines.push(this.$t('DineOpenResultDropped', { count: r.droppedDishes }))
+      if (r.failedRounds > 0) lines.push(this.$t('DineOpenResultFailed', { count: r.failedRounds }))
+      // 门店还在改单时等着的一轮改完再送，提示写在改单那一条里
+      if (r.waitingRounds > 0 && a.status !== 'PENDING') lines.push(this.$t('DineOpenResultLater', { count: r.waitingRounds }))
+      const reasons = [...new Set(Object.values(a.ignoredReasons ?? {}).map(x => KNOWN_REASONS.includes(x) ? x : 'STORE_REFUSED'))]
+      if (r.inputIgnored && reasons.length === 0) lines.push(this.$t('DineOpenInputIgnored'))
+      if ((a.adjustedFields ?? []).length > 0) {
+        // 改了什么：类型写改成的类型名，人数写改成几位
+        const what = a.adjustedFields.map(f => f === 'type'
+          ? (this.resultTypeName || this.$t('DineOpenFieldType'))
+          : this.$t('DineOpenParty', { adults: this.resultPeople }))
+        lines.push(this.$t('DineOpenAdjusted', { what: what.join(' · ') }))
+      }
+      reasons.forEach(x => lines.push(this.$t('DineOpenNotApplied_' + x)))
+      return lines
     }
   },
   watch: {
     dineOpenTarget (target) {
       if (target) this.start(target)
+    },
+    dineOpenRejectTarget (target) {
+      if (target) this.rejectFlow(target)
+    },
+    dineOpenAdjustments (list) {
+      if (this.result?.adjustStatus === 'PENDING' && list.some(a => a.sessionId === this.dineOpenTarget?.sessionId)) this.adjustSeen = true
     }
   },
   mounted () {
-    addToQueue('dineOpenRequests', () => this.poll())
+    addToQueue('dineOpenRequests', () => {
+      this.TICK_DINE_OPEN()
+      this.poll()
+    })
   },
   methods: {
-    ...mapMutations(['SET_DINE_OPEN_REQUESTS', 'OPEN_DINE_REQUEST', 'CLOSE_DINE_REQUEST', 'SHOW_DINE_OPEN_LIST']),
+    ...mapMutations(['SET_DINE_OPEN_REQUESTS', 'SET_DINE_OPEN_ADJUSTMENTS', 'OPEN_DINE_REQUEST', 'CLOSE_DINE_REQUEST',
+      'SHOW_DINE_OPEN_LIST', 'SHOW_DINE_OPEN_CHOICE', 'REJECT_DINE_REQUEST', 'DINE_REJECT_DONE', 'HIDE_DINE_REQUEST',
+      'DINE_OPEN_CONFIRMED', 'TICK_DINE_OPEN']),
     async poll () {
       if (this.polling || Date.now() < this.nextPollAt) return
       this.polling = true
       try {
         const res = await loadDineOpenRequests()
         const list = res?.requests ?? []
-        // 只为新的、没被拒绝过的请求响一声；被拒绝过的桌客人再点一轮时会重新算新的
+        // 只为新的、没被拒绝过的请求响一声；按会话算，两组都算，桌开了挪到「已开桌」不再响
         const active = list.filter(r => !r.rejectedAt)
         if (active.some(r => !this.seen.has(r.sessionId))) this.beep()
         this.seen = new Set(active.map(r => r.sessionId))
         this.SET_DINE_OPEN_REQUESTS(list)
+        this.SET_DINE_OPEN_ADJUSTMENTS(res?.adjustments ?? [])
         this.nextPollAt = Date.now() + (res?.nextPollSeconds ?? 30) * 1000
       } catch (e) {
         // 拿不到设备号或云端连不上：一分钟后再试，不打扰收银。
-        // 清掉旧列表：不然断网时点有角标的桌还会被拦到确认框里，进不了桌
+        // 清掉旧列表：不然断网时点有角标的桌还会被拦到三选一里
+        // adjustments 留着上一次的：清掉会把「门店还在处理」当成处理完了，人工核对的红条也会跟着没了
         this.SET_DINE_OPEN_REQUESTS([])
         this.nextPollAt = Date.now() + 60 * 1000
       } finally {
@@ -247,23 +695,63 @@ export default {
     lang () {
       return (this.$i18n.locale || 'de').slice(0, 2)
     },
+    /** 几位 · 自助（类型名）或单点 */
     partyText (r) {
       const people = r.children > 0
         ? this.$t('DineOpenPartyWithChildren', { adults: r.adults, children: r.children })
         : this.$t('DineOpenParty', { adults: r.adults })
-      const mode = r.mode === 'BUFFET' ? this.$t('DineOpenModeBuffet') : this.$t('DineOpenModeAlaCarte')
+      let mode = this.$t('DineOpenModeAlaCarte')
+      if (r.mode === 'BUFFET') {
+        const name = r.consumeTypeId ? findConsumeTypeById(r.consumeTypeId).name : ''
+        mode = name ? `${this.$t('DineOpenModeBuffet')} · ${name}` : this.$t('DineOpenModeBuffet')
+      }
       return `${people} · ${mode}`
     },
-    waitedMinutes (r) {
-      return r.requestedAt ? Math.max(0, Math.floor((Date.now() - new Date(r.requestedAt).getTime()) / 60000)) : 0
+    /** 等着的一轮 · 等了几分钟 · 还剩几分钟过期 · 谁在确认 */
+    waitText (r) {
+      const parts = []
+      if (r.queuedRounds > 0) {
+        // 云端带 queuedDishes 时写一共几道菜，老云端只有轮数
+        parts.push(r.queuedDishes > 0
+          ? this.$t('DineOpenQueuedDishes', { count: r.queuedDishes })
+          : this.$t('DineOpenQueuedShort', { count: r.queuedRounds }))
+      }
+      // 时间都只用来显示：云端时间按柏林解析，到期优先用云端给的
+      const waited = dineRequestWaitedMinutes(r, this.dineOpenNow)
+      if (waited != null) parts.push(this.$t('DineOpenWaitingMinutes', { minutes: waited }))
+      const left = dineRequestMinutesLeft(r, this.dineOpenNow)
+      if (left != null) parts.push(this.$t('DineOpenExpiresIn', { minutes: left }))
+      if (r.claimedBy) parts.push(this.$t('DineOpenClaimedBy', { name: r.claimedBy }))
+      return parts.join(' · ')
+    },
+    /** 三选一里的「只开桌」：照常进桌开单，请求继续挂着，之后在单页顶上确认 */
+    openOnly (r) {
+      this.SHOW_DINE_OPEN_CHOICE(null)
+      openOrEnterTable(r.tableName)
+    },
+    setMode (mode) {
+      if (mode == null || mode === this.form.mode) return
+      this.form.mode = mode
+      this.touched.mode = true
+    },
+    setType (id) {
+      this.form.consumeTypeId = id
+      this.touched.type = true
+    },
+    setParty (key, value) {
+      this.form[key] = Math.max(0, value)
+      this.touched.party = true
     },
     async start (target) {
       const seq = ++this.seq
       // 确认框跟着 pw 显示：先清掉上一桌的，等这一桌的密码
       this.pw = null
       this.detail = null
+      this.result = null
+      this.adjustSeen = false
       this.error = ''
       this.loading = true
+      this.touched = { mode: false, type: false, party: false }
       this.form = { mode: target.mode || 'A_LA_CARTE', consumeTypeId: target.consumeTypeId, adults: target.adults, children: target.children }
       try {
         const pw = await popAuthorize('')
@@ -277,18 +765,7 @@ export default {
         const detail = await claimDineOpenRequest(target.sessionId, pw, this.lang())
         if (seq !== this.seq) return
         this.detail = detail
-        const types = this.buffetTypes
-        // 客人选的类型现在还能开就沿用；只有一种能开时默认选它；多种时让服务员自己选（和确认网页一样）
-        const typeId = types.some(t => t.id === detail.consumeTypeId)
-          ? detail.consumeTypeId
-          : (detail.candidates?.length === 1 ? detail.candidates[0].id : null)
-        this.form = {
-          // 现在没有能开的自助类型（比如自助时段刚过）：只能单点，切换也不显示
-          mode: types.length > 0 && detail.buffetLicensed ? (detail.mode || this.form.mode) : 'A_LA_CARTE',
-          consumeTypeId: typeId,
-          adults: detail.adults,
-          children: detail.children
-        }
+        this.form = this.initialForm(detail)
       } catch (e) {
         if (seq !== this.seq) return
         // 还没拿到密码就出错：确认框跟着 pw 显示，不关掉的话请求挂着却什么都看不见
@@ -301,35 +778,96 @@ export default {
         if (seq === this.seq) this.loading = false
       }
     },
+    initialForm (detail) {
+      const types = this.buffetTypes
+      const offered = detail.candidates ?? []
+      // 客人选的类型现在还能开就沿用（POS-899）；只有一种能开时默认选它；多种时让服务员自己选（和确认网页一样）
+      const guestTypeId = types.some(t => t.id === detail.consumeTypeId)
+        ? detail.consumeTypeId
+        : (offered.length === 1 ? offered[0].id : null)
+      if (this.adjusting) {
+        // 已开的桌：默认是门店现在的人数和类型，服务员改了才传
+        return {
+          mode: this.storeBuffet ? 'BUFFET' : 'A_LA_CARTE',
+          consumeTypeId: this.storeBuffet ? detail.tableConsumeTypeId : guestTypeId,
+          adults: detail.tableAdults ?? 0,
+          children: detail.tableChildren ?? 0
+        }
+      }
+      return {
+        // 现在没有能开的自助类型（比如自助时段刚过）：只能单点，切换也不显示
+        mode: types.length > 0 && detail.buffetLicensed ? (detail.mode || this.form.mode) : 'A_LA_CARTE',
+        consumeTypeId: guestTypeId,
+        adults: detail.adults,
+        children: detail.children
+      }
+    },
+    confirmFields () {
+      const buffet = this.form.mode === 'BUFFET'
+      // 收银机已经开了这一桌、门店不能改：人数和类型以收银机为准，不传（POS-897）
+      if (!this.editable) return {}
+      if (this.adjusting) {
+        // 已开的桌按确认改门店单（POS-901）：只传服务员动过的
+        const fields = { adjust: true }
+        if (this.touched.mode || this.touched.type) {
+          fields.mode = this.form.mode
+          if (buffet) fields.consumeTypeId = this.form.consumeTypeId
+        }
+        if (this.touched.party) {
+          fields.adults = this.form.adults
+          fields.children = this.partyChildren
+        }
+        return fields
+      }
+      return {
+        mode: this.form.mode,
+        consumeTypeId: buffet ? this.form.consumeTypeId : null,
+        adults: this.form.adults,
+        children: this.partyChildren
+      }
+    },
     async open () {
+      const target = this.dineOpenTarget
+      const seq = this.seq
       this.busy = true
       this.error = ''
       try {
-        const res = await confirmDineOpenRequest(this.dineOpenTarget.sessionId, this.pw, {
-          ...this.form,
-          consumeTypeId: this.form.mode === 'BUFFET' ? this.form.consumeTypeId : null
-        })
-        toast(this.$t('DineOpenDone', { table: res.tableName ?? this.dineOpenTarget.tableName }), null, 'success')
-        this.finish()
+        const res = await confirmDineOpenRequest(target.sessionId, this.pw, this.confirmFields())
+        if (seq !== this.seq) return
+        this.HIDE_DINE_REQUEST(target.sessionId)
+        this.DINE_OPEN_CONFIRMED()
+        this.result = res
+        this.nextPollAt = 0
       } catch (e) {
-        this.error = this.describe(e)
+        if (seq === this.seq) this.error = this.describe(e, target)
       } finally {
         this.busy = false
       }
     },
-    async reject () {
-      const answer = await showConfirmAsyn(this.$t('DineOpenRejectHint'), this.$t('DineOpenReject'))
-      if (!answer?.value) return
-      this.busy = true
-      this.error = ''
+    /** 拒绝：列表、三选一、单页顶条、确认框里点「拒绝」都走这里。先问一句，再要密码（确认框里已经有了就不再要） */
+    async rejectFlow (target) {
       try {
-        await rejectDineOpenRequest(this.dineOpenTarget.sessionId, this.pw, this.lang())
-        toast(this.$t('DineOpenRejected', { table: this.dineOpenTarget.tableName }))
-        this.finish()
+        const answer = await showConfirmAsyn(this.$t('DineOpenRejectHint'), this.$t('DineOpenRejectTitle', { table: target.tableName }))
+        if (!answer?.value) return
+        const inDialog = this.dineOpenTarget?.sessionId === target.sessionId && this.pw != null
+        const pw = inDialog ? this.pw : await popAuthorize('')
+        if (pw == null) return
+        if (inDialog) this.busy = true
+        await rejectDineOpenRequest(target.sessionId, pw, this.lang())
+        this.HIDE_DINE_REQUEST(target.sessionId)
+        toast(this.$t('DineOpenRejected', { table: target.tableName }))
+        if (inDialog) this.close()
+        this.nextPollAt = 0
       } catch (e) {
-        this.error = this.describe(e)
+        const message = this.describe(e, target)
+        if (this.dineOpenTarget?.sessionId === target.sessionId) {
+          this.error = message
+        } else {
+          toast(message, null, 'error')
+        }
       } finally {
         this.busy = false
+        this.DINE_REJECT_DONE()
       }
     },
     finish () {
@@ -341,10 +879,14 @@ export default {
       this.loading = false
       this.pw = null
       this.detail = null
+      this.result = null
       this.CLOSE_DINE_REQUEST()
     },
-    describe (e) {
+    describe (e, target = this.dineOpenTarget) {
       const { code, info, params } = dineOpenErrorOf(e)
+      // 请求已经没了（过期、结账、拒绝、桌上换了单）：列表里马上去掉
+      if (GONE_CODES.includes(code) && target) this.HIDE_DINE_REQUEST(target.sessionId)
+      if (GONE_CODES.includes(code) || code === 'DINE_TABLE_ALREADY_OPEN') this.nextPollAt = 0
       // 锁住时云端带上还要等几分钟
       if (code === 'DINE_WAITER_LOCKED' && params?.minutes) return this.$t('DineOpenErrorLockedMinutes', { minutes: params.minutes })
       const known = {
@@ -354,6 +896,10 @@ export default {
         DINE_TABLE_ALREADY_OPEN: 'DineOpenErrorAlreadyOpen',
         DINE_OPEN_CODE_EXPIRED: 'DineOpenErrorGone',
         DINE_SESSION_NOT_FOUND: 'DineOpenErrorGone',
+        DINE_SESSION_CLOSED: 'DineOpenErrorGone',
+        DINE_OPEN_NOT_REQUESTED: 'DineOpenErrorGone',
+        DINE_REQUEST_ORDER_ENDED: 'DineOpenErrorOrderEnded',
+        DINE_OPEN_CLAIMED: 'DineOpenErrorClaimed',
         STORE_UNREACHABLE: 'DineOpenErrorStoreUnreachable',
         STORE_UNAVAILABLE: 'DineOpenErrorStoreUnreachable',
         CLOUD_UNREACHABLE: 'DineOpenErrorUnreachable',
@@ -369,7 +915,6 @@ export default {
         DINE_OPEN_REFUSED: 'DineOpenErrorRefused',
         DINE_BUFFET_TYPE_REQUIRED: 'DineOpenErrorBuffetType'
       }
-      if (code === 'DINE_TABLE_ALREADY_OPEN' || code === 'DINE_SESSION_NOT_FOUND') this.nextPollAt = 0
       if (known[code]) return this.$t(known[code])
       // 云端的 message 是中文，不给店员看；只带上错误码方便排查
       return code ? `${this.$t('DineOpenErrorUnknown')} (${code})` : (info || this.$t('DineOpenErrorUnknown'))
