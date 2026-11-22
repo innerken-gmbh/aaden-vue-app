@@ -144,6 +144,17 @@ const messages = {
   }
 }
 
+// 语言切换器只用到 langCode / flag / langLabel 三个字段（见 LanguageSwitcher.vue）。
+// 不要在模板里写 :locales="$i18n.messages"：vue-i18n 的 messages getter 是
+// 「读一次深拷一次全部语言包」（16 个语言包 ≈ 600 KB，实测单次约 30ms），
+// 而 FirstPage 因为桌台轮询每秒都会重渲染，等于每秒白烧 30ms + 600KB 垃圾。
+// 这里在模块加载时抽一次，引用固定，行为与原来给的东西等价。
+export const localeMetaList = Object.keys(messages).map(code => ({
+  langCode: messages[code].langCode,
+  flag: messages[code].flag,
+  langLabel: messages[code].langLabel
+}))
+
 function loadNumberFormats () {
   const numberFormats = {}
   return loadTransLangs().forEach(lang => {
