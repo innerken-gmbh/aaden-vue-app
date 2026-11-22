@@ -95,7 +95,7 @@ export default {
     },
     /**
      * 店里空不空：busy = 在点单页（/table，可能有没送出的菜、正在结账），或者结账框 / 接单框 / 密码框开着，
-     * 或者正在确认堂食开桌（POS-991：从选中这一桌、输密码、到确认或拒绝完，中间装更新会把确认打断）；
+     * 或者正在确认堂食开桌（POS-991：从三选一、选中这一桌、输密码，到确认或拒绝完，中间装更新会把确认打断）；
      * openTables = 门店服务器上未结的桌数，问不到是 null（主进程白天就不装）
      */
     async posIdleState () {
@@ -120,7 +120,7 @@ export default {
     posBusy () {
       const s = this.$store.state
       return this.$route?.name === 'table' || !!s.showCheckoutDialog || !!s.showOrderAcceptDialog ||
-        !!s.pinDialogShow || !!s.dineOpenTarget || this.confirm
+        !!s.pinDialogShow || !!s.dineOpenTarget || !!s.dineOpenChoice || !!s.dineOpenRejectTarget || this.confirm
     }
   }
 }

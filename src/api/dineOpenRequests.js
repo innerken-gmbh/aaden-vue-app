@@ -25,16 +25,21 @@ async function request (path, body) {
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), 40 * 1000)
   let res
+  let json
   try {
     res = await fetch(url, body
       ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal }
       : { method: 'GET', signal: controller.signal })
+    // 读正文也算在 40 秒里：只有响应头到了、正文一直不结束时，确认框会永远转圈，自动更新也一直被挡（POS-991）
+    json = await res.json().catch(e => {
+      if (controller.signal.aborted) throw e
+      return null
+    })
   } catch (e) {
-    clearTimeout(timer)
     throw fail('CLOUD_UNREACHABLE', e?.message ?? '')
+  } finally {
+    clearTimeout(timer)
   }
-  clearTimeout(timer)
-  const json = await res.json().catch(() => null)
   if (res.ok && json?.code === 200) return json.data
   throw fail(json?.data?.errorCode ?? (res.ok ? 'CLOUD_ERROR' : `HTTP_${res.status}`), json?.message ?? '', json?.data?.params ?? {})
 }
