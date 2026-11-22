@@ -102,7 +102,7 @@ export function canAutoInstall (state, version, now) {
  * 店里现在空不空，能不能关掉收银去装。返回安装原因 'idle' / 'night'，不能装返回 null。
  *   idleSeconds：电脑多久没人碰（powerMonitor.getSystemIdleTime）
  *   pos：页面的回答 { busy, openTables }，没回答传 null。
- *        busy = 在点单页，或者结账框 / 接单框 / 密码框开着；openTables = 门店服务器上未结的桌数，问不到是 null
+ *        busy = 在点单页，或者结账框 / 接单框 / 密码框开着、正在确认堂食开桌；openTables = 门店服务器上未结的桌数，问不到是 null
  */
 export function idleInstallReason (idleSeconds, pos, now) {
   if (!(idleSeconds >= IDLE_INSTALL_MIN_IDLE_SECONDS) || !pos || pos.busy !== false) return null
