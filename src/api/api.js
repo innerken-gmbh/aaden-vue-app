@@ -622,3 +622,7 @@ export async function loadDashboardDataByDeviceId (dateRange, deviceIdUrl) {
     endDate
   }, { timeout: 1000 * 60 * 2 })
 }
+
+export async function getBackendVersion () {
+  return await hillo.get('../package.json', {})
+}

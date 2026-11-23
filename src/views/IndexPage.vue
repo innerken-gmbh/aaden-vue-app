@@ -28,10 +28,13 @@
           </nav-button>
         </div>
         <v-spacer/>
-        <div class="d-flex align-center flex-column justify-center white--text">
-          <div class="text-no-wrap text-caption text-center mt-n1">
-            v{{ version }}
-          </div>
+        <div
+            class="version-info white--text text-center px-1 mb-1 flex-shrink-0"
+        >
+          <div>Aaden Pos</div>
+          <div class="mb-2">v{{ version }}</div>
+          <div v-if="backendVersion">Backend</div>
+          <div v-if="backendVersion"> v{{ backendVersion }}</div>
         </div>
       </div>
     </v-navigation-drawer>
@@ -43,6 +46,7 @@
 <script>
 import { jumpTo, popAuthorize } from '@/oldjs/common'
 import { getServantList } from '@/oldjs/api'
+import { getCurrentBackendVersion } from '@/api/nightwatch'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { resetCache } from '@/oldjs/StaticModel'
 import LogoDisplay from '@/components/LogoDisplay.vue'
@@ -60,6 +64,7 @@ export default {
   },
   data: function () {
     return {
+      backendVersion: '',
       version,
       drawer: false,
       servantList: [],
@@ -170,11 +175,30 @@ export default {
     } catch (e) {
 
     }
+    try {
+      this.backendVersion = await getCurrentBackendVersion()
+    } catch (e) {
+
+    }
   }
 }
 </script>
 
 <style scoped>
+.version-info {
+  width: 100%;
+  font-size: 10px;
+  line-height: 1.2;
+  opacity: 1;
+}
+
+.version-line {
+  /* 抽屉宽度只有 72px，版本号较长时允许换行，避免被截断 */
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
 .gradient {
   background: #3a7bd5; /* fallback for old browsers */
   background: linear-gradient(to bottom, #3e3e3e, #341d33); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
