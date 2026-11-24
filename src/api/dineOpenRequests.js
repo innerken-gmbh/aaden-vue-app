@@ -93,6 +93,55 @@ export function dineOpenOutcomeUnknown (code) {
   return code === 'CLOUD_UNREACHABLE' || /^HTTP_5\d\d$/.test(code ?? '')
 }
 
+/** 连续失败几次才报：偶尔一次超时不报 */
+const POLL_REPORT_AFTER = 2
+
+function clock (ms) {
+  return new Date(ms).toTimeString().slice(0, 5)
+}
+
+/** 写一条云端的设备事件（ERP 设备页的事件列表，桌面版自动更新也报在这里）。报不出去就算了，不影响收银 */
+async function postDeviceEvent (content) {
+  try {
+    const deviceId = await getCurrentDeviceId()
+    if (!deviceId || deviceId === '-1') return
+    await fetch(`${CLOUD_BASE}/deviceLog/createEvent`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deviceId: String(deviceId), content, type: '系统生成', operator: 'aaden-pos' })
+    })
+  } catch (e) {
+  }
+}
+
+/**
+ * 拉待开桌列表失败时上报（POS-1062）：连续失败 [POLL_REPORT_AFTER] 次报一条，之后恢复时再报一条，带失败次数和时间段，中间不重复报。
+ * 断网时第一条也报不出去，恢复那条会带上整段。report 可以换掉，测试用
+ */
+export function createDinePollReporter (report = postDeviceEvent) {
+  let failures = 0
+  let since = null
+  let lastCode = null
+  let reported = false
+  return {
+    failed (code) {
+      failures += 1
+      since = since ?? Date.now()
+      lastCode = code || 'ERROR'
+      if (reported || failures < POLL_REPORT_AFTER) return
+      reported = true
+      report(`堂食待开桌列表拉取失败：从 ${clock(since)} 起连续 ${failures} 次，${lastCode}`)
+    },
+    succeeded () {
+      if (reported) report(`堂食待开桌列表恢复：${clock(since)}–${clock(Date.now())} 失败 ${failures} 次，最后一次 ${lastCode}`)
+      failures = 0
+      since = null
+      lastCode = null
+      reported = false
+    }
+  }
+}
+
 /** 错误码和说明 */
 export function dineOpenErrorOf (e) {
   return { code: e?.code ?? null, info: e?.info ?? e?.message ?? '', params: e?.params ?? {} }
