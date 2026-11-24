@@ -457,6 +457,7 @@ import {
   claimDineOpenRequest,
   confirmDineOpenRequest,
   dineOpenErrorOf,
+  dineOpenOutcomeUnknown,
   dineRequestMinutesLeft,
   dineRequestWaitedMinutes,
   loadDineOpenRequests,
@@ -684,16 +685,16 @@ export default {
       'DINE_OPEN_CONFIRMED', 'TICK_DINE_OPEN']),
     /** 拉一次列表，成功回 true。force：不管间隔马上拉，正在拉的那次等它完再拉新的（确认结果未知时要拉到之后的状态） */
     async poll (force = false) {
-      if (this.polling) {
-        if (!force) return false
-        await this.polling
-      }
+      if (this.polling && !force) return false
+      // 几次强制拉同时进来时一个一个来：等到没人在拉再开始，自己拉完只清自己的那一次
+      while (this.polling) await this.polling
       if (!force && Date.now() < this.nextPollAt) return false
-      this.polling = this.loadList()
+      const mine = this.loadList()
+      this.polling = mine
       try {
-        return await this.polling
+        return await mine
       } finally {
-        this.polling = null
+        if (this.polling === mine) this.polling = null
       }
     },
     async loadList () {
@@ -804,7 +805,7 @@ export default {
         const detail = await claimDineOpenRequest(target.sessionId, pw, this.lang())
         // 占上的时候框已经关了：马上放开，不让客人干等 10 分钟
         if (seq !== this.seq) {
-          this.release(target.sessionId, detail?.waiterName)
+          this.release(target.sessionId, detail?.claimId)
           return
         }
         this.detail = detail
@@ -885,8 +886,8 @@ export default {
       } catch (e) {
         if (seq !== this.seq) return
         this.error = this.describe(e, target, 'open')
-        // 等超时或断网：云端可能已经开好桌、等着的一轮稍后自动送厨房，不能当失败（审查 B5）。马上重拉列表看这一桌的真实状态
-        if (dineOpenErrorOf(e).code === 'CLOUD_UNREACHABLE') this.recheck(target, seq)
+        // 等超时、断网或网关 5xx：云端可能已经开好桌、等着的一轮稍后自动送厨房，不能当失败（审查 B5）。马上重拉列表看这一桌的真实状态
+        if (dineOpenOutcomeUnknown(dineOpenErrorOf(e).code)) this.recheck(target, seq)
       } finally {
         this.busy = false
       }
@@ -928,9 +929,9 @@ export default {
       else if (!live) this.recheckState = 'gone'
       else this.recheckState = live.tableOpen ? 'tableOpen' : 'waiting'
     },
-    /** 放开这次打开确认框时的占用（POS-1064）；没占上（没拿到 claim 的结果）就不用放 */
-    release (sessionId, by) {
-      if (sessionId && by) releaseDineOpenRequest(sessionId, by).catch(() => {})
+    /** 放开这次打开确认框时的占用（POS-1064）；没占上（没拿到 claim 的结果）、老云端不回凭据时不用放 */
+    release (sessionId, claimId) {
+      if (sessionId && claimId) releaseDineOpenRequest(sessionId, claimId).catch(() => {})
     },
     finish () {
       this.close()
@@ -938,7 +939,7 @@ export default {
     },
     close () {
       // 取消、确认完、拒绝完都走这里：放开打开时的占用。确认、拒绝成功后云端已经放了，这一下什么都不改
-      this.release(this.dineOpenTarget?.sessionId, this.detail?.waiterName)
+      this.release(this.dineOpenTarget?.sessionId, this.detail?.claimId)
       this.seq++
       this.recheckState = null
       this.loading = false
@@ -947,10 +948,10 @@ export default {
       this.result = null
       this.CLOSE_DINE_REQUEST()
     },
-    /** action 是 'open' 时，连不上云端说成「结果未知」：确认可能已经成了（POS-1064） */
+    /** action 是 'open' 时，连不上、超时、网关 5xx 说成「结果未知」：确认可能已经成了（POS-1064） */
     describe (e, target = this.dineOpenTarget, action = null) {
       const { code, info, params } = dineOpenErrorOf(e)
-      if (code === 'CLOUD_UNREACHABLE' && action === 'open') return this.$t('DineOpenErrorOutcomeUnknown')
+      if (action === 'open' && dineOpenOutcomeUnknown(code)) return this.$t('DineOpenErrorOutcomeUnknown')
       // 请求已经没了（过期、结账、拒绝、桌上换了单）：列表里马上去掉
       if (GONE_CODES.includes(code) && target) this.HIDE_DINE_REQUEST(target.sessionId)
       if (GONE_CODES.includes(code) || code === 'DINE_TABLE_ALREADY_OPEN') this.nextPollAt = 0
