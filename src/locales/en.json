@@ -1027,6 +1027,8 @@
   "DineOnlineReviewConfirmTitle": "Paid online, but the amount no longer matches",
   "DineOnlineReviewConfirmHint": "The guest at table {table} has already paid online, but the cloud could not check out this table (usually because the bill changed after payment). At checkout the keypad shows \"Online payment\" and fills in what the guest paid online (up to {amount} € left; only the bill amount if the bill is smaller; the tip the guest paid is added too). Settle the rest with the guest in person. Once it is all recorded, the payment is closed in Portal automatically. Do not charge the full amount again. Go to checkout now?",
   "DineOnlinePayKey": "Online payment",
+  "DineOnlinePayOver": "The online payment is more than the guest paid online (another till may have just recorded it), or the table is no longer pending. Close checkout, open it again and use the amount shown on the keypad.",
+  "DineOnlinePayNotAllowed": "\"Online payment\" can't be used for this table now: it is no longer pending, or it is not this payment's method. Close checkout and open it again.",
   "DineAddDishesOrderClosed": "This order has already been checked out, dishes can no longer be added",
   "DineAddDishesTableBusy": "This table is being checked out, please try again shortly"
 }

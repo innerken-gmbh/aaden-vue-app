@@ -734,6 +734,8 @@
   "DineOnlineReviewConfirmTitle": "这桌已线上付款，金额对不上",
   "DineOnlineReviewConfirmHint": "{table} 号桌的客人已经线上付了钱，云端没能结这一桌（多半是付款后账单又改了）。接着结账时键盘上会有「线上付款」，自动记上客人线上付的部分（还能记 {amount} €，账单更少时只记账单的金额，客人付的小费也一起记上），剩下的差额当面和客人结清。全记掉以后 Portal 上这一笔会自动处理完。不要把全额再收一次。现在去结账吗？",
   "DineOnlinePayKey": "线上付款",
+  "DineOnlinePayOver": "线上付款超过了客人线上付的金额（可能另一台收银机刚记过），或者这桌已经不是待处理。请关掉结账重新打开，按键盘上显示的金额结。",
+  "DineOnlinePayNotAllowed": "这桌现在不能用「线上付款」：已经不是待处理，或者用的不是这一笔的付款方式。请关掉结账重新打开。",
   "DineAddDishesOrderClosed": "这张单已经结账，不能再加菜",
   "DineAddDishesTableBusy": "这张桌正在结账，请稍后再试"
 }

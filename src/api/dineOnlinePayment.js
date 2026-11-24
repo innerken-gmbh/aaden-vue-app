@@ -41,6 +41,11 @@ export function onlinePayKeyOf (mark) {
   return { id: String(mark.payMethodId), available, tip }
 }
 
+/** 待处理、客人线上付的已经全用「线上付款」记掉了（POS-1096）：剩下的就是普通结账，不再提示。云端一会儿会自动处理完、清掉标记 */
+function fullyRecorded (mark) {
+  return mark.state === 'review' && mark.available != null && !(parseFloat(mark.available) > 0)
+}
+
 /**
  * 结账前现读门店：客人正在付、已经付了就先问服务员；待人工处理时写明怎么结。读不到门店时不挡结账（门店结账时云端还会核对金额）。
  * @return {Promise<{ proceed: boolean, onlinePay: ({ id: string, amount: number } | null) }>}
@@ -53,7 +58,7 @@ export async function confirmCheckoutDuringOnlinePayment (tableId, tableName) {
   } catch (e) {
     return { proceed: true, onlinePay: null }
   }
-  if (!mark) {
+  if (!mark || fullyRecorded(mark)) {
     return { proceed: true, onlinePay: null }
   }
   const text = TEXT[mark.state]
@@ -65,6 +70,20 @@ export async function confirmCheckoutDuringOnlinePayment (tableId, tableName) {
     i18n.t(text.title)
   )
   return { proceed: !!answer?.value, onlinePay }
+}
+
+/**
+ * 门店拒绝结账时的堂食线上付款错误码（POS-1096）：线上付款超过了客人付的（DINE_ONLINE_PAY_OVER，比如另一台收银机刚记过），
+ * 或者这桌已经不是待处理（DINE_ONLINE_PAY_NOT_ALLOWED）。翻成一句话；别的错误回 null，照原样显示
+ */
+export function dineOnlinePayErrorText (info) {
+  const key = ONLINE_PAY_REFUSED[(info ?? '').trim()]
+  return key ? i18n.t(key) : null
+}
+
+const ONLINE_PAY_REFUSED = {
+  DINE_ONLINE_PAY_OVER: 'DineOnlinePayOver',
+  DINE_ONLINE_PAY_NOT_ALLOWED: 'DineOnlinePayNotAllowed'
 }
 
 /**

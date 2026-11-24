@@ -730,6 +730,8 @@
   "DineOnlineReviewConfirmTitle": "Online bezahlt, Betrag stimmt nicht mehr",
   "DineOnlineReviewConfirmHint": "Der Gast an Tisch {table} hat bereits online bezahlt, aber die Cloud konnte den Tisch nicht abrechnen (meist wurde die Rechnung nach der Zahlung geändert). Beim Abrechnen zeigt die Tastatur „Online-Zahlung“ und trägt den online bezahlten Betrag ein (noch bis zu {amount} €; ist die Rechnung kleiner, nur der Rechnungsbetrag; ein online gezahltes Trinkgeld wird mit eingetragen). Den Rest direkt mit dem Gast abrechnen. Ist alles erfasst, wird die Zahlung im Portal automatisch erledigt. Nicht den vollen Betrag noch einmal kassieren. Jetzt abrechnen?",
   "DineOnlinePayKey": "Online-Zahlung",
+  "DineOnlinePayOver": "Die Online-Zahlung ist höher als der online bezahlte Betrag (vielleicht hat eine andere Kasse sie gerade erfasst) oder der Tisch ist nicht mehr offen. Abrechnung schließen, neu öffnen und den angezeigten Betrag verwenden.",
+  "DineOnlinePayNotAllowed": "„Online-Zahlung“ ist für diesen Tisch gerade nicht möglich: nicht mehr offen oder nicht die Zahlungsart dieser Zahlung. Abrechnung schließen und neu öffnen.",
   "DineAddDishesOrderClosed": "Diese Bestellung ist bereits abgerechnet, es können keine Gerichte mehr hinzugefügt werden",
   "DineAddDishesTableBusy": "Dieser Tisch wird gerade abgerechnet, bitte gleich noch einmal versuchen"
 }

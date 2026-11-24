@@ -20,6 +20,11 @@ import { getCurrentLanguage } from '@/api/api'
 import { forwardDesktopUpdateEvents, reportToCloud } from '@/oldjs/common'
 import { getNiceRestaurantInfo } from '@/oldjs/zbonPrint'
 import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
+import { dineOnlinePayErrorText } from '@/api/dineOnlinePayment'
+
+// 门店拒绝结账时的堂食线上付款错误码（POS-1096）翻成服务员看得懂的话，别的错误照原样
+const hilloShowError = hillo.RqConfig.LoadingUtils.showError
+hillo.RqConfig.LoadingUtils.showError = (info, ...rest) => hilloShowError(dineOnlinePayErrorText(info) ?? info, ...rest)
 
 Vue.component('vue-draggable-resizable', VueDraggableResizable)
 
