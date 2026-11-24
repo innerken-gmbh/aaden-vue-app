@@ -708,5 +708,11 @@
   "DineOpenNotApplied_TABLE_UNAVAILABLE": "Der Tisch wird gerade abgeglichen oder ist schon beendet. Bitte an der Kasse ändern.",
   "DineOpenErrorOrderEnded": "An diesem Tisch läuft schon eine andere Bestellung. Die Anfrage der Gäste ist beendet, bitte den Tischcode neu scannen lassen.",
   "DineOpenErrorClaimed": "Ein anderer Kellner bestätigt diesen Tisch gerade. Bitte gleich noch einmal versuchen.",
-  "DineOpenTableJustOpenedHint": "Der Tisch wurde gerade an der Kasse geöffnet, die Cloud kennt die Bestellung noch nicht: Personen und Art wie an der Kasse, hier nicht änderbar. Bitte zuerst an der Kasse ändern oder diesen Dialog gleich noch einmal öffnen. Beim Bestätigen kommen die Handys des Gastes an den Tisch und die wartende Runde geht raus."
+  "DineOpenTableJustOpenedHint": "Der Tisch wurde gerade an der Kasse geöffnet, die Cloud kennt die Bestellung noch nicht: Personen und Art wie an der Kasse, hier nicht änderbar. Bitte zuerst an der Kasse ändern oder diesen Dialog gleich noch einmal öffnen. Beim Bestätigen kommen die Handys des Gastes an den Tisch und die wartende Runde geht raus.",
+  "DineOnlinePayingBadge": "Zahlt online {amount} €",
+  "DineOnlinePaidBadge": "Online bezahlt {amount} €",
+  "DineOnlinePayingConfirmTitle": "Gast zahlt gerade am Handy",
+  "DineOnlinePayingConfirmHint": "Der Gast an Tisch {table} zahlt gerade online {amount} €. Wenn Sie jetzt an der Kasse abrechnen, zahlt der Gast eventuell doppelt und muss manuell erstattet werden. Trotzdem abrechnen?",
+  "DineOnlinePaidConfirmTitle": "Gast hat bereits online bezahlt",
+  "DineOnlinePaidConfirmHint": "Der Gast an Tisch {table} hat bereits {amount} € online bezahlt. Die Cloud rechnet den Tisch gerade ab oder wartet auf manuelle Prüfung (Portal → Online-Zahlungen am Tisch). Eine zweite Abrechnung an der Kasse kassiert doppelt. Trotzdem abrechnen?"
 }

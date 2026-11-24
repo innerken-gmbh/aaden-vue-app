@@ -85,6 +85,18 @@
           </div>
 
         </template>
+        <div
+            v-if="onlinePayment"
+            :class="onlinePayment.state === 'paid' ? 'onlinePayStrip onlinePayStripPaid' : 'onlinePayStrip'"
+        >
+          <v-icon
+              class="mr-1"
+              size="14"
+              color="white"
+          >mdi-cellphone-nfc
+          </v-icon>
+          <span class="text-no-wrap text-truncate">{{ onlinePaymentBadge(onlinePayment) }}</span>
+        </div>
         <template v-if="displayReservations.length>0">
           <v-card
               @click.stop="showReservationDialog"
@@ -119,6 +131,7 @@ import TableInfoDisplay from '@/views/FirstPage/Table/Table/Widget/TableInfoDisp
 import store from '@/store'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import dayjs from 'dayjs'
+import { onlinePaymentBadge, onlinePaymentOf } from '@/api/dineOnlinePayment'
 
 export default {
   name: 'TableCard',
@@ -128,6 +141,7 @@ export default {
     cardOnly: { default: false }
   },
   methods: {
+    onlinePaymentBadge,
     findConsumeTypeById (id) {
       return findConsumeTypeById(id).name
     },
@@ -147,6 +161,10 @@ export default {
      */
     dineOpenRequest () {
       return store.getters.dineOpenVisible.find(r => r.tableName === this.table?.tableName) ?? null
+    },
+    /** 客人正在手机上线上付款，或者付了门店还没结（POS-1067）：门店桌子列表带的，收银机只读 */
+    onlinePayment () {
+      return this.table.inUse ? onlinePaymentOf(this.table) : null
     },
     tableCardFontSize () {
       return '20px'
@@ -336,6 +354,22 @@ export default {
   font-weight: 900;
   color: white;
   background: #f57c00;
+}
+
+/* 线上付款中（POS-1067）：整条宽，放在桌卡底部，和预约条一样不挡人数和角标 */
+.onlinePayStrip {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 900;
+  color: white;
+  background: #5e35b1;
+}
+
+.onlinePayStripPaid {
+  background: #2e7d32;
 }
 
 /* 已开的桌左上角是人数圆点，小标放右上角 */

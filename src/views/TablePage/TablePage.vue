@@ -703,6 +703,7 @@ import NavButton from '@/components/navigation/NavButton.vue'
 import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
 import { mapActions, mapMutations, mapState } from 'vuex'
 import DineOpenStrip from '@/views/TablePage/DineOpenStrip.vue'
+import { confirmCheckoutDuringOnlinePayment } from '@/api/dineOnlinePayment'
 import { getReservationsByTableId } from '@/api/ReservationService'
 import ReservationListPage from '@/views/TablePage/ReservationList/ReservationListPage.vue'
 import {
@@ -1298,6 +1299,10 @@ export default {
       this.showConfirmDialog = false
     },
     async jumpToPayment (paymentType = 'checkOut') {
+      // 客人正在手机上线上付款（POS-1067）：先问服务员，再走输密码和付款
+      if (!await confirmCheckoutDuringOnlinePayment(this.id, this.tableDetailInfo?.tableName)) {
+        return
+      }
       try {
         const paymentStatus = await getOrderPaymentStatusDetail(this.currentOrderId)
         if (paymentStatus === '1') {

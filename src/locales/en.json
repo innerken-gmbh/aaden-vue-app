@@ -1005,5 +1005,11 @@
   "DineOpenNotApplied_TABLE_UNAVAILABLE": "This table is being re-checked right now or has just ended. Please change it on the till.",
   "DineOpenErrorOrderEnded": "This table already has another order. The guests' request has ended, please ask them to scan the table code again.",
   "DineOpenErrorClaimed": "Another staff member is confirming this table. Please try again shortly.",
-  "DineOpenTableJustOpenedHint": "This table was just opened on the till and the cloud hasn't read the order yet: party and type follow the till and can't be changed here. Change them on the till first, or close and reopen this dialog in a moment. Confirming adds the guest's phones to the table and sends the waiting round."
+  "DineOpenTableJustOpenedHint": "This table was just opened on the till and the cloud hasn't read the order yet: party and type follow the till and can't be changed here. Change them on the till first, or close and reopen this dialog in a moment. Confirming adds the guest's phones to the table and sends the waiting round.",
+  "DineOnlinePayingBadge": "Paying online {amount} €",
+  "DineOnlinePaidBadge": "Paid online {amount} €",
+  "DineOnlinePayingConfirmTitle": "Guest is paying on their phone",
+  "DineOnlinePayingConfirmHint": "The guest at table {table} is paying {amount} € online right now. If you check out at the till now, the guest may pay twice and need a manual refund. Check out anyway?",
+  "DineOnlinePaidConfirmTitle": "Guest has already paid online",
+  "DineOnlinePaidConfirmHint": "The guest at table {table} has already paid {amount} € online. The cloud is checking out this table or waiting for manual review (Portal → dine-in payments). Checking out again at the till charges twice. Check out anyway?"
 }

@@ -712,5 +712,11 @@
   "DineOpenNotApplied_TABLE_UNAVAILABLE": "这一桌正在核对或刚结束，请在收银机上改",
   "DineOpenErrorOrderEnded": "这张桌已经是另一张单，原来的请求已结束，请客人重新扫码",
   "DineOpenErrorClaimed": "别的服务员正在确认这一桌，请稍后再试",
-  "DineOpenTableJustOpenedHint": "收银机上刚开了这一桌，云端还没读到这张单：人数和类型以收银机为准，这里不能改。要改请先在收银机上改，或者稍等一会儿关掉再打开确认框；确认后客人的手机加入这一桌，等着的一轮送出"
+  "DineOpenTableJustOpenedHint": "收银机上刚开了这一桌，云端还没读到这张单：人数和类型以收银机为准，这里不能改。要改请先在收银机上改，或者稍等一会儿关掉再打开确认框；确认后客人的手机加入这一桌，等着的一轮送出",
+  "DineOnlinePayingBadge": "线上付款中 {amount} €",
+  "DineOnlinePaidBadge": "已线上付款 {amount} €",
+  "DineOnlinePayingConfirmTitle": "客人正在手机上付款",
+  "DineOnlinePayingConfirmHint": "{table} 号桌的客人正在线上付 {amount} €。现在在收银机上结账，客人可能付两次，要人工退款。确定还要结账吗？",
+  "DineOnlinePaidConfirmTitle": "客人已经线上付款",
+  "DineOnlinePaidConfirmHint": "{table} 号桌的客人已经线上付了 {amount} €，云端正在结这一桌，或者在等人工处理（Portal → 堂食付款）。在收银机上再结一次会多收钱。确定还要结账吗？"
 }
