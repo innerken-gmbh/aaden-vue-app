@@ -465,6 +465,7 @@ import { findConsumeTypeById, openOrEnterTable, popAuthorize, showConfirmAsyn, t
 import {
   claimDineOpenRequest,
   confirmDineOpenRequest,
+  createDinePollReporter,
   dineOpenErrorOf,
   dineOpenOutcomeUnknown,
   dineRequestMinutesLeft,
@@ -693,6 +694,10 @@ export default {
       if (this.result?.adjustStatus === 'PENDING' && list.some(a => a.sessionId === this.dineOpenTarget?.sessionId)) this.adjustSeen = true
     }
   },
+  created () {
+    // 不放进 data：只是计数，不用响应式
+    this.pollReporter = createDinePollReporter()
+  },
   mounted () {
     addToQueue('dineOpenRequests', () => {
       this.TICK_DINE_OPEN()
@@ -728,8 +733,10 @@ export default {
         this.SET_DINE_OPEN_REQUESTS(list)
         this.SET_DINE_OPEN_ADJUSTMENTS(res?.adjustments ?? [])
         this.nextPollAt = Date.now() + (res?.nextPollSeconds ?? 30) * 1000
+        this.pollReporter.succeeded()
         return true
       } catch (e) {
+        this.pollReporter.failed(e?.code)
         // 拿不到设备号或云端连不上：一分钟后再试，不打扰收银。
         // 清掉旧列表：不然断网时点有角标的桌还会被拦到三选一里
         // adjustments 留着上一次的：清掉会把「门店还在处理」当成处理完了，人工核对的红条也会跟着没了
