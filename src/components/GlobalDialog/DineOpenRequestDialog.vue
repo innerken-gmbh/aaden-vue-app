@@ -370,12 +370,12 @@
 
             <!-- 等着的一轮按确认的人数算额度，超出的退回客人购物车（POS-897 / POS-902） -->
             <v-alert
-                v-if="overQuota > 0"
+                v-if="queuedOutcome"
                 class="mb-3"
                 dense
                 text
                 type="warning"
-            >{{ $t('DineOpenOverQuota', { people: partyCount, send: freePerRound + queuedExtra, back: overQuota }) }}
+            >{{ $t('DineOpenOverQuota', { people: partyCount, send: queuedOutcome.send, back: queuedOutcome.back }) }}
             </v-alert>
             <v-alert
                 v-if="editable && hasBuffet && form.mode !== 'BUFFET' && queuedLines.length > 0"
@@ -573,14 +573,13 @@ export default {
       const t = this.pickedType
       return t ? (t.perAdult ?? 0) * this.form.adults + (t.perChild ?? 0) * this.partyChildren : 0
     },
-    /** 等着的一轮里额外送、不占额度的免费锅底（POS-1039）：超额时照送，「这一轮送几道」要加上；老云端不回，算 0 */
-    queuedExtra () {
-      return this.pickedType?.queuedExtra ?? 0
-    },
-    /** 等着的一轮按确认人数算超出的免费菜：确认后退回客人购物车 */
-    overQuota () {
-      if (!this.editable || !this.pickedType || this.freePerRound <= 0) return 0
-      return Math.max(0, (this.pickedType.queuedFree ?? 0) - this.freePerRound)
+    /**
+     * 等着的一轮按确认人数的每轮上限送几道、退几道（POS-1039）：云端和送单截额度同一个算法算好（queuedOutcomes，含额外送的锅底），
+     * 这里按上限查表，自己不算；查不到（不会退、老云端）就不提示
+     */
+    queuedOutcome () {
+      if (!this.editable || !this.pickedType || this.freePerRound <= 0) return null
+      return (this.pickedType.queuedOutcomes ?? []).find(o => o.limit === this.freePerRound) ?? null
     },
     canOpen () {
       if (!this.detail) return false
