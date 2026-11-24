@@ -87,7 +87,7 @@
         </template>
         <div
             v-if="onlinePayment"
-            :class="onlinePayment.state === 'paid' ? 'onlinePayStrip onlinePayStripPaid' : 'onlinePayStrip'"
+            :class="['onlinePayStrip', 'onlinePayStrip-' + onlinePayment.state]"
         >
           <v-icon
               class="mr-1"
@@ -368,8 +368,13 @@ export default {
   background: #5e35b1;
 }
 
-.onlinePayStripPaid {
+.onlinePayStrip-paid {
   background: #2e7d32;
+}
+
+/* 已线上付、金额对不上等人工处理 */
+.onlinePayStrip-review {
+  background: #e65100;
 }
 
 /* 已开的桌左上角是人数圆点，小标放右上角 */

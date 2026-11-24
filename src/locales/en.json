@@ -1022,5 +1022,8 @@
   "DineOnlinePayingConfirmTitle": "Guest is paying on their phone",
   "DineOnlinePayingConfirmHint": "The guest at table {table} is paying {amount} € online right now. If you check out at the till now, the guest may pay twice and need a manual refund. Check out anyway?",
   "DineOnlinePaidConfirmTitle": "Guest has already paid online",
-  "DineOnlinePaidConfirmHint": "The guest at table {table} has already paid {amount} € online. The cloud is checking out this table or waiting for manual review (Portal → dine-in payments). Checking out again at the till charges twice. Check out anyway?"
+  "DineOnlinePaidConfirmHint": "The guest at table {table} has already paid {amount} € online. The cloud is checking out this table, usually within a few seconds. Checking out again at the till charges twice. Check out anyway?",
+  "DineOnlineReviewBadge": "Paid online {amount} € · to handle",
+  "DineOnlineReviewConfirmTitle": "Paid online, but the amount no longer matches",
+  "DineOnlineReviewConfirmHint": "The guest at table {table} has already paid {amount} € online, but the cloud could not check out this table (usually because the bill changed after payment). Check out like this: record {amount} € as online payment and settle the difference with the guest in person; then mark this payment as handled in Portal → dine-in payments. Do not charge the full amount again. Go to checkout now?"
 }
