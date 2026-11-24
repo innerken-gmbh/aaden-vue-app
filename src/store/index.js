@@ -41,6 +41,8 @@ export default new Vuex.Store({
     showCheckoutDialog: false,
     checkoutTotal: 0,
     checkoutResolve: null,
+    /** 结账键盘上的「线上付款」（POS-1096）：{ id, amount }，只有堂食线上付款转人工时有 */
+    checkoutOnlinePay: null,
     tableColor: '',
 
     // 堂食扫码的待开桌（POS-275）：DineOpenRequestDialog 轮询写入；dineOpenTarget 是正在确认的那一桌
@@ -121,6 +123,7 @@ export default new Vuex.Store({
     hideCheckoutDialog (state) {
       state.showCheckoutDialog = false
       state.checkoutResolve = null
+      state.checkoutOnlinePay = null
     },
     hideOrderAcceptDialog (state) {
       state.showOrderAcceptDialog = false
@@ -230,9 +233,12 @@ export default new Vuex.Store({
         state.orderResolve = resolve
       })
     },
+    /** amount 可以直接是金额，也可以是 { amount, onlinePay }（POS-1096，见 checkoutOnlinePay） */
     async doCheckout ({ state }, amount) {
+      const { amount: total, onlinePay = null } = typeof amount === 'object' && amount !== null ? amount : { amount }
+      state.checkoutOnlinePay = onlinePay
       state.showCheckoutDialog = true
-      state.checkoutTotal = amount
+      state.checkoutTotal = total
       return await new Promise(resolve => {
         state.checkoutResolve = resolve
       })

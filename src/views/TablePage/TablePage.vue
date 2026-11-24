@@ -1300,7 +1300,8 @@ export default {
     },
     async jumpToPayment (paymentType = 'checkOut') {
       // 客人正在手机上线上付款（POS-1067）：先问服务员，再走输密码和付款
-      if (!await confirmCheckoutDuringOnlinePayment(this.id, this.tableDetailInfo?.tableName)) {
+      const online = await confirmCheckoutDuringOnlinePayment(this.id, this.tableDetailInfo?.tableName)
+      if (!online.proceed) {
         return
       }
       try {
@@ -1352,7 +1353,8 @@ export default {
         this.checkoutId = this.checkOutModel.list.map(it => it.code)
         const includesEaDp = this.checkOutModel.list.find(it => it.code === 'eaDp') ?? null
         const currentPrice = round(this.checkOutModel.total * (1 - this.discountRatio), 2)
-        const checkoutInfo = await this.doCheckout(currentPrice)
+        // 待人工处理的线上付款（POS-1096）：结账键盘上出「线上付款」，预填客人已付的金额
+        const checkoutInfo = await this.doCheckout({ amount: currentPrice, onlinePay: online.onlinePay })
         const shouldGoHome = paymentType === 'checkOut' && checkoutInfo.returnHome
         IKUtils.showLoading()
         if (checkoutInfo.billType === 1) {

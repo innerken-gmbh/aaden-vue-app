@@ -300,7 +300,8 @@ const fixedNames = {
   card: 'card',
   return: 'returnMoney',
   tip: 'tip',
-  vip: 'coupon'
+  vip: 'coupon',
+  online: 'DineOnlinePayKey'
 }
 const defaultRealName = {
   'mdi-minus': 'reverse',
@@ -355,12 +356,16 @@ export default {
       if (val) {
         // 每次打开结账弹窗都从干净状态开始，不再只依赖点 X 按钮清理
         this.clearDraft()
+        // 待人工处理的线上付款（POS-1096）：先把客人已经线上付的记上（第一次连小费），差额照常收
+        if (this.checkoutOnlinePay) {
+          this.logOnlinePay()
+        }
       }
       this.show = val
     }
   },
   computed: {
-    ...mapState(['showCheckoutDialog', 'checkoutTotal', 'checkoutResolve']),
+    ...mapState(['showCheckoutDialog', 'checkoutTotal', 'checkoutResolve', 'checkoutOnlinePay']),
     keyArr: function () {
       if (this.remainTotal >= 0) {
         return [
@@ -429,7 +434,14 @@ export default {
       }
     },
     realExtraPaymentMethodName: function () {
-      return [fixedNames.vip, ...this.paymentMethods.map((p) => p.name)]
+      const online = this.checkoutOnlinePay ? [fixedNames.online] : []
+      return [...online, fixedNames.vip, ...this.paymentMethods.map((p) => p.name)]
+    },
+    /** 这一单已经记上的「线上付款」（含小费部分）（POS-1096） */
+    onlinePayLogged: function () {
+      if (!this.checkoutOnlinePay) return 0
+      return round(this.paymentLog.filter(it => String(it.id) === this.checkoutOnlinePay.id)
+        .reduce((sum, it) => sum + parseFloat(it.price), 0), 2)
     },
     remainTotal: function () {
       const logTotal = this.paymentLog.reduce((cry, i) => {
@@ -565,7 +577,30 @@ export default {
         }
       }
     },
+    /**
+     * 记一笔「线上付款」（POS-1096）：最多记到门店说的还能记多少（available，减去这一单已经记上的），也不超过还没收的。
+     * 这一单还没记过线上付款、客人付了小费时，小费一起记上，另记一行小费（id 9，负数），和刷卡多付当小费是同一种记法。
+     * 超了门店会拒绝结账（DINE_ONLINE_PAY_OVER），这里只是不让键盘记多
+     */
+    logOnlinePay (requested = round(this.remainTotal, 2)) {
+      const key = this.checkoutOnlinePay
+      const left = round(key.available - this.onlinePayLogged, 2)
+      const tip = this.onlinePayLogged === 0 ? Math.min(key.tip, left) : 0
+      const bill = Math.max(0, Math.min(requested, left - tip, round(this.remainTotal, 2)))
+      if (bill <= 0 && tip <= 0) {
+        return
+      }
+      const icon = this.$t(fixedNames.online)
+      const hash = this.paymentLog.length + 'p' + bill + 'icon' + icon
+      this.paymentLog.push({ id: key.id, price: round(bill + tip, 2), icon, hash, name: icon })
+      if (tip > 0) {
+        this.paymentLog.push({ id: 9, price: -tip, icon: 'TIP', hash: hash + 'tip' })
+      }
+    },
     async logPayment (type) {
+      if (this.checkoutOnlinePay && String(type) === this.checkoutOnlinePay.id) {
+        return this.logOnlinePay(this.readBuffer())
+      }
       const price = this.readBuffer()
       if (price === 0 && this.paymentLog.length !== 0) {
         return
@@ -620,7 +655,7 @@ export default {
       if (!isNaN(parseInt(input))) {
         this.inputBuffer += input
       } else {
-        const c = this.realName[input]
+        const c = input === fixedNames.online ? this.checkoutOnlinePay?.id : this.realName[input]
         switch (c) {
           case '.':
             this.inputBuffer += c
