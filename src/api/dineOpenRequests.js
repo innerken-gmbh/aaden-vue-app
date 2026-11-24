@@ -77,6 +77,14 @@ export function rejectDineOpenRequest (sessionId, pw, lang) {
   return request(`/${sessionId}/reject`, { pw, lang })
 }
 
+/**
+ * 关掉确认框时放开打开时的占用（POS-1064），取消、确认完、拒绝完都调：客人页不再写「X 正在确认」，客人又能改人数。
+ * by 是 claim 回的 waiterName，云端只放这位服务员自己占着的；不要密码。失败不要紧，占用 10 分钟后自己过期
+ */
+export function releaseDineOpenRequest (sessionId, by) {
+  return request(`/${sessionId}/release`, { by })
+}
+
 /** 错误码和说明 */
 export function dineOpenErrorOf (e) {
   return { code: e?.code ?? null, info: e?.info ?? e?.message ?? '', params: e?.params ?? {} }
