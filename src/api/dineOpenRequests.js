@@ -77,6 +77,22 @@ export function rejectDineOpenRequest (sessionId, pw, lang) {
   return request(`/${sessionId}/reject`, { pw, lang })
 }
 
+/**
+ * 关掉确认框时放开打开时的占用（POS-1064），取消、确认完、拒绝完都调：客人页不再写「X 正在确认」，客人又能改人数。
+ * claimId 是 claim 回的这一次占码的凭据，云端只放这一次的（同名的另一台不受影响）；不要密码。失败不要紧，占用 10 分钟后自己过期
+ */
+export function releaseDineOpenRequest (sessionId, claimId) {
+  return request(`/${sessionId}/release`, { claimId })
+}
+
+/**
+ * 确认请求的结果未知（POS-1064）：连不上、等超时，或者网关回了 5xx 却没有云端的错误码（502/503/504 这类）。
+ * 云端自己回的 503（门店连不上、正忙）带错误码，不算在这里
+ */
+export function dineOpenOutcomeUnknown (code) {
+  return code === 'CLOUD_UNREACHABLE' || /^HTTP_5\d\d$/.test(code ?? '')
+}
+
 /** 错误码和说明 */
 export function dineOpenErrorOf (e) {
   return { code: e?.code ?? null, info: e?.info ?? e?.message ?? '', params: e?.params ?? {} }
