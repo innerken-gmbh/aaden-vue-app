@@ -375,7 +375,7 @@
                 dense
                 text
                 type="warning"
-            >{{ $t('DineOpenOverQuota', { people: partyCount, send: freePerRound, back: overQuota }) }}
+            >{{ $t('DineOpenOverQuota', { people: partyCount, send: freePerRound + queuedExtra, back: overQuota }) }}
             </v-alert>
             <v-alert
                 v-if="editable && hasBuffet && form.mode !== 'BUFFET' && queuedLines.length > 0"
@@ -572,6 +572,10 @@ export default {
     freePerRound () {
       const t = this.pickedType
       return t ? (t.perAdult ?? 0) * this.form.adults + (t.perChild ?? 0) * this.partyChildren : 0
+    },
+    /** 等着的一轮里额外送、不占额度的免费锅底（POS-1039）：超额时照送，「这一轮送几道」要加上；老云端不回，算 0 */
+    queuedExtra () {
+      return this.pickedType?.queuedExtra ?? 0
     },
     /** 等着的一轮按确认人数算超出的免费菜：确认后退回客人购物车 */
     overQuota () {
