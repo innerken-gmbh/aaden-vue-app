@@ -703,7 +703,7 @@ import NavButton from '@/components/navigation/NavButton.vue'
 import RestaurantLogoDisplay from '@/components/RestaurantLogoDisplay.vue'
 import { mapActions, mapMutations, mapState } from 'vuex'
 import DineOpenStrip from '@/views/TablePage/DineOpenStrip.vue'
-import { confirmCheckoutDuringOnlinePayment } from '@/api/dineOnlinePayment'
+import { addDishesRefusedText, confirmCheckoutDuringOnlinePayment } from '@/api/dineOnlinePayment'
 import { getReservationsByTableId } from '@/api/ReservationService'
 import ReservationListPage from '@/views/TablePage/ReservationList/ReservationListPage.vue'
 import {
@@ -1281,7 +1281,7 @@ export default {
           await this.initialUI()
         }
       } catch (e) {
-        logError(this.$t('JSTableOrderFailed') + e.data.info)
+        logError(this.$t('JSTableOrderFailed') + addDishesRefusedText(e?.data?.info))
       } finally {
         this.isSendingRequest = false
       }

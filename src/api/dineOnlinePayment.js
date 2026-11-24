@@ -45,3 +45,17 @@ export async function confirmCheckoutDuringOnlinePayment (tableId, tableName) {
   )
   return !!answer?.value
 }
+
+/**
+ * 加菜被门店拒绝时给服务员看的话（POS-1067）。线上付款结账和加菜同时到时，门店会拒绝加菜：
+ * 单已经结了回 Diese Bestellung ist beendet，正在结账、等锁超时回 TABLE_BUSY。别的原因照门店原文显示
+ */
+export function addDishesRefusedText (info) {
+  const key = ADD_DISHES_REFUSED[(info ?? '').trim()]
+  return key ? i18n.t(key) : info
+}
+
+const ADD_DISHES_REFUSED = {
+  'Diese Bestellung ist beendet': 'DineAddDishesOrderClosed',
+  TABLE_BUSY: 'DineAddDishesTableBusy'
+}
