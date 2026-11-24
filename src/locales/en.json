@@ -1025,7 +1025,7 @@
   "DineOnlinePaidConfirmHint": "The guest at table {table} has already paid {amount} € online. The cloud is checking out this table, usually within a few seconds. Checking out again at the till charges twice. Check out anyway?",
   "DineOnlineReviewBadge": "Paid online {amount} € · to handle",
   "DineOnlineReviewConfirmTitle": "Paid online, but the amount no longer matches",
-  "DineOnlineReviewConfirmHint": "The guest at table {table} has already paid {amount} € online, but the cloud could not check out this table (usually because the bill changed after payment). At checkout the keypad shows \"Online payment\" with {amount} € already filled in; settle the rest with the guest in person. Then mark this payment as handled in Portal → Dine-in. Do not charge the full amount again. Go to checkout now?",
+  "DineOnlineReviewConfirmHint": "The guest at table {table} has already paid online, but the cloud could not check out this table (usually because the bill changed after payment). At checkout the keypad shows \"Online payment\" and fills in what the guest paid online (up to {amount} € left; only the bill amount if the bill is smaller; the tip the guest paid is added too). Settle the rest with the guest in person. Once it is all recorded, the payment is closed in Portal automatically. Do not charge the full amount again. Go to checkout now?",
   "DineOnlinePayKey": "Online payment",
   "DineAddDishesOrderClosed": "This order has already been checked out, dishes can no longer be added",
   "DineAddDishesTableBusy": "This table is being checked out, please try again shortly"

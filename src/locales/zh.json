@@ -732,7 +732,7 @@
   "DineOnlinePaidConfirmHint": "{table} 号桌的客人已经线上付了 {amount} €，云端正在结这一桌，一般几秒内结好。在收银机上再结一次会多收钱。确定还要结账吗？",
   "DineOnlineReviewBadge": "已线上付 {amount} € · 待处理",
   "DineOnlineReviewConfirmTitle": "这桌已线上付款，金额对不上",
-  "DineOnlineReviewConfirmHint": "{table} 号桌的客人已经线上付了 {amount} €，云端没能结这一桌（多半是付款后账单又改了）。接着结账时键盘上会有「线上付款」，已经填好 {amount} €，剩下的差额当面和客人结清；结完到 Portal → 堂食订单，把这笔标记处理完。不要把全额再收一次。现在去结账吗？",
+  "DineOnlineReviewConfirmHint": "{table} 号桌的客人已经线上付了钱，云端没能结这一桌（多半是付款后账单又改了）。接着结账时键盘上会有「线上付款」，自动记上客人线上付的部分（还能记 {amount} €，账单更少时只记账单的金额，客人付的小费也一起记上），剩下的差额当面和客人结清。全记掉以后 Portal 上这一笔会自动处理完。不要把全额再收一次。现在去结账吗？",
   "DineOnlinePayKey": "线上付款",
   "DineAddDishesOrderClosed": "这张单已经结账，不能再加菜",
   "DineAddDishesTableBusy": "这张桌正在结账，请稍后再试"
