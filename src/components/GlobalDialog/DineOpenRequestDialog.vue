@@ -411,6 +411,28 @@
               class="error--text text-body-2 mb-3"
           >{{ error }}
           </div>
+          <!-- 确认结果未知（超时、断网）：自动重拉列表后写这一桌的真实状态，不让服务员手工补录（POS-1064） -->
+          <div
+              v-if="recheckState"
+              class="d-flex align-center text-body-2 mb-3"
+          >
+            <v-progress-circular
+                v-if="recheckState === 'checking'"
+                class="mr-2"
+                indeterminate
+                size="16"
+                width="2"
+            />
+            <span>{{ $t('DineOpenRecheck_' + recheckState) }}</span>
+            <v-spacer/>
+            <v-btn
+                v-if="recheckState !== 'checking'"
+                small
+                text
+                @click="recheck()"
+            >{{ $t('DineOpenRecheckAgain') }}
+            </v-btn>
+          </div>
 
           <div class="d-flex">
             <v-btn
@@ -444,10 +466,12 @@ import {
   claimDineOpenRequest,
   confirmDineOpenRequest,
   dineOpenErrorOf,
+  dineOpenOutcomeUnknown,
   dineRequestMinutesLeft,
   dineRequestWaitedMinutes,
   loadDineOpenRequests,
-  rejectDineOpenRequest
+  rejectDineOpenRequest,
+  releaseDineOpenRequest
 } from '@/api/dineOpenRequests'
 
 /** 改单没改成的原因（POS-901），每个有一句文案；不认识的按「收银机没有接受」写，和确认网页一样 */
@@ -470,7 +494,8 @@ export default {
   name: 'DineOpenRequestDialog',
   data: () => ({
     nextPollAt: 0,
-    polling: false,
+    // 正在拉列表时是那一次的 Promise：确认结果未知时要等它拉完再拉一次新的
+    polling: null,
     audio: null,
     seen: new Set(),
     pw: null,
@@ -483,12 +508,14 @@ export default {
     // 每打开一次确认框加一：关掉再开别的桌时，上一桌迟到的结果不写进来
     seq: 0,
     error: '',
+    // 确认结果未知（超时、断网）后重拉列表看到的这一桌：checking / waiting / tableOpen / gone / failed（POS-1064）
+    recheckState: null,
     form: { mode: 'A_LA_CARTE', consumeTypeId: null, adults: 1, children: 0 },
     // 服务员动过哪几项：已开的桌只传动过的（POS-901），没动的云端沿用门店现在的，不把收银机刚改的又改回去
     touched: { mode: false, type: false, party: false }
   }),
   computed: {
-    ...mapState(['dineOpenTarget', 'dineOpenListShow', 'dineOpenChoice', 'dineOpenRejectTarget', 'dineOpenAdjustments', 'dineOpenNow']),
+    ...mapState(['dineOpenRequests', 'dineOpenTarget', 'dineOpenListShow', 'dineOpenChoice', 'dineOpenRejectTarget', 'dineOpenAdjustments', 'dineOpenNow']),
     ...mapGetters(['dineOpenVisible']),
     groups () {
       return [
@@ -676,9 +703,21 @@ export default {
     ...mapMutations(['SET_DINE_OPEN_REQUESTS', 'SET_DINE_OPEN_ADJUSTMENTS', 'OPEN_DINE_REQUEST', 'CLOSE_DINE_REQUEST',
       'SHOW_DINE_OPEN_LIST', 'SHOW_DINE_OPEN_CHOICE', 'REJECT_DINE_REQUEST', 'DINE_REJECT_DONE', 'HIDE_DINE_REQUEST',
       'DINE_OPEN_CONFIRMED', 'TICK_DINE_OPEN']),
-    async poll () {
-      if (this.polling || Date.now() < this.nextPollAt) return
-      this.polling = true
+    /** 拉一次列表，成功回 true。force：不管间隔马上拉，正在拉的那次等它完再拉新的（确认结果未知时要拉到之后的状态） */
+    async poll (force = false) {
+      if (this.polling && !force) return false
+      // 几次强制拉同时进来时一个一个来：等到没人在拉再开始，自己拉完只清自己的那一次
+      while (this.polling) await this.polling
+      if (!force && Date.now() < this.nextPollAt) return false
+      const mine = this.loadList()
+      this.polling = mine
+      try {
+        return await mine
+      } finally {
+        if (this.polling === mine) this.polling = null
+      }
+    },
+    async loadList () {
       try {
         const res = await loadDineOpenRequests()
         const list = res?.requests ?? []
@@ -689,14 +728,14 @@ export default {
         this.SET_DINE_OPEN_REQUESTS(list)
         this.SET_DINE_OPEN_ADJUSTMENTS(res?.adjustments ?? [])
         this.nextPollAt = Date.now() + (res?.nextPollSeconds ?? 30) * 1000
+        return true
       } catch (e) {
         // 拿不到设备号或云端连不上：一分钟后再试，不打扰收银。
         // 清掉旧列表：不然断网时点有角标的桌还会被拦到三选一里
         // adjustments 留着上一次的：清掉会把「门店还在处理」当成处理完了，人工核对的红条也会跟着没了
         this.SET_DINE_OPEN_REQUESTS([])
         this.nextPollAt = Date.now() + 60 * 1000
-      } finally {
-        this.polling = false
+        return false
       }
     },
     beep () {
@@ -770,6 +809,7 @@ export default {
       this.result = null
       this.adjustSeen = false
       this.error = ''
+      this.recheckState = null
       this.loading = true
       this.touched = { mode: false, type: false, party: false }
       this.form = { mode: target.mode || 'A_LA_CARTE', consumeTypeId: target.consumeTypeId, adults: target.adults, children: target.children }
@@ -783,7 +823,11 @@ export default {
         }
         this.pw = pw
         const detail = await claimDineOpenRequest(target.sessionId, pw, this.lang())
-        if (seq !== this.seq) return
+        // 占上的时候框已经关了：马上放开，不让客人干等 10 分钟
+        if (seq !== this.seq) {
+          this.release(target.sessionId, detail?.claimId)
+          return
+        }
         this.detail = detail
         this.form = this.initialForm(detail)
       } catch (e) {
@@ -851,6 +895,7 @@ export default {
       const seq = this.seq
       this.busy = true
       this.error = ''
+      this.recheckState = null
       try {
         const res = await confirmDineOpenRequest(target.sessionId, this.pw, this.confirmFields())
         if (seq !== this.seq) return
@@ -859,7 +904,10 @@ export default {
         this.result = res
         this.nextPollAt = 0
       } catch (e) {
-        if (seq === this.seq) this.error = this.describe(e, target)
+        if (seq !== this.seq) return
+        this.error = this.describe(e, target, 'open')
+        // 等超时、断网或网关 5xx：云端可能已经开好桌、等着的一轮稍后自动送厨房，不能当失败（审查 B5）。马上重拉列表看这一桌的真实状态
+        if (dineOpenOutcomeUnknown(dineOpenErrorOf(e).code)) this.recheck(target, seq)
       } finally {
         this.busy = false
       }
@@ -890,20 +938,40 @@ export default {
         this.DINE_REJECT_DONE()
       }
     },
+    /** 确认结果未知时：重拉列表，按这一桌还在不在、桌开没开写真实状态（POS-1064） */
+    async recheck (target = this.dineOpenTarget, seq = this.seq) {
+      if (!target) return
+      this.recheckState = 'checking'
+      const ok = await this.poll(true)
+      if (seq !== this.seq) return
+      const live = ok ? this.dineOpenRequests.find(r => r.sessionId === target.sessionId) : null
+      if (!ok) this.recheckState = 'failed'
+      else if (!live) this.recheckState = 'gone'
+      else this.recheckState = live.tableOpen ? 'tableOpen' : 'waiting'
+    },
+    /** 放开这次打开确认框时的占用（POS-1064）；没占上（没拿到 claim 的结果）、老云端不回凭据时不用放 */
+    release (sessionId, claimId) {
+      if (sessionId && claimId) releaseDineOpenRequest(sessionId, claimId).catch(() => {})
+    },
     finish () {
       this.close()
       this.nextPollAt = 0
     },
     close () {
+      // 取消、确认完、拒绝完都走这里：放开打开时的占用。确认、拒绝成功后云端已经放了，这一下什么都不改
+      this.release(this.dineOpenTarget?.sessionId, this.detail?.claimId)
       this.seq++
+      this.recheckState = null
       this.loading = false
       this.pw = null
       this.detail = null
       this.result = null
       this.CLOSE_DINE_REQUEST()
     },
-    describe (e, target = this.dineOpenTarget) {
+    /** action 是 'open' 时，连不上、超时、网关 5xx 说成「结果未知」：确认可能已经成了（POS-1064） */
+    describe (e, target = this.dineOpenTarget, action = null) {
       const { code, info, params } = dineOpenErrorOf(e)
+      if (action === 'open' && dineOpenOutcomeUnknown(code)) return this.$t('DineOpenErrorOutcomeUnknown')
       // 请求已经没了（过期、结账、拒绝、桌上换了单）：列表里马上去掉
       if (GONE_CODES.includes(code) && target) this.HIDE_DINE_REQUEST(target.sessionId)
       if (GONE_CODES.includes(code) || code === 'DINE_TABLE_ALREADY_OPEN') this.nextPollAt = 0
@@ -913,6 +981,7 @@ export default {
         DINE_WAITER_PW_WRONG: 'DineOpenErrorPassword',
         DINE_WAITER_SIGN_IN: 'DineOpenErrorPassword',
         DINE_WAITER_LOCKED: 'DineOpenErrorLocked',
+        DINE_WAITER_PW_MISSING: 'DineOpenErrorPasswordMissing',
         DINE_TABLE_ALREADY_OPEN: 'DineOpenErrorAlreadyOpen',
         DINE_OPEN_CODE_EXPIRED: 'DineOpenErrorGone',
         DINE_SESSION_NOT_FOUND: 'DineOpenErrorGone',
