@@ -728,7 +728,8 @@
   "DineOnlinePaidConfirmHint": "Der Gast an Tisch {table} hat bereits {amount} € online bezahlt. Die Cloud rechnet den Tisch gerade ab, meist in wenigen Sekunden. Eine zweite Abrechnung an der Kasse kassiert doppelt. Trotzdem abrechnen?",
   "DineOnlineReviewBadge": "Online bezahlt {amount} € · offen",
   "DineOnlineReviewConfirmTitle": "Online bezahlt, Betrag stimmt nicht mehr",
-  "DineOnlineReviewConfirmHint": "Der Gast an Tisch {table} hat bereits {amount} € online bezahlt, aber die Cloud konnte den Tisch nicht abrechnen (meist wurde die Rechnung nach der Zahlung geändert). So abrechnen: {amount} € als Online-Zahlung erfassen und die Differenz direkt mit dem Gast ausgleichen; danach die Zahlung im Portal → Am Tisch als erledigt markieren. Nicht den vollen Betrag noch einmal kassieren. Jetzt abrechnen?",
+  "DineOnlineReviewConfirmHint": "Der Gast an Tisch {table} hat bereits {amount} € online bezahlt, aber die Cloud konnte den Tisch nicht abrechnen (meist wurde die Rechnung nach der Zahlung geändert). Beim Abrechnen zeigt die Tastatur „Online-Zahlung“ mit {amount} € bereits eingetragen; den Rest direkt mit dem Gast abrechnen. Danach die Zahlung im Portal → Am Tisch als erledigt markieren. Nicht den vollen Betrag noch einmal kassieren. Jetzt abrechnen?",
+  "DineOnlinePayKey": "Online-Zahlung",
   "DineAddDishesOrderClosed": "Diese Bestellung ist bereits abgerechnet, es können keine Gerichte mehr hinzugefügt werden",
   "DineAddDishesTableBusy": "Dieser Tisch wird gerade abgerechnet, bitte gleich noch einmal versuchen"
 }

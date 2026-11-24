@@ -300,7 +300,8 @@ const fixedNames = {
   card: 'card',
   return: 'returnMoney',
   tip: 'tip',
-  vip: 'coupon'
+  vip: 'coupon',
+  online: 'DineOnlinePayKey'
 }
 const defaultRealName = {
   'mdi-minus': 'reverse',
@@ -355,12 +356,16 @@ export default {
       if (val) {
         // 每次打开结账弹窗都从干净状态开始，不再只依赖点 X 按钮清理
         this.clearDraft()
+        // 待人工处理的线上付款（POS-1096）：先把客人已经线上付的记上，差额照常收
+        if (this.checkoutOnlinePay) {
+          this.logPayment(this.checkoutOnlinePay.id)
+        }
       }
       this.show = val
     }
   },
   computed: {
-    ...mapState(['showCheckoutDialog', 'checkoutTotal', 'checkoutResolve']),
+    ...mapState(['showCheckoutDialog', 'checkoutTotal', 'checkoutResolve', 'checkoutOnlinePay']),
     keyArr: function () {
       if (this.remainTotal >= 0) {
         return [
@@ -429,7 +434,15 @@ export default {
       }
     },
     realExtraPaymentMethodName: function () {
-      return [fixedNames.vip, ...this.paymentMethods.map((p) => p.name)]
+      const online = this.checkoutOnlinePay ? [fixedNames.online] : []
+      return [...online, fixedNames.vip, ...this.paymentMethods.map((p) => p.name)]
+    },
+    /** 「线上付款」还能记多少：客人线上付的减去已经记上的（POS-1096） */
+    onlinePayLeft: function () {
+      if (!this.checkoutOnlinePay) return 0
+      const logged = this.paymentLog.filter(it => String(it.id) === this.checkoutOnlinePay.id)
+        .reduce((sum, it) => sum + parseFloat(it.price), 0)
+      return round(this.checkoutOnlinePay.amount - logged, 2)
     },
     remainTotal: function () {
       const logTotal = this.paymentLog.reduce((cry, i) => {
@@ -566,11 +579,19 @@ export default {
       }
     },
     async logPayment (type) {
-      const price = this.readBuffer()
+      let price = this.readBuffer()
       if (price === 0 && this.paymentLog.length !== 0) {
         return
       }
-      const icon = Object.entries(this.realName).find(([k, v]) => v === type)[0]
+      const online = this.checkoutOnlinePay && String(type) === this.checkoutOnlinePay.id
+      if (online) {
+        // 线上付款最多记到客人实际付的金额，也不超过还没收的部分
+        price = Math.min(price, this.onlinePayLeft, round(this.remainTotal, 2))
+        if (price <= 0) {
+          return
+        }
+      }
+      const icon = online ? this.$t(fixedNames.online) : Object.entries(this.realName).find(([k, v]) => v === type)[0]
       const name = this.paymentMethods.find(it => it.id === type)?.name ?? icon
       const hash = this.paymentLog.length + 'p' + price + 'icon' + icon
       const obj = {
@@ -620,7 +641,7 @@ export default {
       if (!isNaN(parseInt(input))) {
         this.inputBuffer += input
       } else {
-        const c = this.realName[input]
+        const c = input === fixedNames.online ? this.checkoutOnlinePay?.id : this.realName[input]
         switch (c) {
           case '.':
             this.inputBuffer += c

@@ -5,7 +5,8 @@ import { showConfirmAsyn } from '@/oldjs/common'
 /**
  * 堂食客人线上付款（POS-1067）。标记只存在门店，只有云端写：客人打开付款页时写 paying，钱到了、云端正在结时是 paid，
  * 云端结不了（金额对不上等）转人工时是 review，结好、取消、过期、Portal 上处理完时云端清掉。收银机只读：桌子列表（showAllTableWithCells）
- * 和 currentInfo 每一行带 onlinePayment（{ state, amount, expiresAt }，没有时是 null）。
+ * 和 currentInfo 每一行带 onlinePayment（{ state, amount, payMethodId, expiresAt }，没有时是 null）。
+ * payMethodId 是云端这一笔结账用的门店付款方式（POS-1096），转人工时结账键盘按它出「线上付款」；老云端不带时是 null。
  */
 export function onlinePaymentOf (info) {
   const mark = info?.onlinePayment
@@ -25,25 +26,37 @@ export function onlinePaymentBadge (mark) {
 }
 
 /**
+ * 待人工处理（review）、云端带了付款方式时，结账键盘上出「线上付款」（POS-1096）：记成和云端自动结账同一个付款方式，
+ * 金额就是客人已经线上付的账单部分，不能超过。别的状态、老云端没带付款方式时是 null，键盘照常
+ * @return {{ id: string, amount: number } | null}
+ */
+export function onlinePayKeyOf (mark) {
+  if (mark?.state !== 'review' || !mark.payMethodId) return null
+  const amount = parseFloat(mark.amount)
+  return amount > 0 ? { id: String(mark.payMethodId), amount } : null
+}
+
+/**
  * 结账前现读门店：客人正在付、已经付了就先问服务员；待人工处理时写明怎么结。读不到门店时不挡结账（门店结账时云端还会核对金额）。
- * @return {Promise<boolean>} true = 继续结账
+ * @return {Promise<{ proceed: boolean, onlinePay: ({ id: string, amount: number } | null) }>}
+ *   proceed = 继续结账；onlinePay = 结账键盘上要出的「线上付款」，见 onlinePayKeyOf
  */
 export async function confirmCheckoutDuringOnlinePayment (tableId, tableName) {
   let mark = null
   try {
     mark = onlinePaymentOf((await hillo.silentGet('Tables.php', { op: 'currentInfo', id: tableId }, { noDebug: true })).content)
   } catch (e) {
-    return true
+    return { proceed: true, onlinePay: null }
   }
   if (!mark) {
-    return true
+    return { proceed: true, onlinePay: null }
   }
   const text = TEXT[mark.state]
   const answer = await showConfirmAsyn(
     i18n.t(text.hint, { table: tableName ?? '', amount: mark.amount }),
     i18n.t(text.title)
   )
-  return !!answer?.value
+  return { proceed: !!answer?.value, onlinePay: onlinePayKeyOf(mark) }
 }
 
 /**
