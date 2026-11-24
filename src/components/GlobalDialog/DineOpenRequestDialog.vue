@@ -368,6 +368,15 @@
               </div>
             </div>
 
+            <!-- 送单会整批拒（锅底不止一份等）：说清这一轮会整批退回，和送单结果一样（POS-1039） -->
+            <v-alert
+                v-if="queuedRefusal"
+                class="mb-3"
+                dense
+                text
+                type="warning"
+            >{{ $t(queuedRefusalKey) }}
+            </v-alert>
             <!-- 等着的一轮按确认的人数算额度，超出的退回客人购物车（POS-897 / POS-902） -->
             <v-alert
                 v-if="queuedOutcome"
@@ -572,6 +581,14 @@ export default {
     freePerRound () {
       const t = this.pickedType
       return t ? (t.perAdult ?? 0) * this.form.adults + (t.perChild ?? 0) * this.partyChildren : 0
+    },
+    /** 等着的一轮送单时会整批拒的原因（云端 queuedRefusal，和送单同一条规则）；有它时不看额度 */
+    queuedRefusal () {
+      return this.editable ? (this.pickedType?.queuedRefusal ?? null) : null
+    },
+    queuedRefusalKey () {
+      const known = ['DINE_HOTPOT_ONE_ONLY', 'DINE_HOTPOT_INCOMPLETE']
+      return 'DineOpenQueuedRefused_' + (known.includes(this.queuedRefusal) ? this.queuedRefusal : 'OTHER')
     },
     /**
      * 等着的一轮按确认人数的每轮上限送几道、退几道（POS-1039）：云端和送单截额度同一个算法算好（queuedOutcomes，含额外送的锅底），
