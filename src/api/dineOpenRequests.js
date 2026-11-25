@@ -111,9 +111,48 @@ export function createDinePollReporter (report = postDeviceEvent) {
 }
 
 /** 错误码和说明 */
+/**
+ * 确认 / 拒绝开桌出错时店员看哪句话、要不要从列表去掉、要不要马上重拉列表，都由云端定（POS-1075）：
+ * 失败回包的 data 带 messageKey（同一个意思的错误码合成一个键）、gone（请求已经没了）、refreshList（马上重拉列表）。
+ * 收银机自己生成的错误（连不上云端 CLOUD_UNREACHABLE、没有设备号）和老云端（POS-1075 之前，没有这几个字段）
+ * 才按下面的 [LEGACY_KEYS] / [LEGACY_GONE] 推，云端都升级后可以删掉这两张表
+ */
 export function dineOpenErrorOf (e) {
-  return { code: e?.code ?? null, info: e?.info ?? e?.message ?? '', params: e?.params ?? {} }
+  const code = e?.code ?? null
+  const data = e?.data ?? {}
+  const gone = typeof data.gone === 'boolean' ? data.gone : LEGACY_GONE.includes(code)
+  return {
+    code,
+    info: e?.info ?? e?.message ?? '',
+    params: e?.params ?? {},
+    messageKey: data.messageKey ?? LOCAL_KEYS[code] ?? LEGACY_KEYS[code] ?? (code ? 'dineOpen.unknown' : null),
+    gone,
+    refreshList: typeof data.refreshList === 'boolean' ? data.refreshList : (gone || code === 'DINE_TABLE_ALREADY_OPEN')
+  }
 }
+
+/** 收银机自己生成的错误码（云端不会回） */
+const LOCAL_KEYS = { CLOUD_UNREACHABLE: 'dineOpen.unreachable' }
+
+/** 老云端没有 gone 时：这些错误码说明请求已经没了 */
+const LEGACY_GONE = ['DINE_SESSION_NOT_FOUND', 'DINE_OPEN_CODE_EXPIRED', 'DINE_SESSION_CLOSED', 'DINE_OPEN_NOT_REQUESTED', 'DINE_REQUEST_ORDER_ENDED']
+
+/** 老云端没有 messageKey 时：错误码 → 键（和云端 DineStaffErrorKeys 一样） */
+const LEGACY_KEYS = Object.fromEntries(Object.entries({
+  'dineOpen.password': ['DINE_WAITER_PW_WRONG', 'DINE_WAITER_SIGN_IN'],
+  'dineOpen.passwordMissing': ['DINE_WAITER_PW_MISSING'],
+  'dineOpen.locked': ['DINE_WAITER_LOCKED'],
+  'dineOpen.alreadyOpen': ['DINE_TABLE_ALREADY_OPEN'],
+  'dineOpen.gone': ['DINE_OPEN_CODE_EXPIRED', 'DINE_SESSION_NOT_FOUND', 'DINE_SESSION_CLOSED', 'DINE_OPEN_NOT_REQUESTED'],
+  'dineOpen.orderEnded': ['DINE_REQUEST_ORDER_ENDED'],
+  'dineOpen.claimed': ['DINE_OPEN_CLAIMED'],
+  'dineOpen.storeUnreachable': ['STORE_UNREACHABLE', 'STORE_UNAVAILABLE'],
+  'dineOpen.buffetUnavailable': ['DINE_BUFFET_TYPE_UNAVAILABLE', 'DINE_OUTSIDE_SERVICE', 'DINE_BUFFET_NOT_LICENSED'],
+  'dineOpen.people': ['DINE_TIER_MISMATCH', 'DINE_TIER_REQUIRED', 'DINE_PEOPLE_INVALID'],
+  'dineOpen.inProgress': ['DINE_OPEN_IN_PROGRESS', 'DINE_SESSION_BUSY', 'DINE_OPEN_UNCONFIRMED'],
+  'dineOpen.refused': ['DINE_OPEN_REFUSED'],
+  'dineOpen.buffetType': ['DINE_BUFFET_TYPE_REQUIRED']
+}).flatMap(([key, codes]) => codes.map(c => [c, key])))
 
 /** 开桌请求从客人提交起多久没人确认就过期（云端 dine-in.request-ttl-minutes 的默认值，POS-897）。老云端不带到期时间时才用，只用来显示 */
 export const DINE_REQUEST_TTL_MINUTES = 30

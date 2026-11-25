@@ -484,8 +484,23 @@ const KNOWN_REASONS = ['STORE_CANNOT_ADJUST', 'PAYMENT_IN_PROGRESS', 'ORDER_HAS_
 const KNOWN_REFUSALS = ['DINE_HOTPOT_ONE_ONLY', 'DINE_HOTPOT_INCOMPLETE', 'DINE_HOTPOT_ALREADY_ORDERED', 'DINE_HOTPOT_REQUIRED']
 const refusalKey = (prefix, refusal) => prefix + (KNOWN_REFUSALS.includes(refusal) ? refusal : 'OTHER')
 
-/** 这些错误说明请求已经没了：列表里马上去掉 */
-const GONE_CODES = ['DINE_SESSION_NOT_FOUND', 'DINE_OPEN_CODE_EXPIRED', 'DINE_SESSION_CLOSED', 'DINE_OPEN_NOT_REQUESTED', 'DINE_REQUEST_ORDER_ENDED']
+/** 云端的文案键（POS-1075）→ 本机文案；键由云端定，这里只管每个键说哪句话 */
+const MESSAGE_TEXT = {
+  'dineOpen.password': 'DineOpenErrorPassword',
+  'dineOpen.passwordMissing': 'DineOpenErrorPasswordMissing',
+  'dineOpen.locked': 'DineOpenErrorLocked',
+  'dineOpen.alreadyOpen': 'DineOpenErrorAlreadyOpen',
+  'dineOpen.gone': 'DineOpenErrorGone',
+  'dineOpen.orderEnded': 'DineOpenErrorOrderEnded',
+  'dineOpen.claimed': 'DineOpenErrorClaimed',
+  'dineOpen.storeUnreachable': 'DineOpenErrorStoreUnreachable',
+  'dineOpen.unreachable': 'DineOpenErrorUnreachable',
+  'dineOpen.buffetUnavailable': 'DineOpenErrorBuffetUnavailable',
+  'dineOpen.people': 'DineOpenErrorPeople',
+  'dineOpen.inProgress': 'DineOpenErrorInProgress',
+  'dineOpen.refused': 'DineOpenErrorRefused',
+  'dineOpen.buffetType': 'DineOpenErrorBuffetType'
+}
 
 /**
  * 扫码点餐 / 堂食版的开桌请求（POS-275，POS-883 跟云端 POS-897 / 899 / 901 / 902 对齐）。挂在 App 上：
@@ -984,41 +999,14 @@ export default {
     },
     /** action 是 'open' 时，连不上、超时、网关 5xx 说成「结果未知」：确认可能已经成了（POS-1064） */
     describe (e, target = this.dineOpenTarget, action = null) {
-      const { code, info, params } = dineOpenErrorOf(e)
+      const { code, info, params, messageKey, gone, refreshList } = dineOpenErrorOf(e)
       if (action === 'open' && dineOpenOutcomeUnknown(code)) return this.$t('DineOpenErrorOutcomeUnknown')
-      // 请求已经没了（过期、结账、拒绝、桌上换了单）：列表里马上去掉
-      if (GONE_CODES.includes(code) && target) this.HIDE_DINE_REQUEST(target.sessionId)
-      if (GONE_CODES.includes(code) || code === 'DINE_TABLE_ALREADY_OPEN') this.nextPollAt = 0
+      // 请求已经没了（过期、结账、拒绝、桌上换了单）：列表里马上去掉；要不要马上重拉列表也由云端说（POS-1075）
+      if (gone && target) this.HIDE_DINE_REQUEST(target.sessionId)
+      if (refreshList) this.nextPollAt = 0
       // 锁住时云端带上还要等几分钟
-      if (code === 'DINE_WAITER_LOCKED' && params?.minutes) return this.$t('DineOpenErrorLockedMinutes', { minutes: params.minutes })
-      const known = {
-        DINE_WAITER_PW_WRONG: 'DineOpenErrorPassword',
-        DINE_WAITER_SIGN_IN: 'DineOpenErrorPassword',
-        DINE_WAITER_LOCKED: 'DineOpenErrorLocked',
-        DINE_WAITER_PW_MISSING: 'DineOpenErrorPasswordMissing',
-        DINE_TABLE_ALREADY_OPEN: 'DineOpenErrorAlreadyOpen',
-        DINE_OPEN_CODE_EXPIRED: 'DineOpenErrorGone',
-        DINE_SESSION_NOT_FOUND: 'DineOpenErrorGone',
-        DINE_SESSION_CLOSED: 'DineOpenErrorGone',
-        DINE_OPEN_NOT_REQUESTED: 'DineOpenErrorGone',
-        DINE_REQUEST_ORDER_ENDED: 'DineOpenErrorOrderEnded',
-        DINE_OPEN_CLAIMED: 'DineOpenErrorClaimed',
-        STORE_UNREACHABLE: 'DineOpenErrorStoreUnreachable',
-        STORE_UNAVAILABLE: 'DineOpenErrorStoreUnreachable',
-        CLOUD_UNREACHABLE: 'DineOpenErrorUnreachable',
-        DINE_BUFFET_TYPE_UNAVAILABLE: 'DineOpenErrorBuffetUnavailable',
-        DINE_OUTSIDE_SERVICE: 'DineOpenErrorBuffetUnavailable',
-        DINE_BUFFET_NOT_LICENSED: 'DineOpenErrorBuffetUnavailable',
-        DINE_TIER_MISMATCH: 'DineOpenErrorPeople',
-        DINE_TIER_REQUIRED: 'DineOpenErrorPeople',
-        DINE_PEOPLE_INVALID: 'DineOpenErrorPeople',
-        DINE_OPEN_IN_PROGRESS: 'DineOpenErrorInProgress',
-        DINE_SESSION_BUSY: 'DineOpenErrorInProgress',
-        DINE_OPEN_UNCONFIRMED: 'DineOpenErrorInProgress',
-        DINE_OPEN_REFUSED: 'DineOpenErrorRefused',
-        DINE_BUFFET_TYPE_REQUIRED: 'DineOpenErrorBuffetType'
-      }
-      if (known[code]) return this.$t(known[code])
+      if (messageKey === 'dineOpen.locked' && params?.minutes) return this.$t('DineOpenErrorLockedMinutes', { minutes: params.minutes })
+      if (MESSAGE_TEXT[messageKey]) return this.$t(MESSAGE_TEXT[messageKey])
       // 云端的 message 是中文，不给店员看；只带上错误码方便排查
       return code ? `${this.$t('DineOpenErrorUnknown')} (${code})` : (info || this.$t('DineOpenErrorUnknown'))
     }

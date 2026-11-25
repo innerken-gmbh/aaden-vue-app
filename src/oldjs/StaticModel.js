@@ -47,9 +47,14 @@ export function findDish (code) {
   return dishesDictionary[code.toLowerCase()]
 }
 
+/** 菜单里的菜、购物车行的菜 id：菜单接口给 dishId，有的地方叫 id / dishesId；各处都按这个顺序取 */
+export function dishIdOf (dish) {
+  return dish?.dishId ?? dish?.id ?? dish?.dishesId
+}
+
 /** 按菜 id 找本机菜单里的菜（收银台活动的赠品 / 换购按云端给的 dishesId 找，POS-1106） */
 export function findDishById (id) {
-  return Object.values(dishesDictionary).find(d => String(d.dishId ?? d.id) === String(id))
+  return Object.values(dishesDictionary).find(d => String(dishIdOf(d)) === String(id))
 }
 
 export function processDishList (dishList) {
