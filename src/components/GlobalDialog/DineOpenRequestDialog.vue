@@ -667,18 +667,16 @@ export default {
       if (!r) return []
       const a = this.shownAdjust
       const lines = []
-      if (r.queuedRefusal) {
-        // 确认框里云端说了这一轮送单会整批拒（POS-1092）：回包时它可能还在「发送中」被算进 sentRounds，送单那一步才退回。
-        // 照确认框同一个云端结论写已退回，不写「已送 N 轮」
-        lines.push(this.$t(refusalKey('DineOpenResultRefused_', r.queuedRefusal)))
-      } else {
-        if (r.sentRounds > 0) lines.push(this.$t('DineOpenResultSent', { count: r.sentRounds }))
-        if (r.returnedDishes > 0) lines.push(this.$t('DineOpenResultReturned', { count: r.returnedDishes }))
-        if (r.droppedDishes > 0) lines.push(this.$t('DineOpenResultDropped', { count: r.droppedDishes }))
-        if (r.failedRounds > 0) lines.push(this.$t('DineOpenResultFailed', { count: r.failedRounds }))
-        // 门店还在改单时等着的一轮改完再送，提示写在改单那一条里
-        if (r.waitingRounds > 0 && a.status !== 'PENDING') lines.push(this.$t('DineOpenResultLater', { count: r.waitingRounds }))
-      }
+      // 都照云端确认回包写，收银机不自己判断。整轮被自助规则拒的（refusal，POS-1092，比如两份锅底）算在 failedRounds 里，
+      // 那一轮写「已退回客人购物车」和原因，其余没送出的照旧写；老云端没有 refusal，照旧
+      const failed = r.refusal ? r.failedRounds - 1 : r.failedRounds
+      if (r.sentRounds > 0) lines.push(this.$t('DineOpenResultSent', { count: r.sentRounds }))
+      if (r.refusal) lines.push(this.$t(refusalKey('DineOpenResultRefused_', r.refusal)))
+      if (r.returnedDishes > 0) lines.push(this.$t('DineOpenResultReturned', { count: r.returnedDishes }))
+      if (r.droppedDishes > 0) lines.push(this.$t('DineOpenResultDropped', { count: r.droppedDishes }))
+      if (failed > 0) lines.push(this.$t('DineOpenResultFailed', { count: failed }))
+      // 门店还在改单时等着的一轮改完再送，提示写在改单那一条里
+      if (r.waitingRounds > 0 && a.status !== 'PENDING') lines.push(this.$t('DineOpenResultLater', { count: r.waitingRounds }))
       const reasons = [...new Set(Object.values(a.ignoredReasons ?? {}).map(x => KNOWN_REASONS.includes(x) ? x : 'STORE_REFUSED'))]
       if (r.inputIgnored && reasons.length === 0) lines.push(this.$t('DineOpenInputIgnored'))
       if ((a.adjustedFields ?? []).length > 0) {
@@ -917,8 +915,7 @@ export default {
         if (seq !== this.seq) return
         this.HIDE_DINE_REQUEST(target.sessionId)
         this.DINE_OPEN_CONFIRMED()
-        // 带上确认框里云端给的整批拒原因（queuedRefusal）：结果框和确认框写同一个结论
-        this.result = { ...res, queuedRefusal: this.queuedRefusal }
+        this.result = res
         this.nextPollAt = 0
       } catch (e) {
         if (seq !== this.seq) return
