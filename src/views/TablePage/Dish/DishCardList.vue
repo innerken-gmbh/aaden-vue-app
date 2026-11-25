@@ -49,8 +49,24 @@
       >
 
         <template v-for="(order, index) in dishList">
+          <div
+              v-if="promoLayout.headers[index]"
+              :key="'promo' + title + promoLayout.headers[index].key"
+              class="mt-2 px-2 py-1 rounded orange lighten-5 text-body-2 d-flex align-center"
+          >
+            <v-icon
+                class="mr-1"
+                small
+            >mdi-tag
+            </v-icon>
+            <span class="flex-grow-1 font-weight-bold text-truncate">{{ promoLayout.headers[index].label }}</span>
+            <span
+                v-if="promoLayout.headers[index].saved > 0"
+                class="text-no-wrap"
+            >{{ $t('PosPromoSaved') }} {{ promoLayout.headers[index].saved | priceDisplay }}</span>
+          </div>
           <dish-card
-              :key="'order' + title + order.identity"
+              :key="'order' + title + (order.promoRowKey || order.identity)"
               :click-callback="() => _clickCallBack(index, order)"
               :dish="order"
               :expand="index === expandIndex"
@@ -91,6 +107,7 @@ import i18n from '@/i18n'
 import IKUtils from 'innerken-js-utils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { sumBy } from 'lodash'
+import { groupSaved, promoGroupOf } from '@/views/TablePage/posPromo'
 
 export default {
   name: 'DishCardList',
@@ -203,11 +220,12 @@ export default {
     shouldDisplaySourceMarks: function () {
       return this.sourceMarks.length > 1
     },
+    // 免费菜过滤（onlyPaid）不藏收银台活动的行：赠品、减到 0 元的行（POS-1106）
     sliceDishBySourceMarks () {
       const list = [...this.dishListModel.list].filter((it) => {
         return (
           (this.activeSourceMark === '' || it.sourceMark === this.activeSourceMark) &&
-            (this.onlyPaid === '1' || it.realPrice !== 0)
+            (this.onlyPaid === '1' || it.realPrice !== 0 || it.promotionRowKind)
         )
       })
       if (this.reverse) {
@@ -215,17 +233,47 @@ export default {
       }
       return list
     },
-    dishList: function () {
+    /**
+     * 收银台活动（POS-1106）：同一个活动的行排在一起，第一行前面显示活动名和省了多少（购物车的算好价的行、已下的单都认）。
+     * 没有活动的行位置不变，没有活动时整个列表不变
+     */
+    promoLayout: function () {
       const list = [...this.dishListModel.list].filter((it) => {
         return (
           (this.activeSourceMark === '' || it.sourceMark !== this.activeSourceMark) &&
-            (this.onlyPaid === '1' || it.realPrice !== 0)
+            (this.onlyPaid === '1' || it.realPrice !== 0 || it.promotionRowKind)
         )
       })
       if (this.reverse) {
         list.reverse()
       }
-      return list
+      const groups = {}
+      const slots = []
+      list.forEach(it => {
+        const g = promoGroupOf(it)
+        if (!g) {
+          slots.push({ row: it })
+        } else if (groups[g.key]) {
+          groups[g.key].rows.push(it)
+        } else {
+          groups[g.key] = { key: g.key, label: g.label, rows: [it] }
+          slots.push({ group: groups[g.key] })
+        }
+      })
+      const out = []
+      const headers = {}
+      slots.forEach(slot => {
+        if (slot.row) {
+          out.push(slot.row)
+        } else {
+          headers[out.length] = { key: slot.group.key, label: slot.group.label, saved: groupSaved(slot.group.rows) }
+          out.push(...slot.group.rows)
+        }
+      })
+      return { list: out, headers }
+    },
+    dishList: function () {
+      return this.promoLayout.list
     },
     dishLength () {
       return sumBy(this.dishList, 'count')

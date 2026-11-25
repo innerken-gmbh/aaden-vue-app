@@ -120,6 +120,7 @@
                   v-ripple
                   :code="dish.code"
                   :count="dish.count"
+                  :dish-id="dish.dishId || dish.id"
                   :dish-name="dish.dishName"
                   :display-color="dish.displayColor"
                   :foreground="dish.foreground"

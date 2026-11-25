@@ -173,6 +173,7 @@
                     </v-btn>
                   </template>
                   <template v-slot:default="{ total }">
+                    <pos-promo-panel :rows="orderListModel.list"/>
                     <div class="pa-2">
                       <v-btn
                           :disabled="!canOperate || splitOrderListModel.list.length > 0"
@@ -200,7 +201,7 @@
                   ref="cartList"
                   :click-callback="removeDish"
                   :default-expand="true"
-                  :dish-list-model="cartListModel"
+                  :dish-list-model="cartDisplayModel"
                   :reset-current-expand-index="true"
                   :reverse="true"
                   :show-edit="true"
@@ -230,6 +231,10 @@
                   </v-btn>
                 </template>
                 <template v-slot:default="{ total }">
+                  <pos-promo-panel
+                      :cart="true"
+                      :rows="cartDisplayModel.list"
+                  />
                   <div class="pa-2">
                     <v-btn
                         :loading="isSendingRequest"
@@ -716,6 +721,21 @@ import { round } from 'lodash-es'
 import router from '@/router'
 import { clearGlobalCart, getActiveCodes } from '@/api/scanQr'
 import LoadingProvider from '@/views/Widget/LoadingProvider.vue'
+import PosPromoPanel from '@/views/TablePage/Dish/PosPromoPanel.vue'
+import {
+  awaitFresh,
+  loadMenuBadges,
+  offlineWithExtras,
+  onCartChanged,
+  posPromoState,
+  pricedRows,
+  promoLang,
+  removeExtraRow,
+  resetPosPromo,
+  submitPayload,
+  unclaimedGift
+} from '@/views/TablePage/posPromo'
+import Swal from 'sweetalert2'
 
 const checkoutFactory = DishDocker.StandardDishesListFactory()
 const splitOrderFactory = DishDocker.StandardDishesListFactory()
@@ -755,6 +775,7 @@ export default {
     dragscroll
   },
   components: {
+    PosPromoPanel,
     LoadingProvider,
     ReservationListPage,
     RestaurantLogoDisplay,
@@ -929,6 +950,10 @@ export default {
           //* mark by ju
           const discountInfo = result.filter((r) => r.code === '-1')
           const noDiscount = result.filter((r) => r.code !== '-1')
+          // 收银台活动（POS-1106）：不同活动（或同一活动的不同角色）的行不能按菜合并，按活动分开
+          noDiscount.forEach(d => {
+            if (d.promotionKey || d.promotionRowKind) d.uid = (d.promotionKey ?? '') + '|' + (d.promotionRowKind ?? '')
+          })
           this.orderListModel.loadTTDishList(noDiscount)
           if (discountInfo.length > 0) {
             const [discount] = discountInfo
@@ -1136,7 +1161,44 @@ export default {
       }, 1)
     },
     removeDish: function (dish) {
-      this.cartListModel.add(dish, -1)
+      // 收银台活动（POS-1106）：赠品 / 换购那一份去掉这份；算好价的行减回购物车原行
+      if (removeExtraRow(dish)) return
+      this.cartListModel.add(dish.promoSource ?? dish, -1)
+    },
+    /**
+     * 收银台活动（POS-1106）：下单前等这一次报价（配了活动的店最多 7 秒，没配的不等）。
+     * 还有赠品没选：问一句，去选就不下单；离线时已经选好的换购 / 赠品按原价 / 0 元一起下单，也先问一句。
+     * 返回 false = 这次不下单
+     */
+    async confirmPosPromo (order) {
+      await awaitFresh(order)
+      const gift = unclaimedGift()
+      if (gift) {
+        const res = await Swal.fire({
+          title: this.$t('PosPromoRemindTitle'),
+          icon: 'info',
+          showDenyButton: true,
+          confirmButtonText: this.$t('PosPromoRemindChoose'),
+          denyButtonText: this.$t('PosPromoRemindOrder')
+        })
+        if (res.isConfirmed) {
+          posPromoState.picker = gift
+          return false
+        }
+        if (!res.isDenied) return false
+      }
+      if (offlineWithExtras()) {
+        const res = await Swal.fire({
+          title: this.$t('PosPromoOffline'),
+          html: this.$t('PosPromoOfflineExtras'),
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: this.$t('PosPromoOfflineExtrasOrder'),
+          cancelButtonText: this.$t('Cancel')
+        })
+        if (!res.isConfirmed) return false
+      }
+      return true
     },
     submitModification: function (_mod, dish, count, saveInfo) {
       if (this.count !== 1) {
@@ -1230,6 +1292,9 @@ export default {
       if (this.isSendingRequest) return
       this.isSendingRequest = true
       try {
+        if (!(await this.confirmPosPromo(order))) return
+        // 配了收银台活动：按报价算好的行提交（每行带减额和活动字段）；没配就是购物车原样
+        const payload = submitPayload(order)
         if (!this.haveOrder) {
           const password = await optionalAuthorizeAsync('', GlobalConfig.usePassword, null, false, this.id)
           // 用户取消了密码输入，直接终止下单
@@ -1260,7 +1325,7 @@ export default {
         await hillo.post(
           'Complex.php?op=addDishesToTable&_servantPw=' + GlobalConfig.defaultPassword,
           {
-            params: JSON.stringify(order),
+            params: JSON.stringify(payload),
             tableId: this.id,
             printingKitchenBon: print ? 1 : 0,
             // POS-659：显式传出单意图。下单 = 现在出（now），「下单不打印」= 永远不出（never）。
@@ -1762,6 +1827,25 @@ export default {
         ...normalActions
       ]
     },
+    /** 购物车显示：配了收银台活动就是算好价的行（POS-1106），没配就是购物车原样 */
+    cartDisplayModel () {
+      const rows = pricedRows(this.cartListModel.list)
+      if (!rows) return this.cartListModel
+      return {
+        list: rows,
+        total: () => rows.reduce((t, r) => t + r.realPrice * r.count, 0),
+        count: () => rows.reduce((t, r) => t + r.count, 0)
+      }
+    },
+    /** 收银台活动报价看的东西：每行的份数、规格、用餐方式、手动折扣，加上这一单的用餐方式 */
+    posPromoInput () {
+      return JSON.stringify([this.consumeTypeId, this.cartListModel.list.map(it => [
+        it.hash, it.count, it.overrideConsumeTypeId, it.tempDiscountStr, (it.apply ?? []).map(a => a.selectId)
+      ])])
+    },
+    menuBadgeKey () {
+      return [parseInt(this.realConsumeTypeId) === 2, promoLang(), this.id]
+    },
     cartListModelHash () {
       return this.cartListModel.list.map(it => {
         return {
@@ -1798,6 +1882,13 @@ export default {
       }
       await setCheckOutStatusInFirebase(val, this.deviceId, this.checkoutId)
     },
+    posPromoInput () {
+      if (this.cartListModel.list.length === 0) resetPosPromo()
+      else onCartChanged(this.cartListModel.list, this.consumeTypeId)
+    },
+    menuBadgeKey ([takeaway]) {
+      loadMenuBadges(takeaway)
+    },
     cartListModelHash (val) {
       const res = val.map(it => it.allInfo)
       this.setCartListByTableNameInFirebase(res)
@@ -1816,6 +1907,8 @@ export default {
       IKUtils.showError(e.message)
       console.log(e)
     }
+    // 收银台活动角标（POS-1106）：进点菜页读一次，5 分钟内同一种用餐方式和语言不重读
+    loadMenuBadges(parseInt(this.realConsumeTypeId) === 2)
 
     this.globalLoading = false
     this.currentMemberId = null
