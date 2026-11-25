@@ -481,7 +481,7 @@ const KNOWN_REASONS = ['STORE_CANNOT_ADJUST', 'PAYMENT_IN_PROGRESS', 'ORDER_HAS_
   'TILL_CHANGED', 'TABLE_UNAVAILABLE']
 
 /** 等着的一轮整批拒的原因（云端 queuedRefusal）各有一句文案；不认识的写通用的「客人手机上会看到原因」 */
-const KNOWN_REFUSALS = ['DINE_HOTPOT_ONE_ONLY', 'DINE_HOTPOT_INCOMPLETE']
+const KNOWN_REFUSALS = ['DINE_HOTPOT_ONE_ONLY', 'DINE_HOTPOT_INCOMPLETE', 'DINE_HOTPOT_ALREADY_ORDERED', 'DINE_HOTPOT_REQUIRED']
 const refusalKey = (prefix, refusal) => prefix + (KNOWN_REFUSALS.includes(refusal) ? refusal : 'OTHER')
 
 /** 这些错误说明请求已经没了：列表里马上去掉 */
