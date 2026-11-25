@@ -480,6 +480,10 @@ const KNOWN_REASONS = ['STORE_CANNOT_ADJUST', 'PAYMENT_IN_PROGRESS', 'ORDER_HAS_
   'ORDER_DOWN_PAYMENT', 'ORDER_SPLIT', 'STORE_UNREACHABLE', 'STORE_REFUSED', 'TYPE_UNKNOWN', 'ADJUST_PENDING', 'ORDER_MISMATCH',
   'TILL_CHANGED', 'TABLE_UNAVAILABLE']
 
+/** 等着的一轮整批拒的原因（云端 queuedRefusal）各有一句文案；不认识的写通用的「客人手机上会看到原因」 */
+const KNOWN_REFUSALS = ['DINE_HOTPOT_ONE_ONLY', 'DINE_HOTPOT_INCOMPLETE', 'DINE_HOTPOT_ALREADY_ORDERED', 'DINE_HOTPOT_REQUIRED']
+const refusalKey = (prefix, refusal) => prefix + (KNOWN_REFUSALS.includes(refusal) ? refusal : 'OTHER')
+
 /** 这些错误说明请求已经没了：列表里马上去掉 */
 const GONE_CODES = ['DINE_SESSION_NOT_FOUND', 'DINE_OPEN_CODE_EXPIRED', 'DINE_SESSION_CLOSED', 'DINE_OPEN_NOT_REQUESTED', 'DINE_REQUEST_ORDER_ENDED']
 
@@ -615,8 +619,7 @@ export default {
       return this.editable ? (this.pickedType?.queuedRefusal ?? null) : null
     },
     queuedRefusalKey () {
-      const known = ['DINE_HOTPOT_ONE_ONLY', 'DINE_HOTPOT_INCOMPLETE']
-      return 'DineOpenQueuedRefused_' + (known.includes(this.queuedRefusal) ? this.queuedRefusal : 'OTHER')
+      return refusalKey('DineOpenQueuedRefused_', this.queuedRefusal)
     },
     /**
      * 等着的一轮按确认人数的每轮上限送几道、退几道（POS-1039）：云端和送单截额度同一个算法算好（queuedOutcomes，含额外送的锅底），
@@ -664,10 +667,14 @@ export default {
       if (!r) return []
       const a = this.shownAdjust
       const lines = []
+      // 都照云端确认回包写，收银机不自己判断。整轮被自助规则拒的（refusal，POS-1092，比如两份锅底）算在 failedRounds 里，
+      // 那一轮写「已退回客人购物车」和原因，其余没送出的照旧写；老云端没有 refusal，照旧
+      const failed = r.refusal ? r.failedRounds - 1 : r.failedRounds
       if (r.sentRounds > 0) lines.push(this.$t('DineOpenResultSent', { count: r.sentRounds }))
+      if (r.refusal) lines.push(this.$t(refusalKey('DineOpenResultRefused_', r.refusal)))
       if (r.returnedDishes > 0) lines.push(this.$t('DineOpenResultReturned', { count: r.returnedDishes }))
       if (r.droppedDishes > 0) lines.push(this.$t('DineOpenResultDropped', { count: r.droppedDishes }))
-      if (r.failedRounds > 0) lines.push(this.$t('DineOpenResultFailed', { count: r.failedRounds }))
+      if (failed > 0) lines.push(this.$t('DineOpenResultFailed', { count: failed }))
       // 门店还在改单时等着的一轮改完再送，提示写在改单那一条里
       if (r.waitingRounds > 0 && a.status !== 'PENDING') lines.push(this.$t('DineOpenResultLater', { count: r.waitingRounds }))
       const reasons = [...new Set(Object.values(a.ignoredReasons ?? {}).map(x => KNOWN_REASONS.includes(x) ? x : 'STORE_REFUSED'))]
