@@ -47,6 +47,11 @@ export function findDish (code) {
   return dishesDictionary[code.toLowerCase()]
 }
 
+/** 按菜 id 找本机菜单里的菜（收银台活动的赠品 / 换购按云端给的 dishesId 找，POS-1106） */
+export function findDishById (id) {
+  return Object.values(dishesDictionary).find(d => String(d.dishId ?? d.id) === String(id))
+}
+
 export function processDishList (dishList) {
   if (dishList.length > 0) {
     dishList = DishDocker.StandardDishesListFactory().formatList(dishList).map(d => {

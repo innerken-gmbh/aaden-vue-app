@@ -46,6 +46,18 @@
           >
             # {{ dish.note }}
           </div>
+          <div
+              v-if="dish.promoOptedOut"
+              class="text-body-2 grey--text"
+          >
+            {{ $t('PosPromoCancelled') }}
+          </div>
+          <div
+              v-if="dish.promoUnsynced"
+              class="text-caption orange--text text--darken-2"
+          >
+            {{ $t('PosPromoDishUnsynced') }}
+          </div>
         </div>
         <v-spacer/>
         <div class="flex-shrink-0 text-body-1 d-flex">
@@ -90,10 +102,20 @@
         <template v-if="showEdit">
           <template>
             <v-icon
+                v-if="!dish.promoExtra"
                 class="mr-2"
                 large
                 @click.stop="editNote(dish)"
             > mdi-pencil-circle
+            </v-icon>
+            <v-icon
+                v-if="dish.promoToggle"
+                :title="dish.promoOptedOut ? $t('PosPromoRestore') : $t('PosPromoRemove')"
+                class="mr-2"
+                :color="dish.promoOptedOut ? 'orange darken-2' : ''"
+                large
+                @click.stop="dish.promoToggle()"
+            >{{ dish.promoOptedOut ? 'mdi-tag-plus' : 'mdi-tag-off' }}
             </v-icon>
           </template>
           <template v-if="showNumber">
@@ -104,6 +126,7 @@
             > mdi-minus-circle
             </v-icon>
             <v-icon
+                v-if="!dish.promoExtra"
                 large
                 @click.stop="changeDish(1)"
             > mdi-plus-circle

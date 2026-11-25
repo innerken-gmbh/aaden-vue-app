@@ -1,47 +1,15 @@
-import IKUtils from 'innerken-js-utils'
+import { CLOUD_BASE, cloudDeviceId, cloudRequest } from '@/api/cloudJson'
 import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
 
 /**
  * 扫码点餐 / 堂食版的「待开桌」（POS-275）：客人扫桌码后请服务员开桌，这里在收银机上确认或拒绝。
  * 直接调云端 /dine-in/device/{deviceId}/open-requests，开桌逻辑和服务员确认网页是同一套，服务员密码由云端拿门店核对。
- * 云端地址默认 cloud-v2.aaden.io，本机联调时可以用地址栏 ?CloudBase=http://localhost:8096 覆盖。
+ * 云端调用（地址、超时、错误码）在 cloudJson.js，和收银台活动报价共用。
  * 失败时抛出带 code / info 的 Error：code 是云端的错误码（data.errorCode），比如 DINE_WAITER_PW_WRONG。
  */
-const CLOUD_BASE = (IKUtils.getQueryString('CloudBase') || 'https://cloud-v2.aaden.io').replace(/\/$/, '')
-
-function fail (code, info, params = {}) {
-  return Object.assign(new Error(info || code), { code, info, params })
-}
-
-async function base () {
-  const deviceId = await getCurrentDeviceId()
-  if (!deviceId || deviceId === '-1') throw fail('NO_DEVICE_ID', 'no device id')
-  return `${CLOUD_BASE}/dine-in/device/${deviceId}/open-requests`
-}
-
 async function request (path, body) {
-  const url = (await base()) + path
   // 开桌要等云端写门店，最多等 40 秒；超时当连不上，不让确认框一直转圈挡住收银界面
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), 40 * 1000)
-  let res
-  let json
-  try {
-    res = await fetch(url, body
-      ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal }
-      : { method: 'GET', signal: controller.signal })
-    // 读正文也算在 40 秒里：只有响应头到了、正文一直不结束时，确认框会永远转圈，自动更新也一直被挡（POS-991）
-    json = await res.json().catch(e => {
-      if (controller.signal.aborted) throw e
-      return null
-    })
-  } catch (e) {
-    throw fail('CLOUD_UNREACHABLE', e?.message ?? '')
-  } finally {
-    clearTimeout(timer)
-  }
-  if (res.ok && json?.code === 200) return json.data
-  throw fail(json?.data?.errorCode ?? (res.ok ? 'CLOUD_ERROR' : `HTTP_${res.status}`), json?.message ?? '', json?.data?.params ?? {})
+  return cloudRequest(`${CLOUD_BASE}/dine-in/device/${await cloudDeviceId()}/open-requests${path}`, body)
 }
 
 /**
