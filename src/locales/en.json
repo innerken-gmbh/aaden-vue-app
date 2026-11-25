@@ -1059,5 +1059,6 @@
   "PosPromoNudgeGiftCount": "{count} more item(s) for 1 free item",
   "PosPromoNudgeAddonReady": "Add-on available now",
   "PosPromoOfflineExtras": "Chosen add-on items are charged at the regular price, free items at 0 €. Order anyway?",
-  "PosPromoOfflineExtrasOrder": "Order anyway"
+  "PosPromoOfflineExtrasOrder": "Order anyway",
+  "PosPromoDishUnsynced": "Cloud price differs – discount adjusted to the till price"
 }

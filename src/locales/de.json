@@ -762,5 +762,6 @@
   "PosPromoNudgeGiftCount": "Noch {count} Artikel, dann 1 Artikel gratis",
   "PosPromoNudgeAddonReady": "Zukauf jetzt möglich",
   "PosPromoOfflineExtras": "Gewählte Zukaufartikel werden zum normalen Preis, Gratisartikel für 0 € mitbestellt. Trotzdem bestellen?",
-  "PosPromoOfflineExtrasOrder": "Trotzdem bestellen"
+  "PosPromoOfflineExtrasOrder": "Trotzdem bestellen",
+  "PosPromoDishUnsynced": "Preis in der Cloud weicht ab – Rabatt an den Kassenpreis angepasst"
 }

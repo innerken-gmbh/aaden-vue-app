@@ -2,7 +2,8 @@ import Vue from 'vue'
 import IKUtils from 'innerken-js-utils'
 import i18n from '@/i18n'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import { findDish } from '@/oldjs/StaticModel'
+import { findDishById } from '@/oldjs/StaticModel'
+import { DishDocker } from 'aaden-base-model'
 import { posMenuPromotions, posQuote } from '@/api/posPromotions'
 import { cloudDeviceId } from '@/api/cloudJson'
 
@@ -53,6 +54,9 @@ let timer = null
 let running = null
 let skipUntil = 0
 let badgesKey = null
+/** 每次购物车变化加一：报价回来时不是最新的就丢掉，旧结果不会冲掉新的 */
+let quoteSeq = 0
+const dishFormatter = DishDocker.StandardDishesListFactory()
 let badgesAt = 0
 
 function bump () {
@@ -85,8 +89,10 @@ function selectionsOf (type) {
   return selections[type]
 }
 
+/** 四舍五入到分；加一点点余量，避开 2.675 * 100 = 267.49999… 这类浮点误差 */
 function round2 (v) {
-  return Math.round(Number(v) * 100) / 100
+  const n = Number(v) || 0
+  return Math.sign(n) * Math.round(Math.abs(n) * 100 + 1e-7) / 100
 }
 
 /** 减额写成两位小数的数字串（"15.00"），和云端给的 tempDiscountStr 一个格式 */
@@ -104,9 +110,37 @@ export function typeOf (line) {
   return parseInt(line.overrideConsumeTypeId ?? tableConsumeTypeId) === 2 ? TAKEAWAY : IN_HOUSE
 }
 
-/** 一份的单价 = 菜价 + 规格加价（含税） */
+function isFreeDish (line) {
+  return line.isFree === true || line.isFree === '1' || line.isFree === 1
+}
+
+/** 一份的单价 = 菜价 + 规格加价（含税）；免费菜的菜价按 0 算（只收规格加价），和 DishDocker、跑堂手机一样 */
 function unitPrice (line) {
-  return round2(Number(line.originPrice ?? line.price ?? 0) + Number(line.addPrice ?? 0))
+  const base = isFreeDish(line) ? 0 : Number(line.originPrice ?? line.price ?? 0)
+  return round2(base + Number(line.addPrice ?? 0))
+}
+
+/** 原价就是 0 的行（免费菜、0 元菜）：「隐藏免费菜」只藏这些 */
+export function originallyFree (row) {
+  return isFreeDish(row) || unitPrice(row) === 0
+}
+
+/**
+ * 按菜 id 从本机菜单找菜，规格照云端的 apply（[{groupId, selectId: [...]}]）挑出来，套成购物车行的样子
+ * （displayApply、addPrice 等由 DishDocker 算）。本机菜单没有这道菜返回 null
+ */
+function menuDish (dishId, apply = []) {
+  const dish = findDishById(dishId)
+  if (!dish) return null
+  const copy = IKUtils.deepCopy(dish)
+  copy.apply = (apply ?? []).map(a => {
+    const group = (copy.modInfo ?? []).find(m => String(m.id) === String(a.groupId))
+    if (!group) return null
+    const ids = [a.selectId].flat().filter(id => id != null).map(String).filter(id => (group.selectValue ?? []).includes(id))
+    return ids.length ? { ...group, groupId: group.id, selectId: ids } : null
+  }).filter(a => a)
+  copy.count = 1
+  return dishFormatter.formatList([copy])[0]
 }
 
 function isPfand (line) {
@@ -159,9 +193,11 @@ export function onCartChanged (lines, consumeTypeId) {
   lastLines = [...lines]
   tableConsumeTypeId = consumeTypeId ?? 1
   clearTimeout(timer)
+  const seq = ++quoteSeq
   running = new Promise(resolve => {
     timer = setTimeout(() => {
-      quote().catch(e => {
+      quote(seq).catch(e => {
+        if (seq !== quoteSeq) return
         console.warn('POS quote failed', e)
         results = {}
         posPromoState.offline = storeHasPosPromotions()
@@ -175,7 +211,7 @@ function requote () {
   onCartChanged(lastLines, tableConsumeTypeId)
 }
 
-async function quote () {
+async function quote (seq) {
   const groups = groupsOf(lastLines)
   if (Object.keys(groups).length === 0) {
     results = {}
@@ -196,6 +232,8 @@ async function quote () {
     }
     return { type, request, res }
   }))
+  // 等报价期间购物车又变了：这是旧请求的结果，丢掉（新的那次会自己算）
+  if (seq !== quoteSeq) return
   apply(answers)
 }
 
@@ -254,6 +292,7 @@ export function offlineWithExtras () {
 /** 新开一单 / 下单完 / 清空购物车：选择和报价都清掉 */
 export function resetPosPromo () {
   clearTimeout(timer)
+  quoteSeq++
   running = null
   results = {}
   selections = {}
@@ -278,7 +317,7 @@ function labelFor (labels, fallback) {
   return l && String(l).trim() ? l : (fallback ?? '')
 }
 
-function fieldsOf (type, row) {
+function fieldsOf (type, row, unsyncedIds = []) {
   const own = (row.promotions ?? []).find(p => p.key && p.key === row.instanceKey) ??
     (row.promotions ?? []).find(p => p.layer === 'ITEM') ??
     (row.promotions ?? []).find(p => p.kind === 'ORDER_ADD_ON' || p.kind === 'ORDER_GIFT')
@@ -291,15 +330,18 @@ function fieldsOf (type, row) {
       promotionLabel: row.promotionLabel ?? null,
       promotionLabels: row.promotionLabels ?? null,
       orderPromotions: (row.orderPromotions ?? []).length ? row.orderPromotions : null,
-      promotionRowKind: row.kind ?? null
+      // 只有参加了活动的行（有实例号）才写行类型，普通行不写，门店照原来按菜合并
+      promotionRowKind: row.instanceKey ? (row.kind ?? null) : null
     },
     display: {
       // 两组可能有同一个实例号（各自从 1 数）：组号带上用餐方式，分组显示不串
       promoGroupKey: groupKey ? type + '/' + groupKey : null,
       promoLabel: hasOwn ? labelFor(row.promotionLabels, row.label ?? own?.label) : null,
       promoOptedOut: row.passthrough === 'OPT_OUT',
-      promoUnsynced: !!row.priceUnsynced,
-      quoteType: type
+      // 云端镜像菜价和本机不一样：减额按本机价调整过，行上提示一下
+      promoUnsynced: !!row.priceUnsynced || unsyncedIds.includes(String(row.dishesId)),
+      quoteType: type,
+      extraKind: row.lineIds?.length ? null : (row.kind ?? null)
     }
   }
 }
@@ -319,15 +361,16 @@ function mapRows (type, result, lines) {
   const byId = {}
   lines.forEach(l => { byId[lineId(l)] = l })
   const addOns = selections[type]?.addOns ?? new Map()
+  const unsyncedIds = (result.unsyncedDishIds ?? []).map(String)
   const used = {}
   const out = []
   for (const row of result.rows ?? []) {
-    const { fields, display } = fieldsOf(type, row)
+    const { fields, display } = fieldsOf(type, row, unsyncedIds)
     if (!row.lineIds?.length) {
-      // 赠品那一份：购物车里没有原行，照云端给的菜和规格造一行（本机菜单里找不到这道菜就不显示这一份）
-      const dish = findDish(row.code || '')
+      // 赠品那一份：购物车里没有原行，按 dishesId 找菜、照云端的 apply 挑规格造一行（本机菜单里找不到这道菜就不显示这一份）
+      const dish = menuDish(row.dishesId, row.apply)
       if (!dish) continue
-      out.push(entry(dish, null, row.count, { ...fields, ...inheritFields(lines), apply: row.apply ?? [] }, display))
+      out.push(entry(dish, null, row.count, { ...fields, ...inheritFields(lines) }, display))
       continue
     }
     let left = row.count
@@ -340,7 +383,7 @@ function mapRows (type, result, lines) {
       if (take <= 0) continue
       out.push(source
         ? entry(source, source, take, fields, { ...display, sourceLineId: id })
-        : entry(extra.dish, null, take, { ...fields, ...inheritFields(lines) }, { ...display, sourceLineId: id }))
+        : entry(extra.dish, null, take, { ...fields, ...inheritFields(lines) }, { ...display, sourceLineId: id, extraKind: 'ADD_ON' }))
       used[id] = (used[id] ?? 0) + take
       left -= take
     }
@@ -362,21 +405,34 @@ function offlineEntries (lines) {
     const group = lines.filter(l => typeOf(l) === type)
     if (!group.length) return
     s.addOns.forEach((a, id) => {
-      extras.push(entry(a.dish, null, a.input.qty, { tempDiscountStr: '0.00', promotionRowKind: 'ADD_ON', ...inheritFields(group) }, { sourceLineId: id, quoteType: type }))
+      extras.push(entry(a.dish, null, a.input.qty, { tempDiscountStr: '0.00', ...inheritFields(group) }, { sourceLineId: id, quoteType: type, extraKind: 'ADD_ON' }))
     })
     s.gifts.forEach(g => {
-      const dish = findDish(g.code || '')
+      const dish = menuDish(g.dishId)
       if (!dish) return
       // 赠品按 0 元：每份减额就是它的单价
-      extras.push(entry(dish, null, 1, { tempDiscountStr: twoDecimals(unitPrice(dish)), promotionRowKind: 'GIFT', ...inheritFields(group) }, { quoteType: type, giftPromotionId: g.promotionId }))
+      extras.push(entry(dish, null, 1, { tempDiscountStr: twoDecimals(unitPrice(dish)), ...inheritFields(group) }, { quoteType: type, giftPromotionId: g.promotionId, extraKind: 'GIFT' }))
     })
   })
   return plainEntries(lines).concat(extras)
 }
 
-/** 算好价的各项；没配活动时为 null（照原来的方式） */
+/** 算好价的各项；没配活动时为 null（照原来的方式）。算的时候出错按离线（原价、0.00），不让购物车整个画不出来 */
 function pricedEntries (lines) {
   if (!storeHasPosPromotions()) return null
+  try {
+    return computeEntries(lines)
+  } catch (e) {
+    console.warn('POS priced rows failed', e)
+    try {
+      return plainEntries(lines)
+    } catch (e2) {
+      return null
+    }
+  }
+}
+
+function computeEntries (lines) {
   if (posPromoState.offline || !fresh(lines)) return offlineEntries(lines)
   const groups = groupsOf(lines)
   const out = []
@@ -398,33 +454,56 @@ export function pricedRows (lines) {
   posPromoState.version
   const entries = pricedEntries(lines)
   if (!entries) return null
-  return entries.map((e, i) => {
-    const row = Object.create(e.base)
-    const discount = Number(e.fields.tempDiscountStr ?? 0) || 0
-    Object.assign(row, e.fields, e.display, {
-      count: e.count,
-      sumCount: e.count,
-      tempDiscountMod: e.fields.tempDiscountStr != null ? -discount : (e.base.tempDiscountMod ?? 0),
-      realPrice: round2(unitPrice(e.base) - (e.fields.tempDiscountStr != null ? discount : -(e.base.tempDiscountMod ?? 0))),
-      promoRowKey: (e.display.sourceLineId ?? 'x') + ':' + i,
-      promoSource: e.source,
-      promoExtra: e.source == null
+  try {
+    return entries.map((e, i) => toRow(e, i))
+  } catch (e) {
+    console.warn('POS priced rows failed', e)
+    return null
+  }
+}
+
+function toRow (e, i) {
+  const row = Object.create(e.base)
+  const discount = Number(e.fields.tempDiscountStr ?? 0) || 0
+  const unit = unitPrice(e.base)
+  Object.assign(row, e.fields, e.display, {
+    count: e.count,
+    sumCount: e.count,
+    tempDiscountMod: e.fields.tempDiscountStr != null ? -discount : (e.base.tempDiscountMod ?? 0),
+    // 有减额时实收不会低于 0（比如赠品带了加价规格、减额按菜价算）
+    realPrice: e.fields.tempDiscountStr != null
+      ? (discount > 0 ? Math.max(0, round2(unit - discount)) : round2(unit - discount))
+      : round2(unit + Number(e.base.tempDiscountMod ?? 0)),
+    promoRowKey: (e.display.sourceLineId ?? 'x') + ':' + i,
+    promoSource: e.source,
+    promoExtra: e.source == null
+  })
+  if (e.source) {
+    Object.defineProperty(row, 'note', {
+      get: () => e.source.note,
+      set: v => { Vue.set(e.source, 'note', v) },
+      enumerable: true,
+      configurable: true
     })
-    if (e.source) {
-      Object.defineProperty(row, 'note', {
-        get: () => e.source.note,
-        set: v => { Vue.set(e.source, 'note', v) },
-        enumerable: true,
-        configurable: true
-      })
-      // 购物车原行参加了活动（或者取消了活动）：可以取消 / 恢复这一行的活动
-      if (row.promoGroupKey || row.promoOptedOut) row.promoToggle = () => toggleOptOut(row)
-    } else {
-      // 赠品 / 换购那一份：菜单里的菜，没有 change / edit；减一份、删掉都是去掉这份
-      row.haveMod = 0
-      row.change = n => { if (n < 0) removeExtraRow(row) }
-    }
-    return row
+    // 购物车原行参加了活动（或者取消了活动）：可以取消 / 恢复这一行的活动
+    if (row.promoGroupKey || row.promoOptedOut) row.promoToggle = () => toggleOptOut(row)
+  } else {
+    // 赠品 / 换购那一份：菜单里的菜，没有 change / edit；减一份、删掉都是去掉这份
+    row.haveMod = 0
+    row.change = n => { if (n < 0) removeExtraRow(row) }
+  }
+  return row
+}
+
+/** 客显（Firebase）用的行：算好价的行摊平成普通对象（折后价、赠品、换购都在），去掉函数和购物车原行的引用 */
+export function customerDisplayRows (rows) {
+  return rows.map(r => {
+    const flat = Object.assign({}, Object.getPrototypeOf(r), r)
+    delete flat.promoSource
+    delete flat.promoToggle
+    delete flat.change
+    delete flat.edit
+    return flat
   })
 }
 
@@ -456,7 +535,7 @@ export function toggleOptOut (row) {
 export function pick (target, choice) {
   const { type, promotion } = target
   const s = selectionsOf(type)
-  const dish = findDish(choice.code || '')
+  const dish = menuDish(choice.dishId)
   if (promotion.kind === 'ORDER_ADD_ON') {
     if (!dish) return
     const id = `A${promotion.promotionId}-${choice.dishId}`
@@ -490,12 +569,12 @@ export function removeExtraRow (row) {
   const type = row.quoteType
   const s = selections[type]
   if (!s) return false
-  if (row.promotionRowKind === 'ADD_ON') {
+  if (row.extraKind === 'ADD_ON') {
     if (!row.sourceLineId || !s.addOns.delete(row.sourceLineId)) return false
     requote()
     return true
   }
-  if (row.promotionRowKind === 'GIFT') {
+  if (row.extraKind === 'GIFT') {
     const pid = row.giftPromotionId ??
       results[type]?.result?.promotions?.find(p => p.instanceKey === row.promotionKey)?.promotionId ??
       [...s.gifts.values()].find(g => String(g.dishId) === String(row.id ?? row.dishId))?.promotionId

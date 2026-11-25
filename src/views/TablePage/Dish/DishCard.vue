@@ -52,6 +52,12 @@
           >
             {{ $t('PosPromoCancelled') }}
           </div>
+          <div
+              v-if="dish.promoUnsynced"
+              class="text-caption orange--text text--darken-2"
+          >
+            {{ $t('PosPromoDishUnsynced') }}
+          </div>
         </div>
         <v-spacer/>
         <div class="flex-shrink-0 text-body-1 d-flex">

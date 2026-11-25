@@ -766,5 +766,6 @@
   "PosPromoNudgeGiftCount": "再买 {count} 件就送 1 件",
   "PosPromoNudgeAddonReady": "现在可以换购",
   "PosPromoOfflineExtras": "已经选好的换购按原价收、赠品按 0 元送出，一起下单？",
-  "PosPromoOfflineExtrasOrder": "照样下单"
+  "PosPromoOfflineExtrasOrder": "照样下单",
+  "PosPromoDishUnsynced": "云端菜价和本机不一致，减额已按本机价调整"
 }

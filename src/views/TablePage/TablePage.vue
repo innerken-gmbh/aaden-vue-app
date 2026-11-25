@@ -724,6 +724,7 @@ import LoadingProvider from '@/views/Widget/LoadingProvider.vue'
 import PosPromoPanel from '@/views/TablePage/Dish/PosPromoPanel.vue'
 import {
   awaitFresh,
+  customerDisplayRows,
   loadMenuBadges,
   offlineWithExtras,
   onCartChanged,
@@ -952,7 +953,7 @@ export default {
           const noDiscount = result.filter((r) => r.code !== '-1')
           // 收银台活动（POS-1106）：不同活动（或同一活动的不同角色）的行不能按菜合并，按活动分开
           noDiscount.forEach(d => {
-            if (d.promotionKey || d.promotionRowKind) d.uid = (d.promotionKey ?? '') + '|' + (d.promotionRowKind ?? '')
+            if (d.promotionKey) d.uid = d.promotionKey + '|' + (d.promotionRowKind ?? '')
           })
           this.orderListModel.loadTTDishList(noDiscount)
           if (discountInfo.length > 0) {
@@ -1846,6 +1847,16 @@ export default {
     menuBadgeKey () {
       return [parseInt(this.realConsumeTypeId) === 2, promoLang(), this.id]
     },
+    /**
+     * 客显同步的购物车：配了收银台活动就同步算好价的行（折后价、赠品、换购，离线时是原价），和快消版 SecondScreenCart 一样；
+     * 没配就是购物车原样（POS-1106）
+     */
+    customerDisplayCart () {
+      const model = this.cartDisplayModel
+      return model === this.cartListModel
+        ? this.cartListModelHash.map(it => it.allInfo)
+        : customerDisplayRows(model.list)
+    },
     cartListModelHash () {
       return this.cartListModel.list.map(it => {
         return {
@@ -1889,9 +1900,8 @@ export default {
     menuBadgeKey ([takeaway]) {
       loadMenuBadges(takeaway)
     },
-    cartListModelHash (val) {
-      const res = val.map(it => it.allInfo)
-      this.setCartListByTableNameInFirebase(res)
+    customerDisplayCart (val) {
+      this.setCartListByTableNameInFirebase(val)
     },
     orderListModelList (val) {
       this.setOrderListByTableNameInFirebase(val)

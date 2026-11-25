@@ -107,7 +107,7 @@ import i18n from '@/i18n'
 import IKUtils from 'innerken-js-utils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { sumBy } from 'lodash'
-import { groupSaved, promoGroupOf } from '@/views/TablePage/posPromo'
+import { groupSaved, originallyFree, promoGroupOf } from '@/views/TablePage/posPromo'
 
 export default {
   name: 'DishCardList',
@@ -182,6 +182,13 @@ export default {
     }
   },
   methods: {
+    /**
+     * 「隐藏免费菜」藏不藏这一行：原来实收为 0 的照旧藏；收银台活动的行（带 promotionKey 的赠品、被活动减到 0 元的行）
+     * 只要原价不是 0 就照常显示，这是客人拿到的优惠（POS-1106）
+     */
+    paidOrPromo (it) {
+      return it.realPrice !== 0 || (!!it.promotionKey && !originallyFree(it))
+    },
     editFreeDishDisplay () {
       GlobalConfig.showFreeDish = this.onlyPaid === '0' ? '1' : '0'
     },
@@ -220,12 +227,11 @@ export default {
     shouldDisplaySourceMarks: function () {
       return this.sourceMarks.length > 1
     },
-    // 免费菜过滤（onlyPaid）不藏收银台活动的行：赠品、减到 0 元的行（POS-1106）
     sliceDishBySourceMarks () {
       const list = [...this.dishListModel.list].filter((it) => {
         return (
           (this.activeSourceMark === '' || it.sourceMark === this.activeSourceMark) &&
-            (this.onlyPaid === '1' || it.realPrice !== 0 || it.promotionRowKind)
+            (this.onlyPaid === '1' || this.paidOrPromo(it))
         )
       })
       if (this.reverse) {
@@ -241,7 +247,7 @@ export default {
       const list = [...this.dishListModel.list].filter((it) => {
         return (
           (this.activeSourceMark === '' || it.sourceMark !== this.activeSourceMark) &&
-            (this.onlyPaid === '1' || it.realPrice !== 0 || it.promotionRowKind)
+            (this.onlyPaid === '1' || this.paidOrPromo(it))
         )
       })
       if (this.reverse) {
