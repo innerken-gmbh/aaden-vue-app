@@ -2,7 +2,7 @@ import Vue from 'vue'
 import IKUtils from 'innerken-js-utils'
 import i18n from '@/i18n'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
-import { findDishById } from '@/oldjs/StaticModel'
+import { dishIdOf, findDishById } from '@/oldjs/StaticModel'
 import { DishDocker } from 'aaden-base-model'
 import { posMenuPromotions, posQuote } from '@/api/posPromotions'
 import { cloudDeviceId } from '@/api/cloudJson'
@@ -171,7 +171,7 @@ function buildRequest (type, lines) {
     lang: promoLang(),
     lines: lines.map(l => ({
       lineId: lineId(l),
-      dishId: String(l.id ?? l.dishId ?? l.dishesId),
+      dishId: String(dishIdOf(l)),
       qty: l.count,
       attributeIds: (l.apply ?? []).flatMap(a => (a.selectId ?? []).map(String)),
       unitPrice: unitPrice(l)
@@ -405,13 +405,14 @@ function offlineEntries (lines) {
     const group = lines.filter(l => typeOf(l) === type)
     if (!group.length) return
     s.addOns.forEach((a, id) => {
-      extras.push(entry(a.dish, null, a.input.qty, { tempDiscountStr: '0.00', ...inheritFields(group) }, { sourceLineId: id, quoteType: type, extraKind: 'ADD_ON' }))
+      extras.push(entry(a.dish, null, a.input.qty, { tempDiscountStr: '0.00', promotionRowKind: 'ADD_ON', ...inheritFields(group) }, { sourceLineId: id, quoteType: type, extraKind: 'ADD_ON' }))
     })
     s.gifts.forEach(g => {
       const dish = menuDish(g.dishId)
       if (!dish) return
       // 赠品按 0 元：每份减额就是它的单价
-      extras.push(entry(dish, null, 1, { tempDiscountStr: twoDecimals(unitPrice(dish)), ...inheritFields(group) }, { quoteType: type, giftPromotionId: g.promotionId, extraKind: 'GIFT' }))
+      // 离线补交的赠品 / 换购没有实例号，也写上行类型：门店和「隐藏免费菜」都认得出这是活动的行（#88 复审）
+      extras.push(entry(dish, null, 1, { tempDiscountStr: twoDecimals(unitPrice(dish)), promotionRowKind: 'GIFT', ...inheritFields(group) }, { quoteType: type, giftPromotionId: g.promotionId, extraKind: 'GIFT' }))
     })
   })
   return plainEntries(lines).concat(extras)
@@ -577,7 +578,7 @@ export function removeExtraRow (row) {
   if (row.extraKind === 'GIFT') {
     const pid = row.giftPromotionId ??
       results[type]?.result?.promotions?.find(p => p.instanceKey === row.promotionKey)?.promotionId ??
-      [...s.gifts.values()].find(g => String(g.dishId) === String(row.id ?? row.dishId))?.promotionId
+      [...s.gifts.values()].find(g => String(g.dishId) === String(dishIdOf(row)))?.promotionId
     if (pid == null) return false
     s.gifts.delete(pid)
     s.declinedGifts.add(pid)

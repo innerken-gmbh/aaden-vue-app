@@ -183,11 +183,11 @@ export default {
   },
   methods: {
     /**
-     * 「隐藏免费菜」藏不藏这一行：原来实收为 0 的照旧藏；收银台活动的行（带 promotionKey 的赠品、被活动减到 0 元的行）
-     * 只要原价不是 0 就照常显示，这是客人拿到的优惠（POS-1106）
+     * 「隐藏免费菜」藏不藏这一行：原来实收为 0 的照旧藏；收银台活动的行（带 promotionKey 的赠品、被活动减到 0 元的行，
+     * 离线补交的赠品 / 换购）只要原价不是 0 就照常显示，这是客人拿到的优惠（POS-1106）
      */
     paidOrPromo (it) {
-      return it.realPrice !== 0 || (!!it.promotionKey && !originallyFree(it))
+      return it.realPrice !== 0 || (!!(it.promotionKey || it.promotionRowKind) && !originallyFree(it))
     },
     editFreeDishDisplay () {
       GlobalConfig.showFreeDish = this.onlyPaid === '0' ? '1' : '0'

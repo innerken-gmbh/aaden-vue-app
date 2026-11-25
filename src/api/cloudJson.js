@@ -4,13 +4,14 @@ import { getCurrentDeviceId } from '@/api/VIPCard/VIPCloudApi'
 /**
  * 直接调云端 JSON 接口（扫码开桌请求 POS-275、收银台活动报价 POS-1106 共用）。
  * 云端地址默认 cloud-v2.aaden.io，本机联调时可以用地址栏 ?CloudBase=http://localhost:8096 覆盖。
- * 回包 {code:200, data}；失败时抛出带 code / info / params 的 Error：code 是云端的错误码（data.errorCode），
+ * 回包 {code:200, data}；失败时抛出带 code / info / params / data 的 Error：code 是云端的错误码（data.errorCode），
+ * data 是云端失败回包的 data 原样（待开桌接口带 messageKey / gone / refreshList，POS-1075），
  * 没有错误码时是 HTTP_<状态>，连不上、超时是 CLOUD_UNREACHABLE
  */
 export const CLOUD_BASE = (IKUtils.getQueryString('CloudBase') || 'https://cloud-v2.aaden.io').replace(/\/$/, '')
 
-export function cloudFail (code, info, params = {}) {
-  return Object.assign(new Error(info || code), { code, info, params })
+export function cloudFail (code, info, params = {}, data = null) {
+  return Object.assign(new Error(info || code), { code, info, params, data })
 }
 
 /** 这台收银机的设备号；拿不到抛 NO_DEVICE_ID */
@@ -43,5 +44,5 @@ export async function cloudRequest (url, body = null, { timeoutMs = 40 * 1000 } 
     clearTimeout(timer)
   }
   if (res.ok && json?.code === 200) return json.data
-  throw cloudFail(json?.data?.errorCode ?? (res.ok ? 'CLOUD_ERROR' : `HTTP_${res.status}`), json?.message ?? '', json?.data?.params ?? {})
+  throw cloudFail(json?.data?.errorCode ?? (res.ok ? 'CLOUD_ERROR' : `HTTP_${res.status}`), json?.message ?? '', json?.data?.params ?? {}, json?.data ?? null)
 }
