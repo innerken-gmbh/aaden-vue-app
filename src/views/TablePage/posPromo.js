@@ -696,6 +696,15 @@ export function promoGroupOf (row) {
   return { key, label: labelFor(parseJson(row.promotionLabels), row.promotionLabel) || row.promotionLabel || '' }
 }
 
+/**
+ * 已下的单里这一行是不是活动行（POS-1131）：带活动实例号 / 活动名 / 行类型（套餐、赠品、换购等），或者分到了满减。
+ * 这些行的减额是云端报价算好的，手动单菜打折会把它整个换掉（赠品从 0 变成收钱），所以不让再单独打折
+ */
+export function isPromoRow (row) {
+  if (!row) return false
+  return !!(row.promotionKey || row.promotionRowKind || row.promotionLabel || (parseJson(row.orderPromotions) ?? []).length)
+}
+
 /** 这一行分到的满减（每份），给分组省了多少时减掉 */
 function orderPart (row) {
   return (parseJson(row.orderPromotions) ?? []).reduce((a, op) => a + (Number(op.amount) || 0), 0)

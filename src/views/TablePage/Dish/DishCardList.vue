@@ -52,9 +52,11 @@
           <div
               v-if="promoLayout.headers[index]"
               :key="'promo' + title + promoLayout.headers[index].key"
-              class="mt-2 px-2 py-1 rounded orange lighten-5 text-body-2 d-flex align-center"
+              :class="promoLayout.headers[index].plain ? 'grey lighten-3' : 'orange lighten-5'"
+              class="mt-2 px-2 py-1 rounded text-body-2 d-flex align-center"
           >
             <v-icon
+                v-if="!promoLayout.headers[index].plain"
                 class="mr-1"
                 small
             >mdi-tag
@@ -268,8 +270,12 @@ export default {
       })
       const out = []
       const headers = {}
-      slots.forEach(slot => {
+      slots.forEach((slot, i) => {
         if (slot.row) {
+          // 没活动的行紧跟在活动组后面：加一条同级的小标题隔开，不然看起来像同一组（POS-1133）
+          if (slots[i - 1]?.group) {
+            headers[out.length] = { key: 'plain' + out.length, label: i18n.t('PosPromoNoPromotion'), saved: 0, plain: true }
+          }
           out.push(slot.row)
         } else {
           headers[out.length] = { key: slot.group.key, label: slot.group.label, saved: groupSaved(slot.group.rows) }

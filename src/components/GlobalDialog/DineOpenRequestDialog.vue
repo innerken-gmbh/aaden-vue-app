@@ -387,7 +387,7 @@
             >{{ $t('DineOpenOverQuota', { people: partyCount, send: queuedOutcome.send, back: queuedOutcome.back }) }}
             </v-alert>
             <v-alert
-                v-if="editable && hasBuffet && form.mode !== 'BUFFET' && queuedLines.length > 0"
+                v-if="editable && hasBuffet && form.mode !== 'BUFFET' && guestChoice.mode === 'BUFFET' && queuedLines.length > 0"
                 class="mb-3"
                 dense
                 text
@@ -642,7 +642,9 @@ export default {
      */
     queuedOutcome () {
       if (!this.editable || !this.pickedType || this.freePerRound <= 0) return null
-      return (this.pickedType.queuedOutcomes ?? []).find(o => o.limit === this.freePerRound) ?? null
+      const outcome = (this.pickedType.queuedOutcomes ?? []).find(o => o.limit === this.freePerRound) ?? null
+      // 一道都不退（back=0）就不用提示（POS-1133）
+      return outcome && Number(outcome.back) > 0 ? outcome : null
     },
     canOpen () {
       if (!this.detail) return false

@@ -15,7 +15,7 @@
       <v-card-text>
         <v-text-field
             :label="$t('AmountOrPercentage')"
-            :messages="$t('CashDiscountUseTips')"
+            :messages="inputTips"
             v-model="localDiscountStr"
         ></v-text-field>
       </v-card-text>
@@ -79,6 +79,10 @@ export default {
       default: false
     },
     discountRatio: {
+      default: 0
+    },
+    // 选中的行里有几行是活动行：单菜打折不打它们（POS-1131），框里提示一句
+    skippedPromoCount: {
       default: 0
     }
   },
@@ -184,6 +188,8 @@ export default {
     },
     async sendDiscount (discountStr) {
       if (this.useDishesDiscount) {
+        // 没有可以打折的行（选中的全是活动行）就不发请求
+        if (this.dishesItems.length === 0) return
         const res = await hillo.post('Dishes.php?op=setDiscountToDishes', {
           discountStr: discountStr,
           orderId: this.orderId,
@@ -213,6 +219,12 @@ export default {
     }
   },
   computed: {
+    /** 输入框下面的小字：选中的行里有活动行时写「活动价的菜已跳过」（POS-1131），不另占一行，小屏上键盘不被挤下去 */
+    inputTips () {
+      return this.useDishesDiscount && this.skippedPromoCount > 0
+        ? this.$t('PosPromoDishDiscountSkipped')
+        : this.$t('CashDiscountUseTips')
+    },
     realShow: {
       get: function () {
         return this.discountModelShow

@@ -787,10 +787,11 @@ export default {
       }, 1000 * 10)
     },
     photoPath (item) {
-      return location.protocol + '//' + GlobalConfig.Base + '/Resource/servantImg/' + item
+      return location.protocol + '//' + GlobalConfig.Base + '/Resource/servantImg/' + (item ?? '')
     },
+    /** 有没有照片文件名（带扩展名）。门店里没传过照片的服务员这一列是 NULL，按没有照片用默认头像（POS-1132） */
     checkStaffPhoto (item) {
-      return item.split('.')[1]
+      return typeof item === 'string' && !!item.split('.')[1]
     },
     async changeWorkStatus (item) {
       this.servant = item
