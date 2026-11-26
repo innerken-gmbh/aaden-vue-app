@@ -767,5 +767,5 @@
   "PosPromoDishUnsynced": "Preis in der Cloud weicht ab – Rabatt an den Kassenpreis angepasst",
   "PosPromoNoDishDiscount": "Artikel mit Aktionspreis können nicht zusätzlich rabattiert werden",
   "PosPromoDishDiscountSkipped": "Artikel mit Aktionspreis werden übersprungen; der Rabatt gilt nur für die übrigen Artikel",
-  "PosPromoNoPromotion": "Ohne Aktion"
+  "PosPromoNoPromotion": "Keine Aktion"
 }

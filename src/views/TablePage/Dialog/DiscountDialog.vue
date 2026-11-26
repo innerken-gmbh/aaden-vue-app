@@ -15,6 +15,7 @@
       <v-card-text>
         <v-text-field
             :label="$t('AmountOrPercentage')"
+            :error-count="inputTips.length"
             :messages="inputTips"
             v-model="localDiscountStr"
         ></v-text-field>
@@ -219,11 +220,14 @@ export default {
     }
   },
   computed: {
-    /** 输入框下面的小字：选中的行里有活动行时写「活动价的菜已跳过」（POS-1131），不另占一行，小屏上键盘不被挤下去 */
+    /**
+     * 输入框下面的小字：原来的用法提示一直在；选中的行里有活动行时再加一行「活动价的菜已跳过」（POS-1131）。
+     * 两行都放在输入框自己的提示区里（error-count 跟着行数，不然 Vuetify 只显示第一条）
+     */
     inputTips () {
-      return this.useDishesDiscount && this.skippedPromoCount > 0
-        ? this.$t('PosPromoDishDiscountSkipped')
-        : this.$t('CashDiscountUseTips')
+      const tips = [this.$t('CashDiscountUseTips')]
+      if (this.useDishesDiscount && this.skippedPromoCount > 0) tips.push(this.$t('PosPromoDishDiscountSkipped'))
+      return tips
     },
     realShow: {
       get: function () {

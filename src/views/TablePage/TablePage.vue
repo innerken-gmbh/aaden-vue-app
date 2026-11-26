@@ -734,7 +734,7 @@ import {
   promoLang,
   removeExtraRow,
   resetPosPromo,
-  isPromoRow,
+  splitByPromo,
   submitPayload,
   unclaimedGift
 } from '@/views/TablePage/posPromo'
@@ -1089,8 +1089,8 @@ export default {
     },
     dishesSetDiscount: async function () {
       // 活动行（套餐、赠品、换购、分到满减的行）不能再单独打折（POS-1131）：全是活动行就不开折扣框
-      const list = this.splitOrderListModel.list
-      if (list.length > 0 && list.every(isPromoRow)) {
+      const { plain, promo } = this.selectedByPromo
+      if (promo.length > 0 && plain.length === 0) {
         await Swal.fire({ title: this.$t('PosPromoNoDishDiscount'), icon: 'info' })
         return
       }
@@ -1695,13 +1695,16 @@ export default {
     showDiscountBtn () {
       return this.Config.hideDiscountBtn !== '1'
     },
-    /** 单菜打折只打在没有活动的行上（POS-1131）；整单打折照旧把选中的行原样传给折扣框 */
+    /** 选中的行按能不能单菜打折分开（POS-1131，口径见 posPromo 的 isPromoRow）：{ plain, promo } */
+    selectedByPromo () {
+      return splitByPromo(this.splitOrderListModel.list)
+    },
+    /** 单菜打折只打在没有活动的行上；整单打折照旧把选中的行原样传给折扣框 */
     discountDishes () {
-      const list = this.splitOrderListModel.list
-      return this.useDishesDiscount ? list.filter(it => !isPromoRow(it)) : list
+      return this.useDishesDiscount ? this.selectedByPromo.plain : this.splitOrderListModel.list
     },
     discountSkippedPromoCount () {
-      return this.useDishesDiscount ? this.splitOrderListModel.list.filter(isPromoRow).length : 0
+      return this.useDishesDiscount ? this.selectedByPromo.promo.length : 0
     },
     menu () {
       const menu = [{

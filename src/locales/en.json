@@ -1064,5 +1064,5 @@
   "PosPromoDishUnsynced": "Cloud price differs – discount adjusted to the till price",
   "PosPromoNoDishDiscount": "Items at a promotion price cannot be discounted again",
   "PosPromoDishDiscountSkipped": "Items at a promotion price are skipped; the discount applies to the other items only",
-  "PosPromoNoPromotion": "No promotion"
+  "PosPromoNoPromotion": "Not in a promotion"
 }

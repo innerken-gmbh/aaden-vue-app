@@ -685,24 +685,72 @@ function parseJson (v) {
   }
 }
 
-/** 这一行的活动分组：{ key, label }；没参加活动、取消了活动为 null。购物车的算好价的行和已下的单（门店读回来的行）都认 */
-export function promoGroupOf (row) {
-  if (row.promoOptedOut) return null
-  if (row.promoGroupKey) return row.promoLabel ? { key: row.promoGroupKey, label: row.promoLabel } : null
-  const own = row.promotionKey || (row.promotionLabel ? 'label:' + row.promotionLabel : null)
-  if (!own) return null
-  // 实例号每次报价都从 1 数，外带和堂食各报各的：分组带上这一行的用餐方式，两组同号的不并在一起
-  const key = (row.overrideConsumeTypeId ?? '') + '/' + own
-  return { key, label: labelFor(parseJson(row.promotionLabels), row.promotionLabel) || row.promotionLabel || '' }
+// ---------------------------------------------------------------- 活动行判定（已下的单 + 购物车共用，POS-1131）
+//
+// 口径和门店 aaden-php-backend 的 promotionLineBlocksManualDiscount 一样（POS-1136）：
+// 活动行 = 带活动实例号 promotionKey，或带活动名 promotionLabel（限时折扣没有实例号，只有活动名和减额），
+// 或行类型是赠品 / 换购（GIFT / ADD_ON），或分到了满减（orderPromotions 非空，待定口径，见 ORDER_SHARE_IS_PROMO）。
+// 只有行类型 PAID、别的都空的是普通行：云端报价每一行都带 kind，快消版 3.0 和跑堂手机对普通行也提交 PAID，门店照存。
+// 分组（promoGroupOf）和能不能单菜打折（isPromoRow）是两个问题，都从下面这几个函数来：
+// 「未参加活动」小标题下只会有 isPromoRow 为否的行（DishCardList.promoLayout）
+
+/** 待定口径：只分到满减的行算不算活动行（挡不挡单菜打折）。产品还没定，现在按算；定了只改这里（门店那边改 $orderPromotionsCounts） */
+export const ORDER_SHARE_IS_PROMO = true
+
+function filled (v) {
+  return v != null && String(v).trim() !== ''
+}
+
+/** 赠品 / 换购那一份（行类型 GIFT / ADD_ON；离线补交的这种行没有实例号） */
+export function isExtraPromoRow (row) {
+  const kind = String(row?.promotionRowKind ?? '').trim().toUpperCase()
+  return kind === 'GIFT' || kind === 'ADD_ON'
+}
+
+/** 这一行自己参加了活动：有实例号、活动名，或者是赠品 / 换购。只有行类型 PAID 不算 */
+export function hasOwnPromotion (row) {
+  return !!row && (filled(row.promotionKey) || filled(row.promotionLabel) || isExtraPromoRow(row))
+}
+
+/** 这一行分到的满减（每份）：[{ key, kind, label, labels, amount }]，没有是 [] */
+function orderSharesOf (row) {
+  const v = parseJson(row?.orderPromotions)
+  return Array.isArray(v) ? v : []
 }
 
 /**
- * 已下的单里这一行是不是活动行（POS-1131）：带活动实例号 / 活动名 / 行类型（套餐、赠品、换购等），或者分到了满减。
- * 这些行的减额是云端报价算好的，手动单菜打折会把它整个换掉（赠品从 0 变成收钱），所以不让再单独打折
+ * 已下的单里这一行是不是活动行（POS-1131）：这些行的减额是云端报价算好的，手动单菜打折会把它整个换掉（赠品从 0 变成收钱），
+ * 所以不让再单独打折
  */
 export function isPromoRow (row) {
-  if (!row) return false
-  return !!(row.promotionKey || row.promotionRowKind || row.promotionLabel || (parseJson(row.orderPromotions) ?? []).length)
+  return hasOwnPromotion(row) || (ORDER_SHARE_IS_PROMO && orderSharesOf(row).length > 0)
+}
+
+/** 选中的行按能不能单菜打折分开：{ plain, promo } */
+export function splitByPromo (rows) {
+  const plain = []
+  const promo = []
+  ;(rows ?? []).forEach(r => (isPromoRow(r) ? promo : plain).push(r))
+  return { plain, promo }
+}
+
+/**
+ * 这一行的活动分组：{ key, label }；没参加活动、取消了活动为 null。购物车的算好价的行和已下的单（门店读回来的行）都认。
+ * 自己没参加活动、只分到满减的行归到满减那一组（组名是满减的活动名，省了多少照旧在最下面的满减合计里显示），
+ * 不放在「未参加活动」下面
+ */
+export function promoGroupOf (row) {
+  if (row.promoOptedOut) return null
+  // 实例号每次报价都从 1 数，外带和堂食各报各的：分组带上这一行的用餐方式，两组同号的不并在一起
+  const ct = (row.overrideConsumeTypeId ?? '') + '/'
+  if (row.promoGroupKey && row.promoLabel) return { key: row.promoGroupKey, label: row.promoLabel }
+  if (!row.promoGroupKey) {
+    const own = row.promotionKey || (row.promotionLabel ? 'label:' + row.promotionLabel : null)
+    if (own) return { key: ct + own, label: labelFor(parseJson(row.promotionLabels), row.promotionLabel) || row.promotionLabel || '' }
+  }
+  const share = orderSharesOf(row).find(op => op && (op.key || op.label))
+  if (share) return { key: ct + 'order:' + (share.key ?? share.label), label: labelFor(share.labels, share.label) || share.label || '' }
+  return null
 }
 
 /** 这一行分到的满减（每份），给分组省了多少时减掉 */
