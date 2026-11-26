@@ -504,7 +504,8 @@
         :id="id"
         ref="discount"
         :discount-model-show="discountModelShow"
-        :dishesItems="splitOrderListModel.list"
+        :dishesItems="discountDishes"
+        :skipped-promo-count="discountSkippedPromoCount"
         :initial-u-i="initialUI"
         :discount-ratio="discountRatio"
         :orderId="currentOrderId"
@@ -733,6 +734,7 @@ import {
   promoLang,
   removeExtraRow,
   resetPosPromo,
+  splitByPromo,
   submitPayload,
   unclaimedGift
 } from '@/views/TablePage/posPromo'
@@ -1086,6 +1088,12 @@ export default {
       }
     },
     dishesSetDiscount: async function () {
+      // 活动行（套餐、赠品、换购、分到满减的行）不能再单独打折（POS-1131）：全是活动行就不开折扣框
+      const { plain, promo } = this.selectedByPromo
+      if (promo.length > 0 && plain.length === 0) {
+        await Swal.fire({ title: this.$t('PosPromoNoDishDiscount'), icon: 'info' })
+        return
+      }
       const password = await optionalAuthorizeAsync('', GlobalConfig.discountWithPassword === '1')
       if (password == null) return
       this.discountModelShow = true
@@ -1686,6 +1694,17 @@ export default {
     ...mapState(['dineOpenDoneSeq']),
     showDiscountBtn () {
       return this.Config.hideDiscountBtn !== '1'
+    },
+    /** 选中的行按能不能单菜打折分开（POS-1131，口径见 posPromo 的 isPromoRow）：{ plain, promo } */
+    selectedByPromo () {
+      return splitByPromo(this.splitOrderListModel.list)
+    },
+    /** 单菜打折只打在没有活动的行上；整单打折照旧把选中的行原样传给折扣框 */
+    discountDishes () {
+      return this.useDishesDiscount ? this.selectedByPromo.plain : this.splitOrderListModel.list
+    },
+    discountSkippedPromoCount () {
+      return this.useDishesDiscount ? this.selectedByPromo.promo.length : 0
     },
     menu () {
       const menu = [{

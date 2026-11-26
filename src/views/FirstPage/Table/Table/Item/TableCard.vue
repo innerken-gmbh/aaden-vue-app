@@ -90,12 +90,14 @@
             :class="['onlinePayStrip', 'onlinePayStrip-' + onlinePayment.state]"
         >
           <v-icon
-              class="mr-1"
+              class="onlinePayIcon"
               size="14"
               color="white"
           >mdi-cellphone-nfc
           </v-icon>
-          <span class="text-no-wrap text-truncate">{{ onlinePaymentBadge(onlinePayment) }}</span>
+          <!-- 金额在前、从右往左排：放不下时状态文字整个折到下一行被裁掉，金额始终完整（POS-1133） -->
+          <span class="onlinePayAmount">{{ onlinePayment.amount | priceDisplay }}</span>
+          <span class="onlinePayLabel">{{ onlinePaymentBadge(onlinePayment) }}</span>
         </div>
         <template v-if="displayReservations.length>0">
           <v-card
@@ -358,14 +360,37 @@ export default {
 
 /* 线上付款中（POS-1067）：整条宽，放在桌卡底部，和预约条一样不挡人数和角标 */
 .onlinePayStrip {
+  position: relative;
   display: flex;
-  align-items: center;
+  flex-flow: row-reverse wrap;
+  align-content: flex-start;
   width: 100%;
-  padding: 2px 6px;
+  height: 21px;
+  overflow: hidden;
+  padding: 2px 6px 2px 24px;
   font-size: 11px;
+  line-height: 17px;
   font-weight: 900;
+  white-space: nowrap;
   color: white;
   background: #5e35b1;
+}
+
+.onlinePayIcon {
+  position: absolute;
+  left: 6px;
+  top: 3px;
+}
+
+/* 小桌卡上一行放不下时只留图标和金额（POS-1133）；状态还能从底色看出来 */
+.onlinePayAmount {
+  flex: 0 0 auto;
+}
+
+.onlinePayLabel {
+  flex: 1 0 auto;
+  padding-right: 4px;
+  text-align: left;
 }
 
 .onlinePayStrip-paid {

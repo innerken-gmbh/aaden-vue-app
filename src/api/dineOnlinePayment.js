@@ -21,9 +21,9 @@ const TEXT = {
   review: { badge: 'DineOnlineReviewBadge', title: 'DineOnlineReviewConfirmTitle', hint: 'DineOnlineReviewConfirmHint' }
 }
 
-/** 桌卡上的小条文字 */
+/** 桌卡上的小条的状态文字；金额由桌卡自己用 priceDisplay 显示（POS-1133） */
 export function onlinePaymentBadge (mark) {
-  return i18n.t(TEXT[mark.state].badge, { amount: mark.amount })
+  return i18n.t(TEXT[mark.state].badge)
 }
 
 /**
@@ -64,9 +64,12 @@ export async function confirmCheckoutDuringOnlinePayment (tableId, tableName) {
   const text = TEXT[mark.state]
   const onlinePay = onlinePayKeyOf(mark)
   // 待处理时写还能记多少：分单、换一台收银机再结时就是剩下的
-  const amount = onlinePay ? onlinePay.available.toFixed(2) : mark.amount
+  // 金额和别处一样写成「9,00」（POS-1133）
+  const amount = (onlinePay ? onlinePay.available : (parseFloat(mark.amount) || 0)).toFixed(2).replace('.', ',')
+  // 待处理但门店标记没带付款方式（老云端 / 老门店）：键盘上不会有「线上付款」，提示写手工怎么结（POS-1133）
+  const hint = mark.state === 'review' && !onlinePay ? 'DineOnlineReviewConfirmHintManual' : text.hint
   const answer = await showConfirmAsyn(
-    i18n.t(text.hint, { table: tableName ?? '', amount }),
+    i18n.t(hint, { table: tableName ?? '', amount }),
     i18n.t(text.title)
   )
   return { proceed: !!answer?.value, onlinePay }

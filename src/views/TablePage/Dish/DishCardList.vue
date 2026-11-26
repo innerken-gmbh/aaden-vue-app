@@ -52,9 +52,11 @@
           <div
               v-if="promoLayout.headers[index]"
               :key="'promo' + title + promoLayout.headers[index].key"
-              class="mt-2 px-2 py-1 rounded orange lighten-5 text-body-2 d-flex align-center"
+              :class="promoLayout.headers[index].plain ? 'grey lighten-3' : 'orange lighten-5'"
+              class="mt-2 px-2 py-1 rounded text-body-2 d-flex align-center"
           >
             <v-icon
+                v-if="!promoLayout.headers[index].plain"
                 class="mr-1"
                 small
             >mdi-tag
@@ -107,7 +109,7 @@ import i18n from '@/i18n'
 import IKUtils from 'innerken-js-utils'
 import GlobalConfig from '@/oldjs/LocalGlobalSettings'
 import { sumBy } from 'lodash'
-import { groupSaved, originallyFree, promoGroupOf } from '@/views/TablePage/posPromo'
+import { groupSaved, hasOwnPromotion, isPromoRow, originallyFree, promoGroupOf } from '@/views/TablePage/posPromo'
 
 export default {
   name: 'DishCardList',
@@ -184,10 +186,11 @@ export default {
   methods: {
     /**
      * 「隐藏免费菜」藏不藏这一行：原来实收为 0 的照旧藏；收银台活动的行（带 promotionKey 的赠品、被活动减到 0 元的行，
-     * 离线补交的赠品 / 换购）只要原价不是 0 就照常显示，这是客人拿到的优惠（POS-1106）
+     * 离线补交的赠品 / 换购）只要原价不是 0 就照常显示，这是客人拿到的优惠（POS-1106）。
+     * 活动行用 posPromo 的 hasOwnPromotion（只有行类型 PAID 的普通行不算，POS-1131）
      */
     paidOrPromo (it) {
-      return it.realPrice !== 0 || (!!(it.promotionKey || it.promotionRowKind) && !originallyFree(it))
+      return it.realPrice !== 0 || (hasOwnPromotion(it) && !originallyFree(it))
     },
     editFreeDishDisplay () {
       GlobalConfig.showFreeDish = this.onlyPaid === '0' ? '1' : '0'
@@ -256,7 +259,8 @@ export default {
       const groups = {}
       const slots = []
       list.forEach(it => {
-        const g = promoGroupOf(it)
+        // 没有分组的活动行（离线补交的赠品 / 换购没有实例号）放进一个「活动」组，不归到「未参加活动」下面（POS-1131）
+        const g = promoGroupOf(it) ?? (isPromoRow(it) ? { key: 'promo-other', label: i18n.t('PosPromoBadge') } : null)
         if (!g) {
           slots.push({ row: it })
         } else if (groups[g.key]) {
@@ -268,8 +272,13 @@ export default {
       })
       const out = []
       const headers = {}
-      slots.forEach(slot => {
+      slots.forEach((slot, i) => {
         if (slot.row) {
+          // 没活动的行紧跟在活动组后面：加一条同级的小标题隔开，不然看起来像同一组（POS-1133）。
+          // 走到这里的行 promoGroupOf 为空且 isPromoRow 为否（上面把活动行都分了组），「未参加活动」下面的行都能单菜打折
+          if (slots[i - 1]?.group) {
+            headers[out.length] = { key: 'plain' + out.length, label: i18n.t('PosPromoNoPromotion'), saved: 0, plain: true }
+          }
           out.push(slot.row)
         } else {
           headers[out.length] = { key: slot.group.key, label: slot.group.label, saved: groupSaved(slot.group.rows) }

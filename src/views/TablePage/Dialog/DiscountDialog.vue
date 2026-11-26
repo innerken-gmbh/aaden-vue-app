@@ -15,7 +15,8 @@
       <v-card-text>
         <v-text-field
             :label="$t('AmountOrPercentage')"
-            :messages="$t('CashDiscountUseTips')"
+            :error-count="inputTips.length"
+            :messages="inputTips"
             v-model="localDiscountStr"
         ></v-text-field>
       </v-card-text>
@@ -79,6 +80,10 @@ export default {
       default: false
     },
     discountRatio: {
+      default: 0
+    },
+    // 选中的行里有几行是活动行：单菜打折不打它们（POS-1131），框里提示一句
+    skippedPromoCount: {
       default: 0
     }
   },
@@ -184,6 +189,8 @@ export default {
     },
     async sendDiscount (discountStr) {
       if (this.useDishesDiscount) {
+        // 没有可以打折的行（选中的全是活动行）就不发请求
+        if (this.dishesItems.length === 0) return
         const res = await hillo.post('Dishes.php?op=setDiscountToDishes', {
           discountStr: discountStr,
           orderId: this.orderId,
@@ -213,6 +220,15 @@ export default {
     }
   },
   computed: {
+    /**
+     * 输入框下面的小字：原来的用法提示一直在；选中的行里有活动行时再加一行「活动价的菜已跳过」（POS-1131）。
+     * 两行都放在输入框自己的提示区里（error-count 跟着行数，不然 Vuetify 只显示第一条）
+     */
+    inputTips () {
+      const tips = [this.$t('CashDiscountUseTips')]
+      if (this.useDishesDiscount && this.skippedPromoCount > 0) tips.push(this.$t('PosPromoDishDiscountSkipped'))
+      return tips
+    },
     realShow: {
       get: function () {
         return this.discountModelShow
