@@ -713,7 +713,9 @@ export default {
       const r = this.result
       if (!r) return ''
       const id = this.shownAdjust.storeConsumeTypeId ?? r.storeConsumeTypeId
-      if (r.storeTypeName || id) return r.storeTypeName || findConsumeTypeById(id).name
+      // 门店类型按界面语言写（storeTypeNames，键是大写语言码），不写门店默认语言的名字「In Haus」（POS-1140）；老云端没有时照旧
+      const name = r.storeTypeNames?.[this.lang().toUpperCase()] || r.storeTypeName
+      if (name || id) return name || findConsumeTypeById(id).name
       // 没开的桌按确认框里选的开：结果里没有类型，写服务员确认的
       if (r.alreadyOpen) return ''
       return this.pickedType?.name ?? this.$t('DineOpenModeAlaCarte')
