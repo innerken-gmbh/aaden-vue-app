@@ -400,9 +400,16 @@
                 class="mb-3"
             >
               <div class="text-body-2 font-weight-bold">
-                {{ $t(tableOpen ? 'DineOpenQueuedOpenTable' : 'DineOpenQueued', { count: detail.queued.length }) }}
+                {{ $t(queuedNoneSent ? 'DineOpenQueuedNone' : tableOpen ? 'DineOpenQueuedOpenTable' : 'DineOpenQueued', { count: detail.queued.length }) }}
               </div>
               <div class="text-caption grey--text text--darken-1">{{ queuedLines.map(l => l.qty + '× ' + l.name).join(' · ') }}</div>
+              <!-- 收银机按别的类型开的桌：事先说清确认后退几道、哪一轮整轮退回（POS-1139），只是告知，不拦确认 -->
+              <div
+                  v-for="(line, i) in queuedCheckLines"
+                  :key="'queued-check-' + i"
+                  class="text-body-2 warning--text text--darken-2"
+              >{{ line }}
+              </div>
             </div>
           </template>
 
@@ -612,6 +619,38 @@ export default {
     },
     queuedLines () {
       return (this.detail?.queued ?? []).flatMap(r => r.lines ?? [])
+    },
+    /**
+     * 确认后等着的几轮预计退几道（POS-1139）：云端 claim 回包的 queuedCheck，按收银机上这张桌现在的类型算好，这里只显示。
+     * 老云端没有这个字段、桌还没开时是 null，照旧。服务员在框里选了别的类型（自助 / 单点或自助类型）：
+     * 确认时按改后的类型核对，预告不作数，藏掉（和确认网页一样）
+     */
+    queuedCheck () {
+      const d = this.detail
+      if (!d || !this.tableOpen || !(d.queued ?? []).length) return null
+      const buffet = this.form.mode === 'BUFFET'
+      const typeChanged = this.adjusting && (buffet !== this.storeBuffet ||
+        (buffet && (this.form.consumeTypeId ?? null) !== (d.tableConsumeTypeId ?? null)))
+      return typeChanged ? null : (d.queuedCheck ?? null)
+    },
+    /** 一道都送不了、整轮退回的轮：n 是第几轮（按 rounds 里的位置，和 queued 同序） */
+    queuedFailedRounds () {
+      return (this.queuedCheck?.rounds ?? []).map((r, i) => ({ ...r, n: i + 1 })).filter(r => r.failed)
+    },
+    /** 等着的轮全都送不了：「确认后自动送厨房」改成「确认后不会送厨房」 */
+    queuedNoneSent () {
+      const rounds = this.queuedCheck?.rounds ?? []
+      return rounds.length > 0 && this.queuedFailedRounds.length === rounds.length
+    },
+    queuedCheckLines () {
+      const c = this.queuedCheck
+      if (!c || !(c.droppedDishes > 0 || c.failedRounds > 0)) return []
+      const lines = []
+      if (c.droppedDishes > 0) lines.push(this.$t('DineOpenQueuedCheckDropped', { count: c.droppedDishes }))
+      // 整轮都不在本桌菜单里写「都不在本桌菜单里」，别的原因（卖完、不在供应时段等）写「现在都送不了」
+      this.queuedFailedRounds.forEach(r => lines.push(this.$t(
+        r.dropped === r.dishes ? 'DineOpenQueuedCheckRoundFailed' : 'DineOpenQueuedCheckRoundFailedOther', { n: r.n })))
+      return lines
     },
     /** 选的自助类型有没有儿童价档；没有档位的（常见的是火锅）和单点都能填儿童 */
     hasChildTier () {
